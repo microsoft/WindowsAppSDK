@@ -1,6 +1,5 @@
 ---
-ms.reviewedAt: Date of last review in mm/dd/yyyy format
-ms.reviewedBy: alias of person that last reviewed this file
+
 ---
 
 # Contributing
