@@ -1,10 +1,6 @@
 ﻿#pragma once
 
 #include <Microsoft.Reunion.Common.g.h>
-#include <thread>
-#include <mutex>
-#include <wil/token_helpers.h>
-#include <appmodel.h>
 
 namespace winrt::Microsoft::Reunion::implementation
 {
@@ -52,7 +48,7 @@ namespace winrt::Microsoft::Reunion::implementation
 }
 namespace winrt::Microsoft::Reunion::factory_implementation
 {
-    struct Common : CommonT<Common, implementation::Common, static_lifetime>
+    struct Common : CommonT<Common, implementation::Common>
     {
     };
 }
