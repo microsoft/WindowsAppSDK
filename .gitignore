@@ -251,19 +251,3 @@ CodeCoverageOutput/
 # Dump files
 [Dd]ump[Ff]iles/
 *.dmp
-
-# Private (not-checked-in) build properties
-local.props
-InnerLoopAreas.props
-
-# Files from OS repo to ignore
-.cachedFileHashes
-dev/dll/CppWinRTFilterTypes.txt
-dev/dll/XamlTypeInfo.g.*
-manifest/Microsoft-Windows-UI-Xaml-MUXControls.man
-
-artifacts/
-HelixPayload/
-/test/MUXControlsTestApp/MSTest/MUXControlsTestApp_Test
-/test/MUXControlsTestApp/TAEF/MUXControlsTestApp_Test
-UnreliableTestReport.csv
