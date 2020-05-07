@@ -1,0 +1,12 @@
+﻿namespace Microsoft.Reunion
+{
+    runtimeclass Common
+    {
+        static void Initialize();
+
+        static String AppIdentity { get; };
+
+        static Boolean IsAppContainer{ get; };
+        static Boolean HasIdentity{ get; };
+    };
+}
