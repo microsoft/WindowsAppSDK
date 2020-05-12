@@ -9,11 +9,11 @@ some basic common features.  You can help by filing issues for features you'd li
 
 ## Documentation
 
+* [High level overview](docs/overview.md) - why we're doing this, how you can use it
 * [Roadmap](docs/roadmap.md) - where we're going
-* [High-level overview](docs/overview.md) - why we're doing this, how you can use it
-* [Using Reunion](docs/developer-guide.md) - how to use Project Reunion in your app
-* [Contributor/developer Guide](docs/contributor-guide.md) - how to contribute to Project Reunion
-* [Implementation/API design Guide](docs/implementation-guide.md) - how to define and implement
+* [Using Project Reunion](docs/developer-guide.md) - how to use Project Reunion in your app
+* [Contributor/developer guide](docs/contributor-guide.md) - how to contribute to Project Reunion
+* [Implementation/API design guide](docs/implementation-guide.md) - how to define and implement
   Project Reunion components.
 * [FAQ](docs/faq.md) - frequently asked questions about Project Reunion
 
