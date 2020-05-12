@@ -19,9 +19,11 @@ It's fine if you don't have all the details: you can start with the Summary and 
 <!-- Include 1-2 sentences summarizing your feature or API proposal -->
 
 ## Rationale
-<!-- Create a list that describes WHY the feature should be added to Project Reunion for all developers and users.
-Proposals often have multiple motives for why we should do the work, so list each one as a separate bullet.
-If applicable you can also describe how the proposal aligns to the current Project Reunion roadmap and priorities in a separate paragraph:
+<!-- Create a list that describes WHY the feature should be added to Project Reunion for all 
+developers and users. Proposals often have multiple motives for why we should do the work, 
+so list each one as a separate bullet.
+If applicable you can also describe how the proposal aligns to the current Project Reunion roadmap
+and priorities in a separate paragraph:
 https://github.com/Microsoft/ProjectReunion/blob/master/docs/roadmap.md
 -->
 * {First reason for why we should consider this proposal}
