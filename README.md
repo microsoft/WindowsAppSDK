@@ -1,24 +1,25 @@
 # Project Reunion
 
-Project Reunion provides functionality that supports all your apps on Windows.
+Over the last couple of years, we have been breaking down the barriers between Win32 and UWP. We are expanding our efforts even further and finally giving this effort a name: Project Reunion
 
-## Roadmap
+Project Reunion is:
 
-We're following a [roadmap](docs/roadmap.md) that gets us to building a v1.0 of Project Reunion exploring
-some basic common features.  You can help by filing issues for features you'd like to see!
+- **The next evolution of the journey we started with UWP**. It embraces all the goodness and investments our community has done in UWP and Win32, and builds a path forward for both
 
-## Documentation
+- **it clears up the confusion around the Windows platform**, and acknowledges that supporting all Windows versions (over 1Billion endpoints),  not just the latest version, and provides meaningful TAM and lowers cost for our developer base
 
-* [High level overview](docs/overview.md) - why we're doing this, how you can use it.
-* [Roadmap](docs/roadmap.md) - where we're going.
-* [Contributor/developer guide](docs/contributor-guide.md) - how to contribute to Project Reunion.
-* [FAQ](docs/faq.md) - frequently asked questions about Project Reunion.
+- **This evolution will converge our divergent paths of the past and brings our developer base forward**. It unblocks future scenarios and jumpstarts the revolution of Windows apps (e.g. Cloud streamed, Cloud-hybrid, Cloud/Edge Apps)
 
-## Features
 
-### Benefits
+### Current App Model
+![Appmodel](docs/currentappmodel.PNG)
 
-_Windows and Project Reunion loves all your apps_
+### Unified App Model(Project Reunion)
+![Reunion](docs/newappmodel.PNG)
+
+###  Benefits of Project Reunion
+
+ _Windows and Project Reunion loves all your apps_
 
 The Project Reunion Framework helps you use modern features of Windows across all your apps, across all your
 users. You'll get access to modern features of the Windows Application Platform at your own pace.
@@ -26,20 +27,45 @@ Improve power use and uphold privacy requirements in your existing apps.  Update
 APIs that automatically switch to fill-in support on older versions of Windows.  Get access to
 more of Windows from your UWPs. Connect to notifications from your Win32 applications.
 
-1. Project Reunion stays up to date automatically as new versions are available without recompilation or
-updates to your app.
 
-2. Project Reunion APIs are backwards-compatible across a range of Windows versions and provide a clear
+- Your **existing UWP and Win32 apps still work** on supported versions of Windows with **no changes**
+- If you build fully against Project Reunion, **we will do the work** to make your app always work across all of Windows. Project Reunion APIs are backwards-compatible across a range of Windows versions and provide a clear
 message to you that an API might not be supported.
+- You can **incrementally adopt** Project Reunion components for your existing apps and middleware libraries. Project Reunion helps you incrementally adopt powerful Windows features like AppContainer, Desktop
+Bridge, Identity, and more
+- Project Reunion will **update independent of Windows releases**, and will always have the latest and greatest support for new hardware. Project Reunion stays up to date automatically as new versions are available without recompilation or
+updates to your app.
+- Project Reunion is an inclusive set of technologies allowing developers **a broad range of choice**.  We will recommend technologies 
+that deliver the best experience on the broad set of hardware we support, have great fundamentals, and are optimized for the cloud.
+- Project Reunion works for packaged, unpackaged, UWP, Desktop Bridge, and bring-your-own identity apps.
+**Write your app or framework code once and use it everywhere**.
 
-3. Project Reunion works for packaged, unpackaged, UWP, Desktop Bridge, and bring-your-own identity apps.
-Write your app or framework code once and use it everywhere.
-
-4. Project Reunion helps you incrementally adopt powerful Windows features like AppContainer, Desktop
-Bridge, Identity, and more.
 
 
-### Version Support
+### Project Reunion Principles
+
+**Compatible**<br>
+	Unifies Win32 and UWP. With project Reunion, you won't have to pick between UWP or Win32<br>
+	It works on all supported Windows versions<br>
+**Modern**<br>
+	It supports the latest libraries for e.g. UI, AI, ML<br>
+	Project Reunion helps you get ready for cloud integration, app streaming, edge compute, etc<br>
+**Agile**<br>
+	Project Reunion ships out of band with OS releases, with regular previews<br>
+	You can incrementally adopt Project Reunion components for your existing apps and middleware libraries<br>
+**Open**<br>
+	We're committing to engineering Project Reunion in the open on GitHub so you have a more direct say in how the platform evolves<br>
+
+## Documentation
+
+* [High level overview](docs/overview.md) - Why we're doing this? how does it benefit you?
+* [Roadmap](docs/roadmap.md) - where we're going. We're following a [roadmap](docs/roadmap.md) that gets us to building a v1.0 of Project Reunion exploring
+some basic common features.  You can help by filing issues for features you'd like to see!
+* [Contributor/developer guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
+* [FAQ](docs/faq.md) - frequently asked questions about Project Reunion.
+
+
+## Version Support
 
 At this time, Project Reunion supports Windows `TargetPlatformVersion` >= 10.0.18362 (Windows 10 1809) or
 greater. 
@@ -56,13 +82,13 @@ When features have partial implementations on older versions of Windows they wil
 [`IsSupported`](docs/developer-guide.md) method indicating what level of support is present.
 
 
-## Requesting Project Reunion Functionality
+## Have Your Say!
 
 File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
 trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
-points if there's a gist or existing repo we can look at with you.s
+points if there's a gist or existing repo we can look at with you.
 
-# Contributing
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
@@ -76,7 +102,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-# Legal Notices
+## Legal Notices
 
 Microsoft and any contributors grant you a license to the Microsoft documentation and other content
 in this repository under the [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode),
