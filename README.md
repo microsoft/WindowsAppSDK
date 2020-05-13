@@ -9,13 +9,10 @@ some basic common features.  You can help by filing issues for features you'd li
 
 ## Documentation
 
-* [High level overview](docs/overview.md) - why we're doing this, how you can use it
-* [Roadmap](docs/roadmap.md) - where we're going
-* [Using Project Reunion](docs/developer-guide.md) - how to use Project Reunion in your app
-* [Contributor/developer guide](docs/contributor-guide.md) - how to contribute to Project Reunion
-* [Implementation/API design guide](docs/implementation-guide.md) - how to define and implement
-  Project Reunion components.
-* [FAQ](docs/faq.md) - frequently asked questions about Project Reunion
+* [High level overview](docs/overview.md) - why we're doing this, how you can use it.
+* [Roadmap](docs/roadmap.md) - where we're going.
+* [Contributor/developer guide](docs/contributor-guide.md) - how to contribute to Project Reunion.
+* [FAQ](docs/faq.md) - frequently asked questions about Project Reunion.
 
 ## Features
 
@@ -41,17 +38,6 @@ Write your app or framework code once and use it everywhere.
 4. Project Reunion helps you incrementally adopt powerful Windows features like AppContainer, Desktop
 Bridge, Identity, and more.
 
-### API Support
-
-Project Reunion supports many of the APIs in Windows already. See below for a list and links to both
-definition and sample code.
-
-| Area          | Description                                                   | IDL | Sample |
-| ------------- | ------------------------------------------------------------- | --- | ------ |
-| Startup Tasks | Schedule your app to run when the user logs in                |     |        |
-| App Lifecycle | Events tracking app start & stop requests, login/out, restart |     |        |
-| Storage       | Store your app's data in a central location per user          |     |        |
-
 
 ### Version Support
 
@@ -69,38 +55,12 @@ Your app's users can be on any of the following supported Windows 10 versions:
 When features have partial implementations on older versions of Windows they will have an
 [`IsSupported`](docs/developer-guide.md) method indicating what level of support is present.
 
-## Data/Telemetry
-
-This project collects usage data and sends it to Microsoft to help improve our products and services. See the [privacy statement](privacy.md) for more details.
-
-For more information on telemetry implementation see the [developer guide](docs/developer-guide.md#Telemetry).
-
-# Quick Start
-
-## Using Project Reunion in Your Apps
-
-There are [multiple samples available](samples/README.md). Briefly the steps are:
-
-1. [Add a reference](docs/developer-guide.md#Packages) to the Microsoft.Reunion package
-2. [Update your code](docs/developer-guide.md#UpdateYourApp) to use Project Reunion functionality
-3. [Deploy your app](docs/developer-guide.md#DeployingProjectReunion) with Project Reunion
 
 ## Requesting Project Reunion Functionality
 
 File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
 trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
-points if there's a gist or existing repo we can look at with you.  There's [a fuller description](docs/expanding-projectreunion.md)
-of how this works, how you & the community can help, and more available.
-
-## Contributing to Project Reunion
-
-First, read the [Contributing](#Contributing) section.  Then:
-
-1. Create a fork of this repo then clone it
-1. Start Visual Studio 2019 on [ProjectReunion.sln](./ProjectReunion.sln)
-1. [Modify the code](docs/implementation-guide.md#UpdatingProjectReunion) you'd like to see changed
-1. [Add tests](docs/implementation-guide.md#Testing) for your fix or functionality
-1. [Create a pull request](docs/implementation-guide.md#PullRequest) from your fork to this repo
+points if there's a gist or existing repo we can look at with you.s
 
 # Contributing
 
