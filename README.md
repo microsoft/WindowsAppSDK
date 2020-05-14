@@ -120,9 +120,9 @@ gets us to building a v1.0 of Project Reunion exploring some basic common featur
 
 ## Links
 
-* Build 2020 Kevin Gallo KeyNote speech introducing Project Reunion
-* Build 2020 Project Reunion Session with Jesse Bishop & Paul Gusmorino
-* Project Reunion Launch blog post
+* [Build 2020 Kevin Gallo keynote speech introducing Project Reunion]()
+* [Build 2020 Project Reunion Session with Jesse Bishop & Paul Gusmorino]()
+* [Project Reunion announcement blog post]()
   
 
 ## Contributing
