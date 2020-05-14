@@ -1,6 +1,6 @@
 ## Contributing
 
-#### We want to hear from you!
+_We want to hear from you!_
 
 File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
 trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
@@ -19,7 +19,7 @@ points if there's a gist or existing repo we can look at with you.
    What components do you want to see in Project Reunion? For example you can propose a new API on an existing type, or an idea for a new API.
    It's fine if you don't have all the details: you can start with a summary and rationale.
 
-Over time, we will add Project Reunion code and samples into this repo and provide code contribution guidelines.
+**Over time, we will add Project Reunion code and samples into this repo and provide code contribution/developer guidelines.**
 
 
 Most contributions require you to agree to a

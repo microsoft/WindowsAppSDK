@@ -6,8 +6,8 @@ Project reunion is an umbrella of work that we will develop together over time. 
   <tbody>
     <tr>
       <th>//BUILD 2020</th>
-      <th align="center">End of 2020</th>
-      <th align="right">2021++</th>
+      <th>End of 2020</th>
+      <th>2021++</th>
     </tr>
     <tr>
       <td>
