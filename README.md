@@ -6,12 +6,14 @@ Project Reunion is:
 
 - **The next evolution of the journey we started with UWP**. It embraces all the goodness and investments our community has done in UWP and Win32, and builds a path forward for both
 
-- **it clears up the confusion around the Windows platform**, and acknowledges that supporting all Windows versions (over 1Billion endpoints),  not just the latest version, and provides meaningful TAM and lowers cost for our developer base
+- **It clears up the confusion around the Windows platform**, and acknowledges that supporting all Windows versions (over 1Billion endpoints),  not just the latest version, and provides meaningful TAM and lowers cost for our developer base
 
 - **This evolution will converge our divergent paths of the past and brings our developer base forward**. It unblocks future scenarios and jumpstarts the revolution of Windows apps (e.g. Cloud streamed, Cloud-hybrid, Cloud/Edge Apps)
 
 
 ### Current App Model
+
+When you write apps today, they call Win32
 ![Appmodel](docs/currentappmodel.PNG)
 
 ### Unified App Model(Project Reunion)
