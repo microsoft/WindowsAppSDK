@@ -1,10 +1,7 @@
 # Frequently Asked Questions
-**When can I start using components in Project Reunion?**
+**1. When can I start using components in Project Reunion?**
 
-Right away. See below for more information about what's already part of the Project Reunion family.
-
-
-**What is available in Project Reunion?**
+Right away.
 
 These components are available for you to use now and adhere to the “Project Reunion Family Promise” 
 that they have a single API for use in all kinds of applications. 
@@ -28,19 +25,20 @@ the MSIX packaging story on older versions of Windows.
 
 [Tell us what other components you'd like to see as part of the Project reunion Family](https://github.com/microsoft/ProjectReunion/issues/new/choose)
 
-**Do I need to be packaged to use Project Reunion?**
+**2. Do I need to be packaged to use Project Reunion?**
 
 Your app does not need to be packaged to use Project Reunion functionality.
 
-**How do I contribute?**
+**3. What does it take to migrate to using Project Reunion?**
+You would need to recompile your app against the Project Reunion SDK.
+
+
+**4. What is a framework package?**
+Framework packages are ways for apps to share code from a common source, rather than carrying it within the app itself.
+
+
+**5. How do I contribute?**
 
 Here's a [link]((https://github.com/microsoft/ProjectReunion/issues/new/choose)) to how to ask questions, start a discussion or make a feature proposal 
 
-**What does it take to migrate to using Project Reunion?**
-You would need to recompile your app against the Project Reunion SDK
-
-
-**What is a framework package?**
-Framework packages are ways for apps to share code from a common source, rather than carrying it within the app itself.
-[TODO]
 
