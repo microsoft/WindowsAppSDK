@@ -1,24 +1,57 @@
-# Project Reunion
+﻿# Project Reunion
 
-Over the last couple of years, we have been breaking down the barriers between Win32 and UWP. We are expanding our efforts even further and finally giving this effort a name: Project Reunion
+Over the past couple of years, we have been breaking down the barriers between Desktop Win32 and 
+Universal Windows Platform (UWP) APIs. Project Reunion is an expansion of that effort to truly make 
+it easier to build a great Windows app. It will unify access to existing desktop and UWP APIs and 
+make them available decoupled from the OS via tools like NuGet. This will provide a common platform
+ for new apps, as well as enable incrementally updating and modernizing your existing apps with the 
+latest functionality, whether they're C++, .NET – including WinForms, WPF, and UWP – or React Native. 
+We'll also continue to expand and evolve the platform with new capabilities. As we decouple the 
+platform, we are also doing the work to polyfill as needed so that APIs work downlevel across 
+supported versions of Windows. 
 
-Project Reunion is:
+Project Reunion:
 
-- **The next evolution of the journey we started with UWP**. It embraces all the goodness and investments our community has done in UWP and Win32, and builds a path forward for both
+- **Is the next evolution of the journey we started with UWP**. It embraces all the goodness and 
+investments our community has done in UWP and Win32, and builds a path forward for both
 
-- **It clears up the confusion around the Windows platform**, and acknowledges that supporting all Windows versions (over 1Billion endpoints),� not just the latest version, and provides meaningful TAM and lowers cost for our developer base
+- **It clears up the confusion around the Windows platform**, and acknowledges that supporting
+ all Windows versions (over 1 billion endpoints) not just the latest version, and provides a meaningful
+ total adressable market and lowers cost for our developer base, build once run everywhere.
 
-- **This evolution will converge our divergent paths of the past and�brings our developer base forward**. It unblocks future scenarios and jumpstarts the revolution of Windows apps (e.g. Cloud streamed, Cloud-hybrid, Cloud/Edge Apps)
+- **This evolution will converge our divergent paths of the past and brings our developer base forward**. 
+It unblocks future scenarios and jumpstarts the revolution of Windows apps (e.g. Cloud streamed, 
+Cloud-hybrid, Cloud/Edge Apps)
 
+We invite you to come learn more and engage with us at this early stage right here. [Ask questions,
+start discussions and make feature proposals](https://github.com/microsoft/ProjectReunion/issues/new/choose). We'll be sharing our progress and listening to your feedback as we implement 
+this vision. 
+
+**We have already started with APIs like [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml), WebView2 and MSIX which you can start using today.** 
+
+WinUI 3 Preview 1 is one of the first components in the Project Reunion journey: it’s the modern native 
+UI framework for Windows, now available to all Windows app developers across both UWP and Desktop apps.
+Using WinUI you will be able to create new apps with modern UI that adapts and scales across devices, 
+or incrementally modernize the UI of existing desktop apps including C++, WPF and WinForms. 
 
 ### Current App Model
 
-When you write apps today, they call Win32
+When you write apps or libraries today, they call directyly into Desktop Win32 APIs or UWP APIs that are 
+part of the OS. Over time we have brought more Desktop Win32 APIs into UWP e.g. the File System API and 
+enabled Desktop apps to call WinRT UWP APIs.
 ![Appmodel](docs/currentappmodel.PNG)
 
 ### Unified App Model(Project Reunion)
-![Reunion](docs/newappmodel.PNG)
+With Project reunion, we are iteratively taking the same APIs you use today across UWP and Desktop apps like 
+WinForms, WPF, C++ and decoupling them from the OS by making them available via package managers like Nuget.
+This allows you to mix and match APIs that work best for your app and adopt new capabilities on demand. 
+![ProjectReunion](docs/newappmodel.PNG)
 
+
+Over time, we will blur that distinction between Desktop Win32 apps and UWP apps such that you are building a 
+Windows app or library.
+
+![ProjectReunion2](docs/projectreunionappmodel.PNG)
 ###  Benefits of Project Reunion
 
  _Windows and Project Reunion loves all your apps_
@@ -31,7 +64,7 @@ more of Windows from your UWPs. Connect to notifications from your Win32 applica
 
 
 - Your **existing UWP and Win32 apps still work** on supported versions of Windows with **no changes**
-- If you build fully against Project Reunion, **we will do the work** to make�your app always work across all�of Windows. Project Reunion APIs are backwards-compatible across a range of Windows versions and provide a clear
+- If you build fully against Project Reunion, **we will do the work** to make your app always work across all of Windows. Project Reunion APIs are backwards-compatible across a range of Windows versions and provide a clear
 message to you that an API might not be supported.
 - You can **incrementally adopt** Project Reunion components for your existing apps and middleware libraries. Project Reunion helps you incrementally adopt powerful Windows features like AppContainer, Desktop
 Bridge, Identity, and more
@@ -60,10 +93,10 @@ that deliver the best experience on the broad set of hardware we support, have g
 
 ## Documentation
 
-* [High level overview](docs/overview.md) - Why we're doing this? how does it benefit you?
+* [High level overview](README.md) - Why we're doing this? how does it benefit you?
 * [Roadmap](docs/roadmap.md) - where we're going. We're following a [roadmap](docs/roadmap.md) that gets us to building a v1.0 of Project Reunion exploring
 some basic common features.  You can help by filing issues for features you'd like to see!
-* [Contributor/developer guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
+* [Contributor guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
 * [FAQ](docs/faq.md) - frequently asked questions about Project Reunion.
 
 
