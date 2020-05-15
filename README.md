@@ -17,7 +17,7 @@ down-level across supported versions of Windows.
 ### How can I use Project Reunion?
 We have already started with APIs like 
 **[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml)**,
-**[WebView2](https://docs.microsoft.com/en-us/microsoft-edge/hosting/webview2/gettingstarted)** and 
+**[WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)** and 
 **[MSIX](https://docs.microsoft.com/en-us/windows/msix/overview)**
 **([MSIX-Core](https://github.com/microsoft/msix-packaging))** 
 which you can start using today!
@@ -63,10 +63,10 @@ points if there's a gist or existing repo we can look at with you.
 
 
 1. **[Ask a question](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
-    Also, have a look at our [frequently asked questions]() page which we will update often.
+    Also, have a look at our [frequently asked questions]() page which we will update periodically.
 
 2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=discussion&template=discussion.md&title=Discussion%3A+%5Byour+title+here%5D+)**<br>
-   Discussions can be about any topics or ideas related to Project Reunion.For example,
+   Discussions can be about any topics or ideas related to Project Reunion. For example,
    you might start a Discussion issue to see if others are interested in a cool new idea
    you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
 
@@ -76,13 +76,13 @@ points if there's a gist or existing repo we can look at with you.
 
 **Over time, we will add Project Reunion code and samples into this repo and provide code contribution/developer guidelines.**
 
-Read more about the [contribution guide here](docs/contributor-guide).
+Read more about the [contribution guide here](docs/contributor-guide.md).
 
 ### Version Support
 
 Project Reunion aims to work on supported versions of Windows. We'll use techniques like '_polyfills_' 
 and custom implementations to do the heavy lifting for you and make sure your app works across Windows
-versions and devices
+versions and devices.
 
 ### Documentation
 
