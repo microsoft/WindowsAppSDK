@@ -1,6 +1,6 @@
 # Roadmap
 
-Project reunion is an umbrella of work that we will develop together over time. 
+Project Reunion is an umbrella of work that we will develop together over time. 
 Here's how we intend to roll out Project Reunion.
 <table>
   <tbody>
@@ -22,7 +22,7 @@ Here's how we intend to roll out Project Reunion.
       <td>
         <ul>
             <li>WinUi Preview for UWP & Win32</li>
-            <li>Project Reunion Core SDK Preview (V0.01)</li>
+            <li>Project Reunion Preview</li>
          </ul>
      </td>
     <td>

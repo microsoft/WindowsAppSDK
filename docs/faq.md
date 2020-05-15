@@ -1,8 +1,8 @@
 # Frequently Asked Questions
-We will update this page often.
+We will update this page periodically.
 
-### 1. When can I start using components in Project Reunion?
-Right away.
+### 1. How do I start using Project Reunion in my app?
+If you have a Desktop Win32 or UWP app there are multiple components available now.
 
 These components are available for you to use now and adhere to the “Project Reunion Family Promise” 
 that they have a single API for use in all kinds of applications.
@@ -29,22 +29,18 @@ packaging story on older versions of Windows.
 
 ### 2. Do I need to be packaged to use Project Reunion?
 Your app does not need to be packaged to use Project Reunion functionality.
+
 If you are packaged using either a Universal Windows Application package or a Desktop Bridge package, 
 referencing the NuGet package is enough to start using Project Reunion right away.
+
 If you have your own installer, we’ll have instructions to carry the Project Reunion components with your app 
 and how to install them using some common installers.
 
-### 3. How will I start using Project Reunion?
-Add a reference to the Project Reunion NuGet Package when it’s available and rebuild.
-For some functionality all you have to do is change your namespace references from “Windows.Thing” to 
-“Microsoft.Thing” as the API surfaces are the same.
-See the per-area functionality guides for how to turn on additional Project Reunion features.
-More advanced Project Reunion features might require changes to your existing code to take full advantage of 
-the implementation. Certain features might require additional items like identity or API keys.
 
-### 4. What is a framework package?
-Framework packages are ways for apps to share code from a common source, rather than carrying it within the app itself.
-Framework packages can be updated automatically on Windows as other apps bring new versions. We’ll use a modified form of Semantic Versioning to make sure your app is never broken due to an interface or behavioral change when using these shared components.
-
-### 5. How do I contribute?
+### 3. How do I contribute?
 Use this repo’s GitHub Issues to [ask questions, start a discussion or make a feature proposal](https://github.com/microsoft/ProjectReunion/issues/new/choose).
+
+
+
+
+##### I don’t see my question here! [Create an issue to ask a question or start a discussion](https://github.com/microsoft/ProjectReunion/issues/new/choose).
