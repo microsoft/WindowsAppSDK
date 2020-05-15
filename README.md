@@ -22,24 +22,25 @@ requiring you to make a hard choice to rewrite or re-implement across versions o
 
  _Windows and Project Reunion loves all your apps_
 
-- Your existing UWP and Win32 apps continue to work on supported versions of Windows with no changes.
+- Your **existing UWP and Win32 apps continue to work** on supported versions of Windows with **no changes**.
 
-- Project Reunion helps your app work across more versions of Windows by filling in support and 
-letting you know when features are fully available. Project Reunion APIs are backwards-compatible 
+- Project Reunion helps **your app work across more versions of Windows** by filling in support and 
+letting you know when features are fully available. Project Reunion APIs are **backwards-compatible**
 across a range of Windows versions and provide a clear message to you that an API might not be supported.
 
-- You can incrementally adopt Project Reunion components for your existing apps and middleware 
+- You can **incrementally adopt Project Reunion components** for your existing apps and middleware 
 libraries. Your Desktop Bridge, UWP, and Win32 apps can start using powerful platform APIs through Project 
 Reunion at your own pace.
 
-- Features in Project Reunion are delivered without a Windows update so you can use them everywhere 
-as soon as they're available. Project Reunion stays up to date automatically, fixing issues for you.
+- Features in Project Reunion are **delivered without a Windows update** so you can use them everywhere 
+as soon as they're available. Project Reunion **stays up to date** automatically, fixing issues for you.
 
-- Project Reunion is an inclusive set of technologies allowing developers a broad range of choice. 
+- Project Reunion is an inclusive set of technologies allowing developers **a broad range of choice**. 
 We will recommend technologies that deliver the best experience on the broad set of hardware we support, 
 have great fundamentals, and are optimized for the cloud.
 
-- Project Reunion works for packaged, unpackaged, UWP, Desktop Bridge, and bring-your-own identity apps. Write your app or framework code once and run it everywhere
+- Project Reunion works for packaged, unpackaged, UWP, Desktop Bridge, and bring-your-own identity apps.
+Write your app or framework **code once and run it everywhere**
 
 
 
