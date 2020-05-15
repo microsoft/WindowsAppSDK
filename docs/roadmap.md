@@ -1,7 +1,7 @@
 # Roadmap
 
-Project reunion is an umbrella of work that we will develop together over time. Here's how we intend to roll out Project reunion.
-
+Project reunion is an umbrella of work that we will develop together over time. 
+Here's how we intend to roll out Project Reunion.
 <table>
   <tbody>
     <tr>
