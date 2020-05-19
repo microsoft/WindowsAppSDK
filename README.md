@@ -30,6 +30,8 @@ WinForms.
 
 [Help us figure out what Project Reunion becomes to support your application.](https://github.com/microsoft/ProjectReunion/issues/new/choose)
 
+![Project Reunion](docs/projectreunion.gif)
+
 ### Project Reunion Principles
 
 **Compatible**
