@@ -65,7 +65,7 @@ points if there's a gist or existing repo we can look at with you.
 
 
 1. **[Ask a question](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
-    Also, have a look at our [frequently asked questions]() page which we will update periodically.
+    Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
 
 2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=discussion&template=discussion.md&title=Discussion%3A+%5Byour+title+here%5D+)**<br>
    Discussions can be about any topics or ideas related to Project Reunion. For example,
