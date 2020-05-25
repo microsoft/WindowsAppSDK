@@ -21,7 +21,7 @@ Here's how we intend to roll out Project Reunion.
      </td>
       <td>
         <ul>
-            <li>WinUi Preview for UWP & Win32</li>
+            <li>WinUI Preview for UWP & Win32</li>
             <li>Project Reunion Preview</li>
          </ul>
      </td>
