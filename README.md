@@ -30,7 +30,7 @@ WinForms.
 
 [Help us figure out what Project Reunion becomes to support your application.](https://github.com/microsoft/ProjectReunion/issues/new/choose)
 
-![Project Reunion](docs/projectreunion.gif)
+![Project Reunion](docs/images/projectreunion.gif)
 
 ### Project Reunion Principles
 
@@ -67,7 +67,7 @@ points if there's a gist or existing repo we can look at with you.
 1. **[Ask a question](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
     Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
 
-2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=discussion&template=discussion.md&title=Discussion%3A+%5Byour+title+here%5D+)**<br>
+2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/discussions)**<br>
    Discussions can be about any topics or ideas related to Project Reunion. For example,
    you might start a Discussion issue to see if others are interested in a cool new idea
    you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
@@ -88,6 +88,8 @@ versions and devices.
 
 ### Documentation
 
+* [More details about Project Reunion](https://github.com/microsoft/ProjectReunion/blob/master/docs/README.md) - 
+More on what the project is and how we're approaching the work.
 * [Roadmap](docs/roadmap.md) - Where we're going. We're following this roadmap that 
 gets us to building a first version of Project Reunion exploring some basic common features.
   [You can help by filing issues for features you'd like to see](https://github.com/microsoft/ProjectReunion/issues/new/choose)!
