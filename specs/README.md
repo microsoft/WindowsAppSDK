@@ -3,7 +3,7 @@
 This directory contains archived and in-progress spec documents for APIs in
 Project Reunion.
 
-Documents in this directory are used as part of a feature and API reiview
+Documents in this directory are used as part of a feature and API review
 for features in development and are not intended to be final developer
 documentation.
 
