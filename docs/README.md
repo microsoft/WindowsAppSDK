@@ -17,7 +17,7 @@ This repo contains the Project Reunion components that are common for all applic
 Look for the **"Project Reunion Family"** badge in other repos showing that their code is 
 using Project Reunion techniques and tooling.  Your own components can be part of the 
 "Project Reunion Family" by following the same principles and practices as Project 
-Reunion itself – support all forms of apps with a single API surface and meet 
+Reunion itself - support all forms of apps with a single API surface and meet 
 developers where they are with the tools they need to build great apps on Windows.
 
 Using Project Reunion will be as simple as adding a reference to our NuGet packages in 
@@ -26,7 +26,7 @@ your build.
 
 # What Project Reunion Brings
 
-Project Reunion functionality comes in three main categories – new APIs, converged APIs, 
+Project Reunion functionality comes in three main categories - new APIs, converged APIs, 
 and API subsets.  Your apps can pick up each different level of functionality **at your 
 own pace**.
 
@@ -88,7 +88,7 @@ existing application style and behaviors.  Whenever possible these APIs will be 
 to their existing Windows SDK namespaced APIs, easing the transition to Project Reunion 
 for your existing code.  For existing "flat C" Win32 APIs, an equivalent converged API 
 will be added and then projected to your language and runtime. If you prefer a "flat C" 
-style – or the APIs you want already have a "flat C" expression – we're working on 
+style - or the APIs you want already have a "flat C" expression - we're working on 
 building out a projection of those APIs for you.
 
 As your app migrates to Project Reunion functionality it'll be easier to move between 
@@ -200,7 +200,7 @@ Some functionality will be delivered first as Project Reunion components. As we 
 evolving the platform it's important to make sure new functionality & features are available 
 to our developer community just as soon as they're ready to go.  Where there's newer 
 in-platform functionality to use Project Reunion will help you adopt that as soon as it's 
-widely available, without you having to retarget or rewrite – the same Project Reunion API 
+widely available, without you having to retarget or rewrite - the same Project Reunion API 
 surface will continue to work.
 
 As your app uses more Project Reunion functionality it'll be ready for additional targets 
