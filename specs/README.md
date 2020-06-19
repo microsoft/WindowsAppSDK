@@ -3,7 +3,7 @@
 This directory contains archived and in-progress spec documents for APIs in
 Project Reunion.
 
-Documents in this directory are used as part of a feature and API review
+Documents in this directory are used as part of a feature or API review
 for features in development and form the basis for public documentation
 and sample code. Write specs so they can be directly consumed by an
 app developer or document author.
@@ -13,17 +13,14 @@ app developer or document author.
 * Provide feedback by **commenting on active pull requests** tagged with
     [the "ApiReview" label.](https://github.com/microsoft/ProjectReunion/pulls?q=is%3Apr+is%3Aopen+label%3AApiReview)
 * Provide feedback by **opening [issues](https://github.com/microsoft/ProjectReunion/issues/new/choose)
-   regarding spec documents in the [reviewed](./reviewed) folder**.
-   Specs in the `reviewed` folder have been previously reviewed for
-   inclusion in Project Reunion.
+   regarding spec documents in this folder**.  Specs in this folder
+   are ready for implementation or have already been added to Project Reunion.
 * Create pull requests for new or updated specs when requested to do so
    as part of an issue thread.
 
 ## Please DO NOT:
 
-* Provide feedback on spec documents in the `archive` folder since those
-    features have been deprecated or altered substantially.
-* Create unsolicited PRs that add new specs. To propose a new feature,
+* Create unsolicited PRs that add or modify  specs. To propose a new feature
     please follow the Project Reunion contribution process [described here](../docs/contributor-guide.md)
     and start by [opening a new issue](https://github.com/microsoft/ProjectReunion/issues/new/choose).
 
@@ -40,6 +37,7 @@ For Project Reunion team members, the spec and API design workflow is:
 
 4. Author your spec using the [spec template](spec_template.md).
    Please use relative links for images or other assets in the folder.
+   Be sure to read and follow the commented instructions in the template.
 
 5. When your spec is ready for review:
 
