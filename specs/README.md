@@ -13,16 +13,18 @@ app developer or document author.
 * Provide feedback by **commenting on active pull requests** tagged with
     [the "ApiReview" label.](https://github.com/microsoft/ProjectReunion/pulls?q=is%3Apr+is%3Aopen+label%3AApiReview)
 * Provide feedback by **opening [issues](https://github.com/microsoft/ProjectReunion/issues/new/choose)
-   regarding spec documents in the [reviewed](https://github.com/microsoft/ProjectReunion/tree/master/specs/reviewed) folder**.
+   regarding spec documents in the [reviewed](./reviewed) folder**.
    Specs in the `reviewed` folder have been previously reviewed for
    inclusion in Project Reunion.
+* Create pull requests for new or updated specs when requested to do so
+   as part of an issue thread.
 
 ## Please DO NOT:
 
 * Provide feedback on spec documents in the `archive` folder since those
     features have been deprecated or altered substantially.
 * Create unsolicited PRs that add new specs. To propose a new feature,
-    please follow the Project Reunion contribution process [described here](https://github.com/Microsoft/ProjectReunion/docs/contributor-guide.md)
+    please follow the Project Reunion contribution process [described here](../docs/contributor-guide.md)
     and start by [opening a new issue](https://github.com/microsoft/ProjectReunion/issues/new/choose).
 
 ## Spec workflow
