@@ -4,8 +4,9 @@ This directory contains archived and in-progress spec documents for APIs in
 Project Reunion.
 
 Documents in this directory are used as part of a feature and API review
-for features in development and are not intended to be final developer
-documentation.
+for features in development and form the basis for public documentation
+and sample code. Write specs so they can be directly consumed by an
+app developer or document author.
 
 ## Please DO:
 
@@ -52,3 +53,32 @@ For Project Reunion team members, the spec and API design workflow is:
 8. Complete the pull request
 
 This workflow applies to modifying API designs as well.
+
+
+## Specification Notes
+
+**DO** write specification templates as if they will be read by a
+developer trying to understand how to use the API and feature.
+
+**DO** include links to existing types, pointers into https://docs.microsoft.com
+when providing converged features.
+
+**DO** describe how packaged, unpackaged, AppContainer and Full Trust
+applications will use the feature.
+
+**DO NOT** reference Windows-internal features, plans, or scheduling. This
+includes links to internal specifications.
+
+**DO** use "http://task.ms/12345" links if necessary to reference internal
+tasks or deliverable information.
+
+**DO** update existing specifications when adding new functionality,
+rather than creating a new-spec-per-change. Reviewers should read the
+changes to the specification in a pull request.
+
+**DO NOT** gratuitously reformat specification documents, as that can
+obscure real changes vs editorial, whitespace, or other changes.
+
+**DO** specify any additional requirements on application authors, such
+as "you must define an app.config" or "you must include this package
+manifest markup or this application manifest markup" to use a feature.

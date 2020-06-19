@@ -118,7 +118,30 @@
 
 <!-- TEMPLATE
 
-    The exact API, in MIDL3 format (https://docs.microsoft.com/en-us/uwp/midl-3/) 
+    The exact API, in MIDL3 format (https://docs.microsoft.com/en-us/uwp/midl-3/)
+    when possible, or in C# if starting with an API sketch.  GitHub's markdown
+    syntax formatter does not (yet) know about MIDL3, so use ```c# instead even
+    when writing MIDL3.
+
+    Example:
+
+    ```c# (but really MIDL3)
+    namespace Microsoft.AppModel
+    {
+        /// Represents a package on the host system. See Windows.ApplicationModel.Package for more details
+        runtimeclass Package
+        {
+            /// Returns the current package, or null if the current process is not packaged
+            static Package Current { get; };
+
+            /// Returns the package from the system store with this full name or null if not found
+            static Package GetFromFullName(String fullName);
+
+            /// Returns packages in the given family, by name
+            static Package[] FindByFamilyName(String familyName);
+        }
+    }
+    ```
 -->
 
 # Appendix
