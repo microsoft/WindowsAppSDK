@@ -133,15 +133,17 @@ with the "**subset**" tag on it and list the APIs and functionality you'd like t
 
 # Project Reunion Family Components
 
-### Available Now
+## Available Now
 These components are available for you to use now and adhere to the "Project Reunion 
 Family Promise" that they have a single API for use in all kinds of applications.
 
-* **[WinUI 3 for XAML](https://github.com/microsoft/microsoft-ui-xaml)** 
-helps you build fluent UX for all kinds of applications with the 
-power of XAML.  This component {link to repo} is part of the Project Reunion Family 
-of functionality, building on the identity + packaging + deployment transparent ideas 
-that Project Reunion supports for your app as well.
+* **[WinUI](https://github.com/microsoft/microsoft-ui-xaml)** 
+is the native UI layer for Windows that embodies Fluent Design and delivers 
+modern, performant, and polished user experiences to both Win32 and UWP apps. 
+This component is part of the Project Reunion Family of functionality, building 
+on the identity + packaging + deployment transparent ideas that Project Reunion 
+supports for your app as well.
+
 * **[C++/WinRT](https://github.com/microsoft/cppwinrt)**, 
 **[RUST/WinRT](https://github.com/microsoft/winrt-rs)**, 
 and **[C#/WinRT](https://github.com/microsoft/cswinrt)** 
@@ -155,7 +157,7 @@ lets you package your application for distribution to Windows Desktop machines
 via the store or your own delivery pipeline.  MSIX-Core lets you use the reuse parts 
 of the MSIX packaging story on older versions of Windows.
 
-### Coming Soon
+## Coming Soon
 While we think these are interesting for applications, you tell us! Part of working in 
 the open is that we learn together about the needs of application developers.  Below are 
 a set of functionality that seems interesting to make available through a Converged or 
@@ -186,11 +188,12 @@ the same time as other system maintenance tasks are happening.
 AppContainer apps can access powerful Win32 technologies like the clipboard, inter-process 
 communication, and the Windows Shell Namespace with user consent through brokering.
 
-* **Modern Resource Tooling** so you can use the power of ResX/ResW in your Win32 applications 
+* **[Modern Resource Tooling](https://github.com/microsoft/ProjectReunion/issues/11)** 
+so you can use the power of ResX/ResW in your Win32 applications 
 instead of MUI.
 
 
-# Future Direction
+# Future direction
 We aim to grow Project Reunion to provide a modern, simple, and accessible version of much 
 of the power of the Windows Application Platform.  Working in the open with our development 
 community ensures we're doing the right things first to solve problems your apps are facing 
@@ -211,14 +214,14 @@ widest range of Windows editions and releases while using up-to-date functionali
 
 # How we are doing this
 
-#### Working in the open
+## Working in the open
 Project Reunion relies on the power of open-source and the features of GitHub to deliver 
 code to you as fast as we can dream it up.  You should feel free to fork, create pull 
-requests, open issues, propose resolutions to issues.  You can see and influence all 
+requests, open issues, and propose resolutions to issues.  You can see and influence all 
 our features via the issue tracker. You should expect that we listen and provide constructive 
 feedback.
 
-#### Build & Artifacts
+## Build & Artifacts
 Code within the Project Reunion GitHub repo builds on a CI/CD loop and produces freshly 
 built DLLs and metadata on each pull request.  The output includes a NuGet package containing 
 metadata for Project Reunion and a ready-to-deliver MSIX for inclusion in your application as 
@@ -226,14 +229,14 @@ a redistributable or as a package reference. Add a reference to the Project Reun
 and start building.  To help deploy your apps we'll include both a Framework Package MSIX 
 as well as instructions on how to deploy that MSIX from your existing installer.
 
-#### Versioning
+## Versioning
 Project Reunion will use strongly-typed metadata-based API definitions on which your apps 
 can take a long-term dependency following our published support lifecycle. We'll use SemVer 2 
 to clearly identify breaking API shape levels that let those APIs evolve forward towards 
 new functionality while not compromising existing apps. Project Reunion helps keep apps up 
 to date through Framework Packages that are updated with non-breaking changes as appropriate.
 
-#### Extending APIs
+## Extending APIs
 Some of what Project Reunion provides is access to functionality that is inside Windows, 
 but for which there is no public API.  We're working on the details, but our plan is to 
 deliver a secondary package of code that provides a public API over those previously unexposed 
@@ -241,7 +244,7 @@ components.  While those components will be implemented as closed-source they'll
 a metadata-based publicly callable & supported API surface and be included in the Project 
 Reunion framework packages for use by apps.
 
-#### Brokering
+## Brokering
 UWPs (AppContainer, Low-IL) processes are meant to protect both the user and the application 
 itself from other applications.  Access to user & system resources is limited to the supported 
 set of brokers for those resources.  Project Reunion also includes a main package that runs 
@@ -275,7 +278,7 @@ lifecycle and state isolation help get your app ready to run wherever your custo
 
 
 
-# More Documentation
+# More documentation
 
 * [High level overview](https://github.com/microsoft/ProjectReunion/blob/master/README.md) - Why we're doing this.
 * [Roadmap](roadmap.md) - Where we're going. We're following a roadmap that 
