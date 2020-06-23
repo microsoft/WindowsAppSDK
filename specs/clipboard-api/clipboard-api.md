@@ -104,15 +104,45 @@ to the clipboard developer and user experiences, like these:
 
 ## Description
 
-When you use Windows' built-in user interface controls, you get their built-in support for copying and pasting data for free. However, when you use your own controls or controls from a third-party vendor, you might need to implement copying and pasting yourself. You can do this with the clipboard API in the Project Reunion SDK, 
+When you use Windows' built-in user interface controls, you get their
+built-in support for copying and pasting data for free. However,
+when you use your own controls or controls from a third-party vendor,
+you might need to implement copying and pasting yourself.
+You can do this with the clipboard API in the Project Reunion SDK.
 
-T, described in the examples of this document, is very similar to those of Windows.ApplicationModel.DataTransfer, with only 2 differences. We'll call out these differences in the following examples. For the rest of the information, start here to refer to the existing documentation: https://docs.microsoft.com/windows/uwp/app-to-app/copy-and-paste
+The Reunion SDK clipboard API is very similar to Windows' built-in
+clipboard API in the Windows.ApplicationModel.DataTransfer WinRT namespace.
+In fact, in this initial version (as of mid-2020), the Reunion
+SDK clipboard API is exactly the same as Windows.ApplicationModel.DataTransfer,
+except for these differences:
+
+1. The namespace is now Microsoft.ProjectReunion.ApplicationModel.DataTransfer.
+
+1. Types in Windows.ApplicationModel.DataTransfer that are irrelevant
+   to the clipboard are not included. For the exact set of types that are
+   included, see the [API Details section](#api-details).
+
+1. Your app will no longer ever need to call [Clipboard.Flush()](
+  https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.flush)
+  after setting the clipboard data on cut or copy. All formats for the
+  clipboard data item set by your app will be available after your
+  app exits normally or is automatically shut down by Windows,
+  as if the app called Clipboard.Flush() before exiting.
 
 ## Examples
 
+Because the Reunion SDK clipboard API is a near-copy of
+Windows.ApplicationModel.DataTransfer, these examples are copied from the
+guide to coding copy and paste in a Universal Windows Platform app using
+Windows.ApplicationModel.DataTransfer:
+https://docs.microsoft.com/windows/uwp/app-to-app/copy-and-paste
+
 ### Get set up to access the clipboard
 
-First, include the [**Windows.ApplicationModel.DataTransfer**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer) namespace in your app. Then, add an instance of the [**DataPackage**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer.DataPackage) object. This object contains both the data the user wants to copy and any properties (such as a description) that you want to include.
+First, include the **Microsoft.ProjectReunion.ApplicationModel.DataTransfer**
+namespace in your app. Then, create an instance of the **DataPackage** class.
+This object contains both the data the user wants to copy and any properties
+(such as a description) that you want to include.
 
 ```csharp
 DataPackage dataPackage = new DataPackage();
@@ -120,7 +150,9 @@ DataPackage dataPackage = new DataPackage();
 
 ### Copy and cut
 
-Copy and cut (also referred to as *move*) work almost exactly the same. Choose which operation you want by using the [**RequestedOperation**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackage.requestedoperation) property.
+Copy and cut (also referred to as *move*) work almost exactly the same.
+Choose which operation you want by using the **RequestedOperation** property
+of **DataPackage**.
 
 ```csharp
 // copy
@@ -131,13 +163,17 @@ dataPackage.RequestedOperation = DataPackageOperation.Move;
 
 ### Set the copied content
 
-Next, you can add the data that a user has selected to the [**DataPackage**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer.DataPackage) object. If this data is supported by the **DataPackage** class, you can use one of the corresponding [methods](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackage#methods) of the **DataPackage** object. Here's how to add text by using the [**SetText**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackage.settext) method:
+Next, you can add the data value that a user has selected to the **DataPackage**
+object. If all formats for this data value are supported by the **DataPackage**
+class, you can use one of **DataPackage**'s corresponding methods.
+Here's how to add text by using the **SetText** method:
 
 ```csharp
 dataPackage.SetText("Hello World!");
 ```
 
-The last step is to add the [**DataPackage**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer.DataPackage) to the clipboard by calling the static [**SetContent**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.setcontent) method.
+The last step is to add the **DataPackage** to the clipboard by calling the
+static **Clipboard.SetContent** method.
 
 ```csharp
 Clipboard.SetContent(dataPackage);
@@ -145,91 +181,118 @@ Clipboard.SetContent(dataPackage);
 
 ### Paste
 
-To get the contents of the clipboard, call the static [**GetContent**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.getcontent) method. This method returns a [**DataPackageView**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer.DataPackageView) that contains the content. This object is almost identical to a [**DataPackage**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer.DataPackage) object, except that its contents are read-only. With that object, you can use either the [**AvailableFormats**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackageview.availableformats) or the [**Contains**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackageview.contains) method to identify what formats are available. Then, you can call the corresponding [**DataPackageView**](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.DataTransfer.DataPackageView) method to get the data.
+To get the data value currently on the clipboard, call the static
+**Clipboard.GetContent** method. This method returns a **DataPackageView**
+that contains the current clipboard data value. This object is almost
+identical to a **DataPackage** object, except that its contents are read-only.
+With a **DataPackageView** object, you can use either the **AvailableFormats**
+property or the **Contains** method to identify what formats are available.
+Then, you can call the corresponding **DataPackageView** method to get the
+data in the format or formats your app needs.
 
 ```csharp
 async void OutputClipboardText()
 {
-    DataPackageView dataPackageView = Clipboard.GetContent();
-    if (dataPackageView.Contains(StandardDataFormats.Text))
-    {
-        string text = await dataPackageView.GetTextAsync();
-        // To output the text from this example, you need a TextBlock control
-        TextOutput.Text = "Clipboard now contains: " + text;
-    }
+  DataPackageView dataPackageView = Clipboard.GetContent();
+  if (dataPackageView.Contains(StandardDataFormats.Text))
+  {
+    string text = await dataPackageView.GetTextAsync();
+    // To output the text from this example, you need a TextBlock control
+    TextOutput.Text = "Clipboard now contains: " + text;
+  }
 }
 ```
 
 ### Track changes to the clipboard
 
-In addition to copy and paste commands, you may also want to track clipboard changes. Do this by handling the clipboard's [**ContentChanged**](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.contentchanged) event.
+In addition to copy and paste commands, you may also want to track clipboard
+changes. Do this by handling the clipboard's **ContentChanged** event.
 
 ```csharp
-Clipboard.ContentChanged += async (s, e) => 
+Clipboard.ContentChanged += async (s, e) =>
 {
-    DataPackageView dataPackageView = Clipboard.GetContent();
-    if (dataPackageView.Contains(StandardDataFormats.Text))
-    {
-        string text = await dataPackageView.GetTextAsync();
-        // To output the text from this example, you need a TextBlock control
-        TextOutput.Text = "Clipboard now contains: " + text;
-    }
+  DataPackageView dataPackageView = Clipboard.GetContent();
+  if (dataPackageView.Contains(StandardDataFormats.Text))
+  {
+    string text = await dataPackageView.GetTextAsync();
+    // To output the text from this example, you need a TextBlock control
+    TextOutput.Text = "Clipboard now contains: " + text;
+  }
 }
 ```
 
 ## Remarks
 
-<!-- TEMPLATE
-    Explanation and guidance that doesn't fit into the Examples section.
-    APIs should only throw exceptions in exceptional conditions; basically,
-    only when there's a bug in the caller, such as argument exception.  But if for some
-    reason it's necessary for a caller to catch an exception from an API, call that
-    out with an explanation either here or in the Examples
--->
+\[None at this time\]
 
 ## API Notes
 
-<!-- TEMPLATE
-    Option 1: Give a one or two line description of each API (type and member),
-        or at least the ones that aren't obvious from their name. These
-        descriptions are what show up in IntelliSense. For properties, specify
-        the default value of the property if it isn't the type's default (for
-        example an int-typed property that doesn't default to zero.) 
-        
-    Option 2: Put these descriptions in the below API Details section,
-        with a "///" comment above the member or type. 
--->
+\[To be added\]
 
 ## API Details
 
-<!-- TEMPLATE
-    The exact API, in MIDL3 format (https://docs.microsoft.com/en-us/uwp/midl-3/)
-    when possible, or in C# if starting with an API sketch.  GitHub's markdown
-    syntax formatter does not (yet) know about MIDL3, so use ```c# instead even
-    when writing MIDL3.
-    Example:
-    ```c# (but really MIDL3)
-    namespace Microsoft.AppModel
-    {
-        /// Represents a package on the host system. See Windows.ApplicationModel.Package for more details
-        runtimeclass Package
-        {
-            /// Returns the current package, or null if the current process is not packaged
-            static Package Current { get; };
-            /// Returns the package from the system store with this full name or null if not found
-            static Package GetFromFullName(String fullName);
-            /// Returns packages in the given family, by name
-            static Package[] FindByFamilyName(String familyName);
-        }
-    }
-    ```
--->
+The syntactic interface of the Project Reunion SDK's clipboard API
+is an exact subset of Windows.ApplicationModel.DataTransfer, apart
+from a different name (Microsoft.ProjectReunion.ApplicationModel.DataTransfer).
+
+The set of types from Windows.ApplicationModel.DataTransfer that
+will be copied into the clipboard API is the following:
+
+* `Clipboard` - Top level for the clipboard API. Provides "static" methods
+  (methods implemented by the class's activation factory) to read and write
+  the current clipboard item and clipboard history, along with methods
+  to read settings for clipboard history and cloud clipboard sync.
+
+* `Clipboard`-related types:
+  * `ClipboardContentOptions`
+  * `ClipboardHistoryItem`
+  * `ClipboardHistoryItemsResult`
+  * `ClipboardHistoryItemsResultStatus`
+  * `ClipboardHistoryChangedEventArgs`
+  * `OperationCompletedEventArgs`
+  * `SetHistoryItemAsContentStatus`
+
+* `DataPackage` - Unit of data transfer for the clipboard API.
+
+* `DataPackage`-related types:
+  * `DataPackageView`
+  * `DataPackageOperation`
+  * `DataPackagePropertySet`
+  * `DataPackagePropertySetView`
+  * `DataProviderDeferral`
+  * `DataProviderHandler`
+  * `DataProviderRequest`
+  * `HtmlFormatHelper`
+  * `StandardDataFormats`
+
+\[To be expanded with IDL\]
 
 ## Appendix
 
-<!-- TEMPLATE
-    Anything else that you want to write down for posterity, but
-    that isn't necessary to understand the purpose and usage of the API.
-    For example, implementation details.
-    
--->
+Initially, the implementation of the Project Reunion SDK's clipboard APi
+will be a set of very thin wrappers around the same-named codes in
+Windows.ApplicationModel.DataTransfer.
+
+The only exception will be the change to make Clipboard.Flush()
+a completely optional operation.
+(TO CONSIDER: Should Clipboard.Flush() be removed entirely?)
+This will be implemented by Clipboard.SetContent(), which will register
+callbacks that call the underlying Clipboard.Flush() in
+Windows.ApplicationModel.DataTransfer when the application is about
+to exit or be suspended:
+
+* For apps that follow the [UWP app lifecycle](
+  https://docs.microsoft.com/windows/uwp/launch-resume/app-lifecycle),
+  a function that calls Clipboard.Flush() will be added as a handler for the
+  [`CoreApplication.EnteredBackground`](
+  https://docs.microsoft.com/uwp/api/windows.applicationmodel.core.coreapplication.enteredbackground)
+  event if that event is available, and
+  [`CoreApplication.Suspending`](
+  https://docs.microsoft.com/uwp/api/windows.applicationmodel.core.coreapplication.suspending)
+  otherwise.
+
+* For other apps, a worker thread will initialize COM in STA
+  and create a message-only user32.dll window, whose window procedure
+  handles WM_DESTROY by calling Clipboard.Flush(). When the application
+  exits normally, the window will receive WM_DESTROY.
+
