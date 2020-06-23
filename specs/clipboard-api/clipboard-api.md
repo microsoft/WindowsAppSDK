@@ -232,8 +232,9 @@ Clipboard.ContentChanged += async (s, e) =>
 ## API Details
 
 The syntactic interface of the Project Reunion SDK's clipboard API
-is an exact subset of Windows.ApplicationModel.DataTransfer, apart
-from a different name (Microsoft.ProjectReunion.ApplicationModel.DataTransfer).
+is an exact subset of [Windows.ApplicationModel.DataTransfer](
+https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer),
+apart from a different name (Microsoft.ProjectReunion.ApplicationModel.DataTransfer).
 
 The set of types from Windows.ApplicationModel.DataTransfer that
 will be copied into the clipboard API is the following:
