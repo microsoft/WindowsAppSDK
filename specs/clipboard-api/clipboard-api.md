@@ -50,7 +50,13 @@ to the clipboard developer and user experiences, like these:
     CloseClipboard(). The new clipboard API in the Reunion SDK will solve
     this problem by omitting the clipboard lock as a caller-visible concept.
 
-  * _No need to flush clipboard_: Sometimes, a cut or copied data value is lost and the clipboard is cleared when the source app exits or crashes. This is likely to happen for clipboard source apps that use the OLE data transfer API or Windows.ApplicationModel.DataTransfer, since those APIs require an explicit "flush clipboard" call to make data set on clipboard persist after the source app exits. The Reunion SDK's new clipboard API will solve this problem by omitting this requirement as a caller-visible concept.
+  * _No need to flush clipboard_: Sometimes, a cut or copied data value is lost
+    and the clipboard is cleared when the source app exits or crashes.
+    This is likely to happen for clipboard source apps that use the OLE data transfer API
+    or Windows.ApplicationModel.DataTransfer, since those APIs require an explicit
+    "flush clipboard" call to make data set on clipboard persist after the source app exits.
+    The Reunion SDK's new clipboard API will solve this problem by omitting
+    this requirement as a caller-visible concept.
 
   The new clipboard API could make more breaking changes to fix other
   design errors and discourage other error-prone usage patterns
@@ -111,8 +117,9 @@ you might need to implement copying and pasting yourself.
 You can do this with the clipboard API in the Project Reunion SDK.
 
 The Reunion SDK clipboard API is very similar to Windows' built-in
-clipboard API in the Windows.ApplicationModel.DataTransfer WinRT namespace.
-In fact, in this initial version (as of mid-2020), the Reunion
+clipboard API in the [Windows.ApplicationModel.DataTransfer](
+https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer)
+WinRT namespace. In fact, in this initial version (as of mid-2020), the Reunion
 SDK clipboard API is exactly the same as Windows.ApplicationModel.DataTransfer,
 except for these differences:
 
@@ -123,16 +130,16 @@ except for these differences:
    included, see the [API Details section](#api-details).
 
 1. Your app will no longer ever need to call [Clipboard.Flush()](
-  https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.flush)
-  after setting the clipboard data on cut or copy. All formats for the
-  clipboard data item set by your app will be available after your
-  app exits normally or is automatically shut down by Windows,
-  as if the app called Clipboard.Flush() before exiting.
+   https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.flush)
+   after setting the clipboard data on cut or copy. All formats for the
+   clipboard data item set by your app will be available after your
+   app exits normally or is automatically shut down by Windows,
+   as if the app called Clipboard.Flush() before exiting.
 
 ## Examples
 
 Because the Reunion SDK clipboard API is a near-copy of
-Windows.ApplicationModel.DataTransfer, these examples are copied from the
+Windows.ApplicationModel.DataTransfer, these C# examples are copied from the
 guide to coding copy and paste in a Universal Windows Platform app using
 Windows.ApplicationModel.DataTransfer:
 https://docs.microsoft.com/windows/uwp/app-to-app/copy-and-paste
@@ -239,7 +246,8 @@ apart from a different name (Microsoft.ProjectReunion.ApplicationModel.DataTrans
 The set of types from Windows.ApplicationModel.DataTransfer that
 will be copied into the clipboard API is the following:
 
-* `Clipboard` - Top level for the clipboard API. Provides "static" methods
+* [`Clipboard`](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard) -
+  Top level for the clipboard API. Provides "static" methods
   (methods implemented by the class's activation factory) to read and write
   the current clipboard item and clipboard history, along with methods
   to read settings for clipboard history and cloud clipboard sync.
@@ -253,7 +261,8 @@ will be copied into the clipboard API is the following:
   * `OperationCompletedEventArgs`
   * `SetHistoryItemAsContentStatus`
 
-* `DataPackage` - Unit of data transfer for the clipboard API.
+* [`DataPackage`](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackage) -
+  Unit of data transfer for the clipboard API.
 
 * `DataPackage`-related types:
   * `DataPackageView`
@@ -272,9 +281,11 @@ will be copied into the clipboard API is the following:
 
 Initially, the implementation of the Project Reunion SDK's clipboard APi
 will be a set of very thin wrappers around the same-named codes in
-Windows.ApplicationModel.DataTransfer.
+[Windows.ApplicationModel.DataTransfer](
+https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer).
 
-The only exception will be the change to make Clipboard.Flush()
+The only exception will be the change to make [Clipboard.Flush()](
+https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.flush)
 a completely optional operation.
 (TO CONSIDER: Should Clipboard.Flush() be removed entirely?)
 This will be implemented by Clipboard.SetContent(), which will register
@@ -293,7 +304,9 @@ to exit or be suspended:
   otherwise.
 
 * For other apps, a worker thread will initialize COM in STA
-  and create a message-only user32.dll window, whose window procedure
-  handles WM_DESTROY by calling Clipboard.Flush(). When the application
-  exits normally, the window will receive WM_DESTROY.
-
+  and create a [message-only user32.dll window](
+  https://docs.microsoft.com/windows/win32/winmsg/window-features#message-only-windows),
+  whose window procedure handles [WM_DESTROY](
+  https://docs.microsoft.com/windows/win32/winmsg/wm-destroy)
+  by calling Clipboard.Flush(). When the application exits normally,
+  the window will receive WM_DESTROY.
