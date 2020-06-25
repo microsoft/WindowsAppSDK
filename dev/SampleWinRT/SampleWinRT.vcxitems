@@ -24,6 +24,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)SampleWinRT.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="$(MSBuildThisFileDirectory)README.md" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
 </Project>

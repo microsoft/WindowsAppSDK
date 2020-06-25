@@ -11,10 +11,11 @@ struct MyRealType
 };
 
 STDAPI SampleFlatApiCreate(
+    _In_ LPCWSTR theString,
     _Outptr_ HSAMPLEFLATAPI* sampleFlat) try
 {
     auto real = std::make_unique<MyRealType>();
-    real->theString = L"kittens";
+    real->theString = theString;
     *sampleFlat = reinterpret_cast<HSAMPLEFLATAPI>(real.release());
     return S_OK;
 }

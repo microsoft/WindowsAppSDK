@@ -7,6 +7,7 @@
 DECLARE_HANDLE(HSAMPLEFLATAPI);
 
 STDAPI SampleFlatApiCreate(
+    _In_ LPCWSTR theString,
     _Outptr_ HSAMPLEFLATAPI* sampleFlat);
 
 STDAPI_(VOID) CloseSampleFlatApi(
