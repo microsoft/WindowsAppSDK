@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Reunion
+﻿namespace Microsoft.SampleWinRT
 {
     runtimeclass Common
     {
