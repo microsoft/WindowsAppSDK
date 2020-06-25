@@ -35,7 +35,7 @@ make any changes that add substantial value. However, creating a new
 clipboard API in the Reunion SDK will let us make future improvements
 to the clipboard developer and user experiences, like these:
 
-* **Improve clipboard reliability by removing traps in the clipboard APIs:**
+* **Improve application reliability by removing traps in the clipboard APIs:**
   People encounter a lot of problems with unexpected clipboard behavior that
   they blame Windows for and that Windows could theoretically solve, even
   though the problems are typically caused by applications misusing the
@@ -58,9 +58,22 @@ to the clipboard developer and user experiences, like these:
     The Reunion SDK's new clipboard API will solve this problem by omitting
     this requirement as a caller-visible concept.
 
-  The new clipboard API could make more breaking changes to fix other
-  design errors and discourage other error-prone usage patterns
-  after a deprecation period.
+  In later version, the new clipboard API could make more changes
+  to discourage other error-prone usage patterns, such as this one:
+
+  * _Explicit ability for all apps to access clipboard in the background_:
+    In older versions of Windows, a Universal Windows Platform app could not
+    read and write the clipboard when the foreground window didn't
+    belong to that app. Newer versions of Windows don't have this
+    limitation, but this is because they allow UWP apps to have "Win32
+    full-trust" helper processes, which completely subvert the permission
+    capability system otherwise applied to UWP apps. If the Reunion SDK's
+    clipboard implementation added a background clipboard
+    access capability (as requested here: [microsoft/ProjectReunion#62](
+    https://github.com/microsoft/ProjectReunion/issues/62)),
+    then that more reliable and secure method could be made available
+    even on Windows versions where the full-trust helper workaround
+    is unavailable.
 
 * **Bring new clipboard features to all versions of Windows that support
   Project Reunion:**
@@ -119,15 +132,17 @@ You can do this with the clipboard API in the Project Reunion SDK.
 The Reunion SDK clipboard API is very similar to Windows' built-in
 clipboard API in the [Windows.ApplicationModel.DataTransfer](
 https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer)
-WinRT namespace. In fact, in this initial version (as of mid-2020), the Reunion
-SDK clipboard API is exactly the same as Windows.ApplicationModel.DataTransfer,
+WinRT namespace.
+In fact, in this initial version (as of mid-2020), the Reunion
+SDK clipboard API is the same as Windows.ApplicationModel.DataTransfer,
 except for these differences:
 
-1. The namespace is now Microsoft.ProjectReunion.ApplicationModel.DataTransfer.
+1. The namespace is now Microsoft.ProjectReunion.ApplicationModel.
 
-1. Types in Windows.ApplicationModel.DataTransfer that are irrelevant
-   to the clipboard are not included. For the exact set of types that are
-   included, see the [API Details section](#api-details).
+1. Types and type members in Windows.ApplicationModel.DataTransfer
+   that are irrelevant to the clipboard are not included.
+   For the exact set of types that are included, see the
+   [API Notes section](#api-notes).
 
 1. Your app will no longer ever need to call [Clipboard.Flush()](
    https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.flush)
@@ -140,13 +155,13 @@ except for these differences:
 
 Because the Reunion SDK clipboard API is a near-copy of
 Windows.ApplicationModel.DataTransfer, these C# examples are copied from the
-guide to coding copy and paste in a Universal Windows Platform app using
-Windows.ApplicationModel.DataTransfer:
-https://docs.microsoft.com/windows/uwp/app-to-app/copy-and-paste
+[guide to coding copy and paste in a UWP app](
+https://docs.microsoft.com/windows/uwp/app-to-app/copy-and-paste)
+using Windows.ApplicationModel.DataTransfer.
 
 ### Get set up to access the clipboard
 
-First, include the **Microsoft.ProjectReunion.ApplicationModel.DataTransfer**
+First, include the **Microsoft.ProjectReunion.ApplicationModel**
 namespace in your app. Then, create an instance of the **DataPackage** class.
 This object contains both the data the user wants to copy and any properties
 (such as a description) that you want to include.
@@ -239,9 +254,11 @@ Clipboard.ContentChanged += async (s, e) =>
 ## API Details
 
 The syntactic interface of the Project Reunion SDK's clipboard API
-is an exact subset of [Windows.ApplicationModel.DataTransfer](
-https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer),
-apart from a different name (Microsoft.ProjectReunion.ApplicationModel.DataTransfer).
+is a subset of [Windows.ApplicationModel.DataTransfer](
+https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer)
+with a different name (Microsoft.ProjectReunion.ApplicationModel).
+Certain types (classes and enums) are omitted, and certain classes
+may have omitted members that are not relevant to clipboard usage.
 
 The set of types from Windows.ApplicationModel.DataTransfer that
 will be copied into the clipboard API is the following:
