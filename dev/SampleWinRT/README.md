@@ -31,3 +31,10 @@ Follow the example of [SampleWinRT](./SampleWinRT.idl):
 * Add types and classes as necessary
 
 Add a header and `.cpp` file and an implementation.
+
+Be sure to add the copyright and license marker to all source files:
+
+```c++
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+```
