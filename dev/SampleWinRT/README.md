@@ -23,7 +23,7 @@ straightforward to add a new component in this manner.
 1. Right-click the shared project and use "Add > New Item"
 2. From the Installed > Visual C++ > Code list, select "Midl File (.idl)"
 3. Pick a good name (for the rest of this example, we'll use `Muffins` again, so "muffins.idl")
-3. Remove the default `import ...` statements that visual studio generates
+4. Remove the default `import ...` statements that visual studio generates
 
 Follow the example of [SampleWinRT](./SampleWinRT.idl):
 

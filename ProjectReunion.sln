@@ -27,10 +27,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleWinRT", "dev\SampleWinRT\SampleWinRT.vcxitems", "{0DE4FEFE-5471-4B50-B74B-D817A02B7F0D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleFlatC", "SampleFlatC", "{8A5C2FE6-86D7-4AAA-BE2E-924B8E03B888}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleFlatC", "dev\SampleFlatC\SampleFlatC.vcxitems", "{CDCE22EC-F7BF-43D4-95D8-2E786229A4E5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
+		dev\SampleFlatC\SampleFlatC.vcxitems*{a4412a57-cece-4494-a873-ccbba5c6e9e6}*SharedItemsImports = 4
 		dev\SampleWinRT\SampleWinRT.vcxitems*{a4412a57-cece-4494-a873-ccbba5c6e9e6}*SharedItemsImports = 4
+		dev\SampleFlatC\SampleFlatC.vcxitems*{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -67,6 +73,8 @@ Global
 		{428CCA9E-ADC5-4917-B51B-7D13E35950C5} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{A4412A57-CECE-4494-A873-CCBBA5C6E9E6} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{0DE4FEFE-5471-4B50-B74B-D817A02B7F0D} = {428CCA9E-ADC5-4917-B51B-7D13E35950C5}
+		{8A5C2FE6-86D7-4AAA-BE2E-924B8E03B888} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{CDCE22EC-F7BF-43D4-95D8-2E786229A4E5} = {8A5C2FE6-86D7-4AAA-BE2E-924B8E03B888}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
