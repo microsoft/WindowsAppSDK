@@ -5,10 +5,12 @@ import "AsyncInfo.idl";
 import "EventToken.idl";
 import "windowscontracts.idl";
 import "Windows.Foundation.idl";
+import "Windows.Foundation.Metadata.idl";
 import "Windows.Security.EnterpriseData.idl";
 import "Windows.Storage.idl";
 import "Windows.Storage.Streams.idl";
 import "Windows.UI.idl";
+#include <sdkddkver.h>
 
 // Forward Declare
 namespace Windows.Foundation
@@ -17,6 +19,16 @@ namespace Windows.Foundation
 	runtimeclass Deferral;
 	typedef struct Rect Rect;
 	runtimeclass Uri;
+}
+
+namespace Windows.Foundation.Metadata
+{
+	[attributeusage(target_all)]
+	[attributename("hasvariant")]
+	[version(NTDDI_WIN8)]
+	attribute HasVariantAttribute
+	{
+	}
 }
 
 namespace Windows.Security.EnterpriseData
@@ -50,10 +62,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	typedef enum ShareUITheme ShareUITheme;
 	delegate DataProviderHandler;
 	delegate ShareProviderHandler;
-	interface IDataPackage;
-	interface IDataPackage2;
-	interface IDataPackage3;
-	interface IDataPackage4;
 	interface IDataPackagePropertySet;
 	interface IDataPackagePropertySet2;
 	interface IDataPackagePropertySet3;
@@ -187,58 +195,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	[uuid(0d89ad1d-bb56-43e0-89d3-df5f85af2dd6)]
 	delegate
 		HRESULT ShareProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation* operation);
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
-	[uuid(36861532-b01e-49c5-9a0b-2282d079c9ac)]
-	interface IDataPackage : IInspectable
-	{
-		HRESULT GetView([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageView** result);
-		[propget] HRESULT Properties([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet** value);
-		[propget] HRESULT RequestedOperation([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation* value);
-		[propput] HRESULT RequestedOperation([in] Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation value);
-		[eventadd] HRESULT OperationCompleted([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, Microsoft.ProjectReunion.ApplicationModel.OperationCompletedEventArgs*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT OperationCompleted([in] EventRegistrationToken token);
-		[eventadd] HRESULT Destroyed([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, IInspectable*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT Destroyed([in] EventRegistrationToken token);
-		HRESULT SetData([in] HSTRING formatId, [in] IInspectable* value);
-		HRESULT SetDataProvider([in] HSTRING formatId, [in] Microsoft.ProjectReunion.ApplicationModel.DataProviderHandler* delayRenderer);
-		HRESULT SetText([in] HSTRING value);
-		[deprecated("SetUri may be altered or unavailable for releases after Windows Phone 'OSVersion' (TBD).Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 1.0)] HRESULT SetUri([in] Windows.Foundation.Uri* value);
-		HRESULT SetHtmlFormat([in] HSTRING value);
-		[propget] HRESULT ResourceMap([out] [retval] Windows.Foundation.Collections.IMap<HSTRING, Windows.Storage.Streams.RandomAccessStreamReference*>** value);
-		HRESULT SetRtf([in] HSTRING value);
-		HRESULT SetBitmap([in] Windows.Storage.Streams.RandomAccessStreamReference* value);
-		[overload("SetStorageItems")] HRESULT SetStorageItemsReadOnly([in] Windows.Foundation.Collections.IIterable<Windows.Storage.IStorageItem*>* value);
-		[overload("SetStorageItems")] HRESULT SetStorageItems([in] Windows.Foundation.Collections.IIterable<Windows.Storage.IStorageItem*>* value, [in] boolean readOnly);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
-	[uuid(9f8a2f2b-3602-48ec-b0dd-4d7f754da3b2)]
-	interface IDataPackage2 : IInspectable
-	{
-		HRESULT SetApplicationLink([in] Windows.Foundation.Uri* value);
-		HRESULT SetWebLink([in] Windows.Foundation.Uri* value);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
-	[uuid(670dbf2f-9f0e-4ed9-a3f3-775fb0cd2134)]
-	interface IDataPackage3 : IInspectable
-	{
-		[eventadd] HRESULT ShareCompleted([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, Microsoft.ProjectReunion.ApplicationModel.ShareCompletedEventArgs*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT ShareCompleted([in] EventRegistrationToken token);
-	}
-
-	[contract(ClipboardContract, 10.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
-	[uuid(fd923204-3d54-4fd2-b1fc-607984c97f43)]
-	interface IDataPackage4 : IInspectable
-	{
-		[eventadd] HRESULT ShareCanceled([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, IInspectable*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT ShareCanceled([in] EventRegistrationToken token);
-	}
 
 	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
@@ -623,16 +579,40 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		Windows.Foundation.Collections.IVectorView<ClipboardHistoryItem> Items { get; };
 	}
 
-	[activatable(ClipboardContract, 1.0)]
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	[threading(both)]
+	[contract(ClipboardContract, 10.0)]
+	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackage", 36861532-b01e-49c5-9a0b-2282d079c9ac)]
 	runtimeclass DataPackage
 	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage2;
-		[contract(ClipboardContract, 4.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage3;
-		[contract(ClipboardContract, 10.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage4;
+		DataPackage();
+
+		DataPackageView GetView();
+		DataPackagePropertySet Properties { get; };
+		DataPackageOperation RequestedOperation;
+		event Windows.Foundation.TypedEventHandler<DataPackage, OperationCompletedEventArgs> OperationCompleted;
+		event Windows.Foundation.TypedEventHandler<DataPackage, Object> Destroyed;
+		void SetData(String formatId, [hasvariant] Object value);
+		void SetDataProvider(String formatId, DataProviderHandler delayRenderer);
+		void SetText(String value);
+		[deprecated("SetUri may be altered or unavailable in later releases. Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 10.0)]
+		void SetUri(Windows.Foundation.Uri value);
+		void SetHtmlFormat(String value);
+
+		Windows.Foundation.Collections.IMap<String, Windows.Storage.Streams.RandomAccessStreamReference> ResourceMap { get; };
+
+		void SetRtf(String value);
+		void SetBitmap(Windows.Storage.Streams.RandomAccessStreamReference value);
+
+		[method_name("SetStorageItemsReadOnly")]
+		void SetStorageItems(Windows.Foundation.Collections.IIterable<Windows.Storage.IStorageItem> value);
+		[method_name("SetStorageItems")]
+		void SetStorageItems(Windows.Foundation.Collections.IIterable<Windows.Storage.IStorageItem> value, Boolean readOnly);
+
+		void SetApplicationLink(Windows.Foundation.Uri value);
+		void SetWebLink(Windows.Foundation.Uri value);
+
+		event Windows.Foundation.TypedEventHandler<DataPackage, ShareCompletedEventArgs> ShareCompleted;
+
+		event Windows.Foundation.TypedEventHandler<DataPackage, Object> ShareCanceled;
 	}
 
 	[contract(ClipboardContract, 1.0)]
@@ -729,7 +709,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	runtimeclass OperationCompletedEventArgs
 	{
 		DataPackageOperation Operation { get; };
-		
+
 		String AcceptedFormatId { get; };
 	}
 
