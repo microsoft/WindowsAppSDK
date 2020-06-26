@@ -54,8 +54,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	interface IClipboardHistoryChangedEventArgs;
 	interface IClipboardHistoryItem;
 	interface IClipboardHistoryItemsResult;
-	interface IClipboardStatics;
-	interface IClipboardStatics2;
 	interface IDataPackage;
 	interface IDataPackage2;
 	interface IDataPackage3;
@@ -238,39 +236,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	{
 		[propget] HRESULT Status([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItemsResultStatus* value);
 		[propget] HRESULT Items([out] [retval] Windows.Foundation.Collections.IVectorView<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem*>** value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.Clipboard)]
-	[uuid(6cb53030-4da0-43a1-95ab-52f87cf59c3a)]
-	interface IClipboardStatics : IInspectable
-	{
-		HRESULT GetContent([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageView** result);
-		HRESULT SetContent([in] Microsoft.ProjectReunion.ApplicationModel.DataPackage* content);
-		HRESULT Flush();
-		HRESULT Clear();
-		[eventadd] HRESULT ContentChanged([in] Windows.Foundation.EventHandler<IInspectable*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT ContentChanged([in] EventRegistrationToken token);
-	}
-
-	[contract(ClipboardContract, 7.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.Clipboard)]
-	[uuid(d6baf461-6fc5-4e51-a4b1-fb07b3a7a9e0)]
-	interface IClipboardStatics2 : IInspectable
-	{
-		HRESULT GetHistoryItemsAsync([out] [retval] Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItemsResult*>** operation);
-		HRESULT ClearHistory([out] [retval] boolean* result);
-		HRESULT DeleteItemFromHistory([in] Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem* item, [out] [retval] boolean* result);
-		HRESULT SetHistoryItemAsContent([in] Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem* item, [out] [retval] Microsoft.ProjectReunion.ApplicationModel.SetHistoryItemAsContentStatus* result);
-		HRESULT IsHistoryEnabled([out] [retval] boolean* result);
-		HRESULT IsRoamingEnabled([out] [retval] boolean* result);
-		HRESULT SetContentWithOptions([in] Microsoft.ProjectReunion.ApplicationModel.DataPackage* content, [in] Microsoft.ProjectReunion.ApplicationModel.ClipboardContentOptions* options, [out] [retval] boolean* result);
-		[eventadd] HRESULT HistoryChanged([in] Windows.Foundation.EventHandler<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryChangedEventArgs*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT HistoryChanged([in] EventRegistrationToken token);
-		[eventadd] HRESULT RoamingEnabledChanged([in] Windows.Foundation.EventHandler<IInspectable*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT RoamingEnabledChanged([in] EventRegistrationToken token);
-		[eventadd] HRESULT HistoryEnabledChanged([in] Windows.Foundation.EventHandler<IInspectable*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT HistoryEnabledChanged([in] EventRegistrationToken token);
 	}
 
 	[contract(ClipboardContract, 1.0)]
@@ -711,13 +676,27 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ApplicationName([out] [retval] HSTRING* value);
 	}
 
-	[contract(ClipboardContract, 1.0)]
+	[contract(ClipboardContract, 7.0)]
+	[static_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics", 6cb53030-4da0-43a1-95ab-52f87cf59c3a)]
 	[marshaling_behavior(standard)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics, ClipboardContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics2, ClipboardContract, 7.0)]
-	[threading(both)]
 	runtimeclass Clipboard
 	{
+		static DataPackageView GetContent();
+		static void SetContent(DataPackage content);
+		static void Flush();
+		static void Clear();
+		static event Windows.Foundation.EventHandler<Object> ContentChanged;
+
+		static Windows.Foundation.IAsyncOperation<ClipboardHistoryItemsResult> GetHistoryItemsAsync();
+		static Boolean ClearHistory();
+		static Boolean DeleteItemFromHistory(ClipboardHistoryItem item);
+		static SetHistoryItemAsContentStatus SetHistoryItemAsContent(ClipboardHistoryItem item);
+		static Boolean IsHistoryEnabled();
+		static Boolean IsRoamingEnabled();
+		static Boolean SetContentWithOptions(DataPackage content, ClipboardContentOptions options);
+		static event Windows.Foundation.EventHandler<ClipboardHistoryChangedEventArgs> HistoryChanged;
+		static event Windows.Foundation.EventHandler<Object> RoamingEnabledChanged;
+		static event Windows.Foundation.EventHandler<Object> HistoryEnabledChanged;
 	}
 
 	[activatable(ClipboardContract, 7.0)]
