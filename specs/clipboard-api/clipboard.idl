@@ -16,7 +16,6 @@ namespace Windows.Foundation
 	typedef struct DateTime DateTime;
 	runtimeclass Deferral;
 	typedef struct Rect Rect;
-	apicontract UniversalApiContract;
 	runtimeclass Uri;
 }
 
@@ -155,15 +154,18 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 // Type definition
 namespace Microsoft.ProjectReunion.ApplicationModel
 {
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contractversion(12.0)]
+	apicontract ClipboardContract { };
+
+	[contract(ClipboardContract, 7.0)]
 	enum ClipboardHistoryItemsResultStatus
 	{
-		Success					 = 0,
-		AccessDenied			 = 1,
+		Success                  = 0,
+		AccessDenied             = 1,
 		ClipboardHistoryDisabled = 2
 	};
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[flags]
 	enum DataPackageOperation
 	{
@@ -173,33 +175,33 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		Link = 0x4
 	};
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	enum SetHistoryItemAsContentStatus
 	{
-		Success		 = 0,
+		Success      = 0,
 		AccessDenied = 1,
-		ItemDeleted	 = 2
+		ItemDeleted  = 2
 	};
 
-	[contract(Windows.Foundation.UniversalApiContract, 5.0)]
+	[contract(ClipboardContract, 5.0)]
 	enum ShareUITheme
 	{
 		Default = 0,
-		Light	= 1,
-		Dark	= 2
+		Light   = 1,
+		Dark    = 2
 	};
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[uuid(E7ECD720-F2F4-4A2D-920E-170A2F482A27)]
 	delegate
 		HRESULT DataProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.DataProviderRequest* request);
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[uuid(E7F9D9BA-E1BA-4E4D-BD65-D43845D3212F)]
 	delegate
 		HRESULT ShareProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation* operation);
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ClipboardContentOptions)]
 	[uuid(E888A98C-AD4B-5447-A056-AB3556276D2B)]
 	interface IClipboardContentOptions : IInspectable
@@ -212,14 +214,14 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT HistoryFormats([out] [retval] Windows.Foundation.Collections.IVector<HSTRING>** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryChangedEventArgs)]
 	[uuid(C0BE453F-8EA2-53CE-9ABA-8D2212573452)]
 	interface IClipboardHistoryChangedEventArgs : IInspectable
 	{
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem)]
 	[uuid(0173BD8A-AFFF-5C50-AB92-3D19F481EC58)]
 	interface IClipboardHistoryItem : IInspectable
@@ -229,7 +231,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT Content([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageView** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItemsResult)]
 	[uuid(E6DFDEE6-0EE2-52E3-852B-F295DB65939A)]
 	interface IClipboardHistoryItemsResult : IInspectable
@@ -238,7 +240,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT Items([out] [retval] Windows.Foundation.Collections.IVectorView<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem*>** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.Clipboard)]
 	[uuid(C627E291-34E2-4963-8EED-93CBB0EA3D70)]
 	interface IClipboardStatics : IInspectable
@@ -251,7 +253,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[eventremove] HRESULT ContentChanged([in] EventRegistrationToken token);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.Clipboard)]
 	[uuid(D2AC1B6A-D29F-554B-B303-F0452345FE02)]
 	interface IClipboardStatics2 : IInspectable
@@ -271,7 +273,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[eventremove] HRESULT HistoryEnabledChanged([in] EventRegistrationToken token);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
 	[uuid(61EBF5C7-EFEA-4346-9554-981D7E198FFE)]
 	interface IDataPackage : IInspectable
@@ -287,7 +289,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT SetData([in] HSTRING formatId, [in] IInspectable* value);
 		HRESULT SetDataProvider([in] HSTRING formatId, [in] Microsoft.ProjectReunion.ApplicationModel.DataProviderHandler* delayRenderer);
 		HRESULT SetText([in] HSTRING value);
-		[deprecated("SetUri may be altered or unavailable for releases after Windows Phone 'OSVersion' (TBD).Instead, use SetWebLink or SetApplicationLink.", deprecate, Windows.Foundation.UniversalApiContract, 1.0)] HRESULT SetUri([in] Windows.Foundation.Uri* value);
+		[deprecated("SetUri may be altered or unavailable for releases after Windows Phone 'OSVersion' (TBD).Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 1.0)] HRESULT SetUri([in] Windows.Foundation.Uri* value);
 		HRESULT SetHtmlFormat([in] HSTRING value);
 		[propget] HRESULT ResourceMap([out] [retval] Windows.Foundation.Collections.IMap<HSTRING, Windows.Storage.Streams.RandomAccessStreamReference*>** value);
 		HRESULT SetRtf([in] HSTRING value);
@@ -296,7 +298,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[overload("SetStorageItems")] HRESULT SetStorageItems([in] Windows.Foundation.Collections.IIterable<Windows.Storage.IStorageItem*>* value, [in] boolean readOnly);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
 	[uuid(041C1FE9-2409-45E1-A538-4C53EEEE04A7)]
 	interface IDataPackage2 : IInspectable
@@ -305,7 +307,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT SetWebLink([in] Windows.Foundation.Uri* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
 	[uuid(88F31F5D-787B-4D32-965A-A9838105A056)]
 	interface IDataPackage3 : IInspectable
@@ -314,7 +316,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[eventremove] HRESULT ShareCompleted([in] EventRegistrationToken token);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 10.0)]
+	[contract(ClipboardContract, 10.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackage)]
 	[uuid(13A24EC8-9382-536F-852A-3045E1B29A3B)]
 	interface IDataPackage4 : IInspectable
@@ -323,7 +325,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[eventremove] HRESULT ShareCanceled([in] EventRegistrationToken token);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
 	[uuid(CD1C93EB-4C4C-443A-A8D3-F5C241E91689)]
 	interface IDataPackagePropertySet : IInspectable
@@ -344,7 +346,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propput] HRESULT ApplicationListingUri([in] Windows.Foundation.Uri* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
 	[uuid(EB505D4A-9800-46AA-B181-7B6F0F2B919A)]
 	interface IDataPackagePropertySet2 : IInspectable
@@ -361,7 +363,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propput] HRESULT LogoBackgroundColor([in] Windows.UI.Color value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
 	[uuid(9E87FD9B-5205-401B-874A-455653BD39E8)]
 	interface IDataPackagePropertySet3 : IInspectable
@@ -370,7 +372,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propput] HRESULT EnterpriseId([in] HSTRING value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 6.0)]
+	[contract(ClipboardContract, 6.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
 	[uuid(6390EBF5-1739-4C74-B22F-865FAB5E8545)]
 	interface IDataPackagePropertySet4 : IInspectable
@@ -379,7 +381,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propput] HRESULT ContentSourceUserActivityJson([in] HSTRING value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
 	[uuid(B94CEC01-0C1A-4C57-BE55-75D01289735D)]
 	interface IDataPackagePropertySetView : IInspectable
@@ -392,7 +394,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ApplicationListingUri([out] [retval] Windows.Foundation.Uri** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
 	[uuid(6054509B-8EBE-4FEB-9C1E-75E69DE54B84)]
 	interface IDataPackagePropertySetView2 : IInspectable
@@ -404,7 +406,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT LogoBackgroundColor([out] [retval] Windows.UI.Color* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
 	[uuid(DB764CE5-D174-495C-84FC-1A51F6AB45D7)]
 	interface IDataPackagePropertySetView3 : IInspectable
@@ -412,7 +414,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT EnterpriseId([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 6.0)]
+	[contract(ClipboardContract, 6.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
 	[uuid(4474C80D-D16F-40AE-9580-6F8562B94235)]
 	interface IDataPackagePropertySetView4 : IInspectable
@@ -420,7 +422,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ContentSourceUserActivityJson([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
 	[uuid(6F0A9445-3760-50BB-8523-C4202DED7D78)]
 	interface IDataPackagePropertySetView5 : IInspectable
@@ -428,7 +430,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT IsFromRoamingClipboard([out] [retval] boolean* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
 	[uuid(7B840471-5900-4D85-A90B-10CB85FE3552)]
 	interface IDataPackageView : IInspectable
@@ -441,7 +443,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT GetDataAsync([in] HSTRING formatId, [out] [retval] Windows.Foundation.IAsyncOperation<IInspectable*>** operation);
 		[overload("GetTextAsync")] HRESULT GetTextAsync([out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
 		[overload("GetTextAsync")] HRESULT GetCustomTextAsync([in] HSTRING formatId, [out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
-		[deprecated("GetUriAsync may be altered or unavailable for releases after Windows 8.1. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, Windows.Foundation.UniversalApiContract, 1.0)] HRESULT GetUriAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri*>** operation);
+		[deprecated("GetUriAsync may be altered or unavailable for releases after Windows 8.1. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, ClipboardContract, 1.0)] HRESULT GetUriAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri*>** operation);
 		HRESULT GetHtmlFormatAsync([out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
 		HRESULT GetResourceMapAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<HSTRING, Windows.Storage.Streams.RandomAccessStreamReference*>*>** operation);
 		HRESULT GetRtfAsync([out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
@@ -449,7 +451,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT GetStorageItemsAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem*>*>** operation);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
 	[uuid(40ECBA95-2450-4C1D-B6B4-ED45463DEE9C)]
 	interface IDataPackageView2 : IInspectable
@@ -458,7 +460,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT GetWebLinkAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri*>** operation);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
 	[uuid(D37771A8-DDAD-4288-8428-D1CAE394128B)]
 	interface IDataPackageView3 : IInspectable
@@ -468,7 +470,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT UnlockAndAssumeEnterpriseIdentity([out] [retval] Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult* result);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 2.0)]
+	[contract(ClipboardContract, 2.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
 	[uuid(DFE96F1F-E042-4433-A09F-26D6FFDA8B85)]
 	interface IDataPackageView4 : IInspectable
@@ -476,7 +478,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT SetAcceptedFormatId([in] HSTRING formatId);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataProviderDeferral)]
 	[uuid(C2CF2373-2D26-43D9-B69D-DCB86D03F6DA)]
 	interface IDataProviderDeferral : IInspectable
@@ -484,7 +486,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT Complete();
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataProviderRequest)]
 	[uuid(EBBC7157-D3C8-47DA-ACDE-F82388D5F716)]
 	interface IDataProviderRequest : IInspectable
@@ -495,7 +497,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT SetData([in] IInspectable* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequest)]
 	[uuid(4341AE3B-FC12-4E53-8C02-AC714C415A27)]
 	interface IDataRequest : IInspectable
@@ -507,7 +509,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT GetDeferral([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataRequestDeferral** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequestDeferral)]
 	[uuid(6DC4B89F-0386-4263-87C1-ED7DCE30890E)]
 	interface IDataRequestDeferral : IInspectable
@@ -515,7 +517,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT Complete();
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequestedEventArgs)]
 	[uuid(CB8BA807-6AC5-43C9-8AC5-9BA232163182)]
 	interface IDataRequestedEventArgs : IInspectable
@@ -523,7 +525,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT Request([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataRequest** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
 	[uuid(A5CAEE9B-8708-49D1-8D36-67D25A8DA00C)]
 	interface IDataTransferManager : IInspectable
@@ -534,7 +536,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[eventremove] HRESULT TargetApplicationChosen([in] EventRegistrationToken eventCookie);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
 	[uuid(30AE7D71-8BA8-4C02-8E3F-DDB23B388715)]
 	interface IDataTransferManager2 : IInspectable
@@ -543,7 +545,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[eventremove] HRESULT ShareProvidersRequested([in] EventRegistrationToken token);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
 	[uuid(A9DA01AA-E00E-4CFE-AA44-2DD932DCA3D8)]
 	interface IDataTransferManagerStatics : IInspectable
@@ -552,7 +554,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT GetForCurrentView([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataTransferManager** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 3.0)]
+	[contract(ClipboardContract, 3.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
 	[uuid(C54EC2EC-9F97-4D63-9868-395E271AD8F5)]
 	interface IDataTransferManagerStatics2 : IInspectable
@@ -560,7 +562,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT IsSupported([out] [retval] boolean* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 5.0)]
+	[contract(ClipboardContract, 5.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
 	[uuid(05845473-6C82-4F5C-AC23-62E458361FAC)]
 	interface IDataTransferManagerStatics3 : IInspectable
@@ -568,7 +570,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[overload("ShowShareUI")] HRESULT ShowShareUIWithOptions([in] Microsoft.ProjectReunion.ApplicationModel.ShareUIOptions* options);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.HtmlFormatHelper)]
 	[uuid(E22E7749-DD70-446F-AEFC-61CEE59F655E)]
 	interface IHtmlFormatHelperStatics : IInspectable
@@ -577,7 +579,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT CreateHtmlFormat([in] HSTRING htmlFragment, [out] [retval] HSTRING* htmlFormat);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.OperationCompletedEventArgs)]
 	[uuid(E7AF329D-051D-4FAB-B1A9-47FD77F70A41)]
 	interface IOperationCompletedEventArgs : IInspectable
@@ -585,7 +587,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT Operation([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 2.0)]
+	[contract(ClipboardContract, 2.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.OperationCompletedEventArgs)]
 	[uuid(858FA073-1E19-4105-B2F7-C8478808D562)]
 	interface IOperationCompletedEventArgs2 : IInspectable
@@ -593,7 +595,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT AcceptedFormatId([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareCompletedEventArgs)]
 	[uuid(4574C442-F913-4F60-9DF7-CC4060AB1916)]
 	interface IShareCompletedEventArgs : IInspectable
@@ -601,7 +603,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ShareTarget([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareTargetInfo** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProvider)]
 	[uuid(2FABE026-443E-4CDA-AF25-8D81070EFD80)]
 	interface IShareProvider : IInspectable
@@ -613,7 +615,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propput] HRESULT Tag([in] IInspectable* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProvider)]
 	[uuid(172A174C-E79E-4F6D-B07D-128F469E0296)]
 	interface IShareProviderFactory : IInspectable
@@ -621,7 +623,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT Create([in] HSTRING title, [in] Windows.Storage.Streams.RandomAccessStreamReference* displayIcon, [in] Windows.UI.Color backgroundColor, [in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderHandler* handler, [out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareProvider** result);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation)]
 	[uuid(19CEF937-D435-4179-B6AF-14E0492B69F6)]
 	interface IShareProviderOperation : IInspectable
@@ -631,7 +633,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT ReportCompleted();
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProvidersRequestedEventArgs)]
 	[uuid(F888F356-A3F8-4FCE-85E4-8826E63BE799)]
 	interface IShareProvidersRequestedEventArgs : IInspectable
@@ -641,7 +643,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT GetDeferral([out] [retval] Windows.Foundation.Deferral** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareTargetInfo)]
 	[uuid(385BE607-C6E8-4114-B294-28F3BB6F9904)]
 	interface IShareTargetInfo : IInspectable
@@ -650,7 +652,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ShareProvider([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareProvider** value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 5.0)]
+	[contract(ClipboardContract, 5.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareUIOptions)]
 	[uuid(72FA8A80-342F-4D90-9551-2AE04E37680C)]
 	interface IShareUIOptions : IInspectable
@@ -661,7 +663,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propput] HRESULT SelectionRect([in] Windows.Foundation.IReference<Windows.Foundation.Rect>* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.SharedStorageAccessManager)]
 	[uuid(C6132ADA-34B1-4849-BD5F-D09FEE3158C5)]
 	interface ISharedStorageAccessManagerStatics : IInspectable
@@ -671,20 +673,20 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		HRESULT RemoveFile([in] HSTRING token);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.StandardDataFormats)]
 	[uuid(7ED681A1-A880-40C9-B4ED-0BEE1E15F549)]
 	interface IStandardDataFormatsStatics : IInspectable
 	{
 		[propget] HRESULT Text([out] [retval] HSTRING* value);
-		[deprecated("Uri may be altered or unavailable for releases after Windows Phone 'OSVersion' (TBD). Instead, use WebLink or ApplicationLink.", deprecate, Windows.Foundation.UniversalApiContract, 1.0)] [propget] HRESULT Uri([out] [retval] HSTRING* value);
+		[deprecated("Uri may be altered or unavailable for releases after Windows Phone 'OSVersion' (TBD). Instead, use WebLink or ApplicationLink.", deprecate, ClipboardContract, 1.0)] [propget] HRESULT Uri([out] [retval] HSTRING* value);
 		[propget] HRESULT Html([out] [retval] HSTRING* value);
 		[propget] HRESULT Rtf([out] [retval] HSTRING* value);
 		[propget] HRESULT Bitmap([out] [retval] HSTRING* value);
 		[propget] HRESULT StorageItems([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.StandardDataFormats)]
 	[uuid(42A254F4-9D76-42E8-861B-47C25DD0CF71)]
 	interface IStandardDataFormatsStatics2 : IInspectable
@@ -693,7 +695,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ApplicationLink([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 6.0)]
+	[contract(ClipboardContract, 6.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.StandardDataFormats)]
 	[uuid(3B57B069-01D4-474C-8B5F-BC8E27F38B21)]
 	interface IStandardDataFormatsStatics3 : IInspectable
@@ -701,7 +703,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT UserActivityJsonArray([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.TargetApplicationChosenEventArgs)]
 	[uuid(CA6FB8AC-2987-4EE3-9C54-D8AFBCB86C1D)]
 	interface ITargetApplicationChosenEventArgs : IInspectable
@@ -709,17 +711,17 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[propget] HRESULT ApplicationName([out] [retval] HSTRING* value);
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(standard)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics, Windows.Foundation.UniversalApiContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics2, Windows.Foundation.UniversalApiContract, 7.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics, ClipboardContract, 1.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics2, ClipboardContract, 7.0)]
 	[threading(both)]
 	runtimeclass Clipboard
 	{
 	}
 
-	[activatable(Windows.Foundation.UniversalApiContract, 7.0)]
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[activatable(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[marshaling_behavior(agile)]
 	[threading(both)]
 	runtimeclass ClipboardContentOptions
@@ -727,173 +729,173 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IClipboardContentOptions;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ClipboardHistoryChangedEventArgs
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IClipboardHistoryChangedEventArgs;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ClipboardHistoryItem
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IClipboardHistoryItem;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 7.0)]
+	[contract(ClipboardContract, 7.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ClipboardHistoryItemsResult
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IClipboardHistoryItemsResult;
 	}
 
-	[activatable(Windows.Foundation.UniversalApiContract, 1.0)]
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[activatable(ClipboardContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	[threading(both)]
 	runtimeclass DataPackage
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage2;
-		[contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage3;
-		[contract(Windows.Foundation.UniversalApiContract, 10.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage4;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage2;
+		[contract(ClipboardContract, 4.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage3;
+		[contract(ClipboardContract, 10.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackage4;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataPackagePropertySet
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet;
 		interface Windows.Foundation.Collections.IMap<HSTRING, IInspectable*>;
 		interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, IInspectable*>*>;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet2;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet3;
-		[contract(Windows.Foundation.UniversalApiContract, 6.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet4;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet2;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet3;
+		[contract(ClipboardContract, 6.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet4;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataPackagePropertySetView
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView2;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView3;
-		[contract(Windows.Foundation.UniversalApiContract, 6.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView4;
-		[contract(Windows.Foundation.UniversalApiContract, 7.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView5;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView2;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView3;
+		[contract(ClipboardContract, 6.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView4;
+		[contract(ClipboardContract, 7.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView5;
 		interface Windows.Foundation.Collections.IMapView<HSTRING, IInspectable*>;
 		interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, IInspectable*>*>;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataPackageView
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView2;
-		[contract(Windows.Foundation.UniversalApiContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView3;
-		[contract(Windows.Foundation.UniversalApiContract, 2.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView4;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView2;
+		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView3;
+		[contract(ClipboardContract, 2.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView4;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataProviderDeferral
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataProviderDeferral;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataProviderRequest
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataProviderRequest;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataRequest
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataRequest;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataRequestDeferral
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataRequestDeferral;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass DataRequestedEventArgs
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataRequestedEventArgs;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(standard)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics, Windows.Foundation.UniversalApiContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics2, Windows.Foundation.UniversalApiContract, 3.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics3, Windows.Foundation.UniversalApiContract, 5.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics, ClipboardContract, 1.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics2, ClipboardContract, 3.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics3, ClipboardContract, 5.0)]
 	runtimeclass DataTransferManager
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataTransferManager;
-		[contract(Windows.Foundation.UniversalApiContract, 4.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataTransferManager2;
+		[contract(ClipboardContract, 4.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataTransferManager2;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IHtmlFormatHelperStatics, Windows.Foundation.UniversalApiContract, 1.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IHtmlFormatHelperStatics, ClipboardContract, 1.0)]
 	runtimeclass HtmlFormatHelper
 	{
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass OperationCompletedEventArgs
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IOperationCompletedEventArgs;
-		[contract(Windows.Foundation.UniversalApiContract, 2.0)] interface Microsoft.ProjectReunion.ApplicationModel.IOperationCompletedEventArgs2;
+		[contract(ClipboardContract, 2.0)] interface Microsoft.ProjectReunion.ApplicationModel.IOperationCompletedEventArgs2;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ShareCompletedEventArgs
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareCompletedEventArgs;
 	}
 
-	[activatable(Microsoft.ProjectReunion.ApplicationModel.IShareProviderFactory, Windows.Foundation.UniversalApiContract, 4.0)]
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[activatable(Microsoft.ProjectReunion.ApplicationModel.IShareProviderFactory, ClipboardContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ShareProvider
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareProvider;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ShareProviderOperation
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareProviderOperation;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ShareProvidersRequestedEventArgs
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareProvidersRequestedEventArgs;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 4.0)]
+	[contract(ClipboardContract, 4.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass ShareTargetInfo
 	{
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareTargetInfo;
 	}
 
-	[activatable(Windows.Foundation.UniversalApiContract, 5.0)]
-	[contract(Windows.Foundation.UniversalApiContract, 5.0)]
+	[activatable(ClipboardContract, 5.0)]
+	[contract(ClipboardContract, 5.0)]
 	[marshaling_behavior(agile)]
 	[threading(both)]
 	runtimeclass ShareUIOptions
@@ -901,22 +903,22 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareUIOptions;
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.ISharedStorageAccessManagerStatics, Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.ISharedStorageAccessManagerStatics, ClipboardContract, 1.0)]
 	runtimeclass SharedStorageAccessManager
 	{
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics, Windows.Foundation.UniversalApiContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics2, Windows.Foundation.UniversalApiContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics3, Windows.Foundation.UniversalApiContract, 6.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics, ClipboardContract, 1.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics2, ClipboardContract, 1.0)]
+	[static(Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics3, ClipboardContract, 6.0)]
 	runtimeclass StandardDataFormats
 	{
 	}
 
-	[contract(Windows.Foundation.UniversalApiContract, 1.0)]
+	[contract(ClipboardContract, 1.0)]
 	[marshaling_behavior(agile)]
 	runtimeclass TargetApplicationChosenEventArgs
 	{
