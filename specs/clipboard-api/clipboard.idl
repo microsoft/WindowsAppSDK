@@ -71,10 +71,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	interface IDataPackagePropertySetView3;
 	interface IDataPackagePropertySetView4;
 	interface IDataPackagePropertySetView5;
-	interface IDataPackageView;
-	interface IDataPackageView2;
-	interface IDataPackageView3;
-	interface IDataPackageView4;
 	interface IDataProviderDeferral;
 	interface IDataProviderRequest;
 	interface IDataRequest;
@@ -299,54 +295,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	interface IDataPackagePropertySetView5 : IInspectable
 	{
 		[propget] HRESULT IsFromRoamingClipboard([out] [retval] boolean* value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
-	[uuid(659f7a31-3335-4e57-b373-8898ffae5ab1)]
-	interface IDataPackageView : IInspectable
-	{
-		[propget] HRESULT Properties([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView** value);
-		[propget] HRESULT RequestedOperation([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation* value);
-		HRESULT ReportOperationCompleted([in] Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation value);
-		[propget] HRESULT AvailableFormats([out] [retval] Windows.Foundation.Collections.IVectorView<HSTRING>** formatIds);
-		HRESULT Contains([in] HSTRING formatId, [out] [retval] boolean* value);
-		HRESULT GetDataAsync([in] HSTRING formatId, [out] [retval] Windows.Foundation.IAsyncOperation<IInspectable*>** operation);
-		[overload("GetTextAsync")] HRESULT GetTextAsync([out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
-		[overload("GetTextAsync")] HRESULT GetCustomTextAsync([in] HSTRING formatId, [out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
-		[deprecated("GetUriAsync may be altered or unavailable for releases after Windows 8.1. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, ClipboardContract, 1.0)] HRESULT GetUriAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri*>** operation);
-		HRESULT GetHtmlFormatAsync([out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
-		HRESULT GetResourceMapAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<HSTRING, Windows.Storage.Streams.RandomAccessStreamReference*>*>** operation);
-		HRESULT GetRtfAsync([out] [retval] Windows.Foundation.IAsyncOperation<HSTRING>** operation);
-		HRESULT GetBitmapAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Storage.Streams.RandomAccessStreamReference*>** operation);
-		HRESULT GetStorageItemsAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem*>*>** operation);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
-	[uuid(a64648c4-fefb-48b4-a0b4-d9be5ac8233b)]
-	interface IDataPackageView2 : IInspectable
-	{
-		HRESULT GetApplicationLinkAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri*>** operation);
-		HRESULT GetWebLinkAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri*>** operation);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
-	[uuid(9b0e47cd-8eef-485d-bdd1-d371e9cf2ebe)]
-	interface IDataPackageView3 : IInspectable
-	{
-		[overload("RequestAccessAsync")] HRESULT RequestAccessAsync([out] [retval] Windows.Foundation.IAsyncOperation<Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult>** operation);
-		[overload("RequestAccessAsync")] HRESULT RequestAccessWithEnterpriseIdAsync([in] HSTRING enterpriseId, [out] [retval] Windows.Foundation.IAsyncOperation<Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult>** operation);
-		HRESULT UnlockAndAssumeEnterpriseIdentity([out] [retval] Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult* result);
-	}
-
-	[contract(ClipboardContract, 2.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackageView)]
-	[uuid(a56c7b9b-7865-4177-abf5-99412eb412a9)]
-	interface IDataPackageView4 : IInspectable
-	{
-		HRESULT SetAcceptedFormatId([in] HSTRING formatId);
 	}
 
 	[contract(ClipboardContract, 1.0)]
@@ -593,7 +541,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		void SetData(String formatId, [hasvariant] Object value);
 		void SetDataProvider(String formatId, DataProviderHandler delayRenderer);
 		void SetText(String value);
-		[deprecated("SetUri may be altered or unavailable in later releases. Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 10.0)]
+		[deprecated("SetUri may be altered or unavailable in future releases. Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 10.0)]
 		void SetUri(Windows.Foundation.Uri value);
 		void SetHtmlFormat(String value);
 
@@ -640,14 +588,43 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, IInspectable*>*>;
 	}
 
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
+	[contract(ClipboardContract, 2.0)]
+	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackageView", 659f7a31-3335-4e57-b373-8898ffae5ab1)]
 	runtimeclass DataPackageView
 	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView2;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView3;
-		[contract(ClipboardContract, 2.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackageView4;
+		DataPackagePropertySetView Properties { get; };
+
+		DataPackageOperation RequestedOperation { get; };
+		void ReportOperationCompleted(DataPackageOperation operation);
+
+		Windows.Foundation.Collections.IVectorView<String> AvailableFormats { get; };
+		Boolean Contains(String formatId);
+
+		Windows.Foundation.IAsyncOperation<Object> GetDataAsync(String formatId);
+
+		[method_name("GetTextAsync")]
+		Windows.Foundation.IAsyncOperation<String> GetTextAsync();
+		[method_name("GetCustomTextAsync")]
+		Windows.Foundation.IAsyncOperation<String> GetTextAsync(String formatId);
+
+		[deprecated("GetUriAsync may be altered or unavailable in future releases. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, ClipboardContract, 2.0)]
+		Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetUriAsync();
+		Windows.Foundation.IAsyncOperation<String> GetHtmlFormatAsync();
+		Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<String, Windows.Storage.Streams.RandomAccessStreamReference> > GetResourceMapAsync();
+		Windows.Foundation.IAsyncOperation<String> GetRtfAsync();
+		Windows.Foundation.IAsyncOperation<Windows.Storage.Streams.RandomAccessStreamReference> GetBitmapAsync();
+		Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem> > GetStorageItemsAsync();
+
+		Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetApplicationLinkAsync();
+		Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetWebLinkAsync();
+
+		[method_name("RequestAccessAsync")]
+		Windows.Foundation.IAsyncOperation<Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult> RequestAccessAsync();
+		[method_name("RequestAccessWithEnterpriseIdAsync")]
+		Windows.Foundation.IAsyncOperation<Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult> RequestAccessAsync(String enterpriseId);
+		Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult UnlockAndAssumeEnterpriseIdentity();
+
+		void SetAcceptedFormatId(String formatId);
 	}
 
 	[contract(ClipboardContract, 1.0)]
@@ -772,7 +749,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	static runtimeclass StandardDataFormats
 	{
 		static String Text { get; };
-		[deprecated("Uri may be altered or unavailable in later releases. Instead, use WebLink or ApplicationLink.", deprecate, ClipboardContract, 6.0)]
+		[deprecated("Uri may be altered or unavailable in future releases. Instead, use WebLink or ApplicationLink.", deprecate, ClipboardContract, 6.0)]
 		static String Uri { get; };
 		static String Html { get; };
 		static String Rtf { get; };
