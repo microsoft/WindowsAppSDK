@@ -62,15 +62,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	typedef enum ShareUITheme ShareUITheme;
 	delegate DataProviderHandler;
 	delegate ShareProviderHandler;
-	interface IDataPackagePropertySet;
-	interface IDataPackagePropertySet2;
-	interface IDataPackagePropertySet3;
-	interface IDataPackagePropertySet4;
-	interface IDataPackagePropertySetView;
-	interface IDataPackagePropertySetView2;
-	interface IDataPackagePropertySetView3;
-	interface IDataPackagePropertySetView4;
-	interface IDataPackagePropertySetView5;
 	interface IDataProviderDeferral;
 	interface IDataProviderRequest;
 	interface IDataRequest;
@@ -191,111 +182,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	[uuid(0d89ad1d-bb56-43e0-89d3-df5f85af2dd6)]
 	delegate
 		HRESULT ShareProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation* operation);
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
-	[uuid(6c1bd5dd-d89e-4f79-ae3b-4ad565586202)]
-	interface IDataPackagePropertySet : IInspectable
-		requires
-			Windows.Foundation.Collections.IMap<HSTRING, IInspectable*>,
-			Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, IInspectable*>*>
-	{
-		[propget] HRESULT Title([out] [retval] HSTRING* value);
-		[propput] HRESULT Title([in] HSTRING value);
-		[propget] HRESULT Description([out] [retval] HSTRING* value);
-		[propput] HRESULT Description([in] HSTRING value);
-		[propget] HRESULT Thumbnail([out] [retval] Windows.Storage.Streams.IRandomAccessStreamReference** value);
-		[propput] HRESULT Thumbnail([in] Windows.Storage.Streams.IRandomAccessStreamReference* value);
-		[propget] HRESULT FileTypes([out] [retval] Windows.Foundation.Collections.IVector<HSTRING>** value);
-		[propget] HRESULT ApplicationName([out] [retval] HSTRING* value);
-		[propput] HRESULT ApplicationName([in] HSTRING value);
-		[propget] HRESULT ApplicationListingUri([out] [retval] Windows.Foundation.Uri** value);
-		[propput] HRESULT ApplicationListingUri([in] Windows.Foundation.Uri* value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
-	[uuid(744e9c77-6463-4b99-b3c3-f69d9ee594bf)]
-	interface IDataPackagePropertySet2 : IInspectable
-	{
-		[propget] HRESULT ContentSourceWebLink([out] [retval] Windows.Foundation.Uri** value);
-		[propput] HRESULT ContentSourceWebLink([in] Windows.Foundation.Uri* value);
-		[propget] HRESULT ContentSourceApplicationLink([out] [retval] Windows.Foundation.Uri** value);
-		[propput] HRESULT ContentSourceApplicationLink([in] Windows.Foundation.Uri* value);
-		[propget] HRESULT PackageFamilyName([out] [retval] HSTRING* value);
-		[propput] HRESULT PackageFamilyName([in] HSTRING value);
-		[propget] HRESULT Square30x30Logo([out] [retval] Windows.Storage.Streams.IRandomAccessStreamReference** value);
-		[propput] HRESULT Square30x30Logo([in] Windows.Storage.Streams.IRandomAccessStreamReference* value);
-		[propget] HRESULT LogoBackgroundColor([out] [retval] Windows.UI.Color* value);
-		[propput] HRESULT LogoBackgroundColor([in] Windows.UI.Color value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
-	[uuid(c8c24a60-f4b3-4ab0-88e9-c23062e0cc33)]
-	interface IDataPackagePropertySet3 : IInspectable
-	{
-		[propget] HRESULT EnterpriseId([out] [retval] HSTRING* value);
-		[propput] HRESULT EnterpriseId([in] HSTRING value);
-	}
-
-	[contract(ClipboardContract, 6.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySet)]
-	[uuid(d1270af6-a2e8-4d31-b697-b48103d5a15a)]
-	interface IDataPackagePropertySet4 : IInspectable
-	{
-		[propget] HRESULT ContentSourceUserActivityJson([out] [retval] HSTRING* value);
-		[propput] HRESULT ContentSourceUserActivityJson([in] HSTRING value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
-	[uuid(054c0bc4-ca76-4e7d-9511-4322a5a0b58b)]
-	interface IDataPackagePropertySetView : IInspectable
-	{
-		[propget] HRESULT Title([out] [retval] HSTRING* value);
-		[propget] HRESULT Description([out] [retval] HSTRING* value);
-		[propget] HRESULT Thumbnail([out] [retval] Windows.Storage.Streams.RandomAccessStreamReference** value);
-		[propget] HRESULT FileTypes([out] [retval] Windows.Foundation.Collections.IVectorView<HSTRING>** value);
-		[propget] HRESULT ApplicationName([out] [retval] HSTRING* value);
-		[propget] HRESULT ApplicationListingUri([out] [retval] Windows.Foundation.Uri** value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
-	[uuid(e35b2f0d-1c7a-4bf3-ab72-50554054d7b2)]
-	interface IDataPackagePropertySetView2 : IInspectable
-	{
-		[propget] HRESULT PackageFamilyName([out] [retval] HSTRING* value);
-		[propget] HRESULT ContentSourceWebLink([out] [retval] Windows.Foundation.Uri** value);
-		[propget] HRESULT ContentSourceApplicationLink([out] [retval] Windows.Foundation.Uri** value);
-		[propget] HRESULT Square30x30Logo([out] [retval] Windows.Storage.Streams.IRandomAccessStreamReference** value);
-		[propget] HRESULT LogoBackgroundColor([out] [retval] Windows.UI.Color* value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
-	[uuid(52067bc5-0b4c-4559-8da1-cc75dc6f2344)]
-	interface IDataPackagePropertySetView3 : IInspectable
-	{
-		[propget] HRESULT EnterpriseId([out] [retval] HSTRING* value);
-	}
-
-	[contract(ClipboardContract, 6.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
-	[uuid(0e1a2836-c904-4e63-be50-d3f743864782)]
-	interface IDataPackagePropertySetView4 : IInspectable
-	{
-		[propget] HRESULT ContentSourceUserActivityJson([out] [retval] HSTRING* value);
-	}
-
-	[contract(ClipboardContract, 7.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataPackagePropertySetView)]
-	[uuid(75ff681c-4bd4-4cfb-aede-9c3a7e6f245d)]
-	interface IDataPackagePropertySetView5 : IInspectable
-	{
-		[propget] HRESULT IsFromRoamingClipboard([out] [retval] boolean* value);
-	}
 
 	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataProviderDeferral)]
@@ -563,29 +449,55 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		event Windows.Foundation.TypedEventHandler<DataPackage, Object> ShareCanceled;
 	}
 
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass DataPackagePropertySet
+	[contract(ClipboardContract, 6.0)]
+	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet", 6c1bd5dd-d89e-4f79-ae3b-4ad565586202)]
+	runtimeclass DataPackagePropertySet :
+		Windows.Foundation.Collections.IMap<String, Object>
+		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
 	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet;
-		interface Windows.Foundation.Collections.IMap<HSTRING, IInspectable*>;
-		interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, IInspectable*>*>;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet2;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet3;
-		[contract(ClipboardContract, 6.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet4;
+		String Title;
+		String Description;
+		Windows.Storage.Streams.IRandomAccessStreamReference Thumbnail;
+		Windows.Foundation.Collections.IVector<String> FileTypes { get; };
+		String ApplicationName;
+		Windows.Foundation.Uri ApplicationListingUri;
+
+		Windows.Foundation.Uri ContentSourceWebLink;
+		Windows.Foundation.Uri ContentSourceApplicationLink;
+		String PackageFamilyName;
+		Windows.Storage.Streams.IRandomAccessStreamReference Square30x30Logo;
+		Windows.UI.Color LogoBackgroundColor;
+
+		String EnterpriseId;
+
+		String ContentSourceUserActivityJson;
 	}
 
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass DataPackagePropertySetView
+	[contract(ClipboardContract, 7.0)]
+	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView", 054c0bc4-ca76-4e7d-9511-4322a5a0b58b)]
+	[hasvariant]
+	runtimeclass DataPackagePropertySetView :
+		Windows.Foundation.Collections.IMapView<String, Object>
+		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
 	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView2;
-		[contract(ClipboardContract, 1.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView3;
-		[contract(ClipboardContract, 6.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView4;
-		[contract(ClipboardContract, 7.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView5;
-		interface Windows.Foundation.Collections.IMapView<HSTRING, IInspectable*>;
-		interface Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<HSTRING, IInspectable*>*>;
+		String Title { get; };
+		String Description { get; };
+		Windows.Storage.Streams.IRandomAccessStreamReference Thumbnail { get; };
+		Windows.Foundation.Collections.IVector<String> FileTypes { get; };
+		String ApplicationName { get; };
+		Windows.Foundation.Uri ApplicationListingUri { get; };
+
+		String PackageFamilyName { get; };
+		Windows.Foundation.Uri ContentSourceWebLink { get; };
+		Windows.Foundation.Uri ContentSourceApplicationLink { get; };
+		Windows.Storage.Streams.IRandomAccessStreamReference Square30x30Logo { get; };
+		Windows.UI.Color LogoBackgroundColor { get; };
+
+		String EnterpriseId { get; };
+
+		String ContentSourceUserActivityJson { get; };
+
+		Boolean IsFromRoamingClipboard { get; };
 	}
 
 	[contract(ClipboardContract, 2.0)]
