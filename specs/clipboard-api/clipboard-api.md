@@ -249,16 +249,12 @@ Clipboard.ContentChanged += async (s, e) =>
 
 ## API Notes
 
-\[To be added\]
-
-## API Details
-
 The syntactic interface of the Project Reunion SDK's clipboard API
 is a subset of [Windows.ApplicationModel.DataTransfer](
 https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer)
 with a different name (Microsoft.ProjectReunion.ApplicationModel).
-Certain types (classes and enums) are omitted, and certain classes
-may have omitted members that are not relevant to clipboard usage.
+Certain types (classes and enums) are omitted, and one class, `DataPackage`,
+omits 2 members that are not relevant to clipboard usage.
 
 The set of types from Windows.ApplicationModel.DataTransfer that
 will be copied into the clipboard API is the following:
@@ -280,6 +276,7 @@ will be copied into the clipboard API is the following:
 
 * [`DataPackage`](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackage) -
   Unit of data transfer for the clipboard API.
+  The `ShareCompleted` and `ShareCanceled` events are omitted.
 
 * `DataPackage`-related types:
   * `DataPackageView`
@@ -292,14 +289,21 @@ will be copied into the clipboard API is the following:
   * `HtmlFormatHelper`
   * `StandardDataFormats`
 
-\[To be expanded with IDL\]
+## API Details
+
+See [`clipboard.idl`](clipboard.idl) for a complete [MIDL 3.0](
+https://docs.microsoft.com/uwp/midl-3/) description
+of the Project Reunion SDK's clipboard API.
 
 ## Appendix
 
 Initially, the implementation of the Project Reunion SDK's clipboard APi
 will be a set of very thin wrappers around the same-named codes in
 [Windows.ApplicationModel.DataTransfer](
-https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer).
+https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer),
+which will gracefully fail with E_NOTIMPL or similar for features that
+are not implemented on that Windows version. (This will be mostly limited
+to cloud clipboard roaming and clipboard history.)
 
 The only exception will be the change to make [Clipboard.Flush()](
 https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.clipboard.flush)
