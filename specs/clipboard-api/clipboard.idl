@@ -450,8 +450,17 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	}
 
 	[contract(ClipboardContract, 6.0)]
-	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySet", 6c1bd5dd-d89e-4f79-ae3b-4ad565586202)]
 	runtimeclass DataPackagePropertySet :
+		[default] IDataPackagePropertySet
+		, Windows.Foundation.Collections.IMap<String, Object>
+		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
+	{ }
+
+	[contract(ClipboardContract, 6.0)]
+	[uuid(6c1bd5dd-d89e-4f79-ae3b-4ad565586202)]
+	[exclusiveto(DataPackagePropertySet)]
+	[hasvariant]
+	interface IDataPackagePropertySet requires
 		Windows.Foundation.Collections.IMap<String, Object>
 		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
 	{
@@ -474,9 +483,17 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	}
 
 	[contract(ClipboardContract, 7.0)]
-	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackagePropertySetView", 054c0bc4-ca76-4e7d-9511-4322a5a0b58b)]
-	[hasvariant]
 	runtimeclass DataPackagePropertySetView :
+		[default] IDataPackagePropertySetView
+		, Windows.Foundation.Collections.IMapView<String, Object>
+		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
+	{ }
+
+	[contract(ClipboardContract, 7.0)]
+	[uuid(054c0bc4-ca76-4e7d-9511-4322a5a0b58b)]
+	[exclusiveto(DataPackagePropertySetView)]
+	[hasvariant]
+	interface IDataPackagePropertySetView requires
 		Windows.Foundation.Collections.IMapView<String, Object>
 		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
 	{
