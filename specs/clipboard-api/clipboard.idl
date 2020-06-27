@@ -62,8 +62,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	typedef enum ShareUITheme ShareUITheme;
 	delegate DataProviderHandler;
 	delegate ShareProviderHandler;
-	interface IDataProviderDeferral;
-	interface IDataProviderRequest;
 	interface IDataRequest;
 	interface IDataRequestDeferral;
 	interface IDataRequestedEventArgs;
@@ -175,32 +173,12 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 
 	[contract(ClipboardContract, 1.0)]
 	[uuid(6d9e7bfb-3280-4219-be29-08145f30f4e5)]
-	delegate
-		HRESULT DataProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.DataProviderRequest* request);
+	delegate void DataProviderHandler(DataProviderRequest request);
 
 	[contract(ClipboardContract, 4.0)]
 	[uuid(0d89ad1d-bb56-43e0-89d3-df5f85af2dd6)]
 	delegate
 		HRESULT ShareProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation* operation);
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataProviderDeferral)]
-	[uuid(4f9a822c-1bb1-4c3e-b908-e202c8b87f4c)]
-	interface IDataProviderDeferral : IInspectable
-	{
-		HRESULT Complete();
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataProviderRequest)]
-	[uuid(25f2c71c-832b-4b8e-b9e9-672f098d2770)]
-	interface IDataProviderRequest : IInspectable
-	{
-		[propget] HRESULT FormatId([out] [retval] HSTRING* value);
-		[propget] HRESULT Deadline([out] [retval] Windows.Foundation.DateTime* value);
-		HRESULT GetDeferral([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataProviderDeferral** value);
-		HRESULT SetData([in] IInspectable* value);
-	}
 
 	[contract(ClipboardContract, 1.0)]
 	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequest)]
@@ -557,17 +535,20 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	}
 
 	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
+	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataProviderDeferral", 4f9a822c-1bb1-4c3e-b908-e202c8b87f4c)]
 	runtimeclass DataProviderDeferral
 	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataProviderDeferral;
+		void Complete();
 	}
 
 	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
+	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataProviderRequest", 25f2c71c-832b-4b8e-b9e9-672f098d2770)]
 	runtimeclass DataProviderRequest
 	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataProviderRequest;
+		String FormatId { get; };
+		Windows.Foundation.DateTime Deadline { get; };
+		DataProviderDeferral GetDeferral();
+		void SetData(Object value);
 	}
 
 	[contract(ClipboardContract, 1.0)]
