@@ -20,6 +20,10 @@ namespace Windows.Foundation
 
 namespace Windows.Foundation.Metadata
 {
+
+	// FIXME: Figure out how to actually forward declare/prototype this WinRT Foundation attribute
+	// without defining it
+
 	[attributeusage(target_all)]
 	[attributename("hasvariant")]
 	[version(NTDDI_WIN8)]
@@ -53,6 +57,9 @@ namespace Windows.UI
 
 namespace Microsoft.ProjectReunion.ApplicationModel
 {
+	[contractversion(1.0)]
+	apicontract ClipboardContract { };
+
 	typedef enum ClipboardHistoryItemsResultStatus ClipboardHistoryItemsResultStatus;
 	typedef enum DataPackageOperation DataPackageOperation;
 	typedef enum SetHistoryItemAsContentStatus SetHistoryItemAsContentStatus;
@@ -90,13 +97,14 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	}
 }
 
-// Type definition
+// Type definitions
 namespace Microsoft.ProjectReunion.ApplicationModel
 {
-	[contractversion(12.0)]
-	apicontract ClipboardContract { };
+	// FIXME: Figure out how to declare these enums without causing definition conflicts
+	// between the enum constants and the same-named ones in
+	// Windows.ApplicationModel.DataTransfer
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	enum ClipboardHistoryItemsResultStatus
 	{
 		aaaSuccess                  = 0,
@@ -114,7 +122,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		aaaLink = 0x4,
 	};
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	enum SetHistoryItemAsContentStatus
 	{
 		aaaSuccess      = 0,
@@ -126,7 +134,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	[uuid(6d9e7bfb-3280-4219-be29-08145f30f4e5)]
 	delegate void DataProviderHandler(DataProviderRequest request);
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	[static_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics", 6cb53030-4da0-43a1-95ab-52f87cf59c3a)]
 	[marshaling_behavior(standard)]
 	static runtimeclass Clipboard
@@ -153,7 +161,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		static event Windows.Foundation.EventHandler<Object> HistoryEnabledChanged;
 	}
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardContentOptions", c31b927f-1008-4e98-b575-adf175ccdd0b)]
 	runtimeclass ClipboardContentOptions
 	{
@@ -165,13 +173,12 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		Windows.Foundation.Collections.IVector<String> HistoryFormats { get; };
 	}
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardHistoryChangedEventArgs", 9d1960c7-cf0a-4e51-943c-72373b7a2579)]
 	runtimeclass ClipboardHistoryChangedEventArgs
-	{
-	}
+	{ }
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardHistoryItem", 1907eff8-7d2f-4a71-8a56-bd02effeb184)]
 	runtimeclass ClipboardHistoryItem
 	{
@@ -180,7 +187,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		DataPackageView Content { get; };
 	}
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardHistoryItemsResult", 2f6c9705-f56b-42f0-b1a1-fc2d46d572e7)]
 	runtimeclass ClipboardHistoryItemsResult
 	{
@@ -188,7 +195,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		Windows.Foundation.Collections.IVectorView<ClipboardHistoryItem> Items { get; };
 	}
 
-	[contract(ClipboardContract, 10.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackage", 36861532-b01e-49c5-9a0b-2282d079c9ac)]
 	runtimeclass DataPackage
 	{
@@ -202,7 +209,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		void SetData(String formatId, [hasvariant] Object value);
 		void SetDataProvider(String formatId, DataProviderHandler delayRenderer);
 		void SetText(String value);
-		[deprecated("SetUri may be altered or unavailable in future releases. Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 10.0)]
+		[deprecated("SetUri may be altered or unavailable in future releases. Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 1.0)]
 		void SetUri(Windows.Foundation.Uri value);
 		void SetHtmlFormat(String value);
 
@@ -220,14 +227,14 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		void SetWebLink(Windows.Foundation.Uri value);
 	}
 
-	[contract(ClipboardContract, 6.0)]
+	[contract(ClipboardContract, 1.0)]
 	runtimeclass DataPackagePropertySet :
 		[default] IDataPackagePropertySet
 		, Windows.Foundation.Collections.IMap<String, Object>
 		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
 	{ }
 
-	[contract(ClipboardContract, 6.0)]
+	[contract(ClipboardContract, 1.0)]
 	[uuid(6c1bd5dd-d89e-4f79-ae3b-4ad565586202)]
 	[exclusiveto(DataPackagePropertySet)]
 	[hasvariant]
@@ -253,14 +260,14 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		String ContentSourceUserActivityJson;
 	}
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	runtimeclass DataPackagePropertySetView :
 		[default] IDataPackagePropertySetView
 		, Windows.Foundation.Collections.IMapView<String, Object>
 		, Windows.Foundation.Collections.IIterable<Windows.Foundation.Collections.IKeyValuePair<String, Object> >
 	{ }
 
-	[contract(ClipboardContract, 7.0)]
+	[contract(ClipboardContract, 1.0)]
 	[uuid(054c0bc4-ca76-4e7d-9511-4322a5a0b58b)]
 	[exclusiveto(DataPackagePropertySetView)]
 	[hasvariant]
@@ -288,7 +295,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		Boolean IsFromRoamingClipboard { get; };
 	}
 
-	[contract(ClipboardContract, 2.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IDataPackageView", 659f7a31-3335-4e57-b373-8898ffae5ab1)]
 	runtimeclass DataPackageView
 	{
@@ -307,7 +314,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		[method_name("GetCustomTextAsync")]
 		Windows.Foundation.IAsyncOperation<String> GetTextAsync(String formatId);
 
-		[deprecated("GetUriAsync may be altered or unavailable in future releases. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, ClipboardContract, 2.0)]
+		[deprecated("GetUriAsync may be altered or unavailable in future releases. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, ClipboardContract, 1.0)]
 		Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetUriAsync();
 		Windows.Foundation.IAsyncOperation<String> GetHtmlFormatAsync();
 		Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<String, Windows.Storage.Streams.RandomAccessStreamReference> > GetResourceMapAsync();
@@ -351,7 +358,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		static String CreateHtmlFormat(String htmlFragment);
 	}
 
-	[contract(ClipboardContract, 2.0)]
+	[contract(ClipboardContract, 1.0)]
 	[interface_name("Microsoft.ProjectReunion.ApplicationModel.IOperationCompletedEventArgs", a180ab74-fcc7-42f3-a6bd-5d373a28fc8d)]
 	runtimeclass OperationCompletedEventArgs
 	{
@@ -360,12 +367,12 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		String AcceptedFormatId { get; };
 	}
 
-	[contract(ClipboardContract, 6.0)]
+	[contract(ClipboardContract, 1.0)]
 	[static_name("Microsoft.ProjectReunion.ApplicationModel.IStandardDataFormatsStatics", 18f4cbf8-64f1-4ba1-9e64-53648a0443a8)]
 	static runtimeclass StandardDataFormats
 	{
 		static String Text { get; };
-		[deprecated("Uri may be altered or unavailable in future releases. Instead, use WebLink or ApplicationLink.", deprecate, ClipboardContract, 6.0)]
+		[deprecated("Uri may be altered or unavailable in future releases. Instead, use WebLink or ApplicationLink.", deprecate, ClipboardContract, 1.0)]
 		static String Uri { get; };
 		static String Html { get; };
 		static String Rtf { get; };
