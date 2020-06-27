@@ -16,3 +16,15 @@ STDAPI_(VOID) CloseSampleFlatApi(
 STDAPI GetSampleFlatApiString(
     _In_ HSAMPLEFLATAPI sampleFlat,
     _Outptr_ LPWSTR* theString);
+
+// Include <wil/resource.h> from the NuGet package Microsoft.Windows.ImplementationLibrary
+// before this file to have this handy lifecycle helper for C++ light up
+
+#ifdef __WIL_RESOURCE
+
+namespace wil
+{
+    using unique_sampleflat_handle = unique_any<HSAMPLEFLATAPI, decltype(CloseSampleFlatApi), &::CloseSampleFlatApi>;
+}
+
+#endif

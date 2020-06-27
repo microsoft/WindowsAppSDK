@@ -14,6 +14,7 @@ STDAPI SampleFlatApiCreate(
     _In_ LPCWSTR theString,
     _Outptr_ HSAMPLEFLATAPI* sampleFlat) try
 {
+    RETURN_HR_IF(E_INVALIDARG, !theString);
     auto real = std::make_unique<MyRealType>();
     real->theString = theString;
     *sampleFlat = reinterpret_cast<HSAMPLEFLATAPI>(real.release());

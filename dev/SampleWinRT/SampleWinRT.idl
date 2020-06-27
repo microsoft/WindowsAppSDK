@@ -3,7 +3,7 @@
 
 namespace Microsoft.SampleWinRT
 {
-    runtimeclass Common
+    static runtimeclass Common
     {
         static void Initialize();
 
