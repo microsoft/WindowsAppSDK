@@ -3,7 +3,6 @@
 import "inspectable.idl";
 import "AsyncInfo.idl";
 import "EventToken.idl";
-import "windowscontracts.idl";
 import "Windows.Foundation.idl";
 import "Windows.Foundation.Metadata.idl";
 import "Windows.Security.EnterpriseData.idl";
@@ -16,8 +15,6 @@ import "Windows.UI.idl";
 namespace Windows.Foundation
 {
 	typedef struct DateTime DateTime;
-	runtimeclass Deferral;
-	typedef struct Rect Rect;
 	runtimeclass Uri;
 }
 
@@ -38,8 +35,8 @@ namespace Windows.Security.EnterpriseData
 
 namespace Windows.Storage
 {
-	interface IStorageFile;
 	interface IStorageItem;
+	interface IStorageFile;
 	runtimeclass StorageFile;
 }
 
@@ -59,25 +56,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	typedef enum ClipboardHistoryItemsResultStatus ClipboardHistoryItemsResultStatus;
 	typedef enum DataPackageOperation DataPackageOperation;
 	typedef enum SetHistoryItemAsContentStatus SetHistoryItemAsContentStatus;
-	typedef enum ShareUITheme ShareUITheme;
 	delegate DataProviderHandler;
-	delegate ShareProviderHandler;
-	interface IDataRequest;
-	interface IDataRequestDeferral;
-	interface IDataRequestedEventArgs;
-	interface IDataTransferManager;
-	interface IDataTransferManager2;
-	interface IDataTransferManagerStatics;
-	interface IDataTransferManagerStatics2;
-	interface IDataTransferManagerStatics3;
-	interface IShareCompletedEventArgs;
-	interface IShareProvider;
-	interface IShareProviderFactory;
-	interface IShareProviderOperation;
-	interface IShareProvidersRequestedEventArgs;
-	interface IShareTargetInfo;
-	interface IShareUIOptions;
-	interface ITargetApplicationChosenEventArgs;
 	runtimeclass Clipboard;
 	runtimeclass ClipboardContentOptions;
 	runtimeclass ClipboardHistoryChangedEventArgs;
@@ -89,21 +68,9 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	runtimeclass DataPackageView;
 	runtimeclass DataProviderDeferral;
 	runtimeclass DataProviderRequest;
-	runtimeclass DataRequest;
-	runtimeclass DataRequestDeferral;
-	runtimeclass DataRequestedEventArgs;
-	runtimeclass DataTransferManager;
 	runtimeclass HtmlFormatHelper;
 	runtimeclass OperationCompletedEventArgs;
-	runtimeclass ShareCompletedEventArgs;
-	runtimeclass ShareProvider;
-	runtimeclass ShareProviderOperation;
-	runtimeclass ShareProvidersRequestedEventArgs;
-	runtimeclass ShareTargetInfo;
-	runtimeclass ShareUIOptions;
-	runtimeclass SharedStorageAccessManager;
 	runtimeclass StandardDataFormats;
-	runtimeclass TargetApplicationChosenEventArgs;
 }
 
 // Generic instantiations
@@ -111,23 +78,15 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 {
 	declare
 	{
-		interface Windows.Foundation.Collections.IIterable<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem*>;
-		interface Windows.Foundation.Collections.IIterable<Microsoft.ProjectReunion.ApplicationModel.ShareProvider*>;
-		interface Windows.Foundation.Collections.IIterator<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem*>;
-		interface Windows.Foundation.Collections.IIterator<Microsoft.ProjectReunion.ApplicationModel.ShareProvider*>;
-		interface Windows.Foundation.Collections.IVectorView<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItem*>;
-		interface Windows.Foundation.Collections.IVectorView<Microsoft.ProjectReunion.ApplicationModel.ShareProvider*>;
-		interface Windows.Foundation.Collections.IVector<Microsoft.ProjectReunion.ApplicationModel.ShareProvider*>;
-		interface Windows.Foundation.EventHandler<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryChangedEventArgs*>;
-		interface Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.ClipboardHistoryItemsResult*>;
-		interface Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.DataPackage*>;
-		interface Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation>;
-		interface Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, IInspectable*>;
-		interface Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, Microsoft.ProjectReunion.ApplicationModel.OperationCompletedEventArgs*>;
-		interface Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataPackage*, Microsoft.ProjectReunion.ApplicationModel.ShareCompletedEventArgs*>;
-		interface Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataTransferManager*, Microsoft.ProjectReunion.ApplicationModel.DataRequestedEventArgs*>;
-		interface Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataTransferManager*, Microsoft.ProjectReunion.ApplicationModel.ShareProvidersRequestedEventArgs*>;
-		interface Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataTransferManager*, Microsoft.ProjectReunion.ApplicationModel.TargetApplicationChosenEventArgs*>;
+		interface Windows.Foundation.Collections.IIterable<ClipboardHistoryItem*>;
+		interface Windows.Foundation.Collections.IIterator<ClipboardHistoryItem*>;
+		interface Windows.Foundation.Collections.IVectorView<ClipboardHistoryItem*>;
+		interface Windows.Foundation.EventHandler<ClipboardHistoryChangedEventArgs*>;
+		interface Windows.Foundation.IAsyncOperation<ClipboardHistoryItemsResult*>;
+		interface Windows.Foundation.IAsyncOperation<DataPackage*>;
+		interface Windows.Foundation.IAsyncOperation<DataPackageOperation>;
+		interface Windows.Foundation.TypedEventHandler<DataPackage*, IInspectable*>;
+		interface Windows.Foundation.TypedEventHandler<DataPackage*, OperationCompletedEventArgs*>;
 	}
 }
 
@@ -142,7 +101,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	{
 		aaaSuccess                  = 0,
 		aaaAccessDenied             = 1,
-		aaaClipboardHistoryDisabled = 2
+		aaaClipboardHistoryDisabled = 2,
 	};
 
 	[contract(ClipboardContract, 1.0)]
@@ -152,7 +111,7 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		aaaNone = 0x0,
 		aaaCopy = 0x1,
 		aaaMove = 0x2,
-		aaaLink = 0x4
+		aaaLink = 0x4,
 	};
 
 	[contract(ClipboardContract, 7.0)]
@@ -160,174 +119,12 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 	{
 		aaaSuccess      = 0,
 		aaaAccessDenied = 1,
-		aaaItemDeleted  = 2
-	};
-
-	[contract(ClipboardContract, 5.0)]
-	enum ShareUITheme
-	{
-		aaaDefault = 0,
-		aaaLight   = 1,
-		aaaDark    = 2
+		aaaItemDeleted  = 2,
 	};
 
 	[contract(ClipboardContract, 1.0)]
 	[uuid(6d9e7bfb-3280-4219-be29-08145f30f4e5)]
 	delegate void DataProviderHandler(DataProviderRequest request);
-
-	[contract(ClipboardContract, 4.0)]
-	[uuid(0d89ad1d-bb56-43e0-89d3-df5f85af2dd6)]
-	delegate
-		HRESULT ShareProviderHandler([in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation* operation);
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequest)]
-	[uuid(6a17e08b-8a32-484c-a07a-d416c04277cb)]
-	interface IDataRequest : IInspectable
-	{
-		[propget] HRESULT Data([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackage** value);
-		[propput] HRESULT Data([in] Microsoft.ProjectReunion.ApplicationModel.DataPackage* value);
-		[propget] HRESULT Deadline([out] [retval] Windows.Foundation.DateTime* value);
-		HRESULT FailWithDisplayText([in] HSTRING value);
-		HRESULT GetDeferral([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataRequestDeferral** value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequestDeferral)]
-	[uuid(dbb4bb17-24d4-45c7-b668-18b162942504)]
-	interface IDataRequestDeferral : IInspectable
-	{
-		HRESULT Complete();
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataRequestedEventArgs)]
-	[uuid(e169b0d1-224d-42e1-84b7-1851d72da4e0)]
-	interface IDataRequestedEventArgs : IInspectable
-	{
-		[propget] HRESULT Request([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataRequest** value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
-	[uuid(d55b10ac-e3c1-4b9d-ba05-e28056811f4b)]
-	interface IDataTransferManager : IInspectable
-	{
-		[eventadd] HRESULT DataRequested([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataTransferManager*, Microsoft.ProjectReunion.ApplicationModel.DataRequestedEventArgs*>* eventHandler, [out] [retval] EventRegistrationToken* eventCookie);
-		[eventremove] HRESULT DataRequested([in] EventRegistrationToken eventCookie);
-		[eventadd] HRESULT TargetApplicationChosen([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataTransferManager*, Microsoft.ProjectReunion.ApplicationModel.TargetApplicationChosenEventArgs*>* eventHandler, [out] [retval] EventRegistrationToken* eventCookie);
-		[eventremove] HRESULT TargetApplicationChosen([in] EventRegistrationToken eventCookie);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
-	[uuid(11c45fc0-76d6-4ff2-86f5-91481511b26c)]
-	interface IDataTransferManager2 : IInspectable
-	{
-		[eventadd] HRESULT ShareProvidersRequested([in] Windows.Foundation.TypedEventHandler<Microsoft.ProjectReunion.ApplicationModel.DataTransferManager*, Microsoft.ProjectReunion.ApplicationModel.ShareProvidersRequestedEventArgs*>* handler, [out] [retval] EventRegistrationToken* token);
-		[eventremove] HRESULT ShareProvidersRequested([in] EventRegistrationToken token);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
-	[uuid(0dc0af01-b3ae-484c-9752-910ce975392f)]
-	interface IDataTransferManagerStatics : IInspectable
-	{
-		HRESULT ShowShareUI();
-		HRESULT GetForCurrentView([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataTransferManager** value);
-	}
-
-	[contract(ClipboardContract, 3.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
-	[uuid(0e9a748d-3b26-4b7b-9399-ee372d58bf32)]
-	interface IDataTransferManagerStatics2 : IInspectable
-	{
-		HRESULT IsSupported([out] [retval] boolean* value);
-	}
-
-	[contract(ClipboardContract, 5.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.DataTransferManager)]
-	[uuid(dfd9220a-e51c-4dad-8b41-86d15192faab)]
-	interface IDataTransferManagerStatics3 : IInspectable
-	{
-		[overload("ShowShareUI")] HRESULT ShowShareUIWithOptions([in] Microsoft.ProjectReunion.ApplicationModel.ShareUIOptions* options);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareCompletedEventArgs)]
-	[uuid(5107a2a6-6dd3-491a-8f1a-93a1867afa56)]
-	interface IShareCompletedEventArgs : IInspectable
-	{
-		[propget] HRESULT ShareTarget([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareTargetInfo** value);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProvider)]
-	[uuid(6dcdc9a9-7118-43c5-ab39-c5b81ae919b3)]
-	interface IShareProvider : IInspectable
-	{
-		[propget] HRESULT Title([out] [retval] HSTRING* value);
-		[propget] HRESULT DisplayIcon([out] [retval] Windows.Storage.Streams.RandomAccessStreamReference** value);
-		[propget] HRESULT BackgroundColor([out] [retval] Windows.UI.Color* value);
-		[propget] HRESULT Tag([out] [retval] IInspectable** value);
-		[propput] HRESULT Tag([in] IInspectable* value);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProvider)]
-	[uuid(05994b01-3050-46ea-a2f1-db35deb79ab5)]
-	interface IShareProviderFactory : IInspectable
-	{
-		HRESULT Create([in] HSTRING title, [in] Windows.Storage.Streams.RandomAccessStreamReference* displayIcon, [in] Windows.UI.Color backgroundColor, [in] Microsoft.ProjectReunion.ApplicationModel.ShareProviderHandler* handler, [out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareProvider** result);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProviderOperation)]
-	[uuid(6956d6f1-ab46-4bcf-a1d3-be8e9a7d31e7)]
-	interface IShareProviderOperation : IInspectable
-	{
-		[propget] HRESULT Data([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageView** value);
-		[propget] HRESULT Provider([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareProvider** value);
-		HRESULT ReportCompleted();
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareProvidersRequestedEventArgs)]
-	[uuid(7314a2ef-4a97-4e53-b347-2316b67e9121)]
-	interface IShareProvidersRequestedEventArgs : IInspectable
-	{
-		[propget] HRESULT Providers([out] [retval] Windows.Foundation.Collections.IVector<Microsoft.ProjectReunion.ApplicationModel.ShareProvider*>** value);
-		[propget] HRESULT Data([out] [retval] Microsoft.ProjectReunion.ApplicationModel.DataPackageView** value);
-		HRESULT GetDeferral([out] [retval] Windows.Foundation.Deferral** value);
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareTargetInfo)]
-	[uuid(9b7ceae7-5d6f-4d29-9a17-427208267b9d)]
-	interface IShareTargetInfo : IInspectable
-	{
-		[propget] HRESULT AppUserModelId([out] [retval] HSTRING* value);
-		[propget] HRESULT ShareProvider([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareProvider** value);
-	}
-
-	[contract(ClipboardContract, 5.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.ShareUIOptions)]
-	[uuid(443a3262-9729-40e4-819c-015f62b4d1c5)]
-	interface IShareUIOptions : IInspectable
-	{
-		[propget] HRESULT Theme([out] [retval] Microsoft.ProjectReunion.ApplicationModel.ShareUITheme* value);
-		[propput] HRESULT Theme([in] Microsoft.ProjectReunion.ApplicationModel.ShareUITheme value);
-		[propget] HRESULT SelectionRect([out] [retval] Windows.Foundation.IReference<Windows.Foundation.Rect>** value);
-		[propput] HRESULT SelectionRect([in] Windows.Foundation.IReference<Windows.Foundation.Rect>* value);
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[exclusiveto(Microsoft.ProjectReunion.ApplicationModel.TargetApplicationChosenEventArgs)]
-	[uuid(cdaa58b4-c944-4c6b-a8f4-f429131cc2ee)]
-	interface ITargetApplicationChosenEventArgs : IInspectable
-	{
-		[propget] HRESULT ApplicationName([out] [retval] HSTRING* value);
-	}
 
 	[contract(ClipboardContract, 7.0)]
 	[static_name("Microsoft.ProjectReunion.ApplicationModel.IClipboardStatics", 6cb53030-4da0-43a1-95ab-52f87cf59c3a)]
@@ -421,10 +218,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 
 		void SetApplicationLink(Windows.Foundation.Uri value);
 		void SetWebLink(Windows.Foundation.Uri value);
-
-		event Windows.Foundation.TypedEventHandler<DataPackage, ShareCompletedEventArgs> ShareCompleted;
-
-		event Windows.Foundation.TypedEventHandler<DataPackage, Object> ShareCanceled;
 	}
 
 	[contract(ClipboardContract, 6.0)]
@@ -551,39 +344,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		void SetData(Object value);
 	}
 
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass DataRequest
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataRequest;
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass DataRequestDeferral
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataRequestDeferral;
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass DataRequestedEventArgs
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataRequestedEventArgs;
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(standard)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics, ClipboardContract, 1.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics2, ClipboardContract, 3.0)]
-	[static(Microsoft.ProjectReunion.ApplicationModel.IDataTransferManagerStatics3, ClipboardContract, 5.0)]
-	runtimeclass DataTransferManager
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IDataTransferManager;
-		[contract(ClipboardContract, 4.0)] interface Microsoft.ProjectReunion.ApplicationModel.IDataTransferManager2;
-	}
-
-	[contract(ClipboardContract, 1.0)]
 	[static_name("Microsoft.ProjectReunion.ApplicationModel.IHtmlFormatHelperStatics", cce26a46-4048-4fb4-99c8-b822d03cd526)]
 	static runtimeclass HtmlFormatHelper
 	{
@@ -598,60 +358,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		DataPackageOperation Operation { get; };
 
 		String AcceptedFormatId { get; };
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass ShareCompletedEventArgs
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareCompletedEventArgs;
-	}
-
-	[activatable(Microsoft.ProjectReunion.ApplicationModel.IShareProviderFactory, ClipboardContract, 4.0)]
-	[contract(ClipboardContract, 4.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass ShareProvider
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareProvider;
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass ShareProviderOperation
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareProviderOperation;
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass ShareProvidersRequestedEventArgs
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareProvidersRequestedEventArgs;
-	}
-
-	[contract(ClipboardContract, 4.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass ShareTargetInfo
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareTargetInfo;
-	}
-
-	[activatable(ClipboardContract, 5.0)]
-	[contract(ClipboardContract, 5.0)]
-	[marshaling_behavior(agile)]
-	[threading(both)]
-	runtimeclass ShareUIOptions
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.IShareUIOptions;
-	}
-
-	[contract(ClipboardContract, 1.0)]
-	[static_name("Microsoft.ProjectReunion.ApplicationModel.ISharedStorageAccessManagerStatics", 9b5b520e-1b1a-487a-be92-f214f21c255f)]
-	static runtimeclass SharedStorageAccessManager
-	{
-		static String AddFile(Windows.Storage.IStorageFile file);
-		static Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> RedeemTokenForFileAsync(String token);
-		static void RemoveFile(String token);
 	}
 
 	[contract(ClipboardContract, 6.0)]
@@ -672,10 +378,4 @@ namespace Microsoft.ProjectReunion.ApplicationModel
 		static String UserActivityJsonArray { get; };
 	}
 
-	[contract(ClipboardContract, 1.0)]
-	[marshaling_behavior(agile)]
-	runtimeclass TargetApplicationChosenEventArgs
-	{
-		[default] interface Microsoft.ProjectReunion.ApplicationModel.ITargetApplicationChosenEventArgs;
-	}
 }
