@@ -12,4 +12,3 @@
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
 #include "CppUnitTest.h"
-#include <SampleFlatC.h>

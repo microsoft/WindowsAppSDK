@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include <winrt/Microsoft.SampleWinRT.h>
+#include <SampleFlatC.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

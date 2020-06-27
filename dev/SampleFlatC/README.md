@@ -22,7 +22,6 @@ APIs from an import library or through a projection that applies a wrapper.
 1. Right-click the shared project and use "Add > New Item"
 2. From the "Installed > Visual C++ > Code" list, select "Header (.h)"
 3. Pick a good name (for the rest of this example, we'll use `Muffins` again, so "muffins.h")
-4. In the properties view for `muffins.h` set the "Content" property to "True"
 5. Define the ABI for the implementation
 
 Follow the example of [SampleFlatC](./SampleFlatC.h):
@@ -34,6 +33,17 @@ Follow the example of [SampleFlatC](./SampleFlatC.h):
 
 1. Add `.cpp` files that implement the APIs in the usual way
 2. For code using C++-with-exceptions use an appropriate exception guard
+
+## Publish header
+
+1. In the `.vcxitems` for the new project, manually add something like this, per [SampleFlatC.vcxitems](./SampleFlatC.vcxitems)
+
+```xml
+<!-- Include this header in the set being published for use with the DLL -->
+<ItemGroup>
+  <PublicHeaders Include="$(MSBuildThisFileDirectory)SampleFlatC.h"/>
+</ItemGroup>
+```
 
 ## Adding exports
 
