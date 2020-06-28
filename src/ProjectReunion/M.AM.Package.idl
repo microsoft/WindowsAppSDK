@@ -1,0 +1,248 @@
+// Copyright (C) Microsoft. All rights reserved.
+
+namespace Microsoft.ApplicationModel
+{
+    runtimeclass FindPackageOptions
+    {
+        Windows.System.User User;
+        String PackageFullName;
+        String PackageFamilyName;
+        String PackageName;
+        String PackagePublisher;
+        String PackagePublisherId;
+        Boolean IsMain;
+        Boolean IsFramework;
+        Boolean IsResource;
+        Boolean IsOptional;
+        Boolean IsOptionalInRelatedSet;
+        Boolean IsOptionalNotInRelatedSet;
+        Boolean IsBundle;
+        Boolean IsProvisioned;
+    };
+
+    runtimeclass Package
+    {
+        // Equivalent to a W.AM.Package object
+        Package(Windows.ApplicationModel.Package package);
+
+        // Equivalent to W.AM.Package.Current
+        static Package GetCurrent();
+
+        PackageDisplayInfo DisplayInfo{ get; };
+
+        PackageLocation Location{ get; };
+
+        PackageIdentity Identity{ get; };
+
+        PackageGraph PackageGraph { get; };
+
+        PackageInstallInfo Install { get; };
+
+        PackageApplications Applications { get; };
+
+        PackageContentGroups ContentGroups { get; };
+
+        // Equivalent to W.M.D.PackageManager.FindPackage(String)
+        static Package FindPackage(String packageFullName);
+
+        // Equivalent to W.M.D.PackageManager.FindPackageForUser(String, String)
+        static Package FindPackage(Windows.System.User user, String packageFullName);
+
+        // Equivalent to W.M.D.PackageManager.FindPackages()
+        static IVector<Package> FindPackages();
+
+        // Equivalent to W.M.D.PackageManager.FindPackages(String)
+        static IVector<Package> FindPackages(String packagFamilyName);
+
+        // Equivalent to W.M.D.PackageManager.FindPackages(String, String)
+        static IVector<Package> FindPackages(String packageName, String packagePublisher);
+
+        // Equivalent to W.M.D.PackageManager.FindPackagesForUser(String)
+        static IVector<Package> FindPackagesForUser(Windows.System.User user);
+
+        // Equivalent to W.M.D.PackageManager.FindPackagesForUser(String, String)
+        static IVector<Package> FindPackagesForUser(Windows.System.User user, String packagFamilyName);
+
+        // Equivalent to W.M.D.PackageManager.FindPackagesForUser(String, String, String)
+        static IVector<Package> FindPackagesForUser(Windows.System.User user, String packageName, String packagePublisher);
+
+        // Equivalent to W.M.D.PackageManager.FindPackagesForUserWithPackageTypes(String, PackageTypes)
+        static IVector<Package> FindPackagesForUserWithPackageTypes(Windows.System.User user, Windows.Management.Deployment.PackageTypes types);
+
+        // Equivalent to W.M.D.PackageManager.FindPackagesForUserWithPackageTypes(String, String, PackageTypes)
+        static IVector<Package> FindPackagesForUserWithPackageTypes(Windows.System.User user, String packagFamilyName, Windows.Management.Deployment.PackageTypes types);
+
+        // Equivalent to W.M.D.PackageManager.FindPackagesForUserWithPackageTypes(String, String, String, PackageTypes)
+        static IVector<Package> FindPackagesForUserWithPackageTypes(Windows.System.User user, String packageName, String packagePublisher, Windows.Management.Deployment.PackageTypes types);
+
+        // Equivalent to W.M.D.PackageManager.FindProvisionedPackages()
+        static IVector<Package> FindProvisionedPackages();
+
+        // Or....just 1 method? Rename to FindPackage(s)?
+        static Package FindPackageWithOptions(FindPackageOptions options);
+        static IVector<Package> FindPackagesWithOptions(FindPackageOptions options);
+
+        Windows.Management.Deployment.PackageTypes PackageType { get; };
+        Boolean IsMain { get; };
+        Boolean IsFramework { get; };
+        Boolean IsResource { get; };
+        Boolean IsOptional { get; };
+        Boolean IsOptionalInRelatedSet { get; };
+        Boolean IsBundle { get; };
+        Boolean IsDevelopmentMode { get; };
+        Boolean IsStub { get; };
+        Windows.ApplicationModel.PackageSignatureKind SignatureKind { get; };
+        Windows.ApplicationModel.PackageStatus Status { get; };
+        Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.PackageUpdateAvailabilityResult> CheckUpdateAvailabilityAsync();
+        Windows.Foundation.IAsyncOperation<Boolean> SetInUseAsync(Boolean inUse);
+        Windows.Foundation.IAsyncOperation<Boolean> VerifyContentIntegrityAsync();
+    }
+
+    runtimeclass PackageDisplayInfo
+    {
+        PackageDisplayInfo(Microsoft.ApplicationModel.Package package);
+
+        String DisplayName { get; };
+        String PublisherDisplayName { get; };
+        String Description { get; };
+
+        String LogoFilename { get; };
+        Windows.Foundation.Uri LogoUri { get; };
+        Windows.Storage.Streams.RandomAccessStreamReference GetLogoStream(Windows.Foundation.Size size);
+        // LogoImage() returning the image as byte[]? Image? ???
+    }
+
+    runtimeclass PackageLocation
+    {
+        PackageLocation(Microsoft.ApplicationModel.Package package);
+
+        // Alias for .EffectivePath
+        String Path { get; };
+
+        // Alias for .EffectiveLocation
+        Windows.Storage.StorageFolder Location { get; };
+
+        String InstalledPath;
+        String MutablePath;
+        String EffectivePath;
+        String EffectiveExternalPath;
+        String UserEffectiveExternalPath;
+        String MachineEffectiveExternalPath;
+
+        Windows.Storage.StorageFolder InstalledLocation;
+        Windows.Storage.StorageFolder MutableLocation;
+        Windows.Storage.StorageFolder EffectiveLocation;
+        Windows.Storage.StorageFolder EffectiveExternalLocation;
+        Windows.Storage.StorageFolder UserEffectiveExternalLocation;
+        Windows.Storage.StorageFolder MachineEffectiveExternalLocation;
+    }
+
+    runtimeclass PackageFamilyNameTuple
+    {
+        String Name;
+        String PublisherId;
+    }
+
+    runtimeclass PackageIdentity
+    {
+        PackageIdentity(Microsoft.ApplicationModel.Package package);
+
+        String Name { get; };
+        Windows.ApplicationModel.PackageVersion Version { get; };
+        Windows.System.ProcessorArchitecture Architecture { get; };
+        String ResouceId { get; };
+        String Publisher { get; };
+        String PublisherId { get; };
+
+        String PackageFullName { get; };
+        String PackageFamilyName { get; };
+
+        // Equivalent to PackageFullNameFromId(...,publisher...) in appmodel.h
+        static String FormatPackageFullName(String packagename, Windows.ApplicationModel.PackageVersion version, Windows.System.ProcessorArchitecture architecture, String resourceId, String publisher);
+
+        // Equivalent to PackageFullNameFromId(...,publisherid...) in appmodel.h
+        static String FormatPackageFullNameGivenPublisherId(String packagename, Windows.ApplicationModel.PackageVersion version, Windows.System.ProcessorArchitecture architecture, String resourceId, String publisherId);
+
+        // Equivalent to PackageIdFromFullName() in appmodel.h
+        static PackageIdentity ParsePackageFullName(String packageFullName);
+
+        // Equivalent to PackageFamilyNameFromFullName() in appmodel.h
+        static String FormatPackageFamilyName(String packageFullName);
+
+        // Equivalent to PackageFamilyNameFromId(...publisher...) in appmodel.h
+        static String FormatPackageFamilyName(String packagename, String publisher);
+
+        // Equivalent to PackageFamilyNameFromId(...publisherid...) in appmodel.h
+        static String FormatPackageFamilyNameGivenPublisherId(String packagename, String publisherId);
+
+        // Equivalent ot PAckageNameAndPublisherIdFromFamilyName() in appmodel.h
+        static PackageFamilyNameTuple ParsePackageFamilyName(String packageFamilyName);
+
+        // Equivalent to VerifyPackageId(...publisher...) in appmodel.h
+        static Boolean VerifyPackageId(String packagename, Windows.ApplicationModel.PackageVersion version, Windows.System.ProcessorArchitecture architecture, String resourceId, String publisher);
+
+        // Equivalent to VerifyPackageId(...publisherid...) in appmodel.h
+        static Boolean VerifyPackageIdGivenPublisherId(String packagename, Windows.ApplicationModel.PackageVersion version, Windows.System.ProcessorArchitecture architecture, String resourceId, String publisherId);
+
+        // Equivalent to VerifyPackageFullName() in appmodel.h
+        static Boolean VerifyPackageFullName(String packageFullName);
+
+        // Equivalent to VerifyFamilyName() in appmodel.h
+        static Boolean VerifyPackageFamilyName(String packageFullName);
+    }
+
+    runtimeclass FindRelatedPackageOptions
+    {
+        FindRelatedPackageOptions();
+
+        Boolean Dependencies;
+        Boolean Dependents;
+        Boolean Framework;
+        Boolean Resource;
+        Boolean Optional;
+        Boolean OptionalInRelatedSet;
+        Boolean OptionalNotInRelatedSet;
+        String PackageFamilyName;
+    }
+
+    runtimeclass PackageGraph
+    {
+        PackageGraph(Microsoft.ApplicationModel.Package package);
+
+        // Equivalent to W.AM.Package.Dependencies
+        IVector<Package> FindRelatedPackages();
+
+        IVector<Package> FindRelatedPackages(FindRelatedPackageOptions options);
+    }
+
+    runtimeclass PackageInstallInfo
+    {
+        PackageInstallInfo(Microsoft.ApplicationModel.Package package);
+
+        Windows.Foundation.DateTime WhenFirstRegisteredForUser { get; };
+
+        // Equivalent to W.AM.Package.InstalledDate
+        Windows.Foundation.DateTime WhenLastRegisteredForUser { get; };
+
+        // Equivalent to W.AM.Package.AppInstallerInfo
+        Windows.ApplicationModel.AppInstallerInfo GetAppInstallerInfo();
+    }
+
+    runtimeclass PackageApplications
+    {
+        PackageApplications(Microsoft.ApplicationModel.Package package);
+
+        IVector<Windows.ApplicationModel.Core.AppListEntry> GetAppListEntries();
+        Windows.Foundation.IAsyncOperation<IVector<Windows.ApplicationModel.Core.AppListEntry> > GetAppListEntriesAsync();
+    }
+
+    runtimeclass PackageContentGroups
+    {
+        PackageContentGroups(Microsoft.ApplicationModel.Package package);
+
+        Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.PackageContentGroup> GetContentGroupAsync(String name);
+        Windows.Foundation.IAsyncOperation<IVector<Windows.ApplicationModel.PackageContentGroup> > GetContentGroupsAsync();
+
+        Windows.Foundation.IAsyncOperation<IVector<Windows.ApplicationModel.PackageContentGroup> > StageContentGroups();
+    }
+}
