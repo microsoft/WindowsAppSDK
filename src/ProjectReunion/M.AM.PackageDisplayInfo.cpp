@@ -6,91 +6,96 @@
 
 #include <filesystem>
 
+// W.AM.Package localizable properties are fully functional only recently
+// (as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10). On older
+// releases they're only functional when created via Package.Current.
+// Instances created via Windows.Management.Deployment.PackageManager.FindPackage*()
+// are non-functional e.g. package.DisplayName returns "". We can
+// determine the same net result by loading the raw values out of
+// AppxManifest.xml and SHLoadIndirectString() in obscure ways.
+// There's a perf cost so we really only want to do the latter
+// when necessary.
+
 namespace winrt::Microsoft::ApplicationModel::implementation
 {
     PackageDisplayInfo::PackageDisplayInfo(Microsoft::ApplicationModel::Package const& package) :
         m_package(package)
     {
+        // W.AM.Package is functional for our needs as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10
+        auto contractName = winrt::to_hstring(L"Windows.Foundation.UniversalApiContract");
+        m_isPackageFullyFunctionalForLocalization = Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(contractName, 10);
     }
     hstring PackageDisplayInfo::DisplayName()
     {
-        // W.AM.Package is functional for our needs as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10
-        auto contractName = winrt::to_hstring(L"Windows.Foundation.UniversalApiContract");
-        if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(contractName, 10))
+        if (m_localizedDisplayName.size() == 0)
         {
-            return m_package.W_AM_Package().DisplayName();
+            if (!m_isPackageFullyFunctionalForLocalization)
+            {
+                if (m_manifestedDisplayName.size() == 0)
+                {
+                    m_manifestedDisplayName = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring(L"/Package/Properties/DisplayName"));
+                    m_localizedDisplayName = ToLocalizedString(m_manifestedDisplayName);
+                }
+            }
         }
-        else
-        {
-            auto string = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring("/Package/Properties/DisplayName"));
-            return ToLocalizedString(string);
-        }
+        return m_localizedDisplayName;
     }
     hstring PackageDisplayInfo::PublisherDisplayName()
     {
-        // W.AM.Package is functional for our needs as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10
-        auto contractName = winrt::to_hstring(L"Windows.Foundation.UniversalApiContract");
-        if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(contractName, 10))
+        if (m_localizedPublisherDisplayName.size() == 0)
         {
-            return m_package.W_AM_Package().PublisherDisplayName();
+            if (!m_isPackageFullyFunctionalForLocalization)
+            {
+                if (m_manifestedPublisherDisplayName.size() == 0)
+                {
+                    m_manifestedPublisherDisplayName = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring(L"/Package/Properties/PublisherDisplayName"));
+                    m_localizedPublisherDisplayName = ToLocalizedString(m_manifestedPublisherDisplayName);
+                }
+            }
         }
-        else
-        {
-            auto string = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring("/Package/Properties/PublisherDisplayName"));
-            return ToLocalizedString(string);
-        }
+        return m_localizedPublisherDisplayName;
     }
     hstring PackageDisplayInfo::Description()
     {
-        // W.AM.Package is functional for our needs as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10
-        auto contractName = winrt::to_hstring(L"Windows.Foundation.UniversalApiContract");
-        if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(contractName, 10))
+        if (m_localizedDescription.size() == 0)
         {
-            return m_package.W_AM_Package().Description();
+            if (!m_isPackageFullyFunctionalForLocalization)
+            {
+                // Description is optional in appxmanifest.xml. We can't rely on
+                // a string from the manifest indicating we've parsed the manifest
+                if (m_descriptionIsParsedFromManifest && m_manifestedDescription.size() == 0)
+                {
+                    m_manifestedDescription = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring(L"/Package/Properties/Description"));
+                    m_localizedDescription = ToLocalizedString(m_manifestedDescription);
+                }
+            }
         }
-        else
-        {
-            auto string = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring("/Package/Properties/Description"));
-            return ToLocalizedString(string);
-        }
+        return m_localizedDescription;
     }
     hstring PackageDisplayInfo::LogoFilename()
     {
-        // W.AM.Package is functional for our needs as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10
-        auto contractName = winrt::to_hstring(L"Windows.Foundation.UniversalApiContract");
-        if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(contractName, 10))
+        if (m_localizedLogo.size() == 0)
         {
-            auto uri = m_package.W_AM_Package().Logo();
-            if (uri)
+            if (!m_isPackageFullyFunctionalForLocalization)
             {
-                if (CompareStringOrdinal(uri.SchemeName().c_str(), -1, L"file", -1, TRUE) == CSTR_EQUAL)
+                if (m_manifestedLogo.size() == 0)
                 {
-                    auto filename = uri.Path();
-                    return filename;
+                    auto string = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring("/Package/Properties/Description"));
+                    m_localizedLogo = ToLocalizedPath(string);
                 }
             }
-            return winrt::hstring();
         }
-        else
-        {
-            auto string = FindLoadAndParseValueFromAppxManifest(winrt::to_hstring("/Package/Properties/Description"));
-            return ToLocalizedPath(string);
-        }
+        return m_localizedLogo;
     }
     Windows::Foundation::Uri PackageDisplayInfo::LogoUri()
     {
-        // W.AM.Package is functional for our needs as of 10.0.19041.0 aka 20H1 aka UniversalApiContract>=10
-        auto contractName = winrt::to_hstring(L"Windows.Foundation.UniversalApiContract");
-        if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(contractName, 10))
+        if (!m_localizedLogoUri)
         {
-            return m_package.W_AM_Package().Logo();
+            auto logoFilename = LogoFilename();
+            Windows::Foundation::Uri uri{ logoFilename.c_str() };
+            m_localizedLogoUri = uri;
         }
-        else
-        {
-            auto filename = LogoFilename();
-            Windows::Foundation::Uri uri{ filename.c_str() };
-            return uri;
-        }
+        return m_localizedLogoUri;
     }
     Windows::Storage::Streams::RandomAccessStreamReference PackageDisplayInfo::GetLogoStream(Windows::Foundation::Size const& size)
     {
