@@ -96,6 +96,8 @@ namespace Microsoft.ApplicationModel
         Windows.Foundation.IAsyncOperation<Windows.ApplicationModel.PackageUpdateAvailabilityResult> CheckUpdateAvailabilityAsync();
         Windows.Foundation.IAsyncOperation<Boolean> SetInUseAsync(Boolean inUse);
         Windows.Foundation.IAsyncOperation<Boolean> VerifyContentIntegrityAsync();
+
+        Windows.ApplicationModel.Package W_AM_Package { get; };
     }
 
     runtimeclass PackageDisplayInfo

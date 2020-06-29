@@ -148,6 +148,7 @@ namespace winrt::Microsoft::ApplicationModel::implementation
     }
     bool Package::IsStub()
     {
+        //? winrt::com_ptr<abi::Windows::ApplicationModel::IPackage9> ptr{ m_package.as<abi::Windows::ApplicationModel::IPackage9>() };
         throw hresult_not_implemented();
     }
     Windows::ApplicationModel::PackageSignatureKind Package::SignatureKind()
@@ -169,5 +170,9 @@ namespace winrt::Microsoft::ApplicationModel::implementation
     Windows::Foundation::IAsyncOperation<bool> Package::VerifyContentIntegrityAsync()
     {
         return m_package.VerifyContentIntegrityAsync();
+    }
+    Windows::ApplicationModel::Package Package::W_AM_Package()
+    {
+        return m_package;
     }
 }

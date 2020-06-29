@@ -44,6 +44,7 @@ namespace winrt::Microsoft::ApplicationModel::implementation
         Windows::Foundation::IAsyncOperation<Windows::ApplicationModel::PackageUpdateAvailabilityResult> CheckUpdateAvailabilityAsync();
         Windows::Foundation::IAsyncOperation<bool> SetInUseAsync(bool inUse);
         Windows::Foundation::IAsyncOperation<bool> VerifyContentIntegrityAsync();
+        Windows::ApplicationModel::Package W_AM_Package();
 
     private:
         Windows::ApplicationModel::Package m_package;
