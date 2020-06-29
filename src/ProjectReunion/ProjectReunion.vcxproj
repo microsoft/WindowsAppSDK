@@ -277,6 +277,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="M.AM.Package.h" />
+    <ClInclude Include="M.AM.PackageDisplayInfo.h" />
     <ClInclude Include="ProjectReunion.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
@@ -284,6 +285,7 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="M.AM.Package.cpp" />
+    <ClCompile Include="M.AM.PackageDisplayInfo.cpp" />
     <ClCompile Include="ProjectReunion.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
