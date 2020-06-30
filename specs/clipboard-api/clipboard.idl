@@ -239,8 +239,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
     void SetData(String formatId, [hasvariant] Object value);
     void SetDataProvider(String formatId, DataProviderHandler delayRenderer);
     void SetText(String value);
-    [deprecated("SetUri may be altered or unavailable in future releases. Instead, use SetWebLink or SetApplicationLink.", deprecate, ClipboardContract, 1.0)]
-    void SetUri(Windows.Foundation.Uri value);
     void SetHtmlFormat(String value);
 
     // typically used with SetHtmlFormat to include images, other secondary resources with the HTML
@@ -280,8 +278,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
     [method_name("GetCustomTextAsync")]
     Windows.Foundation.IAsyncOperation<String> GetTextAsync(String formatId);
 
-    [deprecated("GetUriAsync may be altered or unavailable in future releases. Instead, use GetWebLinkAsync or GetApplicationLinkAsync.", deprecate, ClipboardContract, 1.0)]
-    Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetUriAsync();
     Windows.Foundation.IAsyncOperation<String> GetHtmlFormatAsync();
     Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<String, Windows.Storage.Streams.RandomAccessStreamReference> > GetResourceMapAsync();
     Windows.Foundation.IAsyncOperation<String> GetRtfAsync();
@@ -434,8 +430,6 @@ namespace Microsoft.ProjectReunion.ApplicationModel
   static runtimeclass StandardDataFormats
   {
     static String Text { get; };
-    [deprecated("Uri may be altered or unavailable in future releases. Instead, use WebLink or ApplicationLink.", deprecate, ClipboardContract, 1.0)]
-    static String Uri { get; };
     static String Html { get; };
     static String Rtf { get; };
     static String Bitmap { get; };
