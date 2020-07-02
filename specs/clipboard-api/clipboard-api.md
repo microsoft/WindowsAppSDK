@@ -270,9 +270,9 @@ will be copied into the clipboard API is the following:
   * `ClipboardHistoryItem`
   * `ClipboardHistoryItemsResult`
   * `ClipboardHistoryItemsResultStatus`
-  * `ClipboardHistoryChangedEventArgs`
   * `OperationCompletedEventArgs`
   * `SetHistoryItemAsContentStatus`
+  * (`ClipboardHistoryChangedEventArgs` is omitted because it's an empty class.)
 
 * [`DataPackage`](https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer.datapackage) -
   Unit of data transfer for the clipboard API.
