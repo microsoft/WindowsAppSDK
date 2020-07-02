@@ -3,4 +3,4 @@
 
 #include <pch.h>
 #include <SampleWinRT.h>
-#include <SampleWinRT.Common.g.cpp>
+#include <Common.g.cpp>

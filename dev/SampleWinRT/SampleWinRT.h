@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include <SampleWinRT.Common.g.h>
+#include <Common.g.h>
 
-namespace winrt::Microsoft::SampleWinRT::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct Common
     {
@@ -49,7 +49,7 @@ namespace winrt::Microsoft::SampleWinRT::implementation
         static inline UINT32 m_fullNameLen = PACKAGE_FULL_NAME_MAX_LENGTH;
     };
 }
-namespace winrt::Microsoft::SampleWinRT::factory_implementation
+namespace winrt::Microsoft::ProjectReunion::factory_implementation
 {
     struct Common : CommonT<Common, implementation::Common>
     {
