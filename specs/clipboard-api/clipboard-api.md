@@ -5,28 +5,28 @@
 The Windows clipboard is the component that's responsible for implementing
 the "cut", "copy", and "paste" system for moving and copying data from one
 Windows application to another. Windows maintains one clipboard per
-interactively signed-in user (more precisely, one clipboard per Remote Desktop/
-Terminal Services session), which can hold any number of data "formats"
-which are all intended to represent the same data value.
+user currently signed in to the computer. The current clipboard data consists
+of one or more different representations, called "clipboard formats",
+of what the user would consider as the same data value.
 
 This specification defines the API for the Windows clipboard within the
-Project Reunion SDK. This Windows Runtime API is a [converged API interface](
+Project Reunion SDK. This API is a [converged API interface](
   ../../docs/README.md#converged-apis) in the Project Reunion SDK,
-which is intended to replace the following 3 clipboard APIs within Windows:
+which is intended to consolidate the following 3 clipboard APIs within Windows:
 
-* [The classic clipboard API](https://docs.microsoft.com/windows/win32/dataxchg/clipboard),
-  including GetClipboardData() and friends in windows.h.
+* [The classic clipboard API](https://docs.microsoft.com/windows/win32/dataxchg/clipboard)
+  ("Win32 clipboard"), including GetClipboardData() and friends in windows.h.
 
 * [The OLE data transfer API](https://docs.microsoft.com/windows/win32/com/data-transfer),
   including OleGetClipboard() and friends in ole2.h.
 
 * [Windows.ApplicationModel.DataTransfer.Clipboard](https://docs.microsoft.com/windows/uwp/app-to-app/copy-and-paste)
-  and friends.
+  and friends ("UWP clipboard").
 
-Although this API will be based closely on Windows.ApplicationModel.DataTransfer,
+Although this API will be based closely on "UWP clipboard" in
+Windows.ApplicationModel.DataTransfer,
 its implementation will be delivered as an open-source part of the
-Project Reunion SDK decoupled from Windows. It will _not_ be added to Windows
-as part of the [Reunion Subset API Family](../../docs/README.md#subset-api-family).
+Project Reunion SDK decoupled from Windows.
 
 ### Motivation: reasons to create a new clipboard API
 
@@ -39,10 +39,10 @@ to the clipboard developer and user experiences, like these:
   People encounter a lot of problems with unexpected clipboard behavior that
   they blame Windows for and that Windows could theoretically solve, even
   though the problems are typically caused by applications misusing the
-  clipboard. The new clipboard API makes breaking changes from the previous
-  APIs that solve some of these problems:
+  clipboard. Here are some of these problems, along with how the new
+  clipboard API solves them by making breaking changes from the previous APIs:
 
-  * _No clipboard lock_: Often, attempts to cut or copy data are seemingly
+  * _No Win32 clipboard lock_: Often, attempts to cut or copy data are seemingly
     ignored - the previous data value on the clipboard gets pasted instead,
     if there was one. This can happen when the previous source app uses the
     classic clipboard API, since apps using that API obtain a lock on the
@@ -50,7 +50,7 @@ to the clipboard developer and user experiences, like these:
     CloseClipboard(). The new clipboard API in the Reunion SDK will solve
     this problem by omitting the clipboard lock as a caller-visible concept.
 
-  * _No need to flush clipboard_: Sometimes, a cut or copied data value is lost
+  * _No need to flush OLE and UWP clipboard_: Sometimes, a cut or copied data value is lost
     and the clipboard is cleared when the source app exits or crashes.
     This is likely to happen for clipboard source apps that use the OLE data transfer API
     or Windows.ApplicationModel.DataTransfer, since those APIs require an explicit
@@ -130,9 +130,9 @@ you might need to implement copying and pasting yourself.
 You can do this with the clipboard API in the Project Reunion SDK.
 
 The Reunion SDK clipboard API is very similar to Windows' built-in
-clipboard API in the [Windows.ApplicationModel.DataTransfer](
+"UWP clipboard" API in the [Windows.ApplicationModel.DataTransfer](
 https://docs.microsoft.com/uwp/api/windows.applicationmodel.datatransfer)
-WinRT namespace.
+Windows Runtime namespace.
 In fact, in this initial version (as of mid-2020), the Reunion
 SDK clipboard API is the same as Windows.ApplicationModel.DataTransfer,
 except for these differences:
