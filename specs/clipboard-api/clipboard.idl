@@ -145,21 +145,21 @@ namespace Microsoft.ProjectReunion.ApplicationModel
   static runtimeclass Clipboard
   {
     static DataPackageView GetContent();
-    static void SetContent(DataPackage content);
 
+    static void SetContent(DataPackage content);
+    static Boolean SetContentWithOptions(DataPackage content, ClipboardContentOptions options);
     static void Flush();
     static void Clear();
 
     static event Windows.Foundation.EventHandler<Object> ContentChanged;
 
     static Windows.Foundation.IAsyncOperation<ClipboardHistoryItemsResult> GetHistoryItemsAsync();
-    static Boolean ClearHistory();
-    static Boolean DeleteItemFromHistory(ClipboardHistoryItem item);
     static SetHistoryItemAsContentStatus SetHistoryItemAsContent(ClipboardHistoryItem item);
+    static Boolean DeleteItemFromHistory(ClipboardHistoryItem item);
+    static Boolean ClearHistory();
+
     static Boolean IsHistoryEnabled();
     static Boolean IsRoamingEnabled();
-
-    static Boolean SetContentWithOptions(DataPackage content, ClipboardContentOptions options);
 
     static event Windows.Foundation.EventHandler<Object> HistoryChanged;
     static event Windows.Foundation.EventHandler<Object> RoamingEnabledChanged;
@@ -218,17 +218,20 @@ namespace Microsoft.ProjectReunion.ApplicationModel
     DataPackageView GetView();
     DataPackagePropertySet Properties { get; };
     DataPackageOperation RequestedOperation;
+
     event Windows.Foundation.TypedEventHandler<DataPackage, OperationCompletedEventArgs> OperationCompleted;
     event Windows.Foundation.TypedEventHandler<DataPackage, Object> Destroyed;
+
     void SetData(String formatId, [hasvariant] Object value);
     void SetDataProvider(String formatId, DataProviderHandler delayRenderer);
+
     void SetText(String value);
     void SetHtmlFormat(String value);
-
-    // typically used with SetHtmlFormat to include images, other secondary resources with the HTML
-    Windows.Foundation.Collections.IMap<String, Windows.Storage.Streams.RandomAccessStreamReference> ResourceMap { get; };
-
     void SetRtf(String value);
+
+    void SetApplicationLink(Windows.Foundation.Uri value);
+    void SetWebLink(Windows.Foundation.Uri value);
+
     void SetBitmap(Windows.Storage.Streams.RandomAccessStreamReference value);
 
     [method_name("SetStorageItemsReadOnly")]
@@ -236,8 +239,8 @@ namespace Microsoft.ProjectReunion.ApplicationModel
     [method_name("SetStorageItems")]
     void SetStorageItems(Windows.Foundation.Collections.IIterable<Windows.Storage.IStorageItem> value, Boolean readOnly);
 
-    void SetApplicationLink(Windows.Foundation.Uri value);
-    void SetWebLink(Windows.Foundation.Uri value);
+    /// typically used with SetHtmlFormat to include images, other secondary resources with the HTML
+    Windows.Foundation.Collections.IMap<String, Windows.Storage.Streams.RandomAccessStreamReference> ResourceMap { get; };
   }
 
   /// <summary>
@@ -260,15 +263,17 @@ namespace Microsoft.ProjectReunion.ApplicationModel
     Windows.Foundation.IAsyncOperation<String> GetTextAsync();
     [method_name("GetCustomTextAsync")]
     Windows.Foundation.IAsyncOperation<String> GetTextAsync(String formatId);
-
     Windows.Foundation.IAsyncOperation<String> GetHtmlFormatAsync();
-    Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<String, Windows.Storage.Streams.RandomAccessStreamReference> > GetResourceMapAsync();
     Windows.Foundation.IAsyncOperation<String> GetRtfAsync();
-    Windows.Foundation.IAsyncOperation<Windows.Storage.Streams.RandomAccessStreamReference> GetBitmapAsync();
-    Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem> > GetStorageItemsAsync();
 
     Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetApplicationLinkAsync();
     Windows.Foundation.IAsyncOperation<Windows.Foundation.Uri> GetWebLinkAsync();
+
+    Windows.Foundation.IAsyncOperation<Windows.Storage.Streams.RandomAccessStreamReference> GetBitmapAsync();
+
+    Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem> > GetStorageItemsAsync();
+
+    Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IMapView<String, Windows.Storage.Streams.RandomAccessStreamReference> > GetResourceMapAsync();
 
     [method_name("RequestAccessAsync")]
     Windows.Foundation.IAsyncOperation<Windows.Security.EnterpriseData.ProtectionPolicyEvaluationResult> RequestAccessAsync();
