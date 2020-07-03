@@ -1,5 +1,3 @@
-// Copyright (C) Microsoft. All rights reserved.
-
 namespace Microsoft.ApplicationModel
 {
     runtimeclass FindPackageOptions
