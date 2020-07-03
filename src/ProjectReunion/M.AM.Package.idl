@@ -122,19 +122,19 @@ namespace Microsoft.ApplicationModel
         // Alias for .EffectiveLocation
         Windows.Storage.StorageFolder Location { get; };
 
-        String InstalledPath;
-        String MutablePath;
-        String EffectivePath;
-        String EffectiveExternalPath;
-        String UserEffectiveExternalPath;
-        String MachineEffectiveExternalPath;
+        String InstalledPath { get; };
+        String MutablePath { get; };
+        String EffectivePath { get; };
+        String EffectiveExternalPath { get; };
+        String UserEffectiveExternalPath { get; };
+        String MachineEffectiveExternalPath { get; };
 
-        Windows.Storage.StorageFolder InstalledLocation;
-        Windows.Storage.StorageFolder MutableLocation;
-        Windows.Storage.StorageFolder EffectiveLocation;
-        Windows.Storage.StorageFolder EffectiveExternalLocation;
-        Windows.Storage.StorageFolder UserEffectiveExternalLocation;
-        Windows.Storage.StorageFolder MachineEffectiveExternalLocation;
+        Windows.Storage.StorageFolder InstalledLocation { get; };
+        Windows.Storage.StorageFolder MutableLocation { get; };
+        Windows.Storage.StorageFolder EffectiveLocation { get; };
+        Windows.Storage.StorageFolder EffectiveExternalLocation { get; };
+        Windows.Storage.StorageFolder UserEffectiveExternalLocation { get; };
+        Windows.Storage.StorageFolder MachineEffectiveExternalLocation { get; };
     }
 
     runtimeclass PackageFamilyNameTuple

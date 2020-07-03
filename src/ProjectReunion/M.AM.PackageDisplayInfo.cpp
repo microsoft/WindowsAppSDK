@@ -12,9 +12,9 @@
 // Instances created via Windows.Management.Deployment.PackageManager.FindPackage*()
 // are non-functional e.g. package.DisplayName returns "". We can
 // determine the same net result by loading the raw values out of
-// AppxManifest.xml and SHLoadIndirectString() in obscure ways.
-// There's a perf cost so we really only want to do the latter
-// when necessary.
+// AppxManifest.xml and calling SHLoadIndirectString(), albeit in
+// obscure ways. There's a perf cost to find/load/paarse appxmanifest.xml
+// so we really only want to do the latter when necessary.
 
 namespace winrt::Microsoft::ApplicationModel::implementation
 {

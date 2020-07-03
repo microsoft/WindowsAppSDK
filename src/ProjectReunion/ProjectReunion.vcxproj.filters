@@ -12,6 +12,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="M.AM.Package.cpp" />
     <ClCompile Include="M.AM.PackageDisplayInfo.cpp" />
+    <ClCompile Include="M.AM.PackageLocation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ProjectReunion.h" />
@@ -19,6 +20,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="M.AM.Package.h" />
     <ClInclude Include="M.AM.PackageDisplayInfo.h" />
+    <ClInclude Include="M.AM.PackageLocation.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
