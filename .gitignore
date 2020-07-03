@@ -319,3 +319,6 @@ __pycache__/
 # Dump files
 [Dd]ump[Ff]iles/
 *.dmp
+
+# Build output root
+BuildOutput/
