@@ -13,47 +13,76 @@ namespace winrt::Microsoft::ApplicationModel::implementation
     }
     Microsoft::ApplicationModel::Package Package::FindPackage(hstring const& packageFullName)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        auto package = packageManager.FindPackage(packageFullName);
+        return Microsoft::ApplicationModel::Package(package);
     }
-    Microsoft::ApplicationModel::Package Package::FindPackage(Windows::System::User const& user, hstring const& packageFullName)
+    Microsoft::ApplicationModel::Package Package::FindPackage(Windows::System::User const& /*user*/, hstring const& packageFullName)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto package = packageManager.FindPackageForUser(/*user*/ winrt::hstring(), packageFullName);
+        return Microsoft::ApplicationModel::Package(package);
     }
     Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackages()
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        auto packages = packageManager.FindPackages();
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackages(hstring const& packagFamilyName)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackages(hstring const& packageFamilyName)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        auto packages = packageManager.FindPackages(packageFamilyName);
+        return ToVector(packages);
     }
     Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackages(hstring const& packageName, hstring const& packagePublisher)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        auto packages = packageManager.FindPackages(packageName, packagePublisher);
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUser(Windows::System::User const& user)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUser(Windows::System::User const& /*user*/)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto packages = packageManager.FindPackagesForUser(/*user*/ winrt::hstring());
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUser(Windows::System::User const& user, hstring const& packagFamilyName)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUser(Windows::System::User const& /*user*/, hstring const& packageFamilyName)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto packages = packageManager.FindPackagesForUser(/*user*/ winrt::hstring(), packageFamilyName);
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUser(Windows::System::User const& user, hstring const& packageName, hstring const& packagePublisher)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUser(Windows::System::User const& /*user*/, hstring const& packageName, hstring const& packagePublisher)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto packages = packageManager.FindPackagesForUser(/*user*/ winrt::hstring(), packageName, packagePublisher);
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUserWithPackageTypes(Windows::System::User const& user, Windows::Management::Deployment::PackageTypes const& types)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUserWithPackageTypes(Windows::System::User const& /*user*/, Windows::Management::Deployment::PackageTypes const& types)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto packages = packageManager.FindPackagesForUserWithPackageTypes(/*user*/ winrt::hstring(), types);
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUserWithPackageTypes(Windows::System::User const& user, hstring const& packagFamilyName, Windows::Management::Deployment::PackageTypes const& types)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUserWithPackageTypes(Windows::System::User const& /*user*/, hstring const& packageFamilyName, Windows::Management::Deployment::PackageTypes const& types)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto packages = packageManager.FindPackagesForUserWithPackageTypes(/*user*/ winrt::hstring(), packageFamilyName, types);
+        return ToVector(packages);
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUserWithPackageTypes(Windows::System::User const& user, hstring const& packageName, hstring const& packagePublisher, Windows::Management::Deployment::PackageTypes const& types)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesForUserWithPackageTypes(Windows::System::User const& /*user*/, hstring const& packageName, hstring const& packagePublisher, Windows::Management::Deployment::PackageTypes const& types)
     {
-        throw hresult_not_implemented();
+        auto packageManager = winrt::Windows::Management::Deployment::PackageManager();
+        //TODO convert user to string
+        auto packages = packageManager.FindPackagesForUserWithPackageTypes(/*user*/ winrt::hstring(), packageName, packagePublisher, types);
+        return ToVector(packages);
     }
     Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindProvisionedPackages()
     {
@@ -174,5 +203,22 @@ namespace winrt::Microsoft::ApplicationModel::implementation
     Windows::ApplicationModel::Package Package::W_AM_Package()
     {
         return m_package;
+    }
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::ToVector(
+        Windows::Foundation::Collections::IIterable<Windows::ApplicationModel::Package>& packages)
+    {
+        Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> vector;
+        packages.as(vector);
+        return vector;
+    }
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::ToVector(
+        Windows::Foundation::Collections::IVector<Windows::ApplicationModel::Package>& packages)
+    {
+        Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> vector{ winrt::single_threaded_vector<Microsoft::ApplicationModel::Package>() };
+        for (auto package : packages)
+        {
+            vector.Append(Microsoft::ApplicationModel::Package(package));
+        }
+        return vector;
     }
 }

@@ -12,13 +12,13 @@ namespace winrt::Microsoft::ApplicationModel::implementation
         static Microsoft::ApplicationModel::Package FindPackage(hstring const& packageFullName);
         static Microsoft::ApplicationModel::Package FindPackage(Windows::System::User const& user, hstring const& packageFullName);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackages();
-        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackages(hstring const& packagFamilyName);
+        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackages(hstring const& packageFamilyName);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackages(hstring const& packageName, hstring const& packagePublisher);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUser(Windows::System::User const& user);
-        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUser(Windows::System::User const& user, hstring const& packagFamilyName);
+        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUser(Windows::System::User const& user, hstring const& packageFamilyName);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUser(Windows::System::User const& user, hstring const& packageName, hstring const& packagePublisher);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUserWithPackageTypes(Windows::System::User const& user, Windows::Management::Deployment::PackageTypes const& types);
-        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUserWithPackageTypes(Windows::System::User const& user, hstring const& packagFamilyName, Windows::Management::Deployment::PackageTypes const& types);
+        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUserWithPackageTypes(Windows::System::User const& user, hstring const& packageFamilyName, Windows::Management::Deployment::PackageTypes const& types);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindPackagesForUserWithPackageTypes(Windows::System::User const& user, hstring const& packageName, hstring const& packagePublisher, Windows::Management::Deployment::PackageTypes const& types);
         static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> FindProvisionedPackages();
         static Microsoft::ApplicationModel::Package FindPackageWithOptions(Microsoft::ApplicationModel::FindPackageOptions const& options);
@@ -45,6 +45,12 @@ namespace winrt::Microsoft::ApplicationModel::implementation
         Windows::Foundation::IAsyncOperation<bool> SetInUseAsync(bool inUse);
         Windows::Foundation::IAsyncOperation<bool> VerifyContentIntegrityAsync();
         Windows::ApplicationModel::Package W_AM_Package();
+
+    private:
+        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> ToVector(
+            Windows::Foundation::Collections::IIterable<Windows::ApplicationModel::Package>& packages);
+        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> ToVector(
+            Windows::Foundation::Collections::IVector<Windows::ApplicationModel::Package>& packages);
 
     private:
         Windows::ApplicationModel::Package m_package;
