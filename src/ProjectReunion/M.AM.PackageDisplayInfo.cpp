@@ -97,8 +97,9 @@ namespace winrt::Microsoft::ApplicationModel::implementation
         }
         return m_localizedLogoUri;
     }
-    Windows::Storage::Streams::RandomAccessStreamReference PackageDisplayInfo::GetLogoStream(Windows::Foundation::Size const& size)
+    Windows::Storage::Streams::RandomAccessStreamReference PackageDisplayInfo::GetLogoStream(Windows::Foundation::Size const& /*size*/)
     {
+        //TODO Use Mrm APIs to get the logo in the desired TargetSize=size per https://github.com/microsoft/ProjectReunion/issues/11
         auto logo = LogoUri();
         return Windows::Storage::Streams::RandomAccessStreamReference::CreateFromUri(logo);
     }
@@ -180,12 +181,12 @@ namespace winrt::Microsoft::ApplicationModel::implementation
 
         WCHAR localized[4096]{};
         UINT localizedSize = static_cast<UINT>(std::size(localized));
-        const HRESULT hr = SHLoadIndirectString(source, localized, localizedSize, nullptr);
+        HRESULT hr = SHLoadIndirectString(source.c_str(), localized, localizedSize, nullptr);
         if (FAILED(hr))
         {
             // Try the alternative syntax .../resources/... i.e. @{pkgfullname?ms-resource://pkgname/resources/key}
             source.insert(offsetToResource, L"resources/");
-            const HRESULT hr = SHLoadIndirectString(source, localized, localizedSize, nullptr);
+            hr = SHLoadIndirectString(source.c_str(), localized, localizedSize, nullptr);
             if (FAILED(hr))
             {
                 // Failure to match yields the MRT fully-qualified reference
@@ -218,12 +219,12 @@ namespace winrt::Microsoft::ApplicationModel::implementation
 
         WCHAR localized[4096]{};
         UINT localizedSize = static_cast<UINT>(std::size(localized));
-        const HRESULT hr = SHLoadIndirectString(source, localized, localizedSize, nullptr);
+        HRESULT hr = SHLoadIndirectString(source.c_str(), localized, localizedSize, nullptr);
         if (FAILED(hr))
         {
             // Try the alternative syntax .../resources/... i.e. @{pkgfullname?ms-resource://pkgname/resources/key}
             source.insert(offsetToResource, L"resources/");
-            const HRESULT hr = SHLoadIndirectString(source, localized, localizedSize, nullptr);
+            hr = SHLoadIndirectString(source.c_str(), localized, localizedSize, nullptr);
             if (FAILED(hr))
             {
                 // No match so it's a literal value; no localization needed
