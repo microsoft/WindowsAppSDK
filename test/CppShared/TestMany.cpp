@@ -40,10 +40,18 @@ namespace ProjectReunionCppTest
 
     TEST_CLASS(WinRtApiTests)
     {
+#if PRTEST_MODE_UWP
+        TEST_METHOD(ContainerTests)
+        {
+            Assert::IsTrue(winrt::Microsoft::ProjectReunion::Common::IsAppContainer());
+            Assert::IsTrue(winrt::Microsoft::ProjectReunion::Common::HasIdentity());
+        }
+#else
         TEST_METHOD(ContainerTests)
         {
             Assert::IsFalse(winrt::Microsoft::ProjectReunion::Common::IsAppContainer());
             Assert::IsFalse(winrt::Microsoft::ProjectReunion::Common::HasIdentity());
         }
+#endif
     };
 }
