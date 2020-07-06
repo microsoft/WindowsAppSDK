@@ -13,13 +13,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         static void Initialize()
         {
-            std::call_once(m_initOnce, InitInner);
         }
 
         static hstring AppIdentity()
         {
-            Initialize();
-            return { m_fullName.data(), m_fullNameLen };
+            static winrt::hstring fullName = GetFullIdentityString();
+            return fullName;
         }
 
         static bool IsAppContainer()
@@ -30,23 +29,21 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         static bool HasIdentity()
         {
-            Initialize();
-            return m_fullNameLen > 0;
+            return !AppIdentity().empty();
         }
 
-        static void InitInner()
+        static winrt::hstring GetFullIdentityString()
         {
-            // Initially, our only option is to get the package identity from this process
-            UINT32 nameBufferLen = m_fullName.size();
-            if (::GetCurrentPackageFullName(&nameBufferLen, m_fullName.data()) == ERROR_SUCCESS)
+            winrt::hstring identityString;
+            WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH];
+            UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
+            if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
             {
-                m_fullNameLen = nameBufferLen;
+                identityString = idNameBuffer;
             }
-        }
 
-        static inline std::once_flag m_initOnce;
-        static inline std::array<wchar_t, PACKAGE_FULL_NAME_MAX_LENGTH> m_fullName;
-        static inline UINT32 m_fullNameLen = 0;
+            return identityString;            
+        }
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation
