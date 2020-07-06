@@ -38,3 +38,15 @@ Be sure to add the copyright and license marker to all source files:
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 ```
+
+Add any C++/WinRT projected headers used by the implementation to
+the [pch.h](../ProjectReunion_DLL/pch.h) to reduce compilation times.
+
+## Testing
+
+1. Add a new file to the [CppShared](../../test/CppShared/CppShared.vcxitems)
+2. Follow the existing pattern of adding a `TEST_CLASS` with `TEST_METHOD` for facets of your implementation
+3. Build the project and use the Visual Studio Test Explorer to run all tests
+
+For very large surfaces with lots of tests, add a new directory under `test`
+with its own shared items project.

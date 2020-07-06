@@ -18,3 +18,7 @@
 #include <winrt/Windows.UI.Xaml.Navigation.h>
 #include <winrt/Microsoft.VisualStudio.TestPlatform.TestExecutor.WinRTCore.h>
 #include <CppUnitTest.h>
+
+// Test-specific headers, lifted here
+#include <SampleFlatC.h>
+#include <winrt/Microsoft.ProjectReunion.h>
