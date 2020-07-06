@@ -1,0 +1,36 @@
+name: Build CI Master
+
+# Controls when the action will run. Triggers the workflow on pull requests
+# for the target branch
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: checkout project
+      uses: actions/checkout@v2
+      
+    - name: setup msbuild
+      uses: microsoft/setup-msbuild@v1
+      
+    - name: setup nuget
+      uses: NuGet/setup-nuget@v1.0.2
+
+    - name: restore project packages
+      run: nuget restore ProjectReunion.sln
+
+    - name: build x86
+      run: msbuild /m /p:Configuration=Release,Platform=x86 ProjectReunion.sln
+
+    - name: build x64
+      run: msbuild /m /p:Configuration=Release,Platform=x64 ProjectReunion.sln
+
+    - name: build ARM
+      run: msbuild /m /p:Configuration=Release,Platform=ARM ProjectReunion.sln
+
+    - name: build ARM64
+      run: msbuild /m /p:Configuration=Release,Platform=ARM64 ProjectReunion.sln
