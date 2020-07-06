@@ -31,22 +31,22 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static bool HasIdentity()
         {
             Initialize();
-            return m_identityAvailable;
+            return m_fullNameLen > 0;
         }
 
         static void InitInner()
         {
             // Initially, our only option is to get the package identity from this process
-            if (::GetCurrentPackageFullName(&m_fullNameLen, m_fullName.data()) == ERROR_SUCCESS)
+            UINT32 nameBufferLen = m_fullName.size();
+            if (::GetCurrentPackageFullName(&nameBufferLen, m_fullName.data()) == ERROR_SUCCESS)
             {
-                m_identityAvailable = true;
+                m_fullNameLen = nameBufferLen;
             }
         }
 
         static inline std::once_flag m_initOnce;
-        static inline bool m_identityAvailable = false;
         static inline std::array<wchar_t, PACKAGE_FULL_NAME_MAX_LENGTH> m_fullName;
-        static inline UINT32 m_fullNameLen = PACKAGE_FULL_NAME_MAX_LENGTH;
+        static inline UINT32 m_fullNameLen = 0;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

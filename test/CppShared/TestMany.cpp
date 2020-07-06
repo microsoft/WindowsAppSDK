@@ -9,12 +9,12 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace ProjectReunionCppTest
 {
-	TEST_CLASS(FlatApiTests)
-	{
-	public:
-		
-		TEST_METHOD(Creates)
-		{
+    TEST_CLASS(FlatApiTests)
+    {
+    public:
+        
+        TEST_METHOD(Creates)
+        {
             wil::unique_sampleflat_handle temp;
             Assert::IsTrue(SUCCEEDED(::SampleFlatApiCreate(L"kittens", &temp)));
             Assert::IsTrue(SUCCEEDED(::SampleFlatApiCreate(L"puppies", &temp)));

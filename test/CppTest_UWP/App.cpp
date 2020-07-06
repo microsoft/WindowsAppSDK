@@ -42,15 +42,14 @@ App::App()
 void App::OnLaunched(LaunchActivatedEventArgs const& e)
 {
     Frame rootFrame{ nullptr };
-    auto content = Window::Current().Content();
-    if (content)
+    if (auto content = Window::Current().Content())
     {
         rootFrame = content.try_as<Frame>();
     }
 
     // Do not repeat app initialization when the Window already has content,
     // just ensure that the window is active
-    if (rootFrame == nullptr)
+    if (!rootFrame)
     {
         // Create a Frame to act as the navigation context and associate it with
         // a SuspensionManager key
@@ -64,9 +63,9 @@ void App::OnLaunched(LaunchActivatedEventArgs const& e)
             // final launch steps after the restore is complete
         }
 
-        if (e.PrelaunchActivated() == false)
+        if (!e.PrelaunchActivated())
         {
-            if (rootFrame.Content() == nullptr)
+            if (!rootFrame.Content())
             {
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
@@ -82,9 +81,9 @@ void App::OnLaunched(LaunchActivatedEventArgs const& e)
     }
     else
     {
-        if (e.PrelaunchActivated() == false)
+        if (!e.PrelaunchActivated())
         {
-            if (rootFrame.Content() == nullptr)
+            if (!rootFrame.Content() )
             {
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
@@ -96,7 +95,6 @@ void App::OnLaunched(LaunchActivatedEventArgs const& e)
             Window::Current().Activate();
         }
     }
-
 
     winrt::Microsoft::VisualStudio::TestPlatform::TestExecutor::WinRTCore::UnitTestClient::Run(e.Arguments());
 }

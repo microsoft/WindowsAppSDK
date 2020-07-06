@@ -18,6 +18,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C9998FB7-6EFA-43B5-BD19-7533405784D6}"
 	ProjectSection(SolutionItems) = preProject
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		nuget.config = nuget.config
 		privacy.md = privacy.md
 		README.md = README.md
 		SECURITY.md = SECURITY.md
