@@ -16,7 +16,11 @@ are as described below:
    experience currently is to select a single folder and repeat the dialog for more folders. This 
    is a less than ideal experience for application developers.
 
-The Reunion picker dialog is going to address the above issues. This Reunion API will be based upon the below
+**3. Unable to specify an arbitrary start location for the picker.**
+
+   The existing File/Folder pickers do not allow the developer to specify an arbitrary start location (even if the app has access). Currently, the start location is limited to a set of predefined enum values.
+
+The Reunion picker dialog addresses the above issues. This Reunion API will be based upon the below
 APIs in the Windows SDK. The Reunion Picker API will remove the deprecated APIs and add additional methods
 for the functionality: File and folder picker, Multiple folder picker.
 
@@ -27,87 +31,71 @@ for the functionality: File and folder picker, Multiple folder picker.
 # Description
 
 The goal of this API is to address the gaps in the existing File/Folder picker APIs. The API surface is similar to the existing
-Picker APIs in Windows SDK with additional methods to support File + Folder picker and multiple folder picker. The API removes the
-deprecated methods from Windows SDK.
+Picker APIs in Windows SDK with additional methods to support File + Folder picker and multiple folder picker. The Project Reunion APIs will supercede the Windows APIs.
 
 # Examples
-
 ## Show file and folder picker
     ```c#
-    var picker = StorageItemPicker::CreateStorageItemPicker();
-    picker.Filters.add("*.jpg");
-    picker.Filters.add("*.png");
+    var picker = new StorageItemPicker();
+    picker.FilterAndDescription.Insert("Images", "*.jpg, *.png");
     picker.StartLocation = startLocation;
-    picker.PickerMode = StorageItemPickerMode::Any;
-    IReadOnlyList<StorageItem> storageItems = await picker.PickStorageItemAsync();
+    picker.PickableKinds = StorageItemPickerKinds.Folder | StorageItemPickerKinds.File;
+    IReadOnlyList<StorageItem> storageItems = await picker.PickMultipleItemsAsync();
 
     if(0 < storageItems.Count)
     {
     }
     ```
-
 ## Show single folder picker
     ```c#
-    var picker = StorageItemPicker::CreateStorageItemPicker();
-    picker.PickerMode = StorageItemPickerMode::Folder;
-    Windows.Storage.StorageFolder folder = await picker.PickSingleFolderAsync();
+    var picker = new StorageItemPicker();
+    picker.PickerKinds = StorageItemPickerKinds.Folder;
+    Windows.Storage.IStorageItem folder = await picker.PickSingleItemAsync();
     ```
-
-
 ## Show multi folder picker
     ```c#
-    var picker = StorageItemPicker::CreateStorageItemPicker();
-    picker.PickerMode = StoargeItemPickerMode::Folder;
-    IReadOnlyList<Windows.Storage.StorageFolder> folders = picker.PickMultipleFoldersAsync();
+    var picker = new StorageItemPicker();
+    picker.PickerKinds = StorageItemPickerKinds.Folder;
+    IReadOnlyList<Windows.Storage.IStorageItem> folders = await picker.PickMultipleItemsAsync();
     ```
-
 # Remarks
-
 # API Notes
-
-
 # API Details
-
     ```c#
     namespace Microsoft.Reunion.Storage.Pickers
     {
-        typedef enum PickerViewMode
+        enum PickerViewMode
         {
             List = 0,
             Details,
             Tiles,
             Content
-        } PickerViewMode;
+        };
 
-        typedef enum StorageItemPickerMode
+        enum StorageItemPickerKinds
         {
-            Any = 0,
-            File,
-            Folder
-        } StorageItemPickerMode;
+            File = 0x1,
+            Folder = 0x2
+        };
 
         runtimeclass StorageItemPicker
         {
-            /// Static constructor
-            static StorageItemPicker StorageItemPicker();
+            StorageItemPicker();
 
             /// Properties
-            String StartLocation{ set; }
+            String StartLocation;
             String CommitButtonText { set; }
             String CancelButtonText { set; }
             Windows.Foundation.Collections.IMap<String, String> FilterAndDescription{ get; }
-            PickerViewMode ViewMode{ get; set; }
-            StorageItemPickerMode PickerMode { get; set; }
-            String SuggestedSaveFile{ get; set; }
-            String DefaultFileExtension{ get; set; }
+            PickerViewMode ViewMode;
+            StorageItemPickerKinds PickerKinds;
+            String SuggestedSaveFile;
+            String DefaultFileExtension;
 
             /// Methods
-            Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSingleFileAsync();
-            Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageFile>> PickMutipleFilesAsync();
-            Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageItem>> PickStorageItemsAsync();
+            Windows.Foundation.IAsyncOperation<Windows.Storage.IStorageItem> PickSingleItemAsync();
+            Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<Windows.Storage.IStorageItem>> PickMutipleItemsAsync();
             Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> PickSaveFileAsync();
-            Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFolder> PickFolderAsync();
-            Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<Windows.Storage.StorageFolder>> PickMultipleFoldersAsync();
         }
     }
     ```
