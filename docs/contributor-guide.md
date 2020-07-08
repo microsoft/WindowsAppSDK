@@ -41,4 +41,4 @@ You'll need Visual Studio 2019 installed to do work in a GUI, or at least the MS
 
 From the command line, use ```msbuild /p:configuration=release,platform=x86 projectreunion.sln``` to build.
 
-If you don't have Visual Studio 2019 or Visual Studio Code you installed you can download them [here](https://visualstudio.microsoft.com/downloads/).
+If you don't have Visual Studio 2019 or Visual Studio Code installed you can download them [here](https://visualstudio.microsoft.com/downloads/).
