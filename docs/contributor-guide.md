@@ -37,6 +37,8 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Getting Started
 
-You’ll need Visual Studio 2019 installed to do work in a GUI, or at least the MSBuild and SDK toolchains to build from the command line.  From Visual Studio, open the ProjectReunion.sln and hit build!
+You'll need Visual Studio 2019 installed to do work in a GUI, or at least the MSBuild and SDK toolchains to build from the command line.  From Visual Studio, open the ProjectReunion.sln and hit build!
 
 From the command line, use ```msbuild /p:configuration=release,platform=x86 projectreunion.sln``` to build.
+
+If you don't have Visual Studio 2019 or Visual Studio Code you installed you can download them [here](https://visualstudio.microsoft.com/downloads/).
