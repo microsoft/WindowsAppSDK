@@ -623,6 +623,14 @@ If concurrent processes need the same package resolution for a defined criteria 
 
 Package dependencies can only be resolved to packages registered for a user. As packages cannot be registered for LocalSystem the Dynamic Dependencies feature is not available to callers running as LocalSystem.
 
+## Packaging - ProjectReunion.Loader.dll
+
+The Dynamic Dependencies API is provided via ProjectReunion.Loader.dll.
+
+This dll will be included in the ProjectReunion Framework package for packaged applications. However, it must be a redistributable for non-packaged applications.
+
+Ironically, ProjectReunion.Loader.dll cannot be used from a Framework package by non-packaged applications.
+
 # API Details
 
 **TODO** Retitle this section 'API' since we don't have 'API Notes'?
