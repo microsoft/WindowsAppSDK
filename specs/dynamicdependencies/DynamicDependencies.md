@@ -1,4 +1,36 @@
-# Background
+# 1. MSIX Dynamic Dependencies
+
+- [1. MSIX Dynamic Dependencies](#1-msix-dynamic-dependencies)
+- [2. Background](#2-background)
+- [3. Description](#3-description)
+  - [3.1. Dynamic Package Graph](#31-dynamic-package-graph)
+    - [3.1.1. Detours to Enhance Package Graph APIs](#311-detours-to-enhance-package-graph-apis)
+    - [3.1.2. Add to the Package Graph](#312-add-to-the-package-graph)
+      - [3.1.2.1. Resolve Package](#3121-resolve-package)
+      - [3.1.2.2. Add to Package Graph](#3122-add-to-package-graph)
+    - [3.1.3. Remove from the Package Graph](#313-remove-from-the-package-graph)
+    - [3.1.4. DLL Search Order](#314-dll-search-order)
+      - [3.1.4.1. Non-Packaged Processes](#3141-non-packaged-processes)
+      - [3.1.4.2. Packaged Processes](#3142-packaged-processes)
+  - [3.2. Known Issues for Packaged Processes](#32-known-issues-for-packaged-processes)
+    - [3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-for-uap6loadersearchpathoverride)
+    - [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-known-issue-dll-search-order-ignores-uap6allowexecution)
+  - [3.3. Install-time 'Pinning' aka Prevent Removal](#33-install-time-pinning-aka-prevent-removal)
+  - [3.4. Runtime 'Pinning' aka Prevent Update While In-Use](#34-runtime-pinning-aka-prevent-update-while-in-use)
+- [4. Examples](#4-examples)
+- [5. Remarks](#5-remarks)
+  - [5.1. API Outline and Flow](#51-api-outline-and-flow)
+  - [5.2. Package Dependency Persistence](#52-package-dependency-persistence)
+  - [5.3. Package Dependnecy Resolution is Per-User](#53-package-dependnecy-resolution-is-per-user)
+  - [5.4. LocalSystem is not Supported](#54-localsystem-is-not-supported)
+  - [5.5. Packaging - ProjectReunion.Loader.dll](#55-packaging---projectreunionloaderdll)
+  - [5.6. Dynamic Dependencies vis a vis Static Dependencies](#56-dynamic-dependencies-vis-a-vis-static-dependencies)
+- [6. API Details](#6-api-details)
+  - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
+  - [6.2. WinRT API](#62-winrt-api)
+- [7. Appendix](#7-appendix)
+
+# 2. Background
 
 MSIX supports the ability for packaged applications to access components and other files distributed as Framework packages. However this functionality provides a rather 'static' world view, where dependencies are known at development time and resolved at install-time. There is no support at runtime to define a Framework dependency based on machine state, user interface or other post-development factors of the developer's choosing. Access to Framework package content is also limited access to packaged applications; non-packaged applications cannot use content provided via Framework packages.
 
@@ -6,13 +38,14 @@ Microsoft-internal task [23447728](https://task.ms/23447728)
 
 This is the spec for proposal [MSIX Dynamic Dependencies - allow any process to use MSIX Framework packages #89](https://github.com/microsoft/ProjectReunion/issues/89).
 
-# Description
+# 3. Description
 
 This feature providse APIs to enable access to packaged content at runtime, regardless if the caller is packaged or not. This supplements the MSIX appmodel's current static dependency support (via in appxmanifest.xml) with a dynamic runtime equivalent. It also allows non-packaged processes (which have no appxmanifest.xml) to use packaged content.
 
 Dynamic selection and access of packaged content is challenged by several issues:
 
-## Dynamic Package Graph
+## 3.1. Dynamic Package Graph
+
 A process' Package Graph is fixed at process creation. There is no affordance to alter a process' package graph at runtime.
 
 Packaged processes are initialized with a package graph based on package dependencies declared in their `appxmanifest.xml`. Non-packaged processes have no declared dependencies as they have no `appxmanifest.xml`, thus non-packaged processes are created with an empty Package Graph. Once a process is created its package graph is constant for the rest of its lifetime.
@@ -22,17 +55,18 @@ Packaged processes are initialized with a package graph based on package depende
 Windows provides access to a process' package graph primarily via [GetCurrentPackageInfo](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo) and [GetCurrentPackageInfo2](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2). Equivalent information is available via [Windows.ApplicationModel.Package.Current](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.package.current?view=winrt-19041) and [Package.Current.Dependencies](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.package.dependencies?view=winrt-19041). These correspond to PackageGraph[0] and PackageGraph[1+]. These APIs provide access to the static package graph.
 
 This information is used by several Windows components to find resources across packages available to a process (aka across a process' package graph) including:
-* **DLLs** - the Loader searches the package graph for DLLs (per [Dynamic-Link Library Search Order](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order))
-* **CLR** - the CLR searches the package graph for assemblies (similar to how the Loader does so for DLLs)
-* **WinRT** - WinRT searches the package graph for WinRT activation. Type resolution is constrained to types provided by packages in a process' package graph (and those provided by Windows via the `Windows.*` namespace). Thius include metadata resolution (i.e. *.winmd).
-* **MRT** - MRT searches the package graph for resources (resources.pri, images, etc)
-* **ms-appx URI scheme** - [ms-appx URIs](https://docs.microsoft.com/en-us/windows/uwp/app-resources/uri-schemes) are resolved to packages across the package graph
+
+- **DLLs** - the Loader searches the package graph for DLLs (per [Dynamic-Link Library Search Order](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order))
+- **CLR** - the CLR searches the package graph for assemblies (similar to how the Loader does so for DLLs)
+- **WinRT** - WinRT searches the package graph for WinRT activation. Type resolution is constrained to types provided by packages in a process' package graph (and those provided by Windows via the `Windows.*` namespace). Thius include metadata resolution (i.e. *.winmd).
+- **MRT** - MRT searches the package graph for resources (resources.pri, images, etc)
+- **ms-appx URI scheme** - [ms-appx URIs](https://docs.microsoft.com/en-us/windows/uwp/app-resources/uri-schemes) are resolved to packages across the package graph
 
 If we can alter the package graph as seen by `GetCurrentPackageInfo` and like APIs we can provide the desired dynamic behavior.
 
 **Solution:** We'll manage our own package graph to supplement the static package graph (if any) with dynamic dependencies. We'll use [Detours](https://github.com/Microsoft/Detours) to hook `GetCurrentPackageInfo` and related APIs to redirect to our own Dynamic Dependencies savvy variants.
 
-### Detours to Enhance Package Graph APIs
+### 3.1.1. Detours to Enhance Package Graph APIs
 
 Package Graph information is available for packages registered to the current user via [OpenPackageInfoByFullName](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-openpackageinfobyfullname). We'll keep track of the expanded package graph (static + dynamic) via a global variable filled with PACKAGE_INFO_REFRENCE objects. Our Detour'd API variants walk this information to produce their answers seamlessly spanning static and dynamic package information for the process.
 
@@ -150,8 +184,10 @@ HRESULT MddAddPackageDependency(...)
 }
 ```
 
-### Add to the Package Graph
+### 3.1.2. Add to the Package Graph
+
 `MddAddPackageDependency` has 2 responsibilities:
+
 1. Resolve a package dependency to a specific package
 2. Update the package graph
 
@@ -171,7 +207,8 @@ HRESULT MddAddPackageDependency(...)
 }
 ```
 
-#### Resolve Package
+#### 3.1.2.1. Resolve Package
+
 Resolve the package dependency to a (specific) package, per the following conditions:
 
 1. Packages in Package Family
@@ -183,6 +220,7 @@ Resolve the package dependency to a (specific) package, per the following condit
 7. PackageStatus = usable (not Bad, not NotAvailable, etc)
 
 If 2+ meet the criteria due, then the best-fit is...
+
 1. Highest version
 2. Architecture exactly matches caller's architecture
 3. Architecture=Neutral
@@ -192,17 +230,20 @@ depends on the caller's architecture. For example, assuming multiple package
 candiates only varying by version and/or architecture:
 
 Given v1 and v2
-* Best-Fit = v2
+
+- Best-Fit = v2
 
 Given v1-x86 and v1-x64
-* Best-Fit for x64 callers = v1-x64
-* Best-Fit for x86 callers = v1-x86
-* Best-Fit for arm callers = --no match--
+
+- Best-Fit for x64 callers = v1-x64
+- Best-Fit for x86 callers = v1-x86
+- Best-Fit for arm callers = --no match--
 
 Given v1-x86 and v1-neutral
-* Best-Fit for x64 callers = v1-neutral
-* Best-Fit for x86 callers = v1-x86
-* Best-Fit for arm callers = v1-neutral
+
+- Best-Fit for x64 callers = v1-neutral
+- Best-Fit for x86 callers = v1-x86
+- Best-Fit for arm callers = v1-neutral
 
 **NOTE:** `MddAddPackageDependency` can only resolve to packages registered for the user. Thus as packages cannot be registered to LocalSystem a process running as LocalSystem cannot use Dynamic Dependencies. Impersonation is irrelevant here. Only the process' user identity is relevant to determine the packages registered to the user.
 
@@ -306,7 +347,8 @@ Architecture GetCurrentArchitecture()
 }
 ```
 
-#### Add to Package Graph
+#### 3.1.2.2. Add to Package Graph
+
 The package graph is managed as a sorted list based on `rank`. The static package graph has a rank of MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT (0).
 
 If a package graph node already exists with the same rank as a new addition the new node is, by default, append to the nodes of matching rank. If `MddAddPackageDependencyOptionsPrependIfRankCollision` is specified the new node is prepended to those of matching rank.
@@ -372,8 +414,10 @@ HRESULT AddToPackageGraph(string packageFullName, ...)
 }
 ```
 
-### Remove from the Package Graph
+### 3.1.3. Remove from the Package Graph
+
 `MddRemovePackageDependency` undos the work done by MddRemovePackageDependency:
+
 1. Update the package graph
 
 Updating the package graph also requires the DLL Search Order be updated. See below for more details.
@@ -400,12 +444,13 @@ HRESULT MddRemovePackageDependency(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
 }
 ```
 
-### DLL Search Order
+### 3.1.4. DLL Search Order
+
 Windows informs the Loader when the package graph is defined, but this doesn't help after process creation (and non-packaged processes never have a static package graph).
 
 **Solution:** Tell the loader when the package graph changes.
 
-#### Non-Packaged Processes
+#### 3.1.4.1. Non-Packaged Processes
 
 For non-packaged processes we'll update the DLL Search Order via the PATH environment variable and [AddDllDirectory](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory). Neither technique alone suffices as one or the other can be ignored depending on [LoadLibraryEx](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory) parameters. We'll set both to cover the bases. Worst case a directory is listed twice in the search order, incurring a small cost when failing to find a file in the directory (two misses instead of one).
 
@@ -470,7 +515,8 @@ void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
 }
 ```
 
-#### Packaged Processes
+#### 3.1.4.2. Packaged Processes
+
 Packaged processes are a problem. The PATH environment variable and AddDllDirectory are ignored for packages with package identity. The loader has a rather restrictive search order for packaged processes:
 
 0. DLL Redirection (aka `pkgdir\microsoft.system.package.metadata\Application.Local`) if [DevOverideEnable=1](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-redirection)
@@ -486,9 +532,9 @@ None of these are sufficiently flexible to leverage for Dynamic Dependencies.
 
 **TODO** Perhaps the [uap7:ImportRediorectionTable](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap7-importredirectiontable) supporting machinery can help out here?
 
-## Known Issues for Packaged Processes
+## 3.2. Known Issues for Packaged Processes
 
-### Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride
+### 3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride
 
 Packages can specify [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) to add additional (package-relative) paths to the Loader's search order, and even potentially remove a package's root directory from the Loader's search order. If present the DLL Search Order for the package graph isn't the list of packages in the package graph and there are no public APIs to get this list of information. The only available mechanism is to `Find, Load and Parse appxmanifest.xml` to determine if this extension is present and, if so, honor it.
 
@@ -496,18 +542,20 @@ Packages can specify [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/
 
 The Loader will still see this list when it walks the packaged process' package graph, but those paths will be searched ***after*** Dynamic Dependencies added with `rank > 0` or `rank == 0 AND options.PrependIfRankCollision=false`.
 
-### Known Issue: DLL Search Order ignores [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
+### 3.2.2. Known Issue: DLL Search Order ignores [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
 
 Only packages in the package graph with execution rights are included in the DLL Search Order. This can be explicitly controlled via the [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution) element in appxmanifest.xml. The default value varies, depending on the package
 
 AllowExecution default = True
-* Main
-* Framework
-* Optional, if InRelatedSet
+
+- Main
+- Framework
+- Optional, if InRelatedSet
 
 AllowExecution default = False
-* Resource
-* Optional, if not InRelatedSet
+
+- Resource
+- Optional, if not InRelatedSet
 
 There are no public APIs to get information. The only available mechanism is to `Find, Load and Parse appxmanifest.xml` to determine if this extension is present and, if so, honor it.
 
@@ -517,7 +565,8 @@ The Loader will still see packages manifesting `<uap6:AllowExecution>true</>` wh
 
 If a Framework package specifies `<uap6:AllowExecution>false</>` that won't be known to Dynamic Depednencies' `AddToDllSearchOrder()` logic. The Framework package will be added to the path list, not omitted per the manifested element.
 
-## Install-time 'Pinning' aka Prevent Removal
+## 3.3. Install-time 'Pinning' aka Prevent Removal
+
 Deployment uses a form of 'garbage collection' to decide if a package is unused and can be removed from a system.
 
 When a Main package is registered for a user its manifested `<PackageDependency>` are resolved to specific packages and saved to disk. A Main package and its resolved package dependencies are referred to as a 'package graph'. When evaluating packages if Deployment sees there are no package graphs referencing a Framework package, Deployment may decide to remove the package from the system. This is a classic garbage collection model - an object (package) can be removed if there are no outstanding object references (dependencies in package graphs) for it.
@@ -528,7 +577,7 @@ To prevent Deployment from prematurely removing a package a packaged application
 
 Applications can install a `Main` package with a manifested `<PackageDependnecy>` referencing the Framework package. This Main package requires a minimal manifest. For example:
 
-```
+```xml
 <Package
     xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
     IgnorableNamespaces="uap10">
@@ -552,16 +601,19 @@ When this package is registered for a user the `<PackageDependency>` element wil
 
 A future version of Windows may be more savvy to Dynamic Dependencies and not require this 'helper' Main package to prevent unintended premature removal of a Framework package. Until then, this is the recommended technique for install-time pinning.
 
-## Runtime 'Pinning' aka Prevent Update While In-Use
+## 3.4. Runtime 'Pinning' aka Prevent Update While In-Use
+
 Registering an updated package for a user poses a complication for applications using Dynamic Dependencies.
 
 Framework packagessupport concurrent versioning semantics. This differs from other package types:
-* A user can only have 0-1 Main package in a package family registered at a time
-* A user can have 0+ Framework packages in a package family registered at a time
+
+- A user can only have 0-1 Main package in a package family registered at a time
+- A user can have 0+ Framework packages in a package family registered at a time
 
 If Main-v1 is registered to a user and Main-v2 is registered, Deployment ***changes*** the user to have v2 registered instead of v1. Frameworks have no such 'There Can Be Only One' restriction. If Fwk-v1 is registered for a user when Fwk-v2 is registered...
-* All Main packages dependent on Fwk-v1 but not in use have their package graphs changed to reference Fwk-v2 (instead of Fwk-v1)
-* All Main packages dependent on Fwk-v1 that are in use **are not modified**. When the last running packaged process for a user terminates, the Framework package is no longer in use by that Main package and will be updated to Fwk-v2.
+
+- All Main packages dependent on Fwk-v1 but not in use have their package graphs changed to reference Fwk-v2 (instead of Fwk-v1)
+- All Main packages dependent on Fwk-v1 that are in use **are not modified**. When the last running packaged process for a user terminates, the Framework package is no longer in use by that Main package and will be updated to Fwk-v2.
 
 where 'in use' is defined as 'one or more packaged processes with static package graphs referencing the Framework package'.
 
@@ -570,10 +622,11 @@ When a Main package is updated it means the next time a process runs with that M
 This 'do not service package graphs for running packaged processes' behavior relies on manifested package dependencies to detect which processes use which Framework packages. A Framework package used via Dynamic Dependencies has no such static information and thus is effectively invisible and unknown. Deployment determines no one is used Fwk-v1 and will happily deregister it for the user, breaking any future calls to MddAddPackageDependency (which only resolves package dependencies to packages registered to the user).
 
 Worse, if no other user has the Framework package registered and it's not provisioned, Deployment determines there's no need for Fwk-v1 to stay on the machine and happily removes it from the system. DLLs loaded by running processes cannot be deleted, but DLLS not loaded and other files (data files etc) can and will be deleted. This can have minor to disastrous impact on an appplication using Fwk-v1, e.g.
-* an application is running using A.dll from Fwk-v1
-* Deployment determines no one needs Fwk-v1
-* Deployment deletes Fwk-v1's B.dll but cannot delete A.dll
-* the application needs to `LoadLibrary("B.dll")` and fails because it's been deleted
+
+- an application is running using A.dll from Fwk-v1
+- Deployment determines no one needs Fwk-v1
+- Deployment deletes Fwk-v1's B.dll but cannot delete A.dll
+- the application needs to `LoadLibrary("B.dll")` and fails because it's been deleted
 
 This 'torn package' problem can be prevented by ensuring a process is running with the identity of a Main package with a manifested dependency on the Framework.
 
@@ -583,25 +636,28 @@ Alternatively, the 'helper' Main package can declare an [AppService](https://doc
 
 Deployment detects this process running with the 'helper' Main package's identity and will not remove the referenced Framework package when updating the Framework.
 
-# Examples
+# 4. Examples
 
 Samples illustrating the DynamicDependency APIs
-* [Sample 1](sample-1.md) - Fabrikam app using Contosso's Muffins package [\[Win32\]](sample-1.md#win32) [\[WinRT\]](sample-1.md#winrt)
-* [Sample 2](sample-2.md) - Fabrikam app using Contosso's Muffins package with smart class helpers [\[Win32\]](sample-2.md#win32)
-* [Sample 3](sample-3.md) - LolzKitten app using Contosso's Muffins package via transient package dependency [\[Win32\]](sample-3.md#win32) [\[WinRT\]](sample-3.md#winrt)
-* [Sample 4](sample-4.md) - LolzKitten Installer / Uninstaller with File+Registry LifetimeArtifacts [\[Win32\]](sample-4.md#win32) [\[WinRT\]](sample-4.md#winrt)
-* [Sample 5](sample-5.md) - LolzKitten app using PackageDependency pinned by LolzKitten Installer [\[Win32\]](sample-5.md#win32) [\[WinRT\]](sample-5.md#winrt)
-* [Sample 6](sample-6.md) - LolzKitten Installer / Uninstaller defining a 32bit PackageDependency [\[Win32\]](sample-6.md#win32) [\[WinRT\]](sample-6.md#winrt)
-* [Sample 7](sample-7.md) - LolzKitten app ordering Packages in PackageGraph [\[Win32\]](sample-7.md#win32) [\[WinRT\]](sample-7.md#winrt)
-* [Sample 8](sample-8.md) - LolzKitten app ordering Packages in PackageGraph with prepend [\[Win32\]](sample-8.md#win32) [\[WinRT\]](sample-8.md#winrt)
 
-# Remarks
+- [Sample 1](sample-1.md) - Fabrikam app using Contosso's Muffins package [\[Win32\]](sample-1.md#win32) [\[WinRT\]](sample-1.md#winrt)
+- [Sample 2](sample-2.md) - Fabrikam app using Contosso's Muffins package with smart class helpers [\[Win32\]](sample-2.md#win32)
+- [Sample 3](sample-3.md) - LolzKitten app using Contosso's Muffins package via transient package dependency [\[Win32\]](sample-3.md#win32) [\[WinRT\]](sample-3.md#winrt)
+- [Sample 4](sample-4.md) - LolzKitten Installer / Uninstaller with File+Registry LifetimeArtifacts [\[Win32\]](sample-4.md#win32) [\[WinRT\]](sample-4.md#winrt)
+- [Sample 5](sample-5.md) - LolzKitten app using PackageDependency pinned by LolzKitten Installer [\[Win32\]](sample-5.md#win32) [\[WinRT\]](sample-5.md#winrt)
+- [Sample 6](sample-6.md) - LolzKitten Installer / Uninstaller defining a 32bit PackageDependency [\[Win32\]](sample-6.md#win32) [\[WinRT\]](sample-6.md#winrt)
+- [Sample 7](sample-7.md) - LolzKitten app ordering Packages in PackageGraph [\[Win32\]](sample-7.md#win32) [\[WinRT\]](sample-7.md#winrt)
+- [Sample 8](sample-8.md) - LolzKitten app ordering Packages in PackageGraph with prepend [\[Win32\]](sample-8.md#win32) [\[WinRT\]](sample-8.md#winrt)
+
+# 5. Remarks
 
 All processes have a package graph. A process may be created with entries in its package graph; this is referred to as the 'static package graph'.
 
 Packaged processes (i.e. a process with package identity) are created with a static package graph per their AppxManifest.xml. A process' static package graph cannot be altered, but it can be supplemented at runtime via the Dynamic Dependency API.
 
 Processes without package identity have an no static package graph. They can modify their package graph using the Dynamic Dependency API.
+
+## 5.1. API Outline and Flow
 
 ```MddPinPackageDependency``` defines a package dependency.
 
@@ -615,15 +671,21 @@ Once a PackageDependency is resolved to a package all further ```MddAddPackageDe
 
 ```MddUnpinPackageDependency``` undefines a package dependency previously defined via ```MddPinPackageDependency```.
 
-PackageDependency definitions and usage are tracked and managed on a per-user basis.
+## 5.2. Package Dependency Persistence
 
-PackageDependency definitions are not persisted or tracked across reboots if ```MddPinPackageDependency``` is called with ```MddMddPinPackageDependency::LifecycleHint_Process```. Specify ```MddPinPackageDependency::LifecycleHint_FileOrPath``` or ```MddPinPackageDependency::LifecycleHint_RegistrySubkey``` for ```MddPinPackageDependency``` to persist the definition until explicitly removed via ```MddUnpinPackageDependency``` or the specified lifetime artifact is deleted.
+PackageDependency definitions are not persisted or tracked across reboots if ```MddPinPackageDependency``` is called with ```MddMddPinPackageDependency::LifecycleHint_Process``` (the PackageDependency only exists until process termination). Specify ```MddPinPackageDependency::LifecycleHint_FileOrPath``` or ```MddPinPackageDependency::LifecycleHint_RegistrySubkey``` for ```MddPinPackageDependency``` to persist the definition until explicitly removed via ```MddUnpinPackageDependency``` or the specified lifetime artifact is deleted.
 
 If concurrent processes need the same package resolution for a defined criteria they should share the packageDependencyId returned by ```MddPinPackageDependency```. Concurrent processes running as the same user calling ```MddAddPackageDependency``` with the same packageDependencyId get the same resolved package added to their package graph. This enables multiple concurrent processes needing the same package resolution get a consistent answer.
 
+## 5.3. Package Dependnecy Resolution is Per-User
+
+Package graphs are managed per-user, thus resolving a package dependency is a per-user operation. Two users can resolve a package dependency to different answers, depending on the current machine state.
+
+## 5.4. LocalSystem is not Supported
+
 Package dependencies can only be resolved to packages registered for a user. As packages cannot be registered for LocalSystem the Dynamic Dependencies feature is not available to callers running as LocalSystem.
 
-## Packaging - ProjectReunion.Loader.dll
+## 5.5. Packaging - ProjectReunion.Loader.dll
 
 The Dynamic Dependencies API is provided via ProjectReunion.Loader.dll.
 
@@ -631,13 +693,20 @@ This dll will be included in the ProjectReunion Framework package for packaged a
 
 Ironically, ProjectReunion.Loader.dll cannot be used from a Framework package by non-packaged applications.
 
-# API Details
+## 5.6. Dynamic Dependencies vis a vis Static Dependencies
+
+Dynamic dependencies' package dependency is equivalent to an MSIX package's `<PackageDependency>` in `appxmanifest.xml`. This defines criteria to be resolved to a package for use at runtime in a process' package graph.
+
+Packages dynamically added to a package graph can be removed. Packages in the package graph at process creation (aka static package graph) cannot be removed; the static package graph is a part of a process' DNA, from birth to death.
+
+# 6. API Details
 
 **TODO** Retitle this section 'API' since we don't have 'API Notes'?
 
-## Win32 API - MsixDynamicDependency.hpp
+## 6.1. Win32 API - MsixDynamicDependency.hpp
 
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
+
 ```c++
 enum class MddPinPackageDependency : uint32_t
 {
@@ -808,7 +877,8 @@ STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
     _In_ const MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext2);
 ```
 
-## WinRT API
+## 6.2. WinRT API
+
 ```c# (but really MIDL3)
 namespace Microsoft.ApplicationModel
 {
@@ -1104,16 +1174,17 @@ runtimeclass PackageDependencyContext : ICloseable
 }
 ```
 
-# Appendix
+# 7. Appendix
 
 TODO: Answer and delete
 
 Q: Package dependencies are only resolved for Framework packages. Should other package types (Main, Resource, Optional) be supported?
 
 Q:WinRT: How should 'lifetimeArtifact' and MddPinPackageDependency_LifecycleHint* be expressed in the WinRT API? Some ideas:
-* String file; String regkey; if both null then it's Process
-* String lifetimeArtifact; boolean isFile; boolean isReg; boolean isProcess; and only 1 can be true
-* ILifetimeArtifact property with multiple implementations e.g. FileLifetimeArtifact = { string file; } vs * RegistryLifetimeArtifact = { HKEY root; string subkey; } vs Process=null
-* ?
+
+- String file; String regkey; if both null then it's Process
+- String lifetimeArtifact; boolean isFile; boolean isReg; boolean isProcess; and only 1 can be true
+- ILifetimeArtifact property with multiple implementations e.g. FileLifetimeArtifact = { string file; } vs * RegistryLifetimeArtifact = { HKEY root; string subkey; } vs Process=null
+- ?
 
 Q:WinRT: How to express equivalent of MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT?
