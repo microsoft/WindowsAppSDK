@@ -19,12 +19,15 @@
   - [3.4. Runtime 'Pinning' aka Prevent Update While In-Use](#34-runtime-pinning-aka-prevent-update-while-in-use)
 - [4. Examples](#4-examples)
 - [5. Remarks](#5-remarks)
-  - [5.1. API Outline and Flow](#51-api-outline-and-flow)
-  - [5.2. Package Dependency Persistence](#52-package-dependency-persistence)
-  - [5.3. Package Dependnecy Resolution is Per-User](#53-package-dependnecy-resolution-is-per-user)
-  - [5.4. LocalSystem is not Supported](#54-localsystem-is-not-supported)
-  - [5.5. Packaging - ProjectReunion.Loader.dll](#55-packaging---projectreunionloaderdll)
-  - [5.6. Dynamic Dependencies vis a vis Static Dependencies](#56-dynamic-dependencies-vis-a-vis-static-dependencies)
+  - [5.1. API Overview](#51-api-overview)
+  - [5.2. Package Dependency Resolution is Per-User](#52-package-dependency-resolution-is-per-user)
+  - [5.3. LocalSystem is not Supported](#53-localsystem-is-not-supported)
+  - [5.4. Packaging - ProjectReunion.Loader.dll](#54-packaging---projectreunionloaderdll)
+  - [5.5. Dynamic Dependencies vis a vis Static Dependencies](#55-dynamic-dependencies-vis-a-vis-static-dependencies)
+  - [5.6. Known Limitations in v1](#56-known-limitations-in-v1)
+    - [5.6.1. uap6:LoaderSearchPathOverride not supported](#561-uap6loadersearchpathoverride-not-supported)
+    - [5.6.2. uap6:AllowExecution not supported](#562-uap6allowexecution-not-supported)
+    - [5.6.3. Lifecycle Hints are not supported](#563-lifecycle-hints-are-not-supported)
 - [6. API Details](#6-api-details)
   - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
   - [6.2. WinRT API](#62-winrt-api)
@@ -499,7 +502,12 @@ void UpdatePath()
     SetEnvironmentVariable("PROJECTREUNION_DYNAMICDEPENDENCIES_PATH", pathList)
 
     // Make sure our package graph environment variable's at the fron ot the PATH environment variable
-    string
+    string path = GetEnvironmentVariable("PATH")
+    if (!path.startswithnocase("%PROJECTREUNION_DYNAMICDEPENDENCIES_PATH%;"))
+    {
+        path = "%PROJECTREUNION_DYNAMICDEPENDENCIES_PATH%;" + path
+        SetEnvironmentVariable("PATH", path)
+    }
 }
 
 void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
@@ -559,7 +567,7 @@ AllowExecution default = False
 
 There are no public APIs to get information. The only available mechanism is to `Find, Load and Parse appxmanifest.xml` to determine if this extension is present and, if so, honor it.
 
-**The recommendation for v1*** is to not support this extension when building the DLL Search Order for Dynamic Dependencies.
+**The recommendation for v1** is to not support this extension when building the DLL Search Order for Dynamic Dependencies.
 
 The Loader will still see packages manifesting `<uap6:AllowExecution>true</>` when it walks the packaged process' package graph, but those paths will be searched ***after*** Dynamic Dependencies added with `rank > 0` or `rank == 0 AND options.PrependIfRankCollision=false`.
 
@@ -575,7 +583,7 @@ This 'garbage collection' evaluation is based on manifested dependencies. Packag
 
 To prevent Deployment from prematurely removing a package a packaged application can add a `<PackageDependency>` on the Framework package.
 
-Applications can install a `Main` package with a manifested `<PackageDependnecy>` referencing the Framework package. This Main package requires a minimal manifest. For example:
+Applications can install a `Main` package with a manifested `<PackageDependency>` referencing the Framework package. This Main package requires a minimal manifest. For example:
 
 ```xml
 <Package
@@ -590,8 +598,12 @@ Applications can install a `Main` package with a manifested `<PackageDependnecy>
         <Logo>logo.png</Logo>
     </Properties>
 
+    <Resources>
+        <Resource Language="" />
+    </Resources>
+
     <Dependencies>
-        <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763" />
+        <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763" MaxVersionTested="10.0.17763" />
         <PackageDependency Name="Contosso.Muffins" MinVersion="1.0.1967.0" />
     </Dependencies>
 </Package>
@@ -599,7 +611,7 @@ Applications can install a `Main` package with a manifested `<PackageDependnecy>
 
 When this package is registered for a user the `<PackageDependency>` element will be resolved to a (specific) Framework package. That Framework package will be 'pinned' for the user as long as this Main package is registered for the user. Deployment will not remove the Framework because it now sees a dependency needing it.
 
-A future version of Windows may be more savvy to Dynamic Dependencies and not require this 'helper' Main package to prevent unintended premature removal of a Framework package. Until then, this is the recommended technique for install-time pinning.
+A future version of Windows should be more savvy to Dynamic Dependencies and not require this 'helper' Main package to prevent unintended premature removal of a Framework package. Until then, this is the recommended technique for install-time pinning.
 
 ## 3.4. Runtime 'Pinning' aka Prevent Update While In-Use
 
@@ -657,7 +669,14 @@ Packaged processes (i.e. a process with package identity) are created with a sta
 
 Processes without package identity have an no static package graph. They can modify their package graph using the Dynamic Dependency API.
 
-## 5.1. API Outline and Flow
+## 5.1. API Overview
+
+The API supports 4 main operations:
+
+- Pin
+- Add
+- Remove
+- Unpin
 
 ```MddPinPackageDependency``` defines a package dependency.
 
@@ -671,21 +690,15 @@ Once a PackageDependency is resolved to a package all further ```MddAddPackageDe
 
 ```MddUnpinPackageDependency``` undefines a package dependency previously defined via ```MddPinPackageDependency```.
 
-## 5.2. Package Dependency Persistence
-
-PackageDependency definitions are not persisted or tracked across reboots if ```MddPinPackageDependency``` is called with ```MddMddPinPackageDependency::LifecycleHint_Process``` (the PackageDependency only exists until process termination). Specify ```MddPinPackageDependency::LifecycleHint_FileOrPath``` or ```MddPinPackageDependency::LifecycleHint_RegistrySubkey``` for ```MddPinPackageDependency``` to persist the definition until explicitly removed via ```MddUnpinPackageDependency``` or the specified lifetime artifact is deleted.
-
-If concurrent processes need the same package resolution for a defined criteria they should share the packageDependencyId returned by ```MddPinPackageDependency```. Concurrent processes running as the same user calling ```MddAddPackageDependency``` with the same packageDependencyId get the same resolved package added to their package graph. This enables multiple concurrent processes needing the same package resolution get a consistent answer.
-
-## 5.3. Package Dependnecy Resolution is Per-User
+## 5.2. Package Dependency Resolution is Per-User
 
 Package graphs are managed per-user, thus resolving a package dependency is a per-user operation. Two users can resolve a package dependency to different answers, depending on the current machine state.
 
-## 5.4. LocalSystem is not Supported
+## 5.3. LocalSystem is not Supported
 
 Package dependencies can only be resolved to packages registered for a user. As packages cannot be registered for LocalSystem the Dynamic Dependencies feature is not available to callers running as LocalSystem.
 
-## 5.5. Packaging - ProjectReunion.Loader.dll
+## 5.4. Packaging - ProjectReunion.Loader.dll
 
 The Dynamic Dependencies API is provided via ProjectReunion.Loader.dll.
 
@@ -693,11 +706,34 @@ This dll will be included in the ProjectReunion Framework package for packaged a
 
 Ironically, ProjectReunion.Loader.dll cannot be used from a Framework package by non-packaged applications.
 
-## 5.6. Dynamic Dependencies vis a vis Static Dependencies
+## 5.5. Dynamic Dependencies vis a vis Static Dependencies
 
 Dynamic dependencies' package dependency is equivalent to an MSIX package's `<PackageDependency>` in `appxmanifest.xml`. This defines criteria to be resolved to a package for use at runtime in a process' package graph.
 
 Packages dynamically added to a package graph can be removed. Packages in the package graph at process creation (aka static package graph) cannot be removed; the static package graph is a part of a process' DNA, from birth to death.
+
+## 5.6. Known Limitations in v1
+
+The initial implementation does not fully implement this spec.
+
+### 5.6.1. [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) not supported
+
+See [3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-for-uap6loadersearchpathoverride).
+
+### 5.6.2. [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution) not supported
+
+See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-known-issue-dll-search-order-ignores-uap6allowexecution).
+
+### 5.6.3. Lifecycle Hints are not supported
+
+A package dependency is pinned by a registered package. The lifecycle hints to unpin a package dependency when a file `LifecycleHint_FileOrPath`) or registry key (`LifecycleHint_RegistrySubkey`) is deleted are reserved for future use. Specifying these options today is an error.
+
+Implementing these options requires:
+
+1. Detecting when the lifetime artifact is deleted. This could be done aggressively (e.g. monitor the file/regkey) or lazily (e.g. check file/regkey existence when accessed)
+1. Knowing the package pinning the package dependency. This gets complicated if a pinning package declares 2+ `<PackageDependency>`.
+2. Calling `PackageManager.RemovePackageAsync(packagePinningThePackageDependency)`
+3. Sufficient rights to succeed
 
 # 6. API Details
 
@@ -713,8 +749,8 @@ enum class MddPinPackageDependency : uint32_t
     None                               0,
     DoNotVerifyDependencyResolution    0x00000001,
     LifecycleHint_Process              0,
-    LifecycleHint_FileOrPath           0x00000002,
-    LifecycleHint_RegistrySubkey       0x00000004,
+    LifecycleHint_FileOrPath           0x00000002,  // Reserved for future use
+    LifecycleHint_RegistrySubkey       0x00000004,  // Reserved for future use
 
      /// Define the package dependency for the system, accessible to all users
      /// (default is the package dependency is defined for a specific user).
