@@ -1224,3 +1224,33 @@ Q:WinRT: How should 'lifetimeArtifact' and MddPinPackageDependency_LifecycleHint
 - ?
 
 Q:WinRT: How to express equivalent of MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT?
+
+Q: Add a new API to register a 'helper' package to 'pin' a package dependency? Should this be part of DynamicDependencies or a larger ProjectReunion API e.g.
+
+```c# (but really MIDL3)
+namespace Microsoft.ApplicationModel
+{
+runtimeclass ProjectReunion
+{
+    static void RegisterHelperMainPackage(Uri packageUri);
+}
+}
+```
+
+implemented as
+
+
+```c++ (C++ish pseudocode)
+void Microsoft.::ApplicationModel::ProjectReunion::RegisterHelperMainPackage(Uri packageUri)
+{
+    auto packageManager = new Windows.Management.Deployment.PackageManager()
+    auto currentUser = ""
+    auto package = packageManager.FindPackageForUser(currentUser, packageFullName)
+    if (!package)
+    {
+        packageManager.AddPackageAsync(packageUri).get()
+    }
+}
+```
+
+This is a simplistic example. What about `DeploymentOptions.DevelopmentMode`? What about `RegisterPackageAsync()` instead of `AddPackageAsync()`? What if the package is not OK (`package.VerifyIsOK()`) and it needs to be registered to correct the problem?
