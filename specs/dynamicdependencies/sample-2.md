@@ -1,4 +1,4 @@
-# Sample 2 - Fabrikam app using Contosso's Muffins package with smart class helpers
+# Sample 2 - Fabrikam app using Contoso's Muffins package with smart class helpers
 
 Variant of Sample 1 using RAII classes to manage packageDependencyId, packageDependencyContext and DLL lifetimes.
 
@@ -54,7 +54,7 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
 {
     countOfMuffinsManaged = 0;
 
-    // Create a PackageDependency to pin the Contosso Muffin package
+    // Create a PackageDependency to pin the Contoso Muffin package
     // Fail if the PackageDependency cannot be resolved
     PCWSTR packageFamilyName = L"Contoso.muffins_1234567890abc";
     PACKAGE_VERSION minVersion{};

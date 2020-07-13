@@ -1,4 +1,4 @@
-# Sample 1 - Fabrikam app using Contosso's Muffins package
+# Sample 1 - Fabrikam app using Contoso's Muffins package
 
 Contoso publishes a framework package that provides Muffin-managing functionality. At runtime, Fabrikam wants to use this functionality if available, so it adds a dynamic dependency for the Contoso.Muffins package. The dynamic dependency is removed once Fabrikam is done using the Contoso Muffin-managing functionality.
 
@@ -14,7 +14,7 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
 {
     countOfMuffinsManaged = 0;
 
-    // Create a PackageDependency to pin the Contosso Muffin package
+    // Create a PackageDependency to pin the Contoso Muffin package
     // Fail if the PackageDependency cannot be resolved
     PCWSTR packageFamilyName = L"Contoso.muffins_1234567890abc";
     PACKAGE_VERSION minVersion{};

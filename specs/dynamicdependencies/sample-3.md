@@ -1,4 +1,4 @@
-# Sample 3 - LolzKitten app using Contosso's Muffins package via transient package dependency
+# Sample 3 - LolzKitten app using Contoso's Muffins package via transient package dependency
 
 Contoso publishes a framework package. At runtime, LolzKittens wants to use Contoso's functionality for the life of its process. The dynamic dependency is added when the process starts and not explicitly removed, relying on Windows to detect process termination and cleanup any bookkeeping information about the former LolzKittens process despite no calls to ```MddRemovePackageDependency```. The package dependency is defined just long enough to resolve it to a specific package and update the current process to use it.
 

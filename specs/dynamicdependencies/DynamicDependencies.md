@@ -1,5 +1,9 @@
 # 1. MSIX Dynamic Dependencies
 
+This feature makes Framework packages accessible to all kinds of apps, packaged and unpackaged. The package loader - which you carry with your app - lets you pin, bind, resolve, and consume framework package content including WinRT APIs and ‘flat C’ exports.
+
+DynamicDependencies enable access to packaged content via APIs at runtime. This supplements the appmodel's static dependency support (via `<PackageDependency>` in `appxmanifest.xml`) with a dynamic runtime equivalent. It also allows non-packaged processes (which have no `appxmanifest.xml`) to use packaged content.
+
 - [1. MSIX Dynamic Dependencies](#1-msix-dynamic-dependencies)
 - [2. Background](#2-background)
 - [3. Description](#3-description)
@@ -53,7 +57,7 @@ A process' Package Graph is fixed at process creation. There is no affordance to
 
 Packaged processes are initialized with a package graph based on package dependencies declared in their `appxmanifest.xml`. Non-packaged processes have no declared dependencies as they have no `appxmanifest.xml`, thus non-packaged processes are created with an empty Package Graph. Once a process is created its package graph is constant for the rest of its lifetime.
 
-**Solution**: Provide new APIs to alter the current process' Package Graph at runtime.
+We'll provide new APIs to alter the current process' Package Graph at runtime.
 
 Windows provides access to a process' package graph primarily via [GetCurrentPackageInfo](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo) and [GetCurrentPackageInfo2](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2). Equivalent information is available via [Windows.ApplicationModel.Package.Current](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.package.current?view=winrt-19041) and [Package.Current.Dependencies](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.package.dependencies?view=winrt-19041). These correspond to PackageGraph[0] and PackageGraph[1+]. These APIs provide access to the static package graph.
 
@@ -67,7 +71,7 @@ This information is used by several Windows components to find resources across 
 
 If we can alter the package graph as seen by `GetCurrentPackageInfo` and like APIs we can provide the desired dynamic behavior.
 
-**Solution:** We'll manage our own package graph to supplement the static package graph (if any) with dynamic dependencies. We'll use [Detours](https://github.com/Microsoft/Detours) to hook `GetCurrentPackageInfo` and related APIs to redirect to our own Dynamic Dependencies savvy variants.
+We'll manage our own package graph to supplement the static package graph (if any) with dynamic dependencies. We'll use [Detours](https://github.com/Microsoft/Detours) to hook `GetCurrentPackageInfo` and related APIs to redirect to our own Dynamic Dependencies savvy variants.
 
 ### 3.1.1. Detours to Enhance Package Graph APIs
 
@@ -419,7 +423,7 @@ HRESULT AddToPackageGraph(string packageFullName, ...)
 
 ### 3.1.3. Remove from the Package Graph
 
-`MddRemovePackageDependency` undos the work done by MddRemovePackageDependency:
+`MddRemovePackageDependency` undoes the work done by MddRemovePackageDependency:
 
 1. Update the package graph
 
@@ -451,7 +455,7 @@ HRESULT MddRemovePackageDependency(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
 
 Windows informs the Loader when the package graph is defined, but this doesn't help after process creation (and non-packaged processes never have a static package graph).
 
-**Solution:** Tell the loader when the package graph changes.
+The Dynamic Depednencies API informs the loader when the package graph changes.
 
 #### 3.1.4.1. Non-Packaged Processes
 
@@ -538,13 +542,13 @@ Packaged processes are a problem. The PATH environment variable and AddDllDirect
 
 None of these are sufficiently flexible to leverage for Dynamic Dependencies.
 
-**TODO** Perhaps the [uap7:ImportRediorectionTable](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap7-importredirectiontable) supporting machinery can help out here?
+**TODO** Perhaps the [uap7:ImportRedirectionTable](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap7-importredirectiontable) supporting machinery can help out here?
 
 ## 3.2. Known Issues for Packaged Processes
 
 ### 3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride
 
-Packages can specify [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) to add additional (package-relative) paths to the Loader's search order, and even potentially remove a package's root directory from the Loader's search order. If present the DLL Search Order for the package graph isn't the list of packages in the package graph and there are no public APIs to get this list of information. The only available mechanism is to `Find, Load and Parse appxmanifest.xml` to determine if this extension is present and, if so, honor it.
+Packages can specify [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) to add additional (package-relative) paths to the Loader's search order, and even potentially remove a package's root directory from the Loader's search order. If present the DLL Search Order for the package graph isn't the list of packages in the package graph and there are no public APIs to get this list of information. The only available mechanism is to 'Find, Load and Parse appxmanifest.xml' to determine if this extension is present and, if so, honor it.
 
 **The recommendation for v1*** is to not support this extension when building the DLL Search Order for Dynamic Dependencies.
 
@@ -604,7 +608,7 @@ Applications can install a `Main` package with a manifested `<PackageDependency>
 
     <Dependencies>
         <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763" MaxVersionTested="10.0.17763" />
-        <PackageDependency Name="Contosso.Muffins" MinVersion="1.0.1967.0" />
+        <PackageDependency Name="Contoso.Muffins" MinVersion="1.0.1967.0" />
     </Dependencies>
 </Package>
 ```
@@ -617,7 +621,7 @@ A future version of Windows should be more savvy to Dynamic Dependencies and not
 
 Registering an updated package for a user poses a complication for applications using Dynamic Dependencies.
 
-Framework packagessupport concurrent versioning semantics. This differs from other package types:
+Framework packages support concurrent versioning semantics. This differs from other package types:
 
 - A user can only have 0-1 Main package in a package family registered at a time
 - A user can have 0+ Framework packages in a package family registered at a time
@@ -652,9 +656,9 @@ Deployment detects this process running with the 'helper' Main package's identit
 
 Samples illustrating the DynamicDependency APIs
 
-- [Sample 1](sample-1.md) - Fabrikam app using Contosso's Muffins package [\[Win32\]](sample-1.md#win32) [\[WinRT\]](sample-1.md#winrt)
-- [Sample 2](sample-2.md) - Fabrikam app using Contosso's Muffins package with smart class helpers [\[Win32\]](sample-2.md#win32)
-- [Sample 3](sample-3.md) - LolzKitten app using Contosso's Muffins package via transient package dependency [\[Win32\]](sample-3.md#win32) [\[WinRT\]](sample-3.md#winrt)
+- [Sample 1](sample-1.md) - Fabrikam app using Contoso's Muffins package [\[Win32\]](sample-1.md#win32) [\[WinRT\]](sample-1.md#winrt)
+- [Sample 2](sample-2.md) - Fabrikam app using Contoso's Muffins package with smart class helpers [\[Win32\]](sample-2.md#win32)
+- [Sample 3](sample-3.md) - LolzKitten app using Contoso's Muffins package via transient package dependency [\[Win32\]](sample-3.md#win32) [\[WinRT\]](sample-3.md#winrt)
 - [Sample 4](sample-4.md) - LolzKitten Installer / Uninstaller with File+Registry LifetimeArtifacts [\[Win32\]](sample-4.md#win32) [\[WinRT\]](sample-4.md#winrt)
 - [Sample 5](sample-5.md) - LolzKitten app using PackageDependency pinned by LolzKitten Installer [\[Win32\]](sample-5.md#win32) [\[WinRT\]](sample-5.md#winrt)
 - [Sample 6](sample-6.md) - LolzKitten Installer / Uninstaller defining a 32bit PackageDependency [\[Win32\]](sample-6.md#win32) [\[WinRT\]](sample-6.md#winrt)
@@ -909,8 +913,8 @@ STDAPI_(BOOL) MddArePackageDependencyIdsEquivalent(
 // Return TRUE if packageDependencyIdContext1 and packageDependencyContextId2
 // are associated with the same resolved package.
 STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
-    _In_ const MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext1,
-    _In_ const MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext2);
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext1,
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext2);
 ```
 
 ## 6.2. WinRT API
@@ -932,6 +936,22 @@ enum PackageDependencyProcessorArchitectures
     X86A64  = 0x00000020,
 };
 
+enum PackageDependencyLifecycleArtifactKind
+{
+    /// The current process is the lifetime artifact. The package dependency
+    /// is implicitly unpinned when the process terminates.
+    Process,
+
+    /// The lifetime artifact is an absolute filename or path.
+    /// The package dependency is implicitly unpinned when this is deleted.
+    FilePath,
+
+    /// The lifetime artifact is a registry key in the format
+    /// 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU.
+    /// The package dependency is implicitly unpinned when this is deleted.
+    RegistryKey,
+};
+
 /// Options when 'pinning' a package dependency
 runtimeclass PinPackageDependencyOptions
 {
@@ -941,15 +961,13 @@ runtimeclass PinPackageDependencyOptions
     PackageDependencyProcessorArchitectures Architectures;
 
     /// Do not verify at least 1 matching package exists when pinning a package dependency
-    boolean DoNotVerifyDependencyResolution;
+    Boolean VerifyDependencyResolution = true;
 
-    /// An absolute filename or path to use as a lifetime artifact when pinning a package dependency.
-    /// If set, the package dependency is implicitly unpinned when this is deleted.
-    String LifetimeArtifactFileOrPath;
+    /// The kind of lifetime artifact for this package dependency.
+    PackageDependencyLifecycleArtifactKind LifecycleArtifactKind;
 
-    /// A registry key to use as a lifetime artifact when pinning pinning a package dependency.
-    /// If set, the package dependency is implicitly unpinned when this is deleted.
-    String LifetimeArtifactRegistrySubkey;
+    /// The lifetime artifact when pinning a package dependency. The value depends on the LifecycleArtifactKind value.
+    String LifecycleArtifact;
 }
 
 /// Options when adding a package dependency
@@ -960,17 +978,17 @@ runtimeclass AddPackageDependencyOptions
     /// The rank when adding the package dependency to a a package graph.
     /// @note A package graph is sorted in ascending order from -infinity...0...+infinity
     /// @note The default value is zero
-    int Rank;
+    Int32 Rank;
 
     /// If a package dependency resolves to a package with dependencies and this option is true
     /// the dependencies are ignored; only the package is added to the package graph. By default
     /// a resolved package and its dependencies are added to the package graph.
-    boolean OnlyUseFirstPackageFamily;
+    Boolean OnlyUseFirstPackageFamily;
 
     /// If a package is added to a package graph with a package of the same rank (aka a collision on rank)
     /// and this option is true the package is prepended to the set of packages of the same rank.
     /// By default packages are appended to the set of packages with the same rank.
-    boolean PrependIfRankCollision;
+    Boolean PrependIfRankCollision;
 }
 
 /// TBD
@@ -985,12 +1003,12 @@ runtimeclass PackageDependency
     /// Return true if the package dependencies would produce the same
     /// package when resolved e.g. whether they share the same packageFamilyName,
     /// minVersion, and packageDependencyProcessorArchitectures values.
-    static boolean AreEquivalent(String packageDependencyId1, String packageDependencyId2);
+    static Boolean AreEquivalent(String packageDependencyId1, String packageDependencyId2);
 
     /// Return true if this and otherPackageDependency would produce the same
     /// package when resolved e.g. whether they share the same packageFamilyName,
     /// minVersion, and packageDependencyProcessorArchitectures values.
-    boolean AreEquivalent(PackageDependency otherPackageDependency);
+    Boolean AreEquivalent(PackageDependency otherPackageDependency);
 
     /// Define a package dependency for the current user. The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
@@ -1188,13 +1206,13 @@ runtimeclass PackageDependencyContext : ICloseable
 
     /// Return true if packageDependencyContext1 and packageDependencyContext2
     /// are associated with the same resolved package.
-    static boolean AreEquivalent(
+    static Boolean AreEquivalent(
         PackageDependencyContextId packageDependencyContextId1,
         PackageDependencyContextId packageDependencyContextId2);
 
     /// Return true if this and otherPackageDependencyContext
     /// are associated with the same resolved package.
-    boolean AreEquivalent(PackageDependencyContext otherPackageDependencyContext);
+    Boolean AreEquivalent(PackageDependencyContext otherPackageDependencyContext);
 
     /// Remove the resolved package dependency from the current process' package graph
     /// (i.e. undo PackageDependency.Add()).
@@ -1219,7 +1237,7 @@ Q: Package dependencies are only resolved for Framework packages. Should other p
 Q:WinRT: How should 'lifetimeArtifact' and MddPinPackageDependency_LifecycleHint* be expressed in the WinRT API? Some ideas:
 
 - String file; String regkey; if both null then it's Process
-- String lifetimeArtifact; boolean isFile; boolean isReg; boolean isProcess; and only 1 can be true
+- String lifetimeArtifact; Boolean isFile; Boolean isReg; Boolean isProcess; and only 1 can be true
 - ILifetimeArtifact property with multiple implementations e.g. FileLifetimeArtifact = { string file; } vs * RegistryLifetimeArtifact = { HKEY root; string subkey; } vs Process=null
 - ?
 

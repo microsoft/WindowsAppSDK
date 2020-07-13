@@ -97,7 +97,7 @@ PCWSTR GetWafflesLifetimeRegistryKey()
 {
     // MddPinPackageDependency::LifecycleHint_RegistrySubkey requires a string
     // in the format 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU
-    return "HKLM\\SOFTWARE\\LolzCatEnterprises\\LolzKitten\\PackageDependencies\\Contosso.puppies";
+    return "HKLM\\SOFTWARE\\LolzCatEnterprises\\LolzKitten\\PackageDependencies\\Contoso.puppies";
 }
 
 HRESULT DeletePackageDependencyIds()
@@ -210,7 +210,7 @@ namespace LolzKitten
             {
                 // MddPinPackageDependency::LifecycleHint_RegistrySubkey requires a string
                 // in the format 'root\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU
-                return @"HKLM\SOFTWARE\LolzCatEnterprises\LolzKitten\PackageDependencies\Contosso.puppies";
+                return @"HKLM\SOFTWARE\LolzCatEnterprises\LolzKitten\PackageDependencies\Contoso.puppies";
             }
         }
 
