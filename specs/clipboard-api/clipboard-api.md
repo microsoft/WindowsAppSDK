@@ -30,7 +30,7 @@ Project Reunion SDK decoupled from Windows.
 
 ### Motivation: reasons to create a new clipboard API
 
-The first version of this spec creates a new clipboard API but does not
+The first version of this spec creates a new clipboard API but _does not_
 make any changes that add substantial value. However, creating a new
 clipboard API in the Reunion SDK will let us make future improvements
 to the clipboard developer and user experiences, like these:
@@ -77,13 +77,13 @@ to the clipboard developer and user experiences, like these:
 
 * **Bring new clipboard features to all versions of Windows that support
   Project Reunion:**
-  Since the Windows clipboard has historically been considered an integrated
-  Windows component, improvements to the clipboard have only been for the
+  Since the clipboard has historically been part of the Windows OS,
+  improvements to the clipboard have only been for the
   latest Windows version. However, with the Reunion SDK, we have the
   opportunity to implement these improvements in the SDK and let all
   apps that use it benefit, and even (in some cases) apps that don't
   build against the Reunion SDK at all.
-  These features could include:
+  These features _could_ include:
 
   * _Paste as plain text_: We've seen several suggestions from
     Windows users to let you paste a formatted text fragment with all the
@@ -97,12 +97,15 @@ to the clipboard developer and user experiences, like these:
     this feature.
 
   * _Clipboard history:_ Windows 10 version 1809 (October/November 2018 update)
-    introduced a new built-in clipboard history manager. Using the same "main
+    introduced a new built-in clipboard history manager. The Project Reunion SDK
+    could allow us to bring the clipboard history manager to older Windows versions.
+    To do this, we might conceivably use the same "main
     package" as the [Project Reunion brokering system](
-    ../../docs/README.md#brokering), we could install a Windows process
-    to host the shared memory for the clipboard history, allowing us
-    to bring the APIs and user interface
-    for clipboard history to older Windows versions.
+    ../../docs/README.md#brokering) to install a Windows process
+    to host the shared memory for the clipboard history.
+    Then, the APIs and user interface for clipboard history
+    could be ported to work on that main package process
+    rather than the code shipping in Windows.
     (We could also consider using [PowerToys](
       https://github.com/microsoft/PowerToys) as the delivery vehicle
     for the clipboard history UI, while keeping the shared memory store
@@ -111,8 +114,9 @@ to the clipboard developer and user experiences, like these:
   * _Cloud clipboard sync and roaming:_ Windows 10 version 1809 also
     introduced cloud clipboard sync to other Windows devices you sign in to
     with the same personal Microsoft account or work or school Azure
-    Active Directory account. We could also use the Reunion SDK main package
-    to bring the sync client to older versions.
+    Active Directory account. Just as with clipboard history,
+    we could use use the Reunion SDK main package
+    to bring the cloud clipboard sync client to older Windows versions.
   
   * _Copy append/paste multiple_: We've also seen several suggestions from
     Windows users for a way to cut or copy multiple separate items,
@@ -125,7 +129,7 @@ to the clipboard developer and user experiences, like these:
 
 When you use Windows' built-in user interface controls, you get their
 built-in support for copying and pasting data for free. However,
-when you use your own controls or controls from a third-party vendor,
+when you make your own controls or use controls from a third-party vendor,
 you might need to implement copying and pasting yourself.
 You can do this with the clipboard API in the Project Reunion SDK.
 
@@ -151,7 +155,7 @@ except for these differences:
    app exits normally or is automatically shut down by Windows,
    as if the app called Clipboard.Flush() before exiting.
 
-## Examples
+## Example code snippets
 
 Because the Reunion SDK clipboard API is a near-copy of
 Windows.ApplicationModel.DataTransfer, these C# examples are copied from the
