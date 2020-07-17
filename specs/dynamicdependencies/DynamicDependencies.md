@@ -1,6 +1,6 @@
 # 1. MSIX Dynamic Dependencies
 
-This feature makes Framework packages accessible to all kinds of apps, packaged and unpackaged. The package loader - which you carry with your app - lets you pin, bind, resolve, and consume framework package content including WinRT APIs and ‘flat C’ exports.
+This feature makes Framework packages accessible to all kinds of apps, packaged and unpackaged. The package loader - which you carry with your app - lets you pin, bind, resolve, and consume framework package content including WinRT APIs and 'flat C' exports.
 
 DynamicDependencies enable access to packaged content via APIs at runtime. This supplements the appmodel's static dependency support (via `<PackageDependency>` in `appxmanifest.xml`) with a dynamic runtime equivalent. It also allows non-packaged processes (which have no `appxmanifest.xml`) to use packaged content.
 
@@ -81,44 +81,7 @@ Package Graph information is available for packages registered to the current us
 // An instance with no PACKAGE_INFO_REFERENCE (nullptr) is a placeholder for the static package graph
 class PackageGraphNode
 {
-public:
-    PackageGraphNode() = default
-
-    PackageGraphNode(PACKAGE_INFO_REFERENCE packageInfoReference) :
-        m_packageInfoReference(packageInfoReference)
-    {
-    }
-
-    ~PackageGraphNode()
-    {
-        ClosePackageInfo(m_packageInfoReference)
-    }
-
-    PACKAGE_INFO_REFERENCE get()
-    {
-        return m_packageInfoReference
-    }
-
-    MDD_PACKAGE_DEPENDENCY_CONTEXT context()
-    {
-        return m_context
-    }
-
-    void context(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
-    {
-        m_context = context;
-    }
-
-    DLL_DIRECTORY_COOKIE addDllDirectoryCookie()
-    {
-        return m_addDllDirectoryCookie
-    }
-
-    void AddDllDirectoryCookie(DLL_DIRECTORY_COOKIE cookie)
-    {
-        m_addDllDirectoryCookie = cookie
-    }
-
+...
 private:
     PACKAGE_INFO_REFERENCE m_packageInfoReference{}
     MDD_PACKAGE_DEPENDENCY_CONTEXT m_context{}
