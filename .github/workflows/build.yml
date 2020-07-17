@@ -5,6 +5,9 @@ name: Build CI Master
 on:
   pull_request:
     branches: [ master ]
+    paths-ignore: 
+      - 'docs/**'
+      - 'specs/**'
 
 jobs:
   build:
