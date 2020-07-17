@@ -218,7 +218,7 @@ Given v1-x86 and v1-neutral
 **NOTE:** `MddAddPackageDependency` can only resolve to packages registered for the user. Thus as packages cannot be registered to LocalSystem a process running as LocalSystem cannot use Dynamic Dependencies. Impersonation is irrelevant here. Only the process' user identity is relevant to determine the packages registered to the user.
 
 ```c++ (C++ish pseudocode)
-string ResolvePackageDepedency(packageFamily, minVersion, architectureFilter, ...)
+string ResolvePackageDependency(packageFamily, minVersion, architectureFilter, ...)
 {
     string[] packageFullNames = FindPackagesByPackageFamily(packageFamilyName, packageTypeFilter=Framework, ...)
     count = packageFullNames.size()
@@ -418,7 +418,7 @@ HRESULT MddRemovePackageDependency(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
 
 Windows informs the Loader when the package graph is defined, but this doesn't help after process creation (and non-packaged processes never have a static package graph).
 
-The Dynamic Depednencies API informs the loader when the package graph changes.
+The Dynamic Dependencies API informs the loader when the package graph changes.
 
 #### 3.1.4.1. Non-Packaged Processes
 
@@ -538,7 +538,7 @@ There are no public APIs to get information. The only available mechanism is to 
 
 The Loader will still see packages manifesting `<uap6:AllowExecution>true</>` when it walks the packaged process' package graph, but those paths will be searched ***after*** Dynamic Dependencies added with `rank > 0` or `rank == 0 AND options.PrependIfRankCollision=false`.
 
-If a Framework package specifies `<uap6:AllowExecution>false</>` that won't be known to Dynamic Depednencies' `AddToDllSearchOrder()` logic. The Framework package will be added to the path list, not omitted per the manifested element.
+If a Framework package specifies `<uap6:AllowExecution>false</>` that won't be known to Dynamic Dependencies' `AddToDllSearchOrder()` logic. The Framework package will be added to the path list, not omitted per the manifested element.
 
 ## 3.3. Install-time 'Pinning' aka Prevent Removal
 
@@ -546,7 +546,7 @@ Deployment uses a form of 'garbage collection' to decide if a package is unused 
 
 When a Main package is registered for a user its manifested `<PackageDependency>` are resolved to specific packages and saved to disk. A Main package and its resolved package dependencies are referred to as a 'package graph'. When evaluating packages if Deployment sees there are no package graphs referencing a Framework package, Deployment may decide to remove the package from the system. This is a classic garbage collection model - an object (package) can be removed if there are no outstanding object references (dependencies in package graphs) for it.
 
-This 'garbage collection' evaluation is based on manifested dependencies. Packages used via Dynamic Dependencies express no such manifested depednency and are unknown to Deployment.
+This 'garbage collection' evaluation is based on manifested dependencies. Packages used via Dynamic Dependencies express no such manifested dependency and are unknown to Deployment.
 
 To prevent Deployment from prematurely removing a package a packaged application can add a `<PackageDependency>` on the Framework package.
 
