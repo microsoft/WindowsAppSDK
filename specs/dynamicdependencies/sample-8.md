@@ -57,7 +57,7 @@ namespace LolzKitten
             var packageDependency = new PackageDependency(packageDependencyId);
 
             var options = new AddPackageDependencyOptions(){ Rank = rank, PrependIfRankCollision = true };
-            var packageDependencyContext = packageDependency.Add(options);
+            PackageDependencyContext packageDependencyContext = packageDependency.Add(options);
             Console.WriteLine($"{what} via {packageDependencyContext.PackageFullName}");
         }
 

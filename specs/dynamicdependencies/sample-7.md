@@ -62,11 +62,11 @@ namespace LolzKitten
     {
         public static void UpdatePackageGraph()
         {
-            var muffinsPackageDependencyId = LoadPackageDependencyId(L"muffins");
+            string muffinsPackageDependencyId = LoadPackageDependencyId(L"muffins");
             const int muffinsRank = -42;
             AddToPackageGraph(muffinsPackageDependencyId, muffinsRank);
 
-            var wafflesPackageDependencyId = LoadPackageDependencyId(L"waffles");
+            string wafflesPackageDependencyId = LoadPackageDependencyId(L"waffles");
             const int wafflesRank = 3000;
             AddToPackageGraph(wafflesPackageDependencyId, wafflesRank);
         }
@@ -76,7 +76,7 @@ namespace LolzKitten
             var packageDependency = new PackageDependency(packageDependencyId);
 
             var options = new AddPackageDependencyOptions(){ Rank = rank };
-            var packageDependencyContext = packageDependency.Add(options);
+            PackageDependencyContext packageDependencyContext = packageDependency.Add(options);
             Console.WriteLine($"{what} via {packageDependencyContext.PackageFullName}");
         }
 

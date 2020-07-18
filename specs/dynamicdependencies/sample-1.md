@@ -70,9 +70,9 @@ int ManageMuffins()
     minVersion.Minor = 0;
     minVersion.Build = 1234;
     minVersion.Revision = 567;
-    var packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, null);
+    PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, null);
 
-    var packageDependencyContext = packageDependency.Add();
+    PackageDependencyContext packageDependencyContext = packageDependency.Add();
     Console.WriteLine($"Managing muffins via {packageDependencyContext.PackageFullName}");
 
     var assembly = Assembly.Load("Contoso-Muffins, Version=1.0.1967.0, Culture=neutral, PublicKeyToken=8744b20f8da049e3");

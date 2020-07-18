@@ -95,9 +95,9 @@ namespace LolzKitten
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = MuffinsLifetimeAbsoluteFilename
             };
-            var packageDependencyId = PackageDependency.Pin(packageFamilyName, minVersion, options));
+            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, options));
 
-            SavePackageDependencyId(L"muffins", packageDependencyId);
+            SavePackageDependencyId(L"muffins", packageDependency.Id);
         }
 
         string GetLifetimeFile

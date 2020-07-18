@@ -171,9 +171,9 @@ namespace LolzKitten
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = MuffinsLifetimeAbsoluteFilename
             };
-            var packageDependencyId = PackageDependency.Pin(packageFamilyName, minVersion, options));
+            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, options));
 
-            SavePackageDependencyId(L"muffins", packageDependencyId);
+            SavePackageDependencyId(L"muffins", packageDependency.Id);
             return S_OK;
         }
 
@@ -189,9 +189,9 @@ namespace LolzKitten
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = WafflesLifetimeRegistryKey
             };
-            var packageDependencyId = PackageDependency.Pin(packageFamilyName, minVersion, options));
+            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, options));
 
-            SavePackageDependencyId(L"waffles", packageDependencyId);
+            SavePackageDependencyId(L"waffles", packageDependency.Id);
             return S_OK;
         }
 

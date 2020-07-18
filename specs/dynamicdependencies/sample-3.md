@@ -63,14 +63,14 @@ namespace MyApp
             minVersion.Minor = 0;
             minVersion.Build = 1234;
             minVersion.Revision = 567;
-            var packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, null);
+            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, null);
 
-            var packageDependencyContext = PackageDependency.Add();
+            PackageDependencyContext packageDependencyContext = packageDependency.Add();
             Console.WriteLine($"Managing muffins via {packageFullName}");
 
             // We don't need the package dependency definition anymore. We can continue using the package dependency
             // in the current process until we quit. To prevent others from using it we'll explicitly unpin the
-            // package dependency. This prevents new PackageDependency.Add() calls from succeeding.
+            // package dependency. This prevents new packageDependency.Add() calls from succeeding.
             packageDependency.Unpin();
 
             DoFunnyKittenThings();

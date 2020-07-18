@@ -688,11 +688,11 @@ unknown. Deployment determines no one is used Fwk-v1 and will happily deregister
 breaking any future calls to MddAddPackageDependency (which only resolves package dependencies to
 packages registered to the user).
 
-Worse, if no other user has the Framework package registered and it's not provisioned, Deployment
-determines there's no need for Fwk-v1 to stay on the machine and happily removes it from the system.
-DLLs loaded by running processes cannot be deleted, but DLLS not loaded and other files (data files
-etc) can and will be deleted. This can have minor to disastrous impact on an appplication using
-Fwk-v1, e.g.
+If no other user has the Framework package registered and it's not provisioned Deployment
+determines there's no need for Fwk-v1 to stay on the machine and removes it from the system.
+DLLs loaded by running processes cannot be deleted, but DLLS not already loaded and other files
+(data files etc) can and will be deleted. This can have minor to disastrous impact on an
+appplication using Fwk-v1, e.g.
 
 - an application is running using A.dll from Fwk-v1
 - Deployment determines no one needs Fwk-v1
@@ -816,7 +816,7 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 ### 5.6.3. Lifecycle Hints are not supported
 
 A package dependency is pinned by a registered package. The lifecycle hints to unpin a package
-dependency when a file `LifecycleHint_FileOrPath`) or registry key (`LifecycleHint_RegistrySubkey`)
+dependency when a file (`LifecycleHint_FileOrPath`) or registry key (`LifecycleHint_RegistrySubkey`)
 is deleted are reserved for future use. Specifying these options today is an error.
 
 Implementing these options requires:
@@ -862,13 +862,13 @@ DEFINE_ENUM_FLAG_OPERATORS(MddAddPackageDependency)
 
 enum class MddPackageDependencyProcessorArchitectures : uint32_t
 {
-    None = 0,
-    Neutral = 0x00000001,
-    X86     = 0x00000002,
-    X64     = 0x00000004,
-    Arm     = 0x00000008,
-    Arm64   = 0x00000010,
-    X86A64  = 0x00000020,
+    None       = 0,
+    Neutral    = 0x00000001,
+    X86        = 0x00000002,
+    X64        = 0x00000004,
+    Arm        = 0x00000008,
+    Arm64      = 0x00000010,
+    X86OnArm64 = 0x00000020,
 };
 DEFINE_ENUM_FLAG_OPERATORS(MddPackageDependencyProcessorArchitectures)
 
@@ -885,8 +885,8 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 //       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
 //       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
 //       is removed Deployment won't remove Fwk-v2 because it's the only package
-//       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
-//       package matching the PackageDependency) are 'loosely pinned' â€“ Deployment
+//       satisfying the PackageDependency. Thus Fwk-v1 and Fwk-v2 (and any other
+//       package matching the PackageDependency) are 'loosely pinned'. Deployment
 //       guarantees it won't remove a package if it would make a PackageDependency
 //       unsatisfied.
 //
@@ -1000,8 +1000,8 @@ STDAPI_(BOOL) MddArePackageDependencyIdsEquivalent(
 // Return TRUE if packageDependencyIdContext1 and packageDependencyContextId2
 // are associated with the same resolved package.
 STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext1,
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext2);
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context1,
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context2);
 ```
 
 ## 6.2. WinRT API
@@ -1014,13 +1014,13 @@ namespace Microsoft.ApplicationModel
 /// @see Windows.System.ProcessorArchitecture
 enum PackageDependencyProcessorArchitectures
 {
-    None    = 0,
-    Neutral = 0x00000001,
-    X86     = 0x00000002,
-    X64     = 0x00000004,
-    Arm     = 0x00000008,
-    Arm64   = 0x00000010,
-    X86A64  = 0x00000020,
+    None       = 0,
+    Neutral    = 0x00000001,
+    X86        = 0x00000002,
+    X64        = 0x00000004,
+    Arm        = 0x00000008,
+    Arm64      = 0x00000010,
+    X86OnArm64 = 0x00000020,
 };
 
 enum PackageDependencyLifecycleArtifactKind
@@ -1283,7 +1283,7 @@ struct PackageDependencyContextId
 runtimeclass PackageDependencyContext : ICloseable
 {
     /// Create an intstance of the package dependency context identified by context
-    PackageDependencyContext(PackageDependencyContextId);
+    PackageDependencyContext(PackageDependencyContextId contextId);
 
     /// Returns the package dependency context
     PackageDependencyContextId Context { get; }
@@ -1291,18 +1291,18 @@ runtimeclass PackageDependencyContext : ICloseable
     /// Returns the package full name of the resolved package for this context
     String PackageFullName { get; }
 
-    /// Return true if packageDependencyContext1 and packageDependencyContext2
+    /// Return true if context1 and context2
     /// are associated with the same resolved package.
     static Boolean AreEquivalent(
-        PackageDependencyContextId packageDependencyContextId1,
-        PackageDependencyContextId packageDependencyContextId2);
+        PackageDependencyContextId contextId1,
+        PackageDependencyContextId contextId2);
 
     /// Return true if this and otherPackageDependencyContext
     /// are associated with the same resolved package.
     Boolean AreEquivalent(PackageDependencyContext otherPackageDependencyContext);
 
     /// Remove the resolved package dependency from the current process' package graph
-    /// (i.e. undo PackageDependency.Add()).
+    /// (i.e. undo packageDependency.Add()).
     ///
     /// This is the moral equivalent of FreeLibrary.
     ///

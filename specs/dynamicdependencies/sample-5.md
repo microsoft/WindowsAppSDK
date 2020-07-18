@@ -59,10 +59,10 @@ namespace LolzKitten
         {
             int countOfMuffinsManaged = 0;
 
-            var packageDependencyId = LoadPackageDependencyId("muffins");
+            string packageDependencyId = LoadPackageDependencyId("muffins");
             var packageDependency = new PackageDependency(packageDependencyId);
 
-            var packageDependencyContext = packageDependency.Add();
+            PackageDependencyContext packageDependencyContext = packageDependency.Add();
             Console.WriteLine($"Managing muffins via {packageDependencyContext.PackageFullName}");
 
             var assembly = Assembly.Load("Contoso-Muffins, Version=1.0.1967.0, Culture=neutral, PublicKeyToken=8744b20f8da049e3");
