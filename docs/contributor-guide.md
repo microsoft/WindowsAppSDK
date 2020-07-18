@@ -42,3 +42,17 @@ You'll need Visual Studio 2019 installed to do work in a GUI, or at least the MS
 Or start a Developer Command Prompt or Developer Powershell for VS 2019, and use ```msbuild /p:configuration=release,platform=x86 projectreunion.sln``` to build.
 
 If you don't have Visual Studio 2019 or Visual Studio Code installed you can download them [here](https://visualstudio.microsoft.com/downloads/).
+
+### Coding Style Guide
+
+The Project Reunion Coding Style Guide aims to help contributors produce the best code possible by providing specific guidance on best practices, techniques and technologies. We strive to keep the rules as natural and unobtrusive as practical while promiting qualify, productivity and fun.
+
+#### C++
+
+Please follow the industry driven [C++ Code Guidelines](https://isocpp.github.io/CppCoreGuidelines/) when writing C++ code. Exceptions and additions to these guidelines are noted below:
+
+* No exceptions or additions yet :-)
+
+#### Markdown
+
+**GUIDELINE:** The preferred line length limit is ~100 characters. GitHub formats lines regardless of individual length but GitHub diff is line oriented. Keeping lines within the preferred limit makes changes easier to review.
