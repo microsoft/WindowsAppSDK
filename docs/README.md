@@ -145,7 +145,7 @@ on the identity + packaging + deployment transparent ideas that Project Reunion
 supports for your app as well.
 
 * **[C++/WinRT](https://github.com/microsoft/cppwinrt)**, 
-**[RUST/WinRT](https://github.com/microsoft/winrt-rs)**, 
+**[Rust/WinRT](https://github.com/microsoft/winrt-rs)**, 
 and **[C#/WinRT](https://github.com/microsoft/cswinrt)** 
 provide language-native projections of Windows, 
 Project Reunion, and your own custom types defined in metadata. Consume APIs from 
