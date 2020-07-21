@@ -921,7 +921,7 @@ STDAPI MddPinPackageDependency(
 //
 // @warn MddUnpinPackageDependency() requires the caller have administrative privileges
 //       if the package dependency was pinned with MddPinPackageDependency::ScopeIsSystem.
-STDAPI MddUnpinPackageDependency(
+STDAPI_(void) MddUnpinPackageDependency(
     _In_ PCWSTR packageDependencyId);
 
 // Resolve a previously-pinned PackageDependency to a specific package and
@@ -978,7 +978,7 @@ STDAPI MddAddPackageDependency(
 //        a package dependency any files loaded from the package can continue
 //        to be used; future file resolution will fail to see the removed
 //        package dependency.
-STDAPI MddRemovePackageDependency(
+STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext);
 
 // Return the package full name that would be used if the
@@ -1092,10 +1092,10 @@ runtimeclass PackageDependency
     /// minVersion, and packageDependencyProcessorArchitectures values.
     static Boolean AreEquivalent(String packageDependencyId1, String packageDependencyId2);
 
-    /// Return true if this and otherPackageDependency would produce the same
+    /// Return true if this and other would produce the same
     /// package when resolved e.g. whether they share the same packageFamilyName,
     /// minVersion, and packageDependencyProcessorArchitectures values.
-    Boolean AreEquivalent(PackageDependency otherPackageDependency);
+    Boolean IsEquivalent(PackageDependency other);
 
     /// Define a package dependency for the current user. The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
@@ -1221,7 +1221,7 @@ runtimeclass PackageDependency
     /// A process' package graph is used to search for DLLs (per Dynamic-Link Library Search Order),
     /// WinRT objects and other resources; the caller can now load DLLs, activate
     /// WinRT objects and use other resources from the framework package until
-    /// PackageDependencyContext.Remove() is called (or the process ends).
+    /// PackageDependencyContext.Close() is called (or the process ends).
     /// The package dependency Id must match a package dependency defined
     /// for the calling user or the system (via PinForSystem) or an exception is raised.
     ///
@@ -1230,10 +1230,10 @@ runtimeclass PackageDependency
     /// duplicate 'detection' or 'filtering' applied by the API (multiple
     /// references to a package is not harmful). Once resolution is complete
     /// the package stays resolved for that user until the last reference across
-    /// all processes for that user is removed via PackageDependencyContext.Remove()
+    /// all processes for that user is removed via PackageDependencyContext.Close()
     /// (or process termination).
     ///
-    /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
+    /// Calls to Add() can be balanced by a PackageDependencyContext.Close()
     /// to remove the entry from the package graph.
     PackageDependencyContext Add();
 
@@ -1249,7 +1249,7 @@ runtimeclass PackageDependency
     /// A process' package graph is used to search for DLLs (per Dynamic-Link Library Search Order),
     /// WinRT objects and other resources; the caller can now load DLLs, activate
     /// WinRT objects and use other resources from the framework package until
-    /// PackageDependencyContext.Remove() is called (or the process ends).
+    /// PackageDependencyContext.Close() is called (or the process ends).
     /// The package dependency Id must match a package dependency defined
     /// for the calling user or the system (via PinForSystem) or an exception is raised.
     ///
@@ -1258,7 +1258,7 @@ runtimeclass PackageDependency
     /// duplicate 'detection' or 'filtering' applied by the API (multiple
     /// references to a package is not harmful). Once resolution is complete
     /// the package stays resolved for that user until the last reference across
-    /// all processes for that user is removed via PackageDependencyContext.Remove()
+    /// all processes for that user is removed via PackageDependencyContext.Close()
     /// (or process termination).
     ///
     /// This adds the resolved package to the caller's package graph, per rank.
@@ -1268,7 +1268,7 @@ runtimeclass PackageDependency
     /// (by default) added after others of the same rank. To add a package
     /// before others of the same rank, specify PackageDependency.PrependIfRankCollision.
     ///
-    /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
+    /// Calls to Add() can be balanced by a PackageDependencyContext.Close() (or object destruction)
     /// to remove the entry from the package graph.
     PackageDependencyContext Add(AddPackageDependencyOptions options);
 }
@@ -1279,14 +1279,23 @@ struct PackageDependencyContextId
     UInt64 Id;
 };
 
-///TBD
+/// This object provides access to information about a package dependency context
+/// and removes it from the caller's package graph when closed (via .Close() / .Dispose())
+/// or destroyed (i.e. undo packageDependency.Add()).
+///
+/// Closing this object is the moral equivalent of FreeLibrary.
+///
+/// @note This does not unload loaded resources (DLLs etc). After removing
+///        a package dependency any files loaded from the package can continue
+///        to be used; future package dependency resolution (via new calls to
+///        PackageDependency.Add) will fail to see the removed package dependency.
 runtimeclass PackageDependencyContext : ICloseable
 {
     /// Create an intstance of the package dependency context identified by context
     PackageDependencyContext(PackageDependencyContextId contextId);
 
-    /// Returns the package dependency context
-    PackageDependencyContextId Context { get; }
+    /// Returns the package dependency context id
+    PackageDependencyContextId ContextId { get; }
 
     /// Returns the package full name of the resolved package for this context
     String PackageFullName { get; }
@@ -1297,20 +1306,8 @@ runtimeclass PackageDependencyContext : ICloseable
         PackageDependencyContextId contextId1,
         PackageDependencyContextId contextId2);
 
-    /// Return true if this and otherPackageDependencyContext
-    /// are associated with the same resolved package.
-    Boolean AreEquivalent(PackageDependencyContext otherPackageDependencyContext);
-
-    /// Remove the resolved package dependency from the current process' package graph
-    /// (i.e. undo packageDependency.Add()).
-    ///
-    /// This is the moral equivalent of FreeLibrary.
-    ///
-    /// @note This does not unload loaded resources (DLLs etc). After removing
-    ///        a package dependency any files loaded from the package can continue
-    ///        to be used; future package dependency resolution (via new calls to Add)
-    ///        will fail to see the removed package dependency.
-    void Remove();
+    /// Return true if this and other are associated with the same resolved package.
+    Boolean IsEquivalent(PackageDependencyContext other);
 }
 }
 ```

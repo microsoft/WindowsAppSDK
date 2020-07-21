@@ -47,7 +47,7 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
 
     (void) LOG_IF_FAILED(MddRemovePackageDependency(packageDependencyContext));
 
-    (void) LOG_IF_FAILED(MddUnpinPackageDependency(packageDependencyId.get()));
+    MddUnpinPackageDependency(packageDependencyId.get());
 
     return S_OK;
 }
@@ -85,7 +85,7 @@ int ManageMuffins()
         countOfMuffinsManaged = Contoso.Muffins.Manage();
     }
 
-    packageDependencyContext.Remove();
+    packageDependencyContext.Close();
 
     packageDependency.Unpin();
 

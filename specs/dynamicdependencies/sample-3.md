@@ -37,7 +37,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     // We don't need the package dependency definition anymore. We can continue using the package dependency
     // in the current process until we quit. To prevent others from using it we'll explicitly unpin the
     // package dependency. This prevents new MddAddPackageDependency calls from succeeding.
-    (void) LOG_IF_FAILED(MddUnpinPackageDependency(packageDependencyId.get()));
+    MddUnpinPackageDependency(packageDependencyId.get());
 
     DoFunnyKittenThings();
 
