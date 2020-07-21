@@ -15,10 +15,38 @@ class MddPackageDependencyContextAndDll
 public:
     MddPackageDependencyContextAndDll() = default;
 
+    MddPackageDependencyContextAndDll(MddPackageDependencyContextAndDll&& other)
+    {
+        if (&other != this)
+        {
+            m_packageDependencyContext = other.m_packageDependencyContext;
+            other.m_packageDependencyContext = nullptr;
+
+            m_packageFullName = wistd::move(other.m_packageDependencyContext);
+            m_module = wistd::move(other.m_module);
+        }
+    }
+
+    MddPackageDependencyContextAndDll(MddPackageDependencyContextAndDll&) = delete;
+
+    MddPackageDependencyContextAndDll& operator=(MddPackageDependencyContextAndDll&) = delete;
+
     ~MddPackageDependencyContextAndDll()
     {
         (void) LOG_IF_FAILED(MddRemovePackageDependency(m_packageDependencyContext));
-        (void) LOG_IF_WIN32_BOOL_FALSE(FreeLibrary(m_module.get()));
+    }
+
+    MddPackageDependencyContextAndDll& operator=(MddPackageDependencyContextAndDll&& other)
+    {
+        if (&other != this)
+        {
+            m_packageDependencyContext = other.m_packageDependencyContext;
+            other.m_packageDependencyContext = nullptr;
+
+            m_packageFullName = wistd::move(other.m_packageDependencyContext);
+            m_module = wistd::move(other.m_module);
+        }
+        return *this;
     }
 
     HRESULT Add(
@@ -27,27 +55,34 @@ public:
         MddAddPackageDependency flags,
         _In_ PCWSTR dllFilename)
     {
+        MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
+        wil::unique_hlocal_string packageFullName;
         RETURN_IF_FAILED(MddAddPackageDependency(
             packageDependencyId, rank, flags, &m_packageDependencyContext , &m_packageFullName));
-        m_module = ::LoadLibrary(L"Contoso-Muffins");
-        RETURN_LAST_ERROR_IF(!m_module);
+
+        wil::unique_hmodule module(::LoadLibrary(L"Contoso-Muffins"));
+        RETURN_LAST_ERROR_IF(!module);
+
+        m_packageDependencyContext = packageDependencyContext
+        m_packageFullName = wistd::move(packageFullName);
+        m_module = wistd::move(module);
         return S_OK
     }
 
     PCWSTR GetPackageFullName() const
     {
-        Return m_packageFullName.get();
+        return m_packageFullName.get();
     }
 
-    HMODULE GetModule()
+    HMODULE GetModule() const
     {
-        Return m_module.get();
+        return m_module.get();
     }
 
 private:
     MDD_PACKAGEDEPENDENCY_CONTEXT m_packageDependencyContext = nullptr;
     wil::unique_hlocal_string m_packageFullName;
-    wil::unique_hmodule m_module;
+    mutable wil::unique_hmodule m_module;
 };
 
 HRESULT ManageMuffins(int& countOfMuffinsManaged)
