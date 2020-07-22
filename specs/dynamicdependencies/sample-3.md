@@ -48,7 +48,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel
+using Microsoft.ProjectReunion.ApplicationModel
 using Windows.ApplicationModel;
 
 namespace MyApp

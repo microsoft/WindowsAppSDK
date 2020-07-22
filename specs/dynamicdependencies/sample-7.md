@@ -54,7 +54,7 @@ HRESULT LoadPackageDependencyId(_In_ PCWSTR what, wil::unique_ptr<WCHAR[]>& pack
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel
+using Microsoft.ProjectReunion.ApplicationModel
 
 namespace LolzKitten
 {

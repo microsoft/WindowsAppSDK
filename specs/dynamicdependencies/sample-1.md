@@ -56,7 +56,7 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel;
+using Microsoft.ProjectReunion.ApplicationModel;
 using System.Reflection;
 using Windows.ApplicationModel;
 

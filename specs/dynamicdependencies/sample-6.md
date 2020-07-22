@@ -60,7 +60,7 @@ HRESULT SavePackageDependencyId(_In_ PCWSTR packageDependencyId)
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel
+using Microsoft.ProjectReunion.ApplicationModel
 using Windows.ApplicationModel;
 
 
