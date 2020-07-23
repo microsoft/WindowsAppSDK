@@ -113,7 +113,23 @@ manager.TargetRequested += onDropTargetRequestedHandler;
 
 ## Enabling your application to be a drag source (start drag & drop operations)
 
-### *** TODO ***
+```c#
+// C#
+
+CoreDragOperation dragOperation = new CoreDragOperation();
+
+// Set your data on the DataPackage on the CoreDragOperation
+DataPackage dataPackage = dragOperation.Data;
+dataPackage.SetText("Hello from another app!");
+
+// Set default operation
+dataPackage.RequestedOperation = DataPackageOperation.Copy;
+
+// Set allowed operations
+dragOperation.AllowedOperations = DataPackageOperation.Copy | DataPackageOperation.Move;
+
+DataPackageOperation result = await dragOperation.StartAsync();
+```
 
 # Remarks
 
