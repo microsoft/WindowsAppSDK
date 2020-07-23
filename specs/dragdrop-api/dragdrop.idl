@@ -1,0 +1,79 @@
+// Copyright (c) Microsoft Corp. Licensed under the MIT license.
+
+namespace Microsoft.Reunion.DragDrop
+{
+    // Forward declare
+    runtimeclass CoreDragInfo;
+    runtimeclass CoreDragOperation;
+    runtimeclass CoreDragUIOverride;
+    runtimeclass CoreDragDropManager;
+    runtimeclass CoreDropOperationTargetRequestedEventArgs;
+
+    enum DragDropModifiers
+    {
+        None = 0x0,
+        Shift = 0x1,
+        Control = 0x2,
+        Alt = 0x4,
+        LeftButton = 0x8,
+        MiddleButton = 0x10,
+        RightButton = 0x20
+    };
+
+    enum CoreDragUIContentMode
+    {
+        Auto,
+        Deferred,
+    };
+
+    runtimeclass CoreDragInfo
+    {
+        Microsoft.Reunion.ApplicationModel.DataPackage Data { get; };
+        Microsoft.Reunion.DragDrop.DragDropModifiers Modifiers { get; };
+        Windows.Foundation.Point Position { get; };
+        Microsoft.Reunion.ApplicationModel.DataPackage.DataPackageOperation AllowedOperations { get; };
+    }
+
+    runtimeclass CoreDragUIOverride
+    {
+        void SetContentFromSoftwareBitmap(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap);
+        void SetContentFromSoftwareBitmapWithAnchorPoint(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap, Windows.Foundation.Point anchorPoint);
+        boolean IsContentVisible;
+        String Caption;
+        boolean IsCaptionVisible;
+        boolean IsGlyphVisible;
+        void Clear();
+    }
+
+    interface ICoreDropOperationTarget
+    {
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> EnterAsync(CoreDragInfo dragInfo, CoreDragUIOverride dragUIOverride);
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> OverAsync(CoreDragInfo dragInfo, CoreDragUIOverride dragUIOverride);
+        Windows.Foundation.IAsyncAction LeaveAsync(CoreDragInfo dragInfo);
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> DropAsync(CoreDragInfo dragInfo);
+    }
+
+    runtimeclass CoreDragOperation
+    {
+        Microsoft.Reunion.ApplicationModel.DataPackageOperation AllowedOperations;
+        Microsoft.Reunion.ApplicationModel.DataPackage Data { get; };
+        CoreDragUIContentMode DragUIContentMode;
+        void SetPointerId(UInt32 pointerId);
+        void SetDragUIContentFromSoftwareBitmap(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap);
+        void SetDragUIContentFromSoftwareBitmapWithAnchorPoint(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap, Windows.Foundation.Point anchorPoint);
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> StartAsync();
+    }
+
+    runtimeclass ICoreDragDropManager
+    {
+        CoreDragDropManager GetForCurrentView();
+        CoreDragDropManager GetForHWND(HWND hwnd);
+        event Windows.Foundation.TypedEventHandler<CoreDragDropManager, CoreDropOperationTargetRequestedEventArgs> TargetRequested;
+        boolean AreConcurrentOperationsEnabled;
+    }
+
+    runtimeclass CoreDropOperationTargetRequestedEventArgs
+    {
+        void SetTarget(CoreDropOperationTarget target);
+    }
+} // Microsoft.Reunion.DragDrop
