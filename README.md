@@ -1,4 +1,9 @@
 ﻿# Project Reunion
+  
+![Build CI Master](https://github.com/microsoft/ProjectReunion/workflows/Build%20CI%20Master/badge.svg)
+[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
+[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+
 
 ### What is Project Reunion?
 Project Reunion is our vision for unifying and evolving the Windows developer platform to make it easier
