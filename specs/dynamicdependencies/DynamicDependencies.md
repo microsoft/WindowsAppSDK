@@ -31,12 +31,13 @@ to use packaged content.
   - [5.1. API Overview](#51-api-overview)
   - [5.2. Package Dependency Resolution is Per-User](#52-package-dependency-resolution-is-per-user)
   - [5.3. LocalSystem is not Supported](#53-localsystem-is-not-supported)
-  - [5.4. Packaging - ProjectReunion.Loader.dll](#54-packaging---projectreunionloaderdll)
+  - [5.4. Packaging - ProjectReunion.dll and ProjectReunion.Loader.dll](#54-packaging---projectreuniondll-and-projectreunionloaderdll)
+    - [5.4.1. Boostrapper - Find and Load/Run the per-application 'helper' Main package](#541-boostrapper---find-and-loadrun-the-per-application-helper-main-package)
+    - [5.4.2. Boostrapper - Find and Load ProjectReunion.dll](#542-boostrapper---find-and-load-projectreuniondll)
   - [5.5. Dynamic Dependencies vis a vis Static Dependencies](#55-dynamic-dependencies-vis-a-vis-static-dependencies)
   - [5.6. Known Limitations in v1](#56-known-limitations-in-v1)
     - [5.6.1. uap6:LoaderSearchPathOverride not supported](#561-uap6loadersearchpathoverride-not-supported)
     - [5.6.2. uap6:AllowExecution not supported](#562-uap6allowexecution-not-supported)
-    - [5.6.3. Lifecycle Hints are not supported](#563-lifecycle-hints-are-not-supported)
 - [6. API Details](#6-api-details)
   - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
   - [6.2. WinRT API](#62-winrt-api)
@@ -541,8 +542,8 @@ void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
 
 #### 3.1.4.2. Packaged Processes
 
-Packaged processes are a problem. The PATH environment variable and AddDllDirectory are ignored for
-packages with package identity. The loader has a rather restrictive search order for packaged processes:
+Loader path modifications (via PATH environment variable and [AddDllDirectory](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory))
+are ignored for packaged processes. The loader instead uses:
 
 0. DLL Redirection (aka `pkgdir\microsoft.system.package.metadata\Application.Local`) if [DevOverideEnable=1](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-redirection)
 1. APIsets
@@ -562,19 +563,7 @@ supporting machinery can help out here?
 
 ### 3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride
 
-Packages can specify
-[uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
-to add additional (package-relative) paths to the Loader's search order, and even potentially remove
-a package's root directory from the Loader's search order. If present the DLL Search Order for the
-package graph isn't the list of packages in the package graph and there are no public APIs to get
-this list of information. The only available mechanism is to 'Find, Load and Parse appxmanifest.xml'
-to determine if this extension is present and, if so, honor it.
-
-**The recommendation for v1*** is to not support this extension when building the DLL Search Order for Dynamic Dependencies.
-
-The Loader will still see this list when it walks the packaged process' package graph, but those
-paths will be searched ***after*** Dynamic Dependencies added with `rank > 0` or `rank == 0 AND
-options.PrependIfRankCollision=false`.
+The current design and implementation don't consult [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride).
 
 ### 3.2.2. Known Issue: DLL Search Order ignores [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
 
@@ -716,6 +705,11 @@ close the connection until after `MddRemovePackageDependency`.
 Deployment detects this process running with the 'helper' Main package's identity and will not
 remove the referenced Framework package when updating the Framework.
 
+**NOTE:** A single ProjectReunion Main package can provide the needed 'pin' support but
+blocks servicing scenarios e.g. App1 is running when App2 installs a newer ProjectReunion
+Framework package. These issues can be avoided via a per-app 'helper' Main package. See
+TBD-link-to-per-app-helper-proposal for more details.
+
 # 4. Examples
 
 Samples illustrating the DynamicDependency APIs
@@ -782,14 +776,36 @@ Two users can resolve a package dependency to different answers, depending on th
 Package dependencies can only be resolved to packages registered for a user. As packages cannot be
 registered for LocalSystem the Dynamic Dependencies feature is not available to callers running as LocalSystem.
 
-## 5.4. Packaging - ProjectReunion.Loader.dll
+## 5.4. Packaging - ProjectReunion.dll and ProjectReunion.Loader.dll
 
-The Dynamic Dependencies API is provided via ProjectReunion.Loader.dll.
+The Dynamic Dependencies API is provided via ProjectReunion.dll in ProjectReunion's Framework package.
 
-This dll will be included in the ProjectReunion Framework package for packaged applications.
-However, it must be a redistributable for non-packaged applications.
+ProjectReunion.Loader.dll is a redistributable for non-packaged applications.
 
-Ironically, ProjectReunion.Loader.dll cannot be used from a Framework package by non-packaged applications.
+Packaged applications can declare `<PackageDependency Name='ProjectReunion'...>` to access Framework packages.
+Non-packaged applications need to use the 'boostrapper API' in ProjectReunion.Loader.dll to get access to
+ProjectReunion's Framework package. See [3.4. Runtime 'Pinning' aka Prevent Update While In-Use] for more details.
+
+The 'bootstrapper API' provides an initialization function that performs the following actions:
+
+1. Find the per-application 'helper' Main package and create a process with its identity
+2. Find and load ProjectReunion.dll from the ProjectReunion Framework package
+
+### 5.4.1. Boostrapper - Find and Load/Run the per-application 'helper' Main package
+
+The per-application 'helper' Main package defines a [COM OutOfProcess
+server](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-com-comserver)
+and `<PackageDependency Name="ProjectReunionFramework"...>`.
+
+The bootstrapper API calls CoCreateInstance() to create a process with this package's identity.
+The Dynamic Dependencies API can be used by non-packaged processes as long as that process runs.
+The bootstrapper API holds a reference to the returned object until a 'bootstrapper shutdown' API
+is called or process termination.
+
+### 5.4.2. Boostrapper - Find and Load ProjectReunion.dll
+
+The bootstrapper API finds the ProjectReunion Framework package and calls LoadLibrary("ProjectReunion.dll")
+to load and initialize the Dynamic Dependencies API.
 
 ## 5.5. Dynamic Dependencies vis a vis Static Dependencies
 
@@ -813,19 +829,6 @@ See [3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride](#32
 
 See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-known-issue-dll-search-order-ignores-uap6allowexecution).
 
-### 5.6.3. Lifecycle Hints are not supported
-
-A package dependency is pinned by a registered package. The lifecycle hints to unpin a package
-dependency when a file (`LifecycleHint_FileOrPath`) or registry key (`LifecycleHint_RegistrySubkey`)
-is deleted are reserved for future use. Specifying these options today is an error.
-
-Implementing these options requires:
-
-1. Detecting when the lifetime artifact is deleted. This could be done aggressively (e.g. monitor the file/regkey) or lazily (e.g. check file/regkey existence when accessed)
-1. Knowing the package pinning the package dependency. This gets complicated if a pinning package declares 2+ `<PackageDependency>`.
-2. Calling `PackageManager.RemovePackageAsync(packagePinningThePackageDependency)`
-3. Sufficient rights to succeed
-
 # 6. API Details
 
 **TODO** Retitle this section 'API' since we don't have 'API Notes'?
@@ -837,18 +840,33 @@ All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
 ```c++
 enum class MddPinPackageDependency : uint32_t
 {
-    None                               0,
-    DoNotVerifyDependencyResolution    0x00000001,
-    LifecycleHint_Process              0,
-    LifecycleHint_FileOrPath           0x00000002,  // Reserved for future use
-    LifecycleHint_RegistrySubkey       0x00000004,  // Reserved for future use
+    None 0,
+
+    /// Disable dependency resolution when pinning a package dependency.
+    DoNotVerifyDependencyResolution = 0x00000001,
 
      /// Define the package dependency for the system, accessible to all users
      /// (default is the package dependency is defined for a specific user).
      /// This option requires the caller has adminitrative privileges.
-    ScopeIsSystem                      0x00000008,
+    ScopeIsSystem = 0x00000002,
 };
 DEFINE_ENUM_FLAG_OPERATORS(MddPinPackageDependency)
+
+enum class MddPinPackageDependencyLifetimeKind
+{
+    /// The current process is the lifetime artifact. The package dependency
+    /// is implicitly unpinned when the process terminates.
+    Process = 0,
+
+    /// The lifetime artifact is an absolute filename or path.
+    /// The package dependency is implicitly unpinned when this is deleted.
+    FilePath = 1,
+
+    /// The lifetime artifact is a registry key in the format
+    /// 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU.
+    /// The package dependency is implicitly unpinned when this is deleted.
+    RegistryKey = 2,
+}
 
 enum class MddAddPackageDependency : uint32_t
 {
@@ -874,131 +892,132 @@ DEFINE_ENUM_FLAG_OPERATORS(MddPackageDependencyProcessorArchitectures)
 
 DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 
-// Define a package dependency. The criteria for a PackageDependency
-// (package family name, minimum version, etc)
-// may match multiple packages, but ensures Deployment won't remove
-// a package if it's the only one satisfying the PackageDependency.
-//
-// @note A package matching a PackageDependency pin can still be removed
-//       as long as there's another that satisfies the PackageDependency.
-//       For example, if Fwk-v1 is installed and a PackageDependency specifies
-//       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
-//       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
-//       is removed Deployment won't remove Fwk-v2 because it's the only package
-//       satisfying the PackageDependency. Thus Fwk-v1 and Fwk-v2 (and any other
-//       package matching the PackageDependency) are 'loosely pinned'. Deployment
-//       guarantees it won't remove a package if it would make a PackageDependency
-//       unsatisfied.
-//
-// A PackageDependency specifies criteria (package family, minimum version, etc)
-// and not a specific package. Deployment reserves the right to use a different
-// package (e.g. higher version) to satisfy the PackageDependency if/when
-// one becomes available.
-//
-// @param user the user scope of the package dependency. If NULL the caller's
-//        user context is used. MUST be NULL if MddPinPackageDependency::ScopeIsSystem
-//        is specified
-// @param lifetimeArtifact MUST be NULL if MddMddPinPackageDependency::LifecycleHint_Process (default)
-// @param packageDependencyId allocated via LocalAlloc; use LocalFree to deallocate
-//
-// @note MddPinPackageDependency() fails if the PackageDependency cannot be resolved to a specific
-//       package. This package resolution check is skipped if
-//       MddPinPackageDependency::DoNotVerifyDependencyResolution is specified. This is useful
-//       for installers running as user contexts other than the target user (e.g. installers
-//       running as LocalSystem).
+/// Define a package dependency. The criteria for a PackageDependency
+/// (package family name, minimum version, etc)
+/// may match multiple packages, but ensures Deployment won't remove
+/// a package if it's the only one satisfying the PackageDependency.
+///
+/// @note A package matching a PackageDependency pin can still be removed
+///       as long as there's another that satisfies the PackageDependency.
+///       For example, if Fwk-v1 is installed and a PackageDependency specifies
+///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
+///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
+///       is removed Deployment won't remove Fwk-v2 because it's the only package
+///       satisfying the PackageDependency. Thus Fwk-v1 and Fwk-v2 (and any other
+///       package matching the PackageDependency) are 'loosely pinned'. Deployment
+///       guarantees it won't remove a package if it would make a PackageDependency
+///       unsatisfied.
+///
+/// A PackageDependency specifies criteria (package family, minimum version, etc)
+/// and not a specific package. Deployment reserves the right to use a different
+/// package (e.g. higher version) to satisfy the PackageDependency if/when
+/// one becomes available.
+///
+/// @param user the user scope of the package dependency. If NULL the caller's
+///        user context is used. MUST be NULL if MddPinPackageDependency::ScopeIsSystem
+///        is specified
+/// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPinPackageDependencyLifetimeKind::Process
+/// @param packageDependencyId allocated via LocalAlloc; use LocalFree to deallocate
+///
+/// @note MddPinPackageDependency() fails if the PackageDependency cannot be resolved to a specific
+///       package. This package resolution check is skipped if
+///       MddPinPackageDependency::DoNotVerifyDependencyResolution is specified. This is useful
+///       for installers running as user contexts other than the target user (e.g. installers
+///       running as LocalSystem).
 STDAPI MddPinPackageDependency(
     PSID user,
     _In_ PCWSTR packageFamilyName,
     PACKAGE_VERSION minVersion,
     MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+    MddPinPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact,
     MddPinPackageDependency flags,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 
-// Undefine a package dependency. Removing a pin on a PackageDependency is typically done at uninstall-time.
-// This implicitly occurs if the package dependency's 'lifetime artifact' (specified via MddPinPackageDependency)
-// is deleted. Packages that are not referenced by other packages and have no pins are elegible to be removed.
-//
-// @warn MddUnpinPackageDependency() requires the caller have administrative privileges
-//       if the package dependency was pinned with MddPinPackageDependency::ScopeIsSystem.
+/// Undefine a package dependency. Removing a pin on a PackageDependency is typically done at uninstall-time.
+/// This implicitly occurs if the package dependency's 'lifetime artifact' (specified via MddPinPackageDependency)
+/// is deleted. Packages that are not referenced by other packages and have no pins are elegible to be removed.
+///
+/// @warn MddUnpinPackageDependency() requires the caller have administrative privileges
+///       if the package dependency was pinned with MddPinPackageDependency::ScopeIsSystem.
 STDAPI_(void) MddUnpinPackageDependency(
     _In_ PCWSTR packageDependencyId);
 
-// Resolve a previously-pinned PackageDependency to a specific package and
-// add it to the invoking process' package graph. Once the dependency has
-// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
-// can find the binaries in the resolved package.
-//
-// Package resoution is specific to a user and can return different values
-// for different users on a system.
-//
-// Each successful MddAddPackageDependency() adds the resolve packaged to the
-// calling process' package graph, even if already present. There is no
-// duplicate 'detection' or 'filtering' applied by the API (multiple
-// references from a package is not harmful). Once resolution is complete
-// the package stays resolved for that user until the last reference across
-// all processes for that user is removed via MddRemovePackageDependency (or
-// process termination).
-//
-// MddAddPackageDependency() adds the resolved package to the caller's package graph,
-// per the rank specified. A process' package graph is a list of packages sorted by
-// rank in ascending order (-infinityâ€¦0â€¦+infinity). If package(s) are present in the
-// package graph with the same rank as the call to MddAddPackageDependency the resolved
-// package is (by default) added after others of the same rank. To add a package
-// before others o the same rank, specify MddAddPackageDependency::PrependIfRankCollision.
-//
-// Every MddAddPackageDependency should be balanced by a MddRemovePackageDependency
-// to remove the entry from the package graph. If the process terminates all package
-// references are removed, but any pins stay behind.
-//
-// MddAddPackageDependency adds the resulting package to the process' package
-// graph, per the rank and options/flags parameters. The process' package
-// graph is used to search for DLLs (per Dynamic-Link Library Search Order),
-// WinRT objects and other resources; the caller can now load DLLs, activate
-// WinRT objects and use other resources from the framework package until
-// MddRemovePackageDependency is called. The packageDependencyId parameter
-// must match a package dependency defined for the calling user or the
-// system (i.e. pinned with MddPinPackageDependency::ScopeIsSystem) else
-// an error is returned.
-//
-// @param packageDependencyContext valid until passed to MddRemovePackageDependency()
-// @param packageFullName allocated via LocalAlloc; use LocalFree to deallocate
+/// Resolve a previously-pinned PackageDependency to a specific package and
+/// add it to the invoking process' package graph. Once the dependency has
+/// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
+/// can find the binaries in the resolved package.
+///
+/// Package resoution is specific to a user and can return different values
+/// for different users on a system.
+///
+/// Each successful MddAddPackageDependency() adds the resolve packaged to the
+/// calling process' package graph, even if already present. There is no
+/// duplicate 'detection' or 'filtering' applied by the API (multiple
+/// references from a package is not harmful). Once resolution is complete
+/// the package stays resolved for that user until the last reference across
+/// all processes for that user is removed via MddRemovePackageDependency (or
+/// process termination).
+///
+/// MddAddPackageDependency() adds the resolved package to the caller's package graph,
+/// per the rank specified. A process' package graph is a list of packages sorted by
+/// rank in ascending order (-infinityâ€¦0â€¦+infinity). If package(s) are present in the
+/// package graph with the same rank as the call to MddAddPackageDependency the resolved
+/// package is (by default) added after others of the same rank. To add a package
+/// before others o the same rank, specify MddAddPackageDependency::PrependIfRankCollision.
+///
+/// Every MddAddPackageDependency should be balanced by a MddRemovePackageDependency
+/// to remove the entry from the package graph. If the process terminates all package
+/// references are removed, but any pins stay behind.
+///
+/// MddAddPackageDependency adds the resulting package to the process' package
+/// graph, per the rank and options/flags parameters. The process' package
+/// graph is used to search for DLLs (per Dynamic-Link Library Search Order),
+/// WinRT objects and other resources; the caller can now load DLLs, activate
+/// WinRT objects and use other resources from the framework package until
+/// MddRemovePackageDependency is called. The packageDependencyId parameter
+/// must match a package dependency defined for the calling user or the
+/// system (i.e. pinned with MddPinPackageDependency::ScopeIsSystem) else
+/// an error is returned.
+///
+/// @param packageDependencyContext valid until passed to MddRemovePackageDependency()
+/// @param packageFullName allocated via LocalAlloc; use LocalFree to deallocate
 STDAPI MddAddPackageDependency(
     _In_ PCWSTR packageDependencyId,
     INT32 rank,
-    MddMddAddPackageDependency flags,
+    MddAddPackageDependency flags,
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName);
 
-// Remove a resolved PackageDependency from the current process' package graph
-// (i.e. undo MddAddPackageDependency). Used at runtime (i.e. the moral equivalent
-// of FreeLibrary).
-//
-// @note This does not unload loaded resources (DLLs etc). After removing
-//        a package dependency any files loaded from the package can continue
-//        to be used; future file resolution will fail to see the removed
-//        package dependency.
+/// Remove a resolved PackageDependency from the current process' package graph
+/// (i.e. undo MddAddPackageDependency). Used at runtime (i.e. the moral equivalent
+/// of FreeLibrary).
+///
+/// @note This does not unload loaded resources (DLLs etc). After removing
+///        a package dependency any files loaded from the package can continue
+///        to be used; future file resolution will fail to see the removed
+///        package dependency.
 STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext);
 
-// Return the package full name that would be used if the
-// PackageDependency were to be resolved. Does not add the
-// package to the process graph.
-//
-// @param packageFullName allocated via LocalAlloc; use LocalFree to deallocate
+/// Return the package full name that would be used if the
+/// PackageDependency were to be resolved. Does not add the
+/// package to the process graph.
+///
+/// @param packageFullName allocated via LocalAlloc; use LocalFree to deallocate
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName);
 
-// Return TRUE if PackageDependency pins would produce the same package
-// when resolved e.g. whether they share the same packageFamilyName,
-// minVersion, and packageDependencyProcessorArchitectures values.
+/// Return TRUE if PackageDependency pins would produce the same package
+/// when resolved e.g. whether they share the same packageFamilyName,
+/// minVersion, and packageDependencyProcessorArchitectures values.
 STDAPI_(BOOL) MddArePackageDependencyIdsEquivalent(
     _In_ PCWSTR packageDependencyId1,
     _In_ PCWSTR packageDependencyId2);
 
-// Return TRUE if packageDependencyIdContext1 and packageDependencyContextId2
-// are associated with the same resolved package.
+/// Return TRUE if context1 and contextId2
+/// are associated with the same resolved package.
 STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context1,
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context2);
@@ -1023,7 +1042,7 @@ enum PackageDependencyProcessorArchitectures
     X86OnArm64 = 0x00000020,
 };
 
-enum PackageDependencyLifecycleArtifactKind
+enum PackageDependencyLifetimeArtifactKind
 {
     /// The current process is the lifetime artifact. The package dependency
     /// is implicitly unpinned when the process terminates.
@@ -1051,10 +1070,10 @@ runtimeclass PinPackageDependencyOptions
     Boolean VerifyDependencyResolution = true;
 
     /// The kind of lifetime artifact for this package dependency.
-    PackageDependencyLifecycleArtifactKind LifecycleArtifactKind;
+    PackageDependencyLifetimeArtifactKind LifetimeArtifactKind;
 
-    /// The lifetime artifact when pinning a package dependency. The value depends on the LifecycleArtifactKind value.
-    String LifecycleArtifact;
+    /// The lifetime artifact when pinning a package dependency. The value depends on the LifetimeArtifactKind value.
+    String LifetimeArtifact;
 }
 
 /// Options when adding a package dependency
@@ -1122,6 +1141,41 @@ runtimeclass PackageDependency
     ///
     /// @param packageFamilyName the package family to pin
     /// @param minVerrsion the minimum version to pin
+    ///
+    /// @note This fails if the package dependency cannot be resolved to a specific package.
+    ///
+    /// @see Pin(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see PinForUser()
+    /// @see PinForSystem()
+    static PackageDependency Pin(
+        String packageFamilyName,
+        PackageVersion minVersion);
+
+    /// Define a package dependency for the current user. The criteria for a PackageDependency
+    /// (package family name, minimum version, etc) may match multiple
+    /// packages, but ensures Deployment won't remove a package if it's
+    /// the only one satisfying the PackageDependency.
+    ///
+    /// @note A package matching a PackageDependency pin can still be removed
+    ///       as long as there's another that satisfies the PackageDependency.
+    ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
+    ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
+    ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
+    ///       is removed Deployment won't remove Fwk-v2 because it's the only package
+    ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
+    ///       package matching the PackageDependency) are 'loosely pinned' â€“ Deployment
+    ///       guarantees it won't remove a package if it would make a PackageDependency
+    ///       unsatisfied.
+    ///
+    /// A PackageDependency specifies criteria (package family, minimum version, etc)
+    /// and not a specific package. Deployment reserves the right to use a different
+    /// package (e.g. higher version) to satisfy the PackageDependency if/when
+    /// one becomes available.
+    ///
+    /// This method is equivalent to PinForUser(null,...).
+    ///
+    /// @param packageFamilyName the package family to pin
+    /// @param minVerrsion the minimum version to pin
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
@@ -1129,8 +1183,9 @@ runtimeclass PackageDependency
     ///       is specified. This is useful if a package satisfying the dependency
     ///       will be installed after the package dependency is defined.
     ///
-    /// @see PinForUser
-    /// @see PinForSystem
+    /// @see Pin(String, PackageVersion)
+    /// @see PinForUser()
+    /// @see PinForSystem()
     static PackageDependency Pin(
         String packageFamilyName,
         PackageVersion minVersion,
@@ -1163,10 +1218,10 @@ runtimeclass PackageDependency
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
-    ///       This package resolution check is skipped if MddPinPackageDependency.DoNotVerifyDependencyResolution
-    ///       is specified. This is useful for installers running as user contexts other than the target user
-    ///       (e.g. installers running as LocalSystem) or if a package satisfying the dependency
-    ///       will be installed after the package dependency is defined.
+    ///
+    /// @see Pin(String, PackageVersion)
+    /// @see Pin(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see PinForSystem()
     static PackageDependency PinForUser(
         Windows.System.User user,
         String packageFamilyName,
@@ -1202,6 +1257,10 @@ runtimeclass PackageDependency
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///       This package resolution check is skipped if MddPinPackageDependency.DoNotVerifyDependencyResolution
     ///       is specified. This is useful for installers pinning a package dependency for all users on a system.
+    ///
+    /// @see Pin(String, PackageVersion)
+    /// @see Pin(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see PinForUser()
     static PackageDependency PinForSystem(
         String packageFamilyName,
         PackageVersion minVersion,
@@ -1318,14 +1377,6 @@ TODO: Answer and delete
 
 Q: Package dependencies are only resolved for Framework packages. Should other package types (Main,
 Resource, Optional) be supported?
-
-Q:WinRT: How should 'lifetimeArtifact' and MddPinPackageDependency_LifecycleHint* be expressed in
-the WinRT API? Some ideas:
-
-- String file; String regkey; if both null then it's Process
-- String lifetimeArtifact; Boolean isFile; Boolean isReg; Boolean isProcess; and only 1 can be true
-- ILifetimeArtifact property with multiple implementations e.g. FileLifetimeArtifact = { string file; } vs * RegistryLifetimeArtifact = { HKEY root; string subkey; } vs Process=null
-- ?
 
 Q:WinRT: How to express equivalent of MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT?
 

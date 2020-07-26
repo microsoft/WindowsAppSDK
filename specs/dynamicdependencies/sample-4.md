@@ -56,12 +56,12 @@ HRESULT DefinePackageDependency_Muffins()
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
+    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetMuffinsLifetimeAbsoluteFilename();
-    const UINT32 pinFlags = MddPinPackageDependency::DoNotVerifyDependencyResolution |
-                            MddPinPackageDependency::LifecycleHint_FileOrPath;
+    const auto pinFlags = MddPinPackageDependency::DoNotVerifyDependencyResolution;
     wil::unique_hlocal_string packageDependencyId;
     RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, nullptr, pinFlags, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, lifetimeArtifact, pinFlags, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(L"muffins", packageDependencyId.get()));
     return S_OK;
@@ -76,12 +76,12 @@ HRESULT DefinePackageDependency_Waffles()
     minVersion.Build = 67;
     minVersion.Revision = 0;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
+    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetWafflesLifetimeRegistryKey();
-    const UINT32 pinFlags = MddPinPackageDependency::DoNotVerifyDependencyResolution |
-                            MddPinPackageDependency::LifecycleHint_RegistrySubkey;
+    const auto pinFlags = MddPinPackageDependency::DoNotVerifyDependencyResolution;
     wil::unique_hlocal_string packageDependencyId;
     RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, nullptr, pinFlags, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinFlags, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(L"waffles", packageDependencyId.get()));
     return S_OK;

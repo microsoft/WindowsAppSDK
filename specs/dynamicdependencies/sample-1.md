@@ -23,10 +23,11 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const UINT32 pinFlags = MddPinPackageDependency::LifecycleHint_Process;
+    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
+    const auto pinFlags = MddPinPackageDependency::None;
     wil::unique_hlocal_string packageDependencyId;
     RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, pinFlags, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinFlags, &packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
     const UINT32 addFlags = MddAddPackageDependency::None;
