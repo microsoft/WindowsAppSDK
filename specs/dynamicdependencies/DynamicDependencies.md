@@ -22,7 +22,7 @@ to use packaged content.
       - [3.1.4.1. Non-Packaged Processes](#3141-non-packaged-processes)
       - [3.1.4.2. Packaged Processes](#3142-packaged-processes)
   - [3.2. Known Issues for Packaged Processes](#32-known-issues-for-packaged-processes)
-    - [3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-for-uap6loadersearchpathoverride)
+    - [3.2.1. Known Issue: DLL Search Order ignores uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-ignores-uap6loadersearchpathoverride)
     - [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-known-issue-dll-search-order-ignores-uap6allowexecution)
   - [3.3. Install-time 'Pinning' aka Prevent Removal](#33-install-time-pinning-aka-prevent-removal)
   - [3.4. Runtime 'Pinning' aka Prevent Update While In-Use](#34-runtime-pinning-aka-prevent-update-while-in-use)
@@ -561,16 +561,19 @@ supporting machinery can help out here?
 
 ## 3.2. Known Issues for Packaged Processes
 
-### 3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride
+### 3.2.1. Known Issue: DLL Search Order ignores [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
 
-The current design and implementation don't consult [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride).
+The current design and implementation don't consult [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
+when updating the Loader's path list to find DLLs.
 
 ### 3.2.2. Known Issue: DLL Search Order ignores [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
 
-Only packages in the package graph with execution rights are included in the DLL Search Order. This
-can be explicitly controlled via the
-[uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
-element in appxmanifest.xml. The default value varies, depending on the package
+The current design and implementation don't consult [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
+to determine if a package should be in the DLL Search Order.
+
+For packaged processes only packages with execution rights are included in the DLL Search Order.
+This can be explicitly controlled via the [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
+element in appxmanifest.xml. The default value varies, depending on package:
 
 AllowExecution default = True
 
@@ -583,16 +586,8 @@ AllowExecution default = False
 - Resource
 - Optional, if not InRelatedSet
 
-There are no public APIs to get information. The only available mechanism is to `Find, Load and
-Parse appxmanifest.xml` to determine if this extension is present and, if so, honor it.
-
-**The recommendation for v1** is to not support this extension when building the DLL Search Order for Dynamic Dependencies.
-
-The Loader will still see packages manifesting `<uap6:AllowExecution>true</>` when it walks the
-packaged process' package graph, but those paths will be searched ***after*** Dynamic Dependencies
-added with `rank > 0` or `rank == 0 AND options.PrependIfRankCollision=false`.
-
-If a Framework package specifies `<uap6:AllowExecution>false</>` that won't be known to Dynamic Dependencies' `AddToDllSearchOrder()` logic. The Framework package will be added to the path list, not omitted per the manifested element.
+There are no public APIs to get this information so we'll build the DLL Search Order only based
+on package types (as above), regardless if a package manifests [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution).
 
 ## 3.3. Install-time 'Pinning' aka Prevent Removal
 
@@ -823,7 +818,7 @@ The initial implementation does not fully implement this spec.
 
 ### 5.6.1. [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) not supported
 
-See [3.2.1. Known Issue: DLL Search Order for uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-for-uap6loadersearchpathoverride).
+See [3.2.1. Known Issue: DLL Search Order ignores uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-ignores-uap6loadersearchpathoverride).
 
 ### 5.6.2. [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution) not supported
 
