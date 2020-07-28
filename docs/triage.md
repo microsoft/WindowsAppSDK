@@ -4,13 +4,10 @@
 The Project Reunion team manages issues and PRs in the repo using a process we call
 "triage". It helps us keep issues organized and focuses the attention of the different
 groups that work in our project.
-Our objective is to make sure all issues have one or more owners, an issue type label,
-and one or more area labels. Our goal is to make sure all issues are triaged within 2
-business days.
 
-Note: new issues are automatically labeled needs-triage by the msftbot, so the triage team
-only needs to review any issues that have been labeled as needs-triaged.
-(Exception: a few issues were created prior to enabling the bot.)
+Our objective is to make sure all issues have one or more owners, an issue type label,
+and one or more area labels. New issues are automatically labeled needs-triage by the msftbot,
+so the triage team only needs to review any issues that have been labeled as `needs-triage`.
 
 ## Issue Types
 Each issue should only have one type.
@@ -49,7 +46,8 @@ For each issue with `needs-triage`:
 * Feature proposals:
   - Triage makes first pass to ask clarifying questions. If it's ok then:
      - Spec owner gets assigned
-     - Gets added to `Freezer` in feature tracking board
+     - Adds area tag(s)
+     - Gets added to `Under Discussion` in feature tracking board
      - Assigned owner is responsible for following the proposal process
      
 * Everything else:
