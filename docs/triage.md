@@ -65,14 +65,11 @@ investigation, like debugging or another teams input, to determine how to route 
 ## Proposal Review Process
 The Proposal Tracking board has four columns to track the progress we are making on a
 proposal.
-* **Awaiting Triage**: This is where all new proposals start their journey. They are placed here before triage happens and a
-team member is assigned
-* **Under Discussion**: Issue is actively being reviewed and discussed to figure out what that means for our developers
+* **Under Discussion**: Issue is actively being reviewed and discussed internally and with the community to figure out what that means for our developers
 and the platform 
 * **Spec in Progress**:  Work is underway to get a spec ready for publishing or has already been 
 published and is currently being shaped by the community.
 * **Under Development**: The spec is signed off and development can start or has started.
-* **Code Complete**: A PR(s) meeting all the specifications is published.
 * **Backlog/Freezer**: Place where we put proposals that are not high priority at this time or that
 can be reviewed at a later date. The backlog will be reviewed at least once monthly by the triage team.
 
