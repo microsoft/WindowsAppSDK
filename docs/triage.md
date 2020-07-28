@@ -43,7 +43,7 @@ Area labels are the labels (create new ones as needed); there can be multiple ar
 * area-Win32
 * area-etc.
 
-## Triage process
+## Triage Process
 
 For each issue with `needs-triage`:
 * Feature proposals:
@@ -62,7 +62,7 @@ For each issue with `needs-triage`:
 The temporary `needs-assignee-attention` label is intended for issues which need additional
 investigation, like debugging or another teams input, to determine how to route them. 
 
-## Proposal Review process
+## Proposal Review Process
 The Proposal Tracking board has four columns to track the progress we are making on a
 proposal.
 * **Awaiting Triage**: This is where all new proposals start their journey. They are placed here before triage happens and a
@@ -77,19 +77,9 @@ published and is currently being shaped by the community.
 can be reviewed at a later date. The backlog will be reviewed at least once monthly by the triage team.
 
 
-+-----------------+           +------------------+        +------------------+        +-------------------+        +---------------+
-| Awaiting Triage | --+--+--> | Under Discussion | --+--> | Spec in Progress | --+--> | Under Development | --+--> | Code Complete |
-+-----------------+   ^  |    +------------------+   |    +------------------+   |    +-------------------+   |    +---------------+
-                      |  |                           |                           |                            |
-                      |  +---------------------------+-------------+-------------+----------------------------+
-                      |                                            |
-                      |                                            v
-                      |                                   +-----------------+
-                      +---------------------------------- | Backlog/Freezer |
-                                                          +-----------------+
+![Proposal Process](images/proposal-flow.png)
 
-
-## Bot rules
+## Bot Rules
 We've setup a bot to label issues, close issues that meet a criteria and flags issues
 that need attention
 1.	New and re-opened issues get `needs-triage` label added
