@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corp. Licensed under the MIT license.
 
-namespace Microsoft.Reunion.DragDrop
+namespace Microsoft.ProjectReunion.ApplicationModel.DragDrop
 {
     // Forward declare
-    runtimeclass CoreDragInfo;
-    runtimeclass CoreDragOperation;
-    runtimeclass CoreDragUIOverride;
-    runtimeclass CoreDragDropManager;
-    runtimeclass CoreDropOperationTargetRequestedEventArgs;
+    runtimeclass DragInfo;
+    runtimeclass DragOperation;
+    runtimeclass DragUIOverride;
+    runtimeclass DragDropManager;
+    runtimeclass DropOperationTargetRequestedEventArgs;
 
     enum DragDropModifiers
     {
@@ -20,60 +20,59 @@ namespace Microsoft.Reunion.DragDrop
         RightButton = 0x20
     };
 
-    enum CoreDragUIContentMode
+    enum DragUIContentMode
     {
         Auto,
         Deferred,
     };
 
-    runtimeclass CoreDragInfo
+    runtimeclass DragInfo
     {
         Microsoft.Reunion.ApplicationModel.DataPackage Data { get; };
-        Microsoft.Reunion.DragDrop.DragDropModifiers Modifiers { get; };
+        DragDropModifiers Modifiers { get; };
         Windows.Foundation.Point Position { get; };
         Microsoft.Reunion.ApplicationModel.DataPackage.DataPackageOperation AllowedOperations { get; };
     }
 
-    runtimeclass CoreDragUIOverride
+    runtimeclass DragUIOverride
     {
         void SetContentFromSoftwareBitmap(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap);
         void SetContentFromSoftwareBitmapWithAnchorPoint(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap, Windows.Foundation.Point anchorPoint);
-        boolean IsContentVisible;
+        Boolean IsContentVisible;
         String Caption;
-        boolean IsCaptionVisible;
-        boolean IsGlyphVisible;
+        Boolean IsCaptionVisible;
+        Boolean IsGlyphVisible;
         void Clear();
     }
 
-    interface ICoreDropOperationTarget
+    interface IDropOperationTarget
     {
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> EnterAsync(CoreDragInfo dragInfo, CoreDragUIOverride dragUIOverride);
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> OverAsync(CoreDragInfo dragInfo, CoreDragUIOverride dragUIOverride);
-        Windows.Foundation.IAsyncAction LeaveAsync(CoreDragInfo dragInfo);
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> DropAsync(CoreDragInfo dragInfo);
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> EnterAsync(DragInfo dragInfo, DragUIOverride dragUIOverride);
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> OverAsync(DragInfo dragInfo, DragUIOverride dragUIOverride);
+        Windows.Foundation.IAsyncAction LeaveAsync(DragInfo dragInfo);
+        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> DropAsync(DragInfo dragInfo);
     }
 
-    runtimeclass CoreDragOperation
+    runtimeclass DragOperation
     {
         Microsoft.Reunion.ApplicationModel.DataPackageOperation AllowedOperations;
         Microsoft.Reunion.ApplicationModel.DataPackage Data { get; };
-        CoreDragUIContentMode DragUIContentMode;
+        DragUIContentMode DragUIContentMode;
         void SetPointerId(UInt32 pointerId);
         void SetDragUIContentFromSoftwareBitmap(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap);
         void SetDragUIContentFromSoftwareBitmapWithAnchorPoint(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap, Windows.Foundation.Point anchorPoint);
         Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> StartAsync();
     }
 
-    runtimeclass ICoreDragDropManager
+    runtimeclass DragDropManager
     {
-        CoreDragDropManager GetForCurrentView();
-        CoreDragDropManager GetForHWND(HWND hwnd);
-        event Windows.Foundation.TypedEventHandler<CoreDragDropManager, CoreDropOperationTargetRequestedEventArgs> TargetRequested;
-        boolean AreConcurrentOperationsEnabled;
+        DragDropManager GetForCurrentWindow();
+        event Windows.Foundation.TypedEventHandler<DragDropManager, DropOperationTargetRequestedEventArgs> TargetRequested;
+        Boolean AreConcurrentOperationsEnabled;
     }
 
-    runtimeclass CoreDropOperationTargetRequestedEventArgs
+    runtimeclass DropOperationTargetRequestedEventArgs
     {
-        void SetTarget(CoreDropOperationTarget target);
+        void SetTarget(DropOperationTarget target);
     }
-} // Microsoft.Reunion.DragDrop
+} // Microsoft.ProjectReunion.ApplicationModel.DragDrop
