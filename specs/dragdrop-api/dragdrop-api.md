@@ -18,9 +18,11 @@ NOTE: It is important to note that use of a UI framework is _not_ necessary to i
 
 ## Motivation for Project Reunion drag & drop
 
-1. **Bring modern drag & drop to all classic apps in an easy-to-incorporate package:** Foremost among the issues we want to address is that the existing drag & drop APIs can be cumbersome to use; especially the older OLE API, and its wrappers such as WPF. In addition, the OLE API is lacking in modern, illustrative UI. With this Project Reunion API, we plan to bring the ability to access modern drag & drop for _all_ apps.
+1. **Bring modern drag & drop to all classic apps in an easy-to-incorporate package:** Foremost among the issues we want to address is that the existing drag & drop APIs can be cumbersome to use; especially the older OLE API, and its wrappers such as WPF. In addition, the OLE API has limited support for drag UI customization - showing, hiding, or changing the glyph of the object being dragged; adding a caption, or other visual aids to help the user understand the effect of a drag operation, etc. Modern drag & drop provides these customizations. With this Project Reunion API, we plan to bring access to the modern drag & drop experience for _all_ apps.
 
-2. **Evolve the API to make it easier-to-use in general, and incorporate feedback from the community:** Drag & drop as a feature is something that is intuitive for users, and satisfying to use. Especially in a touch-first world, we belive there is a lot of value in empowering developers to make this feature easy-to-implement to build apps that delight customers. Additionally, this will allow us to iterate on improvements/fixes a lot faster than shipping with the Windows SDK.
+2. **Evolve the API to make it easier-to-use in general:** Drag & drop as a feature is something that is intuitive for users, and satisfying to use. Especially in a touch-first world, we believe there is a lot of value in empowering developers to make this feature easy-to-implement to build apps that delight customers. This Project Reunion API aims to do so by wrapping away even more of the decision-making, and so making it easier for developers.
+
+3. **Incorporate feedback from the developer community:** Additionally, this will allow us to iterate on improvements/fixes a lot faster than shipping with the Windows SDK as well as incorporate suggestions from our developer community.
 
 <!-- break out into two points 
 
@@ -51,7 +53,7 @@ Let's say you are building the next greatest photo organizer app. To add photos 
 This does a lot of initialization and basically informs the system that your app wants to register for drag & drop. Note that `DragDropManager` is *per window*.
 
 ```c#
-var manager = DragDropManager.GetForCurrentView();
+var manager = DragDropManager.GetForCurrentWindow();
 ```
 
 1. Implement `IDropOperationTarget`:
@@ -87,7 +89,7 @@ class DropTarget : IDropOperationTarget
 var onDropTargetRequestedHandler = new TypedEventHandler<DragDropManager, DropOperationTargetRequestedEventArgs>(
     delegate (DragDropManager handlerManager, DropOperationTargetRequestedEventArgs handlerArgs)
     {
-        handlerArgs.SetTarget(new DropTarget());
+        handlerArgs.DropTarget = new DropTarget();
     }
 );
 manager.TargetRequested += onDropTargetRequestedHandler;
@@ -99,11 +101,11 @@ manager.TargetRequested += onDropTargetRequestedHandler;
 DragOperation dragOperation = new DragOperation();
 
 // Set your data on the DataPackage provided in the DragOperation
-DataPackage dragOperationDataPackage = dragOperation.Data;
-dragOperationDataPackage.SetText("Hello from another app!");
+DataPackage dataPackage = dragOperation.Data;
+dataPackage.SetText("Hello from another app!");
 
 // Set default operation
-dragOperationDataPackage.RequestedOperation = DataPackageOperation.Copy;
+dataPackage.RequestedOperation = DataPackageOperation.Copy;
 
 // Set allowed operations
 dragOperation.AllowedOperations = DataPackageOperation.Copy | DataPackageOperation.Move;
@@ -118,8 +120,7 @@ Coming soon.
 # API Notes
 
 * `DragDropManager`: Initializes drag & drop environment to enable an application window to be set as a drop target.
-  * `GetForCurrentView`: Static method that constructs a `DragDropManager` for a Window/AppWindow app.
-  * `GetForHWND`: Static method that constructs a `DragDropManager` for a classic HWND-based windowing app.
+  * `GetForCurrentWindow`: Static method that constructs a `DragDropManager` which allows you to set the window as a drop target.
   * `TargetRequested`: Construct a `DropOperationTargetRequestedEventArgs` to provide a `IDropOperationTarget` implementation for your window.
   * ...
 * `DragInfo`

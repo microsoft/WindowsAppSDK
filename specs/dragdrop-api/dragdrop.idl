@@ -28,10 +28,10 @@ namespace Microsoft.ProjectReunion.ApplicationModel.DragDrop
 
     runtimeclass DragInfo
     {
-        Microsoft.Reunion.ApplicationModel.DataPackage Data { get; };
+        Microsoft.ProjectReunion.ApplicationModel.DataPackage Data { get; };
         DragDropModifiers Modifiers { get; };
         Windows.Foundation.Point Position { get; };
-        Microsoft.Reunion.ApplicationModel.DataPackage.DataPackageOperation AllowedOperations { get; };
+        Microsoft.ProjectReunion.ApplicationModel.DataPackage.DataPackageOperation AllowedOperations { get; };
     }
 
     runtimeclass DragUIOverride
@@ -47,32 +47,31 @@ namespace Microsoft.ProjectReunion.ApplicationModel.DragDrop
 
     interface IDropOperationTarget
     {
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> EnterAsync(DragInfo dragInfo, DragUIOverride dragUIOverride);
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> OverAsync(DragInfo dragInfo, DragUIOverride dragUIOverride);
+        Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation> EnterAsync(DragInfo dragInfo, DragUIOverride dragUIOverride);
+        Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation> OverAsync(DragInfo dragInfo, DragUIOverride dragUIOverride);
         Windows.Foundation.IAsyncAction LeaveAsync(DragInfo dragInfo);
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> DropAsync(DragInfo dragInfo);
+        Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation> DropAsync(DragInfo dragInfo);
     }
 
     runtimeclass DragOperation
     {
-        Microsoft.Reunion.ApplicationModel.DataPackageOperation AllowedOperations;
-        Microsoft.Reunion.ApplicationModel.DataPackage Data { get; };
+        Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation AllowedOperations;
+        Microsoft.ProjectReunion.ApplicationModel.DataPackage Data { get; };
         DragUIContentMode DragUIContentMode;
         void SetPointerId(UInt32 pointerId);
         void SetDragUIContentFromSoftwareBitmap(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap);
         void SetDragUIContentFromSoftwareBitmapWithAnchorPoint(Windows.Graphics.Imaging.SoftwareBitmap softwareBitmap, Windows.Foundation.Point anchorPoint);
-        Windows.Foundation.IAsyncOperation<Microsoft.Reunion.ApplicationModel.DataPackageOperation> StartAsync();
+        Windows.Foundation.IAsyncOperation<Microsoft.ProjectReunion.ApplicationModel.DataPackageOperation> StartAsync();
     }
 
     runtimeclass DragDropManager
     {
         DragDropManager GetForCurrentWindow();
         event Windows.Foundation.TypedEventHandler<DragDropManager, DropOperationTargetRequestedEventArgs> TargetRequested;
-        Boolean AreConcurrentOperationsEnabled;
     }
 
     runtimeclass DropOperationTargetRequestedEventArgs
     {
-        void SetTarget(DropOperationTarget target);
+        DropOperationTarget DropTarget { set; };
     }
 } // Microsoft.ProjectReunion.ApplicationModel.DragDrop
