@@ -88,11 +88,11 @@ namespace winrt::Microsoft::ApplicationModel::implementation
     {
         throw hresult_not_implemented();
     }
-    Microsoft::ApplicationModel::Package Package::FindPackageWithOptions(Microsoft::ApplicationModel::FindPackageOptions const& options)
+    Microsoft::ApplicationModel::Package Package::FindPackageWithOptions(Microsoft::ApplicationModel::FindPackageOptions const& /*options*/)
     {
         throw hresult_not_implemented();
     }
-    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesWithOptions(Microsoft::ApplicationModel::FindPackageOptions const& options)
+    Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Package> Package::FindPackagesWithOptions(Microsoft::ApplicationModel::FindPackageOptions const& /*options*/)
     {
         throw hresult_not_implemented();
     }
