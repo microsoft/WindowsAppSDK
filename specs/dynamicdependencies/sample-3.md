@@ -19,10 +19,11 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const UINT32 pinFlags = MddPinPackageDependency::LifecycleHint_Process;
+    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
+    const auto pinFlags = MddPinPackageDependency::None;
     wil::unique_hlocal_string packageDependencyId;
     RETURN_IF_FAILED(MddPinPackageDependency(
-        packageFamilyName, minVersion, architecture, nullptr, pinFlags, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinFlags, &packageDependencyId));
     // lifetimeArtifact=null gives the PackageDepedency a lifetime of the current process
     // The PackageDependency is not persisted. It will be implicitly unpinned when the process terminates.
 
@@ -48,7 +49,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
 ## WinRT
 
 ```c#
-using Microsoft.ProjectReunion.ApplicationModel
+using Microsoft.ApplicationModel.DynamicDependencies;
 using Windows.ApplicationModel;
 
 namespace MyApp

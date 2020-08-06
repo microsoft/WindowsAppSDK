@@ -1021,7 +1021,7 @@ STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
 ## 6.2. WinRT API
 
 ```c# (but really MIDL3)
-namespace Microsoft.ProjectReunion.ApplicationModel
+namespace Microsoft.ApplicationModel.DynamicDependencies
 {
 /// CPU architectures to optionally filter available packages against a package dependency.
 /// These generally correspond to processor architecture types supported by MSIX.
@@ -1379,7 +1379,7 @@ Q: Add a new API to register a 'helper' package to 'pin' a package dependency? S
 of DynamicDependencies or a larger ProjectReunion API e.g.
 
 ```c# (but really MIDL3)
-namespace Microsoft.ProjectReunion.ApplicationModel
+namespace Microsoft.ApplicationModel.DynamicDependencies
 {
 runtimeclass ProjectReunion
 {
