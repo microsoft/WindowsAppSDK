@@ -48,7 +48,7 @@ HRESULT Define32bitPackageDependency()
 PCWSTR GetLifetimeFile()
 {
     // MddPinPackageDependency::LifecycleHint_FileOrPath requires an absolute filename or path
-    return "C:\Program Files\LolzKittens2020\KittyKitty.exe";
+    return "C:\\Program Files\\LolzKittens2020\\KittyKitty.exe";
 }
 
 HRESULT SavePackageDependencyId(_In_ PCWSTR packageDependencyId)
