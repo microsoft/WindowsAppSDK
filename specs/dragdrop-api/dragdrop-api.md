@@ -56,7 +56,7 @@ This does a lot of initialization and basically informs the system that your app
 var manager = DragDropManager.GetForCurrentWindow();
 ```
 
-1. Implement `IDropOperationTarget`:
+2. Implement `IDropOperationTarget`:
 
 ```c#
 class DropTarget : IDropOperationTarget
@@ -115,7 +115,7 @@ DataPackageOperation result = await dragOperation.StartAsync();
 
 # Remarks
 
-Coming soon.
+None at this time.
 
 # API Notes
 
@@ -123,21 +123,22 @@ Coming soon.
   * `GetForCurrentWindow`: Static method that constructs a `DragDropManager` which allows you to set the window as a drop target.
   * `TargetRequested`: Construct a `DropOperationTargetRequestedEventArgs` to provide a `IDropOperationTarget` implementation for your window.
   * ...
-* `DragInfo`
+* `DragInfo`: Provides information to the target app about the type of data being dragged, and what operations are allowed (Copy/Move/Link).
   * ...
 * `DragOperation`: Object used to create and start a drag operation from your app.
   * `AllowedOperations`: Use this property to set the complete set of operations the source app wishes to allow in drag and drop scenarios. You can specify zero or more flags. To set a desired default operation, use the `DataPackage.RequestedOperation` property. Users can override this choices by using SHIFT and CTRL keys. In this case, the target app must inspect the key state to determine the operation the user selected.
   * ...
 * `DragUIContentMode`: Use this to specify whether the `DragOperation` should wait for content load before starting, or run in parallel.
-* `DragUIOverride`
+* `DragUIOverride`: Provides various settings to customize the drag UI by a target app.
   * ...
 * `DropOperationTargetRequestedEventArgs`
   * `SetTarget`: Provide your implementation of `IDropOperationTarget` which specifies the actions your app should take when the user is hovering over your application's window.
-* `IDropOperationTarget`
-  * `DropAsync`
-  * `EnterAsync`
-  * `LeaveAsync`
-  * `OverAsync`
+* `IDropOperationTarget`: All four of the functions on this interface provide `DragInfo` as a parameter. This allows the target app to check the data of the drag operation and inform the system if it can accept the drag or not.
+  * `DropAsync`: Called if and only if when the user releases the pointer, the last returned value of the previous `EnterAsync` or `OverAsync` matches a `DataPackageOperation` specified by the source app in `CoreDragInfo.AllowedOperations`.
+  * `EnterAsync`: Called initially when a mouse cursor enters an app's window for the first time. Note that this is also called when a drag is initially started - in this case, the target is just the same app. This is effectively a special case of `OverAsync` (below).
+  * `LeaveAsync`: : Called if the current target has not communicated that it can accept a drop.
+  * `OverAsync`: Called constantly in what effectively is a busy loop. The target can do things like check the current coordinates of the drag location via `DragInfo.Position` and update the UI via `DragUIOverride`, depending on the data being dragged and the visual element under the cursor.
+  * **IMPORTANT:** For a successful drop to occur, the return value of `EnterAsync` and `OverAsync` should match a `DataPackageOperation` specified in `DragInfo.AllowedOperations` which is set by the source app. It is the responsibility of the target app implementing `IDropOperationTarget` to verify it can accept the drop and communicate this back to the system via the return values of these functions.
 
 # API Details
 
@@ -147,4 +148,4 @@ of the Project Reunion SDK's drag & drop API.
 
 # Appendix
 
-Coming soon.
+* `GetForCurrentWindow` identifies the type of window (user32 HWND/CoreWindow/AppWindow) being used by the caller and does the necessary setup to make sure input events are correctly delivered.

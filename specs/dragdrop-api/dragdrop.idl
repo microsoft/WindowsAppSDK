@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corp. Licensed under the MIT license.
 
-namespace Microsoft.ProjectReunion.ApplicationModel.DragDrop
+namespace Microsoft.ProjectReunion.ApplicationModel
 {
     // Forward declare
     runtimeclass DragInfo;
@@ -66,12 +66,12 @@ namespace Microsoft.ProjectReunion.ApplicationModel.DragDrop
 
     runtimeclass DragDropManager
     {
-        DragDropManager GetForCurrentWindow();
+        static DragDropManager GetForCurrentWindow();
         event Windows.Foundation.TypedEventHandler<DragDropManager, DropOperationTargetRequestedEventArgs> TargetRequested;
     }
 
     runtimeclass DropOperationTargetRequestedEventArgs
     {
-        DropOperationTarget DropTarget { set; };
+        void SetTarget(IDropOperationTarget target);
     }
 } // Microsoft.ProjectReunion.ApplicationModel.DragDrop
