@@ -1,0 +1,76 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)\MicrosoftProjectReunionVersion.props"/>
+  <Import Project="$(MSBuildThisFileDirectory)\Common.targets"/>
+  <ItemGroup>
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\x86\Release\Microsoft.ProjectReunion.2.5.appx">
+      <Architecture>x86</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+    <!-- Some C++/CX projects use Platform=Win32 instead of Platform=x86 -->
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\x86\Release\Microsoft.ProjectReunion.2.5.appx">
+      <Architecture>Win32</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\x64\Release\Microsoft.ProjectReunion.2.5.appx">
+      <Architecture>x64</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\arm\Release\Microsoft.ProjectReunion.2.5.appx">
+      <Architecture>arm</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\arm64\Release\Microsoft.ProjectReunion.2.5.appx">
+      <Architecture>arm64</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+  </ItemGroup>
+  <!-- Add a dependency for the app against VCLibs since we need it but the consuming app might be .NET only. -->
+  <ItemGroup Condition="('$(OutputType)' == 'AppContainerExe')">
+    <SDKReference Include="Microsoft.VCLibs, Version=14.0" />
+  </ItemGroup>
+  <!-- This section is to work around the fact that this Nuget package contains only a .winmd and no implementation, but the
+       VS targets expect that, so convince them it's ok. -->
+  <ItemGroup>
+    <ProjectReunionWinmd Include="$(MSBuildThisFileDirectory)..\lib\uap10.0\Microsoft.ProjectReunion.winmd">
+      <SkipHarvestingWinmdRegistration>true</SkipHarvestingWinmdRegistration>
+      <TargetPath>$(WinMetadataDir)\Microsoft.ProjectReunion.winmd</TargetPath>
+      <OutputGroup>CustomOutputGroupForPackaging</OutputGroup>
+      <ProjectName>$(ProjectName)</ProjectName>
+    </ProjectReunionWinmd>
+  </ItemGroup>
+  <PropertyGroup>
+    <ProjectReunionWinmdName>Microsoft.ProjectReunion.winmd</ProjectReunionWinmdName>
+    <ProjectReunionCompactXbfName>Microsoft.ProjectReunion\DensityStyles\Compact.xbf</ProjectReunionCompactXbfName>
+  </PropertyGroup>
+  <Target Name="_FixWinmdCopyLocal" AfterTargets="ResolveNuGetPackageAssets">
+    <ItemGroup>
+      <ProjectReunionWinMdCopyLocal Include="@(ReferenceCopyLocalPaths)" Condition="'%(ReferenceCopyLocalPaths.Filename)%(ReferenceCopyLocalPaths.Extension)' == '$(ProjectReunionWinmdName)'" />
+    </ItemGroup>
+    <ItemGroup Condition="'@(ProjectReunionWinMdCopyLocal)' != ''">
+      <ReferenceCopyLocalPaths Remove="@(ProjectReunionWinMdCopyLocal)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="_FixWinmdPackaging" BeforeTargets="_ComputeAppxPackagePayload">
+    <ItemGroup>
+      <ProjevtReunionWinmdPackagingOutput Include="@(PackagingOutputs)" Condition="'%(PackagingOutputs.Filename)%(PackagingOutputs.Extension)' == '$(ProjectReunionWinmdName)'" />
+    </ItemGroup>
+    <ItemGroup Condition="'@(ProjectReunionWinmdPackagingOutput)' != ''">
+      <PackagingOutputs Remove="@(ProjectReunionWinmdPackagingOutput)" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackagingOutputs Include="@(ProjectReunionWinmd)" />
+    </ItemGroup>
+  </Target>
+</Project>
