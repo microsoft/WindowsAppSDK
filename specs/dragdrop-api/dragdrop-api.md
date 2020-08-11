@@ -39,8 +39,9 @@ TODO: how much functionality exists for routing touch drag & drop on Desktop
 
 The Reunion SDK drag & drop API is very similar to Windows' built-in "UWP drag & drop" API in the `Windows.ApplicationModel.DataTransfer.DragDrop.` Windows Runtime namespace. In fact, in this initial version (as of mid-2020), the Reunion SDK drag & drop API is almost the same as `Windows.ApplicationModel.DataTransfer.DragDrop.`, except for these differences:
 
-1. The namespace is now `Microsoft.ProjectReunion.ApplicationModel.DragDrop`.
+1. The namespace is now `Microsoft.ProjectReunion.ApplicationModel`.
 2. `DragDropManager::GetForCurrentView()` has been renamed to `GetForCurrentWindow()` and has changes in its implementation to allow its construction from a UWP appmodel application that uses Window/AppWindow, as well as from a classic Win32 app that uses `USER32.dll` windows aka HWNDs.
+3. `DragDropManager::AreConcurrentOperationsEnabled` in v1 of this API as this is a special scenario currently only used by CShell and does not need to be exposed.
 
 # Examples
 
