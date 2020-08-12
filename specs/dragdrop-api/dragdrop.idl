@@ -74,4 +74,4 @@ namespace Microsoft.ProjectReunion.ApplicationModel
     {
         void SetTarget(IDropOperationTarget target);
     }
-} // Microsoft.ProjectReunion.ApplicationModel.DragDrop
+} // Microsoft.ProjectReunion.ApplicationModel
