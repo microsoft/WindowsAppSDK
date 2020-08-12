@@ -2,6 +2,14 @@
     DllCanUnloadNow = WINRT_CanUnloadNow                    PRIVATE
     DllGetActivationFactory = WINRT_GetActivationFactory    PRIVATE
 
+    MddAddPackageDependency
+    MddArePackageDependencyContextsEquivalent
+    MddArePackageDependencyIdsEquivalent
+    MddGetResolvedPackageFullNameForPackageDependency
+    MddPinPackageDependency
+    MddRemovePackageDependency
+    MddUnpinPackageDependency
+
     SampleFlatApiCreate
     CloseSampleFlatApi
     GetSampleFlatApiString
