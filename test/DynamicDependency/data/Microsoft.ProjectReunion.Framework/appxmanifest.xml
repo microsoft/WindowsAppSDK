@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap">
+
+  <Identity
+    Name="Microsoft.ProjectReunion.Framework"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="4.1.1967.333" />
+
+  <Properties>
+    <DisplayName>Microsoft.ProjectReunion.Framework fake for Bootstrap API tests</DisplayName>
+    <PublisherDisplayName>Project Reunion</PublisherDisplayName>
+    <Logo>logo.png</Logo>
+    <Framework>true</Framework>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.ProjectReunion.dll</Path>
+      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
+      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
+      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
+      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
+      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+    </InProcessServer>
+    </Extension>
+  </Extensions>
+</Package>

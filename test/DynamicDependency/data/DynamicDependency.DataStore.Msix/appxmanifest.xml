@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 com rescap">
+
+  <Identity
+    Name="ProjectReunion.Test.DynDep.DataStore"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="10.1.2004.0" />
+
+  <Properties>
+    <DisplayName>ProjectReunion.Test.DynDep.DataStore</DisplayName>
+    <PublisherDisplayName>Project Reunion</PublisherDisplayName>
+    <Logo>Assets\logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <PackageDependency Name="Microsoft.ProjectReunion.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="DynamicDependency.DataStore.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="ProjectReunion.Test.DynDep.DataStore"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="ProjectReunion Test DynamicDependency DataStore"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
+      </uap:VisualElements>
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="DynamicDependency.DataStore.exe" DisplayName="ProjectReunion Test DynamicDependency DataStore">
+              <com:Class Id="D1AD16C7-EC59-4765-BF95-9A243EB00507" DisplayName="ProjectReunion Test DynamicDependency DataStore"/>
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <com:Extension Category="windows.comInterface">
+          <com:ComInterface>
+            <com:ProxyStub Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" DisplayName="DynamicDependency.DataStore ProxyStub" Path="DynamicDependency.DataStore.ProxyStub.dll"/>
+            <com:Interface Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" ProxyStubClsid="DDEB4D6A-E146-476d-B729-0BFB1A29A86E"/> <!-- IID_IDynamicDependencyDataStore -->
+          </com:ComInterface>
+        </com:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

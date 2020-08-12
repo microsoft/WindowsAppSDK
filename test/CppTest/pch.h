@@ -5,19 +5,29 @@
 #define PCH_H
 #endif //PCH_H
 
+#include <unknwn.h>
+
 #include <windows.h>
 #include <sddl.h>
+
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
+#include <wil/token_helpers.h>
 #include <wil/resource.h>
+
 #include <WexTestClass.h>
 
 #include <string>
 
-#include <winrt/Microsoft.ProjectReunion.h>
-#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <wil/result_macros.h>
+
+#include "CppUnitTest.h"
+
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
+
+#include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>

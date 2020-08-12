@@ -1,0 +1,293 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.ApplicationModel.DynamicDependency
+{
+    /// CPU architectures to optionally filter available packages against a package dependency.
+    /// These generally correspond to processor architecture types supported by MSIX.
+    /// @see Windows.System.ProcessorArchitecture
+    [flags]
+    enum PackageDependencyProcessorArchitectures
+    {
+        None       = 0,
+        Neutral    = 0x00000001,
+        X86        = 0x00000002,
+        X64        = 0x00000004,
+        Arm        = 0x00000008,
+        Arm64      = 0x00000010,
+        X86OnArm64 = 0x00000020,
+    };
+
+    enum PackageDependencyLifetimeArtifactKind
+    {
+        /// The current process is the lifetime artifact. The package dependency
+        /// is implicitly deleted when the process terminates.
+        Process,
+
+        /// The lifetime artifact is an absolute filename or path.
+        /// The package dependency is implicitly deleted when this is deleted.
+        FilePath,
+
+        /// The lifetime artifact is a registry key in the format
+        /// 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU.
+        /// The package dependency is implicitly deleted when this is deleted.
+        RegistryKey,
+    };
+
+    /// Options when 'pinning' a package dependency
+    runtimeclass CreatePackageDependencyOptions
+    {
+        CreatePackageDependencyOptions();
+
+        /// Optional filtering by cpu architecture(s)
+        PackageDependencyProcessorArchitectures Architectures;
+
+        /// Do not verify at least 1 matching package exists when pinning a package dependency
+        /// @note Default value is `true`
+        Boolean VerifyDependencyResolution;
+
+        /// The kind of lifetime artifact for this package dependency.
+        PackageDependencyLifetimeArtifactKind LifetimeArtifactKind;
+
+        /// The lifetime artifact when pinning a package dependency. The value depends on the LifetimeArtifactKind value.
+        String LifetimeArtifact;
+    };
+
+    static runtimeclass PackageDependencyRank
+    {
+        /// The default value is zero (0).
+        static Int32 Default { get; };
+    };
+
+    /// Options when adding a package dependency
+    runtimeclass AddPackageDependencyOptions
+    {
+        AddPackageDependencyOptions();
+
+        /// The rank when adding the package dependency to a a package graph.
+        /// @note A package graph is sorted in ascending order from -infinity...0...+infinity
+        /// @note The default value is PackageDependencyRank.Default
+        Int32 Rank;
+
+        /// If a package dependency is added to a package graph with a package of the same rank (aka a collision on rank)
+        /// and this option is true the resolve package dependency is prepended to the set of packages of the same rank.
+        /// By default resolve package dependencies are appended to the set of packages with the same rank.
+        Boolean PrependIfRankCollision;
+    };
+
+    /// TBD
+    runtimeclass PackageDependency
+    {
+        /// Create an intstance of the package dependency identified by id.
+        static PackageDependency GetFromId(String id);
+
+        /// Return the package dependency id.
+        String Id { get; };
+
+        /// Define a package dependency for the current user. The criteria for a PackageDependency
+        /// (package family name, minimum version, etc) may match multiple
+        /// packages, but ensures Deployment won't remove a package if it's
+        /// the only one satisfying the PackageDependency.
+        ///
+        /// @note A package matching a PackageDependency pin can still be removed
+        ///       as long as there's another package that satisfies the PackageDependency.
+        ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
+        ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
+        ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
+        ///       is removed Deployment won't remove Fwk-v2 because it's the only package
+        ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
+        ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
+        ///       guarantees it won't remove a package if it would make a PackageDependency
+        ///       unsatisfied.
+        ///
+        /// A PackageDependency specifies criteria (package family, minimum version, etc)
+        /// and not a specific package. Deployment reserves the right to use a different
+        /// package (e.g. higher version) to satisfy the PackageDependency if/when
+        /// one becomes available.
+        ///
+        /// @param packageFamilyName the package family to pin
+        /// @param minVersion the minimum version to pin
+        ///
+        /// @note This fails if the package dependency cannot be resolved to a specific package.
+        ///
+        /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
+        /// @see CreateForSystem()
+        static PackageDependency Create(
+            String packageFamilyName,
+            Windows.ApplicationModel.PackageVersion minVersion);
+
+        /// Define a package dependency for the current user. The criteria for a PackageDependency
+        /// (package family name, minimum version, etc) may match multiple
+        /// packages, but ensures Deployment won't remove a package if it's
+        /// the only one satisfying the PackageDependency.
+        ///
+        /// @note A package matching a PackageDependency pin can still be removed
+        ///       as long as there's another package that satisfies the PackageDependency.
+        ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
+        ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
+        ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
+        ///       is removed Deployment won't remove Fwk-v2 because it's the only package
+        ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
+        ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
+        ///       guarantees it won't remove a package if it would make a PackageDependency
+        ///       unsatisfied.
+        ///
+        /// A PackageDependency specifies criteria (package family, minimum version, etc)
+        /// and not a specific package. Deployment reserves the right to use a different
+        /// package (e.g. higher version) to satisfy the PackageDependency if/when
+        /// one becomes available.
+        ///
+        /// @param packageFamilyName the package family to pin
+        /// @param minVersion the minimum version to pin
+        /// @param options additional options affecting the package dependency
+        ///
+        /// @note This fails if the package dependency cannot be resolved to a specific package (null is returned).
+        ///       This package resolution check is skipped if MddCreatePackageDependencyOptions.VerifyDependencyResolution=false
+        ///       is specified. This is useful if a package satisfying the dependency
+        ///       will be installed after the package dependency is defined.
+        ///
+        /// @see Create(String, PackageVersion)
+        /// @see CreateForSystem()
+        static PackageDependency Create(
+            String packageFamilyName,
+            Windows.ApplicationModel.PackageVersion minVersion,
+            CreatePackageDependencyOptions options);
+
+        /// Define a package dependency for the system (i.e. all users). The criteria for a PackageDependency
+        /// (package family name, minimum version, etc) may match multiple
+        /// packages, but ensures Deployment won't remove a package if it's
+        /// the only one satisfying the PackageDependency.
+        ///
+        /// @note A package matching a PackageDependency pin can still be removed
+        ///       as long as there's another package that satisfies the PackageDependency.
+        ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
+        ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
+        ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
+        ///       is removed Deployment won't remove Fwk-v2 because it's the only package
+        ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
+        ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
+        ///       guarantees it won't remove a package if it would make a PackageDependency
+        ///       unsatisfied.
+        ///
+        /// A PackageDependency specifies criteria (package family, minimum version, etc)
+        /// and not a specific package. Deployment reserves the right to use a different
+        /// package (e.g. higher version) to satisfy the PackageDependency if/when
+        /// one becomes available.
+        ///
+        /// @param user the user scope of the package dependency. If null the caller's user context is used
+        /// @param packageFamilyName the package family to pin
+        /// @param minVersion the minimum version to pin
+        /// @param options additional options affecting the package dependency
+        ///
+        /// @note This fails if the package dependency cannot be resolved to a specific package.
+        ///       This package resolution check is skipped if MddCreatePackageDependencyOptions.VerifyDependencyResolution=false
+        ///       is specified. This is useful for installers pinning a package dependency for all users on a system.
+        ///
+        /// @see Create(String, PackageVersion)
+        /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
+        static PackageDependency CreateForSystem(
+            String packageFamilyName,
+            Windows.ApplicationModel.PackageVersion minVersion,
+            CreatePackageDependencyOptions options);
+
+        /// Delete a defined package dependency.
+        /// @note The package depenency id useless after Delete. The property is valid but attempting to use it fails e.g. PackageDependency.GetFromId(id) returns null.
+        void Delete();
+
+        /// Resolve a previously pinned PackageDependency to a specific package and
+        /// add it to the calling process' package graph. Once the dependency has
+        /// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
+        /// can find the binaries in the resolved package.
+        ///
+        /// Package resolution is specific to a user. The same package dependency can
+        /// resolve to different packages for different users on a system.
+        ///
+        /// This adds the resolved package to the process' package graph.
+        /// A process' package graph is used to search for DLLs (per Dynamic-Link Library Search Order),
+        /// WinRT objects and other resources; the caller can now load DLLs, activate
+        /// WinRT objects and use other resources from the framework package until
+        /// PackageDependencyContext.Remove() is called (or the process ends).
+        /// The package dependency Id must match a package dependency defined
+        /// for the calling user or the system (via CreateForSystem) or an exception is raised.
+        ///
+        /// Each successful call adds the resolve packaged to the
+        /// calling process' package graph, even if already present. There is no
+        /// duplicate 'detection' or 'filtering' applied by the API (multiple
+        /// references to a package is not harmful). Once resolution is complete
+        /// the package stays resolved for that user until the last reference across
+        /// all processes for that user is removed via PackageDependencyContext.Remove()
+        /// (or process termination).
+        ///
+        /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
+        /// to remove the entry from the package graph.
+        PackageDependencyContext Add();
+
+        /// Resolve a previously pinned PackageDependency to a specific package and
+        /// add it to the calling process' package graph. Once the dependency has
+        /// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
+        /// can find the binaries in the resolved package.
+        ///
+        /// Package resolution is specific to a user. The same package dependency can
+        /// resolve to different packages for different users on a system.
+        ///
+        /// This adds the resolved package to the process' package graph.
+        /// A process' package graph is used to search for DLLs (per Dynamic-Link Library Search Order),
+        /// WinRT objects and other resources; the caller can now load DLLs, activate
+        /// WinRT objects and use other resources from the framework package until
+        /// PackageDependencyContext.Remove() is called (or the process ends).
+        /// The package dependency Id must match a package dependency defined
+        /// for the calling user or the system (via CreateForSystem) or an exception is raised.
+        ///
+        /// Each successful call adds the resolve packaged to the
+        /// calling process' package graph, even if already present. There is no
+        /// duplicate 'detection' or 'filtering' applied by the API (multiple
+        /// references to a package is not harmful). Once resolution is complete
+        /// the package stays resolved for that user until the last reference across
+        /// all processes for that user is removed via PackageDependencyContext.Remove()
+        /// (or process termination).
+        ///
+        /// This adds the resolved package to the caller's package graph, per rank.
+        /// A process' package graph is a list of packages sorted by rank in ascending
+        /// order (-infinity...0...+infinity). If package(s) are present in the
+        /// package graph with the same rank the resolved package is
+        /// (by default) added after others of the same rank. To add a package
+        /// before others of the same rank, specify PackageDependency.PrependIfRankCollision.
+        ///
+        /// Calls to Add() can be balanced by a PackageDependencyContext.Remove() (or object destruction)
+        /// to remove the entry from the package graph.
+        PackageDependencyContext Add(AddPackageDependencyOptions options);
+    };
+
+    /// A unique identifier for a resolved package dependency
+    struct PackageDependencyContextId
+    {
+        UInt64 Id;
+    };
+
+    /// This object provides access to information about a package dependency context.
+    /// The resolved package dependency is removed from the caller's package graph via
+    /// .Remove() or when the object is destroyed.
+    ///
+    /// Calling .Remove() or destroying this object is the moral equivalent of Windows' AddDllDirectory().
+    ///
+    /// @note This does not unload loaded resources (DLLs etc). After removing
+    ///        a package dependency any files loaded from the package can continue
+    ///        to be used; future package dependency resolution (via new calls to
+    ///        PackageDependency.Add) will fail to see the removed package dependency.
+    runtimeclass PackageDependencyContext
+    {
+        /// Create an intstance of the package dependency context identified by context
+        PackageDependencyContext(PackageDependencyContextId contextId);
+
+        /// Returns the package dependency context id
+        PackageDependencyContextId ContextId { get; };
+
+        /// Return the package dependency id.
+        String PackageDependencyId{ get; };
+
+        /// Returns the package full name of the resolved package for this context
+        String PackageFullName { get; };
+
+        void Remove();
+    };
+}

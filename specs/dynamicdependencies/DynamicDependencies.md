@@ -13,15 +13,16 @@ to use packaged content.
 - [2. Background](#2-background)
 - [3. Description](#3-description)
   - [3.1. Dynamic Package Graph](#31-dynamic-package-graph)
-    - [3.1.1. Detours to Enhance Package Graph APIs](#311-detours-to-enhance-package-graph-apis)
-    - [3.1.2. Add to the Package Graph](#312-add-to-the-package-graph)
-      - [3.1.2.1. Resolve Package](#3121-resolve-package)
-      - [3.1.2.2. Package Graph](#3122-package-graph)
-      - [3.1.2.3. Add to Package Graph](#3123-add-to-package-graph)
-    - [3.1.3. Remove from the Package Graph](#313-remove-from-the-package-graph)
-    - [3.1.4. DLL Search Order](#314-dll-search-order)
-      - [3.1.4.1. Non-Packaged Processes](#3141-non-packaged-processes)
-      - [3.1.4.2. Packaged Processes](#3142-packaged-processes)
+    - [3.1.1. LoadPackageLibrary](#311-loadpackagelibrary)
+    - [3.1.2. Detours to Enhance Package Graph APIs](#312-detours-to-enhance-package-graph-apis)
+    - [3.1.3. Add to the Package Graph](#313-add-to-the-package-graph)
+      - [3.1.3.1. Resolve Package](#3131-resolve-package)
+      - [3.1.3.2. Package Graph](#3132-package-graph)
+      - [3.1.3.3. Add to Package Graph](#3133-add-to-package-graph)
+    - [3.1.4. Remove from the Package Graph](#314-remove-from-the-package-graph)
+    - [3.1.5. DLL Search Order](#315-dll-search-order)
+      - [3.1.5.1. Non-Packaged Processes](#3151-non-packaged-processes)
+      - [3.1.5.2. Packaged Processes](#3152-packaged-processes)
   - [3.2. Known Issues for Packaged Processes](#32-known-issues-for-packaged-processes)
     - [3.2.1. Known Issue: DLL Search Order ignores uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-ignores-uap6loadersearchpathoverride)
     - [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-known-issue-dll-search-order-ignores-uap6allowexecution)
@@ -40,7 +41,7 @@ to use packaged content.
     - [5.6.1. uap6:LoaderSearchPathOverride not supported](#561-uap6loadersearchpathoverride-not-supported)
     - [5.6.2. uap6:AllowExecution not supported](#562-uap6allowexecution-not-supported)
 - [6. API Details](#6-api-details)
-  - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
+  - [6.1. Win32 API - MsixDynamicDependency.h](#61-win32-api---msixdynamicdependencyh)
   - [6.2. WinRT API](#62-winrt-api)
 - [7. Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
   - [7.1. Frequently Asked Questions (FAQ)](#71-frequently-asked-questions-faq)
@@ -109,7 +110,13 @@ We'll manage our own package graph to supplement the static package graph (if an
 dependencies. We'll use [Detours](https://github.com/Microsoft/Detours) to hook
 `GetCurrentPackageInfo` and related APIs to redirect to our own Dynamic Dependencies savvy variants.
 
-### 3.1.1. Detours to Enhance Package Graph APIs
+### 3.1.1. LoadPackageLibrary
+
+[LoadPackageLibrary()](https://docs.microsoft.com/windows/win32/api/winbase/nf-winbase-loadpackagedlibrary) provides a restricted form of LoadLibrary,
+but restricted to packaged processes. We'll enlighten LoadPackageLibrary to support the dynamic package graph and work as expected, regardless if the
+process is packaged or not.
+
+### 3.1.2. Detours to Enhance Package Graph APIs
 
 Package Graph information is available for packages registered to the current user via
 [OpenPackageInfoByFullName](https://docs.microsoft.com/windows/win32/api/appmodel/nf-appmodel-openpackageinfobyfullname).
@@ -194,7 +201,7 @@ HRESULT MddAddPackageDependency(...)
 }
 ```
 
-### 3.1.2. Add to the Package Graph
+### 3.1.3. Add to the Package Graph
 
 `MddAddPackageDependency` has 2 responsibilities:
 
@@ -217,7 +224,7 @@ HRESULT MddAddPackageDependency(...)
 }
 ```
 
-#### 3.1.2.1. Resolve Package
+#### 3.1.3.1. Resolve Package
 
 Resolve the package dependency to a (specific) package, per the following conditions:
 
@@ -360,7 +367,7 @@ Architecture GetCurrentArchitecture()
 }
 ```
 
-#### 3.1.2.2. Package Graph
+#### 3.1.3.2. Package Graph
 
 A package graph is a package dependency graph flattened into an ordered list.
 
@@ -378,7 +385,7 @@ Non-packaged processes start with an empty package graph.
 A process' package graph can be altered dynamically at runtime
 via the Dynamic Dependency API.
 
-#### 3.1.2.3. Add to Package Graph
+#### 3.1.3.3. Add to Package Graph
 
 Packages can be added dynamically to the package graph,
 managed as as a sorted list based on `rank`. The list is sorted in ascending order
@@ -470,7 +477,7 @@ HRESULT AddToPackageGraph(string packageFullName, ...)
 }
 ```
 
-### 3.1.3. Remove from the Package Graph
+### 3.1.4. Remove from the Package Graph
 
 `MddRemovePackageDependency` undoes the work done by MddRemovePackageDependency:
 
@@ -500,14 +507,14 @@ HRESULT MddRemovePackageDependency(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
 }
 ```
 
-### 3.1.4. DLL Search Order
+### 3.1.5. DLL Search Order
 
 Windows informs the Loader when the package graph is defined, but this doesn't help after process
 creation (and non-packaged processes never have a static package graph).
 
 The Dynamic Dependencies API informs the loader when the package graph changes.
 
-#### 3.1.4.1. Non-Packaged Processes
+#### 3.1.5.1. Non-Packaged Processes
 
 For non-packaged processes we'll update the DLL Search Order via the PATH environment variable and
 [AddDllDirectory](https://docs.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory).
@@ -597,7 +604,7 @@ void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
 }
 ```
 
-#### 3.1.4.2. Packaged Processes
+#### 3.1.5.2. Packaged Processes
 
 Loader path modifications (via PATH environment variable and [AddDllDirectory](https://docs.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory))
 are ignored for packaged processes. The loader instead uses:
@@ -854,7 +861,8 @@ This implicitly adds the ProjectReunionFramework package to the process' package
 5. The application is now free to call the Dynamic Depedencies API.
 
 `YourAppMain.msix` contains the following information in its `AppxManifest.xml`:
-```
+
+```xml
 <Package>
   ...
   <Applications>
@@ -929,7 +937,7 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 
 # 6. API Details
 
-## 6.1. Win32 API - MsixDynamicDependency.hpp
+## 6.1. Win32 API - MsixDynamicDependency.h
 
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
 
@@ -1105,6 +1113,15 @@ STDAPI_(void) MddRemovePackageDependency(
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName);
+
+/// Return the package dependency for the context.
+///
+/// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate.
+///                            If the package dependency context cannot be resolved
+///                            the function succeeds but packageDependencyId is nullptr.
+STDAPI MddGetIdForPackageDependencyContext(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 ```
 
 ## 6.2. WinRT API
@@ -1440,10 +1457,12 @@ Each 'band' may have additional intra-band ordering rules:
 A package appears once in a package graph. When building the package graph
 Windows uses "Add if not already present" (aka de-dupe'ing) semantics e.g.
 
+```
      packagegraph = []
      ...
          IF package NOT IN packagegraph
              packagegraph.Append(package)
+```
 
 ## 7.1. Frequently Asked Questions (FAQ)
 **Q:** Why are Optional packages after the Main package, w/o Framework or Resource packages between?

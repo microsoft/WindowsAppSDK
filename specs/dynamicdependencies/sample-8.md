@@ -7,7 +7,7 @@ The package graph is updated for the remainder of the process' lifetime (i.e. th
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT LoadPackageDependencyId(wil::unique_ptr<WCHAR[]>& packageDependencyId);
@@ -18,7 +18,7 @@ HRESULT UpdatePackageGraph()
     RETURN_IF_FAILED(LoadPackageDependencyId(packageDependencyId));
 
     const INT32 rank = 1967;
-    const UINT32 options = MddAddPackageDependencyOptions::PrependIfRankCollision;
+    const auto options = MddAddPackageDependencyOptions::PrependIfRankCollision;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     RETURN_IF_FAILED(MddAddPackageDependency(
         packageDependencyId.get(), rank, options, &packageDependencyContext, nullptr));
