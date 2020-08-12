@@ -28,7 +28,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\dll\Microsoft.ProjectReunion.vcxproj">
+    <ProjectReference Include="..\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj">
       <Project>{ad0c90b0-4845-4d4b-88f1-86f653f8171b}</Project>
       <Name>Microsoft.ProjectReunion</Name>
     </ProjectReference>
