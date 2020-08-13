@@ -5,11 +5,17 @@
 #define PCH_H
 #endif //PCH_H
 
-#include <wil/result.h>
+#include <unknwn.h>
+
 #include <wil/cppwinrt.h>
+#include <wil/token_helpers.h>
 #include <wil/resource.h>
+#include <wil/result_macros.h>
+
 #include "CppUnitTest.h"
 
 // Test-specific headers, lifted here
+#include <msixdynamicdependency.h>
 #include <SampleFlatC.h>
+
 #include <winrt/Microsoft.ProjectReunion.h>

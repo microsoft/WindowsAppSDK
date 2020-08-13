@@ -44,6 +44,7 @@ Global
 		dev\DynamicDependencies\DynamicDependencies.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleWinRT\SampleWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\DynamicDependencies\DynamicDependencies.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}*SharedItemsImports = 9
 	EndGlobalSection
