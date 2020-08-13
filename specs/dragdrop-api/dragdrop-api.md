@@ -90,7 +90,7 @@ class DropTarget : IDropOperationTarget
 var onDropTargetRequestedHandler = new TypedEventHandler<DragDropManager, DropOperationTargetRequestedEventArgs>(
     delegate (DragDropManager handlerManager, DropOperationTargetRequestedEventArgs handlerArgs)
     {
-        handlerArgs.DropTarget = new DropTarget();
+        handlerArgs.SetTarget(new DropTarget());
     }
 );
 manager.TargetRequested += onDropTargetRequestedHandler;
