@@ -36,10 +36,10 @@ HRESULT Define32bitPackageDependency()
     // will only resolve to a 32-bit package regardless of the caller's bitness at runtime.
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::X86 |
         MddPackageDependencyProcessorArchitectures::Arm | MddPackageDependencyProcessorArchitectures::X86A64;
-    const UINT32 flags = MddPinPackageDependency::LifecycleHint_FileOrPath;
+    const UINT32 options = MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
     wil::unique_hlocal_string packageDependencyId;
-    RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, GetLifetimeFile(), flags, &packageDependencyId));
+    RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
+        packageFamilyName, minVersion, architecture, GetLifetimeFile(), options, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(packageDependencyId.get()));
     return S_OK;
@@ -47,7 +47,7 @@ HRESULT Define32bitPackageDependency()
 
 PCWSTR GetLifetimeFile()
 {
-    // MddPinPackageDependency::LifecycleHint_FileOrPath requires an absolute filename or path
+    // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
     return "C:\\Program Files\\LolzKittens2020\\KittyKitty.exe";
 }
 
@@ -95,7 +95,7 @@ namespace LolzKitten
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = MuffinsLifetimeAbsoluteFilename
             };
-            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, options));
+            PackageDependency packageDependency = PackageDependency.Create(packageFamilyName, minVersion, options));
 
             SavePackageDependencyId(L"muffins", packageDependency.Id);
         }
@@ -104,7 +104,7 @@ namespace LolzKitten
         {
             get
             {
-                // MddPinPackageDependency::LifecycleHint_FileOrPath requires an absolute filename or path
+                // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
                 return @"C:\Program Files\LolzKittens2020\KittyKitty.exe";
             }
         }

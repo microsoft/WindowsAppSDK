@@ -18,11 +18,11 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     RETURN_IF_FAILED(LoadPackageDependencyId(L"muffins", packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addFlags = MddAddPackageDependency::None;
+    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_hlocal_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
-        packageDependencyId.get(), rank, addFlags, &packageDependencyContext, &packageFullName));
+        packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
     wprintf(L"Managing muffins via %ls", packageFullName.get());
 
     wil::unique_hmodule contosoMuffinsDll(::LoadLibrary(L"Contoso-Muffins"));
@@ -60,7 +60,7 @@ namespace LolzKitten
             int countOfMuffinsManaged = 0;
 
             string packageDependencyId = LoadPackageDependencyId("muffins");
-            var packageDependency = new PackageDependency(packageDependencyId);
+            var packageDependency = new PackageDependency.GetFromId(packageDependencyId);
 
             PackageDependencyContext packageDependencyContext = packageDependency.Add();
             Console.WriteLine($"Managing muffins via {packageDependencyContext.PackageFullName}");

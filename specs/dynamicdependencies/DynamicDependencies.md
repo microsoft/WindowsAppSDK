@@ -50,7 +50,7 @@ as Framework packages. However this functionality provides a rather 'static' wor
 dependencies are known at development time and resolved at install-time. There is no support at
 runtime to define a Framework dependency based on machine state, user interface or other
 post-development factors of the developer's choosing. Access to Framework package content is also
-limited access to packaged applications; non-packaged applications cannot use content provided via
+limited to packaged applications; non-packaged applications cannot use content provided via
 Framework packages.
 
 Microsoft-internal task [23447728](https://task.ms/23447728)
@@ -60,8 +60,8 @@ packages #89](https://github.com/microsoft/ProjectReunion/issues/89).
 
 # 3. Description
 
-This feature providse APIs to enable access to packaged content at runtime, regardless if the caller
-is packaged or not. This supplements the MSIX appmodel's current static dependency support (via in
+This feature provides APIs to enable access to packaged content at runtime, regardless if the caller
+is packaged or not. This supplements the MSIX appmodel's current static dependency support (via an
 appxmanifest.xml) with a dynamic runtime equivalent. It also allows non-packaged processes (which
 have no appxmanifest.xml) to use packaged content.
 
@@ -69,7 +69,7 @@ Dynamic selection and access of packaged content is challenged by several issues
 
 ## 3.1. Dynamic Package Graph
 
-A process' Package Graph is fixed at process creation. There is no affordance to alter a process'
+A process' Package Graph has historically been fixed at process creation. There has been no affordance to alter a process'
 package graph at runtime.
 
 Packaged processes are initialized with a package graph based on package dependencies declared in
@@ -80,24 +80,24 @@ process is created its package graph is constant for the rest of its lifetime.
 We'll provide new APIs to alter the current process' Package Graph at runtime.
 
 Windows provides access to a process' package graph primarily via
-[GetCurrentPackageInfo](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo)
+[GetCurrentPackageInfo](https://docs.microsoft.com/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo)
 and
-[GetCurrentPackageInfo2](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2).
+[GetCurrentPackageInfo2](https://docs.microsoft.com/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2).
 Equivalent information is available via
-[Windows.ApplicationModel.Package.Current](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.package.current?view=winrt-19041)
+[Windows.ApplicationModel.Package.Current](https://docs.microsoft.com/uwp/api/windows.applicationmodel.package.current?view=winrt-19041)
 and
-[Package.Current.Dependencies](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.package.dependencies?view=winrt-19041).
+[Package.Current.Dependencies](https://docs.microsoft.com/uwp/api/windows.applicationmodel.package.dependencies?view=winrt-19041).
 These correspond to PackageGraph[0] and PackageGraph[1+]. These APIs provide access to the static
 package graph.
 
 This information is used by several Windows components to find resources across packages available
 to a process (aka across a process' package graph) including:
 
-- **DLLs** - the Loader searches the package graph for DLLs (per [Dynamic-Link Library Search Order](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order))
+- **DLLs** - the Loader searches the package graph for DLLs (per [Dynamic-Link Library Search Order](https://docs.microsoft.com/windows/win32/dlls/dynamic-link-library-search-order))
 - **CLR** - the CLR searches the package graph for assemblies (similar to how the Loader does so for DLLs)
 - **WinRT** - WinRT searches the package graph for WinRT activation. Type resolution is constrained to types provided by packages in a process' package graph (and those provided by Windows via the `Windows.*` namespace). Thius include metadata resolution (i.e. *.winmd).
 - **MRT** - MRT searches the package graph for resources (resources.pri, images, etc)
-- **ms-appx URI scheme** - [ms-appx URIs](https://docs.microsoft.com/en-us/windows/uwp/app-resources/uri-schemes) are resolved to packages across the package graph
+- **ms-appx URI scheme** - [ms-appx URIs](https://docs.microsoft.com/windows/uwp/app-resources/uri-schemes) are resolved to packages across the package graph
 
 If we can alter the package graph as seen by `GetCurrentPackageInfo` and like APIs we can provide
 the desired dynamic behavior.
@@ -109,7 +109,7 @@ dependencies. We'll use [Detours](https://github.com/Microsoft/Detours) to hook
 ### 3.1.1. Detours to Enhance Package Graph APIs
 
 Package Graph information is available for packages registered to the current user via
-[OpenPackageInfoByFullName](https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-openpackageinfobyfullname).
+[OpenPackageInfoByFullName](https://docs.microsoft.com/windows/win32/api/appmodel/nf-appmodel-openpackageinfobyfullname).
 We'll keep track of the expanded package graph (static + dynamic) via a global variable filled with
 PACKAGE_INFO_REFRENCE objects. Our Detour'd API variants walk this information to produce their
 answers seamlessly spanning static and dynamic package information for the process.
@@ -468,9 +468,9 @@ The Dynamic Dependencies API informs the loader when the package graph changes.
 #### 3.1.4.1. Non-Packaged Processes
 
 For non-packaged processes we'll update the DLL Search Order via the PATH environment variable and
-[AddDllDirectory](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory).
+[AddDllDirectory](https://docs.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory).
 Neither technique alone suffices as one or the other can be ignored depending on
-[LoadLibraryEx](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory)
+[LoadLibraryEx](https://docs.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory)
 parameters. We'll set both to cover the bases. Worst case a directory is listed twice in the search
 order, incurring a small cost when failing to find a file in the directory (two misses instead of one).
 
@@ -542,10 +542,10 @@ void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
 
 #### 3.1.4.2. Packaged Processes
 
-Loader path modifications (via PATH environment variable and [AddDllDirectory](https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory))
+Loader path modifications (via PATH environment variable and [AddDllDirectory](https://docs.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-adddlldirectory))
 are ignored for packaged processes. The loader instead uses:
 
-0. DLL Redirection (aka `pkgdir\microsoft.system.package.metadata\Application.Local`) if [DevOverideEnable=1](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-redirection)
+0. DLL Redirection (aka `pkgdir\microsoft.system.package.metadata\Application.Local`) if [DevOverideEnable=1](https://docs.microsoft.com/windows/win32/dlls/dynamic-link-library-redirection)
 1. APIsets
 2. _[DesktopBridge processes]_ SxS manifest DLL redirection
 3. Loaded Module List (i.e. DLLs already loaded into memory)
@@ -556,23 +556,23 @@ are ignored for packaged processes. The loader instead uses:
 
 None of these are sufficiently flexible to leverage for Dynamic Dependencies.
 
-**TODO** Perhaps the [uap7:ImportRedirectionTable](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap7-importredirectiontable)
+**TODO** Perhaps the [uap7:ImportRedirectionTable](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap7-importredirectiontable)
 supporting machinery can help out here?
 
 ## 3.2. Known Issues for Packaged Processes
 
-### 3.2.1. Known Issue: DLL Search Order ignores [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
+### 3.2.1. Known Issue: DLL Search Order ignores [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
 
-The current design and implementation don't consult [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
+The current design and implementation don't consult [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride)
 when updating the Loader's path list to find DLLs.
 
-### 3.2.2. Known Issue: DLL Search Order ignores [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
+### 3.2.2. Known Issue: DLL Search Order ignores [uap6:AllowExecution](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
 
-The current design and implementation don't consult [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
+The current design and implementation don't consult [uap6:AllowExecution](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
 to determine if a package should be in the DLL Search Order.
 
 For packaged processes only packages with execution rights are included in the DLL Search Order.
-This can be explicitly controlled via the [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
+This can be explicitly controlled via the [uap6:AllowExecution](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution)
 element in appxmanifest.xml. The default value varies, depending on package:
 
 AllowExecution default = True
@@ -587,7 +587,7 @@ AllowExecution default = False
 - Optional, if not InRelatedSet
 
 There are no public APIs to get this information so we'll build the DLL Search Order only based
-on package types (as above), regardless if a package manifests [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution).
+on package types (as above), regardless if a package manifests [uap6:AllowExecution](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution).
 
 ## 3.3. Install-time 'Pinning' aka Prevent Removal
 
@@ -687,13 +687,13 @@ This 'torn package' problem can be prevented by ensuring a process is running wi
 Main package with a manifested dependency on the Framework.
 
 One solution is to include a [COM OutOfProcess
-server](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-com-comserver)
+server](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-com-comserver)
 in the 'helper' Main package. At runtime, instantiate the COM server before calling
 `MddAddPackageDependency` and hang onto the COM server's interface pointer until after calling
 `MddRemovePackageDependency` (or process termination).
 
 Alternatively, the 'helper' Main package can declare an
-[AppService](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap-appservice).
+[AppService](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap-appservice).
 At runtime, establish a connection with the AppService before `MddAddPackageDependency` and don't
 close the connection until after `MddRemovePackageDependency`.
 
@@ -734,12 +734,12 @@ graph using the Dynamic Dependency API.
 
 The API supports 4 main operations:
 
-- Pin
+- Create
 - Add
 - Remove
-- Unpin
+- Delete
 
-```MddPinPackageDependency``` defines a package dependency.
+```MddTryCreatePackageDependency``` defines a package dependency.
 
 ```MddAddPackageDependency``` determines a package that satisfies a package dependency and updates
 the caller's process. This includes adding the resolved package to the process' package graph,
@@ -758,8 +758,8 @@ termination).
 ```MddRemovePackageDependency``` removes the resolved PackageDependency
 from the calling process' package graph.
 
-```MddUnpinPackageDependency``` undefines a package dependency
-previously defined via ```MddPinPackageDependency```.
+```MddDeletePackageDependency``` undefines a package dependency
+previously defined via ```MddTryCreatePackageDependency```.
 
 ## 5.2. Package Dependency Resolution is Per-User
 
@@ -789,7 +789,7 @@ The 'bootstrapper API' provides an initialization function that performs the fol
 ### 5.4.1. Boostrapper - Find and Load/Run the per-application 'helper' Main package
 
 The per-application 'helper' Main package defines a [COM OutOfProcess
-server](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-com-comserver)
+server](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-com-comserver)
 and `<PackageDependency Name="ProjectReunionFramework"...>`.
 
 The bootstrapper API calls CoCreateInstance() to create a process with this package's identity.
@@ -816,11 +816,11 @@ a process' DNA, from birth to death.
 
 The initial implementation does not fully implement this spec.
 
-### 5.6.1. [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) not supported
+### 5.6.1. [uap6:LoaderSearchPathOverride](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-loadersearchpathoverride) not supported
 
 See [3.2.1. Known Issue: DLL Search Order ignores uap6:LoaderSearchPathOverride](#321-known-issue-dll-search-order-ignores-uap6loadersearchpathoverride).
 
-### 5.6.2. [uap6:AllowExecution](https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution) not supported
+### 5.6.2. [uap6:AllowExecution](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-uap6-allowexecution) not supported
 
 See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-known-issue-dll-search-order-ignores-uap6allowexecution).
 
@@ -833,7 +833,7 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
 
 ```c++
-enum class MddPinPackageDependency : uint32_t
+enum class MddTryCreatePackageDependencyOptions : uint32_t
 {
     None 0,
 
@@ -845,7 +845,7 @@ enum class MddPinPackageDependency : uint32_t
      /// This option requires the caller has adminitrative privileges.
     ScopeIsSystem = 0x00000002,
 };
-DEFINE_ENUM_FLAG_OPERATORS(MddPinPackageDependency)
+DEFINE_ENUM_FLAG_OPERATORS(MddTryCreatePackageDependencyOptions)
 
 enum class MddPinPackageDependencyLifetimeKind
 {
@@ -863,13 +863,13 @@ enum class MddPinPackageDependencyLifetimeKind
     RegistryKey = 2,
 }
 
-enum class MddAddPackageDependency : uint32_t
+enum class MddAddPackageDependencyOptions : uint32_t
 {
     None                       0,
     OnlyUseFirstPackageFamily  0x00000001,
     PrependIfRankCollision     0x00000002,
 };
-DEFINE_ENUM_FLAG_OPERATORS(MddAddPackageDependency)
+DEFINE_ENUM_FLAG_OPERATORS(MddAddPackageDependencyOptions)
 
 #define MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT 0
 
@@ -909,33 +909,33 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 /// one becomes available.
 ///
 /// @param user the user scope of the package dependency. If NULL the caller's
-///        user context is used. MUST be NULL if MddPinPackageDependency::ScopeIsSystem
+///        user context is used. MUST be NULL if MddTryCreatePackageDependencyOptions::ScopeIsSystem
 ///        is specified
 /// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPinPackageDependencyLifetimeKind::Process
 /// @param packageDependencyId allocated via LocalAlloc; use LocalFree to deallocate
 ///
-/// @note MddPinPackageDependency() fails if the PackageDependency cannot be resolved to a specific
+/// @note MddTryCreatePackageDependency() fails if the PackageDependency cannot be resolved to a specific
 ///       package. This package resolution check is skipped if
-///       MddPinPackageDependency::DoNotVerifyDependencyResolution is specified. This is useful
+///       MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution is specified. This is useful
 ///       for installers running as user contexts other than the target user (e.g. installers
 ///       running as LocalSystem).
-STDAPI MddPinPackageDependency(
+STDAPI MddTryCreatePackageDependency(
     PSID user,
     _In_ PCWSTR packageFamilyName,
     PACKAGE_VERSION minVersion,
     MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
     MddPinPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact,
-    MddPinPackageDependency flags,
+    MddTryCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 
 /// Undefine a package dependency. Removing a pin on a PackageDependency is typically done at uninstall-time.
-/// This implicitly occurs if the package dependency's 'lifetime artifact' (specified via MddPinPackageDependency)
+/// This implicitly occurs if the package dependency's 'lifetime artifact' (specified via MddTryCreatePackageDependency)
 /// is deleted. Packages that are not referenced by other packages and have no pins are elegible to be removed.
 ///
-/// @warn MddUnpinPackageDependency() requires the caller have administrative privileges
-///       if the package dependency was pinned with MddPinPackageDependency::ScopeIsSystem.
-STDAPI_(void) MddUnpinPackageDependency(
+/// @warn MddDeletePackageDependency() requires the caller have administrative privileges
+///       if the package dependency was pinned with MddTryCreatePackageDependencyOptions::ScopeIsSystem.
+STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId);
 
 /// Resolve a previously-pinned PackageDependency to a specific package and
@@ -959,7 +959,7 @@ STDAPI_(void) MddUnpinPackageDependency(
 /// rank in ascending order (-infinityâ€¦0â€¦+infinity). If package(s) are present in the
 /// package graph with the same rank as the call to MddAddPackageDependency the resolved
 /// package is (by default) added after others of the same rank. To add a package
-/// before others o the same rank, specify MddAddPackageDependency::PrependIfRankCollision.
+/// before others o the same rank, specify MddAddPackageDependencyOptions::PrependIfRankCollision.
 ///
 /// Every MddAddPackageDependency should be balanced by a MddRemovePackageDependency
 /// to remove the entry from the package graph. If the process terminates all package
@@ -972,7 +972,7 @@ STDAPI_(void) MddUnpinPackageDependency(
 /// WinRT objects and use other resources from the framework package until
 /// MddRemovePackageDependency is called. The packageDependencyId parameter
 /// must match a package dependency defined for the calling user or the
-/// system (i.e. pinned with MddPinPackageDependency::ScopeIsSystem) else
+/// system (i.e. pinned with MddTryCreatePackageDependencyOptions::ScopeIsSystem) else
 /// an error is returned.
 ///
 /// @param packageDependencyContext valid until passed to MddRemovePackageDependency()
@@ -980,7 +980,7 @@ STDAPI_(void) MddUnpinPackageDependency(
 STDAPI MddAddPackageDependency(
     _In_ PCWSTR packageDependencyId,
     INT32 rank,
-    MddAddPackageDependency flags,
+    MddAddPackageDependencyOptions options,
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName);
 
@@ -1026,6 +1026,7 @@ namespace Microsoft.ApplicationModel.DynamicDependencies
 /// CPU architectures to optionally filter available packages against a package dependency.
 /// These generally correspond to processor architecture types supported by MSIX.
 /// @see Windows.System.ProcessorArchitecture
+[flags]
 enum PackageDependencyProcessorArchitectures
 {
     None       = 0,
@@ -1062,7 +1063,8 @@ runtimeclass PinPackageDependencyOptions
     PackageDependencyProcessorArchitectures Architectures;
 
     /// Do not verify at least 1 matching package exists when pinning a package dependency
-    Boolean VerifyDependencyResolution = true;
+    /// @note Default value is `true`
+    Boolean VerifyDependencyResolution;
 
     /// The kind of lifetime artifact for this package dependency.
     PackageDependencyLifetimeArtifactKind LifetimeArtifactKind;
@@ -1096,7 +1098,7 @@ runtimeclass AddPackageDependencyOptions
 runtimeclass PackageDependency
 {
     /// Create an intstance of the package dependency identified by id.
-    PackageDependency(String id);
+    static PackageDependencyGetFromId(String id);
 
     /// Return the package dependency id.
     String Id { get; }
@@ -1132,17 +1134,17 @@ runtimeclass PackageDependency
     /// package (e.g. higher version) to satisfy the PackageDependency if/when
     /// one becomes available.
     ///
-    /// This method is equivalent to PinForUser(null,...).
+    /// This method is equivalent to CreateForUser(null,...).
     ///
     /// @param packageFamilyName the package family to pin
     /// @param minVerrsion the minimum version to pin
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///
-    /// @see Pin(String, PackageVersion, PinPackageDependencyOptions)
-    /// @see PinForUser()
-    /// @see PinForSystem()
-    static PackageDependency Pin(
+    /// @see Create(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see CreateForUser()
+    /// @see CreateForSystem()
+    static PackageDependency Create(
         String packageFamilyName,
         PackageVersion minVersion);
 
@@ -1167,21 +1169,21 @@ runtimeclass PackageDependency
     /// package (e.g. higher version) to satisfy the PackageDependency if/when
     /// one becomes available.
     ///
-    /// This method is equivalent to PinForUser(null,...).
+    /// This method is equivalent to CreateForUser(null,...).
     ///
     /// @param packageFamilyName the package family to pin
     /// @param minVerrsion the minimum version to pin
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
-    ///       This package resolution check is skipped if MddPinPackageDependency.DoNotVerifyDependencyResolution
+    ///       This package resolution check is skipped if MddTryCreatePackageDependencyOptions.VerifyDependencyResolution=false
     ///       is specified. This is useful if a package satisfying the dependency
     ///       will be installed after the package dependency is defined.
     ///
-    /// @see Pin(String, PackageVersion)
-    /// @see PinForUser()
-    /// @see PinForSystem()
-    static PackageDependency Pin(
+    /// @see Create(String, PackageVersion)
+    /// @see CreateForUser()
+    /// @see CreateForSystem()
+    static PackageDependency Create(
         String packageFamilyName,
         PackageVersion minVersion,
         PinPackageDependencyOptions options);
@@ -1214,10 +1216,10 @@ runtimeclass PackageDependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///
-    /// @see Pin(String, PackageVersion)
-    /// @see Pin(String, PackageVersion, PinPackageDependencyOptions)
-    /// @see PinForSystem()
-    static PackageDependency PinForUser(
+    /// @see Create(String, PackageVersion)
+    /// @see Create(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see CreateForSystem()
+    static PackageDependency CreateForUser(
         Windows.System.User user,
         String packageFamilyName,
         PackageVersion minVersion,
@@ -1250,18 +1252,20 @@ runtimeclass PackageDependency
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
-    ///       This package resolution check is skipped if MddPinPackageDependency.DoNotVerifyDependencyResolution
+    ///       This package resolution check is skipped if MddTryCreatePackageDependencyOptions.VerifyDependencyResolution=false
     ///       is specified. This is useful for installers pinning a package dependency for all users on a system.
     ///
-    /// @see Pin(String, PackageVersion)
-    /// @see Pin(String, PackageVersion, PinPackageDependencyOptions)
-    /// @see PinForUser()
-    static PackageDependency PinForSystem(
+    /// @see Create(String, PackageVersion)
+    /// @see Create(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see CreateForUser()
+    static PackageDependency CreateForSystem(
         String packageFamilyName,
         PackageVersion minVersion,
         PinPackageDependencyOptions options);
 
-    void Unpin();
+    /// Delete a defined package dependency.
+    /// @note The package depenency id useless after Delete. The property is valid but attempting to use it fails e.g. PackageDependency.GetFromId(id) returns null.
+    void Delete();
 
     /// Resolve a previously pinned PackageDependency to a specific package and
     /// add it to the calling process' package graph. Once the dependency has
@@ -1277,7 +1281,7 @@ runtimeclass PackageDependency
     /// WinRT objects and use other resources from the framework package until
     /// PackageDependencyContext.Close() is called (or the process ends).
     /// The package dependency Id must match a package dependency defined
-    /// for the calling user or the system (via PinForSystem) or an exception is raised.
+    /// for the calling user or the system (via CreateForSystem) or an exception is raised.
     ///
     /// Each successful call adds the resolve packaged to the
     /// calling process' package graph, even if already present. There is no
@@ -1305,7 +1309,7 @@ runtimeclass PackageDependency
     /// WinRT objects and use other resources from the framework package until
     /// PackageDependencyContext.Close() is called (or the process ends).
     /// The package dependency Id must match a package dependency defined
-    /// for the calling user or the system (via PinForSystem) or an exception is raised.
+    /// for the calling user or the system (via CreateForSystem) or an exception is raised.
     ///
     /// Each successful call adds the resolve packaged to the
     /// calling process' package graph, even if already present. There is no
@@ -1343,7 +1347,7 @@ struct PackageDependencyContextId
 ///        a package dependency any files loaded from the package can continue
 ///        to be used; future package dependency resolution (via new calls to
 ///        PackageDependency.Add) will fail to see the removed package dependency.
-runtimeclass PackageDependencyContext : ICloseable
+runtimeclass PackageDependencyContext
 {
     /// Create an intstance of the package dependency context identified by context
     PackageDependencyContext(PackageDependencyContextId contextId);
@@ -1362,6 +1366,8 @@ runtimeclass PackageDependencyContext : ICloseable
 
     /// Return true if this and other are associated with the same resolved package.
     Boolean IsEquivalent(PackageDependencyContext other);
+
+    void Remove();
 }
 }
 ```

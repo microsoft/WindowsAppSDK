@@ -35,11 +35,11 @@ HRESULT UpdatePackageGraph()
 
 HRESULT AddToPackageGraph(_In_ PCWSTR what, _In_ PCWSTR packageDependencyId, INT32 rank)
 {
-    const UINT32 flags = MddAddPackageDependency::None;
+    const UINT32 options = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_hlocal_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
-        packageDependencyId, rank, flags, &packageDependencyContext, &packageFullName));
+        packageDependencyId, rank, options, &packageDependencyContext, &packageFullName));
     wprintf(L"%ls resolved to %ls", what, packageFullName.get());
 
     return S_OK;
@@ -73,7 +73,7 @@ namespace LolzKitten
 
         public static void AddToPackageGraph(string what, string packageDependencyId, int rank)
         {
-            var packageDependency = new PackageDependency(packageDependencyId);
+            var packageDependency = new PackageDependency.GetFromId(packageDependencyId);
 
             var options = new AddPackageDependencyOptions(){ Rank = rank };
             PackageDependencyContext packageDependencyContext = packageDependency.Add(options);

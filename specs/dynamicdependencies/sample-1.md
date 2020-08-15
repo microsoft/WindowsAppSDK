@@ -2,7 +2,7 @@
 
 Contoso publishes a framework package that provides Muffin-managing functionality. At runtime, Fabrikam wants to use this functionality if available, so it adds a dynamic dependency for the Contoso.Muffins package. The dynamic dependency is removed once Fabrikam is done using the Contoso Muffin-managing functionality.
 
-```MddPinPackageDependency``` will fail if there are no packages registered to the user that satisfy the PackageDependency.
+```MddTryCreatePackageDependency``` will fail if there are no packages registered to the user that satisfy the PackageDependency.
 
 ## Win32
 
@@ -24,17 +24,17 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
-    const auto pinFlags = MddPinPackageDependency::None;
+    const auto pinOptions = MddTryCreatePackageDependencyOptions::None;
     wil::unique_hlocal_string packageDependencyId;
-    RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinFlags, &packageDependencyId));
+    RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addFlags = MddAddPackageDependency::None;
+    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_hlocal_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
-        packageDependencyId.get(), rank, addFlags, &packageDependencyContext , &packageFullName));
+        packageDependencyId.get(), rank, addOptions, &packageDependencyContext , &packageFullName));
     wprintf(L"Managing muffins via %ls", packageFullName.get());
 
     wil::unique_hmodule contosoMuffinsDll(::LoadLibrary(L"Contoso-Muffins"));
@@ -48,7 +48,7 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
 
     (void) LOG_IF_FAILED(MddRemovePackageDependency(packageDependencyContext));
 
-    MddUnpinPackageDependency(packageDependencyId.get());
+    MddDeletePackageDependency(packageDependencyId.get());
 
     return S_OK;
 }
@@ -71,7 +71,7 @@ int ManageMuffins()
     minVersion.Minor = 0;
     minVersion.Build = 1234;
     minVersion.Revision = 567;
-    PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, null);
+    PackageDependency packageDependency = PackageDependency.Create(packageFamilyName, minVersion, null);
 
     PackageDependencyContext packageDependencyContext = packageDependency.Add();
     Console.WriteLine($"Managing muffins via {packageDependencyContext.PackageFullName}");
@@ -88,7 +88,7 @@ int ManageMuffins()
 
     packageDependencyContext.Close();
 
-    packageDependency.Unpin();
+    packageDependency.Delete();
 
     return countOfMuffinsManaged;
 }

@@ -2,7 +2,7 @@
 
 Contoso publishes a framework package. At runtime, LolzKittens wants to use Contoso's functionality for the life of its process. The dynamic dependency is added when the process starts and not explicitly removed, relying on Windows to detect process termination and cleanup any bookkeeping information about the former LolzKittens process despite no calls to ```MddRemovePackageDependency```. The package dependency is defined just long enough to resolve it to a specific package and update the current process to use it.
 
-```MddPinPackageDependency``` will fail if there are no packages registered for the calling user satisfying the PackageDependency.
+```MddTryCreatePackageDependency``` will fail if there are no packages registered for the calling user satisfying the PackageDependency.
 
 ## Win32
 
@@ -20,25 +20,25 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
-    const auto pinFlags = MddPinPackageDependency::None;
+    const auto pinOptions = MddTryCreatePackageDependencyOptions::None;
     wil::unique_hlocal_string packageDependencyId;
-    RETURN_IF_FAILED(MddPinPackageDependency(
-        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinFlags, &packageDependencyId));
+    RETURN_IF_FAILED(MddTryCreatePackageDependency(
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
     // lifetimeArtifact=null gives the PackageDepedency a lifetime of the current process
     // The PackageDependency is not persisted. It will be implicitly unpinned when the process terminates.
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addFlags = MddAddPackageDependency::None;
+    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_hlocal_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
-        packageDependencyId.get(), rank, addFlags, &packageDependencyContext, &packageFullName));
+        packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
     wprintf(L"Managing muffins via %ls", packageFullName.get());
 
     // We don't need the package dependency definition anymore. We can continue using the package dependency
     // in the current process until we quit. To prevent others from using it we'll explicitly unpin the
     // package dependency. This prevents new MddAddPackageDependency calls from succeeding.
-    MddUnpinPackageDependency(packageDependencyId.get());
+    MddDeletePackageDependency(packageDependencyId.get());
 
     DoFunnyKittenThings();
 
@@ -64,7 +64,7 @@ namespace MyApp
             minVersion.Minor = 0;
             minVersion.Build = 1234;
             minVersion.Revision = 567;
-            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, null);
+            PackageDependency packageDependency = PackageDependency.Create(packageFamilyName, minVersion, null);
 
             PackageDependencyContext packageDependencyContext = packageDependency.Add();
             Console.WriteLine($"Managing muffins via {packageFullName}");
@@ -72,7 +72,7 @@ namespace MyApp
             // We don't need the package dependency definition anymore. We can continue using the package dependency
             // in the current process until we quit. To prevent others from using it we'll explicitly unpin the
             // package dependency. This prevents new packageDependency.Add() calls from succeeding.
-            packageDependency.Unpin();
+            packageDependency.Delete();
 
             DoFunnyKittenThings();
         }

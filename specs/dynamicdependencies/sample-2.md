@@ -2,7 +2,7 @@
 
 Variant of Sample 1 using RAII classes to manage packageDependencyId, packageDependencyContext and DLL lifetimes.
 
-```MddPinPackageDependency``` will fail if there are no packages registered for the calling user satisfying the PackageDependency.
+```MddTryCreatePackageDependency``` will fail if there are no packages registered for the calling user satisfying the PackageDependency.
 
 ## Win32
 
@@ -52,7 +52,7 @@ public:
     HRESULT Add(
         _In_ PCWSTR packageDependencyId,
         INT32 rank,
-        MddAddPackageDependency flags,
+        MddAddPackageDependencyOptions flags,
         _In_ PCWSTR dllFilename)
     {
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
@@ -98,15 +98,15 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const UINT32 pinFlags = MddPinPackageDependency::LifecycleHint_Process;
+    const UINT32 pinOptions = MddTryCreatePackageDependencyOptions::LifecycleHint_Process;
     wil::unique_packagedependencyid packageDependencyId;
-    RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, nullptr, pinFlags, &packageDependencyId));
+    RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
+        packageFamilyName, minVersion, architecture, nullptr, pinOptions, &packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addFlags = MddAddPackageDependency::None;
+    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
     MddPackageDependencyContextAndDll context;
-    RETURN_IF_FAILED(context.Add(packageDependencyId.get(), rank, addFlags, L"Contoso-Muffins"));
+    RETURN_IF_FAILED(context.Add(packageDependencyId.get(), rank, addOptions, L"Contoso-Muffins"));
     wprintf(L"Managing muffins via %ls", context.GetPackageFullName());
 
     typedef int (WINAPI * ManageMuffins)();

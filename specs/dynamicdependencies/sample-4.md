@@ -58,10 +58,10 @@ HRESULT DefinePackageDependency_Muffins()
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetMuffinsLifetimeAbsoluteFilename();
-    const auto pinFlags = MddPinPackageDependency::DoNotVerifyDependencyResolution;
+    const auto pinOptions = MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
     wil::unique_hlocal_string packageDependencyId;
-    RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, lifetimeKind, lifetimeArtifact, pinFlags, &packageDependencyId));
+    RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
+        packageFamilyName, minVersion, architecture, lifetimeKind, lifetimeArtifact, pinOptions, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(L"muffins", packageDependencyId.get()));
     return S_OK;
@@ -78,10 +78,10 @@ HRESULT DefinePackageDependency_Waffles()
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetWafflesLifetimeRegistryKey();
-    const auto pinFlags = MddPinPackageDependency::DoNotVerifyDependencyResolution;
+    const auto pinOptions = MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
     wil::unique_hlocal_string packageDependencyId;
-    RETURN_IF_FAILED(MddPinPackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinFlags, &packageDependencyId));
+    RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(L"waffles", packageDependencyId.get()));
     return S_OK;
@@ -89,20 +89,20 @@ HRESULT DefinePackageDependency_Waffles()
 
 PCWSTR GetMuffinsLifetimeAbsoluteFilename()
 {
-    // MddPinPackageDependency::LifecycleHint_FileOrPath requires an absolute filename or path
+    // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
     return "C:\\Program Files\\LolzKittens2020\\KittyKitty.exe";
 }
 
 PCWSTR GetWafflesLifetimeRegistryKey()
 {
-    // MddPinPackageDependency::LifecycleHint_RegistrySubkey requires a string
+    // MddTryCreatePackageDependencyOptions::LifecycleHint_RegistrySubkey requires a string
     // in the format 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU
     return "HKLM\\SOFTWARE\\LolzCatEnterprises\\LolzKitten\\PackageDependencies\\Contoso.puppies";
 }
 
 HRESULT DeletePackageDependencyIds()
 {
-    // No need to call MddUnpinPackageDependency() because we defined our package depedencies with
+    // No need to call MddDeletePackageDependency() because we defined our package depedencies with
     // file and registry lifetime artifacts. The install will delete that file and registry key
     // so we only need to delete the package dependency ids we saved when we pinned the package dependencies
 
@@ -171,7 +171,7 @@ namespace LolzKitten
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = MuffinsLifetimeAbsoluteFilename
             };
-            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, options));
+            PackageDependency packageDependency = PackageDependency.Create(packageFamilyName, minVersion, options));
 
             SavePackageDependencyId(L"muffins", packageDependency.Id);
             return S_OK;
@@ -189,7 +189,7 @@ namespace LolzKitten
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = WafflesLifetimeRegistryKey
             };
-            PackageDependency packageDependency = PackageDependency.Pin(packageFamilyName, minVersion, options));
+            PackageDependency packageDependency = PackageDependency.Create(packageFamilyName, minVersion, options));
 
             SavePackageDependencyId(L"waffles", packageDependency.Id);
             return S_OK;
@@ -199,7 +199,7 @@ namespace LolzKitten
         {
             get
             {
-                // MddPinPackageDependency::LifecycleHint_FileOrPath requires an absolute filename or path
+                // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
                 return @"C:\Program Files\LolzKittens2020\KittyKitty.exe";
             }
         }
@@ -208,7 +208,7 @@ namespace LolzKitten
         {
             get
             {
-                // MddPinPackageDependency::LifecycleHint_RegistrySubkey requires a string
+                // MddTryCreatePackageDependencyOptions::LifecycleHint_RegistrySubkey requires a string
                 // in the format 'root\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU
                 return @"HKLM\SOFTWARE\LolzCatEnterprises\LolzKitten\PackageDependencies\Contoso.puppies";
             }
@@ -216,7 +216,7 @@ namespace LolzKitten
 
         void DeletePackageDependencyIds()
         {
-            // No need to call PackageDependency.Unpin() because we defined our package depedencies with
+            // No need to call PackageDependency.Delete() because we defined our package depedencies with
             // file and registry lifetime artifacts. The install will delete that file and registry key
             // so we only need to delete the package dependency ids we saved when we pinned the package dependencies
 
