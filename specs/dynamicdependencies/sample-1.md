@@ -25,14 +25,14 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     const auto pinOptions = MddTryCreatePackageDependencyOptions::None;
-    wil::unique_hlocal_string packageDependencyId;
+    wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
     const UINT32 addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
-    wil::unique_hlocal_string packageFullName;
+    wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
         packageDependencyId.get(), rank, addOptions, &packageDependencyContext , &packageFullName));
     wprintf(L"Managing muffins via %ls", packageFullName.get());

@@ -21,7 +21,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     const auto pinOptions = MddTryCreatePackageDependencyOptions::None;
-    wil::unique_hlocal_string packageDependencyId;
+    wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(
         packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
     // lifetimeArtifact=null gives the PackageDepedency a lifetime of the current process
@@ -30,7 +30,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
     const UINT32 addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
-    wil::unique_hlocal_string packageFullName;
+    wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
         packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
     wprintf(L"Managing muffins via %ls", packageFullName.get());

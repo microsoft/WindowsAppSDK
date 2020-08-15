@@ -37,7 +37,7 @@ HRESULT Define32bitPackageDependency()
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::X86 |
         MddPackageDependencyProcessorArchitectures::Arm | MddPackageDependencyProcessorArchitectures::X86A64;
     const UINT32 options = MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
-    wil::unique_hlocal_string packageDependencyId;
+    wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, GetLifetimeFile(), options, &packageDependencyId));
 

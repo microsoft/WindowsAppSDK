@@ -164,7 +164,7 @@ LONG DynamicGetCurrentPackageInfo(...PACKAGE_INFO* packageInfo...UINT32* count)
 {
     *count = 0
 
-    std::unique_lock<std>>mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock)
 
     for (node : g_packageGraph)
     {
@@ -187,7 +187,7 @@ HRESULT MddAddPackageDependency(...)
 {
     ...
 
-    std::unique_lock<std>>mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock)
 }
 ```
 
@@ -203,7 +203,7 @@ Updating the package graph also requires the DLL Search Order be updated. See be
 ```c++ (C++ish pseudocode)
 HRESULT MddAddPackageDependency(...)
 {
-    std::unique_lock<std>>mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock)
 
     auto packageFullName = ResolvePackageDependency(packageFamilyName, minVersion, architectureFilter, ...)
     if (!packageFullName)
@@ -371,9 +371,9 @@ those of matching rank.
 HRESULT AddToPackageGraph(string packageFullName, ...)
 {
     auto packageInfoReference = OpenPackageInfoByFullName(packageFullName)
-    auto node = PackageGraphNode(packageInfoReference)
+    auto packageGraphNode = PackageGraphNode(packageInfoReference)
 
-    // Find the insertion point where to add the new node to the package graph
+    // Find the insertion point where to add the new package graph node to the package graph
     int index = 0
     for (; index < g_packageGraph.size(); ++index)
     {
@@ -416,11 +416,11 @@ HRESULT AddToPackageGraph(string packageFullName, ...)
     // Add the new node to the package graph
     if (index <> g_packageGraph.size())
     {
-        g_packageGraph.insert(index, node)
+        g_packageGraph.insert(index, packageGraphNode)
     }
     else
     {
-        g_packageGraph.append(node)
+        g_packageGraph.append(packageGraphNode)
     }
 
     // The DLL Search Order must be updated when we update the package graph
@@ -439,17 +439,17 @@ Updating the package graph also requires the DLL Search Order be updated. See be
 ```c++ (C++ish pseudocode)
 HRESULT MddRemovePackageDependency(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
 {
-    std::unique_lock<std>>mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock)
 
     for (int index=0; index < g_packageGraph.size(); ++index)
     {
         auto& node = g_packageGraph[index]
         if (node.context() == context)
         {
-            g_packageGraph.erase(index)
-
             // The DLL Search Order must be updated when we update the package graph
             RemoveFromDllSearchOrder(node)
+
+            g_packageGraph.erase(index)
 
             return S_OK
         }
@@ -494,12 +494,11 @@ void RemoveFromDllSearchOrder(PackageGraphNode package)
     RemoveDllDirectory(package.addDllDirectoryCookie())
 }
 
+static string g_pathListLastAddedToPath;
+
 void UpdatePath()
 {
-    // 1. Set PROJECTREUNION_DYNAMICDEPENDENCIES_PATH=...package graph path list (semi-colon delimited)...
-    // 2. Make sure PATH starts with #1
-
-    // Build the package graph path list
+    // Build the package graph path list (semi-colon delimited)
     string pathList;
     for (PackageGraphNode node : g_packageGraph)
     {
@@ -516,15 +515,31 @@ void UpdatePath()
         }
         AppendPathsToList(pathList, packageInfos)
     }
-    SetEnvironmentVariable("PROJECTREUNION_DYNAMICDEPENDENCIES_PATH", pathList)
 
-    // Make sure our package graph environment variable's at the fron ot the PATH environment variable
+    // Add the path list to the PATH enironment variable
+    // If not present in PATH then add the path list to the front of PATH
+    // If already present then replace it with the updated path list
+
+    // package graph environment variable's at the fron ot the PATH environment variable
     string path = GetEnvironmentVariable("PATH")
-    if (!path.startswithnocase("%PROJECTREUNION_DYNAMICDEPENDENCIES_PATH%;"))
+    if (g_pathListLastAddedToPath.length() == 0)
     {
-        path = "%PROJECTREUNION_DYNAMICDEPENDENCIES_PATH%;" + path
-        SetEnvironmentVariable("PATH", path)
+        // First time we're changing PATH. Prepend the path list to PATH
+        path = pathList + ";" + path;
     }
+    else
+    {
+        // Find the previous path list in PATH (if present)
+        ...find g_pathg_pastListLastAddedToPath in path...
+        if (found)
+            ...path.replace(g_pastListLastAddedToPath, pathList)...
+        else
+            path = pathlist + ";" + path
+    }
+    SetEnvironmentVariable("PATH", path)
+
+    // Remember the path list we added to PATH for future updates
+    g_pathListLastAddedToPath = pathList;
 }
 
 void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
@@ -533,7 +548,7 @@ void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
     {
         if (pathList.size() > 0)
         {
-            path += L";"
+            path += ";"
         }
         path += packageInfo.path
     }
@@ -865,9 +880,8 @@ enum class MddPinPackageDependencyLifetimeKind
 
 enum class MddAddPackageDependencyOptions : uint32_t
 {
-    None                       0,
-    OnlyUseFirstPackageFamily  0x00000001,
-    PrependIfRankCollision     0x00000002,
+    None                   = 0,
+    PrependIfRankCollision = 0x00000001,
 };
 DEFINE_ENUM_FLAG_OPERATORS(MddAddPackageDependencyOptions)
 
@@ -893,7 +907,7 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 /// a package if it's the only one satisfying the PackageDependency.
 ///
 /// @note A package matching a PackageDependency pin can still be removed
-///       as long as there's another that satisfies the PackageDependency.
+///       as long as there's another package that satisfies the PackageDependency.
 ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
 ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
 ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
@@ -912,7 +926,7 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 ///        user context is used. MUST be NULL if MddTryCreatePackageDependencyOptions::ScopeIsSystem
 ///        is specified
 /// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPinPackageDependencyLifetimeKind::Process
-/// @param packageDependencyId allocated via LocalAlloc; use LocalFree to deallocate
+/// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate
 ///
 /// @note MddTryCreatePackageDependency() fails if the PackageDependency cannot be resolved to a specific
 ///       package. This package resolution check is skipped if
@@ -943,7 +957,7 @@ STDAPI_(void) MddDeletePackageDependency(
 /// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
 /// can find the binaries in the resolved package.
 ///
-/// Package resoution is specific to a user and can return different values
+/// Package resolution is specific to a user and can return different values
 /// for different users on a system.
 ///
 /// Each successful MddAddPackageDependency() adds the resolve packaged to the
@@ -961,11 +975,11 @@ STDAPI_(void) MddDeletePackageDependency(
 /// package is (by default) added after others of the same rank. To add a package
 /// before others o the same rank, specify MddAddPackageDependencyOptions::PrependIfRankCollision.
 ///
-/// Every MddAddPackageDependency should be balanced by a MddRemovePackageDependency
+/// Every MddAddPackageDependency can be balanced by a MddRemovePackageDependency
 /// to remove the entry from the package graph. If the process terminates all package
 /// references are removed, but any pins stay behind.
 ///
-/// MddAddPackageDependency adds the resulting package to the process' package
+/// MddAddPackageDependency adds the resolved package to the process' package
 /// graph, per the rank and options/flags parameters. The process' package
 /// graph is used to search for DLLs (per Dynamic-Link Library Search Order),
 /// WinRT objects and other resources; the caller can now load DLLs, activate
@@ -976,7 +990,7 @@ STDAPI_(void) MddDeletePackageDependency(
 /// an error is returned.
 ///
 /// @param packageDependencyContext valid until passed to MddRemovePackageDependency()
-/// @param packageFullName allocated via LocalAlloc; use LocalFree to deallocate
+/// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate
 STDAPI MddAddPackageDependency(
     _In_ PCWSTR packageDependencyId,
     INT32 rank,
@@ -999,23 +1013,12 @@ STDAPI_(void) MddRemovePackageDependency(
 /// PackageDependency were to be resolved. Does not add the
 /// package to the process graph.
 ///
-/// @param packageFullName allocated via LocalAlloc; use LocalFree to deallocate
+/// @param packageFullName allocated via HeapAlloc; use HeapFree to deallocate.
+///                        If the package dependency cannot be resolved the function
+///                        succeeds but packageFullName is nullptr.
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName);
-
-/// Return TRUE if PackageDependency pins would produce the same package
-/// when resolved e.g. whether they share the same packageFamilyName,
-/// minVersion, and packageDependencyProcessorArchitectures values.
-STDAPI_(BOOL) MddArePackageDependencyIdsEquivalent(
-    _In_ PCWSTR packageDependencyId1,
-    _In_ PCWSTR packageDependencyId2);
-
-/// Return TRUE if context1 and contextId2
-/// are associated with the same resolved package.
-STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context1,
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context2);
 ```
 
 ## 6.2. WinRT API
@@ -1073,6 +1076,12 @@ runtimeclass PinPackageDependencyOptions
     String LifetimeArtifact;
 }
 
+static runtimeclass PackageDependencyRank
+{
+    /// The default value is zero (0).
+     static Int32 Default { get; };
+};
+
 /// Options when adding a package dependency
 runtimeclass AddPackageDependencyOptions
 {
@@ -1080,13 +1089,8 @@ runtimeclass AddPackageDependencyOptions
 
     /// The rank when adding the package dependency to a a package graph.
     /// @note A package graph is sorted in ascending order from -infinity...0...+infinity
-    /// @note The default value is zero
+    /// @note The default value is PackageDepedencyRank.Default
     Int32 Rank;
-
-    /// If a package dependency resolves to a package with dependencies and this option is true
-    /// the dependencies are ignored; only the package is added to the package graph. By default
-    /// a resolved package and its dependencies are added to the package graph.
-    Boolean OnlyUseFirstPackageFamily;
 
     /// If a package is added to a package graph with a package of the same rank (aka a collision on rank)
     /// and this option is true the package is prepended to the set of packages of the same rank.
@@ -1103,23 +1107,13 @@ runtimeclass PackageDependency
     /// Return the package dependency id.
     String Id { get; }
 
-    /// Return true if the package dependencies would produce the same
-    /// package when resolved e.g. whether they share the same packageFamilyName,
-    /// minVersion, and packageDependencyProcessorArchitectures values.
-    static Boolean AreEquivalent(String packageDependencyId1, String packageDependencyId2);
-
-    /// Return true if this and other would produce the same
-    /// package when resolved e.g. whether they share the same packageFamilyName,
-    /// minVersion, and packageDependencyProcessorArchitectures values.
-    Boolean IsEquivalent(PackageDependency other);
-
     /// Define a package dependency for the current user. The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
     /// packages, but ensures Deployment won't remove a package if it's
     /// the only one satisfying the PackageDependency.
     ///
     /// @note A package matching a PackageDependency pin can still be removed
-    ///       as long as there's another that satisfies the PackageDependency.
+    ///       as long as there's another package that satisfies the PackageDependency.
     ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
     ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
@@ -1137,7 +1131,7 @@ runtimeclass PackageDependency
     /// This method is equivalent to CreateForUser(null,...).
     ///
     /// @param packageFamilyName the package family to pin
-    /// @param minVerrsion the minimum version to pin
+    /// @param minVersion the minimum version to pin
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///
@@ -1154,7 +1148,7 @@ runtimeclass PackageDependency
     /// the only one satisfying the PackageDependency.
     ///
     /// @note A package matching a PackageDependency pin can still be removed
-    ///       as long as there's another that satisfies the PackageDependency.
+    ///       as long as there's another package that satisfies the PackageDependency.
     ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
     ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
@@ -1172,10 +1166,10 @@ runtimeclass PackageDependency
     /// This method is equivalent to CreateForUser(null,...).
     ///
     /// @param packageFamilyName the package family to pin
-    /// @param minVerrsion the minimum version to pin
+    /// @param minVersion the minimum version to pin
     /// @param options additional options affecting the package dependency
     ///
-    /// @note This fails if the package dependency cannot be resolved to a specific package.
+    /// @note This fails if the package dependency cannot be resolved to a specific package (null is returned).
     ///       This package resolution check is skipped if MddTryCreatePackageDependencyOptions.VerifyDependencyResolution=false
     ///       is specified. This is useful if a package satisfying the dependency
     ///       will be installed after the package dependency is defined.
@@ -1194,7 +1188,7 @@ runtimeclass PackageDependency
     /// the only one satisfying the PackageDependency.
     ///
     /// @note A package matching a PackageDependency pin can still be removed
-    ///       as long as there's another that satisfies the PackageDependency.
+    ///       as long as there's another package that satisfies the PackageDependency.
     ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
     ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
@@ -1211,7 +1205,7 @@ runtimeclass PackageDependency
     ///
     /// @param user the user scope of the package dependency. If null the caller's user context is used
     /// @param packageFamilyName the package family to pin
-    /// @param minVerrsion the minimum version to pin
+    /// @param minVersion the minimum version to pin
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
@@ -1231,7 +1225,7 @@ runtimeclass PackageDependency
     /// the only one satisfying the PackageDependency.
     ///
     /// @note A package matching a PackageDependency pin can still be removed
-    ///       as long as there's another that satisfies the PackageDependency.
+    ///       as long as there's another package that satisfies the PackageDependency.
     ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
     ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
@@ -1248,7 +1242,7 @@ runtimeclass PackageDependency
     ///
     /// @param user the user scope of the package dependency. If null the caller's user context is used
     /// @param packageFamilyName the package family to pin
-    /// @param minVerrsion the minimum version to pin
+    /// @param minVersion the minimum version to pin
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
@@ -1272,14 +1266,14 @@ runtimeclass PackageDependency
     /// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
     /// can find the binaries in the resolved package.
     ///
-    /// Package resoution is specific to a user. The same package dependency can
+    /// Package resolution is specific to a user. The same package dependency can
     /// resolve to different packages for different users on a system.
     ///
-    /// This adds the resulting package to the process' package graph.
+    /// This adds the resolved package to the process' package graph.
     /// A process' package graph is used to search for DLLs (per Dynamic-Link Library Search Order),
     /// WinRT objects and other resources; the caller can now load DLLs, activate
     /// WinRT objects and use other resources from the framework package until
-    /// PackageDependencyContext.Close() is called (or the process ends).
+    /// PackageDependencyContext.Remove() is called (or the process ends).
     /// The package dependency Id must match a package dependency defined
     /// for the calling user or the system (via CreateForSystem) or an exception is raised.
     ///
@@ -1288,10 +1282,10 @@ runtimeclass PackageDependency
     /// duplicate 'detection' or 'filtering' applied by the API (multiple
     /// references to a package is not harmful). Once resolution is complete
     /// the package stays resolved for that user until the last reference across
-    /// all processes for that user is removed via PackageDependencyContext.Close()
+    /// all processes for that user is removed via PackageDependencyContext.Remove()
     /// (or process termination).
     ///
-    /// Calls to Add() can be balanced by a PackageDependencyContext.Close()
+    /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
     /// to remove the entry from the package graph.
     PackageDependencyContext Add();
 
@@ -1300,14 +1294,14 @@ runtimeclass PackageDependency
     /// been added other code-loading methods (LoadLibrary, CoCreateInstance, etc)
     /// can find the binaries in the resolved package.
     ///
-    /// Package resoution is specific to a user. The same package dependency can
+    /// Package resolution is specific to a user. The same package dependency can
     /// resolve to different packages for different users on a system.
     ///
-    /// This adds the resulting package to the process' package graph.
+    /// This adds the resolved package to the process' package graph.
     /// A process' package graph is used to search for DLLs (per Dynamic-Link Library Search Order),
     /// WinRT objects and other resources; the caller can now load DLLs, activate
     /// WinRT objects and use other resources from the framework package until
-    /// PackageDependencyContext.Close() is called (or the process ends).
+    /// PackageDependencyContext.Remove() is called (or the process ends).
     /// The package dependency Id must match a package dependency defined
     /// for the calling user or the system (via CreateForSystem) or an exception is raised.
     ///
@@ -1316,17 +1310,17 @@ runtimeclass PackageDependency
     /// duplicate 'detection' or 'filtering' applied by the API (multiple
     /// references to a package is not harmful). Once resolution is complete
     /// the package stays resolved for that user until the last reference across
-    /// all processes for that user is removed via PackageDependencyContext.Close()
+    /// all processes for that user is removed via PackageDependencyContext.Remove()
     /// (or process termination).
     ///
     /// This adds the resolved package to the caller's package graph, per rank.
     /// A process' package graph is a list of packages sorted by rank in ascending
     /// order (-infinity...0...+infinity). If package(s) are present in the
-    /// package graph with the same rankrank the resolved package is
+    /// package graph with the same rank the resolved package is
     /// (by default) added after others of the same rank. To add a package
     /// before others of the same rank, specify PackageDependency.PrependIfRankCollision.
     ///
-    /// Calls to Add() can be balanced by a PackageDependencyContext.Close() (or object destruction)
+    /// Calls to Add() can be balanced by a PackageDependencyContext.Remove() (or object destruction)
     /// to remove the entry from the package graph.
     PackageDependencyContext Add(AddPackageDependencyOptions options);
 }
@@ -1357,15 +1351,6 @@ runtimeclass PackageDependencyContext
 
     /// Returns the package full name of the resolved package for this context
     String PackageFullName { get; }
-
-    /// Return true if context1 and context2
-    /// are associated with the same resolved package.
-    static Boolean AreEquivalent(
-        PackageDependencyContextId contextId1,
-        PackageDependencyContextId contextId2);
-
-    /// Return true if this and other are associated with the same resolved package.
-    Boolean IsEquivalent(PackageDependencyContext other);
 
     void Remove();
 }

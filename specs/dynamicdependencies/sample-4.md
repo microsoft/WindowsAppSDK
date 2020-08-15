@@ -59,7 +59,7 @@ HRESULT DefinePackageDependency_Muffins()
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetMuffinsLifetimeAbsoluteFilename();
     const auto pinOptions = MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
-    wil::unique_hlocal_string packageDependencyId;
+    wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, lifetimeKind, lifetimeArtifact, pinOptions, &packageDependencyId));
 
@@ -79,7 +79,7 @@ HRESULT DefinePackageDependency_Waffles()
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetWafflesLifetimeRegistryKey();
     const auto pinOptions = MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
-    wil::unique_hlocal_string packageDependencyId;
+    wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
 

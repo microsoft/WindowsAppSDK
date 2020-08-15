@@ -37,7 +37,7 @@ HRESULT AddToPackageGraph(_In_ PCWSTR what, _In_ PCWSTR packageDependencyId, INT
 {
     const UINT32 options = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
-    wil::unique_hlocal_string packageFullName;
+    wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
         packageDependencyId, rank, options, &packageDependencyContext, &packageFullName));
     wprintf(L"%ls resolved to %ls", what, packageFullName.get());

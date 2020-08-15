@@ -56,7 +56,7 @@ public:
         _In_ PCWSTR dllFilename)
     {
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
-        wil::unique_hlocal_string packageFullName;
+        wil::unique_process_heap_string packageFullName;
         RETURN_IF_FAILED(MddAddPackageDependency(
             packageDependencyId, rank, flags, &m_packageDependencyContext , &m_packageFullName));
 
@@ -81,7 +81,7 @@ public:
 
 private:
     MDD_PACKAGEDEPENDENCY_CONTEXT m_packageDependencyContext = nullptr;
-    wil::unique_hlocal_string m_packageFullName;
+    wil::unique_process_heap_string m_packageFullName;
     mutable wil::unique_hmodule m_module;
 };
 
