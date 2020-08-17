@@ -35,7 +35,7 @@ HRESULT LoadPackageDependencyId(_In_ PCWSTR what, wil::unique_ptr<WCHAR[]>& pack
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel.DynamicDependencies;
+using Microsoft.ApplicationModel.DynamicDependency;
 
 namespace LolzKitten
 {

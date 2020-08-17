@@ -60,9 +60,8 @@ HRESULT SavePackageDependencyId(_In_ PCWSTR packageDependencyId)
 ## WinRT
 
 ```c#
-using Microsoft.ProjectReunion.ApplicationModel
+using Microsoft.ApplicationModel.DynamicDependency;
 using Windows.ApplicationModel;
-
 
 namespace LolzKitten
 {
