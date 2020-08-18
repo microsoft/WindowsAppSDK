@@ -31,7 +31,7 @@ to use packaged content.
   - [5.1. API Overview](#51-api-overview)
   - [5.2. Package Dependency Resolution is Per-User](#52-package-dependency-resolution-is-per-user)
   - [5.3. LocalSystem is not Supported](#53-localsystem-is-not-supported)
-  - [5.4. Packaging - ProjectReunion.dll and ProjectReunion.Loader.dll](#54-packaging---projectreuniondll-and-projectreunionloaderdll)
+  - [5.4. Packaging - ProjectReunion.dll and ProjectReunion.Bootstrap.dll](#54-packaging---projectreuniondll-and-projectreunionbootstrapdll)
     - [5.4.1. Boostrapper - Find and Load/Run the per-application 'helper' Main package](#541-boostrapper---find-and-loadrun-the-per-application-helper-main-package)
     - [5.4.2. Boostrapper - Find and Load ProjectReunion.dll](#542-boostrapper---find-and-load-projectreuniondll)
   - [5.5. Dynamic Dependencies vis a vis Static Dependencies](#55-dynamic-dependencies-vis-a-vis-static-dependencies)
@@ -41,7 +41,6 @@ to use packaged content.
 - [6. API Details](#6-api-details)
   - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
   - [6.2. WinRT API](#62-winrt-api)
-- [7. Appendix](#7-appendix)
 
 # 2. Background
 
@@ -120,62 +119,62 @@ class PackageGraphNode
 {
 ...
 private:
-    PACKAGE_INFO_REFERENCE m_packageInfoReference{}
-    MDD_PACKAGE_DEPENDENCY_CONTEXT m_context{}
-    DLL_DIRECTORY_COOKIE m_addDllDirectoryCookie{}
+    PACKAGE_INFO_REFERENCE m_packageInfoReference{};
+    MDD_PACKAGE_DEPENDENCY_CONTEXT m_context{};
+    DLL_DIRECTORY_COOKIE m_addDllDirectoryCookie{};
 };
 
-static std::mutex g_lock
-std::vector<PackageGraphNode> g_packageGraph
+static std::mutex g_lock;
+std::vector<PackageGraphNode> g_packageGraph;
 
-static LONG (WINAPI * TruGetCurrentPackageInfo)(...) = CurrentPackageInfo
-LONG DynamicGetCurrentPackageInfo(...)
+static LONG (WINAPI * TruGetCurrentPackageInfo)(...) = CurrentPackageInfo;
+LONG DynamicGetCurrentPackageInfo(...);
 ...
 
 BOOL DllMain(...)
 {
     if (DetourIsHelperProcess())
     {
-        return TRUE
+        return TRUE;
     }
 
     if (dwReason == DLL_PROCESS_ATTACH)
     {
-        DetourRestoreAfterWith()
+        DetourRestoreAfterWith();
 
-        DetourTransactionBegin()
-        DetourUpdateThread(GetCurrentThread())
-        DetourAttach(&TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo)
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        DetourAttach(&TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo);
         ...
-        DetourTransactionCommit()
+        DetourTransactionCommit();
     }
     else if (dwReason == DLL_PROCESS_DETACH)
     {
-        DetourTransactionBegin()
-        DetourUpdateThread(GetCurrentThread())
-        DetourDetach(&TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo)
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        DetourDetach(&TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo);
         ...
-        DetourTransactionCommit()
+        DetourTransactionCommit();
     }
     return TRUE;
 }
 
 LONG DynamicGetCurrentPackageInfo(...PACKAGE_INFO* packageInfo...UINT32* count)
 {
-    *count = 0
+    *count = 0;
 
-    std::unique_lock<std::mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock);
 
     for (node : g_packageGraph)
     {
-        auto packageInfoReference = node.get()
+        auto packageInfoReference = node.get();
         if (node)
         {
-            packageInfo += GetPackageInfo(packageInfoRefernce...)
+            packageInfo += GetPackageInfo(packageInfoRefernce...);
         }
         else
         {
-            packageInfo += TrueGetCurrentPackageInfo(...)
+            packageInfo += TrueGetCurrentPackageInfo(...);
         }
         ++count
     }
@@ -187,7 +186,7 @@ HRESULT MddAddPackageDependency(...)
 {
     ...
 
-    std::unique_lock<std::mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock);
 }
 ```
 
@@ -203,14 +202,14 @@ Updating the package graph also requires the DLL Search Order be updated. See be
 ```c++ (C++ish pseudocode)
 HRESULT MddAddPackageDependency(...)
 {
-    std::unique_lock<std::mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock);
 
-    auto packageFullName = ResolvePackageDependency(packageFamilyName, minVersion, architectureFilter, ...)
+    auto packageFullName = ResolvePackageDependency(packageFamilyName, minVersion, architectureFilter, ...);
     if (!packageFullName)
     {
-        return ERROR
+        return ERROR;
     }
-    return AddToPackageGraph(packageFullName, ...)
+    return AddToPackageGraph(packageFullName, ...);
 }
 ```
 
@@ -260,26 +259,26 @@ determine the packages registered to the user.
 ```c++ (C++ish pseudocode)
 string ResolvePackageDependency(packageFamily, minVersion, architectureFilter, ...)
 {
-    string[] packageFullNames = FindPackagesByPackageFamily(packageFamilyName, packageTypeFilter=Framework, ...)
-    count = packageFullNames.size()
+    string[] packageFullNames = FindPackagesByPackageFamily(packageFamilyName, packageTypeFilter=Framework, ...);
+    count = packageFullNames.size();
     if (count == 0)
     {
-        return ERROR
+        return ERROR;
     }
 
-    string bestFit = null
+    string bestFit = null;
     for (packageFullName : packageFullNames)
     {
         // Do we already have a higher version under consideration?
         if (bestFit && bestFit.Version > packageFullName.Version)
         {
-            continue
+            continue;
         }
 
         // Package version must meet the minVersion filter
         if (packageFullName.Version < minVersion)
         {
-            continue
+            continue;
         }
 
         // Package architecture must meet the architecture filter
@@ -287,46 +286,46 @@ string ResolvePackageDependency(packageFamily, minVersion, architectureFilter, .
         {
             if (!IsPackageABetterFitPerArchitecture(bestFit, packageFullName))
             {
-                continue
+                continue;
             }
         }
         else
         {
             if (packageFullName.Architecture not in architectureFilter)
             {
-                continue
+                continue;
             }
         }
 
         // Package status must be OK to use a package
-        auto packageManager = ActivateInstance(Windows.Management.Deployment.PackageManager)
-        auto currentUser = ""
-        auto package = packageManager.FindPackageForUser(currentUser, packageFullName)
+        auto packageManager = ActivateInstance(Windows.Management.Deployment.PackageManager);
+        auto currentUser = "";
+        auto package = packageManager.FindPackageForUser(currentUser, packageFullName);
         if (!package.VerifyIsOK())
         {
-            continue
+            continue;
         }
 
         // The new candidate is better than the current champion
-        bestFit = packageFullName
+        bestFit = packageFullName;
     }
-    return bestFit
+    return bestFit;
 }
 
 bool IsPackageABetterFitPerArchitecture(string bestFit, string packageFullName)
 {
     // Is the package a contender?
-    const auto currentArchitecture = GetCurrentArchitecture()
+    const auto currentArchitecture = GetCurrentArchitecture();
     if (packageFullName.Architecture != Neutral && packageFullName.Architecture != currentArchitecture)
     {
-        return false
+        return false;
     }
 
     // Do we have a best-fit candidate yet?
     if (!bestFit)
     {
         // We do now :-)
-        return true
+        return true;
     }
 
     // Is the new package a better fit than the current champion?
@@ -334,23 +333,23 @@ bool IsPackageABetterFitPerArchitecture(string bestFit, string packageFullName)
     // Architecture-specific is always better than architecture-neutral
     if (bestFit.Architecture == Neutral && packageFullName.Architecture != Neutral)
     {
-        return false
+        return false;
     }
 
     // We have a new winner!
-    return true
+    return true;
 }
 
 Architecture GetCurrentArchitecture()
 {
 #if defined(_M_ARM)
-    return Arm
+    return Arm;
 #elif defined(_M_ARM64)
-    return Arm64
+    return Arm64;
 #elif defined(_M_IX86)
-    return X86
+    return X86;
 #elif defined(_M_X64)
-    return X64
+    return X64;
 #else
 #   error "Unknown processor architecture"
 #endif
@@ -370,23 +369,23 @@ those of matching rank.
 ```c++ (C++ish pseudocode)
 HRESULT AddToPackageGraph(string packageFullName, ...)
 {
-    auto packageInfoReference = OpenPackageInfoByFullName(packageFullName)
-    auto packageGraphNode = PackageGraphNode(packageInfoReference)
+    auto packageInfoReference = OpenPackageInfoByFullName(packageFullName);
+    auto packageGraphNode = PackageGraphNode(packageInfoReference);
 
     // Find the insertion point where to add the new package graph node to the package graph
-    int index = 0
+    int index = 0;
     for (; index < g_packageGraph.size(); ++index)
     {
-        auto& node = g_packageGraph[index]
+        auto& node = g_packageGraph[index];
         if (node.rank() < rank)
         {
             // Too soon. Keep looking
-            continue
+            continue;
         }
         else if (rank < node.rank())
         {
             // Gotcha!
-            break
+            break;
         }
 
         if (node.rank() == rank)
@@ -395,18 +394,18 @@ HRESULT AddToPackageGraph(string packageFullName, ...)
             if (options.PrependIfRankCollision)
             {
                 // Gotcha!
-                break
+                break;
             }
             else
             {
                 // Append to items of this rank
                 for (int nextIndex=index+1; nextIndex < g_packageGraph.size(); ++nextIndex)
                 {
-                    auto& nextNode = g_packageGraph[nextIndex]
+                    auto& nextNode = g_packageGraph[nextIndex];
                     if (nextNode.rank() > rank)
                     {
                         // Gotcha!
-                        break
+                        break;
                     }
                 }
             }
@@ -416,15 +415,32 @@ HRESULT AddToPackageGraph(string packageFullName, ...)
     // Add the new node to the package graph
     if (index <> g_packageGraph.size())
     {
-        g_packageGraph.insert(index, packageGraphNode)
+        g_packageGraph.insert(index, packageGraphNode);
     }
     else
     {
-        g_packageGraph.append(packageGraphNode)
+        g_packageGraph.append(packageGraphNode);
     }
 
     // The DLL Search Order must be updated when we update the package graph
-    AddToDllSearchOrder(node)
+    AddToDllSearchOrder(node);
+}
+```
+
+NOTE: This pseudo-code can be expressed more consisely as:
+
+```c++
+HRESULT AddToPackageGraph(string packageFullName, ...)
+{
+    auto packageInfoReference = OpenPackageInfoByFullName(packageFullName);
+    auto node = PackageGraphNode(packageInfoReference);
+
+    auto by_rank = [](auto&& left, auto&& right) { return left.rank < right.rank; });
+    auto where = options.PrependIfRankCollision ?
+        std::lower_bound(g_packageGraph.begin(), g_packageGraph.end(), node, by_rank) :
+        std::upper_bound(g_packageGraph.begin(), g_packageGraph.end(), node, by_rank);
+    g_packageGraph.insert(where, node);
+    return S_OK;
 }
 ```
 
@@ -439,22 +455,22 @@ Updating the package graph also requires the DLL Search Order be updated. See be
 ```c++ (C++ish pseudocode)
 HRESULT MddRemovePackageDependency(MDD_PACKAGE_DEPENDENCY_CONTEXT context)
 {
-    std::unique_lock<std::mutex> lock(g_lock)
+    std::unique_lock<std::mutex> lock(g_lock);
 
     for (int index=0; index < g_packageGraph.size(); ++index)
     {
-        auto& node = g_packageGraph[index]
+        auto& node = g_packageGraph[index];
         if (node.context() == context)
         {
             // The DLL Search Order must be updated when we update the package graph
-            RemoveFromDllSearchOrder(node)
+            RemoveFromDllSearchOrder(node);
 
-            g_packageGraph.erase(index)
+            g_packageGraph.erase(index);
 
-            return S_OK
+            return S_OK;
         }
     }
-    return ERROR_INVALID_HANDLE
+    return HRESULT_FROM_WIN32(ERROR_INVALID_HANDLE);
 }
 ```
 
@@ -478,20 +494,20 @@ order, incurring a small cost when failing to find a file in the directory (two 
 void AddToDllSearchOrder(PackageGraphNode package)
 {
     // Update the PATH environment variable
-    UpdatePath()
+    UpdatePath();
 
     // Update the AddDllDirectory list
-    auto cookie = AddDllDirectory(package.path())
-    package.addDllDirectoryCookie(cookie)
+    auto cookie = AddDllDirectory(package.path());
+    package.addDllDirectoryCookie(cookie);
 }
 
 void RemoveFromDllSearchOrder(PackageGraphNode package)
 {
     // Update the PATH environment variable
-    UpdatePath()
+    UpdatePath();
 
     // Update the AddDllDirectory list
-    RemoveDllDirectory(package.addDllDirectoryCookie())
+    RemoveDllDirectory(package.addDllDirectoryCookie());
 }
 
 static string g_pathListLastAddedToPath;
@@ -507,13 +523,13 @@ void UpdatePath()
         auto packageInfoReference = node.get();
         if (packageInfoReference)
         {
-            PACKAGE_INFO[] packageInfos = GetPackageInfo(packageInfoReference, flags, ...)
+            PACKAGE_INFO[] packageInfos = GetPackageInfo(packageInfoReference, flags, ...);
         }
         else
         {
-            PACKAGE_INFO[] packageInfos = TrueGetCurrentPackageInfo(packageInfoReference, flags, ...)
+            PACKAGE_INFO[] packageInfos = TrueGetCurrentPackageInfo(packageInfoReference, flags, ...);
         }
-        AppendPathsToList(pathList, packageInfos)
+        AppendPathsToList(pathList, packageInfos);
     }
 
     // Add the path list to the PATH enironment variable
@@ -521,7 +537,7 @@ void UpdatePath()
     // If already present then replace it with the updated path list
 
     // package graph environment variable's at the fron ot the PATH environment variable
-    string path = GetEnvironmentVariable("PATH")
+    string path = GetEnvironmentVariable("PATH");
     if (g_pathListLastAddedToPath.length() == 0)
     {
         // First time we're changing PATH. Prepend the path list to PATH
@@ -534,9 +550,9 @@ void UpdatePath()
         if (found)
             ...path.replace(g_pastListLastAddedToPath, pathList)...
         else
-            path = pathlist + ";" + path
+            path = pathlist + ";" + path;
     }
-    SetEnvironmentVariable("PATH", path)
+    SetEnvironmentVariable("PATH", path);
 
     // Remember the path list we added to PATH for future updates
     g_pathListLastAddedToPath = pathList;
@@ -548,9 +564,9 @@ void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
     {
         if (pathList.size() > 0)
         {
-            path += ";"
+            path += ";";
         }
-        path += packageInfo.path
+        path += packageInfo.path;
     }
 }
 ```
@@ -786,20 +802,66 @@ Two users can resolve a package dependency to different answers, depending on th
 Package dependencies can only be resolved to packages registered for a user. As packages cannot be
 registered for LocalSystem the Dynamic Dependencies feature is not available to callers running as LocalSystem.
 
-## 5.4. Packaging - ProjectReunion.dll and ProjectReunion.Loader.dll
+## 5.4. Packaging - ProjectReunion.dll and ProjectReunion.Bootstrap.dll
 
 The Dynamic Dependencies API is provided via ProjectReunion.dll in ProjectReunion's Framework package.
 
-ProjectReunion.Loader.dll is a redistributable for non-packaged applications.
+ProjectReunion.Bootstrap.dll is a redistributable for non-packaged applications.
 
 Packaged applications can declare `<PackageDependency Name='ProjectReunion'...>` to access Framework packages.
-Non-packaged applications need to use the 'boostrapper API' in ProjectReunion.Loader.dll to get access to
+Non-packaged applications need to use the 'boostrapper API' in ProjectReunion.Bootstrap.dll to get access to
 ProjectReunion's Framework package. See [3.4. Runtime 'Pinning' aka Prevent Update While In-Use] for more details.
 
 The 'bootstrapper API' provides an initialization function that performs the following actions:
 
 1. Find the per-application 'helper' Main package and create a process with its identity
 2. Find and load ProjectReunion.dll from the ProjectReunion Framework package
+
+Here's an architectural diagram showing the primary actors and their flow:
+![Dynamic Dependencies Architecture](ReunionDynamicDependencies.svg)
+
+1. An non-packaged app using Dynamic Dependencies calls `MddBootstrapInitialize()` exported from `ProjectReunion.Bootstrap.dll`.
+2. `MddBootstrapInitialize()` calls `CoCreateInstance(clsid)` to instantiate the app's Packaged COM OOP Server from DynamicDependencyLifetimeManager.exe in the app's helper MSIX Main package.
+3. `MddBootstrapInitialize()` calls `LoadLibrary(GetPath(ProjectReunionFramework) + "\ProjectReunion.dll"))` to load the dll containing the Dynamic Dependencies API.
+4. `ProjectReunion.dll`'s DllMain() initializes Detours to support dynamic dependencies in the process' package graph.
+This implicitly adds the ProjectReunionFramework package to the process' package graph.
+5. The application is now free to call the Dynamic Depedencies API.
+
+`YourAppMain.msix` contains the following information in its `AppxManifest.xml`:
+```
+<Package>
+  ...
+  <Applications>
+    <Application Id="DynamicDependencyLifetimeManager" Executable="DynamicDependencyLifetimeManager.exe" EntryPoint="Windows.PartialTrustApplication">
+      <uap:VisualElements AppListEntry="none" DisplayName="DynamicDependency Lifetime Manager" ...>
+        <uap:SplashScreen ... uap5:Optional="true" />
+      </uap:VisualElements>
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="DynamicDependencyLifetimeManager.exe" DisplayName="DynamicDependency Lifetime Manager">
+              <com:Class Id ="...clsid..." DisplayName="DynamicDependency Lifetime Manager" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  ...
+  <Dependencies>
+    <PackageDependency Name="ProjectReunionMain" ... />
+    ...other Framework dependencies...
+  </Dependencies>
+  ...
+</Package>
+```
+
+The `windows.comServer` extension defines a Packaged COM OOP Server provided by DynamicDependencyLifetimeManager.exe.
+This ensures Windows knows the Framework package(s) are in use and cannot be serviced while this process is running.
+
+The `windows.comServer` extension is an application-scope extension i.e. it requires an `<Application>`.
+The application is a non-intrusive definition, i.e. `AppListEntry="none"` is specified to prevent it from appearing
+in applists, as it serves no purpose other than providing a means to define the `windows.comServer` extension.
 
 ### 5.4.1. Boostrapper - Find and Load/Run the per-application 'helper' Main package
 
@@ -1356,45 +1418,3 @@ runtimeclass PackageDependencyContext
 }
 }
 ```
-
-# 7. Appendix
-
-TODO: Answer and delete
-
-Q: Package dependencies are only resolved for Framework packages. Should other package types (Main,
-Resource, Optional) be supported?
-
-Q:WinRT: How to express equivalent of MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT?
-
-Q: Add a new API to register a 'helper' package to 'pin' a package dependency? Should this be part
-of DynamicDependencies or a larger ProjectReunion API e.g.
-
-```c# (but really MIDL3)
-namespace Microsoft.ApplicationModel.DynamicDependency
-{
-runtimeclass ProjectReunion
-{
-    static void RegisterHelperMainPackage(Uri packageUri);
-}
-}
-```
-
-implemented as
-
-
-```c++ (C++ish pseudocode)
-void Microsoft.::ApplicationModel::ProjectReunion::RegisterHelperMainPackage(Uri packageUri)
-{
-    auto packageManager = new Windows.Management.Deployment.PackageManager()
-    auto currentUser = ""
-    auto package = packageManager.FindPackageForUser(currentUser, packageFullName)
-    if (!package)
-    {
-        packageManager.AddPackageAsync(packageUri).get()
-    }
-}
-```
-
-This is a simplistic example. What about `DeploymentOptions.DevelopmentMode`? What about
-`RegisterPackageAsync()` instead of `AddPackageAsync()`? What if the package is not OK
-(`package.VerifyIsOK()`) and it needs to be registered to correct the problem?
