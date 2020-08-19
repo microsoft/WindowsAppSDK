@@ -5,21 +5,21 @@
 
 #include <msixdynamicdependency.h>
 
-STDAPI MddPinPackageDependency(
+STDAPI MddTryCreatePackageDependency(
     PSID /*user*/,
     _In_ PCWSTR /*packageFamilyName*/,
     PACKAGE_VERSION /*minVersion*/,
     MddPackageDependencyProcessorArchitectures /*packageDependencyProcessorArchitectures*/,
-    MddPinPackageDependencyLifetimeKind /*lifetimeKind*/,
+    MddPackageDependencyLifetimeKind /*lifetimeKind*/,
     PCWSTR /*lifetimeArtifact*/,
-    MddPinPackageDependencyFlags /*flags*/,
+    MddCreatePackageDependencyOptions /*options*/,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId)
 {
     *packageDependencyId = nullptr;
     RETURN_WIN32(ERROR_NOT_SUPPORTED);
 }
 
-STDAPI_(void) MddUnpinPackageDependency(
+STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR /*packageDependencyId*/)
 {
 }
@@ -27,7 +27,7 @@ STDAPI_(void) MddUnpinPackageDependency(
 STDAPI MddAddPackageDependency(
     _In_ PCWSTR /*packageDependencyId*/,
     INT32 /*rank*/,
-    MddAddPackageDependencyFlags /*flags*/,
+    MddAddPackageDependencyOptions /*options*/,
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName)
 {
@@ -50,18 +50,4 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
 {
     *packageFullName = nullptr;
     RETURN_WIN32(ERROR_NOT_SUPPORTED);
-}
-
-STDAPI_(BOOL) MddArePackageDependencyIdsEquivalent(
-    _In_ PCWSTR /*packageDependencyId1*/,
-    _In_ PCWSTR /*packageDependencyId2*/)
-{
-    return FALSE;
-}
-
-STDAPI_(BOOL) MddArePackageDependencyContextsEquivalent(
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT /*context1*/,
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT /*context2*/)
-{
-    return FALSE;
 }

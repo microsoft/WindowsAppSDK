@@ -6,12 +6,10 @@ EXPORTS
     DllGetActivationFactory = WINRT_GetActivationFactory    PRIVATE
 
     MddAddPackageDependency
-    MddArePackageDependencyContextsEquivalent
-    MddArePackageDependencyIdsEquivalent
+    MddDeletePackageDependency
     MddGetResolvedPackageFullNameForPackageDependency
-    MddPinPackageDependency
     MddRemovePackageDependency
-    MddUnpinPackageDependency
+    MddTryCreatePackageDependency
 
     SampleFlatApiCreate
     CloseSampleFlatApi

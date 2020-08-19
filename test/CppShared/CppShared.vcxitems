@@ -14,7 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)TestDynamicDependencies.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)TestDynamicDependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)TestMany.cpp" />
   </ItemGroup>
 </Project>

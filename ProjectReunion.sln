@@ -31,9 +31,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Win32", "test\CppTe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_UWP", "test\CppTest_UWP\CppTest_UWP.vcxproj", "{B1A6F5EC-5418-4354-BACF-F7D998EE960D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencies", "DynamicDependencies", "{A5EC7E1B-8C76-43BC-BB3B-272C726EEBA2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{A5EC7E1B-8C76-43BC-BB3B-272C726EEBA2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencies", "dev\DynamicDependencies\DynamicDependencies.vcxitems", "{2071549A-52AE-4DBA-8488-61B443BF7A79}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency", "dev\DynamicDependencies\DynamicDependencies.vcxitems", "{2071549A-52AE-4DBA-8488-61B443BF7A79}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
