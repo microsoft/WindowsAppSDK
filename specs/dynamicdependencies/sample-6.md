@@ -36,7 +36,7 @@ HRESULT Define32bitPackageDependency()
     // will only resolve to a 32-bit package regardless of the caller's bitness at runtime.
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::X86 |
         MddPackageDependencyProcessorArchitectures::Arm | MddPackageDependencyProcessorArchitectures::X86A64;
-    const UINT32 options = MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
+    const UINT32 options = MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, GetLifetimeFile(), options, &packageDependencyId));
@@ -47,7 +47,7 @@ HRESULT Define32bitPackageDependency()
 
 PCWSTR GetLifetimeFile()
 {
-    // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
+    // MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
     return "C:\\Program Files\\LolzKittens2020\\KittyKitty.exe";
 }
 
@@ -87,7 +87,7 @@ namespace LolzKitten
             minVersion.Revision = 567;
             // Specify a PackageDependencyProcessorArchitectures filter to ensure the package dependnency
             // will only resolve to a 32-bit package regardless of the caller's bitness at runtime.
-            var options = new PinPackageDependencyOptions(){
+            var options = new CreatePackageDependencyOptions(){
                 Architectures = PackageDependencyProcessorArchitectures.X86 |
                                 PackageDependencyProcessorArchitectures.Arm |
                                 PackageDependencyProcessorArchitectures.X86A64,
@@ -103,7 +103,7 @@ namespace LolzKitten
         {
             get
             {
-                // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
+                // MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
                 return @"C:\Program Files\LolzKittens2020\KittyKitty.exe";
             }
         }

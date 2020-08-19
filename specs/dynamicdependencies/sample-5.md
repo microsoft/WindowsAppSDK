@@ -75,7 +75,7 @@ namespace LolzKitten
                 countOfMuffinsManaged = Contoso.Muffins.Manage();
             }
 
-            packageDependencyContext.Close();
+            packageDependencyContext.Remove();
 
             return countOfMuffinsManaged;
         }

@@ -24,10 +24,10 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
-    const auto pinOptions = MddTryCreatePackageDependencyOptions::None;
+    const auto createOptions = MddCreatePackageDependencyOptions::None;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, createOptions, &packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
     const UINT32 addOptions = MddAddPackageDependencyOptions::None;
@@ -86,7 +86,7 @@ int ManageMuffins()
         countOfMuffinsManaged = Contoso.Muffins.Manage();
     }
 
-    packageDependencyContext.Close();
+    packageDependencyContext.Remove();
 
     packageDependency.Delete();
 

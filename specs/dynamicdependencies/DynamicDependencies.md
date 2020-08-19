@@ -16,6 +16,7 @@ to use packaged content.
     - [3.1.1. Detours to Enhance Package Graph APIs](#311-detours-to-enhance-package-graph-apis)
     - [3.1.2. Add to the Package Graph](#312-add-to-the-package-graph)
       - [3.1.2.1. Resolve Package](#3121-resolve-package)
+      - [Package Graph](#package-graph)
       - [3.1.2.2. Add to Package Graph](#3122-add-to-package-graph)
     - [3.1.3. Remove from the Package Graph](#313-remove-from-the-package-graph)
     - [3.1.4. DLL Search Order](#314-dll-search-order)
@@ -356,13 +357,33 @@ Architecture GetCurrentArchitecture()
 }
 ```
 
+#### Package Graph
+
+A package graph is a package dependency graph flattened into an ordered list.
+
+Package processes start with a package graph containing the package and its dependencies,
+as resolved resolved at install time. This can be accessed via
+[Windows.ApplicationModel.Package](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Package)
+followed by [Windows.ApplicationModel.Package.Dependencies](https://docs.microsoft.com/uwp/api/windows.applicationmodel.package.dependencies).
+This is referred to as the 'static package graph' as it's fixed at
+process creation and cannot be altered.
+
+Non-packaged processes start with an empty package graph.
+
+A process' package graph can be altered dynamically at runtime
+via the Dynamic Dependency API.
+
 #### 3.1.2.2. Add to Package Graph
 
-The package graph is managed as a sorted list based on `rank`. The static package graph has a rank
+Packages can be added dynamically to the package graph,
+managed as as a sorted list based on `rank`. The list is sorted in ascending order
+i.e. -&infin;...0...+&infin;.
+
+Packages in the static package graph have a rank
 of MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT (0).
 
 If a package graph node already exists with the same rank as a new addition the new node is, by
-default, append to the nodes of matching rank. If
+default, appended to the nodes of matching rank. If
 `MddAddPackageDependencyOptionsPrependIfRankCollision` is specified the new node is prepended to
 those of matching rank.
 
@@ -910,7 +931,7 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
 
 ```c++
-enum class MddTryCreatePackageDependencyOptions : uint32_t
+enum class MddCreatePackageDependencyOptions : uint32_t
 {
     None 0,
 
@@ -922,21 +943,21 @@ enum class MddTryCreatePackageDependencyOptions : uint32_t
      /// This option requires the caller has adminitrative privileges.
     ScopeIsSystem = 0x00000002,
 };
-DEFINE_ENUM_FLAG_OPERATORS(MddTryCreatePackageDependencyOptions)
+DEFINE_ENUM_FLAG_OPERATORS(MddCreatePackageDependencyOptions)
 
 enum class MddPinPackageDependencyLifetimeKind
 {
     /// The current process is the lifetime artifact. The package dependency
-    /// is implicitly unpinned when the process terminates.
+    /// is implicitly deleted when the process terminates.
     Process = 0,
 
     /// The lifetime artifact is an absolute filename or path.
-    /// The package dependency is implicitly unpinned when this is deleted.
+    /// The package dependency is implicitly deleted when this is deleted.
     FilePath = 1,
 
     /// The lifetime artifact is a registry key in the format
     /// 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU.
-    /// The package dependency is implicitly unpinned when this is deleted.
+    /// The package dependency is implicitly deleted when this is deleted.
     RegistryKey = 2,
 }
 
@@ -985,14 +1006,14 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 /// one becomes available.
 ///
 /// @param user the user scope of the package dependency. If NULL the caller's
-///        user context is used. MUST be NULL if MddTryCreatePackageDependencyOptions::ScopeIsSystem
+///        user context is used. MUST be NULL if MddCreatePackageDependencyOptions::ScopeIsSystem
 ///        is specified
 /// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPinPackageDependencyLifetimeKind::Process
 /// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate
 ///
 /// @note MddTryCreatePackageDependency() fails if the PackageDependency cannot be resolved to a specific
 ///       package. This package resolution check is skipped if
-///       MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution is specified. This is useful
+///       MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution is specified. This is useful
 ///       for installers running as user contexts other than the target user (e.g. installers
 ///       running as LocalSystem).
 STDAPI MddTryCreatePackageDependency(
@@ -1002,7 +1023,7 @@ STDAPI MddTryCreatePackageDependency(
     MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
     MddPinPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact,
-    MddTryCreatePackageDependencyOptions options,
+    MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 
 /// Undefine a package dependency. Removing a pin on a PackageDependency is typically done at uninstall-time.
@@ -1010,7 +1031,7 @@ STDAPI MddTryCreatePackageDependency(
 /// is deleted. Packages that are not referenced by other packages and have no pins are elegible to be removed.
 ///
 /// @warn MddDeletePackageDependency() requires the caller have administrative privileges
-///       if the package dependency was pinned with MddTryCreatePackageDependencyOptions::ScopeIsSystem.
+///       if the package dependency was pinned with MddCreatePackageDependencyOptions::ScopeIsSystem.
 STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId);
 
@@ -1042,13 +1063,13 @@ STDAPI_(void) MddDeletePackageDependency(
 /// references are removed, but any pins stay behind.
 ///
 /// MddAddPackageDependency adds the resolved package to the process' package
-/// graph, per the rank and options/flags parameters. The process' package
+/// graph, per the rank and options parameters. The process' package
 /// graph is used to search for DLLs (per Dynamic-Link Library Search Order),
 /// WinRT objects and other resources; the caller can now load DLLs, activate
 /// WinRT objects and use other resources from the framework package until
 /// MddRemovePackageDependency is called. The packageDependencyId parameter
 /// must match a package dependency defined for the calling user or the
-/// system (i.e. pinned with MddTryCreatePackageDependencyOptions::ScopeIsSystem) else
+/// system (i.e. pinned with MddCreatePackageDependencyOptions::ScopeIsSystem) else
 /// an error is returned.
 ///
 /// @param packageDependencyContext valid until passed to MddRemovePackageDependency()
@@ -1062,7 +1083,7 @@ STDAPI MddAddPackageDependency(
 
 /// Remove a resolved PackageDependency from the current process' package graph
 /// (i.e. undo MddAddPackageDependency). Used at runtime (i.e. the moral equivalent
-/// of FreeLibrary).
+/// of RemoveDllDirectory()).
 ///
 /// @note This does not unload loaded resources (DLLs etc). After removing
 ///        a package dependency any files loaded from the package can continue
@@ -1106,23 +1127,23 @@ enum PackageDependencyProcessorArchitectures
 enum PackageDependencyLifetimeArtifactKind
 {
     /// The current process is the lifetime artifact. The package dependency
-    /// is implicitly unpinned when the process terminates.
+    /// is implicitly deleted when the process terminates.
     Process,
 
     /// The lifetime artifact is an absolute filename or path.
-    /// The package dependency is implicitly unpinned when this is deleted.
+    /// The package dependency is implicitly deleted when this is deleted.
     FilePath,
 
     /// The lifetime artifact is a registry key in the format
     /// 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU.
-    /// The package dependency is implicitly unpinned when this is deleted.
+    /// The package dependency is implicitly deleted when this is deleted.
     RegistryKey,
 };
 
 /// Options when 'pinning' a package dependency
-runtimeclass PinPackageDependencyOptions
+runtimeclass CreatePackageDependencyOptions
 {
-    PinPackageDependencyOptions();
+    CreatePackageDependencyOptions();
 
     /// Optional filtering by cpu architecture(s)
     PackageDependencyProcessorArchitectures Architectures;
@@ -1141,7 +1162,7 @@ runtimeclass PinPackageDependencyOptions
 static runtimeclass PackageDependencyRank
 {
     /// The default value is zero (0).
-     static Int32 Default { get; };
+    static Int32 Default { get; };
 };
 
 /// Options when adding a package dependency
@@ -1197,7 +1218,7 @@ runtimeclass PackageDependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///
-    /// @see Create(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
     /// @see CreateForUser()
     /// @see CreateForSystem()
     static PackageDependency Create(
@@ -1232,7 +1253,7 @@ runtimeclass PackageDependency
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package (null is returned).
-    ///       This package resolution check is skipped if MddTryCreatePackageDependencyOptions.VerifyDependencyResolution=false
+    ///       This package resolution check is skipped if MddCreatePackageDependencyOptions.VerifyDependencyResolution=false
     ///       is specified. This is useful if a package satisfying the dependency
     ///       will be installed after the package dependency is defined.
     ///
@@ -1242,7 +1263,7 @@ runtimeclass PackageDependency
     static PackageDependency Create(
         String packageFamilyName,
         PackageVersion minVersion,
-        PinPackageDependencyOptions options);
+        CreatePackageDependencyOptions options);
 
     /// Define a package dependency for a user. The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
@@ -1273,13 +1294,13 @@ runtimeclass PackageDependency
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///
     /// @see Create(String, PackageVersion)
-    /// @see Create(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
     /// @see CreateForSystem()
     static PackageDependency CreateForUser(
         Windows.System.User user,
         String packageFamilyName,
         PackageVersion minVersion,
-        PinPackageDependencyOptions options);
+        CreatePackageDependencyOptions options);
 
     /// Define a package dependency for the system (i.e. all users). The criteria for a PackageDependency
     /// (package family name, minimum version, etc) may match multiple
@@ -1308,16 +1329,16 @@ runtimeclass PackageDependency
     /// @param options additional options affecting the package dependency
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
-    ///       This package resolution check is skipped if MddTryCreatePackageDependencyOptions.VerifyDependencyResolution=false
+    ///       This package resolution check is skipped if MddCreatePackageDependencyOptions.VerifyDependencyResolution=false
     ///       is specified. This is useful for installers pinning a package dependency for all users on a system.
     ///
     /// @see Create(String, PackageVersion)
-    /// @see Create(String, PackageVersion, PinPackageDependencyOptions)
+    /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
     /// @see CreateForUser()
     static PackageDependency CreateForSystem(
         String packageFamilyName,
         PackageVersion minVersion,
-        PinPackageDependencyOptions options);
+        CreatePackageDependencyOptions options);
 
     /// Delete a defined package dependency.
     /// @note The package depenency id useless after Delete. The property is valid but attempting to use it fails e.g. PackageDependency.GetFromId(id) returns null.
@@ -1393,11 +1414,11 @@ struct PackageDependencyContextId
     UInt64 Id;
 };
 
-/// This object provides access to information about a package dependency context
-/// and removes it from the caller's package graph when closed (via .Close() / .Dispose())
-/// or destroyed (i.e. undo packageDependency.Add()).
+/// This object provides access to information about a package dependency context.
+/// The resolved package dependency is removed from the caller's package graph via
+/// .Remove() or when the object is destroyed.
 ///
-/// Closing this object is the moral equivalent of FreeLibrary.
+/// Calling .Remove() or destroying this object is the moral equivalent of AddDllDirectory().
 ///
 /// @note This does not unload loaded resources (DLLs etc). After removing
 ///        a package dependency any files loaded from the package can continue

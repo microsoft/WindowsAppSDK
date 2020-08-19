@@ -37,6 +37,8 @@ HRESULT LoadPackageDependencyId(_In_ PCWSTR what, wil::unique_ptr<WCHAR[]>& pack
 ```c#
 using Microsoft.ApplicationModel.DynamicDependency;
 
+var g_packageDependencyContexts = new Dictionary<string, PackageDependencyContext>();
+
 namespace LolzKitten
 {
     public class Runtime
@@ -59,6 +61,9 @@ namespace LolzKitten
             var options = new AddPackageDependencyOptions(){ Rank = rank, PrependIfRankCollision = true };
             PackageDependencyContext packageDependencyContext = packageDependency.Add(options);
             Console.WriteLine($"{what} via {packageDependencyContext.PackageFullName}");
+
+            // Hang onto the PackageDependencyContext until we're done with it. In this case, the life of the process
+            g_packageDependencyContexts[what] = packageDependencyContext;
         }
 
         static string LoadPackageDependencyId(string what)

@@ -52,13 +52,13 @@ public:
     HRESULT Add(
         _In_ PCWSTR packageDependencyId,
         INT32 rank,
-        MddAddPackageDependencyOptions flags,
+        MddAddPackageDependencyOptions options,
         _In_ PCWSTR dllFilename)
     {
         MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
         wil::unique_process_heap_string packageFullName;
         RETURN_IF_FAILED(MddAddPackageDependency(
-            packageDependencyId, rank, flags, &m_packageDependencyContext , &m_packageFullName));
+            packageDependencyId, rank, options, &m_packageDependencyContext , &m_packageFullName));
 
         wil::unique_hmodule module(::LoadLibrary(L"Contoso-Muffins"));
         RETURN_LAST_ERROR_IF(!module);
@@ -98,10 +98,10 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const UINT32 pinOptions = MddTryCreatePackageDependencyOptions::LifecycleHint_Process;
+    const UINT32 createOptions = MddCreatePackageDependencyOptions::LifecycleHint_Process;
     wil::unique_packagedependencyid packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, nullptr, pinOptions, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, nullptr, createOptions, &packageDependencyId));
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
     const UINT32 addOptions = MddAddPackageDependencyOptions::None;

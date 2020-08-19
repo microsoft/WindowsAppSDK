@@ -58,10 +58,10 @@ HRESULT DefinePackageDependency_Muffins()
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetMuffinsLifetimeAbsoluteFilename();
-    const auto pinOptions = MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
+    const auto createOptions = MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, lifetimeKind, lifetimeArtifact, pinOptions, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(L"muffins", packageDependencyId.get()));
     return S_OK;
@@ -78,10 +78,10 @@ HRESULT DefinePackageDependency_Waffles()
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetWafflesLifetimeRegistryKey();
-    const auto pinOptions = MddTryCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
+    const auto createOptions = MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
-        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, createOptions, &packageDependencyId));
 
     RETURN_IF_FAILED(SavePackageDependencyId(L"waffles", packageDependencyId.get()));
     return S_OK;
@@ -89,13 +89,13 @@ HRESULT DefinePackageDependency_Waffles()
 
 PCWSTR GetMuffinsLifetimeAbsoluteFilename()
 {
-    // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
+    // MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
     return "C:\\Program Files\\LolzKittens2020\\KittyKitty.exe";
 }
 
 PCWSTR GetWafflesLifetimeRegistryKey()
 {
-    // MddTryCreatePackageDependencyOptions::LifecycleHint_RegistrySubkey requires a string
+    // MddCreatePackageDependencyOptions::LifecycleHint_RegistrySubkey requires a string
     // in the format 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU
     return "HKLM\\SOFTWARE\\LolzCatEnterprises\\LolzKitten\\PackageDependencies\\Contoso.puppies";
 }
@@ -167,7 +167,7 @@ namespace LolzKitten
             minVersion.Minor = 0;
             minVersion.Build = 1234;
             minVersion.Revision = 567;
-            var options = new PinPackageDependencyOptions(){
+            var options = new CreatePackageDependencyOptions(){
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = MuffinsLifetimeAbsoluteFilename
             };
@@ -185,7 +185,7 @@ namespace LolzKitten
             minVersion.Minor = 9;
             minVersion.Build = 67;
             minVersion.Revision = 0;
-            var options = new PinPackageDependencyOptions(){
+            var options = new CreatePackageDependencyOptions(){
                 DoNotVerifyDependencyResolution = true,
                 LifetimeArtifactFileOrPath = WafflesLifetimeRegistryKey
             };
@@ -199,7 +199,7 @@ namespace LolzKitten
         {
             get
             {
-                // MddTryCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
+                // MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath requires an absolute filename or path
                 return @"C:\Program Files\LolzKittens2020\KittyKitty.exe";
             }
         }
@@ -208,7 +208,7 @@ namespace LolzKitten
         {
             get
             {
-                // MddTryCreatePackageDependencyOptions::LifecycleHint_RegistrySubkey requires a string
+                // MddCreatePackageDependencyOptions::LifecycleHint_RegistrySubkey requires a string
                 // in the format 'root\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU
                 return @"HKLM\SOFTWARE\LolzCatEnterprises\LolzKitten\PackageDependencies\Contoso.puppies";
             }

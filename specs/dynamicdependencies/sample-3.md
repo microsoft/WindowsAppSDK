@@ -20,12 +20,12 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
     const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
-    const auto pinOptions = MddTryCreatePackageDependencyOptions::None;
+    const auto createOptions = MddCreatePackageDependencyOptions::None;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(
-        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, pinOptions, &packageDependencyId));
+        packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, createOptions, &packageDependencyId));
     // lifetimeArtifact=null gives the PackageDepedency a lifetime of the current process
-    // The PackageDependency is not persisted. It will be implicitly unpinned when the process terminates.
+    // The PackageDependency is not persisted. It will be implicitly deleted when the process terminates.
 
     const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
     const UINT32 addOptions = MddAddPackageDependencyOptions::None;
@@ -36,7 +36,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     wprintf(L"Managing muffins via %ls", packageFullName.get());
 
     // We don't need the package dependency definition anymore. We can continue using the package dependency
-    // in the current process until we quit. To prevent others from using it we'll explicitly unpin the
+    // in the current process until we quit. To prevent others from using it we'll explicitly delete the
     // package dependency. This prevents new MddAddPackageDependency calls from succeeding.
     MddDeletePackageDependency(packageDependencyId.get());
 
@@ -70,7 +70,7 @@ namespace MyApp
             Console.WriteLine($"Managing muffins via {packageFullName}");
 
             // We don't need the package dependency definition anymore. We can continue using the package dependency
-            // in the current process until we quit. To prevent others from using it we'll explicitly unpin the
+            // in the current process until we quit. To prevent others from using it we'll explicitly delete the
             // package dependency. This prevents new packageDependency.Add() calls from succeeding.
             packageDependency.Delete();
 
