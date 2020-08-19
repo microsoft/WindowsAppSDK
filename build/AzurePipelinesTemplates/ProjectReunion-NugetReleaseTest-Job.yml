@@ -6,7 +6,7 @@ parameters:
   dependsOn: ''
   runTests: 'false'
   pkgArtifactPath: ''
-  nugetConfigPath: test\ProjectReunionReleaseTest\nuget.config
+  nugetConfigPath: test\ProjectReunion-ReleaseTest\nuget.config
   helixType: 'test/nuget'
   test_matrix: ''
   matrix:
@@ -48,7 +48,7 @@ jobs:
     buildOutputDir: $(Build.SourcesDirectory)\BuildOutput
 
   steps:
-  # When using the nupkg from artifacts we need to make a new nuget.config that points the ProjectReunionReleaseTest
+  # When using the nupkg from artifacts we need to make a new nuget.config that points the ProjectReunion-ReleaseTest
   # projects at the just-built nupkg. The ProjectReunionRelease projects use a specific nuget version so we need
   # to update nuget.config to include the drop location as well as update the version in the csproj and
   # packages.config for the projects.
