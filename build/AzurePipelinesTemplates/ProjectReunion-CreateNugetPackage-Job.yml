@@ -64,7 +64,7 @@ jobs:
       $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
       if ("${{ parameters.useReleaseTag}}" -eq [bool]::TrueString) { $prereleaseTag = "" }
 
-      & "$env:Build_SourcesDirectory\build\NuSpecs\build-nupkg.ps1" `
+      & "$(Build.SourcesDirectory)\build\NuSpecs\build-nupkg.ps1" `
         -BuildOutput '$(Build.SourcesDirectory)\Artifacts\drop' `
         -OutputDir '${{ parameters.nupkgdir }}' `
         -prereleaseversion "$prereleaseTag" `
