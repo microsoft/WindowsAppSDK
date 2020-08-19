@@ -115,7 +115,7 @@ Copy-IntoNewDirectory -IfExists ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_25
 
 $CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
 
-$NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
+$NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir --debug=1"
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
 $NugetCmdLine = "$nugetExe pack ProjectReunion.nuspec $NugetArgs -version $version"
