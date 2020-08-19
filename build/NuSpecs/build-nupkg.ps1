@@ -38,13 +38,13 @@ if ($VersionOverride)
 else
 {
     [xml]$customProps = (Get-Content ..\..\version.props)
-    $versionMajor = $customProps.GetElementsByTagName("MUXVersionMajor").'#text'
-    $versionMinor = $customProps.GetElementsByTagName("MUXVersionMinor").'#text'
-    $versionPatch = $customProps.GetElementsByTagName("MUXVersionPatch").'#text'
+    $versionMajor = $customProps.GetElementsByTagName("ProjectReunionVersionMajor").'#text'
+    $versionMinor = $customProps.GetElementsByTagName("ProjectReunionVersionMinor").'#text'
+    $versionPatch = $customProps.GetElementsByTagName("ProjectReunionVersionPatch").'#text'
 
     if ((!$versionMajor) -or (!$versionMinor) -or (!$versionPatch))
     {
-        Write-Error "Expected ReunionVersionMajor, ReunionVersionMinor, and ReunionVersionPatch tags to be in version.props file"
+        Write-Error "Expected ProjectReunionVersionMajor, ProjectReunionVersionMinor, and ProjectReunionVersionPatch tags to be in version.props file"
         Exit 1
     }
 
