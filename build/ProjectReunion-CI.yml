@@ -72,11 +72,12 @@ jobs:
     dependsOn: CreateNugetPackage
     pkgArtifactPath: '$(artifactDownloadPath)\drop\FrameworkPackage'
 
-- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-  parameters:
-    dependsOn:
-    - RunTestsInHelix
-    - RunNugetPkgTestsInHelix
-    - RunFrameworkPkgTestsInHelix
-    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
+#UNDONE - turn on in next PR
+#- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
+#  parameters:
+#    dependsOn:
+#    - RunTestsInHelix
+#    - RunNugetPkgTestsInHelix
+#    - RunFrameworkPkgTestsInHelix
+#    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+#    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
