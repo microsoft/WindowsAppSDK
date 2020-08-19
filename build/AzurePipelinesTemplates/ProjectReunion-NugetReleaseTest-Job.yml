@@ -1,11 +1,12 @@
+#UNDONE - runTests defulated to 'false', change to 'true' in subsequent PR
 parameters:
   buildJobName: 'BuildNugetPkgTests'
   buildArtifactName: 'NugetPkgTestsDrop'
   runTestJobName: 'RunNugetPkgTestsInHelix'
   dependsOn: ''
-  runTests: 'true'
+  runTests: 'false'
   pkgArtifactPath: ''
-  nugetConfigPath: test\MUXControlsReleaseTest\nuget.config
+  nugetConfigPath: test\ProjectReunionReleaseTest\nuget.config
   helixType: 'test/nuget'
   test_matrix: ''
   matrix:
@@ -47,8 +48,8 @@ jobs:
     buildOutputDir: $(Build.SourcesDirectory)\BuildOutput
 
   steps:
-  # When using the nupkg from artifacts we need to make a new nuget.config that points the MUXReleaseTest
-  # projects at the just-built nupkg. The MUXRelease projects use a specific nuget version so we need
+  # When using the nupkg from artifacts we need to make a new nuget.config that points the ProjectReunionReleaseTest
+  # projects at the just-built nupkg. The ProjectReunionRelease projects use a specific nuget version so we need
   # to update nuget.config to include the drop location as well as update the version in the csproj and
   # packages.config for the projects.
   - ${{ if parameters.pkgArtifactPath }}:
@@ -79,7 +80,7 @@ jobs:
     - powershell: |
         # First, get the new version
         $candidateNupkgs = Get-ChildItem $env:artifactDownloadPath\drop\Microsoft.ProjectReunion.*.nupkg
-        $newVersion = $candidateNupkgs[0].Name.Replace("Microsoft.UI.Xaml.", "").Replace(".nupkg", "")
+        $newVersion = $candidateNupkgs[0].Name.Replace("Microsoft.ProjectReunion.", "").Replace(".nupkg", "")
 
         Write-Host "New version: $newVersion"
 
