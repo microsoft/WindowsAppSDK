@@ -1047,7 +1047,7 @@ STDAPI_(void) MddDeletePackageDependency(
 /// calling process' package graph, even if already present. There is no
 /// duplicate 'detection' or 'filtering' applied by the API (multiple
 /// references from a package is not harmful). Once resolution is complete
-/// the package stays resolved for that user until the last reference across
+/// the package dependency stays resolved for that user until the last reference across
 /// all processes for that user is removed via MddRemovePackageDependency (or
 /// process termination).
 ///
@@ -1083,7 +1083,7 @@ STDAPI MddAddPackageDependency(
 
 /// Remove a resolved PackageDependency from the current process' package graph
 /// (i.e. undo MddAddPackageDependency). Used at runtime (i.e. the moral equivalent
-/// of RemoveDllDirectory()).
+/// of Windows' RemoveDllDirectory()).
 ///
 /// @note This does not unload loaded resources (DLLs etc). After removing
 ///        a package dependency any files loaded from the package can continue
@@ -1148,7 +1148,7 @@ runtimeclass CreatePackageDependencyOptions
     /// Optional filtering by cpu architecture(s)
     PackageDependencyProcessorArchitectures Architectures;
 
-    /// Do not verify at least 1 matching package exists when pinning a package dependency
+    /// Verify at least 1 matching package exists when pinning a package dependency
     /// @note Default value is `true`
     Boolean VerifyDependencyResolution;
 
@@ -1175,9 +1175,9 @@ runtimeclass AddPackageDependencyOptions
     /// @note The default value is PackageDepedencyRank.Default
     Int32 Rank;
 
-    /// If a package is added to a package graph with a package of the same rank (aka a collision on rank)
-    /// and this option is true the package is prepended to the set of packages of the same rank.
-    /// By default packages are appended to the set of packages with the same rank.
+    /// If a package dependency is added to a package graph with a package of the same rank (aka a collision on rank)
+    /// and this option is true the resolved package dependency is prepended to the set of packages of the same rank.
+    /// By default resolved package dependencies are appended to the set of packages with the same rank.
     Boolean PrependIfRankCollision;
 }
 
@@ -1418,7 +1418,7 @@ struct PackageDependencyContextId
 /// The resolved package dependency is removed from the caller's package graph via
 /// .Remove() or when the object is destroyed.
 ///
-/// Calling .Remove() or destroying this object is the moral equivalent of AddDllDirectory().
+/// Calling .Remove() or destroying this object is the moral equivalent of Windows' AddDllDirectory().
 ///
 /// @note This does not unload loaded resources (DLLs etc). After removing
 ///        a package dependency any files loaded from the package can continue
