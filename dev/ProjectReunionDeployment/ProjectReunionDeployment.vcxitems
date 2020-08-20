@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{c90313ad-b161-4394-8a08-0754d2e999f1}</ItemsProjectGuid>
+    <ItemsRootNamespace>
+    </ItemsRootNamespace>
+    <ItemsProjectName>ProjectReunionDeployment</ItemsProjectName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ProjectReunionDeployment.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ProjectReunionDeploymentStatus.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunionDeployment.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunionDeploymentStatus.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)ProjectReunionDeployment.idl" />
+  </ItemGroup>
+</Project>

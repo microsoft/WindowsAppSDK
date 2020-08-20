@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ProjectReunionDeploymentStatus.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ProjectReunionDeployment.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunionDeploymentStatus.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunionDeployment.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)ProjectReunionDeployment.idl" />
+  </ItemGroup>
+</Project>

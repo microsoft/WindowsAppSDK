@@ -1,0 +1,19 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Management.Deployment
+{
+    runtimeclass ProjectReunionDeploymentStatus
+    {
+        Boolean IsOK { get; };
+        Boolean WindowsUpdatesRequired { get; };
+        Boolean PackageInstallRequired { get; };
+    }
+
+    static runtimeclass ProjectReunionDeployment
+    {
+        static ProjectReunionDeploymentStatus GetStatus(Windows.ApplicationModel.PackageVersion packageVersion);
+        static Windows.Foundation.Uri GetProjectReunionPackageLink();
+        static Windows.Foundation.Uri GetProjectReunionInstallInformationLink();
+    }
+}

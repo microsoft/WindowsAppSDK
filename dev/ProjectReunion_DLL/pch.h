@@ -7,6 +7,7 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <appmodel.h>
+#include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
