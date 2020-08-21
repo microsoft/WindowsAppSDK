@@ -1,0 +1,30 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.ToastNotificationsWinRt
+{
+    [contractversion(1.0)]
+    apicontract NotificationsContract { };
+
+    runtimeclass DesktopToastNotificationManagerCompat;
+    runtimeclass ToastActivatedEventArgs;
+
+    [contract(NotificationsContract, 1.0)]
+    [marshaling_behavior(standard)]
+    runtimeclass ToastActivatedEventArgs
+    {
+        ToastActivatedEventArgs(String appId, String arguments);
+        String Arguments { get; };
+        String AppId { get; };
+        Windows.Foundation.Collections.IMap<String, String> UserInput { get; };
+    }
+
+    [contract(NotificationsContract, 1.0)]
+    [marshaling_behavior(standard)]
+    static runtimeclass DesktopToastNotificationManagerCompat
+    {
+        static void RegisterApplication(String clsid, String appId, String displayName, String iconPath);
+        static Boolean WasProcessToastActivated{ get; };
+        static event Windows.Foundation.EventHandler<ToastActivatedEventArgs> ToastActivated;
+    }
+}
