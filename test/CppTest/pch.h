@@ -15,7 +15,6 @@
 #include "CppUnitTest.h"
 
 // Test-specific headers, lifted here
-#include <msixdynamicdependency.h>
 #include <SampleFlatC.h>
 
 #include <winrt/Microsoft.ProjectReunion.h>

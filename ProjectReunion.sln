@@ -31,20 +31,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Win32", "test\CppTe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_UWP", "test\CppTest_UWP\CppTest_UWP.vcxproj", "{B1A6F5EC-5418-4354-BACF-F7D998EE960D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{A5EC7E1B-8C76-43BC-BB3B-272C726EEBA2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{6CD01EF6-D4A4-4801-ADCF-344CF87FF942}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency", "dev\DynamicDependencies\DynamicDependencies.vcxitems", "{2071549A-52AE-4DBA-8488-61B443BF7A79}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency", "dev\DynamicDependency\DynamicDependency.vcxitems", "{BF055A59-0919-4E34-9B76-DD055495CC5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency_Test_Win32", "test\DynamicDependency\DynamicDependency_Test_Win32\DynamicDependency_Test_Win32.vcxproj", "{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
-		dev\DynamicDependencies\DynamicDependencies.vcxitems*{2071549a-52ae-4dba-8488-61b443bf7a79}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
+		dev\DynamicDependency\DynamicDependency.vcxitems*{6bac3b29-3a6b-4b3f-a9ab-a316aa4e48ed}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
-		dev\DynamicDependencies\DynamicDependencies.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleWinRT\SampleWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
-		dev\DynamicDependencies\DynamicDependencies.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
+		dev\DynamicDependency\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}*SharedItemsImports = 9
 	EndGlobalSection
@@ -159,6 +163,18 @@ Global
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.ActiveCfg = Release|Win32
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.Build.0 = Release|Win32
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.Deploy.0 = Release|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Debug|ARM.ActiveCfg = Debug|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Debug|x64.ActiveCfg = Debug|x64
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Debug|x64.Build.0 = Debug|x64
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Debug|x86.ActiveCfg = Debug|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Debug|x86.Build.0 = Debug|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Release|ARM.ActiveCfg = Release|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Release|ARM64.ActiveCfg = Release|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Release|x64.ActiveCfg = Release|x64
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Release|x64.Build.0 = Release|x64
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Release|x86.ActiveCfg = Release|Win32
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -172,8 +188,10 @@ Global
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{C62688A1-16A0-4729-B6ED-842F4FAA29F3} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
-		{A5EC7E1B-8C76-43BC-BB3B-272C726EEBA2} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
-		{2071549A-52AE-4DBA-8488-61B443BF7A79} = {A5EC7E1B-8C76-43BC-BB3B-272C726EEBA2}
+		{6CD01EF6-D4A4-4801-ADCF-344CF87FF942} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{BF055A59-0919-4E34-9B76-DD055495CC5A} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
+		{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED} = {17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
