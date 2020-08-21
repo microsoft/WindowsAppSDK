@@ -16,8 +16,8 @@ to use packaged content.
     - [3.1.1. Detours to Enhance Package Graph APIs](#311-detours-to-enhance-package-graph-apis)
     - [3.1.2. Add to the Package Graph](#312-add-to-the-package-graph)
       - [3.1.2.1. Resolve Package](#3121-resolve-package)
-      - [Package Graph](#package-graph)
-      - [3.1.2.2. Add to Package Graph](#3122-add-to-package-graph)
+      - [3.1.2.2. Package Graph](#3122-package-graph)
+      - [3.1.2.3. Add to Package Graph](#3123-add-to-package-graph)
     - [3.1.3. Remove from the Package Graph](#313-remove-from-the-package-graph)
     - [3.1.4. DLL Search Order](#314-dll-search-order)
       - [3.1.4.1. Non-Packaged Processes](#3141-non-packaged-processes)
@@ -42,6 +42,8 @@ to use packaged content.
 - [6. API Details](#6-api-details)
   - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
   - [6.2. WinRT API](#62-winrt-api)
+- [7. Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
+  - [7.1. Frequently Asked Questions (FAQ)](#71-frequently-asked-questions-faq)
 
 # 2. Background
 
@@ -73,9 +75,10 @@ A process' Package Graph has historically been fixed at process creation. There 
 package graph at runtime.
 
 Packaged processes are initialized with a package graph based on package dependencies declared in
-their `appxmanifest.xml`. Non-packaged processes have no declared dependencies as they have no
-`appxmanifest.xml`, thus non-packaged processes are created with an empty Package Graph. Once a
-process is created its package graph is constant for the rest of its lifetime.
+their `appxmanifest.xml`. See [Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
+for more details. Non-packaged processes have no declared dependencies as they
+have no `appxmanifest.xml`, thus non-packaged processes are created with an
+empty Package Graph. Once a process is created its package graph was constant for the rest of its lifetime.
 
 We'll provide new APIs to alter the current process' Package Graph at runtime.
 
@@ -357,7 +360,7 @@ Architecture GetCurrentArchitecture()
 }
 ```
 
-#### Package Graph
+#### 3.1.2.2. Package Graph
 
 A package graph is a package dependency graph flattened into an ordered list.
 
@@ -373,7 +376,7 @@ Non-packaged processes start with an empty package graph.
 A process' package graph can be altered dynamically at runtime
 via the Dynamic Dependency API.
 
-#### 3.1.2.2. Add to Package Graph
+#### 3.1.2.3. Add to Package Graph
 
 Packages can be added dynamically to the package graph,
 managed as as a sorted list based on `rank`. The list is sorted in ascending order
@@ -1439,3 +1442,121 @@ runtimeclass PackageDependencyContext
 }
 }
 ```
+# 7. Static Package Dependency Resolution Algorithm
+
+Windows resolves package dependencies at install-time to compute a package
+graph. This is flattened into an strictly ordered list for use at runtime.
+This list is formally called a 'package graph'. It's also been
+referred to as a 'package dependency graph', 'dependency graph',
+'resolve package dependencies' or simply the 'static package graph'.
+
+Packages are strictly ordered in a package graph. The ordering rules are
+designed to meet these base principles:
+
+1. **Deterministc** - Package graph ordering is stable and reproducible.
+   Given the same set of packages the same package graph is produced.
+   There are no timing or order-of-install factors impacting this.
+2. **Knowable** - Package graph ordering is comprehensible and intuitive.
+   You don't have to be an expert to understand what package graph you'll get.
+
+Package graphs are computed per the following rules, as of Windows 10.0.19041.0 (aka Windows 10 May 2020 Update).
+
+Packages are included in a Main package's package graph for any of the following reasons:
+- **Main** package
+- **Optional** packages associated with the Main package, per `<uap3:MainPackageDependency>`
+- **Framework** packages, per `<PackageDependency>`
+- **HostRuntime** providers, per `<uap10:HostRuntimeDependency>`
+- **Resource** packages, in the same package family as any other package in the
+  package graph and selected per Windows' resource package applicability rules
+
+Packages in a package graph are grouped into 'bands' per the following criteria:
+1. Main
+2. Optional
+3. Framework and HostRuntime
+4. Resource
+
+Each 'band' may have additional intra-band ordering rules:
+1. **Main** - No additional rules
+2. **Optional** - Sorted alphabetically by package name
+3. **Frameworks**/**HostRuntimes** - Ordered byr physical order of `<PackageDependency>` in AppxManifest.xml
+4. Resources - Sorted alphabetically by PackageFamilyName+ResourceId
+
+A package appears once in a package graph. When building the package graph
+Windows uses "Add if not already present" (aka de-dupe'ing) semantics e.g.
+
+     packagegraph = []
+     ...
+         IF package NOT IN packagegraph
+             packagegraph.Append(package)
+
+## 7.1. Frequently Asked Questions (FAQ)
+**Q:** Why are Optional packages after the Main package, w/o Framework or Resource packages between?
+<br>
+**A:** Optional packages are conceptually a Main package chopped until into a
+   smaller Main and 1+ Optional package.
+
+
+**Q:** Why are Optional packages sorted alphabetically by `PackageFamilyName + ResourceId`?
+<br>
+**A:** Some, all or no Optional packages may be installed for a user.
+The developer has no ability to know in advance, reason over or directly
+influence which Optional packages may be installed at a given time for a given user.
+Alphabetical sort by `PackageFamilyName + ResourceId` is deterministic and knowable.
+
+**Q:** Why are Frameworks ordered per physical order in AppxManifest.xml?
+<br>
+**A:** Some subsystems sequentially search across the package graph to find
+package content. Most notably, the Loader (DLLs), .NET Framework's CLR Binder
+(assemblies) and WinRT (type resolution and inproc DLL's import
+resolution) use the package graph with FirstWinner search order semantics.
+Developers MUST be able to influence and control the order of Framework
+packages to avoid inappropriate collision resolution.
+
+**Q:** Why are HostRuntimes ordered per physical order in `AppxManifest.xml`?
+<br>
+**A:** HostRuntimes perform a role similar to Framework packages thus facing
+similar requirements and constraints.
+
+**Q:** Why are HostRuntimes in the same 'band' as Framework packages?
+<br>
+**A:** HostRuntime packages function equivalent to framework packages.
+
+**Q:** Why are Resource packages sorted alphabetically by `PackageFamilyName + ResourceId`?
+<br>
+**A:** Resource packages are installed based on applicability rules and
+machine+user state (scale, languages selected, etc). The developer has no
+ability to know in advance, reason over or directly influence which Resource
+packages may be installed at a given time for a given user. Alphabetical sort by
+`PackageFamilyName + ResourceId` is deterministic and knowable.
+
+**Q:** Why are Framework packages before Resource packages?
+<br>
+**A:** Framework order can be influenced by the developer; Resource order
+cannot. Placing Frameworks before Resource packages ensures the developer
+has control if/when needed.
+
+**Q:** How do we traverse dependencies?
+<br>
+**A:** Breadth-First Search (BFS) in a package before moving on to the next
+(then spread across the 'bands' as appropriate). Do NOT do
+a Depth-First Search (DFS) as this will violate several rules and base principles.
+
+**Q:** How about an example?
+<br>
+**A:** Given package=[dependencies]
+
+     Main = [ H1, F1 ]
+      Opt = [ H2, F2 ]
+       H1 = [ F3 ]
+       H2 = [ F4 ]
+
+where
+
+     Main = Main package
+      Opt = Optional package
+       H* = Main package providing a HostRuntime
+       F* = Framework package
+
+the package graph will be
+
+     [Main, Opt, H1, F1, H2, F2, F3, F4]
