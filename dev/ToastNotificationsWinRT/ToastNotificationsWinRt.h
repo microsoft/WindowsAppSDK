@@ -20,6 +20,7 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
     private:
         hstring m_arguments;
         hstring m_appId;
+        Windows::Foundation::Collections::IMap<hstring, hstring> m_userInput;
     };
 
     struct DesktopToastNotificationManagerCompat

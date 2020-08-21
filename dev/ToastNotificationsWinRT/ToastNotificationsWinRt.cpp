@@ -142,15 +142,17 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
 
     hstring ToastActivatedEventArgs::Arguments()
     {
-        throw hresult_not_implemented();
+        return m_arguments;
     }
+
     hstring ToastActivatedEventArgs::AppId()
     {
-        throw hresult_not_implemented();
+        return m_appId;
     }
+
     Windows::Foundation::Collections::IMap<hstring, hstring> ToastActivatedEventArgs::UserInput()
     {
-        throw hresult_not_implemented();
+        return m_userInput;
     }
 
     void DesktopToastNotificationManagerCompat::RegisterApplication(hstring const& clsid, hstring const& appId, hstring const& displayName, hstring const& iconPath)
@@ -267,6 +269,5 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
     }
     void DesktopToastNotificationManagerCompat::ToastActivated(winrt::event_token const& token) noexcept
     {
-        throw hresult_not_implemented();
     }
 }
