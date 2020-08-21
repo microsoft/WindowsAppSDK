@@ -10,7 +10,7 @@ enum class MddCreatePackageDependencyOptions : uint32_t
 {
     None = 0,
 
-    /// Disable dependency resolution when creating a package dependency.
+    /// Disable dependency resolution when pinning a package dependency.
     DoNotVerifyDependencyResolution = 0x00000001,
 
     /// Define the package dependency for the system, accessible to all users
@@ -83,7 +83,7 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 /// @param user the user scope of the package dependency. If NULL the caller's
 ///        user context is used. MUST be NULL if MddCreatePackageDependencyOptions::ScopeIsSystem
 ///        is specified
-/// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPinPackageDependencyLifetimeKind::Process
+/// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPackageDependencyLifetimeKind::Process
 /// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate
 ///
 /// @note MddTryCreatePackageDependency() fails if the PackageDependency cannot be resolved to a specific
@@ -122,13 +122,13 @@ STDAPI_(void) MddDeletePackageDependency(
 /// calling process' package graph, even if already present. There is no
 /// duplicate 'detection' or 'filtering' applied by the API (multiple
 /// references from a package is not harmful). Once resolution is complete
-/// the package stays resolved for that user until the last reference across
+/// the package dependency stays resolved for that user until the last reference across
 /// all processes for that user is removed via MddRemovePackageDependency (or
 /// process termination).
 ///
 /// MddAddPackageDependency() adds the resolved package to the caller's package graph,
 /// per the rank specified. A process' package graph is a list of packages sorted by
-/// rank in ascending order (-infinityÃ¢â‚¬Â¦0Ã¢â‚¬Â¦+infinity). If package(s) are present in the
+/// rank in ascending order (-infinity...0...+infinity). If package(s) are present in the
 /// package graph with the same rank as the call to MddAddPackageDependency the resolved
 /// package is (by default) added after others of the same rank. To add a package
 /// before others o the same rank, specify MddAddPackageDependencyOptions::PrependIfRankCollision.
@@ -158,7 +158,7 @@ STDAPI MddAddPackageDependency(
 
 /// Remove a resolved PackageDependency from the current process' package graph
 /// (i.e. undo MddAddPackageDependency). Used at runtime (i.e. the moral equivalent
-/// of RemoveDllDirectory()).
+/// of Windows' RemoveDllDirectory()).
 ///
 /// @note This does not unload loaded resources (DLLs etc). After removing
 ///        a package dependency any files loaded from the package can continue
