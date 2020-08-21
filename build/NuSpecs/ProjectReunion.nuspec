@@ -23,7 +23,7 @@
     <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd"/>
     <file target="lib\uap10.0" src="Intellisense\Microsoft.ProjectReunion.xml"/>
 
-<!-- UNDONE -->
+<!-- UNDONE - needed? -->
 <!--    <file target="lib\uap10.0\Microsoft.ProjectReunion\Themes" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Generic.xaml"/> -->
 <!--    <file target="lib\uap10.0\Design" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.design.dll"/> -->
 

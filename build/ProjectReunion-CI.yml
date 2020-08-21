@@ -54,14 +54,14 @@ jobs:
     prereleaseVersionTag: ci
 
 # Build solution that depends on nuget package
-- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
-  parameters:
-    buildJobName: 'BuildNugetPkgTests'
-    buildArtifactName: 'NugetPkgTestsDrop'
-    runTestJobName: 'RunNugetPkgTestsInHelix'
-    helixType: 'test/nuget'
-    dependsOn: CreateNugetPackage
-    pkgArtifactPath: '$(artifactDownloadPath)\drop'
+#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
+#  parameters:
+#    buildJobName: 'BuildNugetPkgTests'
+#    buildArtifactName: 'NugetPkgTestsDrop'
+#    runTestJobName: 'RunNugetPkgTestsInHelix'
+#    helixType: 'test/nuget'
+#    dependsOn: CreateNugetPackage
+#    pkgArtifactPath: '$(artifactDownloadPath)\drop'
 
 #UNDONE - depends on Helix infrastructure, subsequent PR
 # Framework package tests
