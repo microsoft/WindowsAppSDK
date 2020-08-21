@@ -31,19 +31,21 @@ function PublishFile {
     }
 }
 
-PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\sdk\
-#PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion\Generic.xaml $FullPublishDir\Microsoft.ProjectReunion\
-#PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.Design.dll $FullPublishDir\Microsoft.ProjectReunion.Design\
-PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
-#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\MUXControls.Test.TAEF\MUXControls.Test.dll $FullPublishDir\Test\
-#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\MUXControls.ReleaseTest.TAEF\MUXControls.ReleaseTest.dll $FullPublishDir\Test\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion\
+#UNDONE - xaml vcxproj re-runs an mdmerge into the sdk node, we are skipping this for now and leaving the winmd in its normal outdir
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\
+#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\sdk\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\sdk\
 
+#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Generic.xaml $FullPublishDir\Microsoft.ProjectReunion\
+#PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.Design.dll $FullPublishDir\Microsoft.ProjectReunion.Design\
+#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
+
+#UNDONE - PGO etc. later PR
 # pgosweep and vcruntime are required to run pgo instrumented test run. They are placed from the
 # cx test app instead of releasetest.dll since these are architecture specific and the ReleaseTest assembly is AnyCPU.
-PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\pgosweep.exe $FullPublishDir\Test\
-PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\vcruntime140.dll $FullPublishDir\Test\
+#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\pgosweep.exe $FullPublishDir\Test\
+#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\vcruntime140.dll $FullPublishDir\Test\
 
 PublishFile -IfExists $FullBuildOutput\FrameworkPackage\*.* $FullPublishDir\FrameworkPackage
 
