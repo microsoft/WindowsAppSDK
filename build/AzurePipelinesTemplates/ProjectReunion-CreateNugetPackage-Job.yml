@@ -52,8 +52,7 @@ jobs:
 
   # debugging - remove or comment out before completing PR      
   - script: |
-      echo dir /s %Build_SourcesDirectory%
-      echo dir /s '$(Build.SourcesDirectory)\Artifacts'
+      echo dir /s '$(Build.SourcesDirectory)'
 
   - template: ProjectReunion-InstallNuget-Steps.yml
 
