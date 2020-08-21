@@ -50,11 +50,16 @@ jobs:
       artifactName: drop
       downloadPath: '$(Build.SourcesDirectory)\Artifacts'
 
+  # debugging - remove or comment out before completing PR      
+  - script: |
+      echo dir /s %Build_SourcesDirectory%
+      echo dir /s '$(Build.SourcesDirectory)\Artifacts'
+
   - template: ProjectReunion-InstallNuget-Steps.yml
 
   - ${{if parameters.signConfig }}:
     # Re-create framework packages because we made them in the build step against unsigned binaries.
-    - template: MUX-MakeFrameworkPackages-Steps.yml
+    - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
 
     # Copy the re-made framework packages into the same location in the artifact drop to be republished at the end of the job.
     - task: CopyFiles@2
