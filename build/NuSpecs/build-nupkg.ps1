@@ -9,7 +9,7 @@ Param(
     [string]$BuildFlavor = "release",
     [string]$BuildArch = "x86",
     [switch]$NoDeleteTemp,
-    [switch]$SkipFrameworkPackage
+    [switch]$SkipFrameworkPackage = $true
 )
 
 #
