@@ -927,8 +927,6 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 
 # 6. API Details
 
-**TODO** Retitle this section 'API' since we don't have 'API Notes'?
-
 ## 6.1. Win32 API - MsixDynamicDependency.hpp
 
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
@@ -936,7 +934,7 @@ All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
 ```c++
 enum class MddCreatePackageDependencyOptions : uint32_t
 {
-    None 0,
+    None = 0,
 
     /// Disable dependency resolution when pinning a package dependency.
     DoNotVerifyDependencyResolution = 0x00000001,
@@ -948,7 +946,7 @@ enum class MddCreatePackageDependencyOptions : uint32_t
 };
 DEFINE_ENUM_FLAG_OPERATORS(MddCreatePackageDependencyOptions)
 
-enum class MddPinPackageDependencyLifetimeKind
+enum class MddPackageDependencyLifetimeKind
 {
     /// The current process is the lifetime artifact. The package dependency
     /// is implicitly deleted when the process terminates.
@@ -962,7 +960,7 @@ enum class MddPinPackageDependencyLifetimeKind
     /// 'root\\subkey' where root is one of the following: HKLM, HKCU, HKCR, HKU.
     /// The package dependency is implicitly deleted when this is deleted.
     RegistryKey = 2,
-}
+};
 
 enum class MddAddPackageDependencyOptions : uint32_t
 {
@@ -1011,7 +1009,7 @@ DECLARE_HANDLE(MDD_PACKAGEDEPENDENCY_CONTEXT);
 /// @param user the user scope of the package dependency. If NULL the caller's
 ///        user context is used. MUST be NULL if MddCreatePackageDependencyOptions::ScopeIsSystem
 ///        is specified
-/// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPinPackageDependencyLifetimeKind::Process
+/// @param lifetimeArtifact MUST be NULL if lifetimeKind=MddPackageDependencyLifetimeKind::Process
 /// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate
 ///
 /// @note MddTryCreatePackageDependency() fails if the PackageDependency cannot be resolved to a specific
@@ -1024,7 +1022,7 @@ STDAPI MddTryCreatePackageDependency(
     _In_ PCWSTR packageFamilyName,
     PACKAGE_VERSION minVersion,
     MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
-    MddPinPackageDependencyLifetimeKind lifetimeKind,
+    MddPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact,
     MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
@@ -1056,7 +1054,7 @@ STDAPI_(void) MddDeletePackageDependency(
 ///
 /// MddAddPackageDependency() adds the resolved package to the caller's package graph,
 /// per the rank specified. A process' package graph is a list of packages sorted by
-/// rank in ascending order (-infinityâ€¦0â€¦+infinity). If package(s) are present in the
+/// rank in ascending order (-infinity...0...+infinity). If package(s) are present in the
 /// package graph with the same rank as the call to MddAddPackageDependency the resolved
 /// package is (by default) added after others of the same rank. To add a package
 /// before others o the same rank, specify MddAddPackageDependencyOptions::PrependIfRankCollision.
@@ -1151,7 +1149,7 @@ runtimeclass CreatePackageDependencyOptions
     /// Optional filtering by cpu architecture(s)
     PackageDependencyProcessorArchitectures Architectures;
 
-    /// Verify at least 1 matching package exists when pinning a package dependency
+    /// Do not verify at least 1 matching package exists when pinning a package dependency
     /// @note Default value is `true`
     Boolean VerifyDependencyResolution;
 
@@ -1179,8 +1177,8 @@ runtimeclass AddPackageDependencyOptions
     Int32 Rank;
 
     /// If a package dependency is added to a package graph with a package of the same rank (aka a collision on rank)
-    /// and this option is true the resolved package dependency is prepended to the set of packages of the same rank.
-    /// By default resolved package dependencies are appended to the set of packages with the same rank.
+    /// and this option is true the resolve package dependency is prepended to the set of packages of the same rank.
+    /// By default resolve package dependencies are appended to the set of packages with the same rank.
     Boolean PrependIfRankCollision;
 }
 
@@ -1205,7 +1203,7 @@ runtimeclass PackageDependency
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
     ///       is removed Deployment won't remove Fwk-v2 because it's the only package
     ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
-    ///       package matching the PackageDependency) are 'loosely pinned' â€“ Deployment
+    ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
     ///       guarantees it won't remove a package if it would make a PackageDependency
     ///       unsatisfied.
     ///
@@ -1240,7 +1238,7 @@ runtimeclass PackageDependency
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
     ///       is removed Deployment won't remove Fwk-v2 because it's the only package
     ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
-    ///       package matching the PackageDependency) are 'loosely pinned' â€“ Deployment
+    ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
     ///       guarantees it won't remove a package if it would make a PackageDependency
     ///       unsatisfied.
     ///
@@ -1280,7 +1278,7 @@ runtimeclass PackageDependency
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
     ///       is removed Deployment won't remove Fwk-v2 because it's the only package
     ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
-    ///       package matching the PackageDependency) are 'loosely pinned' â€“ Deployment
+    ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
     ///       guarantees it won't remove a package if it would make a PackageDependency
     ///       unsatisfied.
     ///
@@ -1317,7 +1315,7 @@ runtimeclass PackageDependency
     ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
     ///       is removed Deployment won't remove Fwk-v2 because it's the only package
     ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
-    ///       package matching the PackageDependency) are 'loosely pinned' â€“ Deployment
+    ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
     ///       guarantees it won't remove a package if it would make a PackageDependency
     ///       unsatisfied.
     ///
