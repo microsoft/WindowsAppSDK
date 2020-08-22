@@ -28,11 +28,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
-  </ItemGroup>
-  <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h"/>
   </ItemGroup>
 </Project>

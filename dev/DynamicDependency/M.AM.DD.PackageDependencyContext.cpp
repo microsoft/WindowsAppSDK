@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -6,22 +6,29 @@
 #include "M.AM.DD.PackageDependencyContext.h"
 #include "Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext.g.cpp"
 
+#include <M.AM.Converters.h>
+
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
-    PackageDependencyContext::PackageDependencyContext(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId const& contextId)
+    PackageDependencyContext::PackageDependencyContext(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId const& contextId) :
+        m_contextId(contextId)
     {
-        throw hresult_not_implemented();
+    }
+    PackageDependencyContext::PackageDependencyContext(MDD_PACKAGEDEPENDENCY_CONTEXT context) :
+        m_contextId(::Microsoft::ApplicationModel::ToContextId(context))
+    {
     }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId PackageDependencyContext::ContextId()
     {
-        throw hresult_not_implemented();
+        return m_contextId;
     }
     hstring PackageDependencyContext::PackageFullName()
     {
+        //TODO Lookup ContextId -> PackageFullName
         throw hresult_not_implemented();
     }
     void PackageDependencyContext::Remove()
     {
-        throw hresult_not_implemented();
+        MddRemovePackageDependency(::Microsoft::ApplicationModel::ToContext(m_contextId));
     }
 }

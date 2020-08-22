@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -11,6 +11,9 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
         PackageDependency() = default;
 
+        PackageDependency(PCWSTR id);
+        PackageDependency(hstring const& id);
+
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency GetFromId(hstring const& id);
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion);
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options);
@@ -20,6 +23,9 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         void Delete();
         Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Add();
         Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Add(Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
+
+    private:
+        hstring m_id;
     };
 }
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -10,34 +10,34 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
     Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures CreatePackageDependencyOptions::Architectures()
     {
-        throw hresult_not_implemented();
+        return m_architectures;
     }
     void CreatePackageDependencyOptions::Architectures(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value)
     {
-        throw hresult_not_implemented();
+        m_architectures = value;
     }
     bool CreatePackageDependencyOptions::VerifyDependencyResolution()
     {
-        throw hresult_not_implemented();
+        return m_verifyDependencyResolution;
     }
     void CreatePackageDependencyOptions::VerifyDependencyResolution(bool value)
     {
-        throw hresult_not_implemented();
+        m_verifyDependencyResolution = value;
     }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind CreatePackageDependencyOptions::LifetimeArtifactKind()
     {
-        throw hresult_not_implemented();
+        return m_lifetimeArtifactKind;
     }
     void CreatePackageDependencyOptions::LifetimeArtifactKind(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value)
     {
-        throw hresult_not_implemented();
+        m_lifetimeArtifactKind = value;
     }
     hstring CreatePackageDependencyOptions::LifetimeArtifact()
     {
-        throw hresult_not_implemented();
+        return m_lifetimeArtifact;
     }
     void CreatePackageDependencyOptions::LifetimeArtifact(hstring const& value)
     {
-        throw hresult_not_implemented();
+        m_lifetimeArtifact = value;
     }
 }

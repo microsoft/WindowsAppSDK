@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -10,18 +10,18 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
     int32_t AddPackageDependencyOptions::Rank()
     {
-        throw hresult_not_implemented();
+        return m_rank;
     }
     void AddPackageDependencyOptions::Rank(int32_t value)
     {
-        throw hresult_not_implemented();
+        m_rank = value;
     }
     bool AddPackageDependencyOptions::PrependIfRankCollision()
     {
-        throw hresult_not_implemented();
+        return m_prependIfRankCollision;
     }
     void AddPackageDependencyOptions::PrependIfRankCollision(bool value)
     {
-        throw hresult_not_implemented();
+        m_prependIfRankCollision = value;
     }
 }
