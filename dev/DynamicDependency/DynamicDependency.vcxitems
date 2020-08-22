@@ -14,9 +14,25 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h"/>
   </ItemGroup>
 </Project>

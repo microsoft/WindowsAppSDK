@@ -1,0 +1,25 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
+
+#include "Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext.g.h"
+
+namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
+{
+    struct PackageDependencyContext : PackageDependencyContextT<PackageDependencyContext>
+    {
+        PackageDependencyContext() = default;
+
+        PackageDependencyContext(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId const& contextId);
+        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId ContextId();
+        hstring PackageFullName();
+        void Remove();
+    };
+}
+namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation
+{
+    struct PackageDependencyContext : PackageDependencyContextT<PackageDependencyContext, implementation::PackageDependencyContext>
+    {
+    };
+}

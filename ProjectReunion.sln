@@ -43,7 +43,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
-		dev\DynamicDependency\DynamicDependency.vcxitems*{6bac3b29-3a6b-4b3f-a9ab-a316aa4e48ed}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
 		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
