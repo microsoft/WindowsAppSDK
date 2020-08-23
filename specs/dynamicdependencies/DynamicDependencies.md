@@ -1212,15 +1212,12 @@ runtimeclass PackageDependency
     /// package (e.g. higher version) to satisfy the PackageDependency if/when
     /// one becomes available.
     ///
-    /// This method is equivalent to CreateForUser(null,...).
-    ///
     /// @param packageFamilyName the package family to pin
     /// @param minVersion the minimum version to pin
     ///
     /// @note This fails if the package dependency cannot be resolved to a specific package.
     ///
     /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
-    /// @see CreateForUser()
     /// @see CreateForSystem()
     static PackageDependency Create(
         String packageFamilyName,
@@ -1247,8 +1244,6 @@ runtimeclass PackageDependency
     /// package (e.g. higher version) to satisfy the PackageDependency if/when
     /// one becomes available.
     ///
-    /// This method is equivalent to CreateForUser(null,...).
-    ///
     /// @param packageFamilyName the package family to pin
     /// @param minVersion the minimum version to pin
     /// @param options additional options affecting the package dependency
@@ -1259,46 +1254,8 @@ runtimeclass PackageDependency
     ///       will be installed after the package dependency is defined.
     ///
     /// @see Create(String, PackageVersion)
-    /// @see CreateForUser()
     /// @see CreateForSystem()
     static PackageDependency Create(
-        String packageFamilyName,
-        PackageVersion minVersion,
-        CreatePackageDependencyOptions options);
-
-    /// Define a package dependency for a user. The criteria for a PackageDependency
-    /// (package family name, minimum version, etc) may match multiple
-    /// packages, but ensures Deployment won't remove a package if it's
-    /// the only one satisfying the PackageDependency.
-    ///
-    /// @note A package matching a PackageDependency pin can still be removed
-    ///       as long as there's another package that satisfies the PackageDependency.
-    ///       For example, if Fwk-v1 is installed and a PackageDependency specifies
-    ///       MinVersion=1 and then Fwk-v2 is installed, Deployment could remove
-    ///       Fwk-v1 because Fwk-v2 will satisfy the PackageDependency. After Fwk-v1
-    ///       is removed Deployment won't remove Fwk-v2 because it's the only package
-    ///       satisfying the PackageDependency. Thus  Fwk-v1 and Fwk-v2 (and any other
-    ///       package matching the PackageDependency) are 'loosely pinned'. Deployment
-    ///       guarantees it won't remove a package if it would make a PackageDependency
-    ///       unsatisfied.
-    ///
-    /// A PackageDependency specifies criteria (package family, minimum version, etc)
-    /// and not a specific package. Deployment reserves the right to use a different
-    /// package (e.g. higher version) to satisfy the PackageDependency if/when
-    /// one becomes available.
-    ///
-    /// @param user the user scope of the package dependency. If null the caller's user context is used
-    /// @param packageFamilyName the package family to pin
-    /// @param minVersion the minimum version to pin
-    /// @param options additional options affecting the package dependency
-    ///
-    /// @note This fails if the package dependency cannot be resolved to a specific package.
-    ///
-    /// @see Create(String, PackageVersion)
-    /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
-    /// @see CreateForSystem()
-    static PackageDependency CreateForUser(
-        Windows.System.User user,
         String packageFamilyName,
         PackageVersion minVersion,
         CreatePackageDependencyOptions options);
@@ -1335,7 +1292,6 @@ runtimeclass PackageDependency
     ///
     /// @see Create(String, PackageVersion)
     /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
-    /// @see CreateForUser()
     static PackageDependency CreateForSystem(
         String packageFamilyName,
         PackageVersion minVersion,
