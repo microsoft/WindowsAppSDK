@@ -364,6 +364,8 @@ Architecture GetCurrentArchitecture()
 
 A package graph is a package dependency graph flattened into an ordered list.
 
+Searches using this list start with the lowest rank and proceed in ascending order through the list. For example, when the Loader searches the package graph for DLLs (per [Dynamic-Link Library Search Order](https://docs.microsoft.com/windows/win32/dlls/dynamic-link-library-search-order)).
+
 Package processes start with a package graph containing the package and its dependencies,
 as resolved resolved at install time. This can be accessed via
 [Windows.ApplicationModel.Package](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Package)
