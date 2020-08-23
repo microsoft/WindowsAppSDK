@@ -46,15 +46,6 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, nullptr, mddOptions, wil::out_param(packageDependencyId)));
         return GetFromId(packageDependencyId.get());
     }
-    Microsoft::ApplicationModel::DynamicDependency::PackageDependency PackageDependency::CreateForUser(Windows::System::User const& user, hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options)
-    {
-        //TODO: Convert user -> PSID
-        UNREFERENCED_PARAMETER(user);
-        UNREFERENCED_PARAMETER(packageFamilyName);
-        UNREFERENCED_PARAMETER(minVersion);
-        UNREFERENCED_PARAMETER(options);
-        throw hresult_not_implemented();
-    }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependency PackageDependency::CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options)
     {
         const auto mddMinVersion = ::Microsoft::ApplicationModel::ToVersion(minVersion);

@@ -17,7 +17,6 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency GetFromId(hstring const& id);
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion);
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options);
-        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency CreateForUser(Windows::System::User const& user, hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options);
         static Microsoft::ApplicationModel::DynamicDependency::PackageDependency CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options);
         hstring Id();
         void Delete();
