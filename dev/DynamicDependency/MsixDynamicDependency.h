@@ -38,7 +38,7 @@ enum class MddPackageDependencyLifetimeKind
 
 enum class MddAddPackageDependencyOptions : uint32_t
 {
-    None = 0,
+    None                   = 0,
     PrependIfRankCollision = 0x00000001,
 };
 DEFINE_ENUM_FLAG_OPERATORS(MddAddPackageDependencyOptions)
@@ -47,12 +47,12 @@ DEFINE_ENUM_FLAG_OPERATORS(MddAddPackageDependencyOptions)
 
 enum class MddPackageDependencyProcessorArchitectures : uint32_t
 {
-    None = 0,
-    Neutral = 0x00000001,
-    X86 = 0x00000002,
-    X64 = 0x00000004,
-    Arm = 0x00000008,
-    Arm64 = 0x00000010,
+    None       = 0,
+    Neutral    = 0x00000001,
+    X86        = 0x00000002,
+    X64        = 0x00000004,
+    Arm        = 0x00000008,
+    Arm64      = 0x00000010,
     X86OnArm64 = 0x00000020,
 };
 DEFINE_ENUM_FLAG_OPERATORS(MddPackageDependencyProcessorArchitectures)
