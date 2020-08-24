@@ -14,9 +14,7 @@ using namespace Microsoft::WRL;
 
 wstring s_appId;
 bool s_registeredAumidAndComServer = false;
-
 LONG g_Count = 0;
-
 Microsoft::WRL::EventSource<winrt::Microsoft::ToastNotificationsWinRt::implementation::ToastActivatedEventArgs> s_event;
 
 #define TOAST_ACTIVATED_LAUNCH_ARG L"-ToastActivated"
@@ -30,6 +28,7 @@ class NotificationActivator WrlSealed :
         _In_reads_(dataCount) const NOTIFICATION_USER_INPUT_DATA * data,
         ULONG dataCount) override
     {
+        printf("Toast Activator!\n");
         winrt::hstring appId;
         appId = appUserModelId;
         winrt::hstring args;
@@ -155,6 +154,64 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
         return m_userInput;
     }
 
+    HRESULT RegisterComServer(GUID clsid, PCWSTR exePath)
+    {
+        wil::unique_cotaskmem_string guidStr;
+        RETURN_IF_FAILED(StringFromCLSID(clsid, &guidStr));
+
+        wstring clsidStr = guidStr.get();
+        wstring subKey = LR"(SOFTWARE\Classes\CLSID\)" + clsidStr + LR"(\LocalServer32)";
+
+        // Include -ToastActivated launch args on the exe
+        std::wstring exePathStr(exePath);
+        exePathStr = L"\"" + exePathStr + L"\" " + TOAST_ACTIVATED_LAUNCH_ARG;
+
+        // We don't need to worry about overflow here as ::GetModuleFileName won't
+       // return anything bigger than the max file system path (much fewer than max of DWORD).
+        DWORD dataSize = static_cast<DWORD>((exePathStr.length() + 1) * sizeof(WCHAR));
+
+        RETURN_IF_FAILED(HRESULT_FROM_WIN32(::RegSetKeyValue(
+            HKEY_CURRENT_USER,
+            subKey.c_str(),
+            nullptr,
+            REG_SZ,
+            reinterpret_cast<const BYTE*>(exePathStr.c_str()),
+            dataSize)));
+        return S_OK;
+    }
+
+
+    HRESULT RegisterActivator(GUID clsid)
+    {
+        wchar_t exePath[MAX_PATH];
+        DWORD charWritten = ::GetModuleFileName(nullptr, exePath, ARRAYSIZE(exePath));
+        RETURN_IF_FAILED(charWritten > 0 ? S_OK : HRESULT_FROM_WIN32(::GetLastError()));
+
+        // Register the COM server
+        RETURN_IF_FAILED(RegisterComServer(clsid, exePath));
+
+        // Update the CustomActivator
+        std::wstring regKey = LR"(SOFTWARE\Classes\AppUserModelId\)" + s_appId;
+
+        wil::unique_cotaskmem_string guidStr;
+        RETURN_IF_FAILED(StringFromCLSID(clsid, &guidStr));
+        wstring clsidStr = guidStr.get();
+
+        // Register the activator
+        RETURN_IF_FAILED(HRESULT_FROM_WIN32(::RegSetKeyValue(
+            HKEY_CURRENT_USER,
+            regKey.c_str(),
+            L"CustomActivator",
+            REG_SZ,
+            reinterpret_cast<const BYTE*>(clsidStr.c_str()),
+            static_cast<DWORD>((clsidStr.size() + 1) * sizeof(WCHAR)))));
+
+        RETURN_IF_FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED));
+        DWORD cookie;
+        RETURN_IF_FAILED(CoRegisterClassObject(clsid, new NotificationActivatorFactory(), CLSCTX_LOCAL_SERVER, REGCLS_MULTIPLEUSE, &cookie));
+        return S_OK;
+    }
+
     void DesktopToastNotificationManagerCompat::RegisterApplication(hstring const& clsid, hstring const& appId, hstring const& displayName, hstring const& iconPath)
     {
         if (!s_registeredAumidAndComServer)
@@ -193,66 +250,10 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
                 static_cast<DWORD>((wcslen(L"FFDDDDDD") + 1) * sizeof(WCHAR)))));
 
             GUID clsidGuid;
-            THROW_HR_IF(E_INVALIDARG, UuidFromStringW((RPC_WSTR)(clsid.c_str()), &clsidGuid) != RPC_S_OK);
+            THROW_IF_FAILED(CLSIDFromString(clsid.c_str(), &clsidGuid));
             THROW_IF_FAILED(RegisterActivator(clsidGuid));
             s_registeredAumidAndComServer = true;
         }
-    }
-
-    HRESULT DesktopToastNotificationManagerCompat::RegisterComServer(GUID clsid, PCWSTR exePath)
-    {
-        wil::unique_cotaskmem_string guidStr;
-        RETURN_IF_FAILED(StringFromCLSID(clsid, &guidStr));
-
-        wstring clsidStr = guidStr.get();
-        wstring subKey = LR"(SOFTWARE\Classes\CLSID\)" + clsidStr + LR"(\LocalServer32)";
-
-        // Include -ToastActivated launch args on the exe
-        std::wstring exePathStr(exePath);
-        exePathStr = L"\"" + exePathStr + L"\" " + TOAST_ACTIVATED_LAUNCH_ARG;
-
-        // We don't need to worry about overflow here as ::GetModuleFileName won't
-       // return anything bigger than the max file system path (much fewer than max of DWORD).
-        DWORD dataSize = static_cast<DWORD>((exePathStr.length() + 1) * sizeof(WCHAR));
-
-        RETURN_IF_FAILED(HRESULT_FROM_WIN32(::RegSetKeyValue(
-            HKEY_CURRENT_USER,
-            subKey.c_str(),
-            nullptr,
-            REG_SZ,
-            reinterpret_cast<const BYTE*>(exePathStr.c_str()),
-            dataSize)));
-        return S_OK;
-    }
-
-    HRESULT DesktopToastNotificationManagerCompat::RegisterActivator(GUID clsid)
-    {
-        wchar_t exePath[MAX_PATH];
-        DWORD charWritten = ::GetModuleFileName(nullptr, exePath, ARRAYSIZE(exePath));
-        RETURN_IF_FAILED(charWritten > 0 ? S_OK : HRESULT_FROM_WIN32(::GetLastError()));
-
-        // Register the COM server
-        RETURN_IF_FAILED(RegisterComServer(clsid, exePath));
-
-        // Update the CustomActivator
-        std::wstring regKey = LR"(SOFTWARE\Classes\AppUserModelId\)" + s_appId;
-
-        wil::unique_cotaskmem_string guidStr;
-        RETURN_IF_FAILED(StringFromCLSID(clsid, &guidStr));
-        wstring clsidStr = guidStr.get();
-
-        // Register the activator
-        RETURN_IF_FAILED(HRESULT_FROM_WIN32(::RegSetKeyValue(
-            HKEY_CURRENT_USER,
-            regKey.c_str(),
-            L"CustomActivator",
-            REG_SZ,
-            reinterpret_cast<const BYTE*>(clsidStr.c_str()),
-            static_cast<DWORD>((clsidStr.size() + 1) * sizeof(WCHAR)))));
-
-        DWORD cookie;
-        RETURN_IF_FAILED(CoRegisterClassObject(clsid, new NotificationActivatorFactory(), CLSCTX_LOCAL_SERVER, REGCLS_MULTIPLEUSE, &cookie));
-        return S_OK;
     }
 
     bool DesktopToastNotificationManagerCompat::WasProcessToastActivated()

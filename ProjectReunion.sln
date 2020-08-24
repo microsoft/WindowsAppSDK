@@ -44,11 +44,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ToastNotificationsWinRT", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationsWinRT", "dev\ToastNotificationsWinRT\ToastNotificationsWinRT.vcxitems", "{778754B0-4E74-4262-8AA3-4EAAB6249E16}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ReunionToastConsole", "dev\ReunionToastConsole\ReunionToastConsole.vcxproj", "{B0E2375A-CC87-4E47-915E-E35951DE667E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
 		dev\ToastNotificationsWinRT\ToastNotificationsWinRT.vcxitems*{778754b0-4e74-4262-8aa3-4eaab6249e16}*SharedItemsImports = 9
+		dev\ToastNotificationsWinRT\ToastNotificationsWinRT.vcxitems*{b0e2375a-cc87-4e47-915e-e35951de667e}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleWinRT\SampleWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
@@ -119,6 +122,18 @@ Global
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.ActiveCfg = Release|Win32
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.Build.0 = Release|Win32
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.Deploy.0 = Release|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Debug|ARM.ActiveCfg = Debug|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Debug|x64.ActiveCfg = Debug|x64
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Debug|x64.Build.0 = Debug|x64
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Debug|x86.ActiveCfg = Debug|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Debug|x86.Build.0 = Debug|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Release|ARM.ActiveCfg = Release|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Release|ARM64.ActiveCfg = Release|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Release|x64.ActiveCfg = Release|x64
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Release|x64.Build.0 = Release|x64
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Release|x86.ActiveCfg = Release|Win32
+		{B0E2375A-CC87-4E47-915E-E35951DE667E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,6 +149,7 @@ Global
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{9AAE5A68-52C3-4068-BA15-F325E0F2B8B8} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{778754B0-4E74-4262-8AA3-4EAAB6249E16} = {9AAE5A68-52C3-4068-BA15-F325E0F2B8B8}
+		{B0E2375A-CC87-4E47-915E-E35951DE667E} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

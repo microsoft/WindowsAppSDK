@@ -33,8 +33,7 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
         static void ToastActivated(winrt::event_token const& token) noexcept;
 
     private:
-        static HRESULT RegisterActivator(GUID clsid);
-        static HRESULT RegisterComServer(GUID clsid, PCWSTR exePath);
+        ~DesktopToastNotificationManagerCompat();
     };
 }
 
