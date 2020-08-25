@@ -30,7 +30,7 @@ namespace WinmdHelper
     {
         public static List<Type> FromFile(string assemblyPath, string referenceWinmds)
         {
-            List<string> references = new List<string>(referenceWinmds.Replace("\\\\", "\\").Split(';'));
+            var references = new List<string>(referenceWinmds.Replace("\\\\", "\\").Split(';'));
 
             AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += (sender, eventArgs) =>
             {
