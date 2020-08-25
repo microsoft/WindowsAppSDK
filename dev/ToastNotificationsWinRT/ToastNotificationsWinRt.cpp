@@ -216,9 +216,9 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
         auto found = commandLineArgs.find(TOAST_ACTIVATED_LAUNCH_ARG, 0);
 
         // If this is a toast activation, wait for the activation request to complete before exiting the process
-        if (found)
+        if (found != std::wstring::npos)
         {
-            WaitForSingleObject(s_toastActivatedHandle.get(), 2000);
+            WaitForSingleObject(s_toastActivatedHandle.get(), 200);
         }
 
         return found != std::wstring::npos;
