@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-This script is used to take the MUX nuget package, unpack it and then overwrite the appx files in it with the
+This script is used to take the Microsoft ProjectReunion nuget package, unpack it and then overwrite the appx files in it with the
 store-signed appx files and then re-create the nuget package.
 #>
 [CmdLetBinding()]
@@ -88,6 +88,7 @@ Write-Host "Repacked to: $nugetRewritten"
 
 if ($pushAndQueueBuild)
 {    
+#UNDONE - need to fix this path when this is turned on.
     $NugetUNCPath = "\\redmond\osg\threshold\testcontent\CORE\DEP\XAML\winui\NugetSigningInput"
 
     $nugetFileName = (Split-Path -Leaf $nugetRewritten).Replace(".updated", "")
