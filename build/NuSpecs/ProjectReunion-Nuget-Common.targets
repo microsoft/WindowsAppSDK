@@ -8,13 +8,13 @@
       <MicrosoftProjectReunionTargetPlatformMinCheckValue>$([System.Version]::Parse('$(TargetPlatformMinVersion)').Build)</MicrosoftProjectReunionTargetPlatformMinCheckValue>
     </PropertyGroup>
     <Error 
-        Text="Microsoft.UI.Xaml nuget package requires TargetPlatformMinVersion &gt;= 10.0.15063.0 (current project is $(MicrosoftProjectReunionTargetPlatformMinCheckValue))" 
-        Condition="$(MicrosoftProjectReunionTargetPlatformMinCheckValue) &lt; 15063" />
+        Text="Microsoft.ProjectReunion nuget package requires TargetPlatformMinVersion &gt;= 10.0.17763.0 (current project is $(MicrosoftProjectReunionTargetPlatformMinCheckValue))" 
+        Condition="$(MicrosoftProjectReunionTargetPlatformMinCheckValue) &lt; 17763" />
     <PropertyGroup>
       <MicrosoftProjectReunionTargetPlatformCheckValue>$([System.Version]::Parse('$(TargetPlatformVersion)').Build)</MicrosoftProjectReunionTargetPlatformCheckValue>
     </PropertyGroup>
     <Error 
-        Text="Microsoft.UI.Xaml nuget package requires TargetPlatformVersion &gt;= 10.0.18362.0 (current project is $(MicrosoftProjectReunionTargetPlatformCheckValue))" 
+        Text="Microsoft.ProjectReunion nuget package requires TargetPlatformVersion &gt;= 10.0.18362.0 (current project is $(MicrosoftProjectReunionTargetPlatformCheckValue))" 
         Condition="$(MicrosoftProjectReunionTargetPlatformCheckValue) &lt; 18362" />
   </Target>
 </Project>
