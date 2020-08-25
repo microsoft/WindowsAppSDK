@@ -25,8 +25,6 @@
     <file target="lib\uap10.0" src="Intellisense\Microsoft.ProjectReunion.xml"/>
     <file target="lib\uap10.0\Design" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.design.dll"/>
 
-<!-- <file target="lib\uap10.0\Microsoft.ProjectReunion\Themes" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Generic.xaml"/> -->
-
 <!-- <file target="tools" src="$TOOLSDIR$\**\*.*"/> -->
 
 <!-- <file target="tools" src="VisualStudioToolsManifest.xml"/> -->
