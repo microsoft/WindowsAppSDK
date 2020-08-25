@@ -59,12 +59,49 @@ void DisplayToast(PCWSTR appId)
     Sleep(50);
 }
 
-void DisplayToastActivated(PCWSTR appId)
+HRESULT SetNodeValueString(HSTRING inputString, IXmlNode* node, IXmlDocument* xml)
+{
+    ComPtr<IXmlText> inputText;
+    RETURN_IF_FAILED(xml->CreateTextNode(inputString, &inputText));
+
+    ComPtr<IXmlNode> inputTextNode;
+    RETURN_IF_FAILED(inputText.As(&inputTextNode));
+
+    ComPtr<IXmlNode> appendedChild;
+    return node->AppendChild(inputTextNode.Get(), &appendedChild);
+}
+
+HRESULT SetTextValues(const PCWSTR* textValues, UINT32 textValuesCount, IXmlDocument* toastXml)
+{
+    ComPtr<IXmlNodeList> nodeList;
+    RETURN_IF_FAILED(toastXml->GetElementsByTagName(HStringReference(L"text").Get(), &nodeList));
+
+    UINT32 nodeListLength;
+    RETURN_IF_FAILED(nodeList->get_Length(&nodeListLength));
+
+    // If a template was chosen with fewer text elements, also change the amount of strings
+    // passed to this method.
+    RETURN_IF_FAILED(textValuesCount <= nodeListLength ? S_OK : E_INVALIDARG);
+
+    for (UINT32 i = 0; i < textValuesCount; i++)
+    {
+        ComPtr<IXmlNode> textNode;
+        RETURN_IF_FAILED(nodeList->Item(i, &textNode));
+
+        RETURN_IF_FAILED(SetNodeValueString(HStringReference(textValues[i]).Get(), textNode.Get(), toastXml));
+    }
+
+    return S_OK;
+}
+
+void DisplayToastActivated(_In_ PCWSTR appId, _In_ PCWSTR arguments)
 {
     const std::wstring toastPayload = LR"(<toast launch="action=viewConversation&amp;conversationId=5">
         <visual>
         <binding template="ToastGeneric">
-        <text>Toast Activated!!</text>
+        <text></text>
+        <text></text>
+        <text></text>
         </binding>
         </visual>
         </toast>)";
@@ -77,6 +114,13 @@ void DisplayToastActivated(PCWSTR appId)
 
     // Load the XML string
     THROW_IF_FAILED(docIO->LoadXml(HStringReference(toastPayload.c_str()).Get()));
+
+    PCWSTR textValues[] = {
+        L"Toast Activated!",
+        appId,
+        arguments
+    };
+    THROW_IF_FAILED(SetTextValues(textValues, ARRAYSIZE(textValues), doc.Get()));
 
     ComPtr<IToastNotificationManagerStatics> toastStatics;
     THROW_IF_FAILED(GetActivationFactory(
@@ -111,17 +155,13 @@ int main(int argc, char* argv[], char* envp[])
 
     winrt::event_token eventToken = DesktopToastNotificationManagerCompat::ToastActivated([](const auto&, winrt::Microsoft::ToastNotificationsWinRt::ToastActivatedEventArgs toastArgs)
     {
-        DisplayToastActivated(toastArgs.AppId().c_str());
+        DisplayToastActivated(toastArgs.AppId().c_str(), toastArgs.Arguments().c_str());
     });
 
     DesktopToastNotificationManagerCompat::RegisterApplication(clsid, appId, displayName, icon);
 
-    // If launched from a toast: Note this API call blocks till the toast activator is set
-    if (DesktopToastNotificationManagerCompat::WasProcessToastActivated())
-    {
-        printf("Launched from Toast!\n");
-    }
-    else
+    // If launched from a toast, don't do anything
+    if (!DesktopToastNotificationManagerCompat::WasProcessToastActivated())
     {
         printf("Launched by a click! Sending a new toast!\n");
         DisplayToast(appId.c_str());
