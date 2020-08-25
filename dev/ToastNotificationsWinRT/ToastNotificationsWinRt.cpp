@@ -16,119 +16,50 @@ wstring s_appId;
 bool s_registeredAumidAndComServer = false;
 LONG g_Count = 0;
 Microsoft::WRL::EventSource<winrt::Microsoft::ToastNotificationsWinRt::implementation::ToastActivatedEventArgs> s_event;
+wil::unique_handle s_toastActivatedHandle;
+static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::ToastNotificationsWinRt::ToastActivatedEventArgs>> s_activatedEvent;
 
 #define TOAST_ACTIVATED_LAUNCH_ARG L"-ToastActivated"
 
-class NotificationActivator WrlSealed :
-    public RuntimeClass<RuntimeClassFlags<ClassicCom>, INotificationActivationCallback>
+struct callback : winrt::implements<callback, INotificationActivationCallback>
 {
-    HRESULT STDMETHODCALLTYPE Activate(
-        _In_ LPCWSTR appUserModelId,
-        _In_ LPCWSTR invokedArgs,
-        _In_reads_(dataCount) const NOTIFICATION_USER_INPUT_DATA * data,
-        ULONG dataCount) override
+    HRESULT __stdcall Activate(
+        LPCWSTR app,
+        LPCWSTR args,
+        [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
+        [[maybe_unused]] ULONG count) noexcept final
     {
-        printf("Toast Activator!\n");
-        winrt::hstring appId;
-        appId = appUserModelId;
-        winrt::hstring args;
-        args = invokedArgs;
-        winrt::Microsoft::ToastNotificationsWinRt::ToastActivatedEventArgs activatedEventArgs(appId, args);
+        printf("This app has been called back from a notification.");
+
+        winrt::Microsoft::ToastNotificationsWinRt::implementation::DesktopToastNotificationManagerCompat::ActivatorCompleted(app, args);
+
+        // Signal the api that we are done process the toast activator
+        SetEvent(s_toastActivatedHandle.get());
         return S_OK;
     }
 };
 
-class NotificationActivatorFactory : public IClassFactory
+struct callback_factory : winrt::implements<callback_factory, IClassFactory>
 {
-public:
-    NotificationActivatorFactory()
-        : m_Ref(1)
+    HRESULT __stdcall CreateInstance(
+        IUnknown* outer,
+        GUID const& iid,
+        void** result) noexcept final
     {
-        ::InterlockedIncrement(&g_Count);
+        *result = nullptr;
+
+        if (outer)
+        {
+            return CLASS_E_NOAGGREGATION;
+        }
+
+        return winrt::make<callback>()->QueryInterface(iid, result);
     }
 
-    //
-    // IUnknown Implementation
-    //
-    IFACEMETHODIMP_(ULONG) NotificationActivatorFactory::AddRef()
+    HRESULT __stdcall LockServer(BOOL) noexcept final
     {
-        return InterlockedIncrement(&m_Ref);
-    }
-
-    IFACEMETHODIMP_(ULONG) NotificationActivatorFactory::Release()
-    {
-        ULONG Ref = InterlockedDecrement(&m_Ref);
-        if (Ref <= 0)
-        {
-            delete this;
-        }
-        return Ref;
-    }
-
-    IFACEMETHODIMP NotificationActivatorFactory::QueryInterface(_In_ REFIID riid, _COM_Outptr_ PVOID* ppv)
-    {
-        HRESULT hr = S_OK;
-        if (ppv == NULL)
-        {
-            hr = E_INVALIDARG;
-            goto Exit;
-        }
-        if (IsEqualIID(riid, __uuidof(IClassFactory)) || IsEqualIID(riid, IID_IUnknown))
-        {
-            *ppv = static_cast<IClassFactory*> (this);
-        }
-        #define IUNKNOWN_QI(IClassFactory)
-        else if (IsEqualIID(riid, __uuidof(IClassFactory)))
-        {
-            *ppv = static_cast<IClassFactory*> (this);
-        }
-        #define IUNKNOWN_QI_END()
-        else
-        {
-           *ppv = NULL;
-           hr = E_NOINTERFACE;
-           goto Exit;
-        }
-        AddRef();
-
-    Exit:
-        return hr;
-    }
-
-    IFACEMETHODIMP NotificationActivatorFactory::CreateInstance(
-        _In_ IUnknown* punkOuter,
-        _In_ REFIID iid,
-        _Outptr_ PVOID* ppv)
-    {
-        *ppv = nullptr;
-        RETURN_HR_IF_NULL(CLASS_E_NOAGGREGATION, punkOuter);
-        ComPtr<INotificationActivationCallback> activator;
-        RETURN_IF_FAILED(MakeAndInitialize<NotificationActivator>(&activator));
-        *ppv = (PVOID)activator.Detach();
         return S_OK;
     }
-
-    IFACEMETHODIMP NotificationActivatorFactory::LockServer(_In_ BOOL Lock)
-    {
-        if (Lock)
-        {
-            ::InterlockedIncrement(&g_Count);
-        }
-        else
-        {
-            ::InterlockedDecrement(&g_Count);
-        }
-
-        return S_OK;
-    }
-
-private:
-    ~NotificationActivatorFactory()
-    {
-
-    }
-
-    LONG m_Ref;
 };
 
 namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
@@ -206,9 +137,13 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
             reinterpret_cast<const BYTE*>(clsidStr.c_str()),
             static_cast<DWORD>((clsidStr.size() + 1) * sizeof(WCHAR)))));
 
-        RETURN_IF_FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         DWORD cookie;
-        RETURN_IF_FAILED(CoRegisterClassObject(clsid, new NotificationActivatorFactory(), CLSCTX_LOCAL_SERVER, REGCLS_MULTIPLEUSE, &cookie));
+        winrt::check_hresult(::CoRegisterClassObject(
+            clsid,
+            make<callback_factory>().get(),
+            CLSCTX_LOCAL_SERVER,
+            REGCLS_SINGLEUSE,
+            &cookie));
         return S_OK;
     }
 
@@ -216,6 +151,8 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
     {
         if (!s_registeredAumidAndComServer)
         {
+            s_toastActivatedHandle = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+            THROW_LAST_ERROR_IF(!s_toastActivatedHandle);
             s_appId = appId.c_str();
             wstring regKey = LR"(SOFTWARE\Classes\AppUserModelId\)" + s_appId;
 
@@ -256,19 +193,35 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
         }
     }
 
+    void DesktopToastNotificationManagerCompat::ActivatorCompleted(_In_ PCWSTR appId, _In_ PCWSTR args)
+    {
+        hstring appIdString = appId;
+        hstring argsString = args;
+        auto toastArgs = winrt::make_self<ToastActivatedEventArgs>(appId, args);
+        s_activatedEvent(nullptr, *toastArgs);
+    }
+
     bool DesktopToastNotificationManagerCompat::WasProcessToastActivated()
     {
         wstring commandLineArgs = GetCommandLine();
         auto found = commandLineArgs.find(TOAST_ACTIVATED_LAUNCH_ARG, 0);
+
+        // If this is a toast activation, wait for the activation request to complete before exiting the process
+        if (found)
+        {
+            WaitForSingleObject(s_toastActivatedHandle.get(), 2000);
+        }
+
         return found != std::wstring::npos;
     }
 
     winrt::event_token DesktopToastNotificationManagerCompat::ToastActivated(Windows::Foundation::EventHandler<Microsoft::ToastNotificationsWinRt::ToastActivatedEventArgs> const& handler)
     {
-        winrt::event_token token;
-        return token;
+        return s_activatedEvent.add(handler);
     }
+
     void DesktopToastNotificationManagerCompat::ToastActivated(winrt::event_token const& token) noexcept
     {
+        s_activatedEvent.remove(token);
     }
 }
