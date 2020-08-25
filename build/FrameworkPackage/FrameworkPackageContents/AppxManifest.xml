@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" IgnorableNamespaces="uap build mp">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build" IgnorableNamespaces="uap build">
   <Identity Name="$(PackageName)" ProcessorArchitecture="$(Platform)" Publisher="$(Publisher)" Version="$(Version)" />
   <Properties>
     <Framework>true</Framework>
@@ -14,7 +14,6 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.18362.0" />
   </Dependencies>
-  <mp:PhoneIdentity PhoneProductId="200b7352-04ae-4693-8a97-23a38e7d67d4" PhonePublisherId="1AC97219-40D1-4c98-B175-2BFCD96578C3" />
   <Extensions>
 $(ActivatableTypes)
       <Extension Category="windows.activatableClass.inProcessServer">
