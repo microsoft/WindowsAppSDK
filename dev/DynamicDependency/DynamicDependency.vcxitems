@@ -33,4 +33,7 @@
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
   </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h"/>
+  </ItemGroup>
 </Project>

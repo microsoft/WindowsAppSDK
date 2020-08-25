@@ -493,4 +493,7 @@
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
   </Target>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h"/>
+  </ItemGroup>
 </Project>
