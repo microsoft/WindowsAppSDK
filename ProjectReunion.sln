@@ -41,6 +41,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency_Test_Win3
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunion_BootstrapDLL", "dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj", "{F76B776E-86F5-48C5-8FC7-D2795ECC9746}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Detours", "dev\Detours\Detours.vcxproj", "{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
@@ -188,6 +190,18 @@ Global
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746}.Release|x64.Build.0 = Release|x64
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746}.Release|x86.ActiveCfg = Release|Win32
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746}.Release|x86.Build.0 = Release|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Debug|ARM.ActiveCfg = Debug|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Debug|x64.ActiveCfg = Debug|x64
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Debug|x64.Build.0 = Debug|x64
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Debug|x86.ActiveCfg = Debug|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Debug|x86.Build.0 = Debug|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Release|ARM.ActiveCfg = Release|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Release|ARM64.ActiveCfg = Release|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Release|x64.ActiveCfg = Release|x64
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Release|x64.Build.0 = Release|x64
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Release|x86.ActiveCfg = Release|Win32
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -205,6 +219,7 @@ Global
 		{BF055A59-0919-4E34-9B76-DD055495CC5A} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
 		{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED} = {17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}
+		{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
