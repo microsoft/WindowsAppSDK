@@ -157,8 +157,7 @@ function Get-WindowsNamespace
         [Parameter(Mandatory=$true)]
         [string]$Namespace
     )
-#UNDONE - revisit what this does and rename to Microsoft.ProjectReunion, etc. 
-    $Namespace.Replace("Microsoft.UI.Xaml", "Windows.UI.Xaml").Replace("Microsoft.UI.Private", "MUXControls")
+    throw "this is supposed to be unused in Project Reunion and microsoft.ui.xaml"
 }
 
 function Write-ErrorInFile
