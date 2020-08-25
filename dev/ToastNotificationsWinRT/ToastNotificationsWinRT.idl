@@ -13,7 +13,7 @@ namespace Microsoft.ToastNotificationsWinRt
     [marshaling_behavior(standard)]
     runtimeclass ToastActivatedEventArgs
     {
-        ToastActivatedEventArgs(String appId, String arguments);
+        ToastActivatedEventArgs(String appId, String arguments, Windows.Foundation.Collections.IMap<String, String> userInput);
         String Arguments { get; };
         String AppId { get; };
         Windows.Foundation.Collections.IMap<String, String> UserInput { get; };

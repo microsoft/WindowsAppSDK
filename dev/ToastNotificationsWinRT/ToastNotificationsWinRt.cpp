@@ -31,7 +31,14 @@ struct callback : winrt::implements<callback, INotificationActivationCallback>
     {
         printf("This app has been called back from a notification.");
 
-        winrt::Microsoft::ToastNotificationsWinRt::implementation::DesktopToastNotificationManagerCompat::ActivatorCompleted(app, args);
+        auto userInput{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
+        for (ULONG i = 0; i < count; ++i)
+        {
+            winrt::hstring key = data[i].Key;
+            winrt::hstring value = data[i].Value;
+            userInput.Insert(key, value);
+        }
+        winrt::Microsoft::ToastNotificationsWinRt::implementation::DesktopToastNotificationManagerCompat::ActivatorCompleted(app, args, userInput);
 
         // Signal the api that we are done process the toast activator
         SetEvent(s_toastActivatedHandle.get());
@@ -64,10 +71,11 @@ struct callback_factory : winrt::implements<callback_factory, IClassFactory>
 
 namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
 {
-    ToastActivatedEventArgs::ToastActivatedEventArgs(hstring const& appId, hstring const& arguments)
+    ToastActivatedEventArgs::ToastActivatedEventArgs(hstring const& appId, hstring const& arguments, Windows::Foundation::Collections::IMap<hstring, hstring> const& userInput)
     {
         m_appId = appId;
         m_arguments = arguments;
+        m_userInput = userInput;
     }
 
     hstring ToastActivatedEventArgs::Arguments()
@@ -193,11 +201,12 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
         }
     }
 
-    void DesktopToastNotificationManagerCompat::ActivatorCompleted(_In_ PCWSTR appId, _In_ PCWSTR args)
+    void DesktopToastNotificationManagerCompat::ActivatorCompleted(_In_ PCWSTR appId, _In_ PCWSTR args, _In_ Windows::Foundation::Collections::IMap<hstring, hstring> const& userInput)
     {
         hstring appIdString = appId;
         hstring argsString = args;
-        auto toastArgs = winrt::make_self<ToastActivatedEventArgs>(appId, args);
+
+        auto toastArgs = winrt::make_self<ToastActivatedEventArgs>(appId, args, userInput);
         s_activatedEvent(nullptr, *toastArgs);
     }
 

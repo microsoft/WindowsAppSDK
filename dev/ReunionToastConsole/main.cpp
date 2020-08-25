@@ -94,11 +94,12 @@ HRESULT SetTextValues(const PCWSTR* textValues, UINT32 textValuesCount, IXmlDocu
     return S_OK;
 }
 
-void DisplayToastActivated(_In_ PCWSTR appId, _In_ PCWSTR arguments)
+void DisplayToastActivated(_In_ PCWSTR appId, _In_ PCWSTR arguments, _In_ winrt::Windows::Foundation::Collections::IMap<hstring, hstring> const& userInput)
 {
     const std::wstring toastPayload = LR"(<toast launch="action=viewConversation&amp;conversationId=5">
         <visual>
         <binding template="ToastGeneric">
+        <text></text>
         <text></text>
         <text></text>
         <text></text>
@@ -115,10 +116,23 @@ void DisplayToastActivated(_In_ PCWSTR appId, _In_ PCWSTR arguments)
     // Load the XML string
     THROW_IF_FAILED(docIO->LoadXml(HStringReference(toastPayload.c_str()).Get()));
 
+    std::wstring input = L"UserInput***** ";
+
+    for (auto const& el : userInput)
+    {
+        input += L"key:";
+        input += el.Key().c_str();
+        input += L" ";
+        input += L"value:";
+        input += el.Value().c_str();
+        input += L" ";
+    }
+
     PCWSTR textValues[] = {
         L"Toast Activated!",
         appId,
-        arguments
+        arguments,
+        input.c_str()
     };
     THROW_IF_FAILED(SetTextValues(textValues, ARRAYSIZE(textValues), doc.Get()));
 
@@ -155,7 +169,7 @@ int main(int argc, char* argv[], char* envp[])
 
     winrt::event_token eventToken = DesktopToastNotificationManagerCompat::ToastActivated([](const auto&, winrt::Microsoft::ToastNotificationsWinRt::ToastActivatedEventArgs toastArgs)
     {
-        DisplayToastActivated(toastArgs.AppId().c_str(), toastArgs.Arguments().c_str());
+        DisplayToastActivated(toastArgs.AppId().c_str(), toastArgs.Arguments().c_str(), toastArgs.UserInput());
     });
 
     DesktopToastNotificationManagerCompat::RegisterApplication(clsid, appId, displayName, icon);

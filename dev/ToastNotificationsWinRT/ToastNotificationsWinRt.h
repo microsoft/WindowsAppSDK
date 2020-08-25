@@ -11,7 +11,7 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
     struct ToastActivatedEventArgs : ToastActivatedEventArgsT<ToastActivatedEventArgs>
     {
         ToastActivatedEventArgs() = default;
-        ToastActivatedEventArgs(hstring const& appId, hstring const& arguments);
+        ToastActivatedEventArgs(hstring const& appId, hstring const& arguments, Windows::Foundation::Collections::IMap<hstring, hstring> const& userInput);
 
         hstring Arguments();
         hstring AppId();
@@ -31,7 +31,7 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
         static bool WasProcessToastActivated();
         static winrt::event_token ToastActivated(Windows::Foundation::EventHandler<Microsoft::ToastNotificationsWinRt::ToastActivatedEventArgs> const& handler);
         static void ToastActivated(winrt::event_token const& token) noexcept;
-        static void ActivatorCompleted(_In_ PCWSTR appId, _In_ PCWSTR args);
+        static void ActivatorCompleted(_In_ PCWSTR appId, _In_ PCWSTR args, _In_ Windows::Foundation::Collections::IMap<hstring, hstring> const& userInput);
 
     private:
         ~DesktopToastNotificationManagerCompat();
