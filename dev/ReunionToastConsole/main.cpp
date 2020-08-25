@@ -21,7 +21,7 @@ void DisplayToast(PCWSTR appId)
         </binding>
         </visual>
         <actions>
-        <input id="tbReply" type="text" placeHolderContent="Type a response" />
+        <input id="Reply" type="text" placeHolderContent="Type a response" />
         <action content="Reply" arguments="action=reply&amp;conversationId=5" />
         <action content="Like" arguments="action=like&amp;conversationId=5" />
         <action content="View" arguments="action=viewImage&amp;imageUrl=https://picsum.photos/364/202?image=883" />
@@ -102,7 +102,6 @@ void DisplayToastActivated(_In_ PCWSTR appId, _In_ PCWSTR arguments, _In_ winrt:
         <text></text>
         <text></text>
         <text></text>
-        <text></text>
         </binding>
         </visual>
         </toast>)";
@@ -120,17 +119,19 @@ void DisplayToastActivated(_In_ PCWSTR appId, _In_ PCWSTR arguments, _In_ winrt:
 
     for (auto const& el : userInput)
     {
-        input += L"key:";
-        input += el.Key().c_str();
-        input += L" ";
-        input += L"value:";
-        input += el.Value().c_str();
-        input += L" ";
+        if (!el.Value().empty())
+        {
+            input += L"key:";
+            input += el.Key().c_str();
+            input += L" ";
+            input += L"value:";
+            input += el.Value().c_str();
+            input += L" ";
+        }
     }
 
     PCWSTR textValues[] = {
         L"Toast Activated!",
-        appId,
         arguments,
         input.c_str()
     };

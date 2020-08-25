@@ -205,7 +205,6 @@ namespace winrt::Microsoft::ToastNotificationsWinRt::implementation
     {
         hstring appIdString = appId;
         hstring argsString = args;
-
         auto toastArgs = winrt::make_self<ToastActivatedEventArgs>(appId, args, userInput);
         s_activatedEvent(nullptr, *toastArgs);
     }
