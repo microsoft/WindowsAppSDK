@@ -134,6 +134,8 @@ Write-Host
 #
 
 $nupkgtitle = "Microsoft.ProjectReunion.MetaPackage"
+$CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
+$NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
 $NugetCmdLine = "$nugetExe pack ProjectReunionMetaPackage.nuspec $NugetArgs -version $version"
