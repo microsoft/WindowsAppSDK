@@ -13,6 +13,10 @@
     <license type="file">license.txt</license>
     <projectUrl>https://github.com/microsoft/projectreunion</projectUrl>
     <iconUrl>https://aka.ms/winui_icon</iconUrl>
+    <dependencies> 
+      <!-- List all Project Reunion references here, please maintain in alphabetical order-->
+      <dependency id="Win2D.uwp" version="1.25.0"/>
+    </dependencies>
   </metadata>
   <files>
     <file src="readme.txt"/>
@@ -27,8 +31,4 @@
     <!-- This is here for C++ based projects, see http://nugetdocsbeta.azurewebsites.net/ndocs/guides/create-uwp-packages -->
     <file target="build\native\$ID$.targets" src="ProjectReunion-Nuget-Native.targets"/>
   </files>
-  <dependencies> 
-    <!-- List all Project Reunion references here, please maintain in alphabetical order-->
-    <dependency id="Win2D.uwp" version="1.25.0"/>
-  </dependencies>
 </package>
