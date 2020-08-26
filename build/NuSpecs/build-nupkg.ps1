@@ -113,8 +113,33 @@ $CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RU
 
 $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
 
+#
+# Build Project Reunion package (with actual contents, i.e. not metapackage)
+#
+
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
 $NugetCmdLine = "$nugetExe pack ProjectReunion.nuspec $NugetArgs -version $version"
+Write-Host 'Building Project Reunion package'
+Write-Host $NugetCmdLine
+Invoke-Expression $NugetCmdLine
+if ($lastexitcode -ne 0)
+{
+    Write-Host "Nuget returned $lastexitcode"
+    Exit $lastexitcode; 
+}
+Write-Host
+
+#
+# Build Project Reunion package meta package (no direct contents, only references)
+#
+
+$nupkgtitle = "Microsoft.ProjectReunion.MetaPackage"
+$CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
+$NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
+
+$nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
+$NugetCmdLine = "$nugetExe pack ProjectReunionMetaPackage.nuspec $NugetArgs -version $version"
+Write-Host 'Building Project Reunion Meta Package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)

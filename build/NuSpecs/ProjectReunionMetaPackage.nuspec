@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>$ID$</id>
+    <version>0.0.0-SpecifyVersionOnCommandline</version>
+    <title>Microsoft Project Reunion Meta Package</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <description>Project Reunion Meta Package</description>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>Windows Reunion ProjectReunion</tags>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="file">license.txt</license>
+    <projectUrl>https://github.com/microsoft/projectreunion</projectUrl>
+    <iconUrl>https://aka.ms/winui_icon</iconUrl>
+    <dependencies> 
+      <!-- List all Project Reunion references here, please maintain in alphabetical order-->
+      <dependency id="Win2D.uwp" version="1.25.0"/>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="readme.txt"/>
+    <file src="license.txt"/>
+
+    <file target="runtimes" src="$RUNTIMESDIR$\**\*.*"/>
+
+    <!-- Common build logic -->
+    <file target="build\$ID$.targets" src="ProjectReunion-Nuget-Common.targets"/>
+    <file target="buildTransitive\$ID$.targets" src="ProjectReunion-Nuget-Common.targets"/>
+
+    <!-- This is here for C++ based projects, see http://nugetdocsbeta.azurewebsites.net/ndocs/guides/create-uwp-packages -->
+    <file target="build\native\$ID$.targets" src="ProjectReunion-Nuget-Native.targets"/>
+  </files>
+</package>
