@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -15,7 +15,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
     }
     PackageDependencyContext::PackageDependencyContext(MDD_PACKAGEDEPENDENCY_CONTEXT context) :
-        m_contextId(::Microsoft::ApplicationModel::ToContextId(context))
+        m_contextId(::Microsoft::ApplicationModel::DynamicDependency::ToContextId(context))
     {
     }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId PackageDependencyContext::ContextId()
@@ -29,6 +29,6 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     }
     void PackageDependencyContext::Remove()
     {
-        MddRemovePackageDependency(::Microsoft::ApplicationModel::ToContext(m_contextId));
+        MddRemovePackageDependency(::Microsoft::ApplicationModel::DynamicDependency::ToContext(m_contextId));
     }
 }

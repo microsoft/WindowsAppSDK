@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -9,6 +9,8 @@
 #include "M.AM.DD.PackageDependencyContext.h"
 
 #include <MsixDynamicDependency.h>
+#include <wil/resource.h>
+#include <wil_msixdynamicdependency.h>
 
 #include <M.AM.Converters.h>
 
@@ -28,7 +30,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependency PackageDependency::Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion)
     {
-        const auto mddMinVersion = ::Microsoft::ApplicationModel::ToVersion(minVersion);
+        const auto mddMinVersion = ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion);
         const auto mddArchitectures = MddPackageDependencyProcessorArchitectures::None;
         const auto mddLifetimeKind = MddPackageDependencyLifetimeKind::Process;
         const auto mddOptions = MddCreatePackageDependencyOptions::None;
@@ -38,20 +40,20 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependency PackageDependency::Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options)
     {
-        const auto mddMinVersion = ::Microsoft::ApplicationModel::ToVersion(minVersion);
-        const auto mddArchitectures = ::Microsoft::ApplicationModel::ToArchitectures(options.Architectures());
-        const auto mddLifetimeKind = ::Microsoft::ApplicationModel::ToLifetimeKind(options.LifetimeArtifactKind());
-        const auto mddOptions = ::Microsoft::ApplicationModel::ToCreateOptions(options);
+        const auto mddMinVersion = ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion);
+        const auto mddArchitectures = ::Microsoft::ApplicationModel::DynamicDependency::ToArchitectures(options.Architectures());
+        const auto mddLifetimeKind = ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind());
+        const auto mddOptions = ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options);
         wil::unique_process_heap_string packageDependencyId;
         THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, nullptr, mddOptions, wil::out_param(packageDependencyId)));
         return GetFromId(packageDependencyId.get());
     }
     Microsoft::ApplicationModel::DynamicDependency::PackageDependency PackageDependency::CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options)
     {
-        const auto mddMinVersion = ::Microsoft::ApplicationModel::ToVersion(minVersion);
-        const auto mddArchitectures = ::Microsoft::ApplicationModel::ToArchitectures(options.Architectures());
-        const auto mddLifetimeKind = ::Microsoft::ApplicationModel::ToLifetimeKind(options.LifetimeArtifactKind());
-        auto mddOptions = ::Microsoft::ApplicationModel::ToCreateOptions(options, MddCreatePackageDependencyOptions::ScopeIsSystem);
+        const auto mddMinVersion = ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion);
+        const auto mddArchitectures = ::Microsoft::ApplicationModel::DynamicDependency::ToArchitectures(options.Architectures());
+        const auto mddLifetimeKind = ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind());
+        auto mddOptions = ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options, MddCreatePackageDependencyOptions::ScopeIsSystem);
         wil::unique_process_heap_string packageDependencyId;
         THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, nullptr, mddOptions, wil::out_param(packageDependencyId)));
         return GetFromId(packageDependencyId.get());
@@ -77,7 +79,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext PackageDependency::Add(Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options)
     {
         const auto rank = options.Rank();
-        const auto mddOptions = ::Microsoft::ApplicationModel::ToAddOptions(options);
+        const auto mddOptions = ::Microsoft::ApplicationModel::DynamicDependency::ToAddOptions(options);
         wil::unique_package_dependency_context packageDependencyContext;
         THROW_IF_FAILED(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
         auto context = winrt::make<implementation::PackageDependencyContext>(packageDependencyContext.get());
