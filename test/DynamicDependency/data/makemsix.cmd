@@ -25,9 +25,9 @@ ECHO copy %TargetDir%\%TargetFileName% %OutDirMsix%\%TargetFileName%
 copy %TargetDir%\%TargetFileName% %OutDirMsix%\%TargetFileName%
 
 ECHO makeappx.exe pack /v /h SHA256 /d %OutDirMsix% /p %OutDir%%TargetName%.msix
-makeappx.exe pack /v /h SHA256 /d %OutDirMsix% /p %OutDir%%TargetName%.msix
+makeappx.exe pack /v /o /h SHA256 /d %OutDirMsix% /p %OutDir%%TargetName%.msix
 
 :TheEnd
 ENDLOCAL
 
-ECHO /B 0
+EXIT /B 0

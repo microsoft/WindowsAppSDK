@@ -290,19 +290,8 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <ItemDefinitionGroup>
-    <CustomBuildStep>
-      <Command>CALL $(ProjectDir)..\makemsix.cmd $(ProjectDir) $(OutDir) $(TargetDir) $(TargetFileName) $(TargetName)</Command>
-      <Outputs>$(TargetName).msix</Outputs>
-      <Inputs>$(ProjectDir)appxmanifest.xml;$(ProjectDir)logo.png;$(TargetPathName)</Inputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create .msix via Custom Build Step</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create .msix via Custom Build Step</Message>
-    </CustomBuildStep>
-  </ItemDefinitionGroup>
+  <Target Name="MakeMSIX" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)appxmanifest.template')" Inputs="$(ProjectDir)appxmanifest.template;$(ProjectDir)logo.png;$(TargetPathName)" Outputs="$(TargetName).msix">
+    <Message Text="Make MSIX $(TargetName).msix for $(ProjectName)"/>
+    <Exec Command="$(ProjectDir)..\makemsix.cmd $(ProjectDir) $(OutDir) $(TargetDir) $(TargetFileName) $(TargetName)" ConsoleToMsBuild="true" IgnoreExitCode="true"/>
+  </Target>
 </Project>
