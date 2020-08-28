@@ -58,7 +58,7 @@ $ActivatableTypes = ""
 # but don't list it because it will be merged together.
 
 Write-Output "Input: $inputDirectory"
-$inputBaseFileName = "Microsoft.UI.Xaml"
+$inputBaseFileName = "Microsoft.ProjectReunion"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
@@ -132,14 +132,14 @@ if (-not (Test-Path $customPropsFile))
     Exit 1
 }
 [xml]$customProps = (Get-Content $customPropsFile)
-$versionMajor = $customProps.GetElementsByTagName("MUXVersionMajor").'#text'
-$versionMinor = $customProps.GetElementsByTagName("MUXVersionMinor").'#text'
+$versionMajor = $customProps.GetElementsByTagName("ProjectReunionVersionMajor").'#text'
+$versionMinor = $customProps.GetElementsByTagName("ProjectReunionVersionMinor").'#text'
 
 Write-Verbose "CustomProps = $customProps, VersionMajor = '$versionMajor', VersionMinor = '$versionMinor'"
 
 if ((!$versionMajor) -or (!$versionMinor))
 {
-    Write-Error "Expected MUXVersionMajor and MUXVersionMinor tags to be in version.props file"
+    Write-Error "Expected ProjectReunionVersionMajor and ProjectReunionVersionMinor tags to be in version.props file"
     Exit 1
 }
 
@@ -196,12 +196,12 @@ $versionPropsFile =
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MicrosoftUIXamlAppxVersion>$version</MicrosoftUIXamlAppxVersion>
+    <MicrosoftProjectReunionAppxVersion>$version</MicrosoftProjectReunionAppxVersion>
   </PropertyGroup>
 </Project>
 "@
 
-Set-Content -Value $versionPropsFile $fullOutputPath\MicrosoftUIXamlVersion.props
+Set-Content -Value $versionPropsFile $fullOutputPath\MicrosoftProjectReunionVersion.props
 
 
 # Also copy in some loose files 
