@@ -10,8 +10,7 @@ namespace winrt::Microsoft::Management::Deployment::implementation
 {
     Microsoft::Management::Deployment::ProjectReunionDeploymentStatus ProjectReunionDeployment::GetStatus(Windows::ApplicationModel::PackageVersion const& packageVersion)
     {
-        //return winrt::make<winrt::Microsoft::Management::Deployment::ProjectReunionDeploymentStatus>(false, false);
-        throw hresult_not_implemented();
+        return make<winrt::Microsoft::Management::Deployment::implementation::ProjectReunionDeploymentStatus>(false, false);
     }
 
     Windows::Foundation::Uri ProjectReunionDeployment::GetProjectReunionPackageLink()
