@@ -31,27 +31,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Win32", "test\CppTe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_UWP", "test\CppTest_UWP\CppTest_UWP.vcxproj", "{B1A6F5EC-5418-4354-BACF-F7D998EE960D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{FFCDBAE8-680A-4750-BD18-C8847729C220}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrameworkPackage", "FrameworkPackage", "{E4DBBFB4-FAE0-4467-B19A-9E45C31AEBF4}"
-	ProjectSection(SolutionItems) = preProject
-		build\FrameworkPackage\FrameworkPackage.csproj = build\FrameworkPackage\FrameworkPackage.csproj
-		build\FrameworkPackage\MakeFrameworkPackage.cmd = build\FrameworkPackage\MakeFrameworkPackage.cmd
-		build\FrameworkPackage\MakeFrameworkPackage.ps1 = build\FrameworkPackage\MakeFrameworkPackage.ps1
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrameworkPackageContents", "FrameworkPackageContents", "{F736997C-AE14-4FBF-92F5-B72BB18D69F0}"
-	ProjectSection(SolutionItems) = preProject
-		build\FrameworkPackage\FrameworkPackageContents\AppxManifest.xml = build\FrameworkPackage\FrameworkPackageContents\AppxManifest.xml
-		build\FrameworkPackage\FrameworkPackageContents\FrameworkPackageFiles.txt = build\FrameworkPackage\FrameworkPackageContents\FrameworkPackageFiles.txt
-		build\FrameworkPackage\FrameworkPackageContents\logo.png = build\FrameworkPackage\FrameworkPackageContents\logo.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PriConfig", "PriConfig", "{219A20FB-09AE-4DF2-BF75-FAB702879201}"
-	ProjectSection(SolutionItems) = preProject
-		build\FrameworkPackage\PriConfig\pri.resfiles = build\FrameworkPackage\PriConfig\pri.resfiles
-		build\FrameworkPackage\PriConfig\priconfig.xml = build\FrameworkPackage\PriConfig\priconfig.xml
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.ProjectReunion.FrameworkPackagePRI", "dev\Microsoft.ProjectReunionFrameworkPackagePRI\Microsoft.ProjectReunion.FrameworkPackagePRI.csproj", "{C13484DD-CE20-4C06-9990-2C583A82AC57}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -174,6 +154,36 @@ Global
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.ActiveCfg = Release|Win32
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.Build.0 = Release|Win32
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D}.Release|x86.Deploy.0 = Release|Win32
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|Any CPU.ActiveCfg = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|Any CPU.Build.0 = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|ARM.ActiveCfg = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|ARM.Build.0 = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|ARM64.ActiveCfg = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|ARM64.Build.0 = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|x64.ActiveCfg = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|x64.Build.0 = Debug_test|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|x86.ActiveCfg = Debug_test|Win32
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug_test|x86.Build.0 = Debug_test|Win32
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|ARM.Build.0 = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|x64.Build.0 = Debug|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|x86.ActiveCfg = Debug|Win32
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Debug|x86.Build.0 = Debug|Win32
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|ARM.ActiveCfg = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|ARM.Build.0 = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|ARM64.Build.0 = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|x64.ActiveCfg = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|x64.Build.0 = Release|Any CPU
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|x86.ActiveCfg = Release|Win32
+		{C13484DD-CE20-4C06-9990-2C583A82AC57}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,9 +197,7 @@ Global
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{C62688A1-16A0-4729-B6ED-842F4FAA29F3} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
-		{E4DBBFB4-FAE0-4467-B19A-9E45C31AEBF4} = {FFCDBAE8-680A-4750-BD18-C8847729C220}
-		{F736997C-AE14-4FBF-92F5-B72BB18D69F0} = {E4DBBFB4-FAE0-4467-B19A-9E45C31AEBF4}
-		{219A20FB-09AE-4DF2-BF75-FAB702879201} = {E4DBBFB4-FAE0-4467-B19A-9E45C31AEBF4}
+		{C13484DD-CE20-4C06-9990-2C583A82AC57} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
