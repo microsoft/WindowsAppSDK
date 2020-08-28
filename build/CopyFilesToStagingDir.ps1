@@ -39,7 +39,7 @@ PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReuni
 
 #PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Generic.xaml $FullPublishDir\Microsoft.ProjectReunion\
 #PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.Design.dll $FullPublishDir\Microsoft.ProjectReunion.Design\
-#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
+PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
 
 #UNDONE - PGO etc. later PR
 # pgosweep and vcruntime are required to run pgo instrumented test run. They are placed from the
