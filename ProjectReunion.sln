@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{0C534F12-B
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Add", "test\DynamicDependency\data\Framework.Math.Add\Framework.Math.Add.vcxproj", "{58E95711-A12F-4C0E-A978-C6B4A0842AC8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Multiply", "..\..\..\..\howard.000\Source\Repos\ProjectReunion\test\DynamicDependency\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj", "{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Multiply", "test\DynamicDependency\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj", "{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
