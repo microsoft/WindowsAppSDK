@@ -5,10 +5,13 @@ steps:
   - powershell: |
       $platforms = @("x86", "x64", "arm", "arm64")
       $configs = @("debug", "release")
+      Write-Host "powershell step in ProjectReunion-MakeFrameworkPackages-Steps.yml - rootPath = $rootPath"
       foreach ($platform in $platforms)
       {
+        Write-Host "Checking $platform"
         foreach ($config in $configs)
         {
+          Write-Host "Checking $config"
           $rootPath = "${{ parameters.buildOutputDir }}\$config\$platform"
           Write-Host ""
           Write-Host "Checking for $rootPath\Microsoft.ProjectReunion"
