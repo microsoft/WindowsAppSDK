@@ -16,26 +16,32 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
         m_architectures = value;
     }
+
     bool CreatePackageDependencyOptions::VerifyDependencyResolution()
     {
         return m_verifyDependencyResolution;
     }
+
     void CreatePackageDependencyOptions::VerifyDependencyResolution(bool value)
     {
         m_verifyDependencyResolution = value;
     }
+
     Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind CreatePackageDependencyOptions::LifetimeArtifactKind()
     {
         return m_lifetimeArtifactKind;
     }
+
     void CreatePackageDependencyOptions::LifetimeArtifactKind(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value)
     {
         m_lifetimeArtifactKind = value;
     }
+
     hstring CreatePackageDependencyOptions::LifetimeArtifact()
     {
         return m_lifetimeArtifact;
     }
+
     void CreatePackageDependencyOptions::LifetimeArtifact(hstring const& value)
     {
         m_lifetimeArtifact = value;

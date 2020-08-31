@@ -27,8 +27,8 @@ public:
     }
 
     PackageGraphNode(PackageGraphNode&& other) :
-        m_packageInfoReference(wistd::move(other.m_packageInfoReference)),
-        m_context(wistd::move(other.m_context)),
+        m_packageInfoReference(std::move(other.m_packageInfoReference)),
+        m_context(std::move(other.m_context)),
         m_addDllDirectoryCookie(other.m_addDllDirectoryCookie)
     {
         other.m_addDllDirectoryCookie = 0;
@@ -39,8 +39,8 @@ public:
         if (this != &other)
         {
             Reset();
-            m_packageInfoReference = wistd::move(other.m_packageInfoReference);
-            m_context = wistd::move(other.m_context);
+            m_packageInfoReference = std::move(other.m_packageInfoReference);
+            m_context = std::move(other.m_context);
             m_addDllDirectoryCookie = other.m_addDllDirectoryCookie;
 
             other.m_addDllDirectoryCookie = 0;

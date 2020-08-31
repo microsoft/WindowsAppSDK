@@ -12,14 +12,17 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
         return m_rank;
     }
+
     void AddPackageDependencyOptions::Rank(int32_t value)
     {
         m_rank = value;
     }
+
     bool AddPackageDependencyOptions::PrependIfRankCollision()
     {
         return m_prependIfRankCollision;
     }
+
     void AddPackageDependencyOptions::PrependIfRankCollision(bool value)
     {
         m_prependIfRankCollision = value;

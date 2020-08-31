@@ -24,6 +24,14 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Add(Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
 
     private:
+        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(
+            PCWSTR packageFamilyName,
+            PACKAGE_VERSION minVersion,
+            MddPackageDependencyProcessorArchitectures architectures,
+            MddPackageDependencyLifetimeKind lifetimeKind,
+            MddCreatePackageDependencyOptions options);
+
+    private:
         hstring m_id;
     };
 }

@@ -66,9 +66,9 @@ STDAPI AddFrameworkToPath(PCWSTR frameworkPath)
 {
     // Add the framework to the Loader's DllDirectory list
     auto dllDirectoryCookie = AddDllDirectory(frameworkPath);
-    RETURN_HR_IF(HRESULT_FROM_WIN32(GetLastError()), dllDirectoryCookie == 0);
+    RETURN_LAST_ERROR_IF(dllDirectoryCookie == 0);
 
-    wil::scope_exit([dllDirectoryCookie] {
+    auto on_exit = wil::scope_exit([dllDirectoryCookie] {
         if (dllDirectoryCookie)
         {
             RemoveDllDirectory(dllDirectoryCookie);

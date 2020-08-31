@@ -22,11 +22,13 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
         return m_contextId;
     }
+
     hstring PackageDependencyContext::PackageFullName()
     {
         //TODO Lookup ContextId -> PackageFullName
         throw hresult_not_implemented();
     }
+
     void PackageDependencyContext::Remove()
     {
         MddRemovePackageDependency(::Microsoft::ApplicationModel::DynamicDependency::ToContext(m_contextId));
