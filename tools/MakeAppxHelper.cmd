@@ -31,7 +31,7 @@ set BasePackageName=Microsoft.ProjectReunion
 
 echo BUILDOUTPUT_OVERRIDE = %BUILDOUTPUT_OVERRIDE%
 if "%BUILDOUTPUT_OVERRIDE%" == "" (
-	set InputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\Microsoft.ProjectReunion
+	set InputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\ProjectReunion_dll
 	set OutputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\FrameworkPackage
 ) else (
 	set InputDirectory=%BUILDOUTPUT_OVERRIDE%\Microsoft.ProjectReunion
