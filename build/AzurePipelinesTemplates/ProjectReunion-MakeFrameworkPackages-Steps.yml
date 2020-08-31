@@ -14,9 +14,9 @@ steps:
           Write-Host "Checking $config"
           $rootPath = "${{ parameters.buildOutputDir }}\$config\$platform"
           Write-Host ""
-          Write-Host "Checking for $rootPath\Microsoft.ProjectReunion"
+          Write-Host "Checking for $rootPath\ProjectReunion_dll"
           Write-Host ""
-          if (Test-Path "$rootPath\Microsoft.ProjectReunion")
+          if (Test-Path "$rootPath\ProjectReunion_dll")
           {
             $env:BUILDOUTPUT_OVERRIDE = $rootPath
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose
