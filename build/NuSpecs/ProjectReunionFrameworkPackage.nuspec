@@ -29,8 +29,8 @@
 
 <!-- <file target="tools" src="VisualStudioToolsManifest.xml"/> -->
 
-    <file target="build" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\FrameworkPackage\MicrosoftProjectReunionVersion.props"/>
-    <file target="buildTransitive" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\FrameworkPackage\MicrosoftProjectReunionVersion.props"/>
+<!--     <file target="build" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\FrameworkPackage\MicrosoftProjectReunionVersion.props"/> -->
+<!--     <file target="buildTransitive" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\FrameworkPackage\MicrosoftProjectReunionVersion.props"/> -->
     <file target="build\Common.targets" src="ProjectReunion-Nuget-Common.targets"/>
     <file target="buildTransitive\Common.targets" src="ProjectReunion-Nuget-Common.targets"/>
     <file target="build\$ID$.props" src="ProjectReunion-Nuget-FrameworkPackage.props"/>
