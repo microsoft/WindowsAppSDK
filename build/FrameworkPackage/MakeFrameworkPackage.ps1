@@ -40,7 +40,8 @@ mkdir -Force $fullOutputPath\Resources | Out-Null
 
 Copy-IntoNewDirectory FrameworkPackageContents\* $fullOutputPath\PackageContents
 
-Copy-IntoNewDirectory PriConfig\* $fullOutputPath
+#Reunion doesn't use the PRI
+#Copy-IntoNewDirectory PriConfig\* $fullOutputPath
 
 $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
 $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\x86"
@@ -62,7 +63,8 @@ $inputBaseFileName = "Microsoft.ProjectReunion"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
-Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
+#Reunion doesn't use the PRI
+#Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
 Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 
 Write-Verbose "Copying $inputBasePath\Themes"
@@ -231,10 +233,10 @@ Set-Content -Value $manifestContents $fullOutputPath\PackageContents\AppxManifes
 
 
 # Call GetFullPath to clean up the path -- makepri is very picky about double slashes in the path.
-$priConfigPath = [IO.Path]::GetFullPath("$fullOutputPath\priconfig.xml")
-$priOutputPath = [IO.Path]::GetFullPath("$fullOutputPath\resources.pri")
+#$priConfigPath = [IO.Path]::GetFullPath("$fullOutputPath\priconfig.xml")
+#$priOutputPath = [IO.Path]::GetFullPath("$fullOutputPath\resources.pri")
 $noiseAssetPath = [IO.Path]::GetFullPath("$fullOutputPath\Assets\NoiseAsset_256x256_PNG.png")
-$resourceContents = [IO.Path]::GetFullPath("$fullOutputPath\Resources")
+#$resourceContents = [IO.Path]::GetFullPath("$fullOutputPath\Resources")
 $pfxPath = [IO.Path]::GetFullPath("..\MSTest.pfx")
 
 pushd $fullOutputPath\PackageContents
@@ -250,14 +252,13 @@ if (($Configuration -ilike "debug") -and (Test-Path $xbfFilesPath))
 
 # Append output path of resources.pri as well
 @"
-"$priOutputPath" "resources.pri"
 "$noiseAssetPath" "Microsoft.ProjectReunion\Assets\NoiseAsset_256x256_PNG.png"
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 
-$makepriNew = "`"" + (Join-Path $WindowsSdkBinDir "makepri.exe") + "`" new /pr $fullOutputPath /cf $priConfigPath /of $priOutputPath /in $PackageName /o"
-Write-Host $makepriNew
-cmd /c $makepriNew
-if ($LastExitCode -ne 0) { Exit 1 }
+#$makepriNew = "`"" + (Join-Path $WindowsSdkBinDir "makepri.exe") + "`" new /pr $fullOutputPath /cf $priConfigPath /of $priOutputPath /in $PackageName /o"
+#Write-Host $makepriNew
+#cmd /c $makepriNew
+#if ($LastExitCode -ne 0) { Exit 1 }
 
 $outputAppxFileFullPath = Join-Path $fullOutputPath "$PackageName.appx"
 $outputAppxFileFullPath = [IO.Path]::GetFullPath($outputAppxFileFullPath)
