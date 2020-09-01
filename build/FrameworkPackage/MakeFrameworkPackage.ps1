@@ -97,8 +97,11 @@ Write-Verbose "WindowsSdkBinDir = $WindowsSdkBinDir"
 $foundationWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.FoundationContract" -Filter "Windows.Foundation.FoundationContract.winmd" | Select-Object -ExpandProperty FullName
 $universalWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.UniversalApiContract" -Filter "Windows.Foundation.UniversalApiContract.winmd" | Select-Object -ExpandProperty FullName
 $refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
-Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
-$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+#UNDONE - not re-writing to sdk dir
+#Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
+#$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\$inputBaseFileName.winmd' '$refrenceWinmds'"
+$classes = Get-ActivatableTypes $inputBasePath\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
 Write-Host $classes.Length Types found.
 @"
 "$inputBaseFileName.dll" "$inputBaseFileName.dll"
