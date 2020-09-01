@@ -101,9 +101,9 @@ $toolsDir = "$($TempDir.FullName)\tools"
 function ConfigureNugetCommandLine {
     Param($pkgId)
 
-    $nupkgtitle = $pkgId
-    $CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
-    $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
+    $script:nupkgtitle = $pkgId
+    $script:CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
+    $script:NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
 }
 
 ConfigureNugetCommandLine("Microsoft.ProjectReunion")
