@@ -156,7 +156,7 @@ Write-Host
 
 if(-not $SkipFrameworkPackage)
 {
-    ConfigureNugetCommandLine("Microsoft.ProjectReunion.FrameworkPackage") 
+    ConfigureNugetCommandLine("Microsoft.ProjectReunion") 
    
     # Nuget package with framework package encapsulation
     $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir\FrameworkPackage"
