@@ -55,16 +55,13 @@ if (-not (Test-Path $WindowsSdkBinDir))
 
 $ActivatableTypes = ""
 
-# Copy over and add to the manifest file list the .dll, .winmd for the inputs. Also copy the .pri
-# but don't list it because it will be merged together.
+# Copy over and add to the manifest file list the .dll, .winmd for the inputs. 
 
 Write-Output "Input: $inputDirectory"
 $inputBaseFileName = "Microsoft.ProjectReunion"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
-#Reunion doesn't use the PRI
-#Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
@@ -118,7 +115,8 @@ Write-Host $classes.Length Types found.
 ForEach ($class in $classes)
 {
     $className = $class.fullname
-    #Write-Host "Activatable type : $className"
+#UNDONE - comment out this line before completing PR
+Write-Host "Activatable type : $className"
     $ActivatableTypes += "        <ActivatableClass ActivatableClassId=`"$className`" ThreadingModel=`"both`" />`r`n"
 }
 
