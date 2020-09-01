@@ -65,10 +65,12 @@ $inputBasePath = $inputDirectory
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
 #Reunion doesn't use the PRI
 #Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
-Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+#UNDONE- not processing into sdk subdir
+#Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 
-Write-Verbose "Copying $inputBasePath\Themes"
-Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
+#Write-Verbose "Copying $inputBasePath\Themes"
+#Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
 
 #Find the latest available sdk
 function Get-SDK-References-Path
@@ -123,7 +125,8 @@ $ActivatableTypes += @"
 
 "@
 
-Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
+#UNDONE
+#Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
 
 $customPropsFile = "$PSScriptRoot\..\..\version.props"
 Write-Verbose "Looking in $customPropsFile"
