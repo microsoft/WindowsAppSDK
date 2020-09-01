@@ -53,6 +53,10 @@ jobs:
     dependsOn: Build
     prereleaseVersionTag: ci
 
+# Debugging, etc., dump the contents of the artifacts\drop directory
+- script: dir /s $(artifactDownloadPath)\drop
+    displayName: 'ProjectReunion-CI: Final output in artifacts\drop'
+
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
 #  parameters:
