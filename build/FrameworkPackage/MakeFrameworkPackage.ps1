@@ -128,8 +128,7 @@ $ActivatableTypes += @"
 
 "@
 
-#UNDONE
-#Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
+Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
 
 $customPropsFile = "$PSScriptRoot\..\..\version.props"
 Write-Verbose "Looking in $customPropsFile"
