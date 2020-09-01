@@ -14,15 +14,15 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.18362.0" />
   </Dependencies>
-  <Extensions>
-$(ActivatableTypes)
-      <Extension Category="windows.activatableClass.inProcessServer">
-        <InProcessServer>
-          <Path>Microsoft.ProjectReunion.dll</Path>
+<!--  <Extensions> -->
+<!-- $(ActivatableTypes) -->
+<!--       <Extension Category="windows.activatableClass.inProcessServer"> -->
+<!--         <InProcessServer> -->
+<!--           <Path>Microsoft.ProjectReunion.dll</Path> -->
           <!-- Special type that we manually list here which is not part of the Nuget dll distribution package. 
                This is our breadcrumb that we leave to be able to detect at runtime that we're using the framework package. -->
           <!-- UNDONE <ActivatableClass ActivatableClassId="Microsoft.UI.Private.Controls.FrameworkPackageDetector" ThreadingModel="both" /> -->
-        </InProcessServer>
-      </Extension>
-    </Extensions>
+<!--         </InProcessServer> --> 
+<!--       </Extension> --> 
+<!--     </Extensions> --> 
 </Package>
