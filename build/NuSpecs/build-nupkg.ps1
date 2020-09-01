@@ -154,6 +154,10 @@ Write-Host
 
 if(-not $SkipFrameworkPackage)
 {
+    $nupkgtitle = "Microsoft.ProjectReunion.FrameworkPackage"
+    $CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
+    $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
+    
     # Nuget package with framework package encapsulation
     $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir\FrameworkPackage"
 
