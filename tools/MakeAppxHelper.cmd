@@ -34,7 +34,7 @@ if "%BUILDOUTPUT_OVERRIDE%" == "" (
 	set InputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\ProjectReunion_dll
 	set OutputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\FrameworkPackage
 ) else (
-	set InputDirectory=%BUILDOUTPUT_OVERRIDE%\Microsoft.ProjectReunion
+	set InputDirectory=%BUILDOUTPUT_OVERRIDE%\ProjectReunion_dll
 	set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\FrameworkPackage
 )
 
