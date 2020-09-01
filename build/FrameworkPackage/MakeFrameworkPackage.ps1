@@ -128,8 +128,6 @@ $ActivatableTypes += @"
 
 "@
 
-#Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
-
 $customPropsFile = "$PSScriptRoot\..\..\version.props"
 Write-Verbose "Looking in $customPropsFile"
 
@@ -237,11 +235,6 @@ $manifestContents = $manifestContents.Replace('$(Version)', "$Version")
 Set-Content -Value $manifestContents $fullOutputPath\PackageContents\AppxManifest.xml
 
 
-# Call GetFullPath to clean up the path -- makepri is very picky about double slashes in the path.
-#$priConfigPath = [IO.Path]::GetFullPath("$fullOutputPath\priconfig.xml")
-#$priOutputPath = [IO.Path]::GetFullPath("$fullOutputPath\resources.pri")
-#$noiseAssetPath = [IO.Path]::GetFullPath("$fullOutputPath\Assets\NoiseAsset_256x256_PNG.png")
-#$resourceContents = [IO.Path]::GetFullPath("$fullOutputPath\Resources")
 $pfxPath = [IO.Path]::GetFullPath("..\MSTest.pfx")
 
 pushd $fullOutputPath\PackageContents
@@ -254,16 +247,6 @@ if (($Configuration -ilike "debug") -and (Test-Path $xbfFilesPath))
 "$_" "$_"
 "@ } | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 }
-
-# Append output path of resources.pri as well
-#@"
-#"$noiseAssetPath" "Microsoft.ProjectReunion\Assets\NoiseAsset_256x256_PNG.png"
-#"@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
-
-#$makepriNew = "`"" + (Join-Path $WindowsSdkBinDir "makepri.exe") + "`" new /pr $fullOutputPath /cf $priConfigPath /of $priOutputPath /in $PackageName /o"
-#Write-Host $makepriNew
-#cmd /c $makepriNew
-#if ($LastExitCode -ne 0) { Exit 1 }
 
 $outputAppxFileFullPath = Join-Path $fullOutputPath "$PackageName.appx"
 $outputAppxFileFullPath = [IO.Path]::GetFullPath($outputAppxFileFullPath)
