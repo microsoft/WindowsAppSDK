@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -28,11 +28,11 @@ STDAPI MddBootstrapInitialize(
     return S_OK;
 }
 
-STDAPI MddBootstrapShutdown()
+STDAPI_(void) MddBootstrapShutdown()
 {
     if (!g_lifetimeManager)
     {
-        RETURN_IF_FAILED(g_lifetimeManager->Shutdown());
+        (void)LOG_IF_FAILED(g_lifetimeManager->Shutdown());
         g_lifetimeManager->Release();
         g_lifetimeManager = nullptr;
     }
@@ -58,8 +58,6 @@ STDAPI MddBootstrapShutdown()
             (void)LOG_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", pathWithoutFrameworkPath));
         }
     }
-
-    return S_OK;
 }
 
 STDAPI AddFrameworkToPath(PCWSTR frameworkPath)

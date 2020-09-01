@@ -1,12 +1,13 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#if !defined(MSIXDYNAMICDEPENDENCY_H)
-#define MSIXDYNAMICDEPENDENCY_H
+#if !defined(MDDBOOSTRAP_H)
+#define MDDBOOSTRAP_H
 
 STDAPI MddBootstrapInitialize(
     const CLSID& appDynamicDependencyLifetimeManager);
 
-STDAPI MddBootstrapShutdown();
+STDAPI_(void) MddBootstrapShutdown();
 
-#endif // MSIXDYNAMICDEPENDENCY_H
+#endif // MDDBOOSTRAP_H
+
