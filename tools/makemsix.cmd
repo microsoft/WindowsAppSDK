@@ -1,13 +1,15 @@
 @ECHO OFF
 SETLOCAL
 
-SET ProjectDir=%1
-SET OutDir=%2
-SET TargetDir=%3
-SET TargetFileName=%4
-SET TargetName=%5
+SET SolutionDir=%1
+SET ProjectDir=%2
+SET OutDir=%3
+SET TargetDir=%4
+SET TargetFileName=%5
+SET TargetName=%6
 
 SET OutDirMsix=%OutDir%\msix
+SET OutMsix=%OutDir%%TargetName%.msix
 
 ECHO rd %OutDirMsix% /s /q
 rd %OutDirMsix% /s /q
@@ -24,8 +26,17 @@ copy %ProjectDir%logo.png %OutDirMsix%\logo.png
 ECHO copy %TargetDir%\%TargetFileName% %OutDirMsix%\%TargetFileName%
 copy %TargetDir%\%TargetFileName% %OutDirMsix%\%TargetFileName%
 
-ECHO makeappx.exe pack /v /h SHA256 /d %OutDirMsix% /p %OutDir%%TargetName%.msix
-makeappx.exe pack /v /o /h SHA256 /d %OutDirMsix% /p %OutDir%%TargetName%.msix
+ECHO makeappx.exe pack /v /h SHA256 /d %OutDirMsix% /p %OutMsix%
+makeappx.exe pack /v /o /h SHA256 /d %OutDirMsix% /p %OutMsix%
+
+REM REM This would be
+REM REM See https://osgwiki.com/wiki/Package_ES_Appx_Bundle#Code_sign_Appx_Bundle for details re SignCert
+REM SET SignCert=136020001
+REM SET SignPublisher=CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US
+REM SET SignFile=%OutMsix%
+REM SimpleSign.exe -i:%SignFile% -c:%SignCert% -s:"%SignPublisher%"
+ECHO signtool.exe sign /a /v /fd SHA256 /f %ProjectDir%\build\MSTest.pfx %OutMsix%
+signtool.exe sign /a /v /fd SHA256 /f %SolutionDir%\build\MSTest.pfx %OutMsix%
 
 :TheEnd
 ENDLOCAL

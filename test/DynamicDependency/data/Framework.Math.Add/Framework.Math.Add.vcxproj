@@ -292,6 +292,6 @@
   </ImportGroup>
   <Target Name="MakeMSIX" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)appxmanifest.template')" Inputs="$(ProjectDir)appxmanifest.template;$(ProjectDir)logo.png;$(TargetPathName)" Outputs="$(TargetName).msix">
     <Message Text="Make MSIX $(TargetName).msix for $(ProjectName)"/>
-    <Exec Command="$(ProjectDir)..\..\..\..\tools\makemsix.cmd $(ProjectDir) $(OutDir) $(TargetDir) $(TargetFileName) $(TargetName)" ConsoleToMsBuild="true" IgnoreExitCode="true"/>
+    <Exec Command="$(SolutionDir)tools\makemsix.cmd $(SolutionDir) $(ProjectDir) $(OutDir) $(TargetDir) $(TargetFileName) $(TargetName)" ConsoleToMsBuild="true" IgnoreExitCode="true"/>
   </Target>
 </Project>
