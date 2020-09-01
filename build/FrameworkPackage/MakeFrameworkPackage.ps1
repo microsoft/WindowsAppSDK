@@ -115,8 +115,7 @@ Write-Host $classes.Length Types found.
 ForEach ($class in $classes)
 {
     $className = $class.fullname
-#UNDONE - comment out this line before completing PR
-Write-Host "Activatable type : $className"
+    #Write-Host "Activatable type : $className"
     $ActivatableTypes += "        <ActivatableClass ActivatableClassId=`"$className`" ThreadingModel=`"both`" />`r`n"
 }
 
