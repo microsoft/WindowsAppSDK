@@ -69,8 +69,6 @@ if ($prereleaseversion)
 
 if (!(Test-Path $OutputDir)) { mkdir $OutputDir }
 
-$nupkgtitle = "Microsoft.ProjectReunion"
-
 function New-TemporaryDirectory {
     $parent = [System.IO.Path]::GetTempPath()
     $name = [System.IO.Path]::GetRandomFileName()
@@ -100,6 +98,16 @@ Write-Verbose "TempDir = $($TempDir.FullName)"
 $runtimesDir = "$($TempDir.FullName)\runtimes"
 $toolsDir = "$($TempDir.FullName)\tools"
 
+function ConfigureNugetCommandLine {
+    Param($pkgId)
+
+    $nupkgtitle = $pkgId
+    $CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
+    $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
+}
+
+ConfigureNugetCommandLine("Microsoft.ProjectReunion")
+
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-x86\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-x86\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-x64\native"
@@ -108,10 +116,6 @@ Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm\Microsoft.ProjectR
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-arm\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-arm64\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-arm64\native"
-
-$CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
-
-$NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
 
 #
 # Build Project Reunion package (with actual contents, i.e. not metapackage)
@@ -133,9 +137,7 @@ Write-Host
 # Build Project Reunion package meta package (no direct contents, only references)
 #
 
-$nupkgtitle = "Microsoft.ProjectReunion.MetaPackage"
-$CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
-$NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
+ConfigureNugetCommandLine("Microsoft.ProjectReunion.MetaPackage")
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
 $NugetCmdLine = "$nugetExe pack ProjectReunionMetaPackage.nuspec $NugetArgs -version $version"
@@ -154,10 +156,8 @@ Write-Host
 
 if(-not $SkipFrameworkPackage)
 {
-    $nupkgtitle = "Microsoft.ProjectReunion.FrameworkPackage"
-    $CommonNugetArgs = "-properties `"BuildOutput=$BuildOutput``;ID=$nupkgtitle``;RUNTIMESDIR=$runtimesDir`;TOOLSDIR=$toolsDir`;BUILDFLAVOR=$($BuildFlavor)`;BUILDARCH=$($BuildArch)`""
-    $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
-    
+    ConfigureNugetCommandLine("Microsoft.ProjectReunion.FrameworkPackage") 
+   
     # Nuget package with framework package encapsulation
     $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir\FrameworkPackage"
 
