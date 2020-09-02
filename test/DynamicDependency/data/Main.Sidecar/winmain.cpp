@@ -7,6 +7,8 @@
 
 using namespace winrt;
 
+// Implement the LifetimeManager as a classic COM Out-of-Proc server, via C++/WinRT
+// See https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/author-coclasses for more details
 
 static constexpr GUID MyLifetimeManager_guid // {32E7CF70-038C-429a-BD49-88850F1B4A11}
 {
