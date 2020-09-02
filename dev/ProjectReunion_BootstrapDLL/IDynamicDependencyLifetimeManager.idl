@@ -10,9 +10,9 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface IDynamicDependencyLifetimeManager : IUnknown
 {
-    HRESULT Initialize([out, retval] LPWSTR* frameworkPath);
+    HRESULT Initialize();
 
     HRESULT Shutdown();
 
-    HRESULT GetFrameworkPath([out, retval] LPWSTR* frameworkPath);
+    HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
 };

@@ -75,13 +75,12 @@ EXTERN_C const IID IID_IDynamicDependencyLifetimeManager;
     IDynamicDependencyLifetimeManager : public IUnknown
     {
     public:
-        virtual HRESULT STDMETHODCALLTYPE Initialize( 
-            /* [retval][out] */ LPWSTR *frameworkPath) = 0;
+        virtual HRESULT STDMETHODCALLTYPE Initialize( void) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Shutdown( void) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE GetFrameworkPath( 
-            /* [retval][out] */ LPWSTR *frameworkPath) = 0;
+        virtual HRESULT STDMETHODCALLTYPE GetPackageFullName( 
+            /* [retval][out] */ LPWSTR *packageFullName) = 0;
         
     };
     
@@ -105,15 +104,14 @@ EXTERN_C const IID IID_IDynamicDependencyLifetimeManager;
             IDynamicDependencyLifetimeManager * This);
         
         HRESULT ( STDMETHODCALLTYPE *Initialize )( 
-            IDynamicDependencyLifetimeManager * This,
-            /* [retval][out] */ LPWSTR *frameworkPath);
+            IDynamicDependencyLifetimeManager * This);
         
         HRESULT ( STDMETHODCALLTYPE *Shutdown )( 
             IDynamicDependencyLifetimeManager * This);
         
-        HRESULT ( STDMETHODCALLTYPE *GetFrameworkPath )( 
+        HRESULT ( STDMETHODCALLTYPE *GetPackageFullName )( 
             IDynamicDependencyLifetimeManager * This,
-            /* [retval][out] */ LPWSTR *frameworkPath);
+            /* [retval][out] */ LPWSTR *packageFullName);
         
         END_INTERFACE
     } IDynamicDependencyLifetimeManagerVtbl;
@@ -138,14 +136,14 @@ EXTERN_C const IID IID_IDynamicDependencyLifetimeManager;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define IDynamicDependencyLifetimeManager_Initialize(This,frameworkPath)	\
-    ( (This)->lpVtbl -> Initialize(This,frameworkPath) ) 
+#define IDynamicDependencyLifetimeManager_Initialize(This)	\
+    ( (This)->lpVtbl -> Initialize(This) ) 
 
 #define IDynamicDependencyLifetimeManager_Shutdown(This)	\
     ( (This)->lpVtbl -> Shutdown(This) ) 
 
-#define IDynamicDependencyLifetimeManager_GetFrameworkPath(This,frameworkPath)	\
-    ( (This)->lpVtbl -> GetFrameworkPath(This,frameworkPath) ) 
+#define IDynamicDependencyLifetimeManager_GetPackageFullName(This,packageFullName)	\
+    ( (This)->lpVtbl -> GetPackageFullName(This,packageFullName) ) 
 
 #endif /* COBJMACROS */
 

@@ -164,6 +164,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -195,6 +196,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -226,6 +228,7 @@
       <PreprocessorDefinitions>_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -257,6 +260,7 @@
       <PreprocessorDefinitions>_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -290,6 +294,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -325,6 +330,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -360,6 +366,7 @@
       <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -395,6 +402,7 @@
       <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -443,42 +451,6 @@
     <None Include="ProjectReunion.Bootstrap.def" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Midl Include="IDynamicDependencyLifetimeManager.idl">
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">None</GenerateServerFiles>
-      <HeaderFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).h</HeaderFileName>
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">None</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">None</GenerateServerFiles>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</GenerateTypeLibrary>
-      <GenerateTypeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</GenerateTypeLibrary>
-    </Midl>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
@@ -494,6 +466,11 @@
     <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
   </Target>
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h"/>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)IDynamicDependencyLifetimeManager.idl" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)IDynamicDependencyLifetimeManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="IDynamicDependencyLifetimeManager.idl" />
   </ItemGroup>
 </Project>
