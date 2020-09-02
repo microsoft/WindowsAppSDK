@@ -49,7 +49,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Add", "test\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Multiply", "test\DynamicDependency\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj", "{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main.Sidecar", "..\..\..\..\howard.000\Source\Repos\ProjectReunion\test\DynamicDependency\data\Main.Sidecar\Main.Sidecar.vcxproj", "{6C10A72D-AF30-4696-9551-2446B689AD92}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main.Sidecar", "test\DynamicDependency\data\Main.Sidecar\Main.Sidecar.vcxproj", "{6C10A72D-AF30-4696-9551-2446B689AD92}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
