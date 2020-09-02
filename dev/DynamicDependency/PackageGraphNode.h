@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -10,11 +10,7 @@
 #include <wil/resource.h>
 #include <wil_msixdynamicdependency.h>
 
-namespace Microsoft
-{
-namespace ApplicationModel
-{
-namespace DynamicDepedency
+namespace Microsoft::ApplicationModel::DynamicDepedency
 {
 class PackageGraphNode
 {
@@ -66,6 +62,4 @@ private:
     wil::unique_package_dependency_context m_context;
     DLL_DIRECTORY_COOKIE m_addDllDirectoryCookie{};
 };
-}
-}
 }

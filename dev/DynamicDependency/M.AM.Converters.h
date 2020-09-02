@@ -1,13 +1,9 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
 
-namespace Microsoft
-{
-namespace ApplicationModel
-{
-namespace DynamicDependency
+namespace Microsoft::ApplicationModel::DynamicDependency
 {
     inline winrt::Windows::ApplicationModel::PackageVersion ToVersion(PACKAGE_VERSION const& from)
     {
@@ -78,6 +74,4 @@ namespace DynamicDependency
     {
         return reinterpret_cast<MDD_PACKAGEDEPENDENCY_CONTEXT>(static_cast<INT_PTR>(contextId.Id));
     }
-}
-}
 }
