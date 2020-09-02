@@ -359,7 +359,7 @@
     <None Include="appxmanifest.template" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\..\howard\Source\Repos\ProjectReunion\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
+    <ProjectReference Include="..\..\..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>
