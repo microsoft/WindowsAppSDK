@@ -24,7 +24,7 @@
 
     <file target="lib\uap10.0" src="Intellisense\Microsoft.ProjectReunion.xml"/>
     <!-- C++ projects need the flat C header declarations and implib -->
-    <file target="lib\native"  src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\projectreunion.lib" />
+    <file target="lib\native"  src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Microsoft.ProjectReunion.lib" />
     <file target="include"     src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\SampleFlatC.h" /> 
 
 <!-- <file target="tools" src="$TOOLSDIR$\**\*.*"/> -->
