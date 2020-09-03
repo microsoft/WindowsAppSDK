@@ -32,7 +32,7 @@ struct MyLifetimeManager : winrt::implements<MyLifetimeManager, IDynamicDependen
         *packageFullName = nullptr;
 
         WCHAR fullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
-        UINT32 fullNameLength = _countof(fullName);
+        UINT32 fullNameLength = ARRAYSIZE(fullName);
         RETURN_IF_FAILED(GetCurrentPackageFullName(&fullNameLength, fullName));
         auto fullNameCoTaskMem = wil::make_cotaskmem_string_nothrow(fullName);
         RETURN_IF_NULL_ALLOC(fullNameCoTaskMem);

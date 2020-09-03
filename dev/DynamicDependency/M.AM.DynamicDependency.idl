@@ -66,7 +66,7 @@ namespace Microsoft.ApplicationModel.DynamicDependency
 
         /// The rank when adding the package dependency to a a package graph.
         /// @note A package graph is sorted in ascending order from -infinity...0...+infinity
-        /// @note The default value is PackageDepedencyRank.Default
+        /// @note The default value is PackageDependencyRank.Default
         Int32 Rank;
 
         /// If a package dependency is added to a package graph with a package of the same rank (aka a collision on rank)

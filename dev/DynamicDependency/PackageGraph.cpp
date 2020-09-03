@@ -8,7 +8,7 @@
 #include <PackageGraphNode.h>
 
 static std::mutex g_lock;
-std::vector<Microsoft::ApplicationModel::DynamicDepedency::PackageGraphNode> g_packageGraph;
+std::vector<Microsoft::ApplicationModel::DynamicDependency::PackageGraphNode> g_packageGraph;
 
 std::unique_lock<std::mutex> AcquirePackageGraphLock()
 {

@@ -52,6 +52,7 @@ STDAPI_(void) MddBootstrapShutdown()
 
     if (g_frameworkPath)
     {
+        //TODO: Revisit once MddAddPackageDependency is lit up
         wil::unique_cotaskmem_string path;
         const auto hr = wil::TryGetEnvironmentVariableW(L"PATH", path);
         if (SUCCEEDED(hr) && path)
@@ -67,10 +68,30 @@ STDAPI_(void) MddBootstrapShutdown()
     }
 }
 
+/// Determine the path for the Project Reunion Framework package
 HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer)
 {
     frameworkPackageInfo = nullptr;
 
+    // We need to determine the exact Project Reunion Framework package
+    // in the sidecar package's dependencies, as resolved by Windows.
+    // A user can have multiple framework packages in a family registered
+    // at a time, for multiple reasons:
+    //
+    //   * Multiple Architecturs -- x86/x64 on an x64 machine, x86/arm/arm64/x86ona64 on an arm64 machine, etc
+    //   * Multiple Versions -- v1.0.0.0 in use by processes running as pkg1 and v1.0.0.1 in use by runnings running as pkg2
+    //                          or v1.0.0.0 in use by running processes and v1.0.0.1 in package graphs for packages w/no running process
+    //
+    // Thus FindPackagesByPackageFamily(pkgfamilyname,...) and PackageManager.FindPackages(user="", pkgfamilyname) could be ambiguous.
+    // We need the actual dependency graph known to Windows for the sidecar package where we got our LifetimeManager.
+    // That leaves us few options:
+    //
+    //   * PackageManager.FindPackage(user="", lifetimeManager->GetPackageFullName()).Dependencies
+    //   * GetPackageInfo(OpenPackageInfoByFullName(lifetimeManager->GetPackageFullName())
+    //
+    // We'll go with the latter as the simpler (no COM/WinRT) and more performant solution.
+
+    // Fetch the package graph for the package (per packageFullName)
     wil::unique_package_info_reference packageInfoReference;
     RETURN_IF_WIN32_ERROR(OpenPackageInfoByFullName(packageFullName, 0, &packageInfoReference));
     UINT32 bufferLength = 0;
@@ -81,6 +102,7 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     UINT32 packageInfoCount = 0;
     RETURN_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, packageInfoBuffer.get(), &packageInfoCount));
 
+    // Find the Project Reunion Framework package in the package graph to determine its path
     const PACKAGE_INFO* packageInfo = reinterpret_cast<const PACKAGE_INFO*>(packageInfoBuffer.get());
     for (size_t index = 0; index < packageInfoCount; ++index, ++packageInfo)
     {

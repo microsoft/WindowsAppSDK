@@ -34,6 +34,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphNode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />

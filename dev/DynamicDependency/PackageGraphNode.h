@@ -10,7 +10,7 @@
 #include <wil/resource.h>
 #include <wil_msixdynamicdependency.h>
 
-namespace Microsoft::ApplicationModel::DynamicDepedency
+namespace Microsoft::ApplicationModel::DynamicDependency
 {
 class PackageGraphNode
 {
@@ -25,9 +25,8 @@ public:
     PackageGraphNode(PackageGraphNode&& other) :
         m_packageInfoReference(std::move(other.m_packageInfoReference)),
         m_context(std::move(other.m_context)),
-        m_addDllDirectoryCookie(other.m_addDllDirectoryCookie)
+        m_addDllDirectoryCookie(std::move(other.m_addDllDirectoryCookie))
     {
-        other.m_addDllDirectoryCookie = 0;
     }
 
     PackageGraphNode& operator=(PackageGraphNode&& other)
@@ -37,9 +36,7 @@ public:
             Reset();
             m_packageInfoReference = std::move(other.m_packageInfoReference);
             m_context = std::move(other.m_context);
-            m_addDllDirectoryCookie = other.m_addDllDirectoryCookie;
-
-            other.m_addDllDirectoryCookie = 0;
+            m_addDllDirectoryCookie = std::move(other.m_addDllDirectoryCookie);
         }
         return *this;
     }
@@ -47,19 +44,13 @@ public:
     void Reset()
     {
         m_packageInfoReference.reset();
-
         m_context.reset();
-
-        if (m_addDllDirectoryCookie != 0)
-        {
-            (void)LOG_IF_WIN32_BOOL_FALSE(RemoveDllDirectory(m_addDllDirectoryCookie));
-            m_addDllDirectoryCookie = 0;
-        }
+        m_addDllDirectoryCookie.reset();
     }
 
 private:
     wil::unique_package_info_reference m_packageInfoReference;
     wil::unique_package_dependency_context m_context;
-    DLL_DIRECTORY_COOKIE m_addDllDirectoryCookie{};
+    wil::unique_dll_directory_cookie m_addDllDirectoryCookie;
 };
 }
