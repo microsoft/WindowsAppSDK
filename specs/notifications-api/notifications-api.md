@@ -54,7 +54,7 @@ First, developers would install the Reunion NuGet package.
 
 Then, developers construct a notification as usual, but call the Interop version of ToastNotificationManager to create the toast notifier. With that one change, toasts will work on Win32 without doing anything additional!
 
-```csharp
+```cs
 // Construct the content (same as today)
 ToastContent content = new ToastContentBuilder()
     .AddToastActivationInfo("picOfHappyCanyon", ToastActivationType.Foreground)
@@ -75,7 +75,7 @@ ToastNotificationManagerInterop.CreateToastNotifier().Show(notification);
 
 UWP apps would receive activation as they do today, within their **App.xaml.cs** OnActivated method.
 
-```csharp
+```cs
 protected override void OnActivated(IActivatedEventArgs e)
 {
     // Handle toast activation
@@ -104,12 +104,11 @@ First, in your Package.appxmanifest, add:
 
 Then, **in your app's startup code** (WinMain), subscribe to the **OnActivated** event.
 
-```csharp
+```cs
 
-int main(int argc, char* argv[], char* envp[])
+[System.STAThreadAttribute()]
+static void Main(string[] args)
 {
-    init_apartment();
-
     // Listen to notification activation
     ToastNotificationManagerInterop.OnActivated += Notification_OnActivated;
 
@@ -140,12 +139,11 @@ private void Notification_OnActivated(ToastNotificationActivatedEventArgsInterop
 
 **In your app's startup code** (WinMain), subscribe to the **OnActivated** event.
 
-```csharp
+```cs
 
-int main(int argc, char* argv[], char* envp[])
+[System.STAThreadAttribute()]
+static void Main(string[] args)
 {
-    init_apartment();
-
     // Listen to notification activation
     ToastNotificationManagerInterop.OnActivated += Notification_OnActivated;
 
@@ -272,7 +270,7 @@ UserInput | Gets the user inputs the user provided on the toast notification | `
 
 # API Details
 
-```c# (but really MIDL3)
+```cpp (but really MIDL3)
     namespace Microsoft.UI.Notifications
     {
         [contractversion(1.0)]
