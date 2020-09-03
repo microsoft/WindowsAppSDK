@@ -32,6 +32,8 @@ function PublishFile {
 }
 
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\SampleFlatC.h $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion\
 #UNDONE - xaml vcxproj re-runs an mdmerge into the sdk node, we are skipping this for now and leaving the winmd in its normal outdir
 #PublishFile -IfExists $FullBuildOutput\projectreunion_dll\sdk\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\sdk\
