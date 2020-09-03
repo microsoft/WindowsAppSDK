@@ -40,7 +40,7 @@ to use packaged content.
     - [5.6.1. uap6:LoaderSearchPathOverride not supported](#561-uap6loadersearchpathoverride-not-supported)
     - [5.6.2. uap6:AllowExecution not supported](#562-uap6allowexecution-not-supported)
 - [6. API Details](#6-api-details)
-  - [6.1. Win32 API - MsixDynamicDependency.hpp](#61-win32-api---msixdynamicdependencyhpp)
+  - [6.1. Win32 API - MsixDynamicDependency.h](#61-win32-api---msixdynamicdependencyh)
   - [6.2. WinRT API](#62-winrt-api)
 - [7. Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
   - [7.1. Frequently Asked Questions (FAQ)](#71-frequently-asked-questions-faq)
@@ -929,7 +929,7 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 
 # 6. API Details
 
-## 6.1. Win32 API - MsixDynamicDependency.hpp
+## 6.1. Win32 API - MsixDynamicDependency.h
 
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
 

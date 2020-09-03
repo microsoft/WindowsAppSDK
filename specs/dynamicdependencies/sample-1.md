@@ -7,7 +7,7 @@ Contoso publishes a framework package that provides Muffin-managing functionalit
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT ManageMuffins(int& countOfMuffinsManaged)

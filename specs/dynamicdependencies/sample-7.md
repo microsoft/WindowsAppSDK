@@ -12,7 +12,7 @@ The package graph is updated for the remainder of the process' lifetime (i.e. th
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT LoadPackageDependencyId(_In_ PCWSTR what, wil::unique_ptr<WCHAR[]>& packageDependencyId);

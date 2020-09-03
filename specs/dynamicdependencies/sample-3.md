@@ -7,7 +7,7 @@ Contoso publishes a framework package. At runtime, LolzKittens wants to use Cont
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])

@@ -7,7 +7,7 @@ Variant of Sample 1 using RAII classes to manage packageDependencyId, packageDep
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 class MddPackageDependencyContextAndDll
