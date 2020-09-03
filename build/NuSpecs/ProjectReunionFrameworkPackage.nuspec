@@ -23,7 +23,6 @@
 <!--    <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri"/> -->
 
     <file target="lib\uap10.0" src="Intellisense\Microsoft.ProjectReunion.xml"/>
-    <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll"/>
 
 <!-- <file target="tools" src="$TOOLSDIR$\**\*.*"/> -->
 
