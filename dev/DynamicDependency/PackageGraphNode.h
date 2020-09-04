@@ -10,7 +10,7 @@
 #include <wil/resource.h>
 #include <wil_msixdynamicdependency.h>
 
-namespace Microsoft::ApplicationModel::DynamicDependency
+namespace MddCore
 {
 class PackageGraphNode
 {
