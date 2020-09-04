@@ -16,11 +16,6 @@
 
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
-    PackageDependency::PackageDependency(PCWSTR id)
-    {
-        m_id = winrt::to_hstring(id);
-    }
-
     PackageDependency::PackageDependency(hstring const& id) :
         m_id(id)
     {
@@ -55,7 +50,6 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto mddArchitectures = ::Microsoft::ApplicationModel::DynamicDependency::ToArchitectures(options.Architectures());
         const auto mddLifetimeKind = ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind());
         auto mddOptions = ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options, MddCreatePackageDependencyOptions::ScopeIsSystem);
-        wil::unique_process_heap_string packageDependencyId;
         return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddOptions);
     }
 

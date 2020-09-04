@@ -28,6 +28,7 @@ HRESULT ResolvePackageDependency(
     MddAddPackageDependencyOptions /*options*/,
     wil::unique_process_heap_string& /*packageFullName*/)
 {
+    //TODO: Implement ResolvePackageDependency
     RETURN_HR(E_NOTIMPL);
 }
 
@@ -37,11 +38,13 @@ HRESULT AddToPackageGraph(
     MddAddPackageDependencyOptions /*options*/,
     MDD_PACKAGEDEPENDENCY_CONTEXT& /*context*/)
 {
+    //TODO: Implement AddToPackageGraph
     RETURN_HR(E_NOTIMPL);
 }
 
 HRESULT RemoveFromPackageGraph(
     MDD_PACKAGEDEPENDENCY_CONTEXT /*context*/)
 {
+    //TODO: Implement RemoveFromPackageGraph
     RETURN_HR(E_NOTIMPL);
 }

@@ -13,7 +13,6 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
         PackageDependency() = default;
 
-        PackageDependency(PCWSTR id);
         PackageDependency(hstring const& id);
 
         static winrt::PackageDependency GetFromId(hstring const& id);

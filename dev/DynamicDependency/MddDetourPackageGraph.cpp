@@ -88,7 +88,7 @@ LONG DynamicGetCurrentPackageInfo2(
 
     auto lock(AcquirePackageGraphLock());
 
-#if 0
+#if defined(TODO_Detour_GetCurrentPackageInfo2)
     for (auto node : g_packageGraph)
     {
         auto packageInfoReference = node.get();

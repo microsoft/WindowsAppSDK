@@ -18,12 +18,15 @@ STDAPI MddTryCreatePackageDependency(
     _Outptr_result_maybenull_ PWSTR* packageDependencyId)
 {
     *packageDependencyId = nullptr;
+
+    //TODO: Implement MddTryCreatePackageDependency
     RETURN_WIN32(ERROR_NOT_SUPPORTED);
 }
 
 STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR /*packageDependencyId*/)
 {
+    //TODO: Implement MddDeletePackageDependency
 }
 
 STDAPI MddAddPackageDependency(
@@ -52,6 +55,7 @@ STDAPI MddAddPackageDependency(
         *packageFullName = fullName.release();
     }
 
+    //TODO: Implement MddAddPackageDependency
     RETURN_WIN32(ERROR_NOT_SUPPORTED);
 }
 
