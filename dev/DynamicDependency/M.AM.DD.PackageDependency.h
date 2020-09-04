@@ -5,6 +5,8 @@
 
 #include "Microsoft.ApplicationModel.DynamicDependency.PackageDependency.g.h"
 
+#include "winrt_namespaces.h"
+
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
     struct PackageDependency : PackageDependencyT<PackageDependency>
@@ -14,17 +16,17 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         PackageDependency(PCWSTR id);
         PackageDependency(hstring const& id);
 
-        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency GetFromId(hstring const& id);
-        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion);
-        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options);
-        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options);
+        static winrt::PackageDependency GetFromId(hstring const& id);
+        static winrt::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion);
+        static winrt::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
+        static winrt::PackageDependency CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
         hstring Id();
         void Delete();
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Add();
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Add(Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
+        winrt::PackageDependencyContext Add();
+        winrt::PackageDependencyContext Add(Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
 
     private:
-        static Microsoft::ApplicationModel::DynamicDependency::PackageDependency Create(
+        static winrt::PackageDependency Create(
             PCWSTR packageFamilyName,
             PACKAGE_VERSION minVersion,
             MddPackageDependencyProcessorArchitectures architectures,

@@ -8,7 +8,7 @@
 
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
-    Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures CreatePackageDependencyOptions::Architectures()
+    winrt::PackageDependencyProcessorArchitectures CreatePackageDependencyOptions::Architectures()
     {
         return m_architectures;
     }
@@ -27,7 +27,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         m_verifyDependencyResolution = value;
     }
 
-    Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind CreatePackageDependencyOptions::LifetimeArtifactKind()
+    winrt::PackageDependencyLifetimeArtifactKind CreatePackageDependencyOptions::LifetimeArtifactKind()
     {
         return m_lifetimeArtifactKind;
     }

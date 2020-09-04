@@ -5,6 +5,8 @@
 
 #include "Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext.g.h"
 
+#include "winrt_namespaces.h"
+
 #include <MsixDynamicDependency.h>
 
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
@@ -16,12 +18,12 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         PackageDependencyContext(MDD_PACKAGEDEPENDENCY_CONTEXT context);
         PackageDependencyContext(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId const& contextId);
 
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId ContextId();
+        winrt::PackageDependencyContextId ContextId();
         hstring PackageFullName();
         void Remove();
 
     private:
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId m_contextId;
+        winrt::PackageDependencyContextId m_contextId;
     };
 }
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation

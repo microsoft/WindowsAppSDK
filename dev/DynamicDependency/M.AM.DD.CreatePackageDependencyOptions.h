@@ -5,25 +5,27 @@
 
 #include "Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions.g.h"
 
+#include "winrt_namespaces.h"
+
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
     struct CreatePackageDependencyOptions : CreatePackageDependencyOptionsT<CreatePackageDependencyOptions>
     {
         CreatePackageDependencyOptions() = default;
 
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures Architectures();
+        winrt::PackageDependencyProcessorArchitectures Architectures();
         void Architectures(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value);
         bool VerifyDependencyResolution();
         void VerifyDependencyResolution(bool value);
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind LifetimeArtifactKind();
+        winrt::PackageDependencyLifetimeArtifactKind LifetimeArtifactKind();
         void LifetimeArtifactKind(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value);
         hstring LifetimeArtifact();
         void LifetimeArtifact(hstring const& value);
 
     private:
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures m_architectures = Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::None;
+        winrt::PackageDependencyProcessorArchitectures m_architectures = winrt::PackageDependencyProcessorArchitectures::None;
         bool m_verifyDependencyResolution = false;
-        Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind m_lifetimeArtifactKind = Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::Process;
+        winrt::PackageDependencyLifetimeArtifactKind m_lifetimeArtifactKind = winrt::PackageDependencyLifetimeArtifactKind::Process;
         hstring m_lifetimeArtifact;
     };
 }
