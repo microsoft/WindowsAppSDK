@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="$(ProjectReunionFinalRelease) != 'true'">
+    <!-- If ProjectReunionPrelease is unset, default it to false. -->
+    <ProjectReunionFinalRelease>false</ProjectReunionFinalRelease>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(UseInsiderSDK) == 'true'">
+    <DefineConstants>$(DefineConstants);USE_INSIDER_SDK</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(UseInternalSDK) == 'true'">
+    <DefineConstants>$(DefineConstants);USE_INTERNAL_SDK</DefineConstants>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="$(ProjectReunionFinalRelease) == 'false'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);PROJECTREUNION_PRERELEASE</PreprocessorDefinitions>
+    </ClCompile>
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);PROJECTREUNION_PRERELEASE</PreprocessorDefinitions>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="$(UseInsiderSDK) == 'true'">
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);USE_INSIDER_SDK</PreprocessorDefinitions>
+    </ClCompile>
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);USE_INSIDER_SDK</PreprocessorDefinitions>
+    </Midl>
+  </ItemDefinitionGroup>
+</Project>

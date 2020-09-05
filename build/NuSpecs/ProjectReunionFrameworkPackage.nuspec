@@ -20,10 +20,12 @@
 
 <!--    <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd"/> -->
     <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd"/>
-    <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri"/>
+<!--    <file target="lib\uap10.0" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri"/> -->
 
     <file target="lib\uap10.0" src="Intellisense\Microsoft.ProjectReunion.xml"/>
-    <file target="lib\uap10.0\Design" src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.design.dll"/>
+    <!-- C++ projects need the flat C header declarations and implib -->
+    <file target="lib\native"  src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\Microsoft.ProjectReunion.lib" />
+    <file target="include"     src="$BUILDOUTPUT$\$BUILDFLAVOR$\$BUILDARCH$\Microsoft.ProjectReunion\SampleFlatC.h" /> 
 
 <!-- <file target="tools" src="$TOOLSDIR$\**\*.*"/> -->
 

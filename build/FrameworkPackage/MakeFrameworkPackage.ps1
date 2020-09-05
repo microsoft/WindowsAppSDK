@@ -40,7 +40,8 @@ mkdir -Force $fullOutputPath\Resources | Out-Null
 
 Copy-IntoNewDirectory FrameworkPackageContents\* $fullOutputPath\PackageContents
 
-Copy-IntoNewDirectory PriConfig\* $fullOutputPath
+#Reunion doesn't use the PRI
+#Copy-IntoNewDirectory PriConfig\* $fullOutputPath
 
 $KitsRoot10 = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows Kits\Installed Roots" -Name KitsRoot10).KitsRoot10
 $WindowsSdkBinDir = Join-Path $KitsRoot10 "bin\x86"
@@ -54,19 +55,19 @@ if (-not (Test-Path $WindowsSdkBinDir))
 
 $ActivatableTypes = ""
 
-# Copy over and add to the manifest file list the .dll, .winmd for the inputs. Also copy the .pri
-# but don't list it because it will be merged together.
+# Copy over and add to the manifest file list the .dll, .winmd for the inputs. 
 
 Write-Output "Input: $inputDirectory"
-$inputBaseFileName = "Microsoft.UI.Xaml"
+$inputBaseFileName = "Microsoft.ProjectReunion"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
-Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.pri" $fullOutputPath\Resources
-Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+#UNDONE- not processing into sdk subdir
+#Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 
-Write-Verbose "Copying $inputBasePath\Themes"
-Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
+#Write-Verbose "Copying $inputBasePath\Themes"
+#Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
 
 #Find the latest available sdk
 function Get-SDK-References-Path
@@ -93,8 +94,11 @@ Write-Verbose "WindowsSdkBinDir = $WindowsSdkBinDir"
 $foundationWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.FoundationContract" -Filter "Windows.Foundation.FoundationContract.winmd" | Select-Object -ExpandProperty FullName
 $universalWinmdPath = Get-ChildItem -Recurse $sdkReferencesPath"\Windows.Foundation.UniversalApiContract" -Filter "Windows.Foundation.UniversalApiContract.winmd" | Select-Object -ExpandProperty FullName
 $refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
-Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
-$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+#UNDONE - not re-writing to sdk dir
+#Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
+#$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\$inputBaseFileName.winmd' '$refrenceWinmds'"
+$classes = Get-ActivatableTypes $inputBasePath\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
 Write-Host $classes.Length Types found.
 @"
 "$inputBaseFileName.dll" "$inputBaseFileName.dll"
@@ -121,8 +125,6 @@ $ActivatableTypes += @"
 
 "@
 
-Copy-IntoNewDirectory ..\..\dev\Materials\Acrylic\Assets\NoiseAsset_256x256_PNG.png $fullOutputPath\Assets
-
 $customPropsFile = "$PSScriptRoot\..\..\version.props"
 Write-Verbose "Looking in $customPropsFile"
 
@@ -132,14 +134,14 @@ if (-not (Test-Path $customPropsFile))
     Exit 1
 }
 [xml]$customProps = (Get-Content $customPropsFile)
-$versionMajor = $customProps.GetElementsByTagName("MUXVersionMajor").'#text'
-$versionMinor = $customProps.GetElementsByTagName("MUXVersionMinor").'#text'
+$versionMajor = $customProps.GetElementsByTagName("ProjectReunionVersionMajor").'#text'
+$versionMinor = $customProps.GetElementsByTagName("ProjectReunionVersionMinor").'#text'
 
 Write-Verbose "CustomProps = $customProps, VersionMajor = '$versionMajor', VersionMinor = '$versionMinor'"
 
 if ((!$versionMajor) -or (!$versionMinor))
 {
-    Write-Error "Expected MUXVersionMajor and MUXVersionMinor tags to be in version.props file"
+    Write-Error "Expected ProjectReunionVersionMajor and ProjectReunionVersionMinor tags to be in version.props file"
     Exit 1
 }
 
@@ -196,12 +198,12 @@ $versionPropsFile =
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MicrosoftUIXamlAppxVersion>$version</MicrosoftUIXamlAppxVersion>
+    <MicrosoftProjectReunionAppxVersion>$version</MicrosoftProjectReunionAppxVersion>
   </PropertyGroup>
 </Project>
 "@
 
-Set-Content -Value $versionPropsFile $fullOutputPath\MicrosoftUIXamlVersion.props
+Set-Content -Value $versionPropsFile $fullOutputPath\MicrosoftProjectReunionVersion.props
 
 
 # Also copy in some loose files 
@@ -230,11 +232,6 @@ $manifestContents = $manifestContents.Replace('$(Version)', "$Version")
 Set-Content -Value $manifestContents $fullOutputPath\PackageContents\AppxManifest.xml
 
 
-# Call GetFullPath to clean up the path -- makepri is very picky about double slashes in the path.
-$priConfigPath = [IO.Path]::GetFullPath("$fullOutputPath\priconfig.xml")
-$priOutputPath = [IO.Path]::GetFullPath("$fullOutputPath\resources.pri")
-$noiseAssetPath = [IO.Path]::GetFullPath("$fullOutputPath\Assets\NoiseAsset_256x256_PNG.png")
-$resourceContents = [IO.Path]::GetFullPath("$fullOutputPath\Resources")
 $pfxPath = [IO.Path]::GetFullPath("..\MSTest.pfx")
 
 pushd $fullOutputPath\PackageContents
@@ -247,17 +244,6 @@ if (($Configuration -ilike "debug") -and (Test-Path $xbfFilesPath))
 "$_" "$_"
 "@ } | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 }
-
-# Append output path of resources.pri as well
-@"
-"$priOutputPath" "resources.pri"
-"$noiseAssetPath" "Microsoft.ProjectReunion\Assets\NoiseAsset_256x256_PNG.png"
-"@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
-
-$makepriNew = "`"" + (Join-Path $WindowsSdkBinDir "makepri.exe") + "`" new /pr $fullOutputPath /cf $priConfigPath /of $priOutputPath /in $PackageName /o"
-Write-Host $makepriNew
-cmd /c $makepriNew
-if ($LastExitCode -ne 0) { Exit 1 }
 
 $outputAppxFileFullPath = Join-Path $fullOutputPath "$PackageName.appx"
 $outputAppxFileFullPath = [IO.Path]::GetFullPath($outputAppxFileFullPath)
