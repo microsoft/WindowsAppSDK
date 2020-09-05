@@ -17,6 +17,10 @@ wil::unique_cotaskmem_string g_frameworkPath;
 STDAPI MddBootstrapInitialize(
     const CLSID& appDynamicDependencyLifetimeManager)
 {
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_dllDirectoryCookie != 0);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_frameworkPath);
+
     wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
     RETURN_IF_FAILED(CoCreateInstance(appDynamicDependencyLifetimeManager, nullptr, CLSCTX_LOCAL_SERVER, __uuidof(IDynamicDependencyLifetimeManager), reinterpret_cast<void**>(lifetimeManager.addressof())));
 
@@ -65,6 +69,8 @@ STDAPI_(void) MddBootstrapShutdown()
             }
             (void)LOG_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", pathWithoutFrameworkPath));
         }
+
+        g_frameworkPath.reset();
     }
 }
 
