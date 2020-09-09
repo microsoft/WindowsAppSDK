@@ -3,15 +3,15 @@
 
 This is the spec for proposal [Project Reunion Deployment Information API #155](https://github.com/microsoft/ProjectReunion/issues/https://github.com/microsoft/ProjectReunion/issues/155).
 
-Project Reunion consists of a Main package and framework published by Microsoft while consumers
-of Project Reunion will often be non-Microsoft publishers. In order to have Project Reunion fully
-present and functional, the Project Reunion Framework and Main packages must both be deployed, and
-depending on the operating system, OS updates may also be required.  While the Windows Application
-Model naturally supports framework dependencies, it does not have a means of declaring a dependency
-across Main packages of different publishers. This API spec and feature proposal is to provide a
-means of identifying when the Project Reunion dependencies are not satisfied, and if that is the
-case, provide URIs for where the missing dependencies could be satisifed by the user and/or the
-developer.
+Project Reunion's deployment consists of a Main package and Framework package published by
+Microsoft while consumers of Project Reunion will be both Microsoft and non-Microsoft publishers.
+In order to have Project Reunion fully present and functional, the Project Reunion Framework and
+Main packages must both be deployed. Depending on the operating system, OS updates may also be
+required. While the Windows Application Model naturally supports framework dependencies, it does
+not have a means of declaring a dependency on Main packages. This API spec and feature proposal is
+to provide a means of identifying when the Project Reunion dependencies are not satisfied, and if
+that is the case, provide URIs for where the missing dependencies could be satisifed by the user
+and/or the developer.
 
 It is expected that we may be operating under conditions in which the user may not have permissions
 for the program or app package to resolve the dependency on its own, or such dependencies may
@@ -60,7 +60,7 @@ required, where to get it, and where to go for instruction.
 
 # Examples
 
-## GetProjectReunionStatus
+## GetStatus
 
 This is the means by which an app or program can call to verify Project Reunion is present to a
 minimum version. It should be called once after activation before trying to use Project Reunion
@@ -70,24 +70,24 @@ deployment state of Project Reunion.
 ```C++
 Windows::ApplicationModel::PackageVersion version{1, 0, 0, 0};
 auto status =
-Microsoft::Management::Deployment::ProjectReunionDeployment::GetProjectReunionStatus(version);
+Microsoft::Management::Deployment::ProjectReunionDeployment::GetStatus(version);
 if (!status.IsOK())
 {
     ...
 }
 ```
 
-## GetProjectReunionPackageLink
+## GetInstallPackageLink
 
-Provides a direct install link to deploy the latest version of ProjectReunion. If no OS Updates are
-required and the program or app has permissions to deploy packages, this can directly resolve the
-missing dependency without burdening the user.
+Provides a direct install link to deploy the latest version of Project Reunion. If no OS Updates
+are required and the program or app has permissions to deploy packages, this can directly resolve
+the missing dependency without burdening the user.
 
 ```C++
-Windows::Foundation::Uri packageLink = Microsoft::Management::Deployment::ProjectReunionDeployment::GetProjectReunionPackageLink();
+Windows::Foundation::Uri packageLink = Microsoft::Management::Deployment::ProjectReunionDeployment::GetInstallPackageLink();
 ```
 
-## GetProjectReunionInstallInformationLink
+## GetInstallInformationLink
 
 Provides a user-friendly link to acquire the latest version of Project Reunion and any OS updates
 that may be required. This can be used to guide the user to where they can resolve the missing
@@ -95,7 +95,7 @@ dependency.
 
 ```C++
 Windows::Foundation::Uri installInformationLink =
-Microsoft::Management::Deployment::ProjectReunionDeployment::GetProjectReunionInstallInformationLink();
+Microsoft::Management::Deployment::ProjectReunionDeployment::GetInstallInformationLink();
 ```
 
 # API Details
@@ -124,12 +124,12 @@ namespace Microsoft.Management.Deployment
         /// minimum package version specified.
         static ProjectReunionDeploymentStatus GetStatus(Windows.ApplicationModel.PackageVersion packageVersion);
 
-        /// Returns a URI for the direct install link for the latest Project Reunion Package.
-        static Windows.Foundation.Uri GetProjectReunionPackageLink();
+        /// Returns a URI for the direct install link for the latest Project Reunion .appinstaller.
+        static Windows.Foundation.Uri GetInstallPackageLink();
 
         /// Returns a URI for a user-friendly install instruction for Project Reunion and any
         /// OS updates that may be required.
-        static Windows.Foundation.Uri GetProjectReunionInstallInformationLink();
+        static Windows.Foundation.Uri GetInstallInformationLink();
     }
 }
 ```
