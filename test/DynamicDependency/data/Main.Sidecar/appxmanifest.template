@@ -16,7 +16,7 @@
   <Properties>
     <DisplayName>ProjectReunion.Test.DynDep.Main.Sidecar</DisplayName>
     <PublisherDisplayName>Project Reunion</PublisherDisplayName>
-    <Logo>logo.png</Logo>
+    <Logo>Assets\logo.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -45,12 +45,13 @@
           <com:ComServer>
             <!-- CLSID -->
             <com:ExeServer Executable="Main.Sidecar.exe" DisplayName="ProjectReunion Test DynDep Main.Sidecar">
-              <com:Class Id="32E7CF70-038C-429a-BD49-88850F1B4A11" DisplayName="ProjectReunion Test DynDep Main.Sidecar MyLifetimeManager" ProgId="TestDynDepMainSidecar.MyLifetimeManager.1" VersionIndependentProgId="TestDynDepMainSidecar.MyLifetimeManager">
+              <!-- ProgId.length must be <= 39 on builds < 10.0.18256.0. "TestDynDepMainSidecar.MyLifetimeManager.1" = 41 chars. Shrink the name a tad to fit -->
+              <com:Class Id="32E7CF70-038C-429a-BD49-88850F1B4A11" DisplayName="ProjectReunion Test DynDep Main.Sidecar MyLifetimeManager" ProgId="TestDynDepMainSide.MyLifetimeManager.1" VersionIndependentProgId="TestDynDepMainSide.MyLifetimeManager">
               </com:Class>
             </com:ExeServer>
             <!-- ProgId -->
-            <com:ProgId Id="TestDynDepMainSidecar.MyLifetimeManager" CurrentVersion="TestDynDepMainSidecar.MyLifetimeManager.1" />
-            <com:ProgId Id="TestDynDepMainSidecar.MyLifetimeManager.1" Clsid="32E7CF70-038C-429a-BD49-88850F1B4A11" />
+            <com:ProgId Id="TestDynDepMainSide.MyLifetimeManager" CurrentVersion="TestDynDepMainSide.MyLifetimeManager.1" />
+            <com:ProgId Id="TestDynDepMainSide.MyLifetimeManager.1" Clsid="32E7CF70-038C-429a-BD49-88850F1B4A11" />
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comInterface">

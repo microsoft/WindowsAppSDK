@@ -376,7 +376,7 @@
     <Error Condition="!Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.targets'))" />
   </Target>
-  <Target Name="MakeMSIX" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)appxmanifest.template')" Inputs="$(ProjectDir)appxmanifest.template;$(ProjectDir)logo.png;$(TargetPathName)" Outputs="$(TargetName).msix">
+  <Target Name="MakeMSIX" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)appxmanifest.template')" Inputs="$(ProjectDir)appxmanifest.template;$(ProjectDir)Assets\logo.png;$(ProjectDir)Assets\Square150x150Logo.png;$(ProjectDir)Assets\Square44x44Logo.png;$(ProjectDir)Assets\Wide310x150Logo.png;$(ProjectDir)Assets\SplashScreen.png;$(TargetPathName)" Outputs="$(TargetName).msix">
     <Message Text="Make MSIX $(TargetName).msix for $(ProjectName)" />
     <Exec Command="$(SolutionDir)tools\makemsix.cmd $(SolutionDir) $(ProjectDir) $(OutDir) $(TargetDir) $(TargetFileName) $(TargetName)" ConsoleToMsBuild="true" IgnoreExitCode="true" />
   </Target>
