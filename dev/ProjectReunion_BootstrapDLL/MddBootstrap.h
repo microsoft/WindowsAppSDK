@@ -5,9 +5,9 @@
 #define MDDBOOSTRAP_H
 
 STDAPI MddBootstrapInitialize(
-    const CLSID& appDynamicDependencyLifetimeManager);
+    const CLSID& appDynamicDependencyLifetimeManager) noexcept;
 
-STDAPI_(void) MddBootstrapShutdown();
+STDAPI_(void) MddBootstrapShutdown() noexcept;
 
 #endif // MDDBOOSTRAP_H
 

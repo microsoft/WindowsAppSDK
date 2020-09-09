@@ -15,7 +15,7 @@ DLL_DIRECTORY_COOKIE g_dllDirectoryCookie = 0;
 wil::unique_cotaskmem_string g_frameworkPath;
 
 STDAPI MddBootstrapInitialize(
-    const CLSID& appDynamicDependencyLifetimeManager)
+    const CLSID& appDynamicDependencyLifetimeManager) noexcept
 {
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_dllDirectoryCookie != 0);
@@ -39,7 +39,7 @@ STDAPI MddBootstrapInitialize(
     return S_OK;
 }
 
-STDAPI_(void) MddBootstrapShutdown()
+STDAPI_(void) MddBootstrapShutdown() noexcept
 {
     if (!g_lifetimeManager)
     {

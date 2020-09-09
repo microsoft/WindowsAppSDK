@@ -35,7 +35,7 @@ LONG DynamicGetCurrentPackageInfo2(
     BYTE* buffer,
     UINT32* count);
 
-HRESULT MddDetourPackageGraphInitialize()
+HRESULT MddDetourPackageGraphInitialize() noexcept
 {
     // Do we need to detour package graph APIs?
     if (DetourIsHelperProcess())
@@ -44,28 +44,33 @@ HRESULT MddDetourPackageGraphInitialize()
     }
 
     // Detour package graph APIs to our implementation
-    DetourRestoreAfterWith();
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo);
-    DetourTransactionCommit();
-
+    RETURN_IF_WIN32_BOOL_FALSE(DetourRestoreAfterWith());
+    RETURN_IF_WIN32_ERROR(DetourTransactionBegin());
+    RETURN_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
+    RETURN_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
+    RETURN_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
 
-void MddDetourPackageGraphShutdown()
+HRESULT _MddDetourPackageGraphShutdown() noexcept
 {
     // Did we detour package graph APIs?
     if (DetourIsHelperProcess())
     {
-        return;
+        return S_OK;
     }
 
     // Stop Detour'ing package graph APIs to our implementation
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo);
-    DetourTransactionCommit();
+    RETURN_IF_WIN32_ERROR(DetourTransactionBegin());
+    RETURN_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
+    RETURN_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
+    RETURN_IF_WIN32_ERROR(DetourTransactionCommit());
+    return S_OK;
+}
+
+void MddDetourPackageGraphShutdown() noexcept
+{
+    _MddDetourPackageGraphShutdown();
 }
 
 LONG DynamicGetCurrentPackageInfo(

@@ -4,7 +4,7 @@
 #if !defined(MDDDETOURPACKAGEGRAPH_H)
 #define MDDDETOURPACKAGEGRAPH_H
 
-HRESULT MddDetourPackageGraphInitialize();
-void MddDetourPackageGraphShutdown();
+HRESULT MddDetourPackageGraphInitialize() noexcept;
+void MddDetourPackageGraphShutdown() noexcept;
 
 #endif // MDDDETOURPACKAGEGRAPH_H
