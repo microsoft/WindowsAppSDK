@@ -69,6 +69,7 @@
             </com:TypeLib>
           </com:ComInterface>
         </com:Extension>
+      </Extensions>
     </Application>
   </Applications>
 
