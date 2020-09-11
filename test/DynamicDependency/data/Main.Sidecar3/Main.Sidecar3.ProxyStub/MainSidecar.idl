@@ -1,0 +1,20 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+import "IDynamicDependencyLifetimeManager.idl";
+
+[uuid(1BF712E5-41ED-46a5-8402-2D40725F691E)]
+[version(1.0)]
+[helpstring("ProjectReunion Test DynDep Main.Sidecar")]
+library TestDynDepMainSide
+{
+    [uuid(32E7CF70-038C-429a-BD49-88850F1B4A11)]
+    [helpstring("ProjectReunion Test DynDep Main.Sidecar MyLifetimeManager")]
+    coclass MyLifetimeManager
+    {
+        [default] interface IDynamicDependencyLifetimeManager;
+    };
+};
