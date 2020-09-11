@@ -56,7 +56,6 @@
           <com:ComInterface>
             <!-- IID_IDynamicDependencyLifetimeManager -->
             <com:Interface Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" UseUniversalMarshaler="true"/>
-            </com:Interface>
           </com:ComInterface>
         </com:Extension>
         <Extension Category="windows.activatableClass.proxyStub">
