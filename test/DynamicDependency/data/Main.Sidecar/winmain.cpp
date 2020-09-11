@@ -83,5 +83,12 @@ int WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLi
 
     register_MyLifetimeManager();
 
+    MSG msg{};
+    while (GetMessage(&msg, 0, 0, 0) > 0)
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
     return 0;
 }
