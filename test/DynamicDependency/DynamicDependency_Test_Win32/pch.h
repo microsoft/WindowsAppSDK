@@ -7,8 +7,6 @@
 #ifndef PCH_H
 #define PCH_H
 
-#include "CppUnitTest.h"
-
 #include <unknwn.h>
 
 #include <wil/cppwinrt.h>
@@ -28,5 +26,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <MddBootstrap.h>
+
+#include "CppUnitTest.h"
 
 #endif //PCH_H
