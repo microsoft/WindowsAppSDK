@@ -176,8 +176,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -199,8 +198,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -226,8 +224,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -249,8 +246,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -276,8 +272,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -303,8 +298,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -322,14 +316,15 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <DllDataFileName>
       </DllDataFileName>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -355,8 +350,7 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <TypeLibraryName />
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -377,15 +371,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="MainSidecar.idl">
-      <GenerateClientFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Stub</GenerateClientFiles>
-      <GenerateServerFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Stub</GenerateServerFiles>
-    </Midl>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="MainSidecar.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
