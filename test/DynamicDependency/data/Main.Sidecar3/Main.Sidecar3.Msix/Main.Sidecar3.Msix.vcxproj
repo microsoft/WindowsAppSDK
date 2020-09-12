@@ -63,10 +63,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeBuildCommandLine>nmake makefile.mak</NMakeBuildCommandLine>
-    <NMakeOutput>Main.Sidecar3.Msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake makefile.mak clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake makefile.mak rebuild</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine>nmake makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)Main.Sidecar3.Msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
