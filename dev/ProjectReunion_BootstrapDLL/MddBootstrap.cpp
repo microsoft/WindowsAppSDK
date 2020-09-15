@@ -15,29 +15,29 @@ DLL_DIRECTORY_COOKIE g_dllDirectoryCookie = 0;
 wil::unique_cotaskmem_string g_frameworkPath;
 
 STDAPI MddBootstrapInitialize(
-    const CLSID& appDynamicDependencyLifetimeManager) noexcept
+    const CLSID& appDynamicDependencyLifetimeManager) noexcept try
 {
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_dllDirectoryCookie != 0);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_frameworkPath);
 
-    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
-    RETURN_IF_FAILED(CoCreateInstance(appDynamicDependencyLifetimeManager, nullptr, CLSCTX_LOCAL_SERVER, __uuidof(IDynamicDependencyLifetimeManager), reinterpret_cast<void**>(lifetimeManager.addressof())));
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager(wil::CoCreateInstance<IDynamicDependencyLifetimeManager>(appDynamicDependencyLifetimeManager, CLSCTX_LOCAL_SERVER));
 
-    RETURN_IF_FAILED(lifetimeManager->Initialize());
+    THROW_IF_FAILED(lifetimeManager->Initialize());
 
     wil::unique_cotaskmem_string packageFullName;
-    RETURN_IF_FAILED(lifetimeManager->GetPackageFullName(&packageFullName));
+    THROW_IF_FAILED(lifetimeManager->GetPackageFullName(&packageFullName));
 
     wil::unique_cotaskmem_ptr<BYTE[]> packageInfoBuffer;
     const PACKAGE_INFO* frameworkPackageInfo = nullptr;
-    RETURN_IF_FAILED(GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo, packageInfoBuffer));
+    THROW_IF_FAILED(GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo, packageInfoBuffer));
 
-    RETURN_IF_FAILED(AddFrameworkToPath(frameworkPackageInfo->path));
+    THROW_IF_FAILED(AddFrameworkToPath(frameworkPackageInfo->path));
 
     g_lifetimeManager = lifetimeManager.detach();
     return S_OK;
 }
+CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
