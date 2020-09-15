@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SignConfigXML>
+  <job platform="AnyCPU" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="Release" dest="__OUTPATHROOT__\signed" jobname="MRT Core nuget sign" approvers="">
+    <file src="__INPATHROOT__\Microsoft.ApplicationModel.Resources.*.nupkg" signType="Nuget" /> 
+  </job>
+</SignConfigXML>

@@ -1,0 +1,8 @@
+{
+    "sdk": {
+        "version": "5.0.100-preview.5.20279.10"
+    },
+    "msbuild-sdks": {
+        "Microsoft.Build.NoTargets" : "1.0.88"
+    }
+}

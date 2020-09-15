@@ -1,0 +1,38 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
+  </PropertyGroup>
+
+  <!--
+    Some of the manual reference adding below may not be necessary due to the files in question being in default locations, but there's no harm in it.
+  -->
+
+  <!-- The three OutputType options MRTCore supports currently are WinExe (C#), Exe (C++) and Library -->
+  <ItemGroup Condition="'$(OutputType)' == 'Exe'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd</HintPath>
+      <Implementation>$(MSBuildThisFileDirectory)..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\Microsoft.ApplicationModel.Resources.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Any .NET 5 version is valid here, hence the regex match! For example, this will match net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
+  <ItemGroup Condition="'$(OutputType)' == 'WinExe' AND $([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) == 'true'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.Projection.dll">
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- TODO: Use the Standard .NET 2 projection DLL for any .NET version less than .NET 5 for now. This may change soon after discussion with the .NET team. -->
+  <ItemGroup Condition="'$(OutputType)' == 'WinExe' AND $([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) != 'true'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.Projection.dll">
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\netstandard2.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
