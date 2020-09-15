@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="SimpleBuildTests">
+        <ParameterTypes>
+            <ParameterType Name="SimpleId">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SingleResource" Description="Build a map with one resource">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems"></Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleRange" Description="Build a map with a single range of resources">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English 
+                    Text</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; string; $en; Item3 English 
+                    Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SingleRangeWithGap" Description="Build a map with a single range of resources with one item missing">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">5</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Collection1/Item4; 
+                Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">4</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 0</Value>
+                <Value>3; Collection1/Item4; 1</Value>
+                <Value>4; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+        </Row>
+        <Row Name="MultiRange" Description="Build a map with multiple ranges of resources">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; string; $en; Item3 English 
+                    Text</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">3</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">9</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+        </Row>
+        <Row Name="SimpleMapMultiCandidate" Description="Build a simple map with multiple candidates per named resource">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#de=2; Language; de-DE</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$de=2; #de=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $de; Item 1 Deutscher 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems">1</Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="ExpectedNumTotalValues">2</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 1; string; $de; Item 1 Deutscher 
+                    Text</Value>
+            </Parameter>
+        </Row>
+    </Table>
+    <Table Id="RegressionTests">
+        <ParameterTypes>
+            <ParameterType Name="SimpleId">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="SimpleMaps" Description="Build simple maps for regressions">
+            <Parameter Name="SimpleId">SimpleMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+            <Parameter Name="Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="ExpectedNumScopes">2</Parameter>
+            <Parameter Name="ExpectedScopes">
+                <Value>1; Collection1; 1</Value> 
+                </Parameter>
+            <Parameter Name="ExpectedNumItems"></Parameter>
+            <Parameter Name="ExpectedItemsList">Collection1/Item1</Parameter>
+            <Parameter Name="ExpectedNumTotalValues">1</Parameter>
+            <Parameter Name="ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+            </Parameter>
+            <Parameter Name="ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="EmptySimpleId">EmptyMap</Parameter>
+            <Parameter Name="EmptyMajorVersion">1</Parameter>
+        </Row>
+    </Table>
+    <Table Id="DeduplicationTests">
+        <ParameterTypes>
+            <ParameterType Name="SimpleId">String</ParameterType>
+            <ParameterType Name="MajorVersion">int</ParameterType>
+            <ParameterType Name="Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="DuplicateStrings" Description="Build basic map for deduplication feature test. Then add strings manually.">
+            <Parameter Name="SimpleId">BasicMap</Parameter>
+            <Parameter Name="MajorVersion">1</Parameter>
+            <Parameter Name="Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Decisions">
+            </Parameter>
+        </Row>
+    </Table>
+
+</Data>

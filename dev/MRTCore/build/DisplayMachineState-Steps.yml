@@ -1,0 +1,8 @@
+steps:
+
+  # Display useful information about the state of the build machine.
+  # This can be helpful when trying to understand build failures that do not repro locally.
+
+  - script: set
+    displayName: 'Display build machine environment variables'
+    condition: always()

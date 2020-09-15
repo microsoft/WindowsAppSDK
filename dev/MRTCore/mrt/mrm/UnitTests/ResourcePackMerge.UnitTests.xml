@@ -1,0 +1,1415 @@
+<?xml version="1.0"?>
+<Data>
+    <Table Id="ThreeFilesMergeTests">
+        <ParameterTypes>
+            <ParameterType Name="Pri1_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri1_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri1_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri2_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri2_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri2_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri3_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri3_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri3_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri4_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri4_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri4_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri5_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri5_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri5_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="PriMerged_1_2_SimpleId">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_MajorVersion">int</ParameterType>
+            <ParameterType Name="PriMerged_1_2_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="PriMerged_3_4_SimpleId">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_MajorVersion">int</ParameterType>
+            <ParameterType Name="PriMerged_3_4_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+
+            <ParameterType Name="PriMerged_3_4_5_SimpleId">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_MajorVersion">int</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="ResourcePackMergeTests" 
+             Description="Data for creating pri files. PriMerged_a_b_ defines data for the resultant merged files from pria and prib.">
+            <Parameter Name="Pri1_SimpleId">PriMergerTest_Schema_First</Parameter>
+            <Parameter Name="Pri1_MajorVersion">1</Parameter>
+            <Parameter Name="Pri1_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="Pri1_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Pri1_Decisions">
+            </Parameter>
+            <Parameter Name="Pri1_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri1_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri1_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri1_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri1_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri1_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri1_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri1_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri1_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri1_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+
+            <Parameter Name="Pri2_SimpleId">PriMergerTest_Schema_First</Parameter>
+            <Parameter Name="Pri2_MajorVersion">1</Parameter>
+            <Parameter Name="Pri2_Qualifiers">
+                <Value>#it=1; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="Pri2_QualifierSets">
+                <Value>$it=1; #it=0</Value>
+            </Parameter>
+            <Parameter Name="Pri2_Decisions">
+            </Parameter>
+            <Parameter Name="Pri2_Candidates">
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri2_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri2_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri2_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri2_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri2_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri2_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri2_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+            <Parameter Name="Pri3_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="Pri3_MajorVersion">1</Parameter>
+            <Parameter Name="Pri3_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="Pri3_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Pri3_Decisions">
+            </Parameter>
+            <Parameter Name="Pri3_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri3_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri3_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri3_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri3_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri3_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri3_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri3_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri3_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri3_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+
+            <Parameter Name="Pri4_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="Pri4_MajorVersion">1</Parameter>
+            <Parameter Name="Pri4_Qualifiers">
+                <Value>#it=1; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="Pri4_QualifierSets">
+                <Value>$it=1; #it=0</Value>
+            </Parameter>
+            <Parameter Name="Pri4_Decisions">
+            </Parameter>
+            <Parameter Name="Pri4_Candidates">
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri4_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri4_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri4_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri4_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri4_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri4_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri4_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri4_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri4_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+			<Parameter Name="Pri5_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="Pri5_MajorVersion">1</Parameter>
+            <Parameter Name="Pri5_Qualifiers">
+                <Value>#ko=1; Language; ko-kr</Value>
+            </Parameter>
+            <Parameter Name="Pri5_QualifierSets">
+                <Value>$ko=1; #ko=0</Value>
+            </Parameter>
+            <Parameter Name="Pri5_Decisions">
+            </Parameter>
+            <Parameter Name="Pri5_Candidates">
+                <Value>Collection1/Item1; string; $ko; Item1 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $ko; Item2 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $ko; ko-kr-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $ko; Item4 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $ko; Item5 ko-kr 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri5_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri5_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri5_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri5_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri5_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri5_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri5_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri5_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri5_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $ko; Item1 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $ko; Item2 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $ko; *ko-kr-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $ko; Item4 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $ko; Item5 ko-kr 
+                    Text</Value>
+            </Parameter>
+            
+            <Parameter Name="PriMerged_1_2_SimpleId">PriMergerTest_Schema_First</Parameter>
+            <Parameter Name="PriMerged_1_2_MajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_1_2_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=1</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_Decisions">
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNumItems">9</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNumTotalValues">10</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+                <Value>1; Collection1/Item2; 2</Value>
+                <Value>2; Collection1/Item3; 2</Value>
+                <Value>7; Collection1/Item4; 2</Value>
+                <Value>8; Collection1/Item5; 2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedQualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedDecisions">
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 1; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 1; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 1; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 1; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+			<Parameter Name="PriMerged_3_4_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="PriMerged_3_4_MajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=1</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_Decisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNumItems">9</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNumTotalValues">10</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+                <Value>1; Collection1/Item2; 2</Value>
+                <Value>2; Collection1/Item3; 2</Value>
+                <Value>7; Collection1/Item4; 2</Value>
+                <Value>8; Collection1/Item5; 2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedQualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedDecisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 1; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 1; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 1; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 1; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+
+            <Parameter Name="PriMerged_3_4_5_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="PriMerged_3_4_5_MajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_5_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+                <Value>#ko=3; Language; ko-kr</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=1</Value>
+                <Value>$ko=3; #ko=2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_Decisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $it; Item1 Italian 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 Italian 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 Italian 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 Italian 
+                    Text</Value>
+				<Value>Collection1/Item1; string; $ko; Item1 Korean 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $ko; Item2 Korean 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $ko; ko-kr-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $ko; Item4 Korean
+                    Text</Value>
+                <Value>Collection1/Item5; string; $ko; Item5 Korean 
+                    Text</Value>					                    
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNumItems">9</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNumTotalValues">15</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 3</Value>
+                <Value>1; Collection1/Item2; 3</Value>
+                <Value>2; Collection1/Item3; 3</Value>
+                <Value>7; Collection1/Item4; 3</Value>
+                <Value>8; Collection1/Item5; 3</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedQualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+                <Value>#ko=3; Language; ko-kr</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=2</Value>
+                <Value>$ko=3; #ko=3</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedDecisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 1; string; $it; Item1 Italian 
+                    Text</Value>
+                <Value>Collection1/Item2; 1; string; $it; Item2 Italian 
+                    Text</Value>
+                <Value>Collection1/Item3; 1; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 1; string; $it; Item4 Italian 
+                    Text</Value>
+                <Value>Collection1/Item5; 1; string; $it; Item5 Italian 
+                    Text</Value>
+				<Value>Collection1/Item1; 2; string; $ko; Item1 Korean 
+                    Text</Value>
+                <Value>Collection1/Item2; 2; string; $ko; Item2 Korean 
+                    Text</Value>
+                <Value>Collection1/Item3; 2; path; $ko; *ko-kr-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 2; string; $ko; Item4 Korean 
+                    Text</Value>
+                <Value>Collection1/Item5; 2; string; $ko; Item5 Korean 
+                    Text</Value>                    
+            </Parameter>
+
+        </Row>
+    </Table>
+    <Table Id="LoadPriWitMergeTests">
+        <ParameterTypes>
+            <ParameterType Name="Pri1_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri1_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri1_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri1_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri2_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri2_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri2_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri2_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri3_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri3_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri3_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri3_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri4_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri4_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri4_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri4_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="Pri5_SimpleId">String</ParameterType>
+            <ParameterType Name="Pri5_MajorVersion">int</ParameterType>
+            <ParameterType Name="Pri5_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="Pri5_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="PriMerged_1_2_SimpleId">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_MajorVersion">int</ParameterType>
+            <ParameterType Name="PriMerged_1_2_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_1_2_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+            <ParameterType Name="PriMerged_3_4_SimpleId">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_MajorVersion">int</ParameterType>
+            <ParameterType Name="PriMerged_3_4_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_ExpectedCandidateInfo" Array="true">String</ParameterType>
+
+
+            <ParameterType Name="PriMerged_3_4_5_SimpleId">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_MajorVersion">int</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_Qualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_QualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_Decisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_NamedResources" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_Candidates" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedQualifiers" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedQualifierSets" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedDecisions" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedScopes" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedNamedResourcesInfo" Array="true">String</ParameterType>
+            <ParameterType Name="PriMerged_3_4_5_ExpectedCandidateInfo" Array="true">String</ParameterType>
+        </ParameterTypes>
+        <Row Name="ResourcePackMergeTests" 
+             Description="Data for creating pri files. PriMerged_a_b_ defines data for the resultant merged files from pria and prib.">
+            <Parameter Name="Pri1_SimpleId">PriMergerTest_Schema_First</Parameter>
+            <Parameter Name="Pri1_MajorVersion">1</Parameter>
+            <Parameter Name="Pri1_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="Pri1_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Pri1_Decisions">
+            </Parameter>
+            <Parameter Name="Pri1_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri1_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri1_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri1_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri1_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri1_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri1_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri1_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri1_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri1_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+
+            <Parameter Name="Pri2_SimpleId">PriMergerTest_Schema_First</Parameter>
+            <Parameter Name="Pri2_MajorVersion">1</Parameter>
+            <Parameter Name="Pri2_Qualifiers">
+                <Value>#it=1; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="Pri2_QualifierSets">
+                <Value>$it=1; #it=0</Value>
+            </Parameter>
+            <Parameter Name="Pri2_Decisions">
+            </Parameter>
+            <Parameter Name="Pri2_Candidates">
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri2_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri2_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri2_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri2_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri2_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri2_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri2_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+            <Parameter Name="Pri3_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="Pri3_MajorVersion">1</Parameter>
+            <Parameter Name="Pri3_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+            </Parameter>
+            <Parameter Name="Pri3_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+            </Parameter>
+            <Parameter Name="Pri3_Decisions">
+            </Parameter>
+            <Parameter Name="Pri3_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri3_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri3_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri3_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri3_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri3_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri3_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri3_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri3_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri3_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $en; Item5 English 
+                    Text</Value>
+            </Parameter>
+
+            <Parameter Name="Pri4_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="Pri4_MajorVersion">1</Parameter>
+            <Parameter Name="Pri4_Qualifiers">
+                <Value>#it=1; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="Pri4_QualifierSets">
+                <Value>$it=1; #it=0</Value>
+            </Parameter>
+            <Parameter Name="Pri4_Decisions">
+            </Parameter>
+            <Parameter Name="Pri4_Candidates">
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri4_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri4_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri4_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri4_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri4_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri4_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri4_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri4_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri4_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+			<Parameter Name="Pri5_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="Pri5_MajorVersion">1</Parameter>
+            <Parameter Name="Pri5_Qualifiers">
+                <Value>#ko=1; Language; ko-kr</Value>
+            </Parameter>
+            <Parameter Name="Pri5_QualifierSets">
+                <Value>$ko=1; #ko=0</Value>
+            </Parameter>
+            <Parameter Name="Pri5_Decisions">
+            </Parameter>
+            <Parameter Name="Pri5_Candidates">
+                <Value>Collection1/Item1; string; $ko; Item1 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $ko; Item2 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $ko; ko-kr-file.txt
+                </Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $ko; Item4 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $ko; Item5 ko-kr 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="Pri5_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="Pri5_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="Pri5_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="Pri5_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="Pri5_ExpectedNumItems">9</Parameter>
+            <Parameter Name="Pri5_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="Pri5_ExpectedNumTotalValues">5</Parameter>
+            <Parameter Name="Pri5_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 1</Value>
+                <Value>1; Collection1/Item2; 1</Value>
+                <Value>2; Collection1/Item3; 1</Value>
+                <Value>7; Collection1/Item4; 1</Value>
+                <Value>8; Collection1/Item5; 1</Value>
+            </Parameter>
+            <Parameter Name="Pri5_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 0; string; $ko; Item1 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $ko; Item2 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $ko; *ko-kr-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $ko; Item4 ko-kr 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $ko; Item5 ko-kr 
+                    Text</Value>
+            </Parameter>
+            
+            <Parameter Name="PriMerged_1_2_SimpleId">PriMergerTest_Schema_First</Parameter>
+            <Parameter Name="PriMerged_1_2_MajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_1_2_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=1</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_Decisions">
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNumItems">9</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNumTotalValues">10</Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+                <Value>1; Collection1/Item2; 2</Value>
+                <Value>2; Collection1/Item3; 2</Value>
+                <Value>7; Collection1/Item4; 2</Value>
+                <Value>8; Collection1/Item5; 2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedQualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedDecisions">
+            </Parameter>
+            <Parameter Name="PriMerged_1_2_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 1; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 1; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 1; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 1; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+			<Parameter Name="PriMerged_3_4_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="PriMerged_3_4_MajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=1</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_Decisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNumItems">9</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNumTotalValues">10</Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 2</Value>
+                <Value>1; Collection1/Item2; 2</Value>
+                <Value>2; Collection1/Item3; 2</Value>
+                <Value>7; Collection1/Item4; 2</Value>
+                <Value>8; Collection1/Item5; 2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedQualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedDecisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 1; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 1; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 1; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 1; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 0; string; $it; Item1 it-it 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $it; Item2 it-it 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $it; Item4 it-it 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $it; Item5 it-it 
+                    Text</Value>
+            </Parameter>
+
+
+            <Parameter Name="PriMerged_3_4_5_SimpleId">PriMergerTest_Schema_Second</Parameter>
+            <Parameter Name="PriMerged_3_4_5_MajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_5_Qualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+                <Value>#ko=3; Language; ko-kr</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_QualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=1</Value>
+                <Value>$ko=3; #ko=2</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_Decisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_Candidates">
+                <Value>Collection1/Item1; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $en; en-us-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; string; $it; Item1 Italian 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $it; Item2 Italian 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $it; it-it-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $it; Item4 Italian 
+                    Text</Value>
+                <Value>Collection1/Item5; string; $it; Item5 Italian 
+                    Text</Value>
+				<Value>Collection1/Item1; string; $ko; Item1 Korean 
+                    Text</Value>
+                <Value>Collection1/Item2; string; $ko; Item2 Korean 
+                    Text</Value>
+                <Value>Collection1/Item3; path; $ko; ko-kr-file.txt</Value>
+                <Value>Pad/Pad1</Value>
+                <Value>Pad/Pad2</Value>
+                <Value>Pad/Pad3</Value>
+                <Value>Pad/Pad4</Value>
+                <Value>Collection1/Item4; string; $ko; Item4 Korean
+                    Text</Value>
+                <Value>Collection1/Item5; string; $ko; Item5 Korean 
+                    Text</Value>					                    
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedMajorVersion">1</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedMinorVersion">0</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNumScopes">3</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedScopes">
+                <Value>1; Collection1; 5</Value> 
+                <Value>2; Pad; 4</Value>
+                </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNumItems">9</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedItemsList">Collection1/Item1; 
+                Collection1/Item2; Collection1/Item3; Pad/Pad1; Pad/Pad2;
+                Pad/Pad3; Pad/Pad4; Collection1/Item4; Collection1/Item5
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNumTotalValues">15</Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedNamedResourcesInfo">
+                <Value>0; Collection1/Item1; 3</Value>
+                <Value>1; Collection1/Item2; 3</Value>
+                <Value>2; Collection1/Item3; 3</Value>
+                <Value>7; Collection1/Item4; 3</Value>
+                <Value>8; Collection1/Item5; 3</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedQualifiers">
+                <Value>#en=1; Language; en-US</Value>
+                <Value>#it=2; Language; it-it</Value>
+                <Value>#ko=3; Language; ko-kr</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedQualifierSets">
+                <Value>$en=1; #en=0</Value>
+                <Value>$it=2; #it=2</Value>
+                <Value>$ko=3; #ko=3</Value>
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedDecisions">
+            </Parameter>
+            <Parameter Name="PriMerged_3_4_5_ExpectedCandidateInfo">
+                <Value>Collection1/Item1; 2; string; $en; Item1 English 
+                    Text</Value>
+                <Value>Collection1/Item2; 2; string; $en; Item2 English 
+                    Text</Value>
+                <Value>Collection1/Item3; 2; path; $en; *en-us-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 2; string; $en; Item4 English 
+                    Text</Value>
+                <Value>Collection1/Item5; 2; string; $en; Item5 English 
+                    Text</Value>
+                <Value>Collection1/Item1; 1; string; $it; Item1 Italian 
+                    Text</Value>
+                <Value>Collection1/Item2; 1; string; $it; Item2 Italian 
+                    Text</Value>
+                <Value>Collection1/Item3; 1; path; $it; *it-it-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 1; string; $it; Item4 Italian 
+                    Text</Value>
+                <Value>Collection1/Item5; 1; string; $it; Item5 Italian 
+                    Text</Value>
+				<Value>Collection1/Item1; 0; string; $ko; Item1 Korean 
+                    Text</Value>
+                <Value>Collection1/Item2; 0; string; $ko; Item2 Korean 
+                    Text</Value>
+                <Value>Collection1/Item3; 0; path; $ko; *ko-kr-file.txt 
+                </Value>
+                <Value>Collection1/Item4; 0; string; $ko; Item4 Korean 
+                    Text</Value>
+                <Value>Collection1/Item5; 0; string; $ko; Item5 Korean 
+                    Text</Value>                    
+            </Parameter>
+
+        </Row>
+    </Table>
+</Data>

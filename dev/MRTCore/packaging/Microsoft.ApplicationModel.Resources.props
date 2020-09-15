@@ -1,0 +1,49 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>
+        $(MSBuildThisFileDirectory)..\lib\$(_MrtCoreRuntimeIdentifier)\mrm.lib;
+        %(AdditionalDependencies);
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- The three OutputType options MRTCore supports currently are WinExe (C#), Exe (C++) and Library -->
+  <ItemGroup Condition="'$(OutputType)' == 'Exe'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\$(_MrtCoreRuntimeIdentifier)\Microsoft.ApplicationModel.Resources.winmd</HintPath>
+      <Implementation>$(MSBuildThisFileDirectory)..\lib\$(_MrtCoreRuntimeIdentifier)\Microsoft.ApplicationModel.Resources.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Any .NET 5 version is valid here, hence the regex match! For example, this will match net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
+  <ItemGroup Condition="'$(OutputType)' == 'WinExe' AND $([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) == 'true'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.Projection.dll">
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\$(_MrtCoreRuntimeIdentifier)\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- TODO: Use the Standard .NET 2 projection DLL for any .NET version less than .NET 5 for now. This may change soon after discussion with the .NET team. -->
+  <ItemGroup Condition="'$(OutputType)' == 'WinExe' AND $([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) != 'true'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.Projection.dll">
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\$(_MrtCoreRuntimeIdentifier)\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
