@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 #include "pch.h"
@@ -7,7 +7,7 @@
 
 namespace winrt::Microsoft::ApplicationModel::Resources::implementation
 {
-ResourceCandidate::ResourceCandidate(ResourceCandidateKind kind, hstring data) : m_stringData(data), m_kind(kind)
+ResourceCandidate::ResourceCandidate(ResourceCandidateKind kind, hstring data) : m_stringData(std::move(data)), m_kind(kind)
 {
     if ((kind != ResourceCandidateKind::String) && (kind != ResourceCandidateKind::FilePath))
     {
@@ -22,7 +22,7 @@ ResourceCandidate::ResourceCandidate(array_view<uint8_t const> data)
 }
 
 ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, MrmContextHandle context, MrmMapHandle map, uint32_t index, const hstring& id, ResourceCandidateKind kind, hstring data)
-    : m_resourceManagerHandle(manager), m_resourceContextHandle(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_stringData(data), m_kind(kind)
+    : m_resourceManagerHandle(manager), m_resourceContextHandle(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_stringData(std::move(data)), m_kind(kind)
 {
     if ((kind != ResourceCandidateKind::String) && (kind != ResourceCandidateKind::FilePath))
     {

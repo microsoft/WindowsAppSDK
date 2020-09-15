@@ -68,9 +68,6 @@
     <None Include="PropertySheet.props" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{872fafe9-cab0-4e11-b733-0d77620ac3cc}</UniqueIdentifier>
     </Filter>

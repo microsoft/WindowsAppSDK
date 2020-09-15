@@ -8,6 +8,13 @@
   <!-- It should not display any schema warnings in error list window.            -->
   <!-- ========================================================================== -->
 
+  <!-- With .NET 5, the propery TargetPlatformIdentifier is not UAP but rather windows. This file expects UAP for all .NET versions, so adjust. -->
+  <PropertyGroup>
+    <TargetPlatformIdentifierAdjusted>$(TargetPlatformIdentifier)</TargetPlatformIdentifierAdjusted>
+      <!-- Any .NET 5 version is valid here, hence the regex match! For example, this will match net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
+    <TargetPlatformIdentifierAdjusted Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) == 'true'">UAP</TargetPlatformIdentifierAdjusted>
+  </PropertyGroup>
+
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
@@ -106,8 +113,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifier)' == 'Windows Phone'">true</_TargetPlatformIsWindowsPhone>
-    <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifier)' == 'WindowsPhoneApp'">true</_TargetPlatformIsWindowsPhone>
+    <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows Phone'">true</_TargetPlatformIsWindowsPhone>
+    <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifierAdjusted)' == 'WindowsPhoneApp'">true</_TargetPlatformIsWindowsPhone>
     <_TargetPlatformIsWindowsPhone Condition="'$(_TargetPlatformIsWindowsPhone)' == ''">false</_TargetPlatformIsWindowsPhone>
   </PropertyGroup>
 
@@ -123,7 +130,7 @@
     <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and  '$(SDKIdentifier)' != ''">6.3.1</AppxOSMinVersion>
     <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.2'">6.3.0</AppxOSMinVersion>
     <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.1' and '$(_TargetPlatformIsWindowsPhone)' == 'true'">6.3.1</AppxOSMinVersion>
-    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.1' and '$(TargetPlatformIdentifier)' == 'Windows'">6.3.0</AppxOSMinVersion>
+    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.1' and '$(TargetPlatformIdentifierAdjusted)' == 'Windows'">6.3.0</AppxOSMinVersion>
     <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == ''">6.2.1</AppxOSMinVersion>
   </PropertyGroup>
 
@@ -134,7 +141,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <NuGetTargetFramework Condition="'$(NuGetTargetFramework)'==''">$(TargetPlatformIdentifier),Version=v$(TargetPlatformMinVersion)</NuGetTargetFramework>
+    <NuGetTargetFramework Condition="'$(NuGetTargetFramework)'==''">$(TargetPlatformIdentifierAdjusted),Version=v$(TargetPlatformMinVersion)</NuGetTargetFramework>
     <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)'==''">win10-arm;win10-arm-aot;win10-arm64-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
     <ResolveAssemblyConflicts>true</ResolveAssemblyConflicts>
   </PropertyGroup>
@@ -307,17 +314,17 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(AppxDefaultResourceQualifiers)' == ''">
-    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifier)' == 'Windows' and '$(TargetPlatformVersion)' == '8.0'">$(AppxDefaultResourceQualifiers_Windows_80)</AppxDefaultResourceQualifiers>
-    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifier)' == 'Windows' and '$(TargetPlatformVersion)' == '8.1'">$(AppxDefaultResourceQualifiers_Windows_81)</AppxDefaultResourceQualifiers>
-    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifier)' == 'Windows' and '$(TargetPlatformVersion)' == '8.2'">$(AppxDefaultResourceQualifiers_Windows_82)</AppxDefaultResourceQualifiers>
-    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifier)' == 'Portable'">$(AppxDefaultResourceQualifiers_Windows_81)</AppxDefaultResourceQualifiers>
+    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows' and '$(TargetPlatformVersion)' == '8.0'">$(AppxDefaultResourceQualifiers_Windows_80)</AppxDefaultResourceQualifiers>
+    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows' and '$(TargetPlatformVersion)' == '8.1'">$(AppxDefaultResourceQualifiers_Windows_81)</AppxDefaultResourceQualifiers>
+    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows' and '$(TargetPlatformVersion)' == '8.2'">$(AppxDefaultResourceQualifiers_Windows_82)</AppxDefaultResourceQualifiers>
+    <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Portable'">$(AppxDefaultResourceQualifiers_Windows_81)</AppxDefaultResourceQualifiers>
     <AppxDefaultResourceQualifiers Condition="'$(SDKIdentifier)' != ''">$(AppxDefaultResourceQualifiers_UAP)</AppxDefaultResourceQualifiers>
     <AppxDefaultResourceQualifiers Condition="'$(_TargetPlatformIsWindowsPhone)' == 'true'">$(AppxDefaultResourceQualifiers_Windows_Phone)</AppxDefaultResourceQualifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(AppxOmitSchemaFromResourcePacks)' == ''">
-    <AppxOmitSchemaFromResourcePacks Condition="'$(TargetPlatformIdentifier)' == 'UAP'">true</AppxOmitSchemaFromResourcePacks>
-    <AppxOmitSchemaFromResourcePacks Condition="'$(TargetPlatformIdentifier)' != 'UAP'">false</AppxOmitSchemaFromResourcePacks>
+    <AppxOmitSchemaFromResourcePacks Condition="'$(TargetPlatformIdentifierAdjusted)' == 'UAP'">true</AppxOmitSchemaFromResourcePacks>
+    <AppxOmitSchemaFromResourcePacks Condition="'$(TargetPlatformIdentifierAdjusted)' != 'UAP'">false</AppxOmitSchemaFromResourcePacks>
   </PropertyGroup>
 
   <!-- If value is still not set, it is a platform yet unknown to us. -->
@@ -654,42 +661,42 @@
   <!-- There is no guarantee that NTVersion always consists of first two parts of OSVersion, hence a separate field. -->
   <ItemGroup>
     <PlatformVersionDescription Include="Windows 8.0">
-      <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+      <TargetPlatformIdentifierAdjusted>Windows</TargetPlatformIdentifierAdjusted>
       <TargetPlatformVersion>8.0</TargetPlatformVersion>
       <OSDescription>Windows 8.0</OSDescription>
       <OSVersion>6.2.1</OSVersion>
       <NTVersion>6.2</NTVersion>
     </PlatformVersionDescription>
     <PlatformVersionDescription Include="Windows 8.1">
-      <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+      <TargetPlatformIdentifierAdjusted>Windows</TargetPlatformIdentifierAdjusted>
       <TargetPlatformVersion>8.1</TargetPlatformVersion>
       <OSDescription>Windows 8.1</OSDescription>
       <OSVersion>6.3.0</OSVersion>
       <NTVersion>6.3</NTVersion>
     </PlatformVersionDescription>
     <PlatformVersionDescription Include="Windows Phone 8.1">
-      <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+      <TargetPlatformIdentifierAdjusted>WindowsPhoneApp</TargetPlatformIdentifierAdjusted>
       <TargetPlatformVersion>8.1</TargetPlatformVersion>
       <OSDescription>Windows Phone 8.1</OSDescription>
       <OSVersion>6.3.1</OSVersion>
       <NTVersion>6.3</NTVersion>
     </PlatformVersionDescription>
     <PlatformVersionDescription Include="Windows Phone Silverlight 8.1">
-      <TargetPlatformIdentifier>Windows Phone</TargetPlatformIdentifier>
+      <TargetPlatformIdentifierAdjusted>Windows Phone</TargetPlatformIdentifierAdjusted>
       <TargetPlatformVersion>8.1</TargetPlatformVersion>
       <OSDescription>Windows Phone 8.1</OSDescription>
       <OSVersion>6.3.1</OSVersion>
       <NTVersion>6.3</NTVersion>
     </PlatformVersionDescription>
     <PlatformVersionDescription Include="Windows 8.2">
-      <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+      <TargetPlatformIdentifierAdjusted>Windows</TargetPlatformIdentifierAdjusted>
       <TargetPlatformVersion>8.2</TargetPlatformVersion>
       <OSDescription>Windows 8.2</OSDescription>
       <OSVersion>6.3.0</OSVersion>
       <NTVersion>6.3</NTVersion>
     </PlatformVersionDescription>
     <PlatformVersionDescription Include="UAP 1.0">
-      <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+      <TargetPlatformIdentifierAdjusted>UAP</TargetPlatformIdentifierAdjusted>
       <TargetPlatformVersion>0.8.0.0</TargetPlatformVersion>
       <OSDescription>Windows 10.0</OSDescription>
       <OSVersion>10.0.0</OSVersion>
@@ -830,7 +837,7 @@
                         TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                         SDKIdentifier="$(SDKIdentifier)"
                         SDKVersion="$(SDKVersion)"
-                        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                         TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                         TargetPlatformVersion="$(TargetPlatformVersion)"
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
@@ -850,7 +857,7 @@
                         TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                         SDKIdentifier="$(SDKIdentifier)"
                         SDKVersion="$(SDKVersion)"
-                        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                         TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                         TargetPlatformVersion="$(TargetPlatformVersion)"
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
@@ -868,7 +875,7 @@
                         TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                         SDKIdentifier="$(SDKIdentifier)"
                         SDKVersion="$(SDKVersion)"
-                        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                         TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                         TargetPlatformVersion="$(TargetPlatformVersion)"
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
@@ -890,7 +897,7 @@
                         TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                         SDKIdentifier="$(SDKIdentifier)"
                         SDKVersion="$(SDKVersion)"
-                        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                         TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                         TargetPlatformVersion="$(TargetPlatformVersion)"
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
@@ -912,7 +919,7 @@
                         TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                         SDKIdentifier="$(SDKIdentifier)"
                         SDKVersion="$(SDKVersion)"
-                        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                         TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                         TargetPlatformVersion="$(TargetPlatformVersion)"
                         MSBuildExtensionsPath64Exists="$(MSBuildExtensionsPath64Exists)"
@@ -925,7 +932,7 @@
     <GetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                          SDKIdentifier="$(SDKIdentifier)"
                          SDKVersion="$(SDKVersion)"
-                         TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                         TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                          TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                          TargetPlatformVersion="$(TargetPlatformVersion)"
                          PropertyName="MakePriExtensionPath"
@@ -937,7 +944,7 @@
     <GetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                          SDKIdentifier="$(SDKIdentifier)"
                          SDKVersion="$(SDKVersion)"
-                         TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                         TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                          TargetPlatformMinVersion="$(TargetPlatformMinVersion)"
                          TargetPlatformVersion="$(TargetPlatformVersion)"
                          PropertyName="MakePriExtensionPath_x64"
@@ -1018,7 +1025,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_SupportEmbedFileResources Condition="'$(_SupportEmbedFileResources)' =='' AND '$(TargetPlatformIdentifier)' == 'UAP'">true</_SupportEmbedFileResources>
+    <_SupportEmbedFileResources Condition="'$(_SupportEmbedFileResources)' =='' AND '$(TargetPlatformIdentifierAdjusted)' == 'UAP'">true</_SupportEmbedFileResources>
     <_PriConfigXmlPath>$(IntermediateOutputPath)priconfig.xml</_PriConfigXmlPath>
     <_UnfilteredLayoutResfilesPath>$(IntermediateOutputPath)unfiltered.layout.resfiles</_UnfilteredLayoutResfilesPath>
     <_FilteredLayoutResfilesPath>$(IntermediateOutputPath)filtered.layout.resfiles</_FilteredLayoutResfilesPath>
@@ -1112,7 +1119,7 @@
                     DefaultResourceLanguage="$(DefaultResourceLanguage)"
                     DefaultResourceQualifiers="$(AppxDefaultResourceQualifiers)"
                     IntermediateExtension="$(AppxIntermediateExtension)"
-                    TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+                    TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
                     TargetPlatformVersion="$(TargetPlatformResourceVersion)"
                     AppxBundleAutoResourcePackageQualifiers="$(AppxBundleAutoResourcePackageQualifiers)"
                     SkipIntermediatePriGenerationForResourceFiles="$(SkipIntermediatePriGenerationForResourceFiles)"
@@ -1234,7 +1241,7 @@
         DefaultResourceQualifiers="$(AppxDefaultResourceQualifiers)"
         IntermediateExtension="$(AppxIntermediateExtension)"
         PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
         TargetPlatformVersion="$(TargetPlatformResourceVersion)"
         AdditionalResourceResFiles="@(_AdditionalResourceResFiles)"
         VsTelemetrySession="$(VsTelemetrySession)"
@@ -1392,7 +1399,7 @@
     </GetCopyToOutputDirectoryItemsDependsOn>
   </PropertyGroup>
 
-  <Target Name="_SetPortablePriProperties" Condition="'$(TargetPlatformIdentifier)' == 'Portable'" DependsOnTargets="ImplicitlyExpandTargetFramework">
+  <Target Name="_SetPortablePriProperties" Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Portable'" DependsOnTargets="ImplicitlyExpandTargetFramework">
     <PropertyGroup>
       <_PortablePriResourcesEnabled Condition="'%(ReferencePath.FileName)' == 'System.Runtime.WindowsRuntime.UI.Xaml'">true</_PortablePriResourcesEnabled>
     </PropertyGroup>
@@ -1597,7 +1604,7 @@
         IntermediateExtension="$(AppxIntermediateExtension)"
         PriConfigXmlPackagingSnippetPath="$(AppxPriConfigXmlPackagingSnippetPath)"
         PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
         TargetPlatformVersion="$(TargetPlatformResourceVersion)"
         VsTelemetrySession="$(VsTelemetrySession)"
             />
@@ -1768,7 +1775,7 @@
         IntermediateExtension="$(AppxIntermediateExtension)"
         PriConfigXmlPackagingSnippetPath="$(AppxPriConfigXmlPackagingSnippetPath)"
         PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
         TargetPlatformVersion="$(TargetPlatformResourceVersion)"
         VsTelemetrySession="$(VsTelemetrySession)" />
 
@@ -1799,7 +1806,7 @@
         IntermediateExtension="$(AppxIntermediateExtension)"
         PriConfigXmlPackagingSnippetPath="$(AppxPriConfigXmlPackagingSnippetPath)"
         PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
         TargetPlatformVersion="$(TargetPlatformResourceVersion)"
         VsTelemetrySession="$(VsTelemetrySession)" />
 
@@ -2461,7 +2468,7 @@
       TargetPlatformVersion="$(TargetPlatformVersion)"
       ProjectLanguage="$(Language)"
       VsTelemetrySession="$(VsTelemetrySession)"
-      TargetPlatformIdentifier="$(TargetPlatformIdentifier)"
+      TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
       Platform="$(Platform)">
     </ValidateConfiguration>
   </Target>

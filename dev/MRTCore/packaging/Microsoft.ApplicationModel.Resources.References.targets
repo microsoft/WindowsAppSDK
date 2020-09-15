@@ -6,7 +6,7 @@
   <PropertyGroup>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
-    <_MrtCoreDllDir>$(MSBuildThisFileDirectory)..\lib\$(_MrtCoreRuntimeIdentifier)\</_MrtCoreDllDir>
+    <_MrtCoreDllDir>$(MSBuildThisFileDirectory)..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\</_MrtCoreDllDir>
 
     <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'=='' AND '$(Platform)' == 'AnyCPU'">false</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>
     <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'=='' AND '$(MSBuildProjectExtension)' == '.wapproj'">true</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>

@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 #include "pch.h"
 #include "KnownResourceQualifierName.h"
 #include "KnownResourceQualifierName.g.cpp"

@@ -84,7 +84,7 @@
       <AdditionalIncludeDirectories>..\..\mrm\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(OutDir)mrmmin.lib;rpcrt4.lib;onecore_downlevel.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\mrmmin\mrmmin.lib;rpcrt4.lib;onecore_downlevel.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>MRM.def</ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>

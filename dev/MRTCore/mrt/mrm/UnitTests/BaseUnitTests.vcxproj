@@ -87,7 +87,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions);_WIN32_WINNT=_WIN32_WINNT_WIN10;INLINE_TEST_METHOD_MARKUP;UNICODE;_UNICODE;DOWNLEVEL_PRIOR_TO_WIN8;WIL_SUPPRESS_PRIVATE_API_USE;</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies);onecore.lib;wex.common.lib;wex.logger.lib;$(OutDir)mrmmin.lib;$(OutDir)mrmex.lib;</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);onecore.lib;wex.common.lib;wex.logger.lib;$(OutDir)..\mrmmin\mrmmin.lib;$(OutDir)..\mrmex\mrmex.lib;</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);kernel32.lib;advapi32.lib</IgnoreSpecificDefaultLibraries>
       <MinimumRequiredVersion>10.0</MinimumRequiredVersion>
       <SubSystem>Console</SubSystem>

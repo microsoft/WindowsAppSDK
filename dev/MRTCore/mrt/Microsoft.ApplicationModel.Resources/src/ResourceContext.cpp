@@ -118,7 +118,7 @@ hstring ResourceContext::GetLangugageContext()
     }
     catch (...)
     {
-        return L"";
+        return hstring();
     }
 
     return context;

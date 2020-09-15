@@ -1,4 +1,4 @@
-# Welcome to the MRT Core Repo!
+# Welcome to MRT Core!
 
 ## Overview 
 
