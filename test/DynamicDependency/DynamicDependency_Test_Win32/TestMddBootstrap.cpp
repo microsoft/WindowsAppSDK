@@ -21,7 +21,13 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_INITIALIZE(Setup)
         {
-            winrt::init_apartment(winrt::apartment_type::single_threaded);
+            // CppUnitTest initializes COM as STA before we get called
+            // But we don't need (or want) STA, and we do want MTA. We can't
+            // stop CppUnitTest from initializing COM but we can uninitialize
+            // it and (re)initialize it as MTA. Don't think of it as crude
+            // and brutish but rather 'thinking outside the box'...
+            winrt::uninit_apartment();
+            winrt::init_apartment();
 
             // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)

@@ -153,6 +153,9 @@
       <Project>{94fe614a-9626-4686-a495-36104b15b1ec}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="appxmanifest.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
