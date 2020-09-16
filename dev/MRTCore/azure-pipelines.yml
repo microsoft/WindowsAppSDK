@@ -132,7 +132,6 @@ jobs:
       alertWarningLevel: 'Medium'
       failOnAlert: true
 
-  # The winmd is arch agnostic. For signing convenience, we group the winmd with the x86 binaries.
   - task: CopyFiles@2
     displayName: 'copy x86 for signing'
     inputs:
@@ -141,17 +140,13 @@ jobs:
         mrm.dll
         mrm.lib
         mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.winmd
+        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll        
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
       flattenFolders: true
 
-  # We build the projection binaries for AnyCPU. For convenience though, we group these binaries with the x86
-  # content for signing. Later, after signing, we deploy the binaries to an arch non-specific location in the
-  # NuGet package (specifically, lib\net5.0-windows\ and lib\netstandard2.0-windows\).
   - task: CopyFiles@2
-    displayName: 'copy projection for signing'
+    displayName: 'copy projection binaries and symbols for signing'
     inputs:
       SourceFolder: '$(Build.BinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
@@ -159,11 +154,18 @@ jobs:
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
       flattenFolders: false
+
+  - task: CopyFiles@2
+    displayName: 'copy winmd for signing'
+    inputs:
+      SourceFolder: '$(Build.BinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      Contents: |
+        net5.0\Microsoft.ApplicationModel.Resources.winmd
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
+      flattenFolders: true
   
-  # Ignore the winmd in the x64 build output. The winmd file is arch agnostic, we just use the x86 one for all archs
-  # when creating the NuGet package below.
   - task: CopyFiles@2
     displayName: 'copy x64 for signing'
     inputs:
@@ -177,8 +179,6 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x64'
       flattenFolders: true
 
-  # Ignore the winmd in the x64 build output. The winmd file is arch agnostic, we just use the x86 one for all archs
-  # when creating the NuGet package below.
   - task: CopyFiles@2
     displayName: 'copy ARM64 for signing'
     inputs:
@@ -210,8 +210,11 @@ jobs:
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
 
   strategy:
-    maxParallel: 3
+    maxParallel: 4
     matrix:
+      Release_ANYCPU:
+        buildPlatform: 'anycpu'
+        buildConfiguration: 'Release'
       Release_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Release'
@@ -264,6 +267,15 @@ jobs:
   steps:
   - task: DownloadBuildArtifacts@0
     condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'Download: Signed Binaries AnyCPU'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'signedbinaries_anycpu'
+      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
+
+  - task: DownloadBuildArtifacts@0
+    condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'Download: Signed Binaries x86'
     inputs:
       buildType: 'current'
@@ -291,38 +303,32 @@ jobs:
 
 # START of copying files into their final package location.
 
-  # The winmd is arch agnostic. For signing convenience, we group it with the x86 binaries.
-  # So, here, we copy from the x86 location to an arch agnostic location.
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'copy winmd'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x86\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_anycpu\lib\anycpu'
       Contents: |
         signed\Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\uap10.0\'
       flattenFolders: true
 
-  # We build the projection binaries for AnyCPU. For convenience though, we group these binaries with other x86
-  # binaries for signing. That's why we're copying from the x86 location but deploying to an arch agnostic location.
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'copy .net 5 projection DLL and PDB'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x86\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_anycpu\lib\anycpu'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         signed\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\net5.0-windows\'
       flattenFolders: true
 
-  # We build the projection binaries for AnyCPU. For convenience though, we group these binaries with other x86
-  # binaries for signing. That's why we're copying from the x86 location but deploying to an arch agnostic location.
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'copy .net 2 projection DLL and PDB'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x86\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_anycpu\lib\anycpu'
       Contents: |
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         signed\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
@@ -407,13 +413,11 @@ jobs:
       artifactName: 'binaries_raw'
       downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
 
-  # The winmd is arch agnostic. For signing convenience, we group it with the x86 binaries.
-  # So, here, we copy from the x86 location to an arch agnostic location.
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, false))
     displayName: 'copy unsigned winmd'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\uap10.0\'
@@ -423,28 +427,24 @@ jobs:
     condition: and(succeeded(), eq(variables.codeSign, false))
     displayName: 'copy unsigned .net 5 projection DLL and PDB'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\net5.0-windows\'
       flattenFolders: true
 
-  # We build the projection binaries for AnyCPU. For signing convenience, we group these binaries with other x86
-  # binaries. That's why we're copying from the x86 location but deploying to an arch agnostic location.
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, false))
     displayName: 'copy unsigned .net 2 projection DLL and PDB'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
       Contents: |
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0-windows\'
       flattenFolders: true
 
-  # We build the projection binaries for AnyCPU. For signing convenience, we group these binaries with other x86
-  # binaries. That's why we're copying from the x86 location but deploying to an arch agnostic location.
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, false))
     displayName: 'copy unsigned x86'
