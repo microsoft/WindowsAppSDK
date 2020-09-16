@@ -137,8 +137,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -158,8 +158,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -179,8 +179,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -200,8 +200,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -225,8 +225,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -250,8 +250,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -275,8 +275,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -300,8 +300,8 @@
     </Link>
     <PostBuildEvent>
       <Command>
-        copy $(TargetDir)\..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)\..\MRM\mrm.pdb $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
+        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
       </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
