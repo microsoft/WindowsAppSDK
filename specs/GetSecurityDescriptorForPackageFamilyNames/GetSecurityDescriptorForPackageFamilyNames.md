@@ -52,3 +52,28 @@ STDAPI GetSecurityDescriptorForPackageFamilyNames(
 )
 ```
 If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
+
+# API Notes
+
+Some alternative designs were considered.
+- Single method, takes a list of permissions corresponding to the list of PFNs. (Current choice)
+  - Pros
+    - Handles both complicated case and simple case in a single call.
+    - API is straightforward, no extra/optional/multimode parameters.
+    - Only a single method to search/remember/code.
+  - Cons
+    - Simple case is not "optimally" simple - requires filling array with a single value.
+- Single method, takes both a single permission as well as an optional array of permissions. The single permission is ignored if the array is non-null.
+  - Pros
+    - Handles both complicated case and simple case in a single call.
+    - Only a single method to search/remember/code.
+    - Provides a way to assign a single permission to all PFNs without filling an array.
+  - Cons
+    - Slightly more complicated API. Two parameters are conditionally used for the same purpose.
+- Two methods, one that takes a list of permissions, and one that takes a single permission.
+  - Pros
+    - Each API is straightforward, no extra/optional/multimode parameters.
+    - Dedicated APIs for assigning a single permission vs different permissions.
+  - Cons
+    - How to meaningfully name these two methods without unintentionally confusing or obfuscating?
+    - Increased mental model tax - now have to search/remember/read two different, but similar APIs.
