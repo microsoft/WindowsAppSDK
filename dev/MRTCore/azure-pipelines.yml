@@ -11,6 +11,7 @@ trigger:
 # Only MRTCore pipeline is registered for signing
 variables:
   codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
 jobs:
 - job: Build
@@ -66,16 +67,16 @@ jobs:
     displayName: 'NuGet restore of MrtCore'
     inputs:
       command: 'restore'
-      restoreSolution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       feedsToUse: 'config'
-      nugetConfigPath: '$(Build.SourcesDirectory)\mrt\NuGet.Config'
+      nugetConfigPath: '$(MRTSourcesDirectory)\mrt\NuGet.Config'
   
   - task: VSBuild@1
     displayName: 'build MrtCore x86'
     inputs:
       platform: 'x86'
       buildPlatform: 'x86'
-      solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
   
@@ -84,7 +85,7 @@ jobs:
     inputs:
       platform: 'x64'
       buildPlatform: 'x64'
-      solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
@@ -93,7 +94,7 @@ jobs:
     inputs:
       platform: 'ARM64'
       buildPlatform: 'x64'
-      solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxBundlePlatforms="ARM64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
   
