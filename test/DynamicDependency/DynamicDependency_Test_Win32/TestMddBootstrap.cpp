@@ -91,7 +91,7 @@ namespace Test::DynamicDependency
             winrt::Windows::Management::Deployment::PackageManager packageManager;
             auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
             auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
-            if (deploymentResult)
+            if (FAILED(deploymentResult.ExtendedErrorCode()))
             {
                 auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
                 Assert::Fail(message.get());
@@ -100,7 +100,7 @@ namespace Test::DynamicDependency
 
         static void RemovePackageIfNecessary(PCWSTR packageFullName)
         {
-            if (IsPackageRegistered(packageFullName))
+            if (!IsPackageRegistered(packageFullName))
             {
                 return;
             }

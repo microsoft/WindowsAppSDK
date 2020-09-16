@@ -41,7 +41,7 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    if (!g_lifetimeManager)
+    if (g_lifetimeManager)
     {
         (void)LOG_IF_FAILED(g_lifetimeManager->Shutdown());
         g_lifetimeManager->Release();
