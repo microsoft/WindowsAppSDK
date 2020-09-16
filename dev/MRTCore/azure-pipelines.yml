@@ -234,12 +234,12 @@ jobs:
       artifactName: 'binaries_raw'
       downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
   
-  #- task: PkgESCodeSign@10
-  #  env:
-  #    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-  #  inputs:
-  #    signConfigXml: 'SignConfig.xml'
-  #    inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
+#  - task: PkgESCodeSign@10
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#    inputs:
+#      signConfigXml: 'SignConfig.xml'
+#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Signed Binaries'
@@ -556,14 +556,14 @@ jobs:
       basePath: '$(Build.ArtifactStagingDirectory)\mrt'
       packDestination: '$(Build.ArtifactStagingDirectory)\nuget'
   
-  - task: PkgESCodeSign@10
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      signConfigXml: 'SignConfig-nuget.xml'
-      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
-      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+#  - task: PkgESCodeSign@10
+#    condition: and(succeeded(), eq(variables.codeSign, true))
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#    inputs:
+#      signConfigXml: 'SignConfig-nuget.xml'
+#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+#      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
   
   - task: PublishBuildArtifacts@1
     condition: and(succeeded(), eq(variables.codeSign, false))
