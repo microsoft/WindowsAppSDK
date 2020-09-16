@@ -21,16 +21,16 @@ Add a flat C API that takes an array of PFNs and access masks, and produces the 
 
 wil::unique_event CreateShareableEvent(PCWSTR name)
 {
-    wil::unique_hlocal_ptr pSD;
+    wil::unique_hlocal_ptr sd;
     PCWSTR packageNames[1] = { L"Contoso.Test.App_12345678" };
     DWORD accessMasks[1] = { ACCESS_MODIFY_STATE };
 
     THROW_IF_FAILED(GetSecurityDescriptorForPackageFamilyNames(
-        1, packageNames, accessMasks, &pSD);
+        1, packageNames, accessMasks, &sd);
 
     SECURITY_ATTRIBUTES sa;
-    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-    sa.lpSecurityDescriptor = pSD.get();
+    sa.nLength = sizeof(sa);
+    sa.lpSecurityDescriptor = sd.get();
     sa.bInheritHandle = FALSE;
 
     wil::unique_event result;
@@ -43,12 +43,12 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
 
 ```c
 STDAPI GetSecurityDescriptorForPackageFamilyNames(
-    DWORD                 cCountOfPackageFamilyNames,
-    _In_Reads_(cCountOfPackageFamilyNames)
-      const PCWSTR*         pListOfPackageFamilyNames,
-    _In_Reads_(cCountOfPackageFamilyNames)
+    uint32_t                countOfPackageFamilyNames,
+    _In_Reads_(countOfPackageFamilyNames)
+      const PCWSTR*         listOfPackageFamilyNames,
+    _In_Reads_(countOfPackageFamilyNames)
       const DWORD*          accessMask,
-    _Outptr_ SECURITY_DESCRIPTOR** ppSD
+    _Outptr_ SECURITY_DESCRIPTOR** securityDescriptor
 )
 ```
 If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
