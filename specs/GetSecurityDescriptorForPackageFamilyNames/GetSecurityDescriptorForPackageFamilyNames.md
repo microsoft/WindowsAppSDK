@@ -28,8 +28,13 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
     THROW_IF_FAILED(GetSecurityDescriptorForPackageFamilyNames(
         1, packageNames, accessMasks, &pSD);
 
+    SECURITY_ATTRIBUTES sa;
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.lpSecurityDescriptor = pSD.get();
+    sa.bInheritHandle = FALSE;
+
     wil::unique_event result;
-    result.create(wil::EventOptions::None, name, pSD.get());
+    result.create(wil::EventOptions::None, name, &sa);
     return result;
 }
 ```
