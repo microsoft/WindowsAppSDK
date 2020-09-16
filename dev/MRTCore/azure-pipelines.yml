@@ -203,7 +203,7 @@ jobs:
   dependsOn:
     - Build
   pool:
-    name: Package ES Standard Build
+    vmImage: 'windows-latest'
   
   variables:
     solution: '**/*.sln'
