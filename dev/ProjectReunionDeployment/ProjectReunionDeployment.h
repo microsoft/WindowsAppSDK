@@ -6,6 +6,7 @@
 
 #define PROJECT_REUNION_INSTALL_INFORMATION_URI L"https://aka.ms/ProjectReunion"
 #define PROJECT_REUNION_PACKAGE_INSTALL_URI L"https://aka.ms/projectreunion/install.msixbundle"
+#define PROJECT_REUNION_OS_UPDATE_REGISTRY_PATH L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModel\\ProjectReunion\\Updates"
 
 namespace winrt::Microsoft::Management::Deployment::implementation
 {
@@ -15,6 +16,9 @@ namespace winrt::Microsoft::Management::Deployment::implementation
         static Microsoft::Management::Deployment::ProjectReunionDeploymentStatus GetStatus(Windows::ApplicationModel::PackageVersion const& packageVersion);
         static Windows::Foundation::Uri GetProjectReunionPackageLink();
         static Windows::Foundation::Uri GetProjectReunionInstallInformationLink();
+
+    private:
+        static bool GetIsOSUpdatesRequired();
     };
 }
 
