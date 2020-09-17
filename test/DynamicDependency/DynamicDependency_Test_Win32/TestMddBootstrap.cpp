@@ -44,6 +44,7 @@ namespace Test::DynamicDependency
             const auto lastError{ GetLastError() };
             Assert::IsNotNull(bootstrapDll.get());
 
+            RemovePackage_MainSidecar();
             AddPackage_ProjectReunionFramework();
             AddPackage_MainSidecar();
 

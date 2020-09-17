@@ -57,7 +57,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main.Sidecar.LifetimeManage
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main.Sidecar.Msix", "test\DynamicDependency\data\Main.Sidecar\Main.Sidecar.Msix\Main.Sidecar.Msix.vcxproj", "{ABD8337A-275B-49F2-A788-F6A6233962CD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.ProjectReunion.Framework", "..\..\..\..\howard.000\Source\Repos\ProjectReunion\test\DynamicDependency\data\Microsoft.ProjectReunion.Framework\Microsoft.ProjectReunion.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.ProjectReunion.Framework", "test\DynamicDependency\data\Microsoft.ProjectReunion.Framework\Microsoft.ProjectReunion.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

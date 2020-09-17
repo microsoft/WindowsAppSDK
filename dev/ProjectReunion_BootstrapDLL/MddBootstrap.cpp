@@ -102,11 +102,12 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     wil::unique_package_info_reference packageInfoReference;
     RETURN_IF_WIN32_ERROR(OpenPackageInfoByFullName(packageFullName, 0, &packageInfoReference));
     UINT32 bufferLength = 0;
-    const auto hr = HRESULT_FROM_WIN32(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, nullptr, nullptr));
+    UINT32 packageInfoCount = 0;
+    const auto hr = HRESULT_FROM_WIN32(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, nullptr, &packageInfoCount));
     RETURN_HR_IF(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER));
+    RETURN_HR_IF(E_UNEXPECTED, packageInfoCount == 0);
     auto buffer = wil::make_unique_cotaskmem_nothrow<BYTE[]>(bufferLength);
     RETURN_IF_NULL_ALLOC(buffer);
-    UINT32 packageInfoCount = 0;
     RETURN_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
     // Find the Project Reunion Framework package in the package graph to determine its path
