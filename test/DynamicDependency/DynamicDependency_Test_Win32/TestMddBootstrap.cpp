@@ -13,6 +13,12 @@ namespace Test::Packages::MainSidecar
     PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Main.Sidecar_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 
+namespace Test::Packages::ProjectReunionFramework
+{
+    PCWSTR c_PackageDirName = L"Microsoft.ProjectReunion.Framework";
+    PCWSTR c_PackageFullName = L"Microsoft.ProjectReunion.Framework_0.1.2.3_neutral__8wekyb3d8bbwe";
+}
+
 namespace Test::DynamicDependency
 {
     TEST_CLASS(BootstrapTests)
@@ -26,8 +32,7 @@ namespace Test::DynamicDependency
             // stop CppUnitTest from initializing COM but we can uninitialize
             // it and (re)initialize it as MTA. Don't think of it as crude
             // and brutish but rather 'thinking outside the box'...
-            winrt::uninit_apartment();
-            winrt::init_apartment();
+            CoSuperInitialize();
 
             // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
@@ -39,6 +44,7 @@ namespace Test::DynamicDependency
             const auto lastError{ GetLastError() };
             Assert::IsNotNull(bootstrapDll.get());
 
+            AddPackage_ProjectReunionFramework();
             AddPackage_MainSidecar();
 
             m_bootstrapDll = std::move(bootstrapDll);
@@ -47,6 +53,7 @@ namespace Test::DynamicDependency
         TEST_CLASS_CLEANUP(Cleanup)
         {
             RemovePackage_MainSidecar();
+            RemovePackage_ProjectReunionFramework();
         }
 
         TEST_METHOD(Initialize_ClassNotFound)
@@ -73,21 +80,70 @@ namespace Test::DynamicDependency
         }
 
     private:
+        static void CoSuperInitialize(winrt::apartment_type const type = winrt::apartment_type::multi_threaded)
+        {
+            // CoUninitialize() needs to be called as many times as CoInitialize()
+            // Keep 'peeling the onion' until we're the 1st to initialize COM
+            for (;;)
+            {
+                const HRESULT hr = WINRT_IMPL_CoInitializeEx(nullptr, static_cast<uint32_t>(type));
+                if (hr == S_OK)
+                {
+                    // COM was initialized successfully on this thread
+                    return;
+                }
+                else if (hr == S_FALSE)
+                {
+                    // COM is already initialized the for thead
+                    // Undo the init we just did and the init we just detected
+                    WINRT_IMPL_CoUninitialize();
+                    WINRT_IMPL_CoUninitialize();
+                }
+                else if (hr == RPC_E_CHANGED_MODE)
+                {
+                    // COM is already initialized for the thread as a different apartment type
+                    // This is an error so nothing to do. Undo the init we just detected
+                    WINRT_IMPL_CoUninitialize();
+                }
+                else
+                {
+                    Assert::AreEqual(S_OK, hr, L"Error in CoInitializeEx()");
+                }
+            }
+        }
+
         static void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
         {
+            // If the package is already registered REMOVE IT!
+            // Make sure we start with a clean and current state
+            // and not state old packages or builds
             if (IsPackageRegistered(packageFullName))
             {
-                return;
+                RemovePackageIfNecessary(packageFullName);
             }
 
             // Build the target package's .msix filename. It's under the Solution's $(OutDir)
-            auto msix = GetSolutionOutDirPath();
+            // NOTE: It could live in ...\Something.msix\... or ...\Something\...
+            auto solutionOutDirPath = GetSolutionOutDirPath();
+            //
+            // Look in ...\Something.msix\...
+            auto msix(solutionOutDirPath);
             msix /= packageDirName;
             msix += L".msix";
             msix /= packageDirName;
             msix += L".msix";
+            if (!std::filesystem::is_regular_file(msix))
+            {
+                // Look in ...\Something\...
+                msix = solutionOutDirPath;
+                msix /= packageDirName;
+                msix /= packageDirName;
+                msix += L".msix";
+                Assert::IsTrue(std::filesystem::is_regular_file(msix));
+            }
             auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
 
+            // Install the package
             winrt::Windows::Management::Deployment::PackageManager packageManager;
             auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
             auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
@@ -100,11 +156,13 @@ namespace Test::DynamicDependency
 
         static void RemovePackageIfNecessary(PCWSTR packageFullName)
         {
+            // If the package isn't registered our work here is already done
             if (!IsPackageRegistered(packageFullName))
             {
                 return;
             }
 
+            // Remove the package
             winrt::Windows::Management::Deployment::PackageManager packageManager;
             auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
             if (!deploymentResult)
@@ -116,6 +174,9 @@ namespace Test::DynamicDependency
 
         static bool IsPackageRegistered(PCWSTR packageFullName)
         {
+            // Check if the package is registered to the current user via GetPackagePath().
+            // GetPackagePath() fails if the package isn't registerd to the current user.
+            // Simplest and most portable test across the platforms we might run on
             const auto path = GetPackagePath(packageFullName);
             return !path.empty();
         }
@@ -155,6 +216,16 @@ namespace Test::DynamicDependency
         static void RemovePackage_MainSidecar()
         {
             RemovePackageIfNecessary(Test::Packages::MainSidecar::c_PackageFullName);
+        }
+
+        static void AddPackage_ProjectReunionFramework()
+        {
+            AddPackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
+        }
+
+        static void RemovePackage_ProjectReunionFramework()
+        {
+            RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
         }
 
         static std::filesystem::path GetTestAbsoluteFilename()
@@ -210,6 +281,15 @@ namespace Test::DynamicDependency
             auto path = GetSolutionOutDirPath();
             path /= L"Main.Sidecar.Msix";
             path /= L"Main.Sidecar.msix";
+            return path;
+        }
+
+        static std::filesystem::path GetProjectReunionFrameworkMsixPath()
+        {
+            // Determine the location of ProjectReunion's Framework's msix. See GetSolutionOutDirPath() for more details.
+            auto path = GetSolutionOutDirPath();
+            path /= L"Microsoft.ProjectReunion.Framework";
+            path /= L"Microsoft.ProjectReunion.Framework.msix";
             return path;
         }
 

@@ -64,7 +64,7 @@ extern "C"{
 #define __IDynamicDependencyLifetimeManager_INTERFACE_DEFINED__
 
 /* interface IDynamicDependencyLifetimeManager */
-/* [unique][uuid][helpstring][object] */ 
+/* [unique][uuid][object] */ 
 
 
 EXTERN_C const IID IID_IDynamicDependencyLifetimeManager;
