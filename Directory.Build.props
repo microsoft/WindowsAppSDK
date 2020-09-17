@@ -18,10 +18,7 @@
     <OutDir Condition="'$(Platform)' == 'Win32'">$(BaseOutputPath)\x86\</OutDir>
 
     <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
-<!--
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)BuildOutput\Int\$(MSBuildProjectName)\obj\$(Platform)$(Configuration)\</BaseIntermediateOutputPath>
-    <IntDir>$(BaseIntermediateOutputPath)</IntDir>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath> -->
+
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>

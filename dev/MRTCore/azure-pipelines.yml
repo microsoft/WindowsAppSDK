@@ -12,6 +12,7 @@ trigger:
 variables:
   codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
 jobs:
 - job: Build
@@ -78,14 +79,14 @@ jobs:
       buildPlatform: 'x86'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.binlog'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish mrtcore binlog'
     condition: succeededOrFailed()
     inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: binlog
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.binlog
+      artifactName: drop
 
   - task: VSBuild@1
     displayName: 'build MrtCore x64'
@@ -114,7 +115,7 @@ jobs:
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
-      searchFolder: '$(Build.BinariesDirectory)\Release\win32'
+      searchFolder: '$(MRTBinariesDirectory)\Release\x86'
       testRunTitle: 'test x86'
       platform: 'x86'
       configuration: 'Release'
@@ -128,7 +129,7 @@ jobs:
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
-      searchFolder: '$(Build.BinariesDirectory)\Release\x64'
+      searchFolder: '$(MRTBinariesDirectory)\Release\x64'
       testRunTitle: 'test x64'
       platform: 'x64'
       configuration: 'Release'
@@ -143,11 +144,11 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy x86 for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\win32'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\x86'
       Contents: |
-        mrm.dll
-        mrm.lib
-        mrm.pdb
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll        
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
@@ -156,7 +157,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy projection binaries and symbols for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
@@ -168,20 +169,20 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy winmd for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
-        net5.0\Microsoft.ApplicationModel.Resources.winmd
+        Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
       flattenFolders: true
   
   - task: CopyFiles@2
     displayName: 'copy x64 for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\x64'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\x64'
       Contents: |
-        mrm.dll
-        mrm.lib
-        mrm.pdb
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x64'
@@ -190,11 +191,11 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy ARM64 for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\ARM64'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\ARM64'
       Contents: |
-        mrm.dll
-        mrm.lib
-        mrm.pdb
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\ARM64'
