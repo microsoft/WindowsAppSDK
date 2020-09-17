@@ -78,14 +78,14 @@ jobs:
       buildPlatform: 'x86'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog'
+      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish ${{ parameters.solutionPath }} binlog'
+    displayName: 'Publish mrtcore binlog'
     condition: succeededOrFailed()
     inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: ${{ parameters.artifactName }}
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      artifactName: binlog
 
   - task: VSBuild@1
     displayName: 'build MrtCore x64'
