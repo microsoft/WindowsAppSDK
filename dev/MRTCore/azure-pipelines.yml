@@ -526,7 +526,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy packaging files'
     inputs:
-      SourceFolder: 'packaging'
+      SourceFolder: '$(MRTSourcesDirectory)\packaging'
       Contents: |
         Microsoft.ApplicationModel.Resources.props
         Microsoft.ApplicationModel.Resources.C.props
@@ -540,7 +540,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy header'
     inputs:
-      SourceFolder: 'mrt\core\src'
+      SourceFolder: '$(MRTSourcesDirectory)\mrt\core\src'
       Contents: |
         mrm.h
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\include'
@@ -548,6 +548,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy license'
     inputs:
+      SourceFolder: '$(MRTSourcesDirectory)'
       Contents: |
         LICENSE.txt
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt'
@@ -557,7 +558,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: 'pack'
-      packagesToPack: 'mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
+      packagesToPack: '$(MRTSourcesDirectory)\mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: '$(Major)'
       minorVersion: '$(Minor)'
