@@ -45,19 +45,25 @@ struct __declspec(uuid("32E7CF70-038C-429a-BD49-88850F1B4A11")) MyLifetimeManage
 };
 CoCreatableClass(MyLifetimeManagerImpl);
 
+wil::unique_event g_endOfTheLine;
+
+void EndOfTheLine()
+{
+    g_endOfTheLine.SetEvent();
+}
+
 int WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
     ::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 
-    auto& module = Module<OutOfProc>::Create();
+    wil::unique_event endOfTheLine(::CreateEventW(nullptr, TRUE, FALSE, nullptr));
+    RETURN_LAST_ERROR_IF_NULL(endOfTheLine);
+    g_endOfTheLine = std::move(endOfTheLine);
+
+    auto& module = Module<OutOfProc>::Create(EndOfTheLine);
     RETURN_IF_FAILED(module.RegisterObjects());
 
-    MSG msg;
-    while (GetMessage(&msg, 0, 0, 0) > 0)
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+    g_endOfTheLine.wait();
 
     (void)LOG_IF_FAILED(module.UnregisterObjects());
     module.Terminate();

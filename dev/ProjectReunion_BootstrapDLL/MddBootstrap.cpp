@@ -78,13 +78,14 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer)
 {
     frameworkPackageInfo = nullptr;
+    packageInfoBuffer.reset();
 
     // We need to determine the exact Project Reunion Framework package
     // in the sidecar package's dependencies, as resolved by Windows.
     // A user can have multiple framework packages in a family registered
     // at a time, for multiple reasons:
     //
-    //   * Multiple Architecturs -- x86/x64 on an x64 machine, x86/arm/arm64/x86ona64 on an arm64 machine, etc
+    //   * Multiple Architectures -- x86/x64 on an x64 machine, x86/arm/arm64/x86ona64 on an arm64 machine, etc
     //   * Multiple Versions -- v1.0.0.0 in use by processes running as pkg1 and v1.0.0.1 in use by runnings running as pkg2
     //                          or v1.0.0.0 in use by running processes and v1.0.0.1 in package graphs for packages w/no running process
     //
@@ -103,18 +104,19 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     UINT32 bufferLength = 0;
     const auto hr = HRESULT_FROM_WIN32(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, nullptr, nullptr));
     RETURN_HR_IF(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER));
-    packageInfoBuffer = wil::make_unique_cotaskmem_nothrow<BYTE[]>(bufferLength);
-    RETURN_IF_NULL_ALLOC(packageInfoBuffer);
+    auto buffer = wil::make_unique_cotaskmem_nothrow<BYTE[]>(bufferLength);
+    RETURN_IF_NULL_ALLOC(buffer);
     UINT32 packageInfoCount = 0;
-    RETURN_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, packageInfoBuffer.get(), &packageInfoCount));
+    RETURN_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
     // Find the Project Reunion Framework package in the package graph to determine its path
-    const PACKAGE_INFO* packageInfo = reinterpret_cast<const PACKAGE_INFO*>(packageInfoBuffer.get());
+    const PACKAGE_INFO* packageInfo = reinterpret_cast<const PACKAGE_INFO*>(buffer.get());
     for (size_t index = 0; index < packageInfoCount; ++index, ++packageInfo)
     {
         PCWSTR frameworkPackageFamilyName = L"Microsoft.ProjectReunionFramework_8wekyb3d8bbwe";
         if (CompareStringOrdinal(packageInfo->packageFamilyName, -1, frameworkPackageFamilyName, -1, TRUE) == CSTR_EQUAL)
         {
+            packageInfoBuffer = std::move(buffer);
             frameworkPackageInfo = packageInfo;
             return S_OK;
         }

@@ -27,15 +27,6 @@
     <Resource Language="en"/>
   </Resources>
 
-  <Extensions>
-    <Extension Category="windows.activatableClass.proxyStub">
-      <ProxyStub ClassId="32e7cf70-038c-429a-bd49-88850f1b4a11">
-        <Path>Main.Sidecar.LifetimeManager.ProxyStub.dll</Path>
-        <Interface Name="IDynamicDependencyLifetimeManager" InterfaceId="06f1bad0-dd14-11d0-ab8f-0000c0148fdb" />
-      </ProxyStub>
-    </Extension>
-  </Extensions>
-
   <Applications>
     <Application Id="App"
       Executable="Main.Sidecar.LifetimeManager.exe"
@@ -53,18 +44,14 @@
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="Main.Sidecar.LifetimeManager.exe" DisplayName="ProjectReunion Test DynDep Main.Sidecar">
-              <!-- ProgId.length must be <= 39 on builds < 10.0.18256.0. "TestDynDepMainSidecar.MyLifetimeManager.1" = 41 chars. Shrink the name a tad to fit -->
-              <com:Class Id="32E7CF70-038C-429a-BD49-88850F1B4A11" DisplayName="ProjectReunion Test DynDep Main.Sidecar MyLifetimeManager" ProgId="TestDynDepMainSide.MyLifetimeManager.1" VersionIndependentProgId="TestDynDepMainSide.MyLifetimeManager">
-              </com:Class>
+              <com:Class Id="32E7CF70-038C-429a-BD49-88850F1B4A11" DisplayName="ProjectReunion Test DynDep Main.Sidecar MyLifetimeManager"/>
             </com:ExeServer>
-            <com:ProgId Id="TestDynDepMainSide.MyLifetimeManager" CurrentVersion="TestDynDepMainSide.MyLifetimeManager.1" />
-            <com:ProgId Id="TestDynDepMainSide.MyLifetimeManager.1" Clsid="32E7CF70-038C-429a-BD49-88850F1B4A11" />
           </com:ComServer>
         </com:Extension>
         <com:Extension Category="windows.comInterface">
           <com:ComInterface>
-            <com:ProxyStub Id="F0F0EC2C-FBFD-4cec-BC94-A38BCA4174CD" DisplayName="Main.Sidecar.LifetimeManager ProxyStub" Path="Main.Sidecar.LifetimeManager.ProxyStub.dll"/>
-            <com:Interface Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" ProxyStubClsid="F0F0EC2C-FBFD-4cec-BC94-A38BCA4174CD"/> <!-- IID_IDynamicDependencyLifetimeManager -->
+            <com:ProxyStub Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" DisplayName="Main.Sidecar.LifetimeManager ProxyStub" Path="Main.Sidecar.LifetimeManager.ProxyStub.dll"/>
+            <com:Interface Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" ProxyStubClsid="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB"/> <!-- IID_IDynamicDependencyLifetimeManager -->
           </com:ComInterface>
         </com:Extension>
       </Extensions>

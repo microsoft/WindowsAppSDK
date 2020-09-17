@@ -23,10 +23,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="dlldata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainSidecar_i.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainSidecar_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -34,5 +40,10 @@
     <Midl Include="MainSidecar.idl">
       <Filter>Source Files</Filter>
     </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MainSidecar.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
