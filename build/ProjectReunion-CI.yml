@@ -3,39 +3,42 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
-jobs:
-- job: Build
-  pool:
-    vmImage: 'windows-2019'
-  timeoutInMinutes: 120
-  strategy:
-    maxParallel: 10
-    matrix:
-      Debug_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Debug'
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        PGOBuildMode: 'Optimize'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-        PGOBuildMode: 'Optimize'
-      Release_Arm:
-        buildPlatform: 'arm'
-        buildConfiguration: 'Release'
-      Release_Arm64:
-        buildPlatform: 'arm64'
-        buildConfiguration: 'Release'
 
-  variables:
-    appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
-    buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
-    publishDir : $(Build.ArtifactStagingDirectory)
-  steps:
-  - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
-  - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
+stages:
+- stage: ProjectReunion
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'windows-2019'
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: 10
+      matrix:
+        Debug_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Debug'
+        Release_x86:
+          buildPlatform: 'x86'
+          buildConfiguration: 'Release'
+          PGOBuildMode: 'Optimize'
+        Release_x64:
+          buildPlatform: 'x64'
+          buildConfiguration: 'Release'
+          PGOBuildMode: 'Optimize'
+        Release_Arm:
+          buildPlatform: 'arm'
+          buildConfiguration: 'Release'
+        Release_Arm64:
+          buildPlatform: 'arm64'
+          buildConfiguration: 'Release'
+  
+    variables:
+      appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
+      buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
+      publishDir : $(Build.ArtifactStagingDirectory)
+    steps:
+    - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
+    - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
 #UNDONE - subsequent PR
 #- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
@@ -47,11 +50,11 @@ jobs:
 #    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
 
 # Create Nuget Package
-- template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
-  parameters:
-    jobName: CreateNugetPackage
-    dependsOn: Build
-    prereleaseVersionTag: ci
+  - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
+    parameters:
+      jobName: CreateNugetPackage
+      dependsOn: Build
+      prereleaseVersionTag: ci
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
@@ -85,6 +88,7 @@ jobs:
 #    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
 
 # MRTCore build pipeline
-- template: ..\dev\MRTCore\azure-pipelines.yml
-  parameters:
-    buildJobName: 'BuildMRTCore'
+- stage MRTCore
+  - template: ..\dev\MRTCore\azure-pipelines.yml
+    parameters:
+      buildJobName: 'BuildMRTCore'
