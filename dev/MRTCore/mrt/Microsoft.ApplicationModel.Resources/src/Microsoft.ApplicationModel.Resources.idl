@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 namespace Microsoft.ApplicationModel.Resources
@@ -47,9 +47,9 @@ namespace Microsoft.ApplicationModel.Resources
 
         ResourceMap GetSubtree(String reference);
         ResourceCandidate GetValue(String resource);
-        ResourceCandidate GetValue(ResourceContext context, String resource);
+        ResourceCandidate GetValue(String resource, ResourceContext context);
         Windows.Foundation.Collections.IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index);
-        Windows.Foundation.Collections.IKeyValuePair<String, ResourceCandidate> GetValueByIndex(ResourceContext context, UInt32 index);
+        Windows.Foundation.Collections.IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index, ResourceContext context);
     }
 
     [contract(MrtContract, 1.0)]
