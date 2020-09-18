@@ -52,7 +52,7 @@ namespace winui_desktop_packaged_app
         {
             // The resource manager does not have a default scope and resolves resources based on the root.
 
-            var resourceCandidate = m_resourceManager.MainResourceMap.GetValue(m_resourceContext, "Resources/SampleString");
+            var resourceCandidate = m_resourceManager.MainResourceMap.GetValue("Resources/SampleString", m_resourceContext);
             var resourceString = resourceCandidate.ValueAsString;
 
             output.Text = resourceString;
