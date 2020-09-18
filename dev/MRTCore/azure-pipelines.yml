@@ -3,19 +3,13 @@
 # Add steps that test and distribute an app, save build artifacts, and more:
 # https://aka.ms/yaml
 
-name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
+#name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 
-trigger:
-- master
-
-# Only MRTCore pipeline is registered for signing
-variables:
-  codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
-  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
-  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+#trigger:
+#- master
 
 jobs:
-- job: Build
+- job: BuildMRT
   pool:
     vmImage: 'windows-latest'
   
@@ -23,7 +17,10 @@ jobs:
     solution: '**/*.sln'
     buildConfiguration: 'Release'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-  
+    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+    MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+
   steps:
 #  - task: PkgESSetupBuild@10
 #    displayName: 'Package ES - Setup Build'
@@ -207,16 +204,17 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw'
       ArtifactName: 'binaries_raw'
 
-- job: Sign
+- job: SignMRT
   condition: and(succeeded(), eq(variables.codeSign, true))
   dependsOn:
-    - Build
+    - BuildMRT
   pool:
     vmImage: 'windows-latest'
   
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+    codeSign: false
 
   strategy:
     maxParallel: 4
@@ -256,11 +254,11 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw'
       ArtifactName: 'signedbinaries_$(BuildPlatform)'
 
-- job: Publish
+- job: PublishMRT
   dependsOn:
-    - Build
-    - Sign
-  condition: and(in(dependencies.Build.result, 'Succeeded'), in(dependencies.Sign.result, 'Succeeded', 'Skipped'))
+    - BuildMRT
+    - SignMRT
+  condition: and(in(dependencies.BuildMRT.result, 'Succeeded'), in(dependencies.SignMRT.result, 'Succeeded', 'Skipped'))
   pool:
     vmImage: 'windows-latest'
   
@@ -272,6 +270,8 @@ jobs:
     Major: '1'
     Minor: '0'
     Patch: '0'
+    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   steps:
   - task: DownloadBuildArtifacts@0
