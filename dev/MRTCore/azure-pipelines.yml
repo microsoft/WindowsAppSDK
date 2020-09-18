@@ -8,14 +8,6 @@
 #trigger:
 #- master
 
-jobs:
-
-# Only MRTCore pipeline is registered for signing
-variables:
-  codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
-  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
-  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
-
 - job: Build
   pool:
     vmImage: 'windows-latest'
@@ -24,7 +16,10 @@ variables:
     solution: '**/*.sln'
     buildConfiguration: 'Release'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-  
+    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+    MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+
   steps:
 #  - task: PkgESSetupBuild@10
 #    displayName: 'Package ES - Setup Build'
@@ -218,6 +213,7 @@ variables:
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+    codeSign: false
 
   strategy:
     maxParallel: 4
@@ -273,6 +269,8 @@ variables:
     Major: '1'
     Minor: '0'
     Patch: '0'
+    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   steps:
   - task: DownloadBuildArtifacts@0
