@@ -8,6 +8,7 @@
 #trigger:
 #- master
 
+jobs:
 - job: Build
   pool:
     vmImage: 'windows-latest'
