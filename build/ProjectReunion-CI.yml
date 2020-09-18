@@ -88,7 +88,7 @@ stages:
 #    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
 
 # MRTCore build pipeline
-- stage MRTCore
+- stage: MRTCore
   jobs:
   - template: ..\dev\MRTCore\azure-pipelines.yml
     parameters:
