@@ -22,13 +22,13 @@ jobs:
     MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
   steps:
-#  - task: PkgESSetupBuild@10
-#    displayName: 'Package ES - Setup Build'
-#    inputs:
-#      ProductName: MRT Core
-#      useDfs: false
-#      branchVersion: false
-#      extSync: false
+  - task: PkgESSetupBuild@10
+    displayName: 'Package ES - Setup Build'
+    inputs:
+      ProductName: MRT Core
+      useDfs: false
+      branchVersion: false
+      extSync: false
   
 #  - task: powershell@2
 #    displayName: 'Installing .NET SDK'
