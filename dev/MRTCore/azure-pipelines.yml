@@ -258,7 +258,7 @@ jobs:
   dependsOn:
     - BuildMRT
     - SignMRT
-  condition: and(in(dependencies.Build.result, 'Succeeded'), in(dependencies.Sign.result, 'Succeeded', 'Skipped'))
+  condition: and(in(dependencies.BuildMRT.result, 'Succeeded'), in(dependencies.SignMRT.result, 'Succeeded', 'Skipped'))
   pool:
     vmImage: 'windows-latest'
   

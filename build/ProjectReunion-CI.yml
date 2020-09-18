@@ -88,3 +88,4 @@ jobs:
 - template: ..\dev\MRTCore\azure-pipelines.yml
   parameters:
     buildJobName: 'BuildMRTCore'
+    dependsOn: CreateNugetPackage
