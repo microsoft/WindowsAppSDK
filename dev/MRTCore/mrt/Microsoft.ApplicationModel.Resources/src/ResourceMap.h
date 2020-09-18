@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 #pragma once
@@ -26,15 +26,15 @@ struct ResourceMap : ResourceMapT<ResourceMap>
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValue(hstring const& resource);
 
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValue(
-        Microsoft::ApplicationModel::Resources::ResourceContext const& context,
-        hstring const& resource);
+        hstring const& resource,
+        Microsoft::ApplicationModel::Resources::ResourceContext const& context);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndex(
         uint32_t index);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndex(
-        Microsoft::ApplicationModel::Resources::ResourceContext const& context,
-        uint32_t index);
+        uint32_t index,
+        Microsoft::ApplicationModel::Resources::ResourceContext const& context);
 
 private:
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValueImpl(
