@@ -89,7 +89,6 @@ stages:
 
 # MRTCore build pipeline
 - stage: MRTCore
-  jobs:
   - template: ..\dev\MRTCore\azure-pipelines.yml
     parameters:
       buildJobName: 'BuildMRTCore'
