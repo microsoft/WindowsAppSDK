@@ -168,7 +168,7 @@ jobs:
     inputs:
       SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
-        Microsoft.ApplicationModel.Resources.winmd
+        net5.0\Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
       flattenFolders: true
   
@@ -341,7 +341,7 @@ jobs:
       Contents: |
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         signed\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0-windows\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -451,7 +451,7 @@ jobs:
       Contents: |
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0-windows\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -528,14 +528,16 @@ jobs:
     inputs:
       SourceFolder: '$(MRTSourcesDirectory)\packaging'
       Contents: |
-        Microsoft.ApplicationModel.Resources.props
-        Microsoft.ApplicationModel.Resources.C.props
         Microsoft.ApplicationModel.Resources.PriGen.targets
         Microsoft.ApplicationModel.Resources.References.targets
         Microsoft.ApplicationModel.Resources.targets
-        Microsoft.ApplicationModel.Resources.WinRt.props
+        native\Microsoft.ApplicationModel.Resources.C.props
+        native\Microsoft.ApplicationModel.Resources.props
+        native\Microsoft.ApplicationModel.Resources.targets
+        native\Microsoft.ApplicationModel.Resources.WinRt.props
         README.md
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\build'
+      flattenFolders: false
 
   - task: CopyFiles@2
     displayName: 'copy header'
