@@ -9,7 +9,7 @@
 #- master
 
 jobs:
-- job: Build
+- job: BuildMRT
   pool:
     vmImage: 'windows-latest'
   
@@ -204,10 +204,10 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw'
       ArtifactName: 'binaries_raw'
 
-- job: Sign
+- job: SignMRT
   condition: and(succeeded(), eq(variables.codeSign, true))
   dependsOn:
-    - Build
+    - BuildMRT
   pool:
     vmImage: 'windows-latest'
   
@@ -254,10 +254,10 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw'
       ArtifactName: 'signedbinaries_$(BuildPlatform)'
 
-- job: Publish
+- job: PublishMRT
   dependsOn:
-    - Build
-    - Sign
+    - BuildMRT
+    - SignMRT
   condition: and(in(dependencies.Build.result, 'Succeeded'), in(dependencies.Sign.result, 'Succeeded', 'Skipped'))
   pool:
     vmImage: 'windows-latest'
