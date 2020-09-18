@@ -3,10 +3,12 @@
 # Add steps that test and distribute an app, save build artifacts, and more:
 # https://aka.ms/yaml
 
-name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
+#name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 
-trigger:
-- master
+#trigger:
+#- master
+
+jobs:
 
 # Only MRTCore pipeline is registered for signing
 variables:
@@ -14,7 +16,6 @@ variables:
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
-jobs:
 - job: Build
   pool:
     vmImage: 'windows-latest'
