@@ -114,7 +114,7 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     const PACKAGE_INFO* packageInfo = reinterpret_cast<const PACKAGE_INFO*>(buffer.get());
     for (size_t index = 0; index < packageInfoCount; ++index, ++packageInfo)
     {
-        PCWSTR frameworkPackageFamilyName = L"Microsoft.ProjectReunionFramework_8wekyb3d8bbwe";
+        PCWSTR frameworkPackageFamilyName = L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe";
         if (CompareStringOrdinal(packageInfo->packageFamilyName, -1, frameworkPackageFamilyName, -1, TRUE) == CSTR_EQUAL)
         {
             packageInfoBuffer = std::move(buffer);
@@ -134,15 +134,8 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
 HRESULT AddFrameworkToPath(PCWSTR frameworkPath)
 {
     // Add the framework to the Loader's DllDirectory list
-    auto dllDirectoryCookie = AddDllDirectory(frameworkPath);
-    RETURN_LAST_ERROR_IF(dllDirectoryCookie == 0);
-
-    auto on_exit = wil::scope_exit([dllDirectoryCookie] {
-        if (dllDirectoryCookie)
-        {
-            RemoveDllDirectory(dllDirectoryCookie);
-        }
-    });
+    wil::unique_dll_directory_cookie dllDirectoryCookie{ AddDllDirectory(frameworkPath) };
+    RETURN_LAST_ERROR_IF_NULL(dllDirectoryCookie);
 
     // Make a copy of the framework path to save for later
     wil::unique_cotaskmem_string frameworkPathCopy(wil::make_cotaskmem_string_nothrow(frameworkPath));
@@ -165,8 +158,8 @@ HRESULT AddFrameworkToPath(PCWSTR frameworkPath)
         RETURN_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", frameworkPath));
     }
 
-    g_frameworkPath = wistd::move(frameworkPathCopy);
-    g_dllDirectoryCookie = dllDirectoryCookie;
+    g_frameworkPath = std::move(frameworkPathCopy);
+    g_dllDirectoryCookie = dllDirectoryCookie.release();
     dllDirectoryCookie = 0;
     return S_OK;
 }

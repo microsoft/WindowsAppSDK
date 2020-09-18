@@ -45,6 +45,7 @@ namespace Test::DynamicDependency
             Assert::IsNotNull(bootstrapDll.get());
 
             RemovePackage_MainSidecar();
+            RemovePackage_ProjectReunionFramework();
             AddPackage_ProjectReunionFramework();
             AddPackage_MainSidecar();
 
@@ -53,8 +54,12 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_CLEANUP(Cleanup)
         {
+            m_bootstrapDll.reset();
+
             RemovePackage_MainSidecar();
             RemovePackage_ProjectReunionFramework();
+
+            winrt::uninit_apartment();
         }
 
         TEST_METHOD(Initialize_ClassNotFound)
@@ -91,7 +96,7 @@ namespace Test::DynamicDependency
                 if (hr == S_OK)
                 {
                     // COM was initialized successfully on this thread
-                    return;
+                    break;
                 }
                 else if (hr == S_FALSE)
                 {
@@ -115,14 +120,14 @@ namespace Test::DynamicDependency
 
         static void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
         {
-            // If the package is already registered REMOVE IT!
-            // Make sure we start with a clean and current state
-            // and not state old packages or builds
-            if (IsPackageRegistered(packageFullName))
+            if (!IsPackageRegistered(packageFullName))
             {
-                RemovePackageIfNecessary(packageFullName);
+                AddPackageIfNecessary(packageDirName, packageFullName);
             }
+        }
 
+        static void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
+        {
             // Build the target package's .msix filename. It's under the Solution's $(OutDir)
             // NOTE: It could live in ...\Something.msix\... or ...\Something\...
             auto solutionOutDirPath = GetSolutionOutDirPath();
@@ -157,13 +162,14 @@ namespace Test::DynamicDependency
 
         static void RemovePackageIfNecessary(PCWSTR packageFullName)
         {
-            // If the package isn't registered our work here is already done
-            if (!IsPackageRegistered(packageFullName))
+            if (IsPackageRegistered(packageFullName))
             {
-                return;
+                RemovePackage(packageFullName);
             }
+        }
 
-            // Remove the package
+        static void RemovePackage(PCWSTR packageFullName)
+        {
             winrt::Windows::Management::Deployment::PackageManager packageManager;
             auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
             if (!deploymentResult)
@@ -211,21 +217,33 @@ namespace Test::DynamicDependency
 
         static void AddPackage_MainSidecar()
         {
-            AddPackageIfNecessary(Test::Packages::MainSidecar::c_PackageDirName, Test::Packages::MainSidecar::c_PackageFullName);
+            AddPackage(Test::Packages::MainSidecar::c_PackageDirName, Test::Packages::MainSidecar::c_PackageFullName);
         }
 
         static void RemovePackage_MainSidecar()
         {
+            // Best-effort removal. PackageManager.RemovePackage errors if the package
+            // is not registered, but if it's not registered we're good. "'Tis the destination
+            // that matters, not the journey" so regardless how much or little work
+            // we need do, we're happy as long as the package isn't registered when we're done
+            //
+            // Thus, do a *IfNecessary removal
             RemovePackageIfNecessary(Test::Packages::MainSidecar::c_PackageFullName);
         }
 
         static void AddPackage_ProjectReunionFramework()
         {
-            AddPackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
+            AddPackage(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
         }
 
         static void RemovePackage_ProjectReunionFramework()
         {
+            // Best-effort removal. PackageManager.RemovePackage errors if the package
+            // is not registered, but if it's not registered we're good. "'Tis the destination
+            // that matters, not the journey" so regardless how much or little work
+            // we need do, we're happy as long as the package isn't registered when we're done
+            //
+            // Thus, do a *IfNecessary removal
             RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
         }
 

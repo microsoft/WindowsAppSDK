@@ -13,3 +13,6 @@
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
 #include <wil/com.h>
+#include <wil/resource.h>
+
+#include "wil_msixdynamicdependency.h"

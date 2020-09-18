@@ -14,6 +14,7 @@
     <DisplayName>Microsoft.ProjectReunion.Framework fake for Bootstrap API tests</DisplayName>
     <PublisherDisplayName>Project Reunion</PublisherDisplayName>
     <Logo>logo.png</Logo>
+    <Framework>true</Framework>
   </Properties>
 
   <Dependencies>
