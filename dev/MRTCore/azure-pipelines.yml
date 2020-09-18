@@ -11,6 +11,8 @@ trigger:
 # Only MRTCore pipeline is registered for signing
 variables:
   codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
 jobs:
 - job: Build
@@ -66,25 +68,32 @@ jobs:
     displayName: 'NuGet restore of MrtCore'
     inputs:
       command: 'restore'
-      restoreSolution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       feedsToUse: 'config'
-      nugetConfigPath: '$(Build.SourcesDirectory)\mrt\NuGet.Config'
+      nugetConfigPath: '$(MRTSourcesDirectory)\mrt\NuGet.Config'
   
   - task: VSBuild@1
     displayName: 'build MrtCore x86'
     inputs:
       platform: 'x86'
       buildPlatform: 'x86'
-      solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
-  
+      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.binlog'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish mrtcore binlog'
+    condition: succeededOrFailed()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.binlog
+      artifactName: drop
+
   - task: VSBuild@1
     displayName: 'build MrtCore x64'
     inputs:
       platform: 'x64'
       buildPlatform: 'x64'
-      solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
@@ -93,7 +102,7 @@ jobs:
     inputs:
       platform: 'ARM64'
       buildPlatform: 'x64'
-      solution: '$(Build.SourcesDirectory)\mrt\MrtCore.sln'
+      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxBundlePlatforms="ARM64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
   
@@ -106,7 +115,7 @@ jobs:
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
-      searchFolder: '$(Build.BinariesDirectory)\Release\win32'
+      searchFolder: '$(MRTBinariesDirectory)\Release\x86'
       testRunTitle: 'test x86'
       platform: 'x86'
       configuration: 'Release'
@@ -120,7 +129,7 @@ jobs:
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
-      searchFolder: '$(Build.BinariesDirectory)\Release\x64'
+      searchFolder: '$(MRTBinariesDirectory)\Release\x64'
       testRunTitle: 'test x64'
       platform: 'x64'
       configuration: 'Release'
@@ -135,11 +144,11 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy x86 for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\win32'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\x86'
       Contents: |
-        mrm.dll
-        mrm.lib
-        mrm.pdb
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll        
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
@@ -148,7 +157,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy projection binaries and symbols for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
@@ -160,20 +169,20 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy winmd for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
-        net5.0\Microsoft.ApplicationModel.Resources.winmd
+        Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
       flattenFolders: true
   
   - task: CopyFiles@2
     displayName: 'copy x64 for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\x64'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\x64'
       Contents: |
-        mrm.dll
-        mrm.lib
-        mrm.pdb
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x64'
@@ -182,11 +191,11 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy ARM64 for signing'
     inputs:
-      SourceFolder: '$(Build.BinariesDirectory)\Release\ARM64'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\ARM64'
       Contents: |
-        mrm.dll
-        mrm.lib
-        mrm.pdb
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\ARM64'
@@ -203,7 +212,7 @@ jobs:
   dependsOn:
     - Build
   pool:
-    name: Package ES Standard Build
+    vmImage: 'windows-latest'
   
   variables:
     solution: '**/*.sln'
@@ -517,7 +526,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy packaging files'
     inputs:
-      SourceFolder: 'packaging'
+      SourceFolder: '$(MRTSourcesDirectory)\packaging'
       Contents: |
         Microsoft.ApplicationModel.Resources.props
         Microsoft.ApplicationModel.Resources.C.props
@@ -531,7 +540,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy header'
     inputs:
-      SourceFolder: 'mrt\core\src'
+      SourceFolder: '$(MRTSourcesDirectory)\mrt\core\src'
       Contents: |
         mrm.h
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\include'
@@ -539,6 +548,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy license'
     inputs:
+      SourceFolder: '$(MRTSourcesDirectory)'
       Contents: |
         LICENSE.txt
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt'
@@ -548,7 +558,7 @@ jobs:
   - task: NuGetCommand@2
     inputs:
       command: 'pack'
-      packagesToPack: 'mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
+      packagesToPack: '$(MRTSourcesDirectory)\mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: '$(Major)'
       minorVersion: '$(Minor)'
