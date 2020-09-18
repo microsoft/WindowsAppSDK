@@ -74,6 +74,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     }
 }
 
+//TODO:Change error handle to exceptions
 /// Determine the path for the Project Reunion Framework package
 HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer)
 {
@@ -131,6 +132,7 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     RETURN_WIN32(APPMODEL_ERROR_PACKAGE_NOT_AVAILABLE);
 }
 
+//TODO:Change error handle to exceptions
 HRESULT AddFrameworkToPath(PCWSTR frameworkPath)
 {
     // Add the framework to the Loader's DllDirectory list
