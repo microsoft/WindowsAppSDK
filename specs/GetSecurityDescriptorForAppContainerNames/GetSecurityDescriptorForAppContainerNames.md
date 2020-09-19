@@ -21,12 +21,13 @@ Add a flat C API that takes an array of PFNs and access masks, and produces the 
 
 wil::unique_event CreateShareableEvent(PCWSTR name)
 {
-    wil::unique_hlocal_ptr sd;
-    PCWSTR packageNames[1] = { L"Contoso.Test.App_12345678" };
-    DWORD accessMasks[1] = { ACCESS_MODIFY_STATE };
+    wil::unique_hlocal_security_descriptor sd;
+    AppContainerAccess access[1] =
+      {{L"Contoso.Test.App_12345678",
+        EVENT_MODIFY_STATE | SYNCHRONIZE}};
 
-    THROW_IF_FAILED(GetSecurityDescriptorForPackageFamilyNames(
-        1, packageNames, accessMasks, &sd);
+    THROW_IF_FAILED(GetSecurityDescriptorForAppContainerNames(
+        1, access, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd);
 
     SECURITY_ATTRIBUTES sa;
     sa.nLength = sizeof(sa);
@@ -42,15 +43,21 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
 # API Details
 
 ```c
-STDAPI GetSecurityDescriptorForPackageFamilyNames(
-    uint32_t                countOfPackageFamilyNames,
-    _In_Reads_(countOfPackageFamilyNames)
-      const PCWSTR*         listOfPackageFamilyNames,
-    _In_Reads_(countOfPackageFamilyNames)
-      const DWORD*          accessMask,
-    _Outptr_ SECURITY_DESCRIPTOR** securityDescriptor
+struct AppContainerAccess
+{
+    PCWSTR appContainerName;
+    uint32_t accessMask;
+};
+
+STDAPI GetSecurityDescriptorForAppContainerNames(
+    uint32_t countOfAppContainerNames,
+    _In_reads_(countOfPackageFamilyNames)
+        const AppContainerAccess* appAccess,
+    uint32_t userAccessMask,
+        _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
 )
 ```
+
 If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
 
 # API Notes
