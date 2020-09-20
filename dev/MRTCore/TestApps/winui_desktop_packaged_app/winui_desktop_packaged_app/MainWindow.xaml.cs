@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.ApplicationModel.Resources;
+using winui_class_lib;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -64,6 +65,12 @@ namespace winui_desktop_packaged_app
             var resourceString = resourceCandidate.ValueAsString;
 
             output.Text = resourceString;
+        }
+
+        private void defaultViaLib_Click(object sender, RoutedEventArgs e)
+        {
+            var libClass = new winui_class_lib_class();
+            output.Text = libClass.GetDefaultSampleString();
         }
 
         private ResourceLoader m_resourceLoader;
