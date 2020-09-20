@@ -7,8 +7,8 @@
 
 #pragma pop_macro("GetCurrentTime")
 
-#include "MRM.h"
-#include "winrt/Microsoft.ApplicationModel.resources.h"
+#include <MRM.h>
+#include <winrt/Microsoft.ApplicationModel.Resources.h>
 
 namespace winrt::winui_desktop_packaged_app_cpp::implementation
 {
@@ -18,9 +18,6 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         ~MainWindow();
 
         void InitializeResourceLoaders(winrt::Microsoft::ApplicationModel::Resources::ResourceManager resourceManagerWinRT, MrmManagerHandle resourceManagerMrm);        
-
-        int32_t MyProperty();
-        void MyProperty(int32_t value);
 
         void defaultWinrtApi_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
         void overrideWinrtApi_Click(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::RoutedEventArgs const& args);
