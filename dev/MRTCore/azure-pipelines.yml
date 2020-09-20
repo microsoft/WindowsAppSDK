@@ -168,7 +168,7 @@ jobs:
     inputs:
       SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
-        net5.0\Microsoft.ApplicationModel.Resources.winmd
+        Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
       flattenFolders: true
   
