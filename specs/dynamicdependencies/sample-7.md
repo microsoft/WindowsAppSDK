@@ -35,7 +35,7 @@ HRESULT UpdatePackageGraph()
 
 HRESULT AddToPackageGraph(_In_ PCWSTR what, _In_ PCWSTR packageDependencyId, INT32 rank)
 {
-    const UINT32 options = MddAddPackageDependencyOptions::None;
+    const auto options = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(

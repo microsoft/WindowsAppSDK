@@ -36,7 +36,7 @@ HRESULT Define32bitPackageDependency()
     // will only resolve to a 32-bit package regardless of the caller's bitness at runtime.
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::X86 |
         MddPackageDependencyProcessorArchitectures::Arm | MddPackageDependencyProcessorArchitectures::X86A64;
-    const UINT32 options = MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
+    const auto options = MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, GetLifetimeFile(), options, &packageDependencyId));

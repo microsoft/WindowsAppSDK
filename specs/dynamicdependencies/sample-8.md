@@ -18,7 +18,7 @@ HRESULT UpdatePackageGraph()
     RETURN_IF_FAILED(LoadPackageDependencyId(packageDependencyId));
 
     const INT32 rank = 1967;
-    const UINT32 options = MddAddPackageDependencyOptions::PrependIfRankCollision;
+    const auto options = MddAddPackageDependencyOptions::PrependIfRankCollision;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     RETURN_IF_FAILED(MddAddPackageDependency(
         packageDependencyId.get(), rank, options, &packageDependencyContext, nullptr));

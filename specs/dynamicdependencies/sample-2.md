@@ -98,13 +98,13 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const UINT32 createOptions = MddCreatePackageDependencyOptions::LifecycleHint_Process;
+    const auto createOptions = MddCreatePackageDependencyOptions::LifecycleHint_Process;
     wil::unique_packagedependencyid packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, nullptr, createOptions, &packageDependencyId));
 
-    const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
+    const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
+    const auto addOptions = MddAddPackageDependencyOptions::None;
     MddPackageDependencyContextAndDll context;
     RETURN_IF_FAILED(context.Add(packageDependencyId.get(), rank, addOptions, L"Contoso-Muffins"));
     wprintf(L"Managing muffins via %ls", context.GetPackageFullName());

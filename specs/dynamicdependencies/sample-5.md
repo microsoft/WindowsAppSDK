@@ -17,8 +17,8 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     wil::unique_ptr<WCHAR[]> packageDependencyId;
     RETURN_IF_FAILED(LoadPackageDependencyId(L"muffins", packageDependencyId));
 
-    const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
+    const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
+    const auto addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
