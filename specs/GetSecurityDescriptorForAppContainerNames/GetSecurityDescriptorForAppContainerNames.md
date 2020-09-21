@@ -51,7 +51,7 @@ struct AppContainerAccess
 
 STDAPI GetSecurityDescriptorForAppContainerNames(
     uint32_t countOfAppContainerNames,
-    _In_reads_(countOfPackageFamilyNames)
+    _In_reads_(countOfAppContainerNames)
         const AppContainerAccess* appAccess,
     uint32_t userAccessMask,
         _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
