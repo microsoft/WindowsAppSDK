@@ -11,9 +11,9 @@ using Microsoft.ApplicationModel.Resources;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace winui_class_lib
+namespace SampleLibrary
 {
-    public class winui_class_lib_class
+    public class SampleType
     {
         public string GetDefaultSampleString()
         {
