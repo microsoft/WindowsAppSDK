@@ -29,4 +29,8 @@
 
 #include "CppUnitTest.h"
 
+#include "TestCom.h"
+#include "TestFilesystem.h"
+#include "TestPackages.h"
+
 #endif //PCH_H

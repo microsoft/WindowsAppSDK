@@ -20,7 +20,7 @@ STDAPI MddTryCreatePackageDependency(
     *packageDependencyId = nullptr;
 
     //TODO: Implement MddTryCreatePackageDependency
-    RETURN_WIN32(ERROR_NOT_SUPPORTED);
+    RETURN_HR(E_NOTIMPL);
 }
 
 STDAPI_(void) MddDeletePackageDependency(
@@ -56,7 +56,7 @@ STDAPI MddAddPackageDependency(
     }
 
     //TODO: Implement MddAddPackageDependency
-    RETURN_WIN32(ERROR_NOT_SUPPORTED);
+    RETURN_HR(E_NOTIMPL);
 }
 
 STDAPI_(void) MddRemovePackageDependency(

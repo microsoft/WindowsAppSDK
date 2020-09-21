@@ -21,9 +21,30 @@
     <ClCompile Include="TestMddBootstrap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestCom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFilesystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestPackages.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicDependency_Test_Win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestPackages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestFilesystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

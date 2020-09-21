@@ -176,7 +176,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -197,7 +197,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -214,7 +214,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -231,7 +231,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -248,7 +248,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -265,7 +265,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -286,7 +286,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -307,17 +307,24 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.Bootstrap.dll;Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DynamicDependency_Test_Win32.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TestCom.cpp" />
+    <ClCompile Include="TestFilesystem.cpp" />
     <ClCompile Include="TestMddBootstrap.cpp" />
+    <ClCompile Include="TestPackages.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TestCom.h" />
+    <ClInclude Include="TestFilesystem.h" />
+    <ClInclude Include="TestPackages.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
