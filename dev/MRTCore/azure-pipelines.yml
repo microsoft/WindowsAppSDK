@@ -210,7 +210,7 @@ jobs:
     inputs:
       platform: 'x86'
       solution: |
-        '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+        '$(Build.SourcesDirectory)\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
 
