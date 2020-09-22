@@ -146,7 +146,7 @@ jobs:
         mrm\mrm.dll
         mrm\mrm.lib
         mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll        
+        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
       flattenFolders: true
@@ -203,6 +203,16 @@ jobs:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw'
       ArtifactName: 'binaries_raw'
+
+  # Build the test apps!
+- task: VSBuild@1
+  displayName: 'build CPP sample app for x86'
+  inputs:
+    platform: 'x86'
+    solution: |
+      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+    configuration: '$(buildConfiguration)'
+    msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
 
 - job: SignMRT
   condition: and(succeeded(), eq(variables.codeSign, true))
@@ -616,16 +626,6 @@ jobs:
 
 # TODO: use the $(solution) variable instead. That'll build all solution files in the repo. Currently, this isn't being done because getting
 # $(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln to build in the pipeline is being deferred.
-
-#- task: VSBuild@1
-#  displayName: 'build x86'
-#  inputs:
-#    platform: 'x86'
-#    solution: |
-#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
-#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
-#    configuration: '$(buildConfiguration)'
-#    msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
 #- task: VSBuild@1
 #  displayName: 'build x64'
