@@ -76,8 +76,7 @@ jobs:
     displayName: 'build CPP sample app for x86'
     inputs:
       platform: 'x86'
-      solution: |
-        '$(MRTSourcesDirectory)\TestApps\winui_desktop_packaged_app_cpp\winui_desktop_packaged_app_cpp.sln'
+      solution: '$(MRTSourcesDirectory)\TestApps\winui_desktop_packaged_app_cpp\winui_desktop_packaged_app_cpp.sln'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
 
