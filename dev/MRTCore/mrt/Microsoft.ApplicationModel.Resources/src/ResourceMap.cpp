@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
 #include "pch.h"
@@ -117,9 +117,12 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
     winrt::throw_hresult(E_UNEXPECTED);
 }
 
-Resources::ResourceCandidate ResourceMap::GetValue(hstring const& resource) { return GetValueImpl(nullptr, resource); }
+Resources::ResourceCandidate ResourceMap::GetValue(hstring const& resource)
+{
+    return GetValueImpl(nullptr, resource);
+}
 
-Resources::ResourceCandidate ResourceMap::GetValue(Resources::ResourceContext const& context, hstring const& resource)
+Resources::ResourceCandidate ResourceMap::GetValue(hstring const& resource, Resources::ResourceContext const& context)
 {
     return GetValueImpl(&context, resource);
 }
@@ -208,7 +211,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     return GetValueByIndexImpl(nullptr, index);
 }
 
-IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByIndex(Resources::ResourceContext const& context, uint32_t index)
+IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByIndex(uint32_t index, Resources::ResourceContext const& context)
 {
     return GetValueByIndexImpl(&context, index);
 }

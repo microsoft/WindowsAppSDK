@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationModel.Resources" Version="1.0.0-CI-20200915-045934" />
+    <PackageReference Include="Microsoft.ApplicationModel.Resources" Version="1.0.0-CI-20200918-170045" />
     <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.6" />
     <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview2.200713.0" />
     <Manifest Include="$(ApplicationManifest)" />
@@ -30,6 +30,12 @@
   <ItemGroup>
     <PRIResource Include="Resources.lang-de-de.resw" />
     <PRIResource Include="Resources.lang-en-us.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="winui_class_lib">
+      <HintPath>..\..\winui_class_lib\obj\$(Configuration)\net5.0\winui_class_lib.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
