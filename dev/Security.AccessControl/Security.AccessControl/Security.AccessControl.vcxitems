@@ -19,4 +19,8 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Security.AccessControl.h" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)Security.AccessControl.h"/>
+  </ItemGroup>  
 </Project>
