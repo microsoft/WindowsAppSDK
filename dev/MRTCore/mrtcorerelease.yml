@@ -3,7 +3,7 @@
 # Add steps that test and distribute an app, save build artifacts, and more:
 # https://aka.ms/yaml
 
-#name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
+name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 
 #trigger:
 #- master
@@ -210,12 +210,12 @@ jobs:
   dependsOn:
     - BuildMRT
   pool:
-    vmImage: 'windows-latest'
+    name: Package ES Standard Build
   
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    codeSign: false
+    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
 
   strategy:
     maxParallel: 4
@@ -242,12 +242,12 @@ jobs:
       artifactName: 'binaries_raw'
       downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
   
-#  - task: PkgESCodeSign@10
-#    env:
-#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-#    inputs:
-#      signConfigXml: 'SignConfig.xml'
-#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
+  - task: PkgESCodeSign@10
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      signConfigXml: 'SignConfig.xml'
+      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Signed Binaries'
@@ -260,8 +260,7 @@ jobs:
     - BuildMRT
     - SignMRT
   condition: and(in(dependencies.BuildMRT.result, 'Succeeded'), in(dependencies.SignMRT.result, 'Succeeded', 'Skipped'))
-  pool:
-    vmImage: 'windows-latest'
+  name: Package ES Standard Build
   
   variables:
     solution: '**/*.sln'
@@ -570,14 +569,14 @@ jobs:
       basePath: '$(Build.ArtifactStagingDirectory)\mrt'
       packDestination: '$(Build.ArtifactStagingDirectory)\nuget'
   
-#  - task: PkgESCodeSign@10
-#    condition: and(succeeded(), eq(variables.codeSign, true))
-#    env:
-#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-#    inputs:
-#      signConfigXml: 'SignConfig-nuget.xml'
-#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
-#      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+  - task: PkgESCodeSign@10
+    condition: and(succeeded(), eq(variables.codeSign, true))
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      signConfigXml: 'SignConfig-nuget.xml'
+      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
   
   - task: PublishBuildArtifacts@1
     condition: and(succeeded(), eq(variables.codeSign, false))
@@ -640,12 +639,12 @@ jobs:
 #    configuration: '$(buildConfiguration)'
 #    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
-#  - task: PkgESSerializeForPostBuild@10
-#    displayName: 'PkgES Post Build Serialization'
-#    continueOnError: true
+  - task: PkgESSerializeForPostBuild@10
+    displayName: 'PkgES Post Build Serialization'
+    continueOnError: true
 
-#  - task: PkgESLateTasks@10
-#    displayName: 'PkgES Finalize and Cleanup'
-#    inputs:
-#      enablePostBuild: false
-#      dfsReleaseInPb: true
+  - task: PkgESLateTasks@10
+    displayName: 'PkgES Finalize and Cleanup'
+    inputs:
+      enablePostBuild: false
+      dfsReleaseInPb: true
