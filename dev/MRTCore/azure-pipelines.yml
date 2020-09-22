@@ -68,7 +68,19 @@ jobs:
       restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       feedsToUse: 'config'
       nugetConfigPath: '$(MRTSourcesDirectory)\mrt\NuGet.Config'
-  
+
+  # TODO: move this down below the building of MRTCore (maybe even as a separate job after building, signing and publishing MRTCore).
+  # TODO: reason for having this up here right now is so that this gets run sooner in the pipeline, that way I can iterate faster!
+  # Build the test apps!
+  - task: VSBuild@1
+    displayName: 'build CPP sample app for x86'
+    inputs:
+      platform: 'x86'
+      solution: |
+        '$(MRTSourcesDirectory)\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+      configuration: '$(buildConfiguration)'
+      msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
+
   - task: VSBuild@1
     displayName: 'build MrtCore x86'
     inputs:
@@ -203,16 +215,6 @@ jobs:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw'
       ArtifactName: 'binaries_raw'
-
-  # Build the test apps!
-  - task: VSBuild@1
-    displayName: 'build CPP sample app for x86'
-    inputs:
-      platform: 'x86'
-      solution: |
-        '$(Build.SourcesDirectory)\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
-      configuration: '$(buildConfiguration)'
-      msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
 
 - job: SignMRT
   condition: and(succeeded(), eq(variables.codeSign, true))
