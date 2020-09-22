@@ -205,14 +205,14 @@ jobs:
       ArtifactName: 'binaries_raw'
 
   # Build the test apps!
-- task: VSBuild@1
-  displayName: 'build CPP sample app for x86'
-  inputs:
-    platform: 'x86'
-    solution: |
-      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
-    configuration: '$(buildConfiguration)'
-    msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
+  - task: VSBuild@1
+    displayName: 'build CPP sample app for x86'
+    inputs:
+      platform: 'x86'
+      solution: |
+        '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+      configuration: '$(buildConfiguration)'
+      msbuildArgs: '/binaryLogger:$(Build.SourcesDirectory)/cpp_sample_app.binlog'
 
 - job: SignMRT
   condition: and(succeeded(), eq(variables.codeSign, true))
