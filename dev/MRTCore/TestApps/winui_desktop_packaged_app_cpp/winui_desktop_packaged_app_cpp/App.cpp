@@ -51,7 +51,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     m_resourceManagerWinRT = ResourceManager(L"resources.pri");
     check_hresult(MrmCreateResourceManager(L"resources.pri", &m_resourceManagerMrm));
 
-    m_resourceManagerWinRT.ResourceNotFound([](ResourceManager sender, ResourceNotFoundEventArgs args)
+    m_resourceManagerWinRT.ResourceNotFound([](ResourceManager const&, ResourceNotFoundEventArgs const& args)
         {
             // There could be a resource in a legacy resource file that we retrieve using the corresponding legacy resource loader. For example, the C#
             // app in this repo uses the .NET resource loader as its fallback. Instead, we just hardcode a resource value here.

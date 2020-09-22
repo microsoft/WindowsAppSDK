@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <SignConfigXML>
+ <job platform="anycpu" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="Release" dest="__INPATHROOT__\ANYCPU\signed" jobname="MRT Core binary sign (ANYCPU)" approvers="">
+   <file src="__INPATHROOT__\ANYCPU\Microsoft.ApplicationModel.Resources.winmd"  signType="AuthenticodeFormer" />
+   <file src="__INPATHROOT__\ANYCPU\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll" signType="AuthenticodeFormer" dest="__INPATHROOT__\ANYCPU\signed\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll"/>
+   <file src="__INPATHROOT__\ANYCPU\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll" signType="AuthenticodeFormer" dest="__INPATHROOT__\ANYCPU\signed\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll"/>
+ </job>
  <job platform="x64" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="Release" dest="__INPATHROOT__\x64\signed" jobname="MRT Core binary sign (x64)" approvers="">
    <file src="__INPATHROOT__\x64\mrm.dll" signType="AuthenticodeFormer" /> 
    <file src="__INPATHROOT__\x64\Microsoft.ApplicationModel.Resources.dll"  signType="AuthenticodeFormer"  /> 
@@ -7,9 +12,6 @@
  <job platform="x86" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="Release" dest="__INPATHROOT__\x86\signed" jobname="MRT Core binary sign (x86)" approvers="">
    <file src="__INPATHROOT__\x86\mrm.dll" signType="AuthenticodeFormer" /> 
    <file src="__INPATHROOT__\x86\Microsoft.ApplicationModel.Resources.dll"  signType="AuthenticodeFormer" /> 
-   <file src="__INPATHROOT__\x86\Microsoft.ApplicationModel.Resources.winmd"  signType="AuthenticodeFormer" />
-   <file src="__INPATHROOT__\x86\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll" signType="AuthenticodeFormer" dest="__INPATHROOT__\x86\signed\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll"/>
-   <file src="__INPATHROOT__\x86\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll" signType="AuthenticodeFormer" dest="__INPATHROOT__\x86\signed\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll"/>
  </job>
  <job platform="ARM64" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="Release" dest="__INPATHROOT__\ARM64\signed" jobname="MRT Core binary sign (ARM64)" approvers="">
    <file src="__INPATHROOT__\ARM64\mrm.dll" signType="AuthenticodeFormer" /> 

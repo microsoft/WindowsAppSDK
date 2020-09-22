@@ -34,16 +34,6 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         check_hresult(MrmSetQualifier(m_overrideResourceContextMrm, L"Language", L"de-DE"));
     }
 
-    int32_t MainWindow::MyProperty()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void MainWindow::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
-    }
-
     void MainWindow::defaultWinrtApi_Click(IInspectable const&, RoutedEventArgs const&)
     {
         auto stringResourceCandidate = m_resourceManagerWinRT.MainResourceMap().GetValue(L"Resources/SampleString");
@@ -52,7 +42,7 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
 
     void MainWindow::overrideWinrtApi_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        auto stringResourceCandidate = m_resourceManagerWinRT.MainResourceMap().GetValue(m_overrideResourceContext, L"Resources/SampleString");
+        auto stringResourceCandidate = m_resourceManagerWinRT.MainResourceMap().GetValue(L"Resources/SampleString", m_overrideResourceContext);
         output().Text(stringResourceCandidate.ValueAsString());
     }
 

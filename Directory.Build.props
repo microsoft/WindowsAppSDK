@@ -19,9 +19,6 @@
 
     <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
 
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)BuildOutput\Int\$(MSBuildProjectName)\obj\$(Platform)$(Configuration)\</BaseIntermediateOutputPath>
-    <IntDir>$(BaseIntermediateOutputPath)</IntDir>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>
