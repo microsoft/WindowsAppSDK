@@ -36,6 +36,7 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
 
     wil::unique_event result;
     result.create(wil::EventOptions::None, name, &sa);
+    // aka, ::CreateEvent(&sa, FALSE, FALSE, name);
     return result;
 }
 ```
