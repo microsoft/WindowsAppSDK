@@ -42,7 +42,7 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
 ```
 
 # API Details
-
+## Flat C
 ```c
 struct AppContainerAccess
 {
@@ -60,6 +60,26 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
 ```
 
 If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
+
+## WinRT
+```c#
+namespace Microsoft.Security.AccessControl
+{
+  struct AppContainerAccess
+  {
+    String appContainerName;
+    UInt32 accessMask;
+  }
+
+  static runtimeclass SecurityDescriptorHelpers
+  {
+    String GetSDDLForAppContainerNames(
+      AppContainerAccess[] appAccess,
+      UInt32 userAccessMask
+    )
+  }
+}
+```
 
 # API Notes
 
