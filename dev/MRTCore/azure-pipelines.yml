@@ -22,13 +22,13 @@ jobs:
     MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
   steps:
-  - task: PkgESSetupBuild@10
-    displayName: 'Package ES - Setup Build'
-    inputs:
-      ProductName: MRT Core
-      useDfs: false
-      branchVersion: false
-      extSync: false
+#  - task: PkgESSetupBuild@10
+#    displayName: 'Package ES - Setup Build'
+#    inputs:
+#      ProductName: MRT Core
+#      useDfs: false
+#      branchVersion: false
+#      extSync: false
   
 #  - task: powershell@2
 #    displayName: 'Installing .NET SDK'
@@ -61,7 +61,7 @@ jobs:
       versionSpec: 5.6
     continueOnError: true
 
-  - task: NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore of MrtCore'
     inputs:
       command: 'restore'
@@ -241,12 +241,12 @@ jobs:
       artifactName: 'binaries_raw'
       downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
   
-  - task: PkgESCodeSign@10
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      signConfigXml: 'SignConfig.xml'
-      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
+#  - task: PkgESCodeSign@10
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#    inputs:
+#      signConfigXml: 'SignConfig.xml'
+#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Signed Binaries'
@@ -555,7 +555,7 @@ jobs:
 
 # END of copying files into their final package location.
   
-  - task: NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     inputs:
       command: 'pack'
       packagesToPack: '$(MRTSourcesDirectory)\mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
@@ -566,14 +566,14 @@ jobs:
       basePath: '$(Build.ArtifactStagingDirectory)\mrt'
       packDestination: '$(Build.ArtifactStagingDirectory)\nuget'
   
-  - task: PkgESCodeSign@10
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      signConfigXml: 'SignConfig-nuget.xml'
-      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
-      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+#  - task: PkgESCodeSign@10
+#    condition: and(succeeded(), eq(variables.codeSign, true))
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#    inputs:
+#      signConfigXml: 'SignConfig-nuget.xml'
+#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+#      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
   
   - task: PublishBuildArtifacts@1
     condition: and(succeeded(), eq(variables.codeSign, false))
@@ -587,7 +587,7 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\nuget\signed'
       ArtifactName: 'drop'
 
-  - task: NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'publish to MRTCore feed'
     inputs:
