@@ -144,7 +144,7 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(_In_ IDWriteBitmapRenderTa
     {
         // We're using an older version that doesn't implement IDWriteBitmapRenderTarget2,
         // so we have to get the bitmap by going through GDI. First get the bitmap handle.
-        HDC hdc = renderTarget_->GetMemoryDC();
+        HDC hdc = renderTarget->GetMemoryDC();
         HGDIOBJ dibHandle = GetCurrentObject(hdc, OBJ_BITMAP);
         if (dibHandle == nullptr)
         {
