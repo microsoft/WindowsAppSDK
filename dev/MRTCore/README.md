@@ -5,6 +5,8 @@
 ### What is MRT Core?
 Thanks for asking! MRT Core was born from the need for [Project Reunion](https://aka.ms/projectreunion) applications to use MRT - Modern Resource Technology. MRT was introduced to Windows in the Windows 8 timeframe and has evolved as the resource management system since that time. You can use these links to learn more about [MRT and resource management](https://docs.microsoft.com/en-us/windows/uwp/app-resources/resource-management-system) as well as the benefits of [globalization and localization](https://docs.microsoft.com/en-us/windows/uwp/design/globalizing/globalizing-portal).
 
+> If you're looking for Core MRT, you're in the right place! Internal project naming was Core MRT and so some of our external communication has also used that terminology - sorry for any confusion! But rest assured, Core MRT or MRT Core, you're in the right place! 😉
+
 ### So what does it do?
 At its *core* 😎 MRT Core provides support to build resource Package Resource Index (PRI) files, and load resources from PRI files. [Learn more about PRI files at this link.](https://docs.microsoft.com/en-us/windows/uwp/app-resources/resource-management-system)
 
