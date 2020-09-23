@@ -46,16 +46,20 @@ namespace Microsoft.ApplicationModel.Resources
         UInt32 ResourceCount { get; }; 
 
         ResourceMap GetSubtree(String reference);
+
         ResourceCandidate GetValue(String resource);
+        [method_name("GetValueWithContext")]
         ResourceCandidate GetValue(String resource, ResourceContext context);
-        Windows.Foundation.Collections.IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index);
-        Windows.Foundation.Collections.IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index, ResourceContext context);
+
+        IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index);
+        [method_name("GetValueByIndexWithContext")]
+        IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index, ResourceContext context);
     }
 
     [contract(MrtContract, 1.0)]
     runtimeclass ResourceContext
     {
-        Windows.Foundation.Collections.IMap<String, String> QualifierValues { get; };
+        IMap<String, String> QualifierValues { get; };
     }
 
     [contract(MrtContract, 1.0)]
@@ -77,7 +81,7 @@ namespace Microsoft.ApplicationModel.Resources
         byte[] ValueAsBytes { get; };
         ResourceCandidateKind Kind { get; };
 
-        Windows.Foundation.Collections.IMapView<String, String> QualifierValues { get; };
+        IMapView<String, String> QualifierValues { get; };
     }
 
     [contract(MrtContract, 1.0)]
