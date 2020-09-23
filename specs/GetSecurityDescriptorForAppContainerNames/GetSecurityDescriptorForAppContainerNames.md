@@ -73,7 +73,7 @@ namespace Microsoft.Security.AccessControl
 
   static runtimeclass SecurityDescriptorHelpers
   {
-    String GetSDDLForAppContainerNames(
+    static String GetSDDLForAppContainerNames(
       AppContainerAccess[] appAccess,
       UInt32 userAccessMask
     )
