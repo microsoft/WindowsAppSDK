@@ -85,7 +85,7 @@ jobs:
 #    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
 
 # MRTCore build pipeline
-- template: ..\dev\MRTCore\azure-pipelines.yml
-  parameters:
-    buildJobName: 'BuildMRTCore'
-    dependsOn: CreateNugetPackage
+#- template: ..\dev\MRTCore\azure-pipelines.yml
+#  parameters:
+#    buildJobName: 'BuildMRTCore'
+#    dependsOn: CreateNugetPackage
