@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.props" Condition="Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.props')" />
+  <Import Project="..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.props" Condition="Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.props')" />
   <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.props')" />
   <Import Project="..\packages\Microsoft.WinUI.3.0.0-preview2.200713.0\build\native\Microsoft.WinUI.props" Condition="Exists('..\packages\Microsoft.WinUI.3.0.0-preview2.200713.0\build\native\Microsoft.WinUI.props')" />
   <PropertyGroup Label="Globals">
@@ -139,7 +139,7 @@
     <Import Project="..\packages\Microsoft.WinUI.3.0.0-preview2.200713.0\build\native\Microsoft.WinUI.targets" Condition="Exists('..\packages\Microsoft.WinUI.3.0.0-preview2.200713.0\build\native\Microsoft.WinUI.targets')" />
     <Import Project="..\packages\Microsoft.VCRTForwarders.140.1.0.6\build\native\Microsoft.VCRTForwarders.140.targets" Condition="Exists('..\packages\Microsoft.VCRTForwarders.140.1.0.6\build\native\Microsoft.VCRTForwarders.140.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.targets" Condition="Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.targets')" />
+    <Import Project="..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.targets" Condition="Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -150,7 +150,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.VCRTForwarders.140.1.0.6\build\native\Microsoft.VCRTForwarders.140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VCRTForwarders.140.1.0.6\build\native\Microsoft.VCRTForwarders.140.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.props'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200918-190947\build\native\Microsoft.ApplicationModel.Resources.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationModel.Resources.1.0.0-CI-20200921-181224\build\native\Microsoft.ApplicationModel.Resources.targets'))" />
   </Target>
 </Project>

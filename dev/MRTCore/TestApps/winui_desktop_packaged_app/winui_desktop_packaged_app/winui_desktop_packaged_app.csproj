@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationModel.Resources" Version="1.0.0-CI-20200918-170045" />
+    <PackageReference Include="Microsoft.ApplicationModel.Resources" Version="1.0.0-CI-20200921-181224" />
     <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.6" />
     <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview2.200713.0" />
     <Manifest Include="$(ApplicationManifest)" />
