@@ -12,5 +12,4 @@
 
 // Test-specific headers, lifted here
 #include <SampleFlatC.h>
-#include <Security.AccessControl.h>
 #include <winrt/Microsoft.ProjectReunion.h>

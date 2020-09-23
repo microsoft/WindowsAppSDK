@@ -34,13 +34,6 @@ namespace ProjectReunionCppTest
             Assert::IsNotNull(stored.get());
             Assert::AreEqual(tasty, stored.get());
         }
-
-        TEST_METHOD(SecurityDescriptor)
-        {
-            AppContainerAccess access[1] = { {L"asdf", EVENT_MODIFY_STATE | SYNCHRONIZE} };
-            wil::unique_hlocal_security_descriptor sd;
-            THROW_IF_FAILED(::GetSecurityDescriptorForAppContainerNames(1, access, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd));
-        }
     };
 
     TEST_CLASS(WinRtApiTests)
