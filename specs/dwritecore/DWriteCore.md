@@ -16,30 +16,6 @@ and functionality regardless of what version of Windows your customer is running
 
 # Background
 
-<!-- TEMPLATE
-    Use this section to provide background context for the new API(s)
-    in this spec. 
-
-    This section and the appendix are the only sections that likely
-    do not get copied into any official documentation, they're just an aid
-    to reading this spec. 
-    
-    If you're modifying an existing API, included a link here to the
-    existing page(s) or spec documentation.
-
-    For example, this section is a place to explain why you're adding this
-    API rather than modifying an existing API.
-
-    If you're writing a "converged" API add links into docs.microsoft.com
-    for the existing Win32 or WinRT APIs that are being converged.
--->
-
-<!-- TEMPLATE
-    For example, this is a place to provide a brief explanation of some dependent
-    area, just explanation enough to understand this new API, rather than telling
-    the reader "go read 100 pages of background information posted at ...". 
--->
-
 The DWriteCore API is the same as the existing public DirectWrite API, with a few additions. These
 additions should eventually be incorporated into the in-box DirectWrite as well, so it is appropriate
 to think of the DWriteCore API as just the latest version of the DirectWrite API. This document focuses 
@@ -49,8 +25,8 @@ primarily on the additions.
 
 The DirectWrite API has grown over time, and many APIs have multiple versions: IDWriteFactory, 
 IDWriteFactory1, IDWriteFactory2, etc. Prior to Windows 10, each new version got a new header file.
-Starting in TH1, new APIs have been added to dwrite_3.h, but conditionalized based on NTDDI_VERSION
-as follows:
+Starting in TH1, new APIs have been added to dwrite_3.h, but conditionalized based on NTDDI_VERSION.
+API definitions in dwrite_3.h in the Windows SDK are conditionalized as follows:
 
 ```c++
 #if NTDDI_VERSION >= NTDDI_WIN10_MN
@@ -59,8 +35,9 @@ as follows:
 ```
 
 DWriteCore always implements the latest version of the API, so there needs to be a mechanism for an
-application using DWriteCore to get access to all the latest APIs regardless of NTDDI_VERSION. To do
-so, we conditionalize APIs as follows:
+application using DWriteCore to get access to all the latest APIs regardless of NTDDI_VERSION. The
+copy of dwrite_3.h in the DWriteCore package therefore uses the following convention to conditinalize
+API definitions:
 
 ```c++
 #if DWRITE_CORE || NTDDI_VERSION >= NTDDI_WIN10_MN
@@ -99,16 +76,16 @@ with interoperability issues.
 
 New APIs introduced by DWriteCore include:
 
- - A new DWRITE_FACTORY_TYPE enumeration for creating a _restricted factory_ object
+ - A new DWRITE_FACTORY_TYPE enumeration for creating an isolated factory object
  - A new method for getting pixel data from a bitmap render target
 
-The new DWRITE_FACTORY_TYPE_RESTRICTED enum value complements the existing values for creating a _shared factory_
-and _isolated factory_ objects. A restricted factory is more locked-down than either of the existing factory
-types. First, it only caches data in-process, and will not attempt to either read from or write to a cross-process
-font cache or persisted cache file. Second, a restricted factory only enumerates well-known fonts in the system
-font collection. The well-known-fonts restriction enables DWriteCore to efficiently construct the system font 
-collection without depending on a cross-process or persistent cache. An example use case for a restricted factory
-would be a web browser rendering process with very limited permissions.
+The new DWRITE_FACTORY_TYPE_ISOLATED2 enum value complements the existing factory types. It is similar to
+DWRITE_FACTORY_TYPE_ISOLATED, but is more locked down in two ways. First, it only caches data in-process, and
+will not attempt to either read from or write to a cross-process font cache or persisted cache file. Second,
+a restricted factory only enumerates well-known fonts in the system font collection. The well-known-fonts
+restriction enables DWriteCore to efficiently construct the system font collection without depending on a
+cross-process or persistent cache. An example use case for the new factory type would be a web browser
+rendering process with very limited permissions.
 
 A _bitmap render target_ (IDWriteBitmapRenderTarget) is an API object that encapsulates a system memory bitmap
 and enables rendering glyphs to the bitmap. On Windows, the object encapsulates a GDI memory DC with a GDI
@@ -118,20 +95,21 @@ interface that an application can use to access the bitmap data without going th
 
 # Examples
 
-## Creating a restricted factory
+## Creating an isolated factory
 
 An application calls the [DWriteCreateFactory](https://docs.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-dwritecreatefactory)
 function to create a factory object, which is the entry-point to all other DirectWrite APIs. An application can
-create a _restricted factory_ if it does not want the factory or objects created from it to read from or write
-to any cross-process or persistent cache. In addition, a restricted factory's system font collection only includes
-well-known system fonts.
+specify the new DWRITE_FACTORY_TYPE_ISOLATED2 enum value if it wants to minimize interaction between DirectWrite
+and the host system. Specifically, the resulting factory only caches data in-process. It neither reads from nor
+writes to a cross-process cache (e.g., a font cache process) or persistent cache (i.e., a file). In addition, the
+resulting factory's sysetm font collection only includes well-known system fonts.
 
-The following example creates a restricted factory.
+The following example creates an isolated factory.
 
 ```c++
 ComPtr<IDWriteFactory7> spFactory;
 HRESULT hr = DWriteCreateFactory(
-    DWRITE_FACTORY_TYPE_RESTRICTED,
+    DWRITE_FACTORY_TYPE_ISOLATED2,
     __uuidof(IDWriteFactory7),
     (IUnknown**)&spFactory
     );
@@ -140,13 +118,13 @@ HRESULT hr = DWriteCreateFactory(
 ## Drawing glyphs to a system memory bitmap
 
 An application creates a bitmap render target by calling [IDWriteGdiInterop::CreateBitmapRenderTarget](https://docs.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-idwritegdiinterop-createbitmaprendertarget).
-A bitmap render target encapsulates a bitmap in system memory, and eanbles rendering glyphs to the bitmap. On Windows,
+A bitmap render target encapsulates a bitmap in system memory, and enables rendering glyphs to the bitmap. On Windows,
 the bitmap is actually a GDI DIB selected into a memory HDC, and it is possible to get the bitmap pixels using GDI
 functions. However, DWriteCore introduces a simpler method through the new IDWriteBitmapRenderTarget2 interface.
 The following example shows both the old way and the new way.
 
 ```c++
-DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(IDWriteBitmapRenderTarget* renderTarget)
+DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(_In_ IDWriteBitmapRenderTarget* renderTarget)
 {
     DWRITE_BITMAP_DATA_BGRA32 result = {};
 
@@ -156,7 +134,7 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(IDWriteBitmapRenderTarget*
     if (SUCCEEDED(hr))
     {
         // IDWriteBitmapRenderTarget2 exists, so we can get the bitmap the easy way.
-        hr = renderTarget2->GetBitmapData(OUT &result);
+        hr = renderTarget2->GetBitmapData(&result);
         if (FAILED(hr))
         {
             throw Exception{ hr };
@@ -175,13 +153,13 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(IDWriteBitmapRenderTarget*
 
         // Call a GDI function to fill in the DIBSECTION structure for the bitmap.
         DIBSECTION dib;
-        if (!GetObjectW(dibHandle, sizeof(dib), &dib))
+        if (GetObjectW(dibHandle, sizeof(dib), &dib) != sizeof(dib))
         {
             throw Exception{ HRESULT_FROM_WIN32(GetLastError()) };
         }
 
         result.width = dib.dsBm.bmWidth;
-        result.height = dib.dsBm.bmHeight;
+        result.height = 0u - dib.dsBm.bmHeight; // bmHeight is negative for top-down DIB
         result.pixels = static_cast<uint32_t*>(dib.dsBm.bmBits);
     }
 
@@ -205,23 +183,28 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(IDWriteBitmapRenderTarget*
 enum DWRITE_FACTORY_TYPE
 {
     /// <summary>
-    /// Shared factory allow for re-use of cached font data across multiple in process components.
-    /// Such factories also take advantage of cross process font caching components for better performance.
+    /// This is the recommended value in most cases. The shared factory is a singleton, so mulitiple
+    /// components in a process that create a shared factory share a single instance. This enables
+    /// reuse of cached font data and other state across multiple components. In addition, objects
+    /// created from a shared factory can read from and/or modify a cross-process or persistent cache.
     /// </summary>
     DWRITE_FACTORY_TYPE_SHARED,
 
     /// <summary>
     /// Objects created from an isolated factory do not modify internal state or cached data used by
-    /// objects from other factories.
+    /// objects from other factories. However, they may still read from a cross-process or persistent
+    /// cache.
     /// </summary>
     DWRITE_FACTORY_TYPE_ISOLATED,
 
 #if DWRITE_CORE
     /// <summary>
-    /// Objects created from a restricted factory do not use or modify internal state or cached data
+    /// Objects created from an "isolated2" factory do not use or modify internal state or cached data
     /// used by other factories. In addition, the system font collection contains only well-known fonts.
     /// </summary>
-    DWRITE_FACTORY_TYPE_RESTRICTED
+    // Warning: Make sure any additional new enum values are consistent between different versions of
+    // this header in DWriteCore and the Windows SDK.
+    DWRITE_FACTORY_TYPE_ISOLATED2
 #endif // DWRITE_CORE
 };
 ```
@@ -231,6 +214,7 @@ enum DWRITE_FACTORY_TYPE
 
 /// <summary>
 /// Contains information about a bitmap associated with an IDWriteBitmapRenderTarget.
+/// The bitmap is top-down with 32-bits per pixel and no padding between scan lines.
 /// </summary>
 struct DWRITE_BITMAP_DATA_BGRA32
 {
