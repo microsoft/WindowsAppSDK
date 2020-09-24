@@ -48,8 +48,27 @@ public:
         m_addDllDirectoryCookie.reset();
     }
 
+    bool IsDynamic() const
+    {
+        return !m_packageInfoReference;
+    }
+
+    bool IsStatic() const
+    {
+        return !IsDynamic();
+    }
+
+    UINT32 CountMatchingPackages(
+        const UINT32 flags,
+        const PackagePathType packagePathType) const;
+
+    UINT32 GetMatchingPackages(
+        const UINT32 flags,
+        const PackagePathType packagePathType,
+        wil::unique_cotaskmem_ptr<BYTE[]>& buffer) const;
+
 private:
-    wil::unique_package_info_reference m_packageInfoReference;
+    mutable wil::unique_package_info_reference m_packageInfoReference;
     wil::unique_package_dependency_context m_context;
     wil::unique_dll_directory_cookie m_addDllDirectoryCookie;
 };

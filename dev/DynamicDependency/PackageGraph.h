@@ -6,6 +6,8 @@
 
 #include <MsixDynamicDependency.h>
 
+#include <PackageGraphNode.h>
+
 namespace MddCore
 {
 enum class Architecture : int32_t // per PACKAGE_ID.processorArchitecture
@@ -20,6 +22,38 @@ enum class Architecture : int32_t // per PACKAGE_ID.processorArchitecture
 };
 
 std::unique_lock<std::mutex> AcquirePackageGraphLock();
+
+typedef LONG (WINAPI * GetCurrentPackageInfo2Function)(
+    const UINT32 flags,
+    PackagePathType packagePathType,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count);
+
+HRESULT GetCurrentPackageInfo2(
+    const UINT32 flags,
+    PackagePathType packagePathType,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count,
+    GetCurrentPackageInfo2Function getCurrentPackageInfo2) noexcept;
+
+UINT32 SerializePackageInfoToBuffer(
+    const UINT32 flags,
+    const PackagePathType packagePathType,
+    const UINT32 bufferLength,
+    BYTE* buffer,
+    const std::vector<MddCore::PackageGraphNode*>& matchingPackageInfo,
+    const UINT32 dynamicPackagesCount,
+    const PACKAGE_INFO* staticPackageInfo,
+    const UINT32 staticPackagesCount);
+
+void SerializeStringToBuffer(
+    const UINT32 bufferLength,
+    BYTE*& buffer,
+    UINT32& bufferNeeded,
+    PWSTR& to,
+    PCWSTR from);
 
 HRESULT ResolvePackageDependency(
     PCWSTR packageDependencyId,

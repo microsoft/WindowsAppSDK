@@ -5,6 +5,7 @@
 #define MDDDETOURPACKAGEGRAPH_H
 
 HRESULT MddDetourPackageGraphInitialize() noexcept;
+
 void MddDetourPackageGraphShutdown() noexcept;
 
 #endif // MDDDETOURPACKAGEGRAPH_H
