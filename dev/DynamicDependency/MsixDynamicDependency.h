@@ -99,7 +99,7 @@ STDAPI MddTryCreatePackageDependency(
     MddPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact,
     MddCreatePackageDependencyOptions options,
-    _Outptr_result_maybenull_ PWSTR* packageDependencyId);
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
 /// Undefine a package dependency. Removing a pin on a PackageDependency is typically done at uninstall-time.
 /// This implicitly occurs if the package dependency's 'lifetime artifact' (specified via MddTryCreatePackageDependency)
@@ -108,7 +108,7 @@ STDAPI MddTryCreatePackageDependency(
 /// @warn MddDeletePackageDependency() requires the caller have administrative privileges
 ///       if the package dependency was pinned with MddCreatePackageDependencyOptions::ScopeIsSystem.
 STDAPI_(void) MddDeletePackageDependency(
-    _In_ PCWSTR packageDependencyId);
+    _In_ PCWSTR packageDependencyId) noexcept;
 
 /// Resolve a previously-pinned PackageDependency to a specific package and
 /// add it to the invoking process' package graph. Once the dependency has
@@ -154,7 +154,7 @@ STDAPI MddAddPackageDependency(
     INT32 rank,
     MddAddPackageDependencyOptions options,
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
-    _Outptr_opt_result_maybenull_ PWSTR* packageFullName);
+    _Outptr_opt_result_maybenull_ PWSTR* packageFullName) noexcept;
 
 /// Remove a resolved PackageDependency from the current process' package graph
 /// (i.e. undo MddAddPackageDependency). Used at runtime (i.e. the moral equivalent
@@ -165,7 +165,7 @@ STDAPI MddAddPackageDependency(
 ///        to be used; future file resolution will fail to see the removed
 ///        package dependency.
 STDAPI_(void) MddRemovePackageDependency(
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext);
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept;
 
 /// Return the package full name that would be used if the
 /// PackageDependency were to be resolved. Does not add the
@@ -176,6 +176,6 @@ STDAPI_(void) MddRemovePackageDependency(
 ///                        succeeds but packageFullName is nullptr.
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
-    _Outptr_result_maybenull_ PWSTR* packageFullName);
+    _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept;
 
 #endif // MSIXDYNAMICDEPENDENCY_H

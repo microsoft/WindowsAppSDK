@@ -10,6 +10,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
@@ -23,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependency.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />

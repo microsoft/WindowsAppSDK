@@ -5,28 +5,55 @@
 
 #include "msixdynamicdependency.h"
 
+#include "PackageDependency.h"
+
 #include "PackageGraph.h"
 
+static std::mutex g_lock;
+std::vector<MddCore::PackageDependency> g_packageDependencies;
+
 STDAPI MddTryCreatePackageDependency(
-    PSID /*user*/,
-    _In_ PCWSTR /*packageFamilyName*/,
-    PACKAGE_VERSION /*minVersion*/,
-    MddPackageDependencyProcessorArchitectures /*packageDependencyProcessorArchitectures*/,
-    MddPackageDependencyLifetimeKind /*lifetimeKind*/,
-    PCWSTR /*lifetimeArtifact*/,
-    MddCreatePackageDependencyOptions /*options*/,
-    _Outptr_result_maybenull_ PWSTR* packageDependencyId)
+    PSID user,
+    _In_ PCWSTR packageFamilyName,
+    PACKAGE_VERSION minVersion,
+    MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+    MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
     *packageDependencyId = nullptr;
 
-    //TODO: Implement MddTryCreatePackageDependency
-    RETURN_HR(E_NOTIMPL);
+    MddCore::PackageDependency packageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options);
+    packageDependency.GenerateId();
+
+    auto lock = std::unique_lock<std::mutex>(g_lock);
+
+    g_packageDependencies.push_back(packageDependency);
+
+    return S_OK;
 }
+CATCH_RETURN();
 
 STDAPI_(void) MddDeletePackageDependency(
-    _In_ PCWSTR /*packageDependencyId*/)
+    _In_ PCWSTR packageDependencyId) noexcept
 {
-    //TODO: Implement MddDeletePackageDependency
+    if (!packageDependencyId)
+    {
+        return;
+    }
+
+    auto lock = std::unique_lock<std::mutex>(g_lock);
+
+    for (size_t index=0; index < g_packageDependencies.size(); ++index)
+    {
+        const auto& packageDependency = g_packageDependencies[index];
+        if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
+        {
+            g_packageDependencies.erase(g_packageDependencies.begin() + index);
+            break;
+        }
+    }
 }
 
 STDAPI MddAddPackageDependency(
@@ -34,7 +61,7 @@ STDAPI MddAddPackageDependency(
     INT32 rank,
     MddAddPackageDependencyOptions options,
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
-    _Outptr_opt_result_maybenull_ PWSTR* packageFullName)
+    _Outptr_opt_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
     *packageDependencyContext = nullptr;
     if (packageFullName)
@@ -58,16 +85,17 @@ STDAPI MddAddPackageDependency(
     //TODO: Implement MddAddPackageDependency
     RETURN_HR(E_NOTIMPL);
 }
+CATCH_RETURN();
 
 STDAPI_(void) MddRemovePackageDependency(
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext)
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept
 {
     (void)LOG_IF_FAILED(MddCore::RemoveFromPackageGraph(packageDependencyContext));
 }
 
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
-    _Outptr_result_maybenull_ PWSTR* packageFullName)
+    _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
     *packageFullName = nullptr;
 
@@ -77,3 +105,4 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     *packageFullName = fullName.release();
     return S_OK;
 }
+CATCH_RETURN();
