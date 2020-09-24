@@ -68,7 +68,7 @@ jobs:
       command: 'restore'
       restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       feedsToUse: 'config'
-      nugetConfigPath: '$(MRTSourcesDirectory)\mrt\NuGet.Config'
+      nugetConfigPath: '$(Build.SourcesDirectory)\nuget.config'
   
   - task: VSBuild@1
     displayName: 'build MrtCore x86'
