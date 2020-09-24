@@ -115,21 +115,21 @@ jobs:
 #      arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
 #    displayName: 'Publish Symbols'
 
-  - task: PkgESCodeSign@10
-    displayName: CodeSign
-    env:
-      SYSTEM_ACCESSTOKEN: $(system.accesstoken)
-    inputs:
-      signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
-      inPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
-      outPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
+#  - task: PkgESCodeSign@10
+#    displayName: CodeSign
+#    env:
+#      SYSTEM_ACCESSTOKEN: $(system.accesstoken)
+#    inputs:
+#      signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
+#      inPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
+#      outPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
 
   # Re-publish signed artifacts to the drop.
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: drop'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
-      artifactName: 'drop'
+#  - task: PublishBuildArtifacts@1
+#    displayName: 'Publish artifact: drop'
+#    inputs:
+#      PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
+#      artifactName: 'drop'
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
