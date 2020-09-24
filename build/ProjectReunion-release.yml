@@ -108,12 +108,12 @@ jobs:
 
   - template: AzurePipelinesTemplates\ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
 
-  - task: powershell@2
-    inputs:
-      targetType: filePath
-      filePath: $(Build.SourcesDirectory)\tools\PublishSymbols\PublishSymbols.ps1
-      arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
-    displayName: 'Publish Symbols'
+#  - task: powershell@2
+#    inputs:
+#      targetType: filePath
+#      filePath: $(Build.SourcesDirectory)\tools\PublishSymbols\PublishSymbols.ps1
+#      arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
+#    displayName: 'Publish Symbols'
 
   - task: PkgESCodeSign@10
     displayName: CodeSign
