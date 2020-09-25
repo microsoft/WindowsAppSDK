@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
-#include "Microsoft.Management.Deployment.ProjectReunionDeploymentStatus.g.h"
+#include "Deployment.ProjectReunionDeploymentStatus.g.h"
 
-namespace winrt::Microsoft::Management::Deployment::implementation
+namespace winrt::Microsoft::ProjectReunion::Deployment::implementation
 {
     struct ProjectReunionDeploymentStatus : ProjectReunionDeploymentStatusT<ProjectReunionDeploymentStatus>
     {

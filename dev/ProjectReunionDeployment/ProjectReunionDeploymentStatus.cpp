@@ -3,9 +3,9 @@
 
 #include "pch.h"
 #include "ProjectReunionDeploymentStatus.h"
-#include "Microsoft.Management.Deployment.ProjectReunionDeploymentStatus.g.cpp"
+#include "Deployment.ProjectReunionDeploymentStatus.g.cpp"
 
-namespace winrt::Microsoft::Management::Deployment::implementation
+namespace winrt::Microsoft::ProjectReunion::Deployment::implementation
 {
     bool ProjectReunionDeploymentStatus::IsOK()
     {

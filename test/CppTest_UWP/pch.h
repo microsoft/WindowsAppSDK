@@ -8,6 +8,7 @@
 #include <hstring.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.UI.Xaml.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>
@@ -22,3 +23,5 @@
 // Test-specific headers, lifted here
 #include <SampleFlatC.h>
 #include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Microsoft.ProjectReunion.Deployment.h>
+

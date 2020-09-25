@@ -44,8 +44,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectReunionDeployment", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunionDeployment", "dev\ProjectReunionDeployment\ProjectReunionDeployment.vcxitems", "{C90313AD-B161-4394-8A08-0754D2E999F1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "projectreuniondeployment", "projectreuniondeployment", "{B71F68DF-2DC0-451D-8530-0982FC0708DB}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
@@ -136,7 +134,6 @@ Global
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{329A3225-1D44-461F-9EFB-2BE18485C141} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{C90313AD-B161-4394-8A08-0754D2E999F1} = {329A3225-1D44-461F-9EFB-2BE18485C141}
-		{B71F68DF-2DC0-451D-8530-0982FC0708DB} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

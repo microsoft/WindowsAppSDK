@@ -4,24 +4,27 @@
 #include "pch.h"
 #include "ProjectReunionDeployment.h"
 #include "ProjectReunionDeploymentStatus.h"
-#include "Microsoft.Management.Deployment.ProjectReunionDeployment.g.cpp"
+#include "Deployment.ProjectReunionDeployment.g.cpp"
 
-namespace winrt::Microsoft::Management::Deployment::implementation
+// Prototype for RtlGetVersion to avoid including a driver kit header.
+NTSTATUS WINAPI RtlGetVersion(PRTL_OSVERSIONINFOW);
+
+namespace winrt::Microsoft::ProjectReunion::Deployment::implementation
 {
 
-    Microsoft::Management::Deployment::ProjectReunionDeploymentStatus ProjectReunionDeployment::GetStatus(Windows::ApplicationModel::PackageVersion const& packageVersion)
+    Microsoft::ProjectReunion::Deployment::ProjectReunionDeploymentStatus ProjectReunionDeployment::GetStatus(Windows::ApplicationModel::PackageVersion const& packageVersion)
     {
-        return make<winrt::Microsoft::Management::Deployment::implementation::ProjectReunionDeploymentStatus>(GetIsOSUpdatesRequired(), false);
+        return make<winrt::Microsoft::ProjectReunion::Deployment::implementation::ProjectReunionDeploymentStatus>(GetIsOSUpdatesRequired(), false);
     }
 
-    Windows::Foundation::Uri ProjectReunionDeployment::GetProjectReunionPackageLink()
+    winrt::Windows::Foundation::Uri ProjectReunionDeployment::GetProjectReunionPackageLink()
     {
-        return Windows::Foundation::Uri(PROJECT_REUNION_INSTALL_INFORMATION_URI);
+        return winrt::Windows::Foundation::Uri(PROJECT_REUNION_PACKAGE_INSTALL_URI);
     }
 
-    Windows::Foundation::Uri ProjectReunionDeployment::GetProjectReunionInstallInformationLink()
+    winrt::Windows::Foundation::Uri ProjectReunionDeployment::GetProjectReunionInstallInformationLink()
     {
-        return Windows::Foundation::Uri(PROJECT_REUNION_PACKAGE_INSTALL_URI);
+        return winrt::Windows::Foundation::Uri(PROJECT_REUNION_INSTALL_INFORMATION_URI);
     }
 
     // Determine if this platform has OS Updates related to Project Reunion.
@@ -52,7 +55,7 @@ namespace winrt::Microsoft::Management::Deployment::implementation
         // Ntdll has the function, but the header is in the driver kit, so we will load it directly.
         wil::unique_hmodule dll(LoadLibrary(L"ntdll.dll"));
         THROW_LAST_ERROR_IF_NULL(dll);
-        auto fnRtlGetVersion = reinterpret_cast<NTSTATUS(*)(PRTL_OSVERSIONINFOW)>(GetProcAddress(dll.get(), "RtlGetVersion"));
+        auto fnRtlGetVersion = GetProcAddressByFunctionDeclaration(dll.get(), RtlGetVersion);
         THROW_LAST_ERROR_IF_NULL(fnRtlGetVersion);
         RTL_OSVERSIONINFOW osVersionInfo{};
         THROW_IF_NTSTATUS_FAILED(fnRtlGetVersion(&osVersionInfo));

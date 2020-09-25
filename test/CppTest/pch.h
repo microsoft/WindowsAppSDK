@@ -9,7 +9,10 @@
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
 #include "CppUnitTest.h"
+#include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.Foundation.Collections.h>
 
 // Test-specific headers, lifted here
 #include <SampleFlatC.h>
 #include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Microsoft.ProjectReunion.Deployment.h>
