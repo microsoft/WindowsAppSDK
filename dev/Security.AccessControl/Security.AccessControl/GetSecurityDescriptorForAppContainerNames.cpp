@@ -12,13 +12,13 @@ using namespace std;
 
 namespace
 {
-    wil::unique_any_psid GetLogonSid(HANDLE hToken)
+    wil::unique_any_psid GetCurrentProcessSid()
     {
         wil::unique_any_psid result;
         wil::unique_process_heap_ptr<TOKEN_GROUPS> tg;
         DWORD length = 0;
         if (!::GetTokenInformation(
-            hToken,
+            ::GetCurrentProcessToken(),
             TokenLogonSid,
             nullptr,
             0,
@@ -34,7 +34,7 @@ namespace
         }
 
         THROW_IF_WIN32_BOOL_FALSE(::GetTokenInformation(
-            hToken,
+            ::GetCurrentProcessToken(),
             TokenLogonSid,
             tg.get(),
             length,
@@ -49,45 +49,51 @@ namespace
 }
 
 STDAPI GetSecurityDescriptorForAppContainerNames(
-    uint32_t countOfAppContainerNames,
-    _In_reads_(countOfAppContainerNames)
-    const AppContainerAccess* appAccess,
-    uint32_t userAccessMask,
-    _Outptr_
-    PSECURITY_DESCRIPTOR* securityDescriptor
+    uint32_t accessRequestCount,
+    _In_reads_(accessRequestCount)
+        const AppContainerNameAndAccess* accessRequests,
+    _In_opt_ PSID principal,
+    uint32_t principalAccessMask,
+    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
 )
 {
     *securityDescriptor = nullptr;
     try
     {
         vector<EXPLICIT_ACCESS> ea;
-        if (countOfAppContainerNames == UINT32_MAX)
+        if (accessRequestCount == UINT32_MAX)
         {
             THROW_HR(E_OUTOFMEMORY);
         }
-        ea.reserve(static_cast<size_t>(countOfAppContainerNames) + 1);
+        ea.reserve(static_cast<size_t>(accessRequestCount) + 1);
 
-        auto logonSid = GetLogonSid(::GetCurrentProcessToken());
+        wil::unique_any_psid currentProcessSid;
+        if (!principal)
+        {
+            currentProcessSid = GetCurrentProcessSid();
+            principal = currentProcessSid.get();
+        }
+
         {
             EXPLICIT_ACCESS entry{};
             entry.grfAccessMode = GRANT_ACCESS;
-            entry.grfAccessPermissions = userAccessMask;
+            entry.grfAccessPermissions = principalAccessMask;
             entry.grfInheritance = NO_INHERITANCE;
             entry.Trustee.TrusteeForm = TRUSTEE_IS_SID;
             entry.Trustee.TrusteeType = TRUSTEE_IS_USER;
-            entry.Trustee.ptstrName = static_cast<PWSTR>(logonSid.get());
+            entry.Trustee.ptstrName = static_cast<PWSTR>(principal);
             ea.push_back(entry);
         }
 
         std::vector<wil::unique_sid> appSids;
-        appSids.reserve(countOfAppContainerNames);
-        for (auto const end = appAccess + countOfAppContainerNames; appAccess < end; ++appAccess)
+        appSids.reserve(accessRequestCount);
+        for (auto const end = accessRequests + accessRequestCount; accessRequests < end; ++accessRequests)
         {
             EXPLICIT_ACCESS entry{};
             wil::unique_sid sid;
-            THROW_IF_FAILED(::DeriveAppContainerSidFromAppContainerName(appAccess->appContainerName, &sid));
+            THROW_IF_FAILED(::DeriveAppContainerSidFromAppContainerName(accessRequests->appContainerName, &sid));
             entry.grfAccessMode = GRANT_ACCESS;
-            entry.grfAccessPermissions = appAccess->accessMask;
+            entry.grfAccessPermissions = accessRequests->accessMask;
             entry.grfInheritance = NO_INHERITANCE;
             entry.Trustee.TrusteeForm = TRUSTEE_IS_SID;
             entry.Trustee.TrusteeType = TRUSTEE_IS_USER;

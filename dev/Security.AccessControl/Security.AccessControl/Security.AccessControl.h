@@ -3,17 +3,17 @@
 #include <Windows.h>
 #include <stdint.h>
 
-struct AppContainerAccess
+struct AppContainerNameAndAccess
 {
     PCWSTR appContainerName;
     uint32_t accessMask;
 };
 
 STDAPI GetSecurityDescriptorForAppContainerNames(
-    uint32_t countOfAppContainerNames,
-    _In_reads_(countOfAppContainerNames)
-    const AppContainerAccess* appAccess,
-    uint32_t userAccessMask,
-    _Outptr_
-    PSECURITY_DESCRIPTOR* securityDescriptor
+    uint32_t accessRequestCount,
+    _In_reads_(accessRequestCount)
+        const AppContainerNameAndAccess* accessRequests,
+    _In_opt_ PSID principal,
+    uint32_t principalAccessMask,
+    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
 );

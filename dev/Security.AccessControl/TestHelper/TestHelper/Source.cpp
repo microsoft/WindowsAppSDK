@@ -11,9 +11,9 @@ int wmain(int argc, wchar_t* argv[])
 
     const auto containerName = argv[1];
 
-    AppContainerAccess ac[1] = { {containerName, EVENT_MODIFY_STATE | SYNCHRONIZE} };
+    AppContainerNameAndAccess ac[1] = { {containerName, EVENT_MODIFY_STATE | SYNCHRONIZE} };
     wil::unique_hlocal_security_descriptor sd;
-    THROW_IF_FAILED(::GetSecurityDescriptorForAppContainerNames(1, ac, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd));
+    THROW_IF_FAILED(::GetSecurityDescriptorForAppContainerNames(1, ac, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd));
 
     wil::unique_event win32_event;
     SECURITY_ATTRIBUTES sa{ sizeof(sa), sd.get(), FALSE };
