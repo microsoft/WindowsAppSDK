@@ -3,10 +3,12 @@
 
 #!include <ProjectReunion.Tools.MakeMsix.mak>
 
+!IFDEF VERBOSE
 !MESSAGE SolutionDir       =$(SolutionDir)
 !MESSAGE ProjectDir        =$(ProjectDir)
 !MESSAGE OutDir            =$(OutDir)
 !MESSAGE TargetName        =$(TargetName)
+!ENDIF
 
 TARGET_BASENAME=Main.Sidecar
 
@@ -17,18 +19,24 @@ TARGET_EXE_FILE=$(TARGET_EXE_DIR)\$(TARGET_EXE).exe
 TARGET_PROXYSTUB=$(TARGET_BASENAME).LifetimeManager.ProxyStub
 TARGET_PROXYSTUB_DIR=$(OutDir)$(TARGET_PROXYSTUB)
 TARGET_PROXYSTUB_FILE=$(TARGET_PROXYSTUB_DIR)\$(TARGET_PROXYSTUB).dll
+!IFDEF VERBOSE
 !MESSAGE $(TARGET_PROXYSTUB_FILE)
+!ENDIF
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
 OutMsix=$(TargetDir)\$(TargetName)
 
+!IFDEF VERBOSE
 !MESSAGE Workdir           =$(WorkDir)
 !MESSAGE OutMsix           =$(OutMsix)
+!ENDIF
 
 all: build
 
-build:
+build: $(OutMsix)
+
+$(OutMsix): $(WorkDir)\appxmanifest.xml
     if not exist $(WorkDir) md $(WorkDir)
     copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml
     if not exist $(WorkDir)\Assets md $(WorkDir)\Assets
