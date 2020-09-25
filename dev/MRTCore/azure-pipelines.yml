@@ -61,13 +61,14 @@ jobs:
       versionSpec: 5.6
     continueOnError: true
 
-  - task: NuGetCommand@2
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore of MrtCore'
     inputs:
       command: 'restore'
       restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       feedsToUse: 'config'
-      nugetConfigPath: '$(MRTSourcesDirectory)\mrt\NuGet.Config'
+      nugetConfigPath: '$(Build.SourcesDirectory)\nuget.config'
   
   - task: VSBuild@1
     displayName: 'build MrtCore x86'
@@ -557,7 +558,8 @@ jobs:
 
 # END of copying files into their final package location.
   
-  - task: NuGetCommand@2
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     inputs:
       command: 'pack'
       packagesToPack: '$(MRTSourcesDirectory)\mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
@@ -589,7 +591,8 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\nuget\signed'
       ArtifactName: 'drop'
 
-  - task: NuGetCommand@2
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'publish to MRTCore feed'
     inputs:
