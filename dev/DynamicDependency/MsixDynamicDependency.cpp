@@ -6,11 +6,8 @@
 #include "msixdynamicdependency.h"
 
 #include "PackageDependency.h"
-
+#include "PackageDependencyManager.h"
 #include "PackageGraph.h"
-
-static std::mutex g_lock;
-std::vector<MddCore::PackageDependency> g_packageDependencies;
 
 STDAPI MddTryCreatePackageDependency(
     PSID user,
@@ -22,15 +19,7 @@ STDAPI MddTryCreatePackageDependency(
     MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
-    *packageDependencyId = nullptr;
-
-    MddCore::PackageDependency packageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options);
-    packageDependency.GenerateId();
-
-    auto lock = std::unique_lock<std::mutex>(g_lock);
-
-    g_packageDependencies.push_back(packageDependency);
-
+    MddCore::PackageDependencyManager::CreatePackageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options, packageDependencyId);
     return S_OK;
 }
 CATCH_RETURN();
@@ -38,22 +27,7 @@ CATCH_RETURN();
 STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId) noexcept
 {
-    if (!packageDependencyId)
-    {
-        return;
-    }
-
-    auto lock = std::unique_lock<std::mutex>(g_lock);
-
-    for (size_t index=0; index < g_packageDependencies.size(); ++index)
-    {
-        const auto& packageDependency = g_packageDependencies[index];
-        if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
-        {
-            g_packageDependencies.erase(g_packageDependencies.begin() + index);
-            break;
-        }
-    }
+    MddCore::PackageDependencyManager::DeletePackageDependency(packageDependencyId);
 }
 
 STDAPI MddAddPackageDependency(
@@ -81,9 +55,7 @@ STDAPI MddAddPackageDependency(
     {
         *packageFullName = fullName.release();
     }
-
-    //TODO: Implement MddAddPackageDependency
-    RETURN_HR(E_NOTIMPL);
+    return S_OK;
 }
 CATCH_RETURN();
 

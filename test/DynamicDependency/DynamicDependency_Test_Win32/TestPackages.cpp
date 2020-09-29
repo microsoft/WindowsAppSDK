@@ -126,6 +126,38 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
     }
 
+    void AddPackage_FrameworkMathAdd()
+    {
+        AddPackage(Test::Packages::FrameworkMathAdd::c_PackageDirName, Test::Packages::FrameworkMathAdd::c_PackageFullName);
+    }
+
+    void RemovePackage_FrameworkMathAdd()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::FrameworkMathAdd::c_PackageFullName);
+    }
+
+    void AddPackage_FrameworkMathMultiply()
+    {
+        AddPackage(Test::Packages::FrameworkMathMultiply::c_PackageDirName, Test::Packages::FrameworkMathMultiply::c_PackageFullName);
+    }
+
+    void RemovePackage_FrameworkMathMultiply()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::FrameworkMathMultiply::c_PackageFullName);
+    }
+
     std::filesystem::path GetMainSidecarMsixPath()
     {
         // Determine the location of the Main.Sidecar's msix. See GetSolutionOutDirPath() for more details.

@@ -22,6 +22,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependencyManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphNode.cpp" />
   </ItemGroup>
@@ -35,8 +36,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependencyManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphNode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageId.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
   </ItemGroup>
   <ItemGroup>

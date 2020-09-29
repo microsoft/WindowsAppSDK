@@ -24,10 +24,14 @@ namespace Test::DynamicDependency::Win32
             // and brutish but rather 'thinking outside the box'...
             COM::CoSuperInitialize();
 
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
             TP::RemovePackage_MainSidecar();
             TP::RemovePackage_ProjectReunionFramework();
             TP::AddPackage_ProjectReunionFramework();
             TP::AddPackage_MainSidecar();
+            TP::AddPackage_FrameworkMathAdd();
+            TP::AddPackage_FrameworkMathMultiply();
 
             // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
@@ -66,6 +70,8 @@ namespace Test::DynamicDependency::Win32
             m_projectReunionDll.reset();
             m_bootstrapDll.reset();
 
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
             TP::RemovePackage_MainSidecar();
             TP::RemovePackage_ProjectReunionFramework();
 
@@ -91,21 +97,31 @@ namespace Test::DynamicDependency::Win32
             //TODO:Verify deletion
         }
 
-        TEST_METHOD(Add)
+        TEST_METHOD(Create_Add_Remove_Delete)
         {
-            PCWSTR packageDependencyId{};
+            PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
+            PACKAGE_VERSION minVersion{};
+            const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
+            const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
+            PCWSTR lifetimeArtifact{};
+            const auto createOptions = MddCreatePackageDependencyOptions::None;
+            wil::unique_process_heap_string packageDependencyId;
+            Assert::AreEqual(E_NOTIMPL, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
+
             const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
-            const auto options = MddAddPackageDependencyOptions::None;
+            const auto addOptions = MddAddPackageDependencyOptions::None;
             MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
             wil::unique_process_heap_string packageFullName;
-            Assert::AreEqual(E_NOTIMPL, MddAddPackageDependency(packageDependencyId, rank, options, &packageDependencyContext, &packageFullName));
-        }
+            Assert::AreEqual(E_NOTIMPL, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
+            Assert::IsNotNull(packageFullName.get());
+            auto actualPackageFullName = std::wstring(packageFullName.get());
+            auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);
+            Assert::AreEqual(actualPackageFullName, expectedPackageFullName);
 
-        TEST_METHOD(Remove)
-        {
-            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
             MddRemovePackageDependency(packageDependencyContext);
             //TODO:Verify removal
+
+            MddDeletePackageDependency(packageDependencyId.get());
         }
 
         TEST_METHOD(GetResolvedPackageFullName)

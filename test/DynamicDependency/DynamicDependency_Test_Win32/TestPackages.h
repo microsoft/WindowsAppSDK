@@ -58,6 +58,14 @@ namespace Test::Packages
 
     void RemovePackage_ProjectReunionFramework();
 
+    void AddPackage_FrameworkMathAdd();
+
+    void RemovePackage_FrameworkMathAdd();
+
+    void AddPackage_FrameworkMathMultiply();
+
+    void RemovePackage_FrameworkMathMultiply();
+
     std::filesystem::path GetMainSidecarMsixPath();
 
     std::filesystem::path GetProjectReunionFrameworkMsixPath();

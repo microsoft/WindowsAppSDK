@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include "MsixDynamicDependency.h"
+#include "MddCore.Architecture.h"
+
 namespace MddCore
 {
 class PackageDependency
@@ -117,9 +120,67 @@ public:
         }
     }
 
+    const std::wstring& PackageFamilyName() const
+    {
+        return m_packageFamilyName;
+    }
+
+    const PACKAGE_VERSION& MinVersion() const
+    {
+        return m_minVersion;
+    }
+
+    MddPackageDependencyProcessorArchitectures Architectures() const
+    {
+        return m_packageDependencyProcessorArchitectures;
+    }
+
+    MddPackageDependencyLifetimeKind LifetimeKind() const
+    {
+        return m_lifetimeKind;
+    }
+
+    const std::wstring& LifetimeArtifact() const
+    {
+        return m_lifetimeArtifact;
+    }
+
+    MddCreatePackageDependencyOptions Options() const
+    {
+        return m_options;
+    }
+
     const std::wstring& Id() const
     {
         return m_packageDependencyId;
+    }
+
+    const std::wstring& PackageFullName() const
+    {
+        return m_packageFullName;
+    }
+
+    std::vector<std::wstring> FindPackagesByFamily() const;
+
+    bool IsArchitectureInArchitectures(const MddCore::Architecture architecture) const
+    {
+        const auto architectureAsArchitectures = ToArchitectures(architecture);
+        return WI_IsAnyFlagSet(m_packageDependencyProcessorArchitectures, architectureAsArchitectures);
+    }
+
+    static MddPackageDependencyProcessorArchitectures ToArchitectures(const MddCore::Architecture architecture)
+    {
+        switch (architecture)
+        {
+        case MddCore::Architecture::X86: return MddPackageDependencyProcessorArchitectures::X86;
+        case MddCore::Architecture::X64: return MddPackageDependencyProcessorArchitectures::X64;
+        case MddCore::Architecture::Arm: return MddPackageDependencyProcessorArchitectures::Arm;
+        case MddCore::Architecture::Arm64: return MddPackageDependencyProcessorArchitectures::Arm64;
+        case MddCore::Architecture::X86OnArm64: return MddPackageDependencyProcessorArchitectures::X86OnArm64;
+        case MddCore::Architecture::Neutral: return MddPackageDependencyProcessorArchitectures::Neutral;
+        case MddCore::Architecture::Unknown: THROW_HR_MSG(E_UNEXPECTED, "Unsupported architecture 0x%X", architecture);
+        default: THROW_HR_MSG(E_UNEXPECTED, "Unknown architecture 0x%X", architecture);
+        }
     }
 
 private:
@@ -131,5 +192,6 @@ private:
     std::wstring m_lifetimeArtifact;
     MddCreatePackageDependencyOptions m_options = MddCreatePackageDependencyOptions::None;
     std::wstring m_packageDependencyId;
+    std::wstring m_packageFullName;
 };
 }

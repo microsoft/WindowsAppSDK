@@ -3,9 +3,11 @@
 
 #include <pch.h>
 
-#include <PackageGraph.h>
+#include "PackageGraph.h"
 
-#include <PackageGraphNode.h>
+#include "PackageGraphNode.h"
+#include "PackageDependencyManager.h"
+#include "PackageId.h"
 
 static UINT32 wcssize(PCWSTR s)
 {
@@ -161,7 +163,7 @@ UINT32 MddCore::SerializePackageInfoToBuffer(
         {
             // It's static package data
             fromPackagesCount = staticPackagesCount;
-            fromPackagesBuffer = buffer;
+            fromPackagesBuffer = staticPackageInfo;
         }
         const auto fromPackageInfo = static_cast<const PACKAGE_INFO*>(fromPackagesBuffer);
 
@@ -210,96 +212,98 @@ void MddCore::SerializeStringToBuffer(
 
 HRESULT MddCore::ResolvePackageDependency(
     PCWSTR packageDependencyId,
-    wil::unique_process_heap_string& packageFullName)
+    wil::unique_process_heap_string& packageFullName) noexcept
 {
     RETURN_IF_FAILED(MddCore::ResolvePackageDependency(packageDependencyId, MddAddPackageDependencyOptions::None, packageFullName));
     return S_OK;
 }
 
 HRESULT MddCore::ResolvePackageDependency(
-    PCWSTR /*packageDependencyId*/,
+    PCWSTR packageDependencyId,
     MddAddPackageDependencyOptions /*options*/,
-    wil::unique_process_heap_string& /*packageFullName*/)
+    wil::unique_process_heap_string& packageFullName) noexcept try
 {
-#if defined(TODO_ResolvePackageDependency)
-    string[] packageFullNames = FindPackagesByPackageFamily(packageFamilyName, packageTypeFilter=Framework, ...);
-    count = packageFullNames.size();
-    if (count == 0)
+    packageFullName.reset();
+
+    // Get the package dependency
+    auto foundPackageDependency = MddCore::PackageDependencyManager::GetPackageDependency(packageDependencyId);
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !foundPackageDependency);
+
+    // Is the package dependency already resolved?
+    const auto& packageDependency = *foundPackageDependency;
+    if (!packageDependency.PackageFullName().empty())
     {
-        return ERROR;
+        packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
+        return S_OK;
     }
 
-    string bestFit = null;
-    for (packageFullName : packageFullNames)
+    // Determine the packages in the family
+    const auto foundPackageFullNames = packageDependency.FindPackagesByFamily();
+
+    // Find the best fit package in the family (if any)
+    MddCore::PackageId bestFit;
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    for (const auto& candidatePackageFullName : foundPackageFullNames)
     {
+        auto candidate = MddCore::PackageId::FromPackageFullName(candidatePackageFullName.c_str());
+
         // Do we already have a higher version under consideration?
-        if (bestFit && bestFit.Version > packageFullName.Version)
+        if (!bestFit && (bestFit.Version().Version > candidate.Version().Version))
         {
             continue;
         }
 
         // Package version must meet the minVersion filter
-        if (packageFullName.Version < minVersion)
+        if (candidate.Version().Version < packageDependency.MinVersion().Version)
         {
             continue;
         }
 
         // Package architecture must meet the architecture filter
-        if (architectureFilter == PackageDependencyArchitectureFilters.None)
+        if (packageDependency.Architectures() == MddPackageDependencyProcessorArchitectures::None)
         {
-            if (!IsPackageABetterFitPerArchitecture(bestFit, packageFullName))
+            if (!MddCore::IsPackageABetterFitPerArchitecture(bestFit, candidate))
             {
                 continue;
             }
         }
         else
         {
-            if (packageFullName.Architecture not in architectureFilter)
+            if (!packageDependency.IsArchitectureInArchitectures(candidate.Architecture()))
             {
                 continue;
             }
         }
 
         // Package status must be OK to use a package
-        auto packageManager = ActivateInstance(Windows.Management.Deployment.PackageManager);
-        auto currentUser = "";
-        auto package = packageManager.FindPackageForUser(currentUser, packageFullName);
-        if (!package.VerifyIsOK())
+        winrt::hstring currentUser;
+        auto package = packageManager.FindPackageForUser(currentUser, candidate.PackageFullName());
+        auto status = package.Status();
+        if (!status.VerifyIsOK())
         {
             continue;
         }
 
         // The new candidate is better than the current champion
-        bestFit = packageFullName;
+        bestFit = std::move(candidate);
     }
-    return bestFit;
-#endif
-    RETURN_HR(E_NOTIMPL);
-}
 
-HRESULT MddCore::IsPackageABetterFitPerArchitecture(
-    PCWSTR bestFit,
-    PCWSTR packageFullName,
-    bool& isBetterFit)
-{
-    auto bestFitArchitecture = MddCore::Architecture::Unknown;
-    RETURN_IF_FAILED(PackageArchitectureFromFullName(bestFit, bestFitArchitecture));
+    // Did we fail to find a match?
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), bestFit.PackageFullName().empty());
 
-    auto packageFullNameArchitecture = MddCore::Architecture::Unknown;
-    RETURN_IF_FAILED(PackageArchitectureFromFullName(packageFullName, packageFullNameArchitecture));
-
-    isBetterFit = IsPackageABetterFitPerArchitecture(bestFit, bestFitArchitecture, packageFullNameArchitecture);
+    // We have a winner!
+    packageFullName = std::move(wil::make_process_heap_string(bestFit.PackageFullName().c_str()));
     return S_OK;
 }
+CATCH_RETURN();
 
 bool MddCore::IsPackageABetterFitPerArchitecture(
-    PCWSTR bestFit,
-    MddCore::Architecture bestFitArchitecture,
-    MddCore::Architecture packageFullNameArchitecture)
+    const PackageId& bestFit,
+    const PackageId& candidate)
 {
     // Is the package a contender?
     const auto currentArchitecture = GetCurrentArchitecture();
-    if (packageFullNameArchitecture != MddCore::Architecture::Neutral && packageFullNameArchitecture != currentArchitecture)
+    if ((candidate.Architecture() != MddCore::Architecture::Neutral) && (candidate.Architecture() != currentArchitecture))
     {
         return false;
     }
@@ -314,27 +318,13 @@ bool MddCore::IsPackageABetterFitPerArchitecture(
     // Is the new package a better fit than the current champion?
 
     // Architecture-specific is always better than architecture-neutral
-    if (bestFitArchitecture == MddCore::Architecture::Neutral && packageFullNameArchitecture != MddCore::Architecture::Neutral)
+    if ((bestFit.Architecture() == MddCore::Architecture::Neutral) && (candidate.Architecture() != MddCore::Architecture::Neutral))
     {
         return false;
     }
 
     // We have a new winner!
     return true;
-}
-
-HRESULT MddCore::PackageArchitectureFromFullName(
-    PCWSTR packageFullName,
-    MddCore::Architecture& architecture)
-{
-    BYTE buffer[sizeof(PACKAGE_ID) + (PACKAGE_NAME_MAX_LENGTH + 1 +
-                                      PACKAGE_RESOURCEID_MAX_LENGTH + 1 +
-                                      PACKAGE_PUBLISHERID_MAX_LENGTH + 1) * sizeof(WCHAR)];
-    UINT32 bufferLength = ARRAYSIZE(buffer);
-    RETURN_IF_WIN32_ERROR(PackageIdFromFullName(packageFullName, PACKAGE_INFORMATION_BASIC, &bufferLength, buffer));
-    const auto packageId = reinterpret_cast<PACKAGE_ID*>(buffer);
-    architecture = static_cast<MddCore::Architecture>(packageId->processorArchitecture);
-    return S_OK;
 }
 
 MddCore::Architecture MddCore::GetCurrentArchitecture()

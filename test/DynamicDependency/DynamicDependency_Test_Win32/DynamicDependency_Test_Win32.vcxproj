@@ -336,9 +336,6 @@
     <ProjectReference Include="..\..\..\dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\data\Microsoft.ProjectReunion.Framework\Microsoft.ProjectReunion.Framework.vcxproj">
-      <Project>{9c1a6c58-52d6-4514-9120-5c339c5df4be}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
