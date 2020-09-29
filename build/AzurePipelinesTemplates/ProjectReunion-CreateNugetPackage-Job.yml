@@ -110,3 +110,5 @@ jobs:
       command: push
       publishVstsFeed: $(NuGetFeed)
       packagesToPush: $(Build.ArtifactStagingDirectory)/*.nupkg
+
+# Dummy change to test pipeline triggers on PR
