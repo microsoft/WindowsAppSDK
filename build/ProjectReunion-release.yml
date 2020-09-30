@@ -115,7 +115,8 @@ jobs:
     displayName: 'Copy symbols to artifact staging directory'
     condition: always()
     inputs:
-      sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
+#      sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
+       sourceFolder: $(Build.SourcesDirectory)\BuildOutput
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
