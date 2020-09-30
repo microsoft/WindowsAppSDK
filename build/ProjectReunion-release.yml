@@ -58,6 +58,7 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
 - job: ComponentDetection
+  dependsOn: Build
   pool:
     vmImage: 'windows-2019'
 
