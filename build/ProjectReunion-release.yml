@@ -116,7 +116,8 @@ jobs:
     condition: always()
     inputs:
 # sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
-      sourceFolder: $(Build.ArtifactStagingDirectory)\drop
+# no PDB's :-(  sourceFolder: $(Build.ArtifactStagingDirectory)\drop
+      sourceFolder: $(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\ProjectReunion_DLL
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
