@@ -57,14 +57,8 @@ jobs:
 
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
-- job: ComponentDetection
-  dependsOn: Build
-  pool:
-    vmImage: 'windows-2019'
-
-  steps:
+# component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection'
 
 - job: SignBinariesAndPublishSymbols
   dependsOn: Build
