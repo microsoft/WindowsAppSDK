@@ -119,6 +119,11 @@ jobs:
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
+      
+# debugging - remove before completing PR      
+  - script: |
+      echo $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
+      dir /s $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
 
   - task: PublishSymbols@2
     displayName: 'Source index symbols'
