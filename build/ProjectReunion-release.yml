@@ -116,7 +116,7 @@ jobs:
     condition: always()
     inputs:
 # sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
-      sourceFolder: $(Build.SourcesDirectory)\BuildOutput
+      sourceFolder: $(Build.ArtifactStagingDirectory)\drop
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
