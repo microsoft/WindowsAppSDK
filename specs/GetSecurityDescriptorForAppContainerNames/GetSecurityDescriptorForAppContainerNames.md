@@ -15,21 +15,21 @@ If we are to meet developers where they are, we need to reduce the friction of W
 Add a flat C API that takes an array of PFNs and access masks, and produces the needed `SECURITY_ATTRIBUTES` object.
 
 # Examples
-
+## Flat C
 ```c++
 #include <wil/resource.h>
 
 wil::unique_event CreateShareableEvent(PCWSTR name)
 {
     wil::unique_hlocal_security_descriptor sd;
-    AppContainerAccess access[1] =
+    AppContainerNameAndAccess access[1] =
       {{L"Contoso.Test.App_12345678",
         EVENT_MODIFY_STATE | SYNCHRONIZE}};
 
     THROW_IF_FAILED(GetSecurityDescriptorForAppContainerNames(
-        1, access, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd);
+        1, access, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd));
 
-    SECURITY_ATTRIBUTES sa;
+    SECURITY_ATTRIBUTES sa{};
     sa.nLength = sizeof(sa);
     sa.lpSecurityDescriptor = sd.get();
     sa.bInheritHandle = FALSE;
@@ -40,26 +40,87 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
     return result;
 }
 ```
+## WinRT (C#)
+```c#
+EventWaitHandle CreateShareableEvent(String name)
+{
+    var access = new AppContainerNameAndAccess[]
+    {
+        new AppContainerNameAndAccess("Contoso.Test.App_12345678",
+          (uint)(EventWaitHandleRights.Modify |
+                 EventWaitHandleRights.Synchronize));
+    };
+
+    string sddl = SecurityDescriptorHelpers.GetSddlForAppContainerNames(
+        access, "",
+        (uint)(EventWaitHandleRights.Modify |
+                 EventWaitHandleRights.Synchronize));
+    
+    var security = new EventWaitHandleSecurity();
+    security.SetSecurityDescriptorSddlForm(sddl);
+
+    Boolean created;
+    return new EventWaitHandle(false,
+      EventResetMode.AutoReset, name, out created, security);
+}
+```
 
 # API Details
-
+## Flat C
 ```c
-struct AppContainerAccess
+struct AppContainerNameAndAccess
 {
     PCWSTR appContainerName;
     uint32_t accessMask;
 };
 
 STDAPI GetSecurityDescriptorForAppContainerNames(
-    uint32_t countOfAppContainerNames,
-    _In_reads_(countOfAppContainerNames)
-        const AppContainerAccess* appAccess,
-    uint32_t userAccessMask,
+    uint32_t accessRequestCount,
+    _In_reads_(accessRequestCount)
+        const AppContainerNameAndAccess* accessRequests,
+    _In_opt_ PSID principal,
+    uint32_t principalAccessMask,
         _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
 )
 ```
 
+If the **principal** parameter is null, the principal of the current thread is used.
+
 If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
+
+## WinRT
+```c#
+namespace Microsoft.Security.AccessControl
+{
+  runtimeclass AppContainerNameAndAccess
+  {
+    AppContainerNameAndAccess()
+    AppContainerNameAndAccess(
+      String appContainerNameArg,
+      UInt32 accessMaskArg)
+
+    String appContainerName;
+    UInt32 accessMask;
+  }
+
+  static runtimeclass SecurityDescriptorHelpers
+  {
+    static String GetSddlForAppContainerNames(
+      AppContainerNameAndAccess[] accessRequests,
+      String principalStringSid,
+      UInt32 principalAccessMask
+    )
+
+    static UInt8[] GetSecurityDescriptorBytesFromAppContainerNames(
+      AppContainerNameAndAccess[] accessRequests,
+      String principalStringSid,
+      UInt32 principalAccessMask
+    )
+  }
+}
+```
+
+The **principalStringSid** parameter is the [security identifier](https://docs.microsoft.com/en-us/windows/win32/secgloss/s-gly) (SID), in [string format](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-components), of the principal (See also: [ConvertSidToStringSid](https://docs.microsoft.com/en-us/windows/win32/api/sddl/nf-sddl-convertsidtostringsidw)). If this parameter is empty, the principal of the current thread is used.
 
 # API Notes
 
