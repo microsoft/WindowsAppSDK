@@ -117,7 +117,7 @@ jobs:
     inputs:
 # sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
 # no PDB's :-(  sourceFolder: $(Build.ArtifactStagingDirectory)\drop
-      sourceFolder: $(Build.ArtifactStagingDirectory)\symbols
+      sourceFolder: $(Build.ArtifactStagingDirectory)
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
