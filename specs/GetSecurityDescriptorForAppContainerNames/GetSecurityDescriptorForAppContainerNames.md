@@ -84,7 +84,7 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
 )
 ```
 
-If the **principal** parameter is null, the principal of the current thread/process is used.
+If the **principal** parameter is null, the principal of the current thread is used.
 
 If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
 
@@ -120,7 +120,7 @@ namespace Microsoft.Security.AccessControl
 }
 ```
 
-The **principalStringSid** parameter is the [security identifier](https://docs.microsoft.com/en-us/windows/win32/secgloss/s-gly) (SID), in [string format](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-components), of the principal (See also: [ConvertSidToStringSid](https://docs.microsoft.com/en-us/windows/win32/api/sddl/nf-sddl-convertsidtostringsidw)). If this parameter is empty, the principal of the current thread/process is used.
+The **principalStringSid** parameter is the [security identifier](https://docs.microsoft.com/en-us/windows/win32/secgloss/s-gly) (SID), in [string format](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-components), of the principal (See also: [ConvertSidToStringSid](https://docs.microsoft.com/en-us/windows/win32/api/sddl/nf-sddl-convertsidtostringsidw)). If this parameter is empty, the principal of the current thread is used.
 
 # API Notes
 
