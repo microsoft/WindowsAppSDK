@@ -1,6 +1,9 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 35  # Sanity check for minimum expected tests to be reported
+#n.b. this is a parameter in WinUI-BuildMUXProject-Steps.yml  
+  buildArtifactsDirectory: $(Build.SourcesDirectory)\BuildOutput
+  
 jobs:
 
 - job: Build
@@ -17,17 +20,21 @@ jobs:
       Release_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
       Release_Arm:
         buildPlatform: 'arm'
         buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
+        normalizedConfiguration: 'fre'
 
   variables:
     appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
@@ -104,6 +111,27 @@ jobs:
 
   - template: AzurePipelinesTemplates\ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
 
+  - task: CopyFiles@2
+    displayName: 'Copy symbols to artifact staging directory'
+    condition: always()
+    inputs:
+      sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
+      contents: |
+        **\*.pdb
+      targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
+
+  - task: PublishSymbols@2
+    displayName: 'Source index symbols'
+    inputs:
+      SearchPattern: '${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols\Product\*.pdb'
+      SymbolServerType: 'TeamServices'
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+
+# legacy symbol pushing - this is no longer allowed
 #  - task: powershell@2
 #    inputs:
 #      targetType: filePath
@@ -111,6 +139,7 @@ jobs:
 #      arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
 #    displayName: 'Publish Symbols'
 
+# turn back on when signing authorization is completed.
 #  - task: PkgESCodeSign@10
 #    displayName: CodeSign
 #    env:
