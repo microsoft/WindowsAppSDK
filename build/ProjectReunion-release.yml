@@ -116,16 +116,15 @@ jobs:
     condition: always()
     inputs:
 # sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
-# no PDB's :-(  sourceFolder: $(Build.ArtifactStagingDirectory)\drop
-      sourceFolder: $(Build.ArtifactStagingDirectory)
+      sourceFolder: $(Build.ArtifactStagingDirectory)\drop
       contents: |
         **\*.pdb
-      targetFolder: $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
+      targetFolder: $(Build.ArtifactStagingDirectory)\symbols
       
 # debugging - remove before completing PR      
   - script: |
-      echo $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
-      dir /s $(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)
+      echo $(Build.ArtifactStagingDirectory)\symbols
+      dir /s $(Build.ArtifactStagingDirectory)\symbols
 
   - task: PublishSymbols@2
     displayName: 'Source index symbols'
