@@ -31,15 +31,26 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Win32", "test\CppTe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_UWP", "test\CppTest_UWP\CppTest_UWP.vcxproj", "{B1A6F5EC-5418-4354-BACF-F7D998EE960D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppLifecycle", "AppLifecycle", "{3DE93B2F-F887-437D-B512-6B1024ABA290}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycle", "dev\AppLifecycle\AppLifecycle.vcxitems", "{E3A522A3-6635-4A42-BDED-1AF46A15F63C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycle", "test\AppLifecycle\AppLifecycle.vcxitems", "{80E07022-9E99-44FE-B875-901FB6C82F52}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
+		test\AppLifecycle\AppLifecycle.vcxitems*{80e07022-9e99-44fe-b875-901fb6c82f52}*SharedItemsImports = 9
+		test\AppLifecycle\AppLifecycle.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
+		dev\AppLifecycle\AppLifecycle.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleWinRT\SampleWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		test\AppLifecycle\AppLifecycle.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}*SharedItemsImports = 9
+		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_test|Any CPU = Debug_test|Any CPU
@@ -165,6 +176,9 @@ Global
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{C62688A1-16A0-4729-B6ED-842F4FAA29F3} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{B1A6F5EC-5418-4354-BACF-F7D998EE960D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{3DE93B2F-F887-437D-B512-6B1024ABA290} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{E3A522A3-6635-4A42-BDED-1AF46A15F63C} = {3DE93B2F-F887-437D-B512-6B1024ABA290}
+		{80E07022-9E99-44FE-B875-901FB6C82F52} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
