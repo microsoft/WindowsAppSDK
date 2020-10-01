@@ -126,16 +126,16 @@ jobs:
 #      dir /s $(Build.ArtifactStagingDirectory)\symbols
 
 #this task doesn't like github sources, turning off for now
-#  - task: PublishSymbols@2
-#    displayName: 'Source index symbols'
-#    inputs:
-#      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-#      symbolServerType: 'TeamServices'
-#      detailedLog: true
+  - task: PublishSymbols@2
+    displayName: 'Source index symbols'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+      detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
-#    env:
-#      LIB: $(Build.SourcesDirectory)
+    env:
+      LIB: $(Build.SourcesDirectory)
 
   - task: PkgESCodeSign@10
     displayName: CodeSign
