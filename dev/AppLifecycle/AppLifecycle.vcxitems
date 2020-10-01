@@ -20,10 +20,18 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExecuteCommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FileActivatedEventArgs.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FileType.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FileType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LaunchActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />
     <Midl Include="$(MSBuildThisFileDirectory)AppLifecycle.idl" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationActivationHandler.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationActivationHandler.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionContractHandler.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ExtensionContractHandler.cpp" />
   </ItemGroup>
 </Project>

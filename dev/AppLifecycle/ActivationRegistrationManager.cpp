@@ -6,6 +6,8 @@
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
+#include "FileActivatedEventArgs.h"
+#include "FileType.h"
 #include "Shared.h"
 
 namespace winrt::Microsoft::ProjectReunion::implementation
@@ -14,7 +16,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         hstring const& logo, array_view<hstring const> supportedFileTypes,
         array_view<hstring const> supportedVerbs)
     {
-        throw hresult_not_implemented();
+        //throw hresult_not_implemented();
+
+        for (auto extension : supportedFileTypes)
+        {
+            FileType type(extension.c_str());
+        }
     }
 
     void ActivationRegistrationManager::RegisterForProtocolActivation(hstring const& scheme,
