@@ -139,7 +139,7 @@ jobs:
     displayName: 'copy projection binaries and symbols for signing'
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
@@ -174,10 +174,10 @@ jobs:
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    codeSign: false
+    codeSign: ${{ eq(variables['System.definitionId'], '57248') }}
 
   strategy:
-    maxParallel: 4
+    maxParallel: 10
     matrix:
       Release_ANYCPU:
         buildPlatform: 'anycpu'
@@ -187,6 +187,9 @@ jobs:
         buildConfiguration: 'Release'
       Release_x64:
         buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_ARM:
+        buildPlatform: 'ARM'
         buildConfiguration: 'Release'
       Release_ARM64:
         buildPlatform: 'ARM64'
@@ -230,7 +233,7 @@ jobs:
     Major: '1'
     Minor: '0'
     Patch: '0'
-    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    codeSign: ${{ eq(variables['System.definitionId'], '57248') }}
     MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   steps:
@@ -259,6 +262,15 @@ jobs:
       buildType: 'current'
       downloadType: 'single'
       artifactName: 'signedbinaries_x64'
+      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
+
+  - task: DownloadBuildArtifacts@0
+    condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'Download: Signed Binaries ARM'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'signedbinaries_ARM'
       downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
 
   - task: DownloadBuildArtifacts@0
@@ -332,6 +344,19 @@ jobs:
 
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'copy ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM\lib\ARM'
+      Contents: |
+        mrm.pdb
+        Microsoft.ApplicationModel.Resources.pdb
+        signed\mrm.dll
+        signed\Microsoft.ApplicationModel.Resources.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm\native'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'copy ARM64'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM64\lib\ARM64'
@@ -361,6 +386,16 @@ jobs:
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x64'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'copy import lib ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM\lib\ARM'
+      Contents: |
+        mrm.lib
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-arm'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -442,6 +477,19 @@ jobs:
 
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, false))
+    displayName: 'copy unsigned ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM'
+      Contents: |
+        mrm.pdb
+        Microsoft.ApplicationModel.Resources.pdb
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm\native'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, false))
     displayName: 'copy unsigned ARM64'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM64'
@@ -471,6 +519,16 @@ jobs:
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x64'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, false))
+    displayName: 'copy unsigned import lib ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM'
+      Contents: |
+        mrm.lib
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-arm'
       flattenFolders: true
 
   - task: CopyFiles@2
