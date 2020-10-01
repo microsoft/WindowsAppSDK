@@ -121,38 +121,30 @@ jobs:
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
       
 # debugging - remove before completing PR      
-  - script: |
-      echo $(Build.ArtifactStagingDirectory)\symbols
-      dir /s $(Build.ArtifactStagingDirectory)\symbols
+#  - script: |
+#      echo $(Build.ArtifactStagingDirectory)\symbols
+#      dir /s $(Build.ArtifactStagingDirectory)\symbols
 
-  - task: PublishSymbols@2
-    displayName: 'Source index symbols'
-    inputs:
-      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-      symbolServerType: 'TeamServices'
-      detailedLog: true
+#this task doesn't like github sources, turning off for now
+#  - task: PublishSymbols@2
+#    displayName: 'Source index symbols'
+#    inputs:
+#      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+#      symbolServerType: 'TeamServices'
+#      detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
-    env:
-      LIB: $(Build.SourcesDirectory)
-
-# legacy symbol pushing - this is no longer allowed
-#  - task: powershell@2
-#    inputs:
-#      targetType: filePath
-#      filePath: $(Build.SourcesDirectory)\tools\PublishSymbols\PublishSymbols.ps1
-#      arguments: -localDirectory "$(Build.ArtifactStagingDirectory)\drop" -Verbose
-#    displayName: 'Publish Symbols'
-
-# turn back on when signing authorization is completed.
-#  - task: PkgESCodeSign@10
-#    displayName: CodeSign
 #    env:
-#      SYSTEM_ACCESSTOKEN: $(system.accesstoken)
-#    inputs:
-#      signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
-#      inPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
-#      outPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
+#      LIB: $(Build.SourcesDirectory)
+
+  - task: PkgESCodeSign@10
+    displayName: CodeSign
+    env:
+      SYSTEM_ACCESSTOKEN: $(system.accesstoken)
+    inputs:
+      signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
+      inPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
+      outPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
 
   # Re-publish signed artifacts to the drop.
 #  - task: PublishBuildArtifacts@1
