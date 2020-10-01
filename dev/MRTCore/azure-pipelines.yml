@@ -139,7 +139,7 @@ jobs:
     displayName: 'copy projection binaries and symbols for signing'
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
@@ -152,7 +152,7 @@ jobs:
     displayName: 'copy winmd for signing'
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
