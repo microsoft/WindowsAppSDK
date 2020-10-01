@@ -102,7 +102,7 @@ jobs:
 
   - task: VSTest@2
     displayName: 'test MRT'
-    condition: and(succeeded(), or(eq($(buildPlatform), 'x86'), eq($(buildPlatform), 'x64')))
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: |
