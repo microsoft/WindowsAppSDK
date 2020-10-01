@@ -115,7 +115,6 @@ jobs:
     displayName: 'Copy symbols to artifact staging directory'
     condition: always()
     inputs:
-# sourceFolder: ${{parameters.buildArtifactsDirectory}}\bin\$(buildOutput)$(normalizedConfiguration)\Symbols
       sourceFolder: $(Build.ArtifactStagingDirectory)\drop
       contents: |
         **\*.pdb
@@ -129,8 +128,8 @@ jobs:
   - task: PublishSymbols@2
     displayName: 'Source index symbols'
     inputs:
-      SearchPattern: '$(Build.ArtifactStagingDirectory)\symbols\$(buildOutput)$(normalizedConfiguration)\*.pdb'
-      SymbolServerType: 'TeamServices'
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
