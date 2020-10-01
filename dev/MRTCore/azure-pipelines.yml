@@ -137,6 +137,7 @@ jobs:
 
   - task: CopyFiles@2
     displayName: 'copy projection binaries and symbols for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
       SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
@@ -149,6 +150,7 @@ jobs:
 
   - task: CopyFiles@2
     displayName: 'copy winmd for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
       SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
