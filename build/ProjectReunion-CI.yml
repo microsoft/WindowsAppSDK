@@ -37,14 +37,14 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
-#UNDONE - subsequent PR
-#- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
-#  parameters:
-#    name: 'RunTestsInHelix'
-#    dependsOn: Build
-#    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-#    testSuite: 'DevTestSuite'
-#    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+
+- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
+  parameters:
+    name: 'RunTestsInHelix'
+    dependsOn: Build
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    testSuite: 'DevTestSuite'
+    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
