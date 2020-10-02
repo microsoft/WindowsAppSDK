@@ -18,17 +18,17 @@ parameters:
       buildConfiguration: 'debug'
       # %3b is the escape code for ';' which is used as the delimiter
       openHelixTargetQueues: 'windows.10.amd64.clientrs2.open.xaml%3bwindows.10.amd64.clientrs5.open.xaml'
-      closedHelixTargetQueues: 'windows.10.amd64.clientrs2.xaml%3bwindows.10.amd64.clientrs5.xaml'
+      #closedHelixTargetQueues: 'windows.10.amd64.clientrs2.xaml%3bwindows.10.amd64.clientrs5.xaml'
     Release_x86:
       buildPlatform: 'x86'
       buildConfiguration: 'release'
       openHelixTargetQueues: 'windows.10.amd64.client19h1.open.xaml%3bwindows.10.amd64.clientrs3.open.xaml'
-      closedHelixTargetQueues: 'windows.10.amd64.client19h1.xaml%3bwindows.10.amd64.clientrs3.xaml'
+      #closedHelixTargetQueues: 'windows.10.amd64.client19h1.xaml%3bwindows.10.amd64.clientrs3.xaml'
     Release_x64:
       buildPlatform: 'x64'
       buildConfiguration: 'release'
       openHelixTargetQueues: 'windows.10.amd64.clientrs4.open.xaml'
-      closedHelixTargetQueues: 'windows.10.amd64.clientrs4.xaml'
+      #closedHelixTargetQueues: 'windows.10.amd64.clientrs4.xaml'
 
 jobs:
 - job: ${{ parameters.name }}
@@ -89,7 +89,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: build\Helix\PrepareHelixPayload.ps1
-      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)' -ArtifactName '${{ parameters.artifactName }}'
+      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
       
   - task: CmdLine@1
     displayName: 'Display Helix payload contents'
