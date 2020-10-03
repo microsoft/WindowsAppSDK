@@ -4,69 +4,81 @@
 #if !defined(PACKAGEGRAPH_H)
 #define PACKAGEGRAPH_H
 
-#include <MsixDynamicDependency.h>
+#include "MsixDynamicDependency.h"
 
-#include <PackageId.h>
-#include <PackageGraphNode.h>
+#include "PackageId.h"
+#include "PackageGraphNode.h"
 
 namespace MddCore
 {
-std::unique_lock<std::mutex> AcquirePackageGraphLock();
+class PackageGraph
+{
+public:
+    PackageGraph() = default;
 
-typedef LONG (WINAPI * GetCurrentPackageInfo2Function)(
-    const UINT32 flags,
-    PackagePathType packagePathType,
-    UINT32* bufferLength,
-    BYTE* buffer,
-    UINT32* count);
+    ~PackageGraph() = default;
 
-HRESULT GetCurrentPackageInfo2(
-    const UINT32 flags,
-    PackagePathType packagePathType,
-    UINT32* bufferLength,
-    BYTE* buffer,
-    UINT32* count,
-    GetCurrentPackageInfo2Function getCurrentPackageInfo2) noexcept;
+    HRESULT Add(
+        _In_ PCWSTR packageDependencyId,
+        INT32 rank,
+        MddAddPackageDependencyOptions options,
+        MDD_PACKAGEDEPENDENCY_CONTEXT& packageDependencyContext,
+        _Outptr_opt_result_maybenull_ PWSTR* packageFullName);
 
-UINT32 SerializePackageInfoToBuffer(
-    const UINT32 flags,
-    const PackagePathType packagePathType,
-    const UINT32 bufferLength,
-    BYTE* buffer,
-    const std::vector<MddCore::PackageGraphNode*>& matchingPackageInfo,
-    const UINT32 dynamicPackagesCount,
-    const PACKAGE_INFO* staticPackageInfo,
-    const UINT32 staticPackagesCount);
+private:
+    HRESULT Add(
+        PCWSTR packageFullName,
+        INT32 rank,
+        MddAddPackageDependencyOptions options,
+        MDD_PACKAGEDEPENDENCY_CONTEXT& context);
 
-void SerializeStringToBuffer(
-    const UINT32 bufferLength,
-    BYTE*& buffer,
-    UINT32& bufferNeeded,
-    PWSTR& to,
-    PCWSTR from);
+public:
+    HRESULT ResolvePackageDependency(
+        PCWSTR packageDependencyId,
+        MddAddPackageDependencyOptions options,
+        wil::unique_process_heap_string& packageFullName) noexcept;
 
-HRESULT ResolvePackageDependency(
-    PCWSTR packageDependencyId,
-    wil::unique_process_heap_string& packageFullName) noexcept;
+    HRESULT Remove(
+        MDD_PACKAGEDEPENDENCY_CONTEXT context);
 
-HRESULT ResolvePackageDependency(
-    PCWSTR packageDependencyId,
-    MddAddPackageDependencyOptions options,
-    wil::unique_process_heap_string& packageFullName) noexcept;
+private:
+    bool IsPackageABetterFitPerArchitecture(
+        const MddCore::PackageId& bestFit,
+        const MddCore::PackageId& candidate);
 
-bool IsPackageABetterFitPerArchitecture(
-    const MddCore::PackageId& bestFit,
-    const MddCore::PackageId& candidate);
+    void AddToDllSearchOrder(PackageGraphNode& package);
 
-Architecture GetCurrentArchitecture();
+    void RemoveFromDllSearchOrder(PackageGraphNode& package);
 
-HRESULT AddToPackageGraph(
-    PCWSTR packageFullName,
-    INT32 rank,
-    MddAddPackageDependencyOptions options,
-    MDD_PACKAGEDEPENDENCY_CONTEXT& context);
+    inline MddCore::Architecture GetCurrentArchitecture()
+    {
+#if defined(_M_ARM)
+        return Architecture::Arm;
+#elif defined(_M_ARM64)
+        return Architecture::Arm64;
+#elif defined(_M_IX86)
+        return Architecture::X86;
+#elif defined(_M_X64)
+        return Architecture::X64;
+#else
+#   error "Unknown processor architecture"
+#endif
+    }
 
-HRESULT RemoveFromPackageGraph(MDD_PACKAGEDEPENDENCY_CONTEXT context);
+    void UpdatePath();
+
+    std::wstring BuildPathList();
+
+public:
+    const std::vector<MddCore::PackageGraphNode>& PackageGraphNodes() const
+    {
+        return m_packageGraphNodes;
+    }
+
+private:
+    std::vector<MddCore::PackageGraphNode> m_packageGraphNodes;
+    std::wstring m_pathListLastAddedToPath;
+};
 }
 
 #endif // PACKAGEGRAPH_H

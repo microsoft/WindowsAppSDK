@@ -14,7 +14,7 @@ public:
     static PackageId FromPackageFullName(PCWSTR packageFullName)
     {
         PackageId packageId;
-        UINT32 bufferLength = sizeof(packageId.m_buffer);
+        UINT32 bufferLength{ sizeof(packageId.m_buffer) };
         THROW_IF_WIN32_ERROR(PackageIdFromFullName(packageFullName, PACKAGE_INFORMATION_BASIC, &bufferLength, packageId.m_buffer));
         packageId.m_packageId = reinterpret_cast<PACKAGE_ID*>(packageId.m_buffer);
         packageId.m_packageFullName = packageFullName;

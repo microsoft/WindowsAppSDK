@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <pch.h>
+#include "pch.h"
 
 #include "PackageGraph.h"
 
@@ -9,216 +9,106 @@
 #include "PackageDependencyManager.h"
 #include "PackageId.h"
 
-static UINT32 wcssize(PCWSTR s)
+#include <wil/win32_helpers.h>
+
+HRESULT MddCore::PackageGraph::Add(
+    _In_ PCWSTR packageDependencyId,
+    INT32 rank,
+    MddAddPackageDependencyOptions options,
+    MDD_PACKAGEDEPENDENCY_CONTEXT& packageDependencyContext,
+    _Outptr_opt_result_maybenull_ PWSTR* packageFullName)
 {
-    return static_cast<UINT32>((wcslen(s) + 1) * sizeof(*s));
+    wil::unique_process_heap_string fullName;
+    RETURN_IF_FAILED(ResolvePackageDependency(packageDependencyId, options, fullName));
+    MDD_PACKAGEDEPENDENCY_CONTEXT context{};
+    RETURN_IF_FAILED(Add(fullName.get(), rank, options, context));
+
+    packageDependencyContext = std::move(context);
+    if (packageFullName)
+    {
+        *packageFullName = fullName.release();
+    }
 }
 
-static std::mutex g_lock;
-std::vector<MddCore::PackageGraphNode> g_packageGraph;
-
-std::unique_lock<std::mutex> MddCore::AcquirePackageGraphLock()
+HRESULT MddCore::PackageGraph::Add(
+    PCWSTR packageFullName,
+    INT32 rank,
+    MddAddPackageDependencyOptions options,
+    MDD_PACKAGEDEPENDENCY_CONTEXT& context)
 {
-    return std::unique_lock<std::mutex>(g_lock);
-}
+    // Load the package's information
+    PackageGraphNode packageGraphNode(packageFullName, rank);
 
-// On success, buffer is a byte[] containing PACKAGE_INFO[count] followed by all variable length data.
-// Pointers in PACKAGE_INFO (all PWSTR) are null or point to their value in the variable length data.
-//
-// On success but \c bufferLength is too small to hold all the data, we still set bufferLength to the
-// size needed for all this data but return ERROR_INSUFFICIENT_BUFFER (as an HRESULT).
-HRESULT MddCore::GetCurrentPackageInfo2(
-    const UINT32 flags,
-    PackagePathType packagePathType,
-    UINT32* bufferLength,
-    BYTE* buffer,
-    UINT32* count,
-    GetCurrentPackageInfo2Function getCurrentPackageInfo2) noexcept try
-{
-    if (count)
+    // Find the insertion point where to add the new package graph node to the package graph
+    int index{};
+    for (; index < m_packageGraphNodes.size(); ++index)
     {
-        *count = 0;
-    }
-
-    auto lock(AcquirePackageGraphLock());
-
-    // Is the package graph empty?
-    if (g_packageGraph.empty())
-    {
-        // No dynamic package data. Is there a static package graph?
-        UINT32 length = 0;
-        const LONG rc = getCurrentPackageInfo2(flags, packagePathType, &length, nullptr, nullptr);
-        if (rc == APPMODEL_ERROR_NO_PACKAGE)
+        auto& node = m_packageGraphNodes[index];
+        if (node.Rank() < rank)
         {
-            // No static package data either
-            THROW_WIN32(APPMODEL_ERROR_NO_PACKAGE);
+            // Too soon. Keep looking
+            continue;
         }
-    }
-
-    // We manage the package graph as a list of nodes, where each contain contains information about 1+ package.
-    //
-    // Find all the packages across the package graph that match our filter criteria (see flags in
-    // https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2).
-    //
-    // Then compute the size needed for all the data.
-    //
-    // The if the buffer's big enough, serialize the data into buffer.
-    //
-    // Either way, set bufferLength with the buffer size needed for all the data.
-
-    std::vector<MddCore::PackageGraphNode*> matchingPackageInfo;
-
-    UINT32 staticPackageGraphBufferLength{};
-    wil::unique_cotaskmem_ptr<BYTE[]> staticPackageGraphBuffer;
-    const PACKAGE_INFO* staticPackageInfo{};
-    UINT32 staticPackagesCount{};
-
-    UINT32 dynamicPackagesCount{};
-    for (auto& packageGraphNode : g_packageGraph)
-    {
-        if (packageGraphNode.IsDynamic())
+        else if (rank < node.Rank())
         {
-            // It's dynamic data we manage. Does the node have any matching packages?
-            const auto countMatchingPackages = packageGraphNode.CountMatchingPackages(flags, packagePathType);
-            if (countMatchingPackages > 0)
-            {
-                matchingPackageInfo.push_back(&packageGraphNode);
-                dynamicPackagesCount += countMatchingPackages;
-            }
+            // Gotcha!
+            break;
         }
-        else
+
+        if (node.Rank() == rank)
         {
-            // It's static data the OS manages. Does the node have any matching packages?
-            LONG rc = getCurrentPackageInfo2(flags, packagePathType, &staticPackageGraphBufferLength, nullptr, nullptr);
-            if (rc == APPMODEL_ERROR_NO_PACKAGE)
+            // Match! Insert before items of the same rank?
+            if (WI_IsFlagSet(options, MddAddPackageDependencyOptions::PrependIfRankCollision))
             {
-                // The process has no static package info
-                // Nothing to do
-            }
-            else if (rc == ERROR_INSUFFICIENT_BUFFER)
-            {
-                // We've got 1+ match! Get the data
-                staticPackageGraphBuffer = wil::make_unique_cotaskmem<BYTE[]>(staticPackageGraphBufferLength);
-                THROW_IF_WIN32_ERROR(getCurrentPackageInfo2(flags, packagePathType, &staticPackageGraphBufferLength, staticPackageGraphBuffer.get(), &staticPackagesCount));
-                staticPackageInfo = reinterpret_cast<PACKAGE_INFO*>(staticPackageGraphBuffer.get());
+                // Gotcha!
+                break;
             }
             else
             {
-                THROW_WIN32(rc);
+                // Append to items of this rank
+                for (int nextIndex=index+1; nextIndex < m_packageGraphNodes.size(); ++nextIndex)
+                {
+                    auto& nextNode = m_packageGraphNodes[nextIndex];
+                    if (nextNode.Rank() > rank)
+                    {
+                        // Gotcha!
+                        break;
+                    }
+                }
             }
         }
     }
 
-    // Update the total 'count' (if any)
-    const auto totalPackagesCount = staticPackagesCount + dynamicPackagesCount;
-    if (count)
+    // Add the new node to the package graph
+    if (index < m_packageGraphNodes.size())
     {
-        *count = totalPackagesCount;
+        m_packageGraphNodes.insert(m_packageGraphNodes.begin() + index, packageGraphNode);
     }
-
-    // Do we have anything to report?
-    if (totalPackagesCount == 0)
+    else
     {
-        // No matches!
-        *bufferLength = 0;
-        return S_OK;
+        m_packageGraphNodes.push_back(packageGraphNode);
     }
+#if defined(TODO_AddToPackageGraph_MoreConcise)
+    auto packageInfoReference{ OpenPackageInfoByFullName(packageFullName) };
+    auto node{ PackageGraphNode(packageInfoReference) };
 
-    // Compute the buffer length used/needed and fill buffer (if we can)
-    *bufferLength = SerializePackageInfoToBuffer(flags, packagePathType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount);
+    auto by_rank = [](auto&& left, auto&& right) { return left.rank < right.rank; });
+    auto where = options.PrependIfRankCollision ?
+        std::lower_bound(m_packageGraphNodes.begin(), m_packageGraphNodes.end(), node, by_rank) :
+        std::upper_bound(m_packageGraphNodes.begin(), m_packageGraphNodes.end(), node, by_rank);
+    m_packageGraphNodes.insert(where, node);
+#endif
+
+    // The DLL Search Order must be updated when we update the package graph
+    {
+        auto& node = m_packageGraphNodes[index];
+        AddToDllSearchOrder(node);
+    }
 
     return S_OK;
 }
-CATCH_RETURN();
 
-UINT32 MddCore::SerializePackageInfoToBuffer(
-    const UINT32 flags,
-    const PackagePathType packagePathType,
-    const UINT32 bufferLength,
-    BYTE* buffer,
-    const std::vector<MddCore::PackageGraphNode*>& matchingPackageInfo,
-    const UINT32 dynamicPackagesCount,
-    const PACKAGE_INFO* staticPackageInfo,
-    const UINT32 staticPackagesCount)
-{
-    // Setup our initial pointers to write the PACKAGE_INFO[] and the variable length data
-    const auto totalPackagesCount = dynamicPackagesCount + staticPackagesCount;
-    UINT32 bufferNeeded = sizeof(PACKAGE_INFO) * totalPackagesCount;
-    buffer += bufferNeeded;
-
-    // Let's do it...
-    for (auto& matchingPackageGraphNode : matchingPackageInfo)
-    {
-        UINT32 fromPackagesCount{};
-        const void* fromPackagesBuffer{};
-        wil::unique_cotaskmem_ptr<BYTE[]> dynamicPackagesBuffer;
-
-        if (matchingPackageGraphNode)
-        {
-            // It's dynamic package data
-            fromPackagesCount = std::move(matchingPackageGraphNode->GetMatchingPackages(flags, packagePathType, dynamicPackagesBuffer));
-            fromPackagesBuffer = dynamicPackagesBuffer.get();
-        }
-        else
-        {
-            // It's static package data
-            fromPackagesCount = staticPackagesCount;
-            fromPackagesBuffer = staticPackageInfo;
-        }
-        const auto fromPackageInfo = static_cast<const PACKAGE_INFO*>(fromPackagesBuffer);
-
-        // Copy the package info to the buffer
-        auto toPackageInfo = reinterpret_cast<PACKAGE_INFO*>(buffer);
-        for (UINT32 index=0; index < fromPackagesCount; ++index, ++toPackageInfo)
-        {
-            // Copy over the fixed length data
-            bufferNeeded += sizeof(*toPackageInfo);
-            if (bufferNeeded <= bufferLength)
-            {
-                memcpy(toPackageInfo, fromPackageInfo, sizeof(*toPackageInfo));
-            }
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->path, fromPackageInfo->path);
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageFullName, fromPackageInfo->packageFullName);
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageFamilyName, fromPackageInfo->packageFamilyName);
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageId.name, fromPackageInfo->packageId.name);
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageId.publisher, fromPackageInfo->packageId.publisher);
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageId.resourceId, fromPackageInfo->packageId.resourceId);
-            SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageId.publisherId, fromPackageInfo->packageId.publisherId);
-        }
-    }
-
-    return bufferNeeded;
-}
-
-void MddCore::SerializeStringToBuffer(
-    const UINT32 bufferLength,
-    BYTE*& buffer,
-    UINT32& bufferNeeded,
-    PWSTR& to,
-    PCWSTR from)
-{
-    if (from)
-    {
-        const auto size = wcssize(from);
-        bufferNeeded += size;
-        if (bufferNeeded <= bufferLength)
-        {
-            memcpy(buffer, from, size);
-            to = reinterpret_cast<PWSTR>(buffer);
-            buffer += size;
-        }
-    }
-}
-
-HRESULT MddCore::ResolvePackageDependency(
-    PCWSTR packageDependencyId,
-    wil::unique_process_heap_string& packageFullName) noexcept
-{
-    RETURN_IF_FAILED(MddCore::ResolvePackageDependency(packageDependencyId, MddAddPackageDependencyOptions::None, packageFullName));
-    return S_OK;
-}
-
-HRESULT MddCore::ResolvePackageDependency(
+HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     PCWSTR packageDependencyId,
     MddAddPackageDependencyOptions /*options*/,
     wil::unique_process_heap_string& packageFullName) noexcept try
@@ -226,7 +116,7 @@ HRESULT MddCore::ResolvePackageDependency(
     packageFullName.reset();
 
     // Get the package dependency
-    auto foundPackageDependency = MddCore::PackageDependencyManager::GetPackageDependency(packageDependencyId);
+    auto foundPackageDependency{ MddCore::PackageDependencyManager::GetPackageDependency(packageDependencyId) };
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !foundPackageDependency);
 
     // Is the package dependency already resolved?
@@ -238,14 +128,14 @@ HRESULT MddCore::ResolvePackageDependency(
     }
 
     // Determine the packages in the family
-    const auto foundPackageFullNames = packageDependency.FindPackagesByFamily();
+    const auto foundPackageFullNames{ packageDependency.FindPackagesByFamily() };
 
     // Find the best fit package in the family (if any)
     MddCore::PackageId bestFit;
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     for (const auto& candidatePackageFullName : foundPackageFullNames)
     {
-        auto candidate = MddCore::PackageId::FromPackageFullName(candidatePackageFullName.c_str());
+        auto candidate{ MddCore::PackageId::FromPackageFullName(candidatePackageFullName.c_str()) };
 
         // Do we already have a higher version under consideration?
         if (!bestFit && (bestFit.Version().Version > candidate.Version().Version))
@@ -262,7 +152,7 @@ HRESULT MddCore::ResolvePackageDependency(
         // Package architecture must meet the architecture filter
         if (packageDependency.Architectures() == MddPackageDependencyProcessorArchitectures::None)
         {
-            if (!MddCore::IsPackageABetterFitPerArchitecture(bestFit, candidate))
+            if (!IsPackageABetterFitPerArchitecture(bestFit, candidate))
             {
                 continue;
             }
@@ -277,8 +167,8 @@ HRESULT MddCore::ResolvePackageDependency(
 
         // Package status must be OK to use a package
         winrt::hstring currentUser;
-        auto package = packageManager.FindPackageForUser(currentUser, candidate.PackageFullName());
-        auto status = package.Status();
+        auto package{ packageManager.FindPackageForUser(currentUser, candidate.PackageFullName()) };
+        auto status{ package.Status() };
         if (!status.VerifyIsOK())
         {
             continue;
@@ -297,12 +187,36 @@ HRESULT MddCore::ResolvePackageDependency(
 }
 CATCH_RETURN();
 
-bool MddCore::IsPackageABetterFitPerArchitecture(
+HRESULT MddCore::PackageGraph::Remove(
+    MDD_PACKAGEDEPENDENCY_CONTEXT /*context*/)
+{
+#if defined(TODO_RemoveFromPackageGraph)
+    std::unique_lock<std::mutex> lock(g_lock);
+
+    for (int index=0; index < m_packageGraphNodes.size(); ++index)
+    {
+        auto& node = m_packageGraphNodes[index];
+        if (node.context() == context)
+        {
+            // The DLL Search Order must be updated when we update the package graph
+            RemoveFromDllSearchOrder(node);
+
+            m_packageGraphNodes.erase(index);
+
+            return S_OK;
+        }
+    }
+    return HRESULT_FROM_WIN32(ERROR_INVALID_HANDLE);
+#endif
+    RETURN_HR(E_NOTIMPL);
+}
+
+bool MddCore::PackageGraph::IsPackageABetterFitPerArchitecture(
     const PackageId& bestFit,
     const PackageId& candidate)
 {
     // Is the package a contender?
-    const auto currentArchitecture = GetCurrentArchitecture();
+    const auto currentArchitecture{ GetCurrentArchitecture() };
     if ((candidate.Architecture() != MddCore::Architecture::Neutral) && (candidate.Architecture() != currentArchitecture))
     {
         return false;
@@ -327,197 +241,75 @@ bool MddCore::IsPackageABetterFitPerArchitecture(
     return true;
 }
 
-MddCore::Architecture MddCore::GetCurrentArchitecture()
-{
-#if defined(_M_ARM)
-    return Architecture::Arm;
-#elif defined(_M_ARM64)
-    return Architecture::Arm64;
-#elif defined(_M_IX86)
-    return Architecture::X86;
-#elif defined(_M_X64)
-    return Architecture::X64;
-#else
-#   error "Unknown processor architecture"
-#endif
-}
-
-HRESULT MddCore::AddToPackageGraph(
-    PCWSTR /*packageFullName*/,
-    INT32 /*rank*/,
-    MddAddPackageDependencyOptions /*options*/,
-    MDD_PACKAGEDEPENDENCY_CONTEXT& /*context*/)
-{
-#if defined(TODO_AddToPackageGraph)
-    auto packageInfoReference = OpenPackageInfoByFullName(packageFullName);
-    auto packageGraphNode = PackageGraphNode(packageInfoReference);
-
-    // Find the insertion point where to add the new package graph node to the package graph
-    int index = 0;
-    for (; index < g_packageGraph.size(); ++index)
-    {
-        auto& node = g_packageGraph[index];
-        if (node.rank() < rank)
-        {
-            // Too soon. Keep looking
-            continue;
-        }
-        else if (rank < node.rank())
-        {
-            // Gotcha!
-            break;
-        }
-
-        if (node.rank() == rank)
-        {
-            // Match! Insert before or after items of the same rank?
-            if (options.PrependIfRankCollision)
-            {
-                // Gotcha!
-                break;
-            }
-            else
-            {
-                // Append to items of this rank
-                for (int nextIndex=index+1; nextIndex < g_packageGraph.size(); ++nextIndex)
-                {
-                    auto& nextNode = g_packageGraph[nextIndex];
-                    if (nextNode.rank() > rank)
-                    {
-                        // Gotcha!
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    // Add the new node to the package graph
-    if (index <> g_packageGraph.size())
-    {
-        g_packageGraph.insert(index, packageGraphNode);
-    }
-    else
-    {
-        g_packageGraph.append(packageGraphNode);
-    }
-
-    // The DLL Search Order must be updated when we update the package graph
-    AddToDllSearchOrder(node);
-#elif defined(TODO_AddToPackageGraph_MoreConcise)
-    auto packageInfoReference = OpenPackageInfoByFullName(packageFullName);
-    auto node = PackageGraphNode(packageInfoReference);
-
-    auto by_rank = [](auto&& left, auto&& right) { return left.rank < right.rank; });
-    auto where = options.PrependIfRankCollision ?
-        std::lower_bound(g_packageGraph.begin(), g_packageGraph.end(), node, by_rank) :
-        std::upper_bound(g_packageGraph.begin(), g_packageGraph.end(), node, by_rank);
-    g_packageGraph.insert(where, node);
-#endif
-    RETURN_HR(E_NOTIMPL);
-}
-
-#if defined(TODO_AddToDllSearchOrderAndFriends)
-void AddToDllSearchOrder(PackageGraphNode package)
+void MddCore::PackageGraph::AddToDllSearchOrder(PackageGraphNode& package)
 {
     // Update the PATH environment variable
     UpdatePath();
 
     // Update the AddDllDirectory list
-    auto cookie = AddDllDirectory(package.path());
-    package.addDllDirectoryCookie(cookie);
+    package.AddDllDirectories();
 }
 
-void RemoveFromDllSearchOrder(PackageGraphNode package)
+void MddCore::PackageGraph::RemoveFromDllSearchOrder(PackageGraphNode& package)
 {
+    // Update the AddDllDirectory list
+    package.RemoveDllDirectories();
+
     // Update the PATH environment variable
     UpdatePath();
-
-    // Update the AddDllDirectory list
-    RemoveDllDirectory(package.addDllDirectoryCookie());
 }
 
-static string g_pathListLastAddedToPath;
-
-void UpdatePath()
+void MddCore::PackageGraph::UpdatePath()
 {
     // Build the package graph path list (semi-colon delimited)
-    string pathList;
-    for (PackageGraphNode node : g_packageGraph)
-    {
-        const auto flags = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_OPTIONAL_IN_RELATED_SET;
-        UINT32 count = 0;
-        auto packageInfoReference = node.get();
-        if (packageInfoReference)
-        {
-            PACKAGE_INFO[] packageInfos = GetPackageInfo(packageInfoReference, flags, ...);
-        }
-        else
-        {
-            PACKAGE_INFO[] packageInfos = getCurrentPackageInfo(packageInfoReference, flags, ...);
-        }
-        AppendPathsToList(pathList, packageInfos);
-    }
+    std::wstring pathList{ BuildPathList() };
 
     // Add the path list to the PATH enironment variable
     // If not present in PATH then add the path list to the front of PATH
     // If already present then replace it with the updated path list
 
     // package graph environment variable's at the fron ot the PATH environment variable
-    string path = GetEnvironmentVariable("PATH");
-    if (g_pathListLastAddedToPath.length() == 0)
+    std::wstring newPath;
+    auto path{ wil::TryGetEnvironmentVariableW(L"PATH") };
+    if (m_pathListLastAddedToPath.length() == 0)
     {
         // First time we're changing PATH. Prepend the path list to PATH
-        path = pathList + ";" + path;
+        newPath = pathList;
+        newPath += L';';
+        newPath += path.get();
     }
     else
     {
         // Find the previous path list in PATH (if present)
+#if defined(TODO_UpdatePath)
         ...find g_pathg_pastListLastAddedToPath in path...
         if (found)
             ...path.replace(g_pastListLastAddedToPath, pathList)...
         else
             path = pathlist + ";" + path;
+#else
+        newPath = pathList;
+        newPath += L';';
+        newPath += path.get();
+#endif
     }
-    SetEnvironmentVariable("PATH", path);
+    THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPath.c_str()));
 
     // Remember the path list we added to PATH for future updates
-    g_pathListLastAddedToPath = pathList;
+    m_pathListLastAddedToPath = pathList;
 }
 
-void AppendPathsToList(string& pathList, PACKAGE_INFO[] packageInfos)
+std::wstring MddCore::PackageGraph::BuildPathList()
 {
-    for (packageInfo : packageInfos)
+    std::wstring pathlist;
+    for (size_t index=0; index < m_packageGraphNodes.size(); ++index)
     {
-        if (pathList.size() > 0)
+        const auto& node = m_packageGraphNodes[index];
+        if (index > 0)
         {
-            path += ";";
+            pathlist += L';';
         }
-        path += packageInfo.path;
+        pathlist += node.PathList();
     }
-}
-#endif
-
-HRESULT MddCore::RemoveFromPackageGraph(
-    MDD_PACKAGEDEPENDENCY_CONTEXT /*context*/)
-{
-#if defined(TODO_RemoveFromPackageGraph)
-    std::unique_lock<std::mutex> lock(g_lock);
-
-    for (int index=0; index < g_packageGraph.size(); ++index)
-    {
-        auto& node = g_packageGraph[index];
-        if (node.context() == context)
-        {
-            // The DLL Search Order must be updated when we update the package graph
-            RemoveFromDllSearchOrder(node);
-
-            g_packageGraph.erase(index);
-
-            return S_OK;
-        }
-    }
-    return HRESULT_FROM_WIN32(ERROR_INVALID_HANDLE);
-#endif
-    RETURN_HR(E_NOTIMPL);
+    return pathlist;
 }

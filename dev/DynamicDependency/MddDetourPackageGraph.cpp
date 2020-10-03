@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <pch.h>
+#include "pch.h"
 
-#include <MddDetourPackageGraph.h>
+#include "MddDetourPackageGraph.h"
 
-#include <PackageGraph.h>
+#include "PackageGraphManager.h"
 
 #include <../Detours/detours.h>
 
@@ -107,5 +107,5 @@ LONG DynamicGetCurrentPackageInfo2(
     BYTE* buffer,
     UINT32* count)
 {
-    return WIN32_FROM_HRESULT(MddCore::GetCurrentPackageInfo2(flags, packagePathType, bufferLength, buffer, count, TrueGetCurrentPackageInfo2));
+    return WIN32_FROM_HRESULT(MddCore::PackageGraphManager::GetCurrentPackageInfo2(flags, packagePathType, bufferLength, buffer, count, TrueGetCurrentPackageInfo2));
 }

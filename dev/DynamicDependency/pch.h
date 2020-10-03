@@ -15,9 +15,11 @@
 
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
+#include <wil/win32_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 
+#include <appmodel_msixdynamicdependency.h>
 #include <wil_msixdynamicdependency.h>
 
 #include <winrt/Windows.Foundation.h>

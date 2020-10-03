@@ -5,9 +5,17 @@
 
 #include "msixdynamicdependency.h"
 
-#include "PackageDependency.h"
 #include "PackageDependencyManager.h"
-#include "PackageGraph.h"
+#include "PackageGraphManager.h"
+
+namespace MddCore
+{
+bool IsStaticPackageGraphEmpty()
+{
+    //TODO Check the static package graph
+    return true;
+}
+}
 
 STDAPI MddTryCreatePackageDependency(
     PSID user,
@@ -19,16 +27,25 @@ STDAPI MddTryCreatePackageDependency(
     MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
+    *packageDependencyId = nullptr;
+
+    // Dynamic Dependencies requires a non-packaged process
+    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+
     MddCore::PackageDependencyManager::CreatePackageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options, packageDependencyId);
     return S_OK;
 }
 CATCH_RETURN();
 
 STDAPI_(void) MddDeletePackageDependency(
-    _In_ PCWSTR packageDependencyId) noexcept
+    _In_ PCWSTR packageDependencyId) noexcept try
 {
+    // Dynamic Dependencies requires a non-packaged process
+    THROW_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+
     MddCore::PackageDependencyManager::DeletePackageDependency(packageDependencyId);
 }
+CATCH_LOG();
 
 STDAPI MddAddPackageDependency(
     _In_ PCWSTR packageDependencyId,
@@ -43,27 +60,23 @@ STDAPI MddAddPackageDependency(
         *packageFullName = nullptr;
     }
 
-    auto lock(MddCore::AcquirePackageGraphLock());
+    // Dynamic Dependencies requires a non-packaged process
+    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
 
-    wil::unique_process_heap_string fullName;
-    RETURN_IF_FAILED(MddCore::ResolvePackageDependency(packageDependencyId, options, fullName));
-    MDD_PACKAGEDEPENDENCY_CONTEXT context{};
-    RETURN_IF_FAILED(MddCore::AddToPackageGraph(fullName.get(), rank, options, context));
-
-    *packageDependencyContext = context;
-    if (packageFullName)
-    {
-        *packageFullName = fullName.release();
-    }
+    RETURN_IF_FAILED(MddCore::PackageGraphManager::AddToPackageGraph(packageDependencyId, rank, options, packageDependencyContext, packageFullName));
     return S_OK;
 }
 CATCH_RETURN();
 
 STDAPI_(void) MddRemovePackageDependency(
-    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept try
 {
-    (void)LOG_IF_FAILED(MddCore::RemoveFromPackageGraph(packageDependencyContext));
+    // Dynamic Dependencies requires a non-packaged process
+    LOG_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+
+    MddCore::PackageGraphManager::RemoveFromPackageGraph(packageDependencyContext);
 }
+CATCH_LOG();
 
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
@@ -71,8 +84,11 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
 {
     *packageFullName = nullptr;
 
+    // Dynamic Dependencies requires a non-packaged process
+    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+
     wil::unique_process_heap_string fullName;
-    RETURN_IF_FAILED(MddCore::ResolvePackageDependency(packageDependencyId, fullName));
+    RETURN_IF_FAILED(MddCore::PackageGraphManager::ResolvePackageDependency(packageDependencyId, MddAddPackageDependencyOptions::None, fullName));
 
     *packageFullName = fullName.release();
     return S_OK;
