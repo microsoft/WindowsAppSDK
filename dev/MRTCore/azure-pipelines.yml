@@ -12,12 +12,27 @@ jobs:
 - job: BuildMRT
   pool:
     vmImage: 'windows-latest'
-  
+
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm:
+        buildPlatform: 'ARM'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+        
   variables:
     solution: '**/*.sln'
-    buildConfiguration: 'Release'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    codeSign: ${{ eq(variables['System.definitionId'], '57248') }}
     MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
     MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
@@ -71,41 +86,23 @@ jobs:
       nugetConfigPath: '$(Build.SourcesDirectory)\nuget.config'
   
   - task: VSBuild@1
-    displayName: 'build MrtCore x86'
+    displayName: 'build MrtCore'
     inputs:
-      platform: 'x86'
-      buildPlatform: 'x86'
+      platform: '$(buildPlatform)'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.binlog'
+      msbuildArgs: '/p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish mrtcore binlog'
     condition: succeededOrFailed()
     inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.binlog
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
       artifactName: drop
 
-  - task: VSBuild@1
-    displayName: 'build MrtCore x64'
-    inputs:
-      platform: 'x64'
-      buildPlatform: 'x64'
-      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
-      configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
-
-  - task: VSBuild@1
-    displayName: 'build MrtCore ARM64'
-    inputs:
-      platform: 'ARM64'
-      buildPlatform: 'x64'
-      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
-      configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="ARM64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
-  
   - task: VSTest@2
-    displayName: 'test x86'
+    displayName: 'test MRT'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: |
@@ -113,24 +110,10 @@ jobs:
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
-      searchFolder: '$(MRTBinariesDirectory)\Release\x86'
-      testRunTitle: 'test x86'
-      platform: 'x86'
-      configuration: 'Release'
-  
-  - task: VSTest@2
-    displayName: 'test x64'
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: |
-        **\*test*.dll
-        !**\*TestAdapter.dll
-        !**\TE.*.dll
-        !**\obj\**
-      searchFolder: '$(MRTBinariesDirectory)\Release\x64'
-      testRunTitle: 'test x64'
-      platform: 'x64'
-      configuration: 'Release'
+      searchFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
+      testRunTitle: 'test MRT $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
   - task: ComponentGovernanceComponentDetection@0
     inputs:
@@ -140,20 +123,21 @@ jobs:
       failOnAlert: true
 
   - task: CopyFiles@2
-    displayName: 'copy x86 for signing'
+    displayName: 'copy binaries for signing'
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\x86'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
       Contents: |
         mrm\mrm.dll
         mrm\mrm.lib
         mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll        
+        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\$(buildPlatform)'
       flattenFolders: true
 
   - task: CopyFiles@2
     displayName: 'copy projection binaries and symbols for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
       SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
@@ -166,37 +150,12 @@ jobs:
 
   - task: CopyFiles@2
     displayName: 'copy winmd for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
-      flattenFolders: true
-  
-  - task: CopyFiles@2
-    displayName: 'copy x64 for signing'
-    inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\x64'
-      Contents: |
-        mrm\mrm.dll
-        mrm\mrm.lib
-        mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x64'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'copy ARM64 for signing'
-    inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\ARM64'
-      Contents: |
-        mrm\mrm.dll
-        mrm\mrm.lib
-        mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\ARM64'
       flattenFolders: true
 
   - task: PublishBuildArtifacts@1
@@ -215,10 +174,10 @@ jobs:
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    codeSign: false
+    codeSign: ${{ eq(variables['System.definitionId'], '57248') }}
 
   strategy:
-    maxParallel: 4
+    maxParallel: 10
     matrix:
       Release_ANYCPU:
         buildPlatform: 'anycpu'
@@ -228,6 +187,9 @@ jobs:
         buildConfiguration: 'Release'
       Release_x64:
         buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_ARM:
+        buildPlatform: 'ARM'
         buildConfiguration: 'Release'
       Release_ARM64:
         buildPlatform: 'ARM64'
@@ -271,7 +233,7 @@ jobs:
     Major: '1'
     Minor: '0'
     Patch: '0'
-    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
+    codeSign: ${{ eq(variables['System.definitionId'], '57248') }}
     MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   steps:
@@ -300,6 +262,15 @@ jobs:
       buildType: 'current'
       downloadType: 'single'
       artifactName: 'signedbinaries_x64'
+      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
+
+  - task: DownloadBuildArtifacts@0
+    condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'Download: Signed Binaries ARM'
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      artifactName: 'signedbinaries_ARM'
       downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
 
   - task: DownloadBuildArtifacts@0
@@ -373,6 +344,19 @@ jobs:
 
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'copy ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM\lib\ARM'
+      Contents: |
+        mrm.pdb
+        Microsoft.ApplicationModel.Resources.pdb
+        signed\mrm.dll
+        signed\Microsoft.ApplicationModel.Resources.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm\native'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'copy ARM64'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM64\lib\ARM64'
@@ -402,6 +386,16 @@ jobs:
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x64'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, true))
+    displayName: 'copy import lib ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM\lib\ARM'
+      Contents: |
+        mrm.lib
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-arm'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -483,6 +477,19 @@ jobs:
 
   - task: CopyFiles@2
     condition: and(succeeded(), eq(variables.codeSign, false))
+    displayName: 'copy unsigned ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM'
+      Contents: |
+        mrm.pdb
+        Microsoft.ApplicationModel.Resources.pdb
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm\native'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, false))
     displayName: 'copy unsigned ARM64'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM64'
@@ -512,6 +519,16 @@ jobs:
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x64'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    condition: and(succeeded(), eq(variables.codeSign, false))
+    displayName: 'copy unsigned import lib ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM'
+      Contents: |
+        mrm.lib
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-arm'
       flattenFolders: true
 
   - task: CopyFiles@2
