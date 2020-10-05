@@ -216,7 +216,7 @@ jobs:
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
-        signConfigXml: 'SignConfig.xml'
+        signConfigXml: '$(MRTSourcesDirectory)\SignConfig.xml'
         inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
 
   - task: PublishBuildArtifacts@1
@@ -425,7 +425,7 @@ jobs:
       env:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
-        signConfigXml: 'SignConfig-nuget.xml'
+        signConfigXml: '$(MRTSourcesDirectory)\SignConfig-nuget.xml'
         inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
         outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
   
