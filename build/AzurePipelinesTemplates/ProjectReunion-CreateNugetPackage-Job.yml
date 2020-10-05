@@ -17,12 +17,14 @@ jobs:
     - ${{ parameters.dependsOn }}
 
   # XES tasks need to be on PackageES machines.
-#  ${{if parameters.signConfig }}:
-#    pool:
-#      name: Package ES Lab E
-
-  pool:
-    vmImage: 'windows-2019'
+  ${{if parameters.signConfig }}:
+    pool:
+      name: Package ES Lab E
+  
+  # otherwise run on Windows VM
+  ${{if eq(parameters.signConfig, 'false')}}:
+    pool:
+      vmImage: 'windows-2019'
 
   steps:
   - ${{if parameters.signConfig }}:
