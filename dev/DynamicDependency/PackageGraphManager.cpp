@@ -82,7 +82,7 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
     //
     // Either way, set bufferLength with the buffer size needed for all the data.
 
-    std::vector<MddCore::PackageGraphNode*> matchingPackageInfo;
+    std::vector<const MddCore::PackageGraphNode*> matchingPackageInfo;
 
     UINT32 staticPackageGraphBufferLength{};
     wil::unique_cotaskmem_ptr<BYTE[]> staticPackageGraphBuffer;
@@ -98,9 +98,7 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
             const auto countMatchingPackages{ packageGraphNode.CountMatchingPackages(flags, packagePathType) };
             if (countMatchingPackages > 0)
             {
-                //TODO Deep copy
-                PackageGraphNode node(packageGraphNode);
-                matchingPackageInfo.push_back(node);
+                matchingPackageInfo.push_back(&packageGraphNode);
                 dynamicPackagesCount += countMatchingPackages;
             }
         }
@@ -154,7 +152,7 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
     const PackagePathType packagePathType,
     const UINT32 bufferLength,
     BYTE* buffer,
-    const std::vector<MddCore::PackageGraphNode*>& matchingPackageInfo,
+    const std::vector<const MddCore::PackageGraphNode*>& matchingPackageInfo,
     const UINT32 dynamicPackagesCount,
     const PACKAGE_INFO* staticPackageInfo,
     const UINT32 staticPackagesCount)

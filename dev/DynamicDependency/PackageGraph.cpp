@@ -28,6 +28,7 @@ HRESULT MddCore::PackageGraph::Add(
     {
         *packageFullName = fullName.release();
     }
+    return S_OK;
 }
 
 HRESULT MddCore::PackageGraph::Add(
@@ -82,11 +83,12 @@ HRESULT MddCore::PackageGraph::Add(
     // Add the new node to the package graph
     if (index < m_packageGraphNodes.size())
     {
-        m_packageGraphNodes.insert(m_packageGraphNodes.begin() + index, packageGraphNode);
+        // We'd like to 
+        m_packageGraphNodes.insert(m_packageGraphNodes.begin() + index, std::move(packageGraphNode));
     }
     else
     {
-        m_packageGraphNodes.push_back(packageGraphNode);
+        m_packageGraphNodes.push_back(std::move(packageGraphNode));
     }
 #if defined(TODO_AddToPackageGraph_MoreConcise)
     auto packageInfoReference{ OpenPackageInfoByFullName(packageFullName) };

@@ -24,6 +24,8 @@ public:
         Reset();
     }
 
+    PackageGraphNode(const PackageGraphNode& other) = delete;
+
     PackageGraphNode(PackageGraphNode&& other) :
         m_packageInfoReference(std::move(other.m_packageInfoReference)),
         m_packageInfo(std::move(other.m_packageInfo)),
@@ -37,6 +39,8 @@ public:
     PackageGraphNode(
         PCWSTR packageFullName,
         INT32 rank);
+
+    PackageGraphNode& operator=(PackageGraphNode& other) = delete;
 
     PackageGraphNode& operator=(PackageGraphNode&& other)
     {

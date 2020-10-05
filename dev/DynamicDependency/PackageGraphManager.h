@@ -48,7 +48,7 @@ private:
         const PackagePathType packagePathType,
         const UINT32 bufferLength,
         BYTE* buffer,
-        const std::vector<MddCore::PackageGraphNode*>& matchingPackageInfo,
+        const std::vector<const MddCore::PackageGraphNode*>& matchingPackageInfo,
         const UINT32 dynamicPackagesCount,
         const PACKAGE_INFO* staticPackageInfo,
         const UINT32 staticPackagesCount);
