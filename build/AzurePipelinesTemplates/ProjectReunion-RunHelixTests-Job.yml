@@ -89,7 +89,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: build\Helix\PrepareHelixPayload.ps1
-      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+      arguments: -buildPlatform '$(buildPlatform)' -buildConfiguration '$(buildConfiguration)'
       
   - task: CmdLine@1
     displayName: 'Display Helix payload contents'
