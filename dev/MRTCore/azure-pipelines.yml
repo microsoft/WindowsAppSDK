@@ -182,6 +182,7 @@ jobs:
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   strategy:
     maxParallel: 10
