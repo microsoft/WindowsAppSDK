@@ -167,7 +167,7 @@ jobs:
       ArtifactName: 'binaries_raw'
 
 - job: SignMRT
-  condition: and(succeeded(), eq(parameters.doCodeSign, 'true'))
+  condition: and(succeeded(), eq(${{ parameters.doCodeSign }}, 'true'))
   dependsOn:
     - BuildMRT
 
