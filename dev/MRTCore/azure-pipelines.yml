@@ -265,7 +265,7 @@ jobs:
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
       Contents: |
-        signed\Microsoft.ApplicationModel.Resources.winmd
+        Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\uap10.0\'
       flattenFolders: true
 
@@ -275,7 +275,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        signed\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
+        net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\net5.0-windows\'
       flattenFolders: true
 
@@ -285,7 +285,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
       Contents: |
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        signed\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
+        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0\'
       flattenFolders: true
 
@@ -296,8 +296,8 @@ jobs:
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-x86\native'
       flattenFolders: true
 
@@ -308,8 +308,8 @@ jobs:
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-x64\native'
       flattenFolders: true
 
@@ -320,8 +320,8 @@ jobs:
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm\native'
       flattenFolders: true
 
@@ -332,8 +332,8 @@ jobs:
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm64\native'
       flattenFolders: true
 
@@ -440,7 +440,7 @@ jobs:
 #    displayName: 'publish to MRTCore feed'
 #    inputs:
 #      command: 'push'
-#      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/signed/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+#      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
 #      nuGetFeedType: 'internal'
 #      publishVstsFeed: '2771a91e-5705-4d88-a3e9-70623b166f8d/659bea81-0d99-4dc0-b32f-200cd635e5ad'
 
