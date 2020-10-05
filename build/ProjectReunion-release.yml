@@ -148,11 +148,11 @@ jobs:
       outPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
 
   # Re-publish signed artifacts to the drop.
-#  - task: PublishBuildArtifacts@1
-#    displayName: 'Publish artifact: drop'
-#    inputs:
-#      PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
-#      artifactName: 'drop'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: drop'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
+      artifactName: 'drop'
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
