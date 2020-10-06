@@ -57,6 +57,7 @@ jobs:
     jobName: CreateNugetPackage
     dependsOn: PublishMRT
     prereleaseVersionTag: ci
+    condition: Always()
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
