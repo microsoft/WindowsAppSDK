@@ -184,25 +184,6 @@ jobs:
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
     MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_ANYCPU:
-        buildPlatform: 'anycpu'
-        buildConfiguration: 'Release'
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-      Release_ARM:
-        buildPlatform: 'ARM'
-        buildConfiguration: 'Release'
-      Release_ARM64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
-
   steps:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Raw Binaries'
