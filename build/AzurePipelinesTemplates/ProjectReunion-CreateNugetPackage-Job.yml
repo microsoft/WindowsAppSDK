@@ -95,7 +95,7 @@ jobs:
       majorVersion: '$(Major)'
       minorVersion: '$(Minor)'
       patchVersion: '$(Patch)'
-      basePath: '$(Build.ArtifactStagingDirectory)\drop'
+      basePath: '$(Build.SourcesDirectory)\Artifacts'
       packDestination: ${{ parameters.nupkgdir }}
   - task: PublishBuildArtifacts@1
     inputs:
