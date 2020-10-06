@@ -10,11 +10,13 @@ parameters:
   signConfig: ''
   useReleaseTag: 'false'
   prereleaseVersionTag: 'prerelease'
+  condition: ''
 
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn:
     - ${{ parameters.dependsOn }}
+  condition: ${{ parameters.condition }}
 
   # XES tasks need to be on PackageES machines.
   ${{if parameters.signConfig }}:
