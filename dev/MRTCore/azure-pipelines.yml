@@ -423,14 +423,13 @@ jobs:
       ArtifactName: 'drop'
 
   # NuGetCommand@2
-#  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-#    condition: and(succeeded(), eq(variables.codeSign, true))
-#    displayName: 'publish to MRTCore feed'
-#    inputs:
-#      command: 'push'
-#      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-#      nuGetFeedType: 'internal'
-#      publishVstsFeed: '2771a91e-5705-4d88-a3e9-70623b166f8d/659bea81-0d99-4dc0-b32f-200cd635e5ad'
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'publish to Project Reunion feed'
+    inputs:
+      command: 'push'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+      nuGetFeedType: 'internal'
+      publishVstsFeed: '55e8140e-57ac-4e5f-8f9c-c7c15b51929d/2072280b-f83c-41d6-9d8d-506f3a02066f'
 
 # TODO: get the test app to build using the NuGet package generated earlier in the pipeline.
 #- task: NuGetCommand@2
