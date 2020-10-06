@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <SignConfigXML>
- <job platform="" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="Release" dest="__INPATHROOT__" jobname="MRT Core binary sign" approvers="">
+ <job platform="" certSubject="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" configuration="" dest="__INPATHROOT__" jobname="MRT Core binary sign" approvers="">
    <file src="__INPATHROOT__\ANYCPU\Microsoft.ApplicationModel.Resources.winmd"  signType="WindowsRT" dest="__INPATHROOT__\ANYCPU\Microsoft.ApplicationModel.Resources.winmd"/>
    <file src="__INPATHROOT__\ANYCPU\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll" signType="WindowsRT" dest="__INPATHROOT__\ANYCPU\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll"/>
    <file src="__INPATHROOT__\ANYCPU\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll" signType="WindowsRT" dest="__INPATHROOT__\ANYCPU\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll"/>
