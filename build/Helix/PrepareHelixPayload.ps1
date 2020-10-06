@@ -1,13 +1,10 @@
+[CmdLetBinding()]
 Param(
-    [Parameter(Mandatory = $true)]
     [string]$Platform,
-    
-    [Parameter(Mandatory = $true)]
     [string]$Configuration
 )
 
-
-$payloadDir = "HelixPayload\$Configuration\$Platform"
+$payloadDir = "HelixPayload\$buildConfiguration\$Platform"
 
 $nugetPackagesDir = Join-Path (Split-Path -Parent $script:MyInvocation.MyCommand.Path) "packages"
 
@@ -21,7 +18,7 @@ New-Item -ItemType Directory -Force -Path $payloadDir
 
 
 # Copy files from nuget packages
-cp C:\"Program Files (x86)"\"Windows Kits"\10\Testing\Runtimes\TAEF\$(Platform)\WTTLog.dll $payloadDir
+cp C:\"Program Files (x86)"\"Windows Kits"\10\Testing\Runtimes\TAEF\$Platform\WTTLog.dll $payloadDir
 
 cp DCPP/Helix/runtests.cmd $payloadDir
 
