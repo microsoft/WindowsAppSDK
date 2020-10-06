@@ -67,6 +67,12 @@ jobs:
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
+# MRTCore build pipeline
+- template: ..\dev\MRTCore\azure-pipelines.yml
+  parameters:
+    buildJobName: 'BuildMRTCore'
+    doCodeSign: 'true'
+
 - job: SignBinariesAndPublishSymbols
   dependsOn: Build
   condition:
