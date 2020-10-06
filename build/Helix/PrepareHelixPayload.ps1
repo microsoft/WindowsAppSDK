@@ -1,10 +1,10 @@
 [CmdLetBinding()]
 Param(
-    [string]$buildPlatform,
-    [string]$buildConfiguration
+    [string]$Platform,
+    [string]$Configuration
 )
 
-$payloadDir = "HelixPayload\$buildConfiguration\$buildPlatform"
+$payloadDir = "HelixPayload\$Configuration\$Platform"
 
 $nugetPackagesDir = Join-Path (Split-Path -Parent $script:MyInvocation.MyCommand.Path) "packages"
 
@@ -18,7 +18,7 @@ New-Item -ItemType Directory -Force -Path $payloadDir
 
 
 # Copy files from nuget packages
-cp C:\"Program Files (x86)"\"Windows Kits"\10\Testing\Runtimes\TAEF\$(buildPlatform)\WTTLog.dll $payloadDir
+cp C:\"Program Files (x86)"\"Windows Kits"\10\Testing\Runtimes\TAEF\$(Platform)\WTTLog.dll $payloadDir
 
 cp DCPP/Helix/runtests.cmd $payloadDir
 
@@ -26,10 +26,10 @@ cp DCPP/Helix/ConvertWttLogToXUnit.cs $payloadDir
 
 cp DCPP/Helix/ConvertWttLogToXUnit.ps1 $payloadDir
 
-cp taeftest/$buildPlatform-$buildConfiguration-taeftest/ProjectReunionHelix.dll $payloadDir
+cp taeftest/$Platform-$Configuration-taeftest/ProjectReunionHelix.dll $payloadDir
 
-cp DCPP/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$buildPlatform/* $payloadDir
+cp DCPP/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/* $payloadDir
 
-cp DCPP/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$buildPlatform/CoreClr/* $payloadDir
+cp DCPP/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/CoreClr/* $payloadDir
 
 dir $payloadDir
