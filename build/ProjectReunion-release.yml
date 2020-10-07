@@ -179,6 +179,7 @@ jobs:
       inputs:
         command: 'push'
         packagesToPush: '$(Build.ArtifactStagingDirectory)/drop/*.nupkg'
+        verbosityPush: 'Detailed' 
         nuGetFeedType: 'internal'
         publishVstsFeed: 'Project.Reunion.nuget.internal'
 
