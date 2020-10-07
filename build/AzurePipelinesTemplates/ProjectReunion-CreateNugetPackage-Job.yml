@@ -7,7 +7,7 @@ parameters:
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
-  signConfig: 'false'
+  signConfig: ''
   useReleaseTag: 'false'
   prereleaseVersionTag: 'prerelease'
   condition: ''
@@ -22,12 +22,12 @@ jobs:
   condition: ${{ parameters.condition }}
 
   # XES tasks need to be on PackageES machines.
-  ${{if eq(parameters.signConfig, 'true')}}:
+  ${{if parameters.signConfig }}:
     pool:
       name: Package ES Lab E
   
   # otherwise run on Windows VM
-  ${{if eq(parameters.signConfig, 'false')}}:
+  ${{if eq(parameters.signConfig, '')}}:
     pool:
       vmImage: 'windows-2019'
 
