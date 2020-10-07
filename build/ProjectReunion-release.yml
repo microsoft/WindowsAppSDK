@@ -169,19 +169,19 @@ jobs:
     useReleaseTag: '$(ProjectReunionFinalRelease)'
     prereleaseVersionTag: prerelease
 
-- job: PushToPrivateNugetFeed
-  dependsOn: CreateNugetPackage
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/drop/*.nupkg'
-        verbosityPush: 'Detailed' 
-        nuGetFeedType: 'internal'
-        publishVstsFeed: 'Project.Reunion.nuget.internal'
+#- job: PushToPrivateNugetFeed
+#  dependsOn: CreateNugetPackage
+#  pool:
+#    vmImage: 'windows-2019'
+#  steps:
+#    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+#    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+#      inputs:
+#        command: 'push'
+#        packagesToPush: '$(Build.ArtifactStagingDirectory)/drop/*.nupkg'
+#        verbosityPush: 'Detailed' 
+#        nuGetFeedType: 'internal'
+#        publishVstsFeed: 'Project.Reunion.nuget.internal'
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
