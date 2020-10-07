@@ -391,7 +391,7 @@ jobs:
       SourceFolder: '$(MRTSourcesDirectory)'
       Contents: |
         LICENSE.txt
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\drop'
 
 # END of copying files into their final package location.
   # UNDONE - moved into ProjectReunion-CreateNugetPackage-Job.yml
