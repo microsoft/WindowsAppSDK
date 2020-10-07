@@ -105,7 +105,7 @@ jobs:
     displayName: 'NuGet push to Project.Reunion.nuget.internal'
     inputs:
       command: 'push'
-      packagesToPush: '${{ parameters.nupkgdir }}\signed\*.nupkg'
+      packagesToPush: '${{ parameters.nupkgdir }}\**\*.nupkg'
       verbosityPush: 'Detailed' 
       nuGetFeedType: 'internal'
       publishVstsFeed: 'Project.Reunion.nuget.internal'
