@@ -105,7 +105,7 @@ jobs:
     displayName: 'NuGet push to Project.Reunion.nuget.internal'
     inputs:
       command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/drop/*.nupkg'
+      packagesToPush: '${{ parameters.nupkgdir }}\signed\*.nupkg'
       verbosityPush: 'Detailed' 
       nuGetFeedType: 'internal'
       publishVstsFeed: 'Project.Reunion.nuget.internal'
