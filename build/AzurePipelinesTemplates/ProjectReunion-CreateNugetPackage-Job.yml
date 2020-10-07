@@ -11,6 +11,9 @@ parameters:
   useReleaseTag: 'false'
   prereleaseVersionTag: 'prerelease'
   condition: ''
+  major: '1'
+  minor: '0'
+  patch: '0'
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -92,9 +95,9 @@ jobs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\dev\MRTCore\mrt\NuGet\Microsoft.ProjectReunion.nuspec'
       versioningScheme: 'byPrereleaseNumber'
-      majorVersion: '$(Major)'
-      minorVersion: '$(Minor)'
-      patchVersion: '$(Patch)'
+      majorVersion: ${{ parameters.major }}
+      minorVersion: ${{ parameters.minor }}
+      patchVersion: ${{ parameters.patch }}
       basePath: '$(Build.SourcesDirectory)\Artifacts'
       packDestination: ${{ parameters.nupkgdir }}
   - task: PublishBuildArtifacts@1
