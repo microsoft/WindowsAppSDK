@@ -20,16 +20,16 @@ New-Item -ItemType Directory -Force -Path $payloadDir
 # Copy files from nuget packages
 cp C:\"Program Files (x86)"\"Windows Kits"\10\Testing\Runtimes\TAEF\$Platform\WTTLog.dll $payloadDir
 
-cp DCPP/Helix/runtests.cmd $payloadDir
+cp build/Helix/runtests.cmd $payloadDir
 
-cp DCPP/Helix/ConvertWttLogToXUnit.cs $payloadDir
+cp build/Helix/ConvertWttLogToXUnit.cs $payloadDir
 
-cp DCPP/Helix/ConvertWttLogToXUnit.ps1 $payloadDir
+cp build/Helix/ConvertWttLogToXUnit.ps1 $payloadDir
 
 cp taeftest/$Platform-$Configuration-taeftest/ProjectReunionHelix.dll $payloadDir
 
-cp DCPP/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/* $payloadDir
+cp build/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/* $payloadDir
 
-cp DCPP/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/CoreClr/* $payloadDir
+cp build/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/CoreClr/* $payloadDir
 
 dir $payloadDir

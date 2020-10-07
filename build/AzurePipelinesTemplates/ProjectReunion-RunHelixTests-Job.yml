@@ -64,25 +64,53 @@ jobs:
       feedsToUse: config
       nugetConfigPath: nuget.config
       restoreDirectory: packages
+  - task: VSBuild@1
+    displayName: Build solution ProjectReunionHelix.sln
+    inputs:
+      solution: test/helix/ProjectReunionHelix.sln
+      platform: $(buildPlatform)
+      configuration: $(buildConfiguration)      
+  - task: PowerShell@2
+    displayName: Collect Build Outputs
+    inputs:
+      targetType: inline
+      script: >
+        mkdir $(buildPlatform)-$(buildConfiguration)-taeftest
 
-  - task: DownloadBuildArtifacts@0 
-    condition:
-      and(succeeded(),eq(variables['useBuildOutputFromBuildId'],''))
-    inputs: 
-      artifactName: ${{ parameters.artifactName }} 
-      downloadPath: '$(artifactsDir)'
+        cp $(outputDirectory)/*.dll $(buildPlatform)-$(buildConfiguration)-taeftest
 
-  - task: DownloadBuildArtifacts@0 
-    condition:
-      and(succeeded(),ne(variables['useBuildOutputFromBuildId'],''))
-    inputs: 
-      buildType: specific
-      buildVersionToDownload: specific
-      project: $(System.TeamProjectId)
-      pipeline: ${{ parameters.useBuildOutputFromPipeline }}
-      buildId: $(useBuildOutputFromBuildId)
-      artifactName: ${{ parameters.artifactName }} 
-      downloadPath: '$(artifactsDir)'
+        cp $(outputDirectory)/*.pdb $(buildPlatform)-$(buildConfiguration)-taeftest
+
+        dir $(buildPlatform)-$(buildConfiguration)-taeftest
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Build Outputs
+    inputs:
+      PathtoPublish: $(buildPlatform)-$(buildConfiguration)-taeftest
+      ArtifactName: $(buildPlatform)-$(buildConfiguration)-taeftest
+      publishLocation: Container
+ 
+
+#   This seems like a different(better?) way of building the test project, 
+#   will start quick and dirty with what we implemented in LiftedIXP to get these off the ground
+#
+#  - task: DownloadBuildArtifacts@0 
+#    condition:
+#      and(succeeded(),eq(variables['useBuildOutputFromBuildId'],''))
+#    inputs: 
+#      artifactName: ${{ parameters.artifactName }} 
+#      downloadPath: '$(artifactsDir)'
+
+#  - task: DownloadBuildArtifacts@0 
+#    condition:
+#      and(succeeded(),ne(variables['useBuildOutputFromBuildId'],''))
+#    inputs: 
+#      buildType: specific
+#      buildVersionToDownload: specific
+#      project: $(System.TeamProjectId)
+#      pipeline: ${{ parameters.useBuildOutputFromPipeline }}
+#      buildId: $(useBuildOutputFromBuildId)
+#      artifactName: ${{ parameters.artifactName }} 
+#      downloadPath: '$(artifactsDir)'
 
   - task: powershell@2
     displayName: 'PrepareHelixPayload.ps1'
