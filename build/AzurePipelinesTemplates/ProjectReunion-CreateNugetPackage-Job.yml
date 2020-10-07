@@ -21,13 +21,13 @@ jobs:
     - ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
 
-  # # XES tasks need to be on PackageES machines.
-  # ${{if parameters.signConfig }}:
-  #   pool:
-  #     name: Package ES Lab E
+  # XES tasks need to be on PackageES machines.
+  ${{if parameters.signConfig }}:
+    pool:
+      name: Package ES Lab E
   
-  # # otherwise run on Windows VM
-  # ${{if eq(parameters.signConfig, 'false')}}:
+  # otherwise run on Windows VM
+  ${{if eq(parameters.signConfig, 'false')}}:
   pool:
     vmImage: 'windows-2019'
 
@@ -58,8 +58,8 @@ jobs:
       downloadPath: '$(Build.SourcesDirectory)\Artifacts'
 
   # debugging - remove or comment out before completing PR      
-  # - script: |
-  #     dir /s $(Build.SourcesDirectory)
+  - script: |
+      dir /s $(Build.SourcesDirectory)
 
   - template: ProjectReunion-InstallNuget-Steps.yml
 
