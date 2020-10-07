@@ -101,6 +101,11 @@ public:
         return m_pathList;
     }
 
+    MDD_PACKAGEDEPENDENCY_CONTEXT Context()
+    {
+        return m_context.get();
+    }
+
     void AddDllDirectories();
 
     void RemoveDllDirectories();

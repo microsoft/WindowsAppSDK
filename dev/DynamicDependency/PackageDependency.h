@@ -19,6 +19,24 @@ public:
         const PACKAGE_VERSION minVersion,
         const MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
         const MddPackageDependencyLifetimeKind lifetimeKind,
+        PCWSTR lifetimeArtifact,
+        const MddCreatePackageDependencyOptions options) :
+        m_packageFamilyName(packageFamilyName),
+        m_minVersion(minVersion),
+        m_packageDependencyProcessorArchitectures(packageDependencyProcessorArchitectures),
+        m_lifetimeKind(lifetimeKind),
+        m_lifetimeArtifact(lifetimeArtifact ? std::wstring(lifetimeArtifact) : std::wstring()),
+        m_options(options)
+    {
+        User(user);
+    }
+
+    PackageDependency(
+        const PSID user,
+        const std::wstring& packageFamilyName,
+        const PACKAGE_VERSION minVersion,
+        const MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures,
+        const MddPackageDependencyLifetimeKind lifetimeKind,
         const std::wstring& lifetimeArtifact,
         const MddCreatePackageDependencyOptions options) :
         m_packageFamilyName(packageFamilyName),

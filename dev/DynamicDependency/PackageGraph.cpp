@@ -102,11 +102,10 @@ HRESULT MddCore::PackageGraph::Add(
 #endif
 
     // The DLL Search Order must be updated when we update the package graph
-    {
-        auto& node = m_packageGraphNodes[index];
-        AddToDllSearchOrder(node);
-    }
+    auto& node = m_packageGraphNodes[index];
+    AddToDllSearchOrder(node);
 
+    context = node.Context();
     return S_OK;
 }
 
@@ -140,7 +139,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
         auto candidate{ MddCore::PackageId::FromPackageFullName(candidatePackageFullName.c_str()) };
 
         // Do we already have a higher version under consideration?
-        if (!bestFit && (bestFit.Version().Version > candidate.Version().Version))
+        if (bestFit && (bestFit.Version().Version > candidate.Version().Version))
         {
             continue;
         }
@@ -190,27 +189,22 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
 CATCH_RETURN();
 
 HRESULT MddCore::PackageGraph::Remove(
-    MDD_PACKAGEDEPENDENCY_CONTEXT /*context*/)
+    MDD_PACKAGEDEPENDENCY_CONTEXT context)
 {
-#if defined(TODO_RemoveFromPackageGraph)
-    std::unique_lock<std::mutex> lock(g_lock);
-
     for (int index=0; index < m_packageGraphNodes.size(); ++index)
     {
         auto& node = m_packageGraphNodes[index];
-        if (node.context() == context)
+        if (node.Context() == context)
         {
             // The DLL Search Order must be updated when we update the package graph
             RemoveFromDllSearchOrder(node);
 
-            m_packageGraphNodes.erase(index);
+            m_packageGraphNodes.erase(m_packageGraphNodes.begin() + index);
 
             return S_OK;
         }
     }
-    return HRESULT_FROM_WIN32(ERROR_INVALID_HANDLE);
-#endif
-    RETURN_HR(E_NOTIMPL);
+    RETURN_WIN32(ERROR_INVALID_HANDLE);
 }
 
 bool MddCore::PackageGraph::IsPackageABetterFitPerArchitecture(

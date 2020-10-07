@@ -4,15 +4,15 @@
 namespace Test::Packages::FrameworkMathAdd
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Math.Add";
-    constexpr PCWSTR c_PackageFamilyName = L"Framework.Math.Add_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Framework.Math.Add_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.Fwk.Math.Add_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Fwk.Math.Add_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages::FrameworkMathMultiply
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Math.Multiply";
-    constexpr PCWSTR c_PackageFamilyName = L"Framework.Math.Multiply_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Framework.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.Fwk.Math.Multiply_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages::MainSidecar

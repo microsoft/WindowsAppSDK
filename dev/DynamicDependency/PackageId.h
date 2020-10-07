@@ -24,9 +24,13 @@ public:
     PackageId() = default;
 
     PackageId(PackageId&& other) :
-        m_packageId(std::move(other.m_packageId))
+        m_packageFullName(std::move(other.m_packageFullName))
     {
         memcpy(m_buffer, other.m_buffer, sizeof(m_buffer));
+        m_packageId = reinterpret_cast<PACKAGE_ID*>(m_buffer);
+
+        other.m_packageId = nullptr;
+        memset(other.m_buffer, 0, sizeof(other.m_buffer));
     }
 
     ~PackageId() = default;
@@ -35,8 +39,12 @@ public:
     {
         if (this != &other)
         {
-            m_packageId = std::move(other.m_packageId);
+            m_packageFullName = std::move(other.m_packageFullName);
             memcpy(m_buffer, other.m_buffer, sizeof(m_buffer));
+            m_packageId = reinterpret_cast<PACKAGE_ID*>(m_buffer);
+
+            other.m_packageId = nullptr;
+            memset(other.m_buffer, 0, sizeof(other.m_buffer));
         }
         return *this;
     }

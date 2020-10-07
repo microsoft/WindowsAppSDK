@@ -14,7 +14,6 @@ public:
         const UINT32 flags = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_BUNDLE,
         const PackagePathType packagePathType = PackagePathType_Effective)
     {
-
         UINT32 bufferLength{};
         const LONG rc{ ::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, nullptr, nullptr) };
         THROW_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_INSUFFICIENT_BUFFER);
@@ -22,23 +21,27 @@ public:
         UINT32 count{};
         THROW_IF_WIN32_ERROR(::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, buffer.get(), &count));
 
-        return PackageInfo(buffer.get(), count);
+        auto packageInfo = PackageInfo(buffer.get(), count);
+        buffer.release();
+        return packageInfo;
     }
 
     PackageInfo() = default;
 
     PackageInfo(PackageInfo&& other) :
-        m_packageInfo(std::move(other.m_packageInfo)),
         m_packageInfoBuffer(std::move(other.m_packageInfoBuffer)),
         m_count(other.m_count)
     {
+        m_packageInfo = reinterpret_cast<PACKAGE_INFO*>(m_packageInfoBuffer.get());
+
+        other.m_packageInfo = nullptr;
     }
 
     PackageInfo(void* buffer, size_t count) :
-        m_packageInfo(static_cast<PACKAGE_INFO*>(buffer)),
         m_packageInfoBuffer(static_cast<BYTE*>(buffer)),
         m_count(count)
     {
+        m_packageInfo = reinterpret_cast<PACKAGE_INFO*>(m_packageInfoBuffer.get());
     }
 
     ~PackageInfo() = default;
@@ -47,9 +50,12 @@ public:
     {
         if (this != &other)
         {
-            m_packageInfo = std::move(other.m_packageInfo);
             m_packageInfoBuffer = std::move(other.m_packageInfoBuffer);
+            m_packageInfo = reinterpret_cast<PACKAGE_INFO*>(m_packageInfoBuffer.get());
             m_count = other.m_count;
+
+            other.m_packageInfo = nullptr;
+            other.m_count = 0;
         }
         return *this;
     }

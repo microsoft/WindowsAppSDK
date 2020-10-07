@@ -87,14 +87,27 @@ namespace Test::DynamicDependency::Win32
             PCWSTR lifetimeArtifact{};
             const auto options = MddCreatePackageDependencyOptions::None;
             wil::unique_process_heap_string packageDependencyId;
-            Assert::AreEqual(E_NOTIMPL, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
+            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
+        }
+
+        TEST_METHOD(Delete_Null)
+        {
+            PCWSTR packageDependencyId{};
+            MddDeletePackageDependency(packageDependencyId);
         }
 
         TEST_METHOD(Delete)
         {
-            PCWSTR packageDependencyId{};
-            MddDeletePackageDependency(packageDependencyId);
-            //TODO:Verify deletion
+            PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
+            PACKAGE_VERSION minVersion{};
+            const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
+            const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
+            PCWSTR lifetimeArtifact{};
+            const auto options = MddCreatePackageDependencyOptions::None;
+            wil::unique_process_heap_string packageDependencyId;
+            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
+
+            MddDeletePackageDependency(packageDependencyId.get());
         }
 
         TEST_METHOD(Create_Add_Remove_Delete)
@@ -106,13 +119,13 @@ namespace Test::DynamicDependency::Win32
             PCWSTR lifetimeArtifact{};
             const auto createOptions = MddCreatePackageDependencyOptions::None;
             wil::unique_process_heap_string packageDependencyId;
-            Assert::AreEqual(E_NOTIMPL, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
+            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
 
             const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
             const auto addOptions = MddAddPackageDependencyOptions::None;
             MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
             wil::unique_process_heap_string packageFullName;
-            Assert::AreEqual(E_NOTIMPL, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
+            Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
             Assert::IsNotNull(packageFullName.get());
             auto actualPackageFullName = std::wstring(packageFullName.get());
             auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);

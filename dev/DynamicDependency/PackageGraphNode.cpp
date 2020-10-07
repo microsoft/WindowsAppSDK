@@ -83,7 +83,7 @@ void MddCore::PackageGraphNode::RemoveDllDirectories()
 void MddCore::PackageGraphNode::BuildPathList()
 {
     // Should only be called if we have package info
-    FAIL_FAST_HR_IF(E_UNEXPECTED, m_packageInfo.Count() > 0);
+    FAIL_FAST_HR_IF(E_UNEXPECTED, m_packageInfo.Count() == 0);
 
     // Build a semi-colon delimited list of paths for the packages in the package info
     std::wstring pathList;
