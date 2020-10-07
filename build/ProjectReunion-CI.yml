@@ -58,7 +58,6 @@ jobs:
     dependsOn: PublishMRT
     prereleaseVersionTag: ci
     condition: Always()
-    signConfig: 'false'
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
