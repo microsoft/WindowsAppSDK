@@ -27,7 +27,7 @@ jobs:
       name: Package ES Lab E
   
   # otherwise run on Windows VM
-  ${{if !parameters.signConfig}}:
+  ${{if eq(parameters.signConfig, false)}}:
     pool:
       vmImage: 'windows-2019'
 
