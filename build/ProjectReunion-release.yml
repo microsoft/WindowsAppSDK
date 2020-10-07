@@ -169,6 +169,15 @@ jobs:
     useReleaseTag: '$(ProjectReunionFinalRelease)'
     prereleaseVersionTag: prerelease
 
+- task: NuGetCommand@2
+  jobName: PushNugetToInternalFeed
+  dependsOn: CreateNugetPackage
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'Project.Reunion.nuget.internal'
+
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
 #  parameters:
