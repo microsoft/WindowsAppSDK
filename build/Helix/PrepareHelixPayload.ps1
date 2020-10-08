@@ -28,8 +28,8 @@ cp build/Helix/ConvertWttLogToXUnit.ps1 $payloadDir
 
 cp $Platform-$Configuration-taeftest/ProjectReunionHelix.dll $payloadDir
 
-cp build/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/* $payloadDir
+cp test/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/* $payloadDir
 
-cp build/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/CoreClr/* $payloadDir
+cp test/Helix/packages/Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/CoreClr/* $payloadDir
 
 dir $payloadDir
