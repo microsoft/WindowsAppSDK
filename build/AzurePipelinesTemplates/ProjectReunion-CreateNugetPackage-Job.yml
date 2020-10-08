@@ -105,9 +105,10 @@ jobs:
     displayName: 'NuGet push to Project.Reunion.nuget.internal'
     inputs:
       command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg;!$(Build.ArtifactStagingDirectory)/*.symbols.nupkg'
       verbosityPush: 'Detailed' 
       nuGetFeedType: 'internal'
+      #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
       publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
 
