@@ -393,29 +393,15 @@ jobs:
         LICENSE.txt
       TargetFolder: '$(Build.ArtifactStagingDirectory)\drop'
 
-# END of copying files into their final package location.
-  # UNDONE - moved into ProjectReunion-CreateNugetPackage-Job.yml
-  # NuGetCommand@2
-  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  #   inputs:
-  #     command: 'pack'
-  #     packagesToPack: '$(MRTSourcesDirectory)\mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
-  #     versioningScheme: 'byPrereleaseNumber'
-  #     majorVersion: '$(Major)'
-  #     minorVersion: '$(Minor)'
-  #     patchVersion: '$(Patch)'
-  #     basePath: '$(Build.ArtifactStagingDirectory)\mrt'
-  #     packDestination: '$(Build.ArtifactStagingDirectory)\nuget'
-
-  # - ${{if eq(parameters.doCodeSign, 'true')}}:
-  #   - task: PkgESCodeSign@10
-  #     condition: succeeded()
-  #     env:
-  #       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-  #     inputs:
-  #       signConfigXml: '$(MRTSourcesDirectory)\SignConfig-nuget.xml'
-  #       inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
-  #       outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
+  - ${{if eq(parameters.doCodeSign, 'true')}}:
+    - task: PkgESCodeSign@10
+      condition: succeeded()
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      inputs:
+        signConfigXml: '$(MRTSourcesDirectory)\SignConfig-nuget.xml'
+        inPathRoot: '$(BUILD.ArtifactStagingDirectory)\drop'
+        outPathRoot: '$(BUILD.ArtifactStagingDirectory)\drop'
   
   - task: PublishBuildArtifacts@1
     inputs:
