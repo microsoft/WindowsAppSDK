@@ -5,10 +5,10 @@
          <version>1.0</version>
          <title>$id$</title>
          <authors>Microsoft</authors>
-         <description>Resource loader for .PRI files.</description>
-         <license type="file">LICENSE.txt</license>
+         <description>Project Reunion</description>
+         <license type="file">LICENSE</license>
          <requireLicenseAcceptance>true</requireLicenseAcceptance>
-         <projectUrl>https://aka.ms/MRTCore</projectUrl>
+         <projectUrl>aka.ms/projectreunion</projectUrl>
          <copyright>© Microsoft Corporation. All rights reserved.</copyright>
          <tags>Microsoft Resources Native</tags>
      </metadata>       
