@@ -120,7 +120,7 @@ jobs:
     inputs:
       restoreSolution: test/Helix/packages.config
       feedsToUse: config
-      nugetConfigPath: test/Helix/nuget.config
+      nugetConfigPath: nuget.config
       restoreDirectory: packages
   - task: powershell@2
     displayName: 'PrepareHelixPayload.ps1'
