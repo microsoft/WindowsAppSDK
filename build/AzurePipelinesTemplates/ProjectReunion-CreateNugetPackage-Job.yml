@@ -105,10 +105,10 @@ jobs:
     displayName: 'NuGet push to Project.Reunion.nuget.internal'
     inputs:
       command: 'push'
-      packagesToPush: '${{ parameters.nupkgdir }}\**\*.nupkg'
+      packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
       verbosityPush: 'Detailed' 
       nuGetFeedType: 'internal'
-      publishVstsFeed: 'Project.Reunion.nuget.internal'
+      publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
 
 #UNDONE - EHO we need to seed these guid's properly!
