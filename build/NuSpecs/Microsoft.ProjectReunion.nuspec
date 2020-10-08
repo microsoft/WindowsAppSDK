@@ -8,7 +8,7 @@
          <description>Project Reunion</description>
          <license type="file">LICENSE</license>
          <requireLicenseAcceptance>true</requireLicenseAcceptance>
-         <projectUrl>aka.ms/projectreunion</projectUrl>
+         <projectUrl>https://aka.ms/projectreunion</projectUrl>
          <copyright>© Microsoft Corporation. All rights reserved.</copyright>
          <tags>Microsoft Resources Native</tags>
      </metadata>       
