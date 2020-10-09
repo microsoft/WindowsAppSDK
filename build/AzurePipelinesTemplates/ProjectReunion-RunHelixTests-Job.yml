@@ -199,6 +199,7 @@ jobs:
     displayName: Run tests in Helix
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      HELIXACCESSTOKEN: $(HelixApiAccessToken)
     inputs:
       command: custom
       projects: build/Helix/RunTestsInHelix.proj
@@ -209,6 +210,7 @@ jobs:
     condition: failed()
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      HELIXACCESSTOKEN: $(HelixApiAccessToken)
     inputs:
       targetType: filePath
       filePath: build/Helix/testResult.ps1
