@@ -120,7 +120,7 @@ jobs:
       inputs:
         signConfigXml: ${{ parameters.signConfig }}
         inPathRoot: '${{ parameters.nupkgdir }}'
-        outPathRoot: '${{ parameters.nupkgdir }}\signed'
+        outPathRoot: '${{ parameters.nupkgdir }}'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: nupkg'
