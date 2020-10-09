@@ -100,7 +100,7 @@ jobs:
     condition: succeededOrFailed()
     inputs:
       PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: mrt_binlogs
+      artifactName: binlogs
 
   - task: VSTest@2
     displayName: 'test MRT'

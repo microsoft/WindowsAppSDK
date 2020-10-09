@@ -65,7 +65,7 @@ steps:
     condition: succeededOrFailed()
     inputs:
       PathtoPublish: $(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: ${{ parameters.artifactName }}
+      artifactName: binlogs
 
 #UNDONE - subsequent PR
 #  - task: powershell@2
