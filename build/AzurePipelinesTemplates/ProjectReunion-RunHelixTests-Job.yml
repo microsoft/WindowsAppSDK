@@ -204,7 +204,7 @@ jobs:
       command: custom
       projects: build/Helix/RunTestsInHelix.proj
       custom: msbuild
-      arguments: /p:Creator=jorvanMS /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)
+      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)
   - task: powershell@2
     displayName: Get Test Result Files
     condition: failed()
