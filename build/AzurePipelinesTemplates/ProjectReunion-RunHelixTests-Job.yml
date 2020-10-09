@@ -115,13 +115,13 @@ jobs:
 #      artifactName: ${{ parameters.artifactName }} 
 #      downloadPath: '$(artifactsDir)'
 
-#  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-#    displayName: Restore NuGet Packages
-#    inputs:
-#      restoreSolution: build/Helix/packages.config
-#      feedsToUse: config
-#      nugetConfigPath: nuget.config
-#      restoreDirectory: packages
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: Restore NuGet Packages
+    inputs:
+      restoreSolution: build/Helix/packages.config
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+      restoreDirectory: packages
   - task: powershell@2
     displayName: 'PrepareHelixPayload.ps1'
     inputs:
