@@ -27,8 +27,10 @@ namespace Test::DynamicDependency::Win32
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::RemovePackage_MainSidecar();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
             TP::AddPackage_ProjectReunionFramework();
+            TP::AddPackage_DynamicDependencyDataStore();
             TP::AddPackage_MainSidecar();
             TP::AddPackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathMultiply();
@@ -73,6 +75,7 @@ namespace Test::DynamicDependency::Win32
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::RemovePackage_MainSidecar();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
 
             winrt::uninit_apartment();

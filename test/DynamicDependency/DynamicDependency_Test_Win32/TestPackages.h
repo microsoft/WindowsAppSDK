@@ -36,6 +36,13 @@ namespace Test::Packages::ProjectReunionFramework
     constexpr PCWSTR c_PackageFullName = L"Microsoft.ProjectReunion.Framework_0.1.2.3_neutral__8wekyb3d8bbwe";
 }
 
+namespace Test::Packages::DynamicDependencyDataStore
+{
+    constexpr PCWSTR c_PackageDirName = L"ProjectReunion.Test.DynDep.DataStore";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_10.1.2004.0_neutral__8wekyb3d8bbwe";
+}
+
 namespace Test::Packages
 {
     void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName);
@@ -65,6 +72,10 @@ namespace Test::Packages
     void AddPackage_FrameworkMathMultiply();
 
     void RemovePackage_FrameworkMathMultiply();
+
+    void AddPackage_DynamicDependencyDataStore();
+
+    void RemovePackage_DynamicDependencyDataStore();
 
     std::filesystem::path GetMainSidecarMsixPath();
 

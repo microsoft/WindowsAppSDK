@@ -146,15 +146,15 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
-      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\DynamicDependency.DataStore\DynamicDependency.DataStore.vcxproj">
-      <Project>{51293dfa-614b-4355-a60d-b30df3228fd1}</Project>
-    </ProjectReference>
+    <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="appxmanifest.xml" />
+    <ProjectReference Include="..\..\..\..\dev\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
+      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\DynamicDependencyDataStore\DynamicDependency.DataStore\DynamicDependency.DataStore.vcxproj">
+      <Project>{51293dfa-614b-4355-a60d-b30df3228fd1}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
