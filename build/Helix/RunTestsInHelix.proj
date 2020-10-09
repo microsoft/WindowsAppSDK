@@ -10,9 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <HelixCorrelationPayload Include="..\..\HelixPayload\$(Platform)\" />
-    <HelixWorkItem Include="HelixSampleTest">
-      <Timeout>00:20:00</Timeout>
-    </HelixWorkItem>
     <HelixWorkItem Include="HelixTAEFTest">
       <Timeout>00:20:00</Timeout>
       <PreCommands>set helixworkitem="HelixTAEFTest"</PreCommands>
