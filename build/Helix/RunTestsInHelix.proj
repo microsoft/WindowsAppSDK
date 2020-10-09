@@ -9,7 +9,7 @@
     <OutputPath>\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <HelixCorrelationPayload Include="\HelixPayload\$(Platform)\" />
+    <HelixCorrelationPayload Include="..\..\HelixPayload\$(Platform)\" />
     <HelixWorkItem Include="HelixSampleTest">
       <Timeout>00:20:00</Timeout>
     </HelixWorkItem>
