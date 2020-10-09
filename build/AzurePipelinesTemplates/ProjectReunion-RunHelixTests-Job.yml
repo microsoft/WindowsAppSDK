@@ -122,12 +122,12 @@ jobs:
 #      feedsToUse: config
 #      nugetConfigPath: nuget.config
 #      restoreDirectory: packages
-#  - task: powershell@2
-#    displayName: 'PrepareHelixPayload.ps1'
-#    inputs:
-#      targetType: filePath
-#      filePath: build\Helix\PrepareHelixPayload.ps1
-#      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+  - task: powershell@2
+    displayName: 'PrepareHelixPayload.ps1'
+    inputs:
+      targetType: filePath
+      filePath: build\Helix\PrepareHelixPayload.ps1
+      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
       
 #  - task: CmdLine@1
 #    displayName: 'Display Helix payload contents'
