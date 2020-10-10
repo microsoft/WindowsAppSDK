@@ -7,7 +7,7 @@ Param(
 )
 
 $AccessToken = $env:SYSTEM_ACCESSTOKEN
-$HelixAccessToken = $env:HelixAccessToken
+$HelixAccessToken = $env:HelixApiAccessToken
 
 $azureDevOpsRestApiHeaders = @{
     "Accept"="application/json"
