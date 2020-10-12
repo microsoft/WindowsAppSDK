@@ -11,7 +11,7 @@ $HelixAccessToken = $env:HelixApiAccessToken
 
 $azureDevOpsRestApiHeaders = @{
     "Accept"="application/json"
-    "Authorization"="Basic $([System.Convert]::ToBase64String([System.Text.ASCIIEncoding]::ASCII.GetBytes(":$AccessToken")))"
+    "Authorization"="Basic $([System.Convert]::ToBase64String([System.Text.ASCIIEncoding]::ASCII.GetBytes(":$HelixAccessToken")))"
 }
 
 $BuildUri = $env:BUILD_BUILDURI
