@@ -87,6 +87,8 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     // Dynamic Dependencies requires a non-packaged process
     RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
 
+    RETURN_HR_IF(E_INVALIDARG, !packageDependencyId || (packageDependencyId[0] == L'\0'));
+
     wil::unique_process_heap_string fullName;
     RETURN_IF_FAILED(MddCore::PackageGraphManager::ResolvePackageDependency(packageDependencyId, MddAddPackageDependencyOptions::None, fullName));
 

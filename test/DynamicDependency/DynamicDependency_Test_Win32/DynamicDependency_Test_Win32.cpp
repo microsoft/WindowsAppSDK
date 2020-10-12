@@ -24,16 +24,19 @@ namespace Test::DynamicDependency::Win32
             // and brutish but rather 'thinking outside the box'...
             COM::CoSuperInitialize();
 
-            TP::RemovePackage_FrameworkMathMultiply();
-            TP::RemovePackage_FrameworkMathAdd();
+            // Remove our packages in case they were previously installed and incompletely removed
             TP::RemovePackage_MainSidecar();
             TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
+
+            // Install our needed packages
+            TP::AddPackage_FrameworkMathAdd();
+            TP::AddPackage_FrameworkMathMultiply();
             TP::AddPackage_ProjectReunionFramework();
             TP::AddPackage_DynamicDependencyDataStore();
             TP::AddPackage_MainSidecar();
-            TP::AddPackage_FrameworkMathAdd();
-            TP::AddPackage_FrameworkMathMultiply();
 
             // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
@@ -48,6 +51,7 @@ namespace Test::DynamicDependency::Win32
                 Assert::IsNotNull(bootstrapDll.get(), message.get());
             }
             Assert::AreEqual(S_OK, MddBootstrapInitialize(Test::Packages::MainSidecar::c_MyLifetimeManagerClsid));
+            m_bootstrapDll = std::move(bootstrapDll);
 
             // We want to find Microsoft.ProjectReunion.dll from out test build
             // and not the framework's package location so let's force it...
@@ -60,8 +64,6 @@ namespace Test::DynamicDependency::Win32
                 auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, projectReunionDllFilename.c_str()) };
                 Assert::IsNotNull(projectReunionDll.get(), message.get());
             }
-
-            m_bootstrapDll = std::move(bootstrapDll);
             m_projectReunionDll = std::move(projectReunionDll);
         }
 
@@ -72,34 +74,19 @@ namespace Test::DynamicDependency::Win32
             m_projectReunionDll.reset();
             m_bootstrapDll.reset();
 
-            TP::RemovePackage_FrameworkMathMultiply();
-            TP::RemovePackage_FrameworkMathAdd();
             TP::RemovePackage_MainSidecar();
             TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
 
+            // Undo COM::CoSuperInitialize() and restore the thread to its initial state
+            // as when CppUnitTest  called us. Or as close as we can get to it
             winrt::uninit_apartment();
+            winrt::init_apartment(winrt::apartment_type::single_threaded);
         }
 
-        TEST_METHOD(Create)
-        {
-            PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
-            PACKAGE_VERSION minVersion{};
-            const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-            const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
-            PCWSTR lifetimeArtifact{};
-            const auto options = MddCreatePackageDependencyOptions::None;
-            wil::unique_process_heap_string packageDependencyId;
-            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
-        }
-
-        TEST_METHOD(Delete_Null)
-        {
-            PCWSTR packageDependencyId{};
-            MddDeletePackageDependency(packageDependencyId);
-        }
-
-        TEST_METHOD(Delete)
+        TEST_METHOD(Create_Delete)
         {
             PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
             PACKAGE_VERSION minVersion{};
@@ -113,8 +100,23 @@ namespace Test::DynamicDependency::Win32
             MddDeletePackageDependency(packageDependencyId.get());
         }
 
+        TEST_METHOD(Delete_Null)
+        {
+            PCWSTR packageDependencyId{};
+            MddDeletePackageDependency(packageDependencyId);
+        }
+
+        TEST_METHOD(Delete_NotFound)
+        {
+            PCWSTR packageDependencyId = L"This.Does.Not.Exist";
+            MddDeletePackageDependency(packageDependencyId);
+        }
+
         TEST_METHOD(Create_Add_Remove_Delete)
         {
+            auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+
             PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
             PACKAGE_VERSION minVersion{};
             const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
@@ -124,6 +126,9 @@ namespace Test::DynamicDependency::Win32
             wil::unique_process_heap_string packageDependencyId;
             Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
 
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
+
             const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
             const auto addOptions = MddAddPackageDependencyOptions::None;
             MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
@@ -131,20 +136,72 @@ namespace Test::DynamicDependency::Win32
             Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
             Assert::IsNotNull(packageFullName.get());
             auto actualPackageFullName = std::wstring(packageFullName.get());
-            auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);
             Assert::AreEqual(actualPackageFullName, expectedPackageFullName);
 
+            VerifyPackageInPackageGraph(expectedPackageFullName, S_OK);
+            VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
+
             MddRemovePackageDependency(packageDependencyContext);
-            //TODO:Verify removal
+
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
             MddDeletePackageDependency(packageDependencyId.get());
+
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPackageDependency(packageDependencyId.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+        }
+
+        TEST_METHOD(GetResolvedPackageFullName_Null)
+        {
+            PCWSTR packageDependencyId{};
+            wil::unique_process_heap_string packageFullName;
+            Assert::AreEqual(E_INVALIDARG, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+        }
+
+        TEST_METHOD(GetResolvedPackageFullName_NotFound)
+        {
+            PCWSTR packageDependencyId = L"This.Does.Not.Exist";
+            wil::unique_process_heap_string packageFullName;
+            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
         }
 
         TEST_METHOD(GetResolvedPackageFullName)
         {
-            PCWSTR packageDependencyId{};
+            //TODO Test GetResolvedPackageFullName
+        }
+
+    private:
+        static void VerifyPackageDependency(
+            PCWSTR packageDependencyId,
+            const HRESULT expectedHR,
+            PCWSTR expectedPackageFullName = nullptr)
+        {
             wil::unique_process_heap_string packageFullName;
-            Assert::AreEqual(E_NOTIMPL, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+            Assert::AreEqual(expectedHR, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+            if (!expectedPackageFullName)
+            {
+                Assert::IsTrue(!packageFullName);
+            }
+            else
+            {
+                Assert::AreEqual(std::wstring(packageFullName.get()), std::wstring(expectedPackageFullName));
+            }
+        }
+
+        static void VerifyPackageDependency(
+            PCWSTR packageDependencyId,
+            const HRESULT expectedHR,
+            const std::wstring& expectedPackageFullName)
+        {
+            VerifyPackageDependency(packageDependencyId, expectedHR, expectedPackageFullName.c_str());
+        }
+
+        static void VerifyPackageInPackageGraph(
+            const std::wstring& /*packageFullName*/,
+            const HRESULT /*expectedHR*/)
+        {
+            //TODO Verify GetCurrentPackageInfo
         }
 
     private:

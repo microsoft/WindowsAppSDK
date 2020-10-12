@@ -73,10 +73,6 @@ void MddCore::PackageGraphNode::AddDllDirectories()
 
 void MddCore::PackageGraphNode::RemoveDllDirectories()
 {
-    for (auto& cookie : m_addDllDirectoryCookies)
-    {
-        RemoveDllDirectory(cookie.get());
-    }
     m_addDllDirectoryCookies.clear();
 }
 

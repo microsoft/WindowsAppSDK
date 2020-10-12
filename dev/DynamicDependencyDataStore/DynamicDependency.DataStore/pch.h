@@ -21,16 +21,6 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 
-// Workaround C++/WinRT / SDK bug
-// See https://github.com/microsoft/Windows-Machine-Learning/pull/343
-// See https://github.com/microsoft/Windows.UI.Composition-Win32-Samples/issues/47
-#include <winrt/base.h>
-namespace winrt::impl
-{
-    template <typename Async>
-    auto wait_for(Async const& async, Windows::Foundation::TimeSpan const& timeout);
-}
-
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
