@@ -19,8 +19,9 @@ struct __declspec(uuid("D1AD16C7-EC59-4765-BF95-9A243EB00507")) DynamicDependenc
     {
         *applicationData = nullptr;
 
-        //TODO Windows.Storage.ApplicationData.Current
-
+        auto appData = winrt::Windows::Storage::ApplicationData::Current();
+        auto appDataIUnkown = winrt::get_unknown(appData);
+        winrt::copy_to_abi(appDataIUnkown, *applicationData);
         return S_OK;
     }
 
