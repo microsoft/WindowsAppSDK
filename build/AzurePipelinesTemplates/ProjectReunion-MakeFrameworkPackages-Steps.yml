@@ -12,7 +12,7 @@ steps:
         # foreach ($config in $configs)
         # {
           Write-Host "Checking $config"
-          $rootPath = "${{ parameters.buildOutputDir }}runtimes\$platform\native"
+          $rootPath = "${{ parameters.buildOutputDir }}\runtimes\$platform\native"
           Write-Host ""
           Write-Host "Checking for $rootPath\MRM_dll"
           Write-Host ""
