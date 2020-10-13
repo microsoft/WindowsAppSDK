@@ -72,9 +72,9 @@ jobs:
     doCodeSign: 'true'
 
 - job: SignBinariesAndPublishSymbols
-  dependsOn: Build
+  dependsOn: PublishMRT
   condition:
-    in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
   pool:
     name: Package ES Lab E
 
