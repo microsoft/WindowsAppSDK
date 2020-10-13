@@ -64,7 +64,7 @@ jobs:
   - template: ProjectReunion-InstallNuget-Steps.yml
 
   # UNDONE to move MRTCore into Project Reunion nuget package
-  - ${{if parameters.signConfig }}:
+  # - ${{if parameters.signConfig }}:
     # Re-create framework packages because we made them in the build step against unsigned binaries.
     - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
 
