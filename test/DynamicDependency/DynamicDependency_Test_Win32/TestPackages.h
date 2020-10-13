@@ -57,6 +57,8 @@ namespace Test::Packages
 
     std::wstring GetPackagePath(PCWSTR packageFullName);
 
+    std::wstring GetPackagePath(const std::wstring& packageFullName);
+
     void AddPackage_MainSidecar();
 
     void RemovePackage_MainSidecar();

@@ -94,6 +94,11 @@ namespace Test::Packages
         return std::wstring(path.get());
     }
 
+    std::wstring GetPackagePath(const std::wstring& packageFullName)
+    {
+        return GetPackagePath(packageFullName.c_str());
+    }
+
     void AddPackage_MainSidecar()
     {
         AddPackage(Test::Packages::MainSidecar::c_PackageDirName, Test::Packages::MainSidecar::c_PackageFullName);

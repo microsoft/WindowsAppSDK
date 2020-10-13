@@ -83,7 +83,7 @@ HRESULT MddCore::PackageGraph::Add(
     // Add the new node to the package graph
     if (index < m_packageGraphNodes.size())
     {
-        // We'd like to 
+        // We'd like to
         m_packageGraphNodes.insert(m_packageGraphNodes.begin() + index, std::move(packageGraphNode));
     }
     else
@@ -196,10 +196,12 @@ HRESULT MddCore::PackageGraph::Remove(
         auto& node = m_packageGraphNodes[index];
         if (node.Context() == context)
         {
+            // Detach the node from the package graph before updating the DLL Search Order
+            auto detachedNode{ std::move(node) };
+            m_packageGraphNodes.erase(m_packageGraphNodes.begin() + index);
+
             // The DLL Search Order must be updated when we update the package graph
             RemoveFromDllSearchOrder(node);
-
-            m_packageGraphNodes.erase(m_packageGraphNodes.begin() + index);
 
             return S_OK;
         }
@@ -246,6 +248,75 @@ void MddCore::PackageGraph::AddToDllSearchOrder(PackageGraphNode& package)
     package.AddDllDirectories();
 }
 
+void MddCore::PackageGraph::UpdatePath()
+{
+    // Get the current PATH environment variable
+    auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
+    std::wstring path{ !pathEnvironmentVariable ? L"" : pathEnvironmentVariable.get() };
+
+    // Build the package graph path list (semi-colon delimited)
+    std::wstring pathList{ BuildPathList() };
+
+    // Build the new PATH environment variable
+    std::wstring newPath;
+    if (!pathEnvironmentVariable)
+    {
+        // We are the PATH
+        newPath = pathList;
+    }
+    else if (!m_pathListLastAddedToPath.empty())
+    {
+        // Replace our previous pathlist in the PATH with the new pathlist
+        const auto& oldPathList{ m_pathListLastAddedToPath };
+        size_t offset = path.find(oldPathList);
+        for (; offset != std::wstring::npos; offset = path.find(oldPathList, offset + 1))
+        {
+            // Is this a false positive?
+            if ((offset != 0) && (path[offset - 1] != L';'))
+            {
+                continue;
+            }
+            const auto offsetAfterOldPathList = offset + oldPathList.length();
+            if ((offsetAfterOldPathList < path.length()) && (path[offsetAfterOldPathList] != L';'))
+            {
+                continue;
+            }
+
+            // Gotcha!
+            const bool needDelimiterPrefix = (offset > 0);
+            newPath = path.substr(0, offset);
+            if (needDelimiterPrefix)
+            {
+                newPath += L';';
+            }
+            newPath += pathList;
+            newPath += path.substr(offsetAfterOldPathList);
+            break;
+        }
+    }
+    if (newPath.empty())
+    {
+        // If this isn't our first addition to PATH our previous addition's been altered by unknown parties
+        (void)LOG_HR_IF_MSG(E_UNEXPECTED, m_pathListLastAddedToPath.empty(), "Package Graph in PATH has been unexpectedly altered");
+
+        // Do the best we can. Add the path list to the front of PATH
+        const bool needDelimiter = (!pathList.empty() && (path[0] != L';'));
+        newPath.reserve(pathList.length() + (needDelimiter ? 1 : 0) + path.length());
+        newPath = pathList;
+        if (needDelimiter)
+        {
+            newPath += L';';
+        }
+        newPath += path;
+    }
+
+    // Update the PATH enironment variable
+    THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPath.c_str()));
+
+    // Remember the path list we added to PATH for future updates
+    m_pathListLastAddedToPath = pathList;
+}
+
 void MddCore::PackageGraph::RemoveFromDllSearchOrder(PackageGraphNode& package)
 {
     // Update the AddDllDirectory list
@@ -253,46 +324,6 @@ void MddCore::PackageGraph::RemoveFromDllSearchOrder(PackageGraphNode& package)
 
     // Update the PATH environment variable
     UpdatePath();
-}
-
-void MddCore::PackageGraph::UpdatePath()
-{
-    // Build the package graph path list (semi-colon delimited)
-    std::wstring pathList{ BuildPathList() };
-
-    // Add the path list to the PATH enironment variable
-    // If not present in PATH then add the path list to the front of PATH
-    // If already present then replace it with the updated path list
-
-    // package graph environment variable's at the fron ot the PATH environment variable
-    std::wstring newPath;
-    auto path{ wil::TryGetEnvironmentVariableW(L"PATH") };
-    if (m_pathListLastAddedToPath.length() == 0)
-    {
-        // First time we're changing PATH. Prepend the path list to PATH
-        newPath = pathList;
-        newPath += L';';
-        newPath += path.get();
-    }
-    else
-    {
-        // Find the previous path list in PATH (if present)
-#if defined(TODO_UpdatePath)
-        ...find g_pathg_pastListLastAddedToPath in path...
-        if (found)
-            ...path.replace(g_pastListLastAddedToPath, pathList)...
-        else
-            path = pathlist + ";" + path;
-#else
-        newPath = pathList;
-        newPath += L';';
-        newPath += path.get();
-#endif
-    }
-    THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPath.c_str()));
-
-    // Remember the path list we added to PATH for future updates
-    m_pathListLastAddedToPath = pathList;
 }
 
 std::wstring MddCore::PackageGraph::BuildPathList()

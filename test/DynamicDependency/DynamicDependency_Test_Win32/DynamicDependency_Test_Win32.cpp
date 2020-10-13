@@ -116,6 +116,8 @@ namespace Test::DynamicDependency::Win32
         {
             auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
+            VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
 
             PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
             PACKAGE_VERSION minVersion{};
@@ -127,6 +129,7 @@ namespace Test::DynamicDependency::Win32
             Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
 
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
             const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
@@ -139,16 +142,20 @@ namespace Test::DynamicDependency::Win32
             Assert::AreEqual(actualPackageFullName, expectedPackageFullName);
 
             VerifyPackageInPackageGraph(expectedPackageFullName, S_OK);
+            auto packagePath{ TP::GetPackagePath(expectedPackageFullName) };
+            VerifyPathEnvironmentVariable(packagePath, pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
             MddRemovePackageDependency(packageDependencyContext);
 
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
             MddDeletePackageDependency(packageDependencyId.get());
 
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
         }
 
@@ -195,6 +202,25 @@ namespace Test::DynamicDependency::Win32
             const std::wstring& expectedPackageFullName)
         {
             VerifyPackageDependency(packageDependencyId, expectedHR, expectedPackageFullName.c_str());
+        }
+
+        static void VerifyPathEnvironmentVariable(PCWSTR path)
+        {
+            std::wstring expectedPath{ path };
+            std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
+            Assert::AreEqual(expectedPath, pathEnvironmentVariable);
+        }
+
+        static void VerifyPathEnvironmentVariable(PCWSTR prefix, PCWSTR path)
+        {
+            std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
+            std::wstring expectedPath{ std::wstring(prefix) + L";" + path };
+            Assert::AreEqual(expectedPath, pathEnvironmentVariable);
+        }
+
+        static void VerifyPathEnvironmentVariable(const std::wstring& prefix, PCWSTR path)
+        {
+            VerifyPathEnvironmentVariable(prefix.c_str(), path);
         }
 
         static void VerifyPackageInPackageGraph(
