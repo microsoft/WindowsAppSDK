@@ -4,15 +4,15 @@ parameters:
 steps:
   - powershell: |
       $platforms = @("win10-x86", "win10-x64", "win10-arm", "win10-arm64")
-      $configs = @("debug", "release")
+      # $configs = @("debug", "release")
       Write-Host "powershell step in ProjectReunion-MakeFrameworkPackages-Steps.yml - rootPath = $rootPath"
       foreach ($platform in $platforms)
       {
         Write-Host "Checking $platform"
-        foreach ($config in $configs)
-        {
+        # foreach ($config in $configs)
+        # {
           Write-Host "Checking $config"
-          $rootPath = "${{ parameters.buildOutputDir }}\$config\$platform"
+          $rootPath = "${{ parameters.buildOutputDir }}runtimes\$platform\native"
           Write-Host ""
           Write-Host "Checking for $rootPath\MRM_dll"
           Write-Host ""
@@ -25,6 +25,6 @@ steps:
                 Exit 1
             }
           }
-        }
+        # }
       }
     displayName: 'Make FrameworkPackages'
