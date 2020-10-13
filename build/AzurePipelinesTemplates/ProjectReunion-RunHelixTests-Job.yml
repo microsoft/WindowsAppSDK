@@ -205,36 +205,4 @@ jobs:
       projects: build/Helix/RunTestsInHelix.proj
       custom: msbuild
       arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)
-  - task: powershell@2
-    displayName: Get Test Result Files
-    condition: failed()
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      HELIXACCESSTOKEN: $(HelixApiAccessToken)
-    inputs:
-      targetType: filePath
-      filePath: build/Helix/testResult.ps1
-      arguments: -Configuration $(buildConfiguration) -Platform $(buildPlatform)
-  - task: powershell@2
-    displayName: Check Result Files
-    condition: failed()
-    inputs:
-      targetType: inline
-      script: >
-        dir build/Helix
-  - task: PowerShell@2
-    displayName: Collect Test Outputs
-    condition: failed()
-    inputs:
-      targetType: inline
-      script: >
-        mkdir screenshorts
-
-        cp build/Helix/*.jpg screenshorts
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Test Outputs
-    condition: failed()
-    inputs:
-      PathtoPublish: screenshorts
-      artifactName: screenshorts
-      publishLocation: Container
+ 
