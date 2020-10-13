@@ -46,7 +46,7 @@ jobs:
     testSuite: 'DevTestSuite'
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
 
-- template: WinUI-ProcessTestResults-Job.yml
+- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
   parameters:
     dependsOn: RunTestsInHelix
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
