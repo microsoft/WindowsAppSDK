@@ -16,7 +16,7 @@ steps:
           Write-Host ""
           Write-Host "Checking for $rootPath\MRM_dll"
           Write-Host ""
-          if (Test-Path "$rootPath\MRM_dll")
+          if (Test-Path "$rootPath\MRM.dll")
           {
             $env:BUILDOUTPUT_OVERRIDE = $rootPath
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose
