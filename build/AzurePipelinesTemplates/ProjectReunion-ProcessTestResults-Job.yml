@@ -4,7 +4,7 @@ parameters:
   minimumExpectedTestsExecutedCount: 500
   checkJobAttempt: false
   pgoArtifact: ''
-  testSuite: 'UNKNOWN' # Can be: DevTestSuite, ScenarioTestSuite
+  testSuite: 'DevTestSuite' # Can be: DevTestSuite, ScenarioTestSuite
 
 jobs:
 - job: ProcessTestResults
