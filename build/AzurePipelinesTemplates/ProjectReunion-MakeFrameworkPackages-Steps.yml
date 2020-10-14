@@ -12,11 +12,11 @@ steps:
         foreach ($config in $configs)
         {
           Write-Host "Checking $config"
-          $rootPath = "${{ parameters.buildOutputDir }}\runtimes\$platform"
+          $rootPath = "${{ parameters.buildOutputDir }}"
           Write-Host ""
-          Write-Host "Checking for $rootPath\native\MRM.dll"
+          Write-Host "Checking for $rootPath\runtimes\$platform\native\MRM.dll"
           Write-Host ""
-          if (Test-Path "$rootPath\native\MRM.dll")
+          if (Test-Path "$rootPath\runtimes\$platform\native\MRM.dll")
           {
             $env:BUILDOUTPUT_OVERRIDE = $rootPath
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose

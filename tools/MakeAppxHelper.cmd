@@ -34,8 +34,8 @@ if "%BUILDOUTPUT_OVERRIDE%" == "" (
 	set InputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\ProjectReunion_dll
 	set OutputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\FrameworkPackage
 ) else (
-	set InputDirectory=%BUILDOUTPUT_OVERRIDE%\native
-	set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\FrameworkPackage
+	set InputDirectory=%BUILDOUTPUT_OVERRIDE%\
+	set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\runtimes\%TFS_PLATFORM%\FrameworkPackage
 )
 
 call ..\build\FrameworkPackage\MakeFrameworkPackage.cmd -InputDirectory '%InputDirectory%' ^

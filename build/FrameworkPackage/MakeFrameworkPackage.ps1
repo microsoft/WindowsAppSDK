@@ -58,13 +58,14 @@ $ActivatableTypes = ""
 # Copy over and add to the manifest file list the .dll, .winmd for the inputs. 
 
 Write-Output "Input: $inputDirectory"
-$inputBaseFileName = "MRM"
+# $inputBaseFileName = "MRM"
 $inputBasePath = $inputDirectory
 
-Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\$Platform\native\MRM.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\$Platform\native\Microsoft.ApplicationModel.Resources.dll" $fullOutputPath\PackageContents
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
-Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd" $fullOutputPath\PackageContents
 
 #Write-Verbose "Copying $inputBasePath\Themes"
 #Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
@@ -97,18 +98,19 @@ $refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
 #UNDONE - not re-writing to sdk dir
 #Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
 #$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
-Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\$inputBaseFileName.winmd' '$refrenceWinmds'"
-$classes = Get-ActivatableTypes $inputBasePath\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\Microsoft.ApplicationModel.Resources.winmd' '$refrenceWinmds'"
+$classes = Get-ActivatableTypes $inputBasePath\Microsoft.ApplicationModel.Resources.winmd  $refrenceWinmds  | Sort-Object -Property FullName
 Write-Host $classes.Length Types found.
 @"
-"$inputBaseFileName.dll" "$inputBaseFileName.dll"
-"$inputBaseFileName.winmd" "$inputBaseFileName.winmd" 
+"Microsoft.ApplicationModel.Resources.dll" "Microsoft.ApplicationModel.Resources.dll"
+"MRM.dll" "MRM.dll"
+"Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ApplicationModel.Resources.winmd" 
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 
     $ActivatableTypes += @"
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>$inputBaseFileName.dll</Path>
+        <Path>Microsoft.ApplicationModel.Resources.dll</Path>
 
 "@
 
