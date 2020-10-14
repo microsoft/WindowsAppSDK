@@ -44,7 +44,7 @@ jobs:
       HELIXACCESSTOKEN: $(HelixApiAccessToken)
     inputs:
       targetType: filePath
-      filePath: DCPP/Helix/testResult.ps1
+      filePath: build/Helix/testResult.ps1
       arguments: -Configuration $(buildConfiguration) -Platform $(buildPlatform)
   - task: powershell@2
     displayName: Check Result Files
