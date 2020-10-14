@@ -58,7 +58,7 @@ $ActivatableTypes = ""
 # Copy over and add to the manifest file list the .dll, .winmd for the inputs. 
 
 Write-Output "Input: $inputDirectory"
-$inputBaseFileName = "Microsoft.ProjectReunion"
+$inputBaseFileName = "MRM"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
