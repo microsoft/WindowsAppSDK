@@ -72,7 +72,7 @@ jobs:
   - task: CopyFiles@2
     inputs:
       targetFolder: '${{ parameters.nupkgdir }}'
-      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\framework'
+      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
       Contents: '**\Microsoft.ProjectReunion*.appx'
 
   - task: PublishBuildArtifacts@1
