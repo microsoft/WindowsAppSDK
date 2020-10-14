@@ -35,7 +35,7 @@ if "%BUILDOUTPUT_OVERRIDE%" == "" (
 	set OutputDirectory=%CD%\..\BuildOutput\%TFS_BUILDCONFIGURATION%\%TFS_PLATFORM%\FrameworkPackage
 ) else (
 	set InputDirectory=%BUILDOUTPUT_OVERRIDE%\
-	set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\runtimes\%TFS_PLATFORM%\FrameworkPackage
+	set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\runtimes\win10-%TFS_PLATFORM%\FrameworkPackage
 )
 
 call ..\build\FrameworkPackage\MakeFrameworkPackage.cmd -InputDirectory '%InputDirectory%' ^

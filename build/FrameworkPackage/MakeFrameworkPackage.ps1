@@ -61,8 +61,8 @@ Write-Output "Input: $inputDirectory"
 # $inputBaseFileName = "MRM"
 $inputBasePath = $inputDirectory
 
-Copy-IntoNewDirectory "$inputBasePath\runtimes\$Platform\native\MRM.dll" $fullOutputPath\PackageContents
-Copy-IntoNewDirectory "$inputBasePath\runtimes\$Platform\native\Microsoft.ApplicationModel.Resources.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.dll" $fullOutputPath\PackageContents
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd" $fullOutputPath\PackageContents
@@ -98,8 +98,8 @@ $refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
 #UNDONE - not re-writing to sdk dir
 #Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
 #$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
-Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\Microsoft.ApplicationModel.Resources.winmd' '$refrenceWinmds'"
-$classes = Get-ActivatableTypes $inputBasePath\Microsoft.ApplicationModel.Resources.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd' '$refrenceWinmds'"
+$classes = Get-ActivatableTypes $inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd  $refrenceWinmds  | Sort-Object -Property FullName
 Write-Host $classes.Length Types found.
 @"
 "Microsoft.ApplicationModel.Resources.dll" "Microsoft.ApplicationModel.Resources.dll"

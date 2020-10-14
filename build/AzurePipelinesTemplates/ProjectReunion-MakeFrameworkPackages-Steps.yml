@@ -3,20 +3,20 @@ parameters:
 
 steps:
   - powershell: |
-      $platforms = @("win10-x86", "win10-x64", "win10-arm", "win10-arm64")
+      $platforms = @("x86", "x64", "arm", "arm64")
       $configs = @("release")
       Write-Host "powershell step in ProjectReunion-MakeFrameworkPackages-Steps.yml - rootPath = $rootPath"
       foreach ($platform in $platforms)
       {
-        Write-Host "Checking $platform"
+        Write-Host "Checking win10-$platform"
         foreach ($config in $configs)
         {
           Write-Host "Checking $config"
           $rootPath = "${{ parameters.buildOutputDir }}"
           Write-Host ""
-          Write-Host "Checking for $rootPath\runtimes\$platform\native\MRM.dll"
+          Write-Host "Checking for $rootPath\runtimes\win10-$platform\native\MRM.dll"
           Write-Host ""
-          if (Test-Path "$rootPath\runtimes\$platform\native\MRM.dll")
+          if (Test-Path "$rootPath\runtimes\win10-$platform\native\MRM.dll")
           {
             $env:BUILDOUTPUT_OVERRIDE = $rootPath
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose
