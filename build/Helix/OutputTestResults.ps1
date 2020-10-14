@@ -3,25 +3,11 @@ Param(
     [int]$MinimumExpectedTestsExecutedCount,
 
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
-    [string]$HelixAccessToken = $env:HelixAccessToken, 
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
-    
-    [Parameter(Mandatory = $true)]
-    [ValidateSet("DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64")]
-    [string]$HelixTypeJobFilter
+    [bool]$CheckJobAttempt
 )
-
-Write-Host "CollectionUri:      $CollectionUri"
-Write-Host "TeamProject:        $TeamProject"
-Write-Host "BuildUri:           $BuildUri"
-
-if($env:taefquery)
-{
-    # If we are running a custom taef query, skip the min test count check
-    $MinimumExpectedTestsExecutedCount = 1
-}
 
 $azureDevOpsRestApiHeaders = @{
     "Accept"="application/json"
@@ -40,72 +26,56 @@ $testRuns = Invoke-RestMethod -Uri $queryUri -Method Get -Headers $azureDevOpsRe
 [System.Collections.Generic.List[string]]$unreliableTests = @()
 [System.Collections.Generic.List[string]]$unexpectedResultTest = @()
 
-[System.Collections.Generic.List[string]]$processedTestRunIds = @()
+[System.Collections.Generic.List[string]]$namesOfProcessedTestRuns = @()
 $totalTestsExecutedCount = 0
 
-# We only process the last testRun with a given name and jobtype (based on completedDate).
-# This is to handle the case where a failing Pipeline Job was re-run.
+# We assume that we only have one testRun with a given name that we care about
+# We only process the last testRun with a given name (based on completedDate)
 # The name of a testRun is set to the Helix queue that it was run on (e.g. windows.10.amd64.client19h1.xaml)
-# If we have multiple test runs on the same queue they must have different Helix JobTypes
-
+# If we have multiple test runs on the same queue that we care about, we will need to re-visit this logic
 foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -Descending))
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun)
-    if(!($jobType -like "$HelixTypeJobFilter*"))
+    if ($CheckJobAttempt)
     {
-        Write-Host "Skipping test run '$($testRun.name)' since jobType '$jobType' does not match HelixTypeJobFilter '$HelixTypeJobFilter'"
-        continue
+        if ($namesOfProcessedTestRuns -contains $testRun.name)
+        {
+            Write-Host "Skipping test run '$($testRun.name)', since we have already processed a test run of that name."
+            continue
+        }
     }
-
-    $testRunId = "$($testRun.name)-$jobType"
-    if ($processedTestRunIds -contains $testRunId)
-    {
-        Write-Host "Skipping test run '$($testRun.name)' with jobType '$jobType', since we have already processed a test run of that name and jobType."
-        continue
-    }
-    Write-Host "Processing results from test run '$($testRun.name)' with jobType '$jobType'"
-    $processedTestRunIds.Add($testRunId)
+    
+    Write-Host "Processing results from test run '$($testRun.name)'"
+    $namesOfProcessedTestRuns.Add($testRun.name)
 
     $totalTestsExecutedCount += $testRun.totalTests
 
-    # Azure DevOps Rest API returns at most 1000 results at a time. We process the results in pages of 1000.
-    $totalTests = $testrun.totalTests
-    $sizeOfPage = 1000
-    $pagesOfTests = [int][Math]::Ceiling($totalTests / $sizeOfPage)
-
-    For ($page=0; $page -lt $pagesOfTests; $page++) 
+    $testRunResultsUri = "$($testRun.url)/results?api-version=5.0"
+    $testResults = Invoke-RestMethod -Uri "$($testRun.url)/results?api-version=5.0" -Method Get -Headers $azureDevOpsRestApiHeaders
+        
+    foreach ($testResult in $testResults.value)
     {
-        $numItemsToSkip = $page * $sizeOfPage
+        $shortTestCaseTitle = $testResult.testCaseTitle -replace "[a-zA-Z0-9]+.[a-zA-Z0-9]+.Windows.UI.Xaml.Tests.MUXControls.",""
 
-        Write-Host "Retrieving test results..."
-        $testRunResultsUri = "$($testRun.url)/results?`$top=$sizeOfPage&`$skip=$numItemsToSkip&api-version=5.1"
-        $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
-
-        foreach ($testResult in $testResults.value)
+        if ($testResult.outcome -eq "Failed")
         {
-            $shortTestCaseTitle = $testResult.testCaseTitle -replace "release.[a-zA-Z0-9]+.Windows.UI.Xaml.Tests.MUXControls.",""
-
-            if ($testResult.outcome -eq "Failed")
+            if (-not $failingTests.Contains($shortTestCaseTitle))
             {
-                if (-not $failingTests.Contains($shortTestCaseTitle))
-                {
-                    $failingTests.Add($shortTestCaseTitle)
-                }
+                $failingTests.Add($shortTestCaseTitle)
             }
-            elseif ($testResult.outcome -eq "Warning")
+        }
+        elseif ($testResult.outcome -eq "Warning")
+        {
+            if (-not $unreliableTests.Contains($shortTestCaseTitle))
             {
-                if (-not $unreliableTests.Contains($shortTestCaseTitle))
-                {
-                    $unreliableTests.Add($shortTestCaseTitle)
-                }
+                $unreliableTests.Add($shortTestCaseTitle)
             }
-            elseif ($testResult.outcome -ne "Passed")
+        }
+        elseif ($testResult.outcome -ne "Passed")
+        {
+            # We should only see tests with result "Passed", "Failed" or "Warning"
+            if (-not $unexpectedResultTest.Contains($shortTestCaseTitle))
             {
-                # We should only see tests with result "Passed", "Failed" or "Warning"
-                if (-not $unexpectedResultTest.Contains($shortTestCaseTitle))
-                {
-                    $unexpectedResultTest.Add($shortTestCaseTitle)
-                }
+                $unexpectedResultTest.Add($shortTestCaseTitle)
             }
         }
     }
@@ -134,27 +104,19 @@ if ($unexpectedResultTest.Count -gt 0)
     Write-Host @"
 ##vso[task.logissue type=error;]Tests with unexpected results:
 ##vso[task.logissue type=error;]$($unexpectedResultTest -join "$([Environment]::NewLine)##vso[task.logissue type=error;]")
+
 "@
 }
 
 if($totalTestsExecutedCount -lt $MinimumExpectedTestsExecutedCount)
 {
-    Write-Error "Expected at least $MinimumExpectedTestsExecutedCount tests to be executed."
-    Write-Error "Actual executed test count is: $totalTestsExecutedCount"
-    Write-Host @"
-##vso[task.logissue type=error;]Expected at least $MinimumExpectedTestsExecutedCount tests to be executed.
-##vso[task.logissue type=error;]Actual executed test count is: $totalTestsExecutedCount
-"@
+    Write-Host "Expected at least $MinimumExpectedTestsExecutedCount tests to be executed."
+    Write-Host "Actual executed test count is: $totalTestsExecutedCount"
     Write-Host "##vso[task.complete result=Failed;]"
 }
 elseif ($failingTests.Count -gt 0)
 {
     Write-Host "At least one test failed."
-    Write-Host "##vso[task.complete result=Failed;]"
-}
-elseif ($unexpectedResultTest.Count -gt 0)
-{
-    Write-Host "At least one test with an unexpected result was found."
     Write-Host "##vso[task.complete result=Failed;]"
 }
 elseif ($unreliableTests.Count -gt 0)

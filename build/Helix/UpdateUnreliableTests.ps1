@@ -4,17 +4,9 @@ Param(
     [int]$RerunPassesRequiredToAvoidFailure,
 
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
-    [string]$HelixAccessToken = $env:HelixAccessToken,
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
-    [string]$BuildUri = $env:BUILD_BUILDURI,
-
-    [Parameter(Mandatory = $true)]
-    [ValidateSet("DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64")]
-    [string]$HelixTypeJobFilter,
-
-    # Don't actually update results in AzDO. Useful for testing the script locally.
-    [switch]$ReadOnlyTestMode
+    [string]$BuildUri = $env:BUILD_BUILDURI
 )
 
 . "$PSScriptRoot/AzurePipelinesHelperScripts.ps1"
@@ -24,14 +16,6 @@ $azureDevOpsRestApiHeaders = @{
     "Accept"="application/json"
     "Authorization"="Basic $([System.Convert]::ToBase64String([System.Text.ASCIIEncoding]::ASCII.GetBytes(":$AccessToken")))"
 }
-
-Write-Host "access token = $AccessToken"
-Write-Host "helix access token = $HelixAccessToken"
-Write-Host "collection uri = $CollectionUri"
-Write-Host "team project = $TeamProject"
-Write-Host "build uri = $BuildUri"
-Write-Host "helix type job filter = $HelixTypeJobFilter"
-Write-Host " read only test mode = $ReadOnlyTestMode"
 
 $queryUri = GetQueryTestRunsUri -CollectionUri $CollectionUri -TeamProject $TeamProject -BuildUri $BuildUri
 Write-Host "queryUri = $queryUri"
@@ -45,160 +29,99 @@ $timesSeenByRunName = @{}
       
 foreach ($testRun in $testRuns.value)
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun)
-#    if(!($jobType -like "$HelixTypeJobFilter*"))
-#    {
-#        Write-Host "Skipping test run '$($testRun.name)' since jobType '$jobType' does not match HelixTypeJobFilter '$HelixTypeJobFilter'"
-#        continue
-#    }
-#    Write-Host "Processing test run '$($testRun.name)' with jobType '$jobType'"
-
-    if(!$ReadOnlyTestMode)
-    {
-        Write-Host "Marking test run `"$($testRun.name)`" as in progress so we can change its results to account for unreliable tests."
-        Invoke-RestMethod -Uri "$($testRun.url)?api-version=5.0" -Method Patch -Body (ConvertTo-Json @{ "state" = "InProgress" }) -Headers $azureDevOpsRestApiHeaders -ContentType "application/json" | Out-Null
-    }
-
-    # Azure DevOps Rest API returns at most 1000 results at a time. We process the results in pages of 1000.
-    $totalTests = $testrun.totalTests
-    $sizeOfPage = 1000
-    $pagesOfTests = [int][Math]::Ceiling($totalTests / $sizeOfPage)
-
-    $totalTestsSeen = 0
-    For ($page=0; $page -lt $pagesOfTests; $page++) 
-    {
-        $numItemsToSkip = $page * $sizeOfPage
-
-        Write-Host "Retrieving test results..."
-        $testRunResultsUri = "$($testRun.url)/results?`$top=$sizeOfPage&`$skip=$numItemsToSkip&api-version=5.1"
-        $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
-
-        $totalTestsSeen += $testResults.count
+    $testRunResultsUri = "$($testRun.url)/results?api-version=5.0"
         
-        foreach ($testResult in $testResults.value)
+    Write-Host "Marking test run `"$($testRun.name)`" as in progress so we can change its results to account for unreliable tests."
+    Invoke-RestMethod -Uri "$($testRun.url)?api-version=5.0" -Method Patch -Body (ConvertTo-Json @{ "state" = "InProgress" }) -Headers $azureDevOpsRestApiHeaders -ContentType "application/json" | Out-Null
+
+    Write-Host "Retrieving test results..."
+    $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
+        
+    foreach ($testResult in $testResults.value)
+    {
+        $testNeedsSubResultProcessing = $false
+        if ($testResult.outcome -eq "NotExecuted")
         {
-            $testNeedsSubResultProcessing = $false
-            if ($testResult.outcome -eq "NotExecuted")
+            $testNeedsSubResultProcessing = $true
+        }
+        elseif($testResult.outcome -eq "Failed")
+        {
+            $testNeedsSubResultProcessing = $testResult.errorMessage -like "*_subresults.json*"
+        }
+
+        if ($testNeedsSubResultProcessing)
+        {
+            Write-Host "  Test $($testResult.testCaseTitle) was detected as unreliable. Updating..."
+            
+            # The errorMessage field contains a link to the JSON-encoded rerun result data.
+            $rerunResults = ConvertFrom-Json (New-Object System.Net.WebClient).DownloadString($testResult.errorMessage)
+            [System.Collections.Generic.List[System.Collections.Hashtable]]$rerunDataList = @()
+            $attemptCount = 0
+            $passCount = 0
+            $totalDuration = 0
+            
+            foreach ($rerun in $rerunResults.results)
             {
-                $testNeedsSubResultProcessing = $true
+                $rerunData = @{
+                    "displayName" = "Attempt #$($attemptCount + 1) - $($testResult.testCaseTitle)";
+                    "durationInMs" = $rerun.duration;
+                    "outcome" = $rerun.outcome;
+                }
+
+                if ($rerun.outcome -eq "Passed")
+                {
+                    $passCount++
+                }
+                
+                if ($attemptCount -gt 0)
+                {
+                    $rerunData["sequenceId"] = $attemptCount
+                }
+
+                Write-Host "    Attempt #$($attemptCount + 1): $($rerun.outcome)"
+                
+                if ($rerun.outcome -ne "Passed")
+                {
+                    # We subtract 1 from the error index because we added 1 so we could use 0
+                    # as a default value not injected into the JSON in order to keep its size down.
+                    # We did this because there's a maximum size enforced for the errorMessage parameter
+                    # in the Azure DevOps REST API.
+                    $fullErrorMessage = @"
+Log: $($rerunResults.blobPrefix)/$($rerun.log)$($rerunResults.blobSuffix)
+
+Error log:
+$($rerunResults.errors[$rerun.errorIndex - 1])
+"@
+
+                    $rerunData["errorMessage"] = $fullErrorMessage
+                }
+                
+                $attemptCount++
+                $totalDuration += $rerun.duration
+                $rerunDataList.Add($rerunData)
             }
-            elseif($testResult.outcome -eq "Failed")
+
+            $overallOutcome = "Warning"
+            
+            if ($attemptCount -eq 2)
             {
-                $testNeedsSubResultProcessing = $testResult.errorMessage -like "*.json"
+                Write-Host "  Test $($testResult.testCaseTitle) passed on the immediate rerun, so we'll mark it as unreliable."
             }
-
-            if ($testNeedsSubResultProcessing)
+            elseif ($passCount -gt $RerunPassesRequiredToAvoidFailure)
             {
-                Write-Host "  Test $($testResult.testCaseTitle) was detected as unreliable. Updating..."
-
-                $info = ConvertFrom-Json $testResult.comment
-                $helixJobId = $info.HelixJobId
-                $helixWorkItemName = $info.HelixWorkItemName
-
-                $testCaseTitle = $testResult.testCaseTitle
-
-                if(!($testCaseTitle.Contains(".") -or $testCaseTitle.Contains(":")))
-                {
-                    Write-Error "TestCaseTitle ($testCaseTitle) is expected to contain '.' or '::'"
-                    exit 1
-                }
-                $subresultsFileName = $testResult.errorMessage
-
-                Write-Host "Downloading $subresultsFileName from Helix"
-                $subResultsFileUrl = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files/$($subresultsFileName)?access_token=$HelixAccessToken"
-                try
-                {
-                    $subResultsJson = (New-Object System.Net.WebClient).DownloadString($subResultsFileUrl)
-                }
-                catch
-                {
-                    if($env:TF_BUILD)
-                    {
-                         Write-Host "##vso[task.logissue type=error;]Failed to download $subresultsFileName"
-                    }
-                    else
-                    {
-                        Write-Error "Failed to download $subresultsFileName"
-                    }
-                    continue
-                }
-
-                $rerunResults = ConvertFrom-Json $subResultsJson
-                
-
-                [System.Collections.Generic.List[System.Collections.Hashtable]]$rerunDataList = @()
-                $attemptCount = 0
-                $passCount = 0
-                $totalDuration = 0
-                
-                foreach ($rerun in $rerunResults.results)
-                {
-                    $rerunData = @{
-                        "displayName" = "Attempt #$($attemptCount + 1) - $($testResult.testCaseTitle)";
-                        "durationInMs" = $rerun.duration;
-                        "outcome" = $rerun.outcome;
-                    }
-
-                    if ($rerun.outcome -eq "Passed")
-                    {
-                        $passCount++
-                    }
-                    
-                    if ($attemptCount -gt 0)
-                    {
-                        $rerunData["sequenceId"] = $attemptCount
-                    }
-
-                    Write-Host "    Attempt #$($attemptCount + 1): $($rerun.outcome)"
-                    
-                    if ($rerun.outcome -ne "Passed")
-                    {
-                        $fullErrorMessage = "$($rerunResults.errors[$rerun.errorIndex - 1])"
-
-                        $rerunData["errorMessage"] = $fullErrorMessage
-                    }
-                    
-                    $attemptCount++
-                    $totalDuration += $rerun.duration
-                    $rerunDataList.Add($rerunData)
-                }
-
-                $overallOutcome = "Warning"
-                
-                if ($attemptCount -eq 2)
-                {
-                    Write-Host "  Test $($testResult.testCaseTitle) passed on the immediate rerun, so we'll mark it as unreliable."
-                }
-                elseif ($passCount -ge $RerunPassesRequiredToAvoidFailure)
-                {
-                    Write-Host "  Test $($testResult.testCaseTitle) passed on $passCount of $attemptCount attempts, which is greater than or equal to the $RerunPassesRequiredToAvoidFailure passes required to avoid being marked as failed. Marking as unreliable."
-                }
-                else
-                {
-                    Write-Host "  Test $($testResult.testCaseTitle) passed on only $passCount of $attemptCount attempts, which is less than the $RerunPassesRequiredToAvoidFailure passes required to avoid being marked as failed. Marking as failed."
-                    $overallOutcome = "Failed"
-                }
-                
-                $updateBody = ConvertTo-Json @(@{ "id" = $testResult.id; "outcome" = $overallOutcome; "errorMessage" = " "; "durationInMs" = $totalDuration; "subResults" = $rerunDataList; "resultGroupType" = "rerun" }) -Depth 5
-                if(!$ReadOnlyTestMode)
-                {
-                    Invoke-RestMethod -Uri $testRunResultsUri -Method Patch -Headers $azureDevOpsRestApiHeaders -Body $updateBody -ContentType "application/json" | Out-Null
-                }
+                Write-Host "  Test $($testResult.testCaseTitle) passed on $passCount of $attemptCount attempts, which is greater than or equal to the $RerunPassesRequiredToAvoidFailure passes required to avoid being marked as failed. Marking as unreliable."
             }
+            else
+            {
+                Write-Host "  Test $($testResult.testCaseTitle) passed on only $passCount of $attemptCount attempts, which is less than the $RerunPassesRequiredToAvoidFailure passes required to avoid being marked as failed. Marking as failed."
+                $overallOutcome = "Failed"
+            }
+            
+            $updateBody = ConvertTo-Json @(@{ "id" = $testResult.id; "outcome" = $overallOutcome; "errorMessage" = " "; "durationInMs" = $totalDuration; "subResults" = $rerunDataList; "resultGroupType" = "rerun" }) -Depth 5
+            Invoke-RestMethod -Uri $testRunResultsUri -Method Patch -Headers $azureDevOpsRestApiHeaders -Body $updateBody -ContentType "application/json" | Out-Null
         }
     }
-
-    Write-Host "Processed $totalTestsSeen / $totalTests tests"
-    if($totalTestsSeen -ne $totalTests)
-    {
-        Write-Error "Expected to recieve $totalTests tests."
-        exit 1
-    }
-    
         
     Write-Host "Finished updates. Re-marking test run `"$($testRun.name)`" as completed."
-    if(!$ReadOnlyTestMode)
-    {
-        Invoke-RestMethod -Uri "$($testRun.url)?api-version=5.0" -Method Patch -Body (ConvertTo-Json @{ "state" = "Completed" }) -Headers $azureDevOpsRestApiHeaders -ContentType "application/json" | Out-Null
-    }
+    Invoke-RestMethod -Uri "$($testRun.url)?api-version=5.0" -Method Patch -Body (ConvertTo-Json @{ "state" = "Completed" }) -Headers $azureDevOpsRestApiHeaders -ContentType "application/json" | Out-Null
 }
