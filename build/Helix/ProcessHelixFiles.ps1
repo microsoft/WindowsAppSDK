@@ -1,6 +1,6 @@
 Param(
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
-    [string]$HelixAccessToken = $env:HelixAPIAccessToken,
+    [string]$HelixAccessToken = $env:HelixApiAccessToken,
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
@@ -13,6 +13,7 @@ $visualTreeVerificationFolder = "$OutputFolder\UpdatedVisualTreeVerificationFile
 $accessTokenParam = ""
 if($HelixAccessToken)
 {
+    Write-Host "helix access token is present"
     $accessTokenParam = "?access_token=$HelixAccessToken"
 }
 
