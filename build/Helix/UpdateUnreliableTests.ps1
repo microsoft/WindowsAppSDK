@@ -38,12 +38,12 @@ $timesSeenByRunName = @{}
 foreach ($testRun in $testRuns.value)
 {
     $jobType = Get-HelixJobTypeFromTestRun($testRun)
-#    if(!($jobType -like "$HelixTypeJobFilter*"))
-#    {
-#        Write-Host "Skipping test run '$($testRun.name)' since jobType '$jobType' does not match HelixTypeJobFilter '$HelixTypeJobFilter'"
-#        continue
-#    }
-#    Write-Host "Processing test run '$($testRun.name)' with jobType '$jobType'"
+    if(!($jobType -like "$HelixTypeJobFilter*"))
+    {
+        Write-Host "Skipping test run '$($testRun.name)' since jobType '$jobType' does not match HelixTypeJobFilter '$HelixTypeJobFilter'"
+        continue
+    }
+    Write-Host "Processing test run '$($testRun.name)' with jobType '$jobType'"
 
     if(!$ReadOnlyTestMode)
     {
