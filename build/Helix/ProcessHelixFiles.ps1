@@ -67,6 +67,7 @@ foreach ($testRun in $testRuns.value)
         {
             $workItems.Add($workItem)
             $filesQueryUri = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files$accessTokenParam"
+            Write-Host "files query uri = $filesQueryUri"
             $files = Invoke-RestMethod -Uri $filesQueryUri -Method Get
 
             $screenShots = $files | where { $_.Name.EndsWith(".jpg") }
