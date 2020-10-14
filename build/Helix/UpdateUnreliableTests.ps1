@@ -25,6 +25,14 @@ $azureDevOpsRestApiHeaders = @{
     "Authorization"="Basic $([System.Convert]::ToBase64String([System.Text.ASCIIEncoding]::ASCII.GetBytes(":$AccessToken")))"
 }
 
+Write-Host "access token = $AccessToken"
+Write-Host "helix access token = $HelixAccessToken"
+Write-Host "collection uri = $CollectionUri"
+Write-Host "team project = $TeamProject"
+Write-Host "build uri = $BuildUri"
+Write-Host "helix type job filter = $HelixTypeJobFilter"
+Write-Host " read only test mode = $ReadOnlyTestMode"
+
 $queryUri = GetQueryTestRunsUri -CollectionUri $CollectionUri -TeamProject $TeamProject -BuildUri $BuildUri
 Write-Host "queryUri = $queryUri"
 
@@ -38,12 +46,12 @@ $timesSeenByRunName = @{}
 foreach ($testRun in $testRuns.value)
 {
     $jobType = Get-HelixJobTypeFromTestRun($testRun)
-    if(!($jobType -like "$HelixTypeJobFilter*"))
-    {
-        Write-Host "Skipping test run '$($testRun.name)' since jobType '$jobType' does not match HelixTypeJobFilter '$HelixTypeJobFilter'"
-        continue
-    }
-    Write-Host "Processing test run '$($testRun.name)' with jobType '$jobType'"
+#    if(!($jobType -like "$HelixTypeJobFilter*"))
+#    {
+#        Write-Host "Skipping test run '$($testRun.name)' since jobType '$jobType' does not match HelixTypeJobFilter '$HelixTypeJobFilter'"
+#        continue
+#    }
+#    Write-Host "Processing test run '$($testRun.name)' with jobType '$jobType'"
 
     if(!$ReadOnlyTestMode)
     {
