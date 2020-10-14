@@ -72,8 +72,13 @@ jobs:
   - task: CopyFiles@2
     inputs:
       targetFolder: '${{ parameters.nupkgdir }}'
-      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
+      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\framework'
       Contents: '**\Microsoft.ProjectReunion*.appx'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: ${{ parameters.nupkgdir }}
+      ArtifactName: 'nuget' 
 
   # - powershell: |
   #     $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
