@@ -19,17 +19,6 @@ jobs:
     helixOutputFolder: $(Build.SourcesDirectory)\HelixOutput
 
   steps:
-  - task: DotNetCoreCLI@2
-    displayName: Run tests in Helix
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      HELIXACCESSTOKEN: $(HelixApiAccessToken)
-    inputs:
-      command: custom
-      projects: build/Helix/RunTestsInHelix.proj
-      custom: msbuild
-      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)  /p:TestSuite=${{parameters.TestSuite}}
-    
   - task: powershell@2
     displayName: 'UpdateUnreliableTests.ps1'
     condition: succeededOrFailed()

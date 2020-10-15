@@ -13,18 +13,18 @@ parameters:
   # if 'useBuildOutputFromBuildId' is set, we will default to using a build from this pipeline:
   useBuildOutputFromPipeline: $(System.DefinitionId)
   matrix: 
-    Debug_x86:
-      buildPlatform: 'x86'
-      buildConfiguration: 'debug'
+    #Debug_x86:
+     # buildPlatform: 'x86'
+      #buildConfiguration: 'debug'
       # %3b is the escape code for ';' which is used as the delimiter
-      openHelixTargetQueues: 'windows.10.amd64.clientrs2.open.xaml%3bwindows.10.amd64.clientrs5.open.xaml'
-      outputDirectory: BuildOutput\Debug\\x86\ProjectReunionHelix\
+      #openHelixTargetQueues: 'windows.10.amd64.clientrs2.open.xaml%3bwindows.10.amd64.clientrs5.open.xaml'
+      #outputDirectory: BuildOutput\Debug\\x86\ProjectReunionHelix\
       #closedHelixTargetQueues: 'windows.10.amd64.clientrs2.xaml%3bwindows.10.amd64.clientrs5.xaml'
-    Release_x86:
-      buildPlatform: 'x86'
-      buildConfiguration: 'release'
-      openHelixTargetQueues: 'windows.10.amd64.client19h1.open.xaml%3bwindows.10.amd64.clientrs3.open.xaml'
-      outputDirectory: BuildOutput\Release\\x86\ProjectReunionHelix\
+    #Release_x86:
+      #buildPlatform: 'x86'
+      #buildConfiguration: 'release'
+      #openHelixTargetQueues: 'windows.10.amd64.client19h1.open.xaml%3bwindows.10.amd64.clientrs3.open.xaml'
+      #outputDirectory: BuildOutput\Release\\x86\ProjectReunionHelix\
       #closedHelixTargetQueues: 'windows.10.amd64.client19h1.xaml%3bwindows.10.amd64.clientrs3.xaml'
     Release_x64:
       buildPlatform: 'x64'
@@ -195,3 +195,14 @@ jobs:
 #      projects: build\Helix\RunTestsInHelix.proj
 #      custom: msbuild
 #      arguments: '$(helixCommonArgs) /p:HelixTargetQueues=$(closedHelixTargetQueues)'
+  - task: DotNetCoreCLI@2
+    displayName: Run tests in Helix
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      HELIXACCESSTOKEN: $(HelixApiAccessToken)
+    inputs:
+      command: custom
+      projects: build/Helix/RunTestsInHelix.proj
+      custom: msbuild
+      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)  /p:TestSuite=${{parameters.TestSuite}}
+ 
