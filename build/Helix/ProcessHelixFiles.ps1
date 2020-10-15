@@ -53,9 +53,8 @@ $webClient = New-Object System.Net.WebClient
 
 foreach ($testRun in $testRuns.value)
 {
-    Write-Host "Retrieving test results..."
-    $testRunResultsUri = "$($testRun.url)/results?`$top=$sizeOfPage&`$skip=$numItemsToSkip&api-version=5.1"
-    $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
+
+    $testResults = Invoke-RestMethod -Uri "$($testRun.url)/results?api-version=5.1" -Method Get -Headers $azureDevOpsRestApiHeaders
     foreach ($testResult in $testResults.value)
     {
         $info = ConvertFrom-Json $testResult.comment
