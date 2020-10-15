@@ -75,11 +75,6 @@ jobs:
       sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
       Contents: '**\Microsoft.ProjectReunion*.appx'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: ${{ parameters.nupkgdir }}
-      ArtifactName: 'nuget' 
-
   # - powershell: |
   #     $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
   #     if ("${{ parameters.useReleaseTag}}" -eq [bool]::TrueString) { $prereleaseTag = "" }
@@ -112,10 +107,6 @@ jobs:
       patchVersion: ${{ parameters.patch }}
       basePath: '$(Build.SourcesDirectory)\Artifacts\drop'
       packDestination: ${{ parameters.nupkgdir }}
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: ${{ parameters.nupkgdir }}
-      ArtifactName: 'nuget' 
 
   - ${{if parameters.signConfig }}:
     - task: PkgESCodeSign@10
