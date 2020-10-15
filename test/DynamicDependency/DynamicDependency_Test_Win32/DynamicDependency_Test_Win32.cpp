@@ -5,6 +5,9 @@
 
 #include <MsixDynamicDependency.h>
 
+// Replace with #include <Math.Add.h>
+extern "C" int Math_Add(int x, int y);
+
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
@@ -114,6 +117,8 @@ namespace Test::DynamicDependency::Win32
 
         TEST_METHOD(Create_Add_Remove_Delete)
         {
+            // Setup our dynamic dependency
+
             auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
             auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
@@ -145,6 +150,24 @@ namespace Test::DynamicDependency::Win32
             auto packagePath{ TP::GetPackagePath(expectedPackageFullName) };
             VerifyPathEnvironmentVariable(packagePath, pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
+
+            // Let's use resources from the dynamically added package
+            auto mathAddDllFilename = L"Framework.Math.Add.dll";
+            wil::unique_hmodule mathAddDll(LoadLibrary(mathAddDllFilename));
+            {
+                const auto lastError{ GetLastError() };
+                auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
+                Assert::IsNotNull(mathAddDll.get(), message.get());
+            }
+
+            auto mathAdd = GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add);
+            Assert::IsNotNull(mathAdd);
+
+            const int expectedValue = 2 + 3;
+            const auto actualValue = mathAdd(2, 3);
+            Assert::AreEqual(expectedValue, actualValue);
+
+            // Tear down our dynamic dependency
 
             MddRemovePackageDependency(packageDependencyContext);
 
