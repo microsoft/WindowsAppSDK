@@ -4,6 +4,8 @@ parameters:
   minimumExpectedTestsExecutedCount: 500
   checkJobAttempt: false
   pgoArtifact: ''
+  buildPlatform: 'x64'
+  buildConfiguration: 'release'
   testSuite: 'DevTestSuite' # Can be: DevTestSuite, ScenarioTestSuite
 
 jobs:
@@ -45,7 +47,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: build/Helix/testResult.ps1
-      arguments: -Configuration $(buildConfiguration) -Platform $(buildPlatform)
+      arguments: -Configuration '${{ parameters.buildConfiguration }}' -Platform '${{ parameters.buildPlatform }}'
   - task: powershell@2
     displayName: Check Result Files
     condition: failed()
