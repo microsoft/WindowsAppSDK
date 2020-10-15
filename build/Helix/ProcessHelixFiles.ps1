@@ -53,10 +53,10 @@ $webClient = New-Object System.Net.WebClient
 
 foreach ($testRun in $testRuns.value)
 {
-
     $testResults = Invoke-RestMethod -Uri "$($testRun.url)/results?api-version=5.1" -Method Get -Headers $azureDevOpsRestApiHeaders
     foreach ($testResult in $testResults.value)
     {
+        Write-Host "test result = $testResult"
         $info = ConvertFrom-Json $testResult.comment
         $helixJobId = $info.HelixJobId
         $helixWorkItemName = $info.HelixWorkItemName
