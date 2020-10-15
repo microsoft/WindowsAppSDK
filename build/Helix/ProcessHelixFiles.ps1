@@ -57,6 +57,7 @@ foreach ($testRun in $testRuns.value)
     foreach ($testResult in $testResults.value)
     {
         Write-Host "test result = $testResult"
+        Write-Host "test result comment = $testResult.comment"
         $info = ConvertFrom-Json $testResult.comment
         $helixJobId = $info.HelixJobId
         $helixWorkItemName = $info.HelixWorkItemName
