@@ -250,10 +250,102 @@ void MddCore::PackageGraph::AddToDllSearchOrder(PackageGraphNode& package)
 
 void MddCore::PackageGraph::UpdatePath()
 {
+    // PATH is mutable by anyone in the process, at any time.
+    // We can't even guarantee our pathlist is unchanged over the life
+    // of the process. Others could have altered part of out PATH addition.
+    // Unfortunately it's not only possible to dynamically add the same
+    // package to the package graph, there are desirable scenarios for it
+    // (e.g. plugin type scenarios).
+    //
+    // As a pratical matter, we'll follow this algorithm:
+    //
+    //      Remove our previous addition to PATH (if present)
+    //      Prepend out new pathlist to PATH
+    //
+    // We'll assume for 'removal' our previous pathlist is an unmodified
+    // block and if not, we won't try to micromanage removing it piecemeal.
+    // If it's not an unmodified block the app's done something unexpected
+    // and we can't reliably predict exactly what's up or how to respond.
+
+    // Build the package graph path list (semi-colon delimited)
+    std::wstring pathList{ BuildPathList() };
+
+    // Build the new PATH
+    std::wstring newPath;
+
     // Get the current PATH environment variable
     auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
     std::wstring path{ !pathEnvironmentVariable ? L"" : pathEnvironmentVariable.get() };
+    if (!pathEnvironmentVariable)
+    {
+        // We are the PATH
+        newPath = pathList;
+    }
+    else
+    {
+        // Remove the previous pathlist from PATH
+        if (m_pathListLastAddedToPath.empty())
+        {
+            // Nothing to remove so use the PATH environment variable as-is
+            newPath = std::move(path);
+        }
+        else
+        {
+            const auto& oldPathList{ m_pathListLastAddedToPath };
+            size_t offset = path.find(oldPathList);
+            for (; offset != std::wstring::npos; offset = path.find(oldPathList, offset + 1))
+            {
+                // Is this a false positive?
+                if ((offset != 0) && (path[offset - 1] != L';'))
+                {
+                    continue;
+                }
+                auto offsetAfterOldPathList = offset + oldPathList.length();
+                if ((offsetAfterOldPathList < path.length()) && (path[offsetAfterOldPathList] != L';'))
+                {
+                    continue;
+                }
 
+                // Gotcha!
+
+                // At this point we know...
+                // ...the old pathlist is the start-of-string or prefixed with ";"
+                // ...the old pathlist is the end-of-string or suffixed with ";"
+                // If we have both we need to remove one.
+                // If we're at the start of PATH we need to remove the trailing ";"
+                // If we're at the end of PATH we need to remove the leading ";"
+                // Simplifying matters, if we're not at the end of the string we can remove
+                // the trailer else remove the leader
+
+                // Keep everything before the old pathlist (if anything exists before it)
+                newPath = path.substr(0, offset);
+
+                // Skip the old path list and the trailing ";" (if any)
+                if (offsetAfterOldPathList < path.length())
+                {
+                    newPath += path.substr(offsetAfterOldPathList + 1);
+                }
+
+                // Done!
+                break;
+            }
+        }
+
+        // Prepend the new pathlist to PATH
+        if (!pathList.empty())
+        {
+            newPath = pathList + L";" + newPath;
+        }
+    }
+
+    // Update the PATH enironment variable
+    PCWSTR newPathEnvironmentVariable = (newPath.length() > 0 ? newPath.c_str() : nullptr);
+    THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPathEnvironmentVariable));
+
+    // Remember the path list we added to PATH for future updates
+    m_pathListLastAddedToPath = pathList;
+
+#if 0
     // Build the package graph path list (semi-colon delimited)
     std::wstring pathList{ BuildPathList() };
 
@@ -297,7 +389,7 @@ void MddCore::PackageGraph::UpdatePath()
     if (newPath.empty())
     {
         // If this isn't our first addition to PATH our previous addition's been altered by unknown parties
-        (void)LOG_HR_IF_MSG(E_UNEXPECTED, m_pathListLastAddedToPath.empty(), "Package Graph in PATH has been unexpectedly altered");
+        (void)LOG_HR_IF_MSG(E_UNEXPECTED, !m_pathListLastAddedToPath.empty(), "Package Graph in PATH has been unexpectedly altered");
 
         // Do the best we can. Add the path list to the front of PATH
         const bool needDelimiter = (!pathList.empty() && (path[0] != L';'));
@@ -315,6 +407,7 @@ void MddCore::PackageGraph::UpdatePath()
 
     // Remember the path list we added to PATH for future updates
     m_pathListLastAddedToPath = pathList;
+#endif
 }
 
 void MddCore::PackageGraph::RemoveFromDllSearchOrder(PackageGraphNode& package)
