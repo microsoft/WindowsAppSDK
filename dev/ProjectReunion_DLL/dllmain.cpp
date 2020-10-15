@@ -3,15 +3,26 @@
 
 #include "pch.h"
 
+#include <MddDetourPackageGraph.h>
+
 BOOL APIENTRY DllMain(HMODULE hmodule, DWORD  reason, LPVOID reserved)
 {
     switch (reason)
     {
     case DLL_PROCESS_ATTACH:
+    {
         DisableThreadLibraryCalls(hmodule);
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
+        FAIL_FAST_IF_FAILED(MddDetourPackageGraphInitialize());
+        break;
+    }
     case DLL_PROCESS_DETACH:
+    {
+        MddDetourPackageGraphShutdown();
+        break;
+    }
+    case DLL_THREAD_ATTACH:
+        break;
+    case DLL_THREAD_DETACH:
         break;
     }
 

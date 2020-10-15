@@ -93,10 +93,10 @@ namespace Test::DynamicDependency::Win32
         {
             PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
             PACKAGE_VERSION minVersion{};
-            const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-            const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
+            const MddPackageDependencyProcessorArchitectures architectureFilter{};
+            const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
             PCWSTR lifetimeArtifact{};
-            const auto options = MddCreatePackageDependencyOptions::None;
+            const MddCreatePackageDependencyOptions options{};
             wil::unique_process_heap_string packageDependencyId;
             Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
 
@@ -111,39 +111,39 @@ namespace Test::DynamicDependency::Win32
 
         TEST_METHOD(Delete_NotFound)
         {
-            PCWSTR packageDependencyId = L"This.Does.Not.Exist";
+            PCWSTR packageDependencyId{ L"This.Does.Not.Exist" };
             MddDeletePackageDependency(packageDependencyId);
         }
 
-        TEST_METHOD(Create_Add_Remove_Delete)
+        TEST_METHOD(Create_Add_Remove_Delete_GetResolved)
         {
             // Setup our dynamic dependency
 
-            auto expectedPackageFullName = std::wstring(TP::FrameworkMathAdd::c_PackageFullName);
-            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            auto expectedPackageFullName{ std::wstring(TP::FrameworkMathAdd::c_PackageFullName) };
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
 
             PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
             PACKAGE_VERSION minVersion{};
-            const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-            const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
+            const MddPackageDependencyProcessorArchitectures architectureFilter{};
+            const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
             PCWSTR lifetimeArtifact{};
-            const auto createOptions = MddCreatePackageDependencyOptions::None;
+            const MddCreatePackageDependencyOptions createOptions{};
             wil::unique_process_heap_string packageDependencyId;
             Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
 
-            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
-            const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
-            const auto addOptions = MddAddPackageDependencyOptions::None;
+            const INT32 rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
+            const MddAddPackageDependencyOptions addOptions{};
             MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
             wil::unique_process_heap_string packageFullName;
             Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
             Assert::IsNotNull(packageFullName.get());
-            auto actualPackageFullName = std::wstring(packageFullName.get());
+            auto actualPackageFullName{ std::wstring(packageFullName.get()) };
             Assert::AreEqual(actualPackageFullName, expectedPackageFullName);
 
             VerifyPackageInPackageGraph(expectedPackageFullName, S_OK);
@@ -152,7 +152,7 @@ namespace Test::DynamicDependency::Win32
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
             // Let's use resources from the dynamically added package
-            auto mathAddDllFilename = L"Framework.Math.Add.dll";
+            auto mathAddDllFilename{ L"Framework.Math.Add.dll" };
             wil::unique_hmodule mathAddDll(LoadLibrary(mathAddDllFilename));
             {
                 const auto lastError{ GetLastError() };
@@ -160,24 +160,24 @@ namespace Test::DynamicDependency::Win32
                 Assert::IsNotNull(mathAddDll.get(), message.get());
             }
 
-            auto mathAdd = GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add);
+            auto mathAdd{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add) };
             Assert::IsNotNull(mathAdd);
 
-            const int expectedValue = 2 + 3;
-            const auto actualValue = mathAdd(2, 3);
+            const int expectedValue{ 2 + 3 };
+            const auto actualValue{ mathAdd(2, 3) };
             Assert::AreEqual(expectedValue, actualValue);
 
             // Tear down our dynamic dependency
 
             MddRemovePackageDependency(packageDependencyContext);
 
-            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
             MddDeletePackageDependency(packageDependencyId.get());
 
-            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
         }
@@ -191,14 +191,9 @@ namespace Test::DynamicDependency::Win32
 
         TEST_METHOD(GetResolvedPackageFullName_NotFound)
         {
-            PCWSTR packageDependencyId = L"This.Does.Not.Exist";
+            PCWSTR packageDependencyId{ L"This.Does.Not.Exist" };
             wil::unique_process_heap_string packageFullName;
             Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
-        }
-
-        TEST_METHOD(GetResolvedPackageFullName)
-        {
-            //TODO Test GetResolvedPackageFullName
         }
 
     private:
@@ -247,10 +242,59 @@ namespace Test::DynamicDependency::Win32
         }
 
         static void VerifyPackageInPackageGraph(
-            const std::wstring& /*packageFullName*/,
-            const HRESULT /*expectedHR*/)
+            const std::wstring& packageFullName,
+            const HRESULT expectedHR)
         {
-            //TODO Verify GetCurrentPackageInfo
+            UINT32 packageInfoCount{};
+            const PACKAGE_INFO* packageInfo{};
+            wil::unique_cotaskmem_ptr<BYTE[]> packageInfosBuffer;
+            Assert::AreEqual(expectedHR, GetCurrentPackageInfo(packageInfoCount, packageInfo, packageInfosBuffer));
+            if (expectedHR == S_OK)
+            {
+                Assert::AreNotEqual(-1, FindPackageFullNameInPackageInfoArray(packageFullName, packageInfoCount, packageInfo));
+            }
+        }
+
+        static HRESULT GetCurrentPackageInfo(
+            UINT32& packageInfoCount,
+            const PACKAGE_INFO*& packageInfo,
+            wil::unique_cotaskmem_ptr<BYTE[]>& buffer)
+        {
+            const UINT32 flags = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_BUNDLE;
+            const PackagePathType packagePathType = PackagePathType_Effective;
+            return GetCurrentPackageInfo(flags, packagePathType, packageInfoCount, packageInfo, buffer);
+        }
+
+        static HRESULT GetCurrentPackageInfo(
+            const UINT32 flags,
+            const PackagePathType packagePathType,
+            UINT32& packageInfoCount,
+            const PACKAGE_INFO*& packageInfo,
+            wil::unique_cotaskmem_ptr<BYTE[]>& buffer)
+        {
+            UINT32 bufferLength{};
+            LONG rc{ GetCurrentPackageInfo2(flags, packagePathType, &bufferLength, nullptr, nullptr) };
+            RETURN_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_INSUFFICIENT_BUFFER);
+
+            buffer = wil::make_unique_cotaskmem<BYTE[]>(bufferLength);
+            RETURN_IF_WIN32_ERROR(GetCurrentPackageInfo2(flags, packagePathType, &bufferLength, buffer.get(), &packageInfoCount));
+            packageInfo = reinterpret_cast<PACKAGE_INFO*>(buffer.get());
+            return S_OK;
+        }
+
+        static int FindPackageFullNameInPackageInfoArray(
+            const std::wstring& packageFullName,
+            const size_t packageInfoCount,
+            const PACKAGE_INFO* packageInfo)
+        {
+            for (UINT32 index = 0; index < packageInfoCount; ++index, ++packageInfo)
+            {
+                if (CompareStringOrdinal(packageFullName.c_str(), -1, packageInfo->packageFullName, -1, TRUE) == CSTR_EQUAL)
+                {
+                    return true;
+                }
+            }
+            return -1;
         }
 
     private:

@@ -69,12 +69,12 @@ public:
 
     bool IsDynamic() const
     {
-        return !m_packageInfoReference;
+        return !IsStatic();
     }
 
     bool IsStatic() const
     {
-        return !IsDynamic();
+        return !m_packageInfoReference.get();
     }
 
     UINT32 CountMatchingPackages(
@@ -116,7 +116,7 @@ private:
 private:
     mutable wil::unique_package_info_reference m_packageInfoReference;
     MddCore::PackageInfo m_packageInfo;
-    INT32 m_rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
+    INT32 m_rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
     std::wstring m_pathList;
     wil::unique_package_dependency_context m_context;
     std::vector<wil::unique_dll_directory_cookie> m_addDllDirectoryCookies;

@@ -62,10 +62,12 @@ HRESULT MddDetourPackageGraphInitialize() noexcept
     }
 
     // Detour package graph APIs to our implementation
-    FAIL_FAST_IF_WIN32_BOOL_FALSE(DetourRestoreAfterWith());
+    DetourRestoreAfterWith();
+    /*FAIL_FAST_IF_WIN32_BOOL_FALSE(DetourRestoreAfterWith());*/
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
     FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
+    FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
@@ -82,6 +84,7 @@ HRESULT _MddDetourPackageGraphShutdown() noexcept
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
     FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
+    FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
     FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }

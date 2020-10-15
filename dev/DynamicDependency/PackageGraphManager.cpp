@@ -141,7 +141,10 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
     }
 
     // Compute the buffer length used/needed and fill buffer (if we can)
-    *bufferLength = SerializePackageInfoToBuffer(flags, packagePathType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount);
+    auto bufferNeeded = SerializePackageInfoToBuffer(flags, packagePathType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount);
+    const auto isInsufficientBuffer = (*bufferLength < bufferNeeded);
+    *bufferLength = bufferNeeded;
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), isInsufficientBuffer);
 
     return S_OK;
 }
@@ -160,7 +163,6 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
     // Setup our initial pointers to write the PACKAGE_INFO[] and the variable length data
     const auto totalPackagesCount{ dynamicPackagesCount + staticPackagesCount };
     UINT32 bufferNeeded{ sizeof(PACKAGE_INFO) * totalPackagesCount };
-    buffer += bufferNeeded;
 
     // Let's do it...
     for (auto& matchingPackageGraphNode : matchingPackageInfo)
@@ -181,17 +183,19 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
             fromPackagesCount = staticPackagesCount;
             fromPackagesBuffer = staticPackageInfo;
         }
-        const auto fromPackageInfo{ static_cast<const PACKAGE_INFO*>(fromPackagesBuffer) };
+        auto fromPackageInfo{ static_cast<const PACKAGE_INFO*>(fromPackagesBuffer) };
 
         // Copy the package info to the buffer
         auto toPackageInfo{ reinterpret_cast<PACKAGE_INFO*>(buffer) };
-        for (UINT32 index=0; index < fromPackagesCount; ++index, ++toPackageInfo)
+        for (UINT32 index=0; index < fromPackagesCount; ++index, ++fromPackageInfo, ++toPackageInfo)
         {
             // Copy over the fixed length data
-            bufferNeeded += sizeof(*toPackageInfo);
             if (bufferNeeded <= bufferLength)
             {
-                memcpy(toPackageInfo, fromPackageInfo, sizeof(*toPackageInfo));
+                memset(toPackageInfo, 0, sizeof(*toPackageInfo));
+                toPackageInfo->flags = fromPackageInfo->flags;
+                toPackageInfo->packageId.processorArchitecture = fromPackageInfo->packageId.processorArchitecture;
+                toPackageInfo->packageId.version = fromPackageInfo->packageId.version;
             }
             SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->path, fromPackageInfo->path);
             SerializeStringToBuffer(bufferLength, buffer, bufferNeeded, toPackageInfo->packageFullName, fromPackageInfo->packageFullName);
@@ -215,13 +219,14 @@ void MddCore::PackageGraphManager::SerializeStringToBuffer(
 {
     if (from)
     {
+        const auto bufferUsed = bufferNeeded;
         const auto size{ wcssize(from) };
         bufferNeeded += size;
         if (bufferNeeded <= bufferLength)
         {
-            memcpy(buffer, from, size);
-            to = reinterpret_cast<PWSTR>(buffer);
-            buffer += size;
+            memcpy(buffer + bufferUsed, from, size);
+            to = reinterpret_cast<PWSTR>(buffer + bufferUsed);
+            //buffer += size;
         }
     }
 }
