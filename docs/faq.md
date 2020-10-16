@@ -168,8 +168,7 @@ complex classes cheaper (fewer interface queries.). Memory usage will be slightl
 as your apps will load code that can be improved and reduced in size over time. For performance 
 at app launch, there'll probably be a net neutral effect.
 
-## Will Project Reunion would help alleviate the burden of app compatibility testing 
-## required with each new version of Windows 10?
+## Will Project Reunion help with app-compat testing of new Windows versions??
 
 Yes.
 Project Reunion components will work downlevel to at least Windows 10 version 1809 and in future 
