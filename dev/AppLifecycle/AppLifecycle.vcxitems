@@ -16,14 +16,11 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)AppLifecycle.idl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)README.md" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationActivationHandler.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationActivationHandler.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionContractHandler.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ExtensionContractHandler.cpp" />
   </ItemGroup>
 </Project>

@@ -42,12 +42,9 @@ Global
 		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
 		test\AppLifecycle\AppLifecycle.vcxitems*{80e07022-9e99-44fe-b875-901fb6c82f52}*SharedItemsImports = 9
-		test\AppLifecycle\AppLifecycle.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
-		dev\AppLifecycle\AppLifecycle.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\SampleWinRT\SampleWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
-		test\AppLifecycle\AppLifecycle.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\SampleFlatC\SampleFlatC.vcxitems*{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9

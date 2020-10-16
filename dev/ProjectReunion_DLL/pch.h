@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <unknwn.h>
+#include <ShObjIdl_core.h>
 #include <thread>
 #include <mutex>
 #include <wil/cppwinrt.h>
@@ -9,4 +10,4 @@
 #include <appmodel.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
-
+#include <NotificationActivationCallback.h>
