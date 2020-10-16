@@ -56,7 +56,6 @@ foreach ($testRun in $testRuns.value)
     $testResults = Invoke-RestMethod -Uri "$($testRun.url)/results?api-version=5.1" -Method Get -Headers $azureDevOpsRestApiHeaders
     foreach ($testResult in $testResults.value)
     {
-        Write-Host "test result = $testResult"
         if ($testResults.comment -ne $null)
         {
             Write-Host "test result comment = $testResult.comment"
