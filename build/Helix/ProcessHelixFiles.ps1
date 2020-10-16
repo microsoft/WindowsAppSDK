@@ -75,72 +75,23 @@ foreach ($testRun in $testRuns.value)
                 $visualTreeVerificationFiles = $files | where { $_.Name.EndsWith(".xml") -And (-Not $_.Name.Contains('testResults')) }
                 $pgcFiles = $files | where { $_.Name.EndsWith(".pgc") }
                 
-                Write-Host "screenshots count = $screenShots.Count"
-                Write-Host "dumps count = $dumps.Count"
-                Write-Host "log count = $logs.Count"
-                Write-Host "pgc count = $pgcFiles.Count"
-                if ($screenShots.Count + $dumps.Count + $visualTreeVerificationFiles.Count + $pgcFiles.Count -gt 0)
+                foreach($file in $files)
                 {
-                    Write-Host "we got files"
-                    if(-Not $isTestRunNameShown)
+                    # We don't upload dump files since they are too large.
+                    # We don't upload the _subresults.json since they usually not useful for investigating test failures.
+                    if(!$file.Name.EndsWith(".dmp") -and !$file.Name.EndsWith("_subresults.json"))
                     {
-                        Write-Host "not isTestRunNameSHown"
-                        Out-File -FilePath $helixLinkFile -Append -InputObject "<h2>$($testRun.name)</h2>"
-                        $isTestRunNameShown = $true
-                    }
-                    Out-File -FilePath $helixLinkFile -Append -InputObject "<h3>$helixWorkItemName</h3>"
-                    Generate-File-Links $screenShots "Screenshots"
-                    Generate-File-Links $dumps "CrashDumps"
-                    Generate-File-Links $logs "Logs"
-                    Generate-File-Links $visualTreeVerificationFiles "visualTreeVerificationFiles"
-                    Generate-File-Links $pgcFiles "PGC files"
-                    $misc = $files | where { ($screenShots -NotContains $_) -And ($dumps -NotContains $_) -And ($visualTreeVerificationFiles -NotContains $_) -And ($pgcFiles -NotContains $_) }
-                    Generate-File-Links $misc "Misc"
-
-                    if( -Not (Test-Path $visualTreeVerificationFolder) )
-                    {
-                        New-Item $visualTreeVerificationFolder -ItemType Directory
-                    }
-                    foreach($screenShot in $screenShots)
-                    {
-                        $destination = "$OutputFolder\screenshots\$($screenShot.Name)"
-                        Write-Host "Copying $($screenShot.Name) to $destination"
-                        $link = "$($screenShot.Link)$accessTokenParam"
-                        $webClient.DownloadFile($link, $destination)
-                    }
-                    foreach($log in $logs)
-                    {
-                        $destination = "$OutputFolder\screenshots\$($log.Name)"
-                        Write-Host "Copying $($log.Name) to $destination"
-                        $link = "$($log.Link)$accessTokenParam"
-                        $webClient.DownloadFile($link, $destination)
-                    }
-                    foreach($verificationFile in $visualTreeVerificationFiles)
-                    {
-
-                        $destination = "$visualTreeVerificationFolder\$($verificationFile.Name)"
-                        Write-Host "Copying $($verificationFile.Name) to $destination"
-                        $link = "$($verificationFile.Link)$accessTokenParam"
-                        $webClient.DownloadFile($link, $destination)
-                    }
-
-                    foreach($pgcFile in $pgcFiles)
-                    {
-                        $flavorPath = $pgcFile.Name.Split('.')[0]
-                        $archPath = $pgcFile.Name.Split('.')[1]
-                        $fileName = $pgcFile.Name.Remove(0, $flavorPath.length + $archPath.length + 2)
-                        $fullPath = "$OutputFolder\PGO\$flavorPath\$archPath"
-                        $destination = "$fullPath\$fileName"
-
-                        Write-Host "Copying $($pgcFile.Name) to $destination"
-
-                        if (-Not (Test-Path $fullPath))
+                        $destination = "$OutputFolder\$($file.Name)"
+                        Write-Host "Copying $($file.Name) to $destination"
+                        $fileurl = Append-HelixAccessTokenToUrl $file.Link  $HelixAccessToken
+                        try
                         {
-                            New-Item $fullPath -ItemType Directory
+                            $webClient.DownloadFile($fileurl, $destination)
                         }
-
-                        $link = "$($pgcFile.Link)$accessTokenParam"
-                        $webClient.DownloadFile($link, $destination)
+                        catch
+                        {
+                            Log-Error "Failed to download $($file.Name): $($_.Exception.Message)"
+                        }
                     }
                 }
             }
@@ -158,4 +109,18 @@ if(Test-Path $visualTreeVerificationFolder)
         Write-Host "Copying $($file.Name) to $visualTreeVerificationFolder"
         Move-Item $file.FullName "$visualTreeVerificationFolder\$($file.Name)" -Force
     }
+}
+
+function Append-HelixAccessTokenToUrl
+{
+    Param ([string]$url, [string]$token)
+    if($url.Contains("?"))
+    {
+        $url = "$($url)&access_token=$($token)"
+    }
+    else
+    {
+        $url = "$($url)?access_token=$($token)"
+    }
+    return $url
 }
