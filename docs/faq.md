@@ -123,6 +123,7 @@ OS shell. Its UX is either drawn using XAML or Composition objects or a
 framework that produces XAML or Composition objects.
 
 ## How will I consume Project Reunion components? How will they be packaged?
+
 Project Reunion components will be available as NuGet packages and Framework packages. 
 Developers can add Nuget packages to their build environments and or reference shared code 
 that will be available as framework packages.
@@ -136,6 +137,7 @@ ProjectReunion.MSIX that contains the framework package as part of your app's un
 installer (similar to how an app carried the VC Runtimes or the DirectX, etc.)
 
 ## What is a Framework Package?
+
 Framework packages are ways for apps to share code from a common source, rather than 
 carrying it with themselves. Apps just need to reference the framework package in their 
 manifest.
@@ -146,6 +148,7 @@ themselves having to update (or know how to update some shared copy.)
 This is much better for security & reliability fixes as well.
 
 ## How will consuming Project Reunion components impact my app size?
+
 If you are a packaged app? No. If unpackaged, it probably will.
 
 Nuget packages are build-time artifacts. Referencing more NuGets may mean additional work at build 
@@ -156,6 +159,7 @@ old “DLL hell” problem – we’ll be using versioning mechanisms to prevent
 
 ## How will Project Reunion impact an application's performance given that the pieces are 
 ## further and further away from the OS?
+
 There's likely going to be a performance impact but it depends on the component.
 In some situations, like with MRT Core, there will be improved performance because we will  
 prune some expensive but rarely used functionality.
@@ -174,10 +178,12 @@ developers - thinking of it as roughly aligned with Windows enterprise support i
 starting point
 
 ## What is the deprecation strategy for in-system components?
-In-box components will be supported forever in the usual way. We have no plans to deprecate 
-(remove their usability) them at this time. We will likely slow down or pause investment in 
+
+In-box components will be supported forever in the usual way. We have no plans to deprecate them
+(remove their usability) at this time. We will likely slow down or pause investment in 
 the in-box components while we focus on making the Project Reunion surface complete.
 
 ## I don't see my question here! 
+
 [Create an issue to ask a question or start a discussion](https://github.com/microsoft/ProjectReunion/issues/new/choose).
 
