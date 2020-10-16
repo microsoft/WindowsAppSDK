@@ -83,10 +83,9 @@ foreach ($testRun in $testRuns.value)
                     {
                         $destination = "$OutputFolder\$($file.Name)"
                         Write-Host "Copying $($file.Name) to $destination"
-                        $fileurl = Append-HelixAccessTokenToUrl $file.Link  $HelixAccessToken
                         try
                         {
-                            $webClient.DownloadFile($fileurl, $destination)
+                            $webClient.DownloadFile($file.Link, $destination)
                         }
                         catch
                         {
