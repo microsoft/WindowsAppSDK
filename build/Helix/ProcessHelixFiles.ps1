@@ -68,8 +68,9 @@ foreach ($testRun in $testRuns.value)
                 $filesQueryUri = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files$accessTokenParam"
                 Write-Host "files query uri = $filesQueryUri"
                 $files = Invoke-RestMethod -Uri $filesQueryUri -Method Get
-
+                Write-Host "files = $files"
                 $screenShots = $files | where { $_.Name.EndsWith(".jpg") }
+                Write-Host "screenshots = $screenShots"
                 $dumps = $files | where { $_.Name.EndsWith(".dmp") }
                 $logs = $files | where { $_.Name.EndsWith(".log") }
                 $visualTreeVerificationFiles = $files | where { $_.Name.EndsWith(".xml") -And (-Not $_.Name.Contains('testResults')) }
