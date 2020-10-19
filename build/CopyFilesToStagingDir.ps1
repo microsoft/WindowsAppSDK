@@ -66,14 +66,5 @@ if($PublishAppxFiles)
 
 # Publish pdbs:
 $symbolsOutputDir = "$($FullPublishDir)\Symbols\"
-PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\IXMPTestApp.TAEF\IXMPTestApp.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXTestUtilities\MUXTestUtilities.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControls.Test\MUXControls.Test.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControlsTestApp.TAEF\MUXControlsTestApp.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControlsTestAppForIslands\MUXControlsTestAppForIslands.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControlsTestAppWPF\MUXControlsTestAppWPF.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\TestAppCX\TestAppCX.pdb $symbolsOutputDir
-PublishFile -IfExists $FullBuildOutput\NugetPackageTestApp\NugetPackageTestApp.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\AppThatUsesMUXIndirectly\AppThatUsesMUXIndirectly.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\NugetPackageTestAppCX.pdb $symbolsOutputDir
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pdb $symbolsOutputDir
+
