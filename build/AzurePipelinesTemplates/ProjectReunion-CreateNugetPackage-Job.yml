@@ -90,6 +90,22 @@ jobs:
 
   #   displayName: 'build-nupkg.ps1'
   
+  # Copy the re-made framework packages into the same location in the artifact drop to be republished at the end of the job.
+  - task: CopyFiles@2
+    inputs:
+      targetFolder: '$(build.artifactStagingDirectory)\thin_nuget'
+      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
+      Contents: |
+        build
+        include
+        lib
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: thin_nupkg'
+    inputs:
+      PathtoPublish: '$(build.artifactStagingDirectory)\thin_nuget'
+      artifactName: 'thin_nuget'
+
   - task: CopyFiles@2
     displayName: 'copy license'
     inputs:
