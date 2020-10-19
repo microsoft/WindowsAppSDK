@@ -96,9 +96,9 @@ jobs:
       targetFolder: '$(build.artifactStagingDirectory)\thin_nuget'
       sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
       Contents: |
-        build
-        include
-        lib
+        **\build\**
+        **\include\**
+        **\lib\**
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: thin_nupkg'
