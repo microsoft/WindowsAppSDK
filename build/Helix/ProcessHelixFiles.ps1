@@ -109,17 +109,3 @@ if(Test-Path $visualTreeVerificationFolder)
         Move-Item $file.FullName "$visualTreeVerificationFolder\$($file.Name)" -Force
     }
 }
-
-function Append-HelixAccessTokenToUrl
-{
-    Param ([string]$url, [string]$token)
-    if($url.Contains("?"))
-    {
-        $url = "$($url)&access_token=$($token)"
-    }
-    else
-    {
-        $url = "$($url)?access_token=$($token)"
-    }
-    return $url
-}

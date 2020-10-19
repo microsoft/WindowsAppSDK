@@ -136,9 +136,11 @@ namespace ProjectReunionHelix
             TEST_METHOD_PROPERTY(L"Owner", L"jorvan@microsoft.com")
             TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
             END_TEST_METHOD()
-            BEGIN_TEST_METHOD(HelixFailedTest)
-            TEST_METHOD_PROPERTY(L"Owner", L"jorvan@microsoft.com")
-            END_TEST_METHOD()
+            // Comment out failing test to not fail in CI mostly used to test helix pipeline
+            // in the case of a test failure
+            //BEGIN_TEST_METHOD(HelixFailedTest)
+            //TEST_METHOD_PROPERTY(L"Owner", L"jorvan@microsoft.com")
+            //END_TEST_METHOD()
     };
 
     void HelixTest::HelixPassedTest()
