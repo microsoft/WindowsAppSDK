@@ -13,7 +13,6 @@ $visualTreeVerificationFolder = "$OutputFolder\UpdatedVisualTreeVerificationFile
 $accessTokenParam = ""
 if($HelixAccessToken)
 {
-    Write-Host "!!!!helix access token is present!!!!"
     $accessTokenParam = "?access_token=$HelixAccessToken"
 }
 
@@ -68,12 +67,6 @@ foreach ($testRun in $testRuns.value)
                 $filesQueryUri = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files$accessTokenParam"
                 Write-Host "files query uri = $filesQueryUri"
                 $files = Invoke-RestMethod -Uri $filesQueryUri -Method Get
-                $screenShots = $files | where { $_.Name.EndsWith(".jpg") }
-                Write-Host "screenshots = $screenShots"
-                $dumps = $files | where { $_.Name.EndsWith(".dmp") }
-                $logs = $files | where { $_.Name.EndsWith(".log") }
-                $visualTreeVerificationFiles = $files | where { $_.Name.EndsWith(".xml") -And (-Not $_.Name.Contains('testResults')) }
-                $pgcFiles = $files | where { $_.Name.EndsWith(".pgc") }
                 
                 foreach($file in $files)
                 {

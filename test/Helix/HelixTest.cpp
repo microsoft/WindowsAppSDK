@@ -179,10 +179,10 @@ namespace ProjectReunionHelix
         // Give window message enough time to execute and pop up result
         Sleep(2000);
     }
-    void HelixTest::HelixFailedTest()
+    /*void HelixTest::HelixFailedTest()
     {
         // Fail the test to enable the error saved files
         VERIFY_ARE_EQUAL(1, 2);
         Sleep(1000);
-    }
+    }*/
 } /* namespace DCPPHelix */
