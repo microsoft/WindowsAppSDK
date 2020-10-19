@@ -35,7 +35,7 @@ namespace HelixTestHelpers
             var root = new XElement("assemblies");
 
             var assembly = new XElement("assembly");
-            assembly.SetAttributeValue("name", "ProjectReunionHelix.dll.dll");
+            assembly.SetAttributeValue("name", "ProjectReunionHelix.dll");
             assembly.SetAttributeValue("test-framework", "TAEF");
             assembly.SetAttributeValue("run-date", DateTime.Now.ToString("yyyy-MM-dd"));
 
@@ -174,16 +174,6 @@ namespace HelixTestHelpers
                         if (testsExecuting == 1)
                         {
                             string testName = element.Attribute("Title").Value;
-                            const string xamlNativePrefix = "Windows::UI::Xaml::Tests::";
-                            const string xamlManagedPrefix = "Windows.UI.Xaml.Tests.";
-                            if (testName.StartsWith(xamlNativePrefix))
-                            {
-                                testName = testName.Substring(xamlNativePrefix.Length);
-                            }
-                            else if (testName.StartsWith(xamlManagedPrefix))
-                            {
-                                testName = testName.Substring(xamlManagedPrefix.Length);
-                            }
 
                             currentResult = new TestResult() { Name = testName, Passed = true, CleanupPassed = true };
                             testResults.Add(currentResult);

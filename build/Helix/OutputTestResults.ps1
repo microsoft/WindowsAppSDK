@@ -54,8 +54,7 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
         
     foreach ($testResult in $testResults.value)
     {
-        $shortTestCaseTitle = $testResult.testCaseTitle -replace "[a-zA-Z0-9]+.[a-zA-Z0-9]+.Windows.UI.Xaml.Tests.MUXControls.",""
-
+        $shortTestCaseTitle = $testResult.testCaseTitle
         if ($testResult.outcome -eq "Failed")
         {
             if (-not $failingTests.Contains($shortTestCaseTitle))

@@ -4,8 +4,6 @@ parameters:
   minimumExpectedTestsExecutedCount: 500
   checkJobAttempt: false
   pgoArtifact: ''
-  buildPlatform: 'x64'
-  buildConfiguration: 'release'
   testSuite: 'DevTestSuite' # Can be: DevTestSuite, ScenarioTestSuite
 
 jobs:
@@ -52,7 +50,7 @@ jobs:
 
   - ${{if ne(parameters.pgoArtifact, '') }}:
     - script: move /y $(helixOutputFolder)\PGO $(Build.ArtifactStagingDirectory)
-      displayName: 'Move pgc files to PGO artifact'#
+      displayName: 'Move pgc files to PGO artifact'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Helix files'
