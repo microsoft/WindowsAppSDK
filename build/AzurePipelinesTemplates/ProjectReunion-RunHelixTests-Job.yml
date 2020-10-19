@@ -13,13 +13,6 @@ parameters:
   # if 'useBuildOutputFromBuildId' is set, we will default to using a build from this pipeline:
   useBuildOutputFromPipeline: $(System.DefinitionId)
   matrix: 
-    Debug_x86:
-      buildPlatform: 'x86'
-      buildConfiguration: 'debug'
-      # %3b is the escape code for ';' which is used as the delimiter
-      openHelixTargetQueues: 'windows.10.amd64.clientrs2.open.xaml%3bwindows.10.amd64.clientrs5.open.xaml'
-      outputDirectory: BuildOutput\Debug\\x86\ProjectReunionHelix\
-      closedHelixTargetQueues: 'windows.10.amd64.clientrs2.xaml%3bwindows.10.amd64.clientrs5.xaml'
     Release_x86:
       buildPlatform: 'x86'
       buildConfiguration: 'release'
@@ -91,29 +84,6 @@ jobs:
       PathtoPublish: $(buildPlatform)-$(buildConfiguration)-taeftest
       ArtifactName: $(buildPlatform)-$(buildConfiguration)-taeftest
       publishLocation: Container
- 
-
-#   This seems like a different(better?) way of building the test project, 
-#   will start quick and dirty with what we implemented in LiftedIXP to get these off the ground
-#
-#  - task: DownloadBuildArtifacts@0 
-#    condition:
-#      and(succeeded(),eq(variables['useBuildOutputFromBuildId'],''))
-#    inputs: 
-#      artifactName: ${{ parameters.artifactName }} 
-#      downloadPath: '$(artifactsDir)'
-
-#  - task: DownloadBuildArtifacts@0 
-#    condition:
-#      and(succeeded(),ne(variables['useBuildOutputFromBuildId'],''))
-#    inputs: 
-#      buildType: specific
-#      buildVersionToDownload: specific
-#      project: $(System.TeamProjectId)
-#      pipeline: ${{ parameters.useBuildOutputFromPipeline }}
-#      buildId: $(useBuildOutputFromBuildId)
-#      artifactName: ${{ parameters.artifactName }} 
-#      downloadPath: '$(artifactsDir)'
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: Restore NuGet Packages
@@ -129,72 +99,6 @@ jobs:
       filePath: build\Helix\PrepareHelixPayload.ps1
       arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
       
-#  - task: CmdLine@1
-#    displayName: 'Display Helix payload contents'
-#    inputs:
-#      filename: 'dir'
-#      arguments: '/s $(Build.SourcesDirectory)\HelixPayload'
-
-#  - template: ProjectReunion-CreateHelixProjFile-Steps.yml
-#    parameters:
-#      condition: and(succeeded(),ne('${{ parameters.testSuite }}','NugetTestSuite'))
-#     testFilePath: '$(artifactsDir)\${{ parameters.artifactName }}\$(buildConfiguration)\$(buildPlatform)\Test\MUXControls.Test.dll'
-#      outputProjFileName: 'RunTestsInHelix-InteractionTests.proj'
-#      testSuite: '${{ parameters.testSuite }}'
-#      taefQuery: ${{ parameters.taefQuery }}
-
-#  - template: ProjectReunion-CreateHelixProjFile-Steps.yml
-#    parameters:
-#      condition: and(succeeded(),ne('${{ parameters.testSuite }}','NugetTestSuite'))
-#      testFilePath: '$(artifactsDir)\${{ parameters.artifactName }}\$(buildConfiguration)\$(buildPlatform)\AppxPackages\MUXControlsTestApp_Test\MUXControlsTestApp.appx'
-#      outputProjFileName: 'RunTestsInHelix-ApiTests.proj'
-#      testSuite: '${{ parameters.testSuite }}'
-#      taefQuery: ${{ parameters.taefQuery }}
-
-#  - template: ProjectReunion-CreateHelixProjFile-Steps.yml
-#    parameters:
-#      condition: and(succeeded(),ne('${{ parameters.testSuite }}','NugetTestSuite'))
-#      testFilePath: '$(artifactsDir)\${{ parameters.artifactName }}\$(buildConfiguration)\$(buildPlatform)\AppxPackages\IXMPTestApp_Test\IXMPTestApp.appx'
-#      outputProjFileName: 'RunTestsInHelix-IXMPTestAppTests.proj'
-#      testSuite: '${{ parameters.testSuite }}'
-#      taefQuery: ${{ parameters.taefQuery }}
-
-#  - template: ProjectReunion-CreateHelixProjFile-Steps.yml
-#    parameters:
-#      condition: and(succeeded(),eq('${{ parameters.testSuite }}','NugetTestSuite'))
-#      testFilePath: '$(artifactsDir)\${{ parameters.artifactName }}\$(buildConfiguration)\$(buildPlatform)\Test\MUXControls.ReleaseTest.dll'
-#      outputProjFileName: 'RunTestsInHelix-NugetTests.proj'
-#      testSuite: '${{ parameters.testSuite }}'
-#      taefQuery: ${{ parameters.taefQuery }}
-
-#  - task: PublishBuildArtifacts@1
-#    displayName: 'Publish generated .proj files'
-#    inputs:
-#      PathtoPublish: $(Build.ArtifactStagingDirectory)
-#      artifactName: ${{ parameters.artifactName }}
-      
-#  - task: DotNetCoreCLI@2
-#    displayName: 'Run tests in Helix (open queues)'
-#    condition: eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/')
-#    env:
-#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-#    inputs:
-#      command: custom
-#      projects: build\Helix\RunTestsInHelix.proj
-#      custom: msbuild
-#      arguments: '$(helixCommonArgs) /p:IsExternal=true /p:Creator=WinUI /p:HelixTargetQueues=$(openHelixTargetQueues)'
-
-#  - task: DotNetCoreCLI@2
-#    displayName: 'Run tests in Helix (closed queues)'
-#    condition: ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/')
-#    env:
-#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-#      HelixAccessToken: $(HelixApiAccessToken)
-#    inputs:
-#      command: custom
-#      projects: build\Helix\RunTestsInHelix.proj
-#      custom: msbuild
-#      arguments: '$(helixCommonArgs) /p:HelixTargetQueues=$(closedHelixTargetQueues)'
   - task: DotNetCoreCLI@2
     displayName: Run tests in Helix
     env:
