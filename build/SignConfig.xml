@@ -3,12 +3,12 @@
   <job platform="" configuration="" dest="__INPATHROOT__" jobname="dep.controls" approvers="">
     <!-- Overwrite the input files to simplify downstream things like nuget and framework package generation. -->
     <file src="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" />
+    <file src="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
     <file src="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" />
+    <file src="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
     <file src="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" />
+    <file src="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
     <file src="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\sdk\Microsoft.ProjectReunion.winmd" />
+    <file src="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
   </job>
 </SignConfigXML>
