@@ -47,7 +47,7 @@ Follow the example of [SampleFlatC](./SampleFlatC.h):
 
 ## Adding exports
 
-1. In [ProjectReunion.def](../dll/ProjectReunion.def) add the list of exported methods
+1. In [ProjectReunion.def](../ProjectReunion_DLL/ProjectReunion.def) add the list of exported methods
 
 ## Other notes
 
