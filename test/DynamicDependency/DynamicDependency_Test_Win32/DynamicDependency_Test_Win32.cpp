@@ -115,35 +115,25 @@ namespace Test::DynamicDependency::Win32
             MddDeletePackageDependency(packageDependencyId);
         }
 
-        TEST_METHOD(Create_Add_Remove_Delete_GetResolved_Framework_ProjectReunion)
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_ProjectReunion)
         {
             // Setup our dynamic dependencies
 
-            auto expectedPackageFullName{ std::wstring(TP::ProjectReunionFramework::c_PackageFullName) };
+            std::wstring expectedPackageFullName{ TP::ProjectReunionFramework::c_PackageFullName };
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
 
-            PCWSTR packageFamilyName{ TP::ProjectReunionFramework::c_PackageFamilyName };
-            PACKAGE_VERSION minVersion{};
-            const MddPackageDependencyProcessorArchitectures architectureFilter{};
-            const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
-            PCWSTR lifetimeArtifact{};
-            const MddCreatePackageDependencyOptions createOptions{};
-            wil::unique_process_heap_string packageDependencyId;
-            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
+            wil::unique_process_heap_string packageDependencyId{ Mdd_TryCreate_ProjectReunionFramework() };
 
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
-            const INT32 rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
-            const MddAddPackageDependencyOptions addOptions{};
-            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
             wil::unique_process_heap_string packageFullName;
-            Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
+            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{ Mdd_Add(packageDependencyId.get(), packageFullName) };
             Assert::IsNotNull(packageFullName.get());
-            auto actualPackageFullName{ std::wstring(packageFullName.get()) };
+            std::wstring actualPackageFullName{ packageFullName.get() };
             Assert::AreEqual(actualPackageFullName, expectedPackageFullName);
 
             VerifyPackageInPackageGraph(expectedPackageFullName, S_OK);
@@ -166,7 +156,7 @@ namespace Test::DynamicDependency::Win32
             wil::unique_process_heap_string resolvedPackageFullName;
             Assert::AreEqual(S_OK, mddGetResolvedPackageFullNameForPackageDependency(packageDependencyId.get(), &resolvedPackageFullName));
             Assert::IsNotNull(resolvedPackageFullName.get());
-            auto actualResolvedPackageFullName{ std::wstring(resolvedPackageFullName.get()) };
+            std::wstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
             const auto& expectedResolvedPackageFullName{ expectedPackageFullName };
             Assert::AreEqual(expectedResolvedPackageFullName, actualResolvedPackageFullName);
 
@@ -185,35 +175,25 @@ namespace Test::DynamicDependency::Win32
             VerifyPackageDependency(packageDependencyId.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
         }
 
-        TEST_METHOD(Create_Add_Remove_Delete_GetResolved_Frameworks_ProjectReunion_MathAdd)
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_ProjectReunion_MathAdd)
         {
             // Setup our dynamic dependencies
 
-            auto expectedPackageFullName{ std::wstring(TP::FrameworkMathAdd::c_PackageFullName) };
+            std::wstring expectedPackageFullName{ TP::FrameworkMathAdd::c_PackageFullName };
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
 
-            PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
-            PACKAGE_VERSION minVersion{};
-            const MddPackageDependencyProcessorArchitectures architectureFilter{};
-            const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
-            PCWSTR lifetimeArtifact{};
-            const MddCreatePackageDependencyOptions createOptions{};
-            wil::unique_process_heap_string packageDependencyId;
-            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
+            wil::unique_process_heap_string packageDependencyId{ Mdd_TryCreate_FrameworkMathAdd() };
 
             VerifyPackageInPackageGraph(expectedPackageFullName, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
             VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
             VerifyPackageDependency(packageDependencyId.get(), S_OK, expectedPackageFullName);
 
-            const INT32 rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
-            const MddAddPackageDependencyOptions addOptions{};
-            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
             wil::unique_process_heap_string packageFullName;
-            Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId.get(), rank, addOptions, &packageDependencyContext, &packageFullName));
+            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{ Mdd_Add(packageDependencyId.get(), packageFullName) };
             Assert::IsNotNull(packageFullName.get());
-            auto actualPackageFullName{ std::wstring(packageFullName.get()) };
+            std::wstring actualPackageFullName{ packageFullName.get() };
             Assert::AreEqual(actualPackageFullName, expectedPackageFullName);
 
             VerifyPackageInPackageGraph(expectedPackageFullName, S_OK);
@@ -365,6 +345,48 @@ namespace Test::DynamicDependency::Win32
                 }
             }
             return -1;
+        }
+
+    private:
+        // Overloads and conveniences for TryCreate to simplify test readability
+        wil::unique_process_heap_string Mdd_TryCreate(
+            PCWSTR packageFamilyName,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr)
+        {
+            PACKAGE_VERSION minVersion{};
+            const MddPackageDependencyProcessorArchitectures architectureFilter{};
+            const MddCreatePackageDependencyOptions createOptions{};
+            wil::unique_process_heap_string packageDependencyId;
+            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
+            return packageDependencyId;
+        }
+
+        wil::unique_process_heap_string Mdd_TryCreate_ProjectReunionFramework(
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr)
+        {
+            return Mdd_TryCreate(TP::ProjectReunionFramework::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
+        }
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr)
+        {
+            return Mdd_TryCreate(TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
+        }
+
+    private:
+        // Overloads and conveniences for TryCreate to simplify test readability
+        MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            PCWSTR packageDependencyId,
+            wil::unique_process_heap_string& packageFullName)
+        {
+            const INT32 rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
+            const MddAddPackageDependencyOptions addOptions{};
+            MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
+            Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId, rank, addOptions, &packageDependencyContext, &packageFullName));
+            return packageDependencyContext;
         }
 
     private:
