@@ -279,13 +279,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Math.h" />
+    <ClInclude Include="Math.Multiply.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Math.Multiply.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -308,4 +308,11 @@
     <Message Text="Make MSIX $(TargetName).msix for $(ProjectName)" />
     <Exec Command="$(SolutionDir)tools\makemsix.cmd $(SolutionDir) $(ProjectDir) $(OutDir) $(TargetDir) $(TargetFileName) $(TargetName)" ConsoleToMsBuild="true" IgnoreExitCode="true" />
   </Target>
+  <Target Name="MakeNuGet" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)Math.Multiply.h')" Inputs="$(ProjectDir)Math.Multiply.h;$(TargetPathName)" Outputs="$(OutDir)Math.Multiply.h">
+    <Message Text="Make NuGet (sorta) for $(ProjectName)" />
+    <Exec Command="COPY $(ProjectDir)Math.Multiply.h $(OutDir)\Math.Multiply.h" ConsoleToMsBuild="true" IgnoreExitCode="true" />
+  </Target>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)Math.Multiply.h" />
+  </ItemGroup>
 </Project>

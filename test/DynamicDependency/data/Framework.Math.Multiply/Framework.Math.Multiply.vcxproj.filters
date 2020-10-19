@@ -9,12 +9,12 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Math.Multiply.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Math.h" />
+    <ClInclude Include="Math.Multiply.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="module.def" />

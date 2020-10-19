@@ -5,8 +5,8 @@
 
 #include <MsixDynamicDependency.h>
 
-// Replace with #include <Math.Add.h>
-extern "C" int Math_Add(int x, int y);
+#include <Math.Add.h>
+#include <Math.Multiply.h>
 
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
