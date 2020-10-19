@@ -2,13 +2,13 @@
 <SignConfigXML>
   <job platform="" configuration="" dest="__INPATHROOT__" jobname="dep.controls" approvers="">
     <!-- Overwrite the input files to simplify downstream things like nuget and framework package generation. -->
-    <file src="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
-    <file src="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
-    <file src="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
-    <file src="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" signType="WindowsRT" dest="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll" />
-    <file src="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" signType="WindowsRT" dest="__INPATHROOT__\Release\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.winmd" />
+    <file src="__INPATHROOT__\runtimes\win10-x86\native\Microsoft.ApplicationModel.Resources.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-x86\native\Microsoft.ApplicationModel.Resources.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-x86\native\MRM.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-x86\native\MRM.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-x64\native\Microsoft.ApplicationModel.Resources.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-x64\native\Microsoft.ApplicationModel.Resources.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-x64\native\MRM.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-x64\native\MRM.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-arm\native\Microsoft.ApplicationModel.Resources.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-arm\native\Microsoft.ApplicationModel.Resources.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-arm\native\MRM.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-arm\native\MRM.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-arm64\native\Microsoft.ApplicationModel.Resources.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-arm64\native\Microsoft.ApplicationModel.Resources.dll" />
+    <file src="__INPATHROOT__\runtimes\win10-arm64\native\MRM.dll" signType="WindowsRT" dest="__INPATHROOT__\runtimes\win10-arm64\native\MRM.dll" />
   </job>
 </SignConfigXML>
