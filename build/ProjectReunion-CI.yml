@@ -37,7 +37,6 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
-
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
@@ -52,13 +51,18 @@ jobs:
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
     minimumExpectedTestsExecutedCount: 7500
 
+# MRTCore build pipeline
+- template: ..\dev\MRTCore\azure-pipelines.yml
+  parameters:
+    buildJobName: 'BuildMRTCore'
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
   parameters:
     jobName: CreateNugetPackage
-    dependsOn: Build
+    dependsOn: PublishMRT
     prereleaseVersionTag: ci
+    condition: succeeded('PublishMRT')
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
@@ -90,9 +94,3 @@ jobs:
 #    - RunFrameworkPkgTestsInHelix
 #    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
 #    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
-
-# MRTCore build pipeline
-- template: ..\dev\MRTCore\azure-pipelines.yml
-  parameters:
-    buildJobName: 'BuildMRTCore'
-    dependsOn: CreateNugetPackage
