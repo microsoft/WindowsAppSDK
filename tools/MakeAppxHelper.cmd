@@ -35,7 +35,7 @@ if "%BUILDOUTPUT_OVERRIDE%" EQU "" (
 )
 
 set InputDirectory=%BUILDOUTPUT_OVERRIDE%\
-set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\FrameworkPackage\win10-%TFS_PLATFORM%
+set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\runtimes\win10-%TFS_PLATFORM%
 
 call ..\build\FrameworkPackage\MakeFrameworkPackage.cmd -InputDirectory '%InputDirectory%' ^
 -OutputDirectory '%OutputDirectory%' -BasePackageName '%BasePackageName%' ^
