@@ -62,7 +62,9 @@ Write-Output "Input: $inputDirectory"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.pdb" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.pdb" $fullOutputPath\PackageContents
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd" $fullOutputPath\PackageContents
@@ -103,7 +105,9 @@ $classes = Get-ActivatableTypes $inputBasePath\lib\uap10.0\Microsoft.Application
 Write-Host $classes.Length Types found.
 @"
 "Microsoft.ApplicationModel.Resources.dll" "Microsoft.ApplicationModel.Resources.dll"
+"Microsoft.ApplicationModel.Resources.pdb" "Microsoft.ApplicationModel.Resources.pdb"
 "MRM.dll" "MRM.dll"
+"MRM.pdb" "MRM.pdb"
 "Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ApplicationModel.Resources.winmd" 
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 
