@@ -3,7 +3,8 @@ parameters:
   jobName: ''
   dependsOn: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  nupkgdir: '$(build.artifactStagingDirectory)\nuget'
+  nupkgdir: '$(build.artifactStagingDirectory)\thin_nuget'
+  fwpdir: '$(build.artifactStagingDirectory)\fwp'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
@@ -46,6 +47,7 @@ jobs:
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
       echo parameters.nupkgdir '${{ parameters.nupkgdir }}'
+      echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
@@ -54,7 +56,12 @@ jobs:
 
   - task: DownloadBuildArtifacts@0 
     inputs: 
-      artifactName: drop
+      artifactName: thin_nuget
+      downloadPath: '$(Build.SourcesDirectory)\Artifacts'
+
+  - task: DownloadBuildArtifacts@0 
+    inputs: 
+      artifactName: fwp
       downloadPath: '$(Build.SourcesDirectory)\Artifacts'
 
   # debugging - remove or comment out before completing PR      
@@ -72,7 +79,7 @@ jobs:
   - task: CopyFiles@2
     inputs:
       targetFolder: '${{ parameters.nupkgdir }}'
-      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
+      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\fwp'
       Contents: '**\Microsoft.ProjectReunion*.appx'
 
   # - powershell: |
@@ -89,22 +96,6 @@ jobs:
   #       -BuildFlavor ${{ parameters.buildFlavor }}
 
   #   displayName: 'build-nupkg.ps1'
-  
-  # Copy the re-made framework packages into the same location in the artifact drop to be republished at the end of the job.
-  - task: CopyFiles@2
-    inputs:
-      targetFolder: '$(build.artifactStagingDirectory)\thin_nuget'
-      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
-      Contents: |
-        **\build\**
-        **\include\**
-        **\lib\**
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: thin_nupkg'
-    inputs:
-      PathtoPublish: '$(build.artifactStagingDirectory)\thin_nuget'
-      artifactName: 'thin_nuget'
 
   - task: CopyFiles@2
     displayName: 'copy license'
@@ -112,7 +103,7 @@ jobs:
       SourceFolder: '$(Build.SourcesDirectory)'
       Contents: |
         LICENSE
-      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
+      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\thin_nuget'
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     inputs:
       command: 'pack'
@@ -121,7 +112,7 @@ jobs:
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
       patchVersion: ${{ parameters.patch }}
-      basePath: '$(Build.SourcesDirectory)\Artifacts\drop'
+      basePath: '$(Build.SourcesDirectory)\Artifacts\thin_nuget'
       packDestination: ${{ parameters.nupkgdir }}
 
   - ${{if parameters.signConfig }}:
@@ -135,10 +126,16 @@ jobs:
         outPathRoot: '${{ parameters.nupkgdir }}'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: nupkg'
+    displayName: 'Publish artifact: thin_nupkg'
     inputs:
       PathtoPublish: '${{ parameters.nupkgdir }}'
-      artifactName: 'nuget'
+      artifactName: 'thin_nuget'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: fwp'
+    inputs:
+      PathtoPublish: '${{ parameters.fwpdir }}'
+      artifactName: 'fwp'
       
   - ${{if parameters.signConfig }}:
     # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
@@ -146,7 +143,7 @@ jobs:
       displayName: 'NuGet push to Project.Reunion.nuget.internal'
       inputs:
         command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/nuget/*.symbols.nupkg'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/thin_nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/thin_nuget/*.symbols.nupkg'
         verbosityPush: 'Detailed' 
         nuGetFeedType: 'internal'
         #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
