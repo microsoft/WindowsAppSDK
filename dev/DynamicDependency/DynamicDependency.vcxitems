@@ -7,13 +7,14 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\DynamicDependency.DataStore.ProxyStub</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.cpp" />
@@ -29,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependency.h" />

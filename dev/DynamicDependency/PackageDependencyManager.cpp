@@ -5,6 +5,8 @@
 
 #include "PackageDependencyManager.h"
 
+#include "DataStore.h"
+
 static std::mutex g_lock;
 std::vector<MddCore::PackageDependency> g_packageDependencies;
 
@@ -22,6 +24,8 @@ void MddCore::PackageDependencyManager::CreatePackageDependency(
 
     MddCore::PackageDependency packageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options);
     packageDependency.GenerateId();
+
+    MddCore::DataStore::Save(packageDependency);
 
     auto lock = std::unique_lock<std::mutex>(g_lock);
 
@@ -50,16 +54,28 @@ void MddCore::PackageDependencyManager::DeletePackageDependency(
             break;
         }
     }
+
+    MddCore::DataStore::Delete(packageDependencyId);
 }
 
 const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageDependency(
     _In_ PCWSTR packageDependencyId)
 {
+    // Check the in-memory list
     for (const auto& packageDependency : g_packageDependencies)
     {
         if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
         {
             return &packageDependency;
+        }
+    }
+
+    // Check the persisted package dependencies
+    {
+        auto packageDependency{ MddCore::DataStore::Load(packageDependencyId) };
+        if (!packageDependency)
+        {
+            
         }
     }
 

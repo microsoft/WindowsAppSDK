@@ -443,4 +443,12 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <!-- Include header files from the dev chunks -->
+  <Target Name="CopyFiles" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
+  </Target>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)DynamicDependencyDataStore_h.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)DynamicDependencyDataStore.idl" />
+  </ItemGroup>
 </Project>

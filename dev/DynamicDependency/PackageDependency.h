@@ -138,6 +138,16 @@ public:
         }
     }
 
+    const PSID User() const
+    {
+        return m_user.get();
+    }
+
+    PSID User()
+    {
+        return m_user.get();
+    }
+
     const std::wstring& PackageFamilyName() const
     {
         return m_packageFamilyName;
@@ -199,6 +209,11 @@ public:
         case MddCore::Architecture::Unknown: THROW_HR_MSG(E_UNEXPECTED, "Unsupported architecture 0x%X", architecture);
         default: THROW_HR_MSG(E_UNEXPECTED, "Unknown architecture 0x%X", architecture);
         }
+    }
+
+    bool operator!() const
+    {
+        return m_packageDependencyId.empty();
     }
 
 private:
