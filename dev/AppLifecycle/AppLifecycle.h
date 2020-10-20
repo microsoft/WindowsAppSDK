@@ -12,16 +12,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         static Windows::ApplicationModel::Activation::IActivatedEventArgs GetActivatedEventArgs();
 
-        static bool RegisterForFileTypeActivation(hstring const& groupName, Microsoft::ProjectReunion::DesiredView const& desiredView, hstring const& logo,
+        static void RegisterForFileTypeActivation(hstring const& groupName,
+            Microsoft::ProjectReunion::DesiredView const& desiredView, hstring const& logo,
             array_view<hstring const> supportedFileTypes, array_view<hstring const> supportedVerbs);
-        static bool RegisterForProtocolActivation(hstring const& name, Microsoft::ProjectReunion::DesiredView const& desiredView);
-        static bool RegisterForStartupActivation(hstring const& taskId, bool isEnabled, hstring const& displayName);
-        static bool RegisterForToastActivation(hstring const& displayName);
+        static void RegisterForProtocolActivation(hstring const& scheme, hstring const& displayName,
+            Microsoft::ProjectReunion::DesiredView const& desiredView);
+        static void RegisterForStartupActivation(hstring const& taskId, bool isEnabled,
+            hstring const& displayName);
+        static void RegisterForToastActivation(hstring const& displayName);
 
-        static bool UnregisterForFileTypeActivation(hstring const& groupName);
-        static bool UnregisterForProtocolActivation(hstring const& name);
-        static bool UnregisterForStartupActivation();
-        static bool UnregisterForToastActivation();
+        static void UnregisterForFileTypeActivation(hstring const& groupName);
+        static void UnregisterForProtocolActivation(hstring const& scheme);
+        static void UnregisterForStartupActivation();
+        static void UnregisterForToastActivation();
     };
 }
 

@@ -16,14 +16,14 @@ namespace Microsoft.ProjectReunion
     {
         static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
 
-        static Boolean RegisterForFileTypeActivation(String groupName, DesiredView desiredView, String logo, String[] supportedFileTypes, String[] supportedVerbs);
-        static Boolean RegisterForProtocolActivation(String name, DesiredView desiredView);
-        static Boolean RegisterForStartupActivation(String taskId, Boolean isEnabled, String displayName);
-        static Boolean RegisterForToastActivation(String displayName);
+        static void RegisterForFileTypeActivation(String groupName, DesiredView desiredView, String logo, String[] supportedFileTypes, String[] supportedVerbs);
+        static void RegisterForProtocolActivation(String scheme, String displayName, DesiredView desiredView);
+        static void RegisterForStartupActivation(String taskId, Boolean isEnabled, String displayName);
+        static void RegisterForToastActivation(String displayName);
 
-        static Boolean UnregisterForFileTypeActivation(String groupName);
-        static Boolean UnregisterForProtocolActivation(String name);
-        static Boolean UnregisterForStartupActivation();
-        static Boolean UnregisterForToastActivation();
+        static void UnregisterForFileTypeActivation(String groupName);
+        static void UnregisterForProtocolActivation(String scheme);
+        static void UnregisterForStartupActivation();
+        static void UnregisterForToastActivation();
     };
 }

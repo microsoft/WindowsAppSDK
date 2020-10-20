@@ -4,15 +4,18 @@
 #include <pch.h>
 #include "NotificationActivationHandler.h"
 
-HRESULT STDMETHODCALLTYPE NotificationActivationHandler::Activate(LPCWSTR app, LPCWSTR args,
-    [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data, [[maybe_unused]] ULONG count) noexcept
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    try
+    HRESULT STDMETHODCALLTYPE NotificationActivationHandler::Activate(LPCWSTR app, LPCWSTR args,
+        [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data, [[maybe_unused]] ULONG count) noexcept
     {
-        return E_FAIL;
-    }
-    catch (...)
-    {
-        return winrt::to_hresult();
+        try
+        {
+            return E_FAIL;
+        }
+        catch (...)
+        {
+            return winrt::to_hresult();
+        }
     }
 }
