@@ -106,12 +106,17 @@ public:
         return m_context.get();
     }
 
+    void GenerateContext();
+
     void AddDllDirectories();
 
     void RemoveDllDirectories();
 
 private:
     void BuildPathList();
+
+private:
+    static volatile MDD_PACKAGEDEPENDENCY_CONTEXT s_lastContext;
 
 private:
     mutable wil::unique_package_info_reference m_packageInfoReference;

@@ -39,6 +39,7 @@ HRESULT MddCore::PackageGraph::Add(
 {
     // Load the package's information
     PackageGraphNode packageGraphNode(packageFullName, rank);
+    packageGraphNode.GenerateContext();
 
     // Find the insertion point where to add the new package graph node to the package graph
     int index{};
@@ -83,23 +84,12 @@ HRESULT MddCore::PackageGraph::Add(
     // Add the new node to the package graph
     if (index < m_packageGraphNodes.size())
     {
-        // We'd like to
         m_packageGraphNodes.insert(m_packageGraphNodes.begin() + index, std::move(packageGraphNode));
     }
     else
     {
         m_packageGraphNodes.push_back(std::move(packageGraphNode));
     }
-#if defined(TODO_AddToPackageGraph_MoreConcise)
-    auto packageInfoReference{ OpenPackageInfoByFullName(packageFullName) };
-    auto node{ PackageGraphNode(packageInfoReference) };
-
-    auto by_rank = [](auto&& left, auto&& right) { return left.rank < right.rank; });
-    auto where = options.PrependIfRankCollision ?
-        std::lower_bound(m_packageGraphNodes.begin(), m_packageGraphNodes.end(), node, by_rank) :
-        std::upper_bound(m_packageGraphNodes.begin(), m_packageGraphNodes.end(), node, by_rank);
-    m_packageGraphNodes.insert(where, node);
-#endif
 
     // The DLL Search Order must be updated when we update the package graph
     auto& node = m_packageGraphNodes[index];

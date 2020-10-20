@@ -163,6 +163,7 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
     // Setup our initial pointers to write the PACKAGE_INFO[] and the variable length data
     const auto totalPackagesCount{ dynamicPackagesCount + staticPackagesCount };
     UINT32 bufferNeeded{ sizeof(PACKAGE_INFO) * totalPackagesCount };
+    auto toPackageInfo{ reinterpret_cast<PACKAGE_INFO*>(buffer) };
 
     // Let's do it...
     for (auto& matchingPackageGraphNode : matchingPackageInfo)
@@ -186,7 +187,6 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
         auto fromPackageInfo{ static_cast<const PACKAGE_INFO*>(fromPackagesBuffer) };
 
         // Copy the package info to the buffer
-        auto toPackageInfo{ reinterpret_cast<PACKAGE_INFO*>(buffer) };
         for (UINT32 index=0; index < fromPackagesCount; ++index, ++fromPackageInfo, ++toPackageInfo)
         {
             // Copy over the fixed length data
