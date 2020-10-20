@@ -258,6 +258,15 @@ jobs:
       flattenFolders: true
 
   - task: CopyFiles@2
+    displayName: 'copy winmd'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
+      Contents: |
+        Microsoft.ApplicationModel.Resources.winmd
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fwp\lib\uap10.0\'
+      flattenFolders: true
+
+  - task: CopyFiles@2
     displayName: 'copy .net 5 projection DLL and PDB'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
