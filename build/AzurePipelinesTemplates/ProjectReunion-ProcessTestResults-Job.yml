@@ -4,6 +4,7 @@ parameters:
   minimumExpectedTestsExecutedCount: 500
   checkJobAttempt: false
   pgoArtifact: ''
+  testSuite: 'DevTestSuite' # Can be: DevTestSuite, ScenarioTestSuite
 
 jobs:
 - job: ProcessTestResults
@@ -24,7 +25,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: build\Helix\UpdateUnreliableTests.ps1
-      arguments: -RerunPassesRequiredToAvoidFailure '${{ parameters.rerunPassesRequiredToAvoidFailure }}'
+      arguments: -RerunPassesRequiredToAvoidFailure '${{ parameters.rerunPassesRequiredToAvoidFailure }}' 
 
   - task: powershell@2
     displayName: 'OutputTestResults.ps1'
