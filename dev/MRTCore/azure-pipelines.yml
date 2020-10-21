@@ -69,10 +69,12 @@ jobs:
       arguments: /envonly $(buildPlatform)fre
       modifyEnvironment: true
 
-  - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet 5.8'
+  - task: powershell@2
+    displayName: 'Use NuGet 5.8.0-preview.3'
     inputs:
-      versionSpec: '5.8.0-preview.3'
+      targetType: filePath
+      filePath: $(MRTSourcesDirectory)\build\Initialize-NuGet.ps1
+      arguments: '-RepoRoot $(MRTSourcesDirectory)'
 
   - task: powershell@2
     displayName: 'Install the VS build tools'
