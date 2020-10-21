@@ -61,11 +61,33 @@ jobs:
 #      arguments: '$(Build.SourcesDirectory)'
 #      modifyEnvironment: true
 
-  - task: UseDotNet@2
+  - task: BatchScript@1
+    displayName: Set up environment
     inputs:
-      packageType: 'sdk'
-      useGlobalJson: true
-      workingDirectory: '$(Build.SourcesDirectory)'
+      filename: '$(MRTSourcesDirectory)\build\init.cmd'
+      arguments: /envonly $(buildPlatform)fre
+      modifyEnvironment: true
+
+  - task: powershell@2
+    displayName: 'Install the VS build tools'
+    inputs:
+      targetType: filePath
+      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
+      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
+      
+  - task: BatchScript@1
+    displayName: Add the VS build tools to the path
+    inputs:
+      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
+      arguments: '$(MRTSourcesDirectory)\.buildtools'
+      modifyEnvironment: true
+
+  - task: powershell@2
+    displayName: 'Installing .NET SDK'
+    inputs:
+      targetType: filePath
+      workingDirectory: $(MRTSourcesDirectory)\build
+      filePath: $(MRTSourcesDirectory)\build\DownloadDotNetCoreSdk.ps1 
 
 #  - task: BatchScript@1
 #    displayName: 'Debug'
@@ -141,13 +163,11 @@ jobs:
     displayName: 'copy projection binaries and symbols for signing'
     condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
-        net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
-        net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
+        Microsoft.ApplicationModel.Resources.Projection.dll
+        Microsoft.ApplicationModel.Resources.Projection.pdb
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
       flattenFolders: false
 
   - task: CopyFiles@2
@@ -265,16 +285,6 @@ jobs:
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\drop\lib\net5.0-windows\'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'copy .net 2 projection DLL and PDB'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
-      Contents: |
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\drop\lib\netstandard2.0\'
       flattenFolders: true
 
   - task: CopyFiles@2

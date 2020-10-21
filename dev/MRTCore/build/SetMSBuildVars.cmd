@@ -1,0 +1,1 @@
+set PATH=%1\MSBuild\Current\Bin;%PATH%
