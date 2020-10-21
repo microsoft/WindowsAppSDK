@@ -14,7 +14,8 @@ parameters:
 jobs:
 - job: BuildMRT
   pool:
-    vmImage: 'windows-latest'
+    name: Package ES Native Code Pool
+#    vmImage: 'windows-latest'
 
   strategy:
     maxParallel: 10
