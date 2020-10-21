@@ -69,6 +69,13 @@ jobs:
       workingDirectory: $(MRTSourcesDirectory)\build
       filePath: $(MRTSourcesDirectory)\build\DownloadDotNetCoreSdk.ps1 
 
+  - task: BatchScript@1
+    displayName: 'Use .NET SDK'
+    inputs:
+      filename: '$(MRTSourcesDirectory)\build\SetDotnetVars.cmd'
+      arguments: '$(MRTSourcesDirectory)'
+      modifyEnvironment: true
+
 #  - task: BatchScript@1
 #    displayName: 'Debug'
 #    inputs:
