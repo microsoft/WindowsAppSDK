@@ -60,9 +60,16 @@ jobs:
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
   parameters:
     jobName: CreateNugetPackage
-    dependsOn: PublishMRT
+    dependsOn:
+      - Build
+      - PublishMRT
     prereleaseVersionTag: ci
-    condition: succeeded('PublishMRT')
+    condition: |
+      and
+      (
+        in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
+        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+      )
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml

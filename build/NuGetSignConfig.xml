@@ -3,7 +3,7 @@
   <job platform="" configuration="" dest="__INPATHROOT__" jobname="project.reunion" approvers="">
     <file src="__INPATHROOT__\Microsoft.ProjectReunion*.nupkg" signType="Nuget" />
   </job>
-  <job platform="" configuration="" dest="__INPATHROOT__\FrameworkPackage" jobname="project.reunion" approvers="">
+  <!-- <job platform="" configuration="" dest="__INPATHROOT__\FrameworkPackage" jobname="project.reunion" approvers="">
     <file src="__INPATHROOT__\FrameworkPackage\Microsoft.ProjectReunion*.nupkg" signType="Nuget" />
-  </job>
+  </job> -->
 </SignConfigXML>
