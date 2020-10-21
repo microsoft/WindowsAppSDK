@@ -14,7 +14,7 @@ parameters:
 jobs:
 - job: BuildMRT
   pool:
-    name: Package ES Native Code Pool
+    name: Hosted Windows 2019 with VS2019
 #    vmImage: 'windows-latest'
 
   strategy:
