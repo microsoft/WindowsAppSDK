@@ -3,21 +3,15 @@
 
 namespace Microsoft.ProjectReunion
 {
-    enum DesiredView
-    {
-        Default,
-        UseLess,
-        UseHalf,
-        UseMore,
-        UseMinimum
-    };
-
     static runtimeclass AppLifecycle
     {
         static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
+    }
 
-        static void RegisterForFileTypeActivation(String groupName, DesiredView desiredView, String logo, String[] supportedFileTypes, String[] supportedVerbs);
-        static void RegisterForProtocolActivation(String scheme, String displayName, DesiredView desiredView);
+    static runtimeclass ActivationRegistrationManager
+    {
+        static void RegisterForFileTypeActivation(String groupName, String logo, String[] supportedFileTypes, String[] supportedVerbs);
+        static void RegisterForProtocolActivation(String scheme, String displayName);
         static void RegisterForStartupActivation(String taskId, Boolean isEnabled, String displayName);
         static void RegisterForToastActivation(String displayName);
 

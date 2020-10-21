@@ -8,14 +8,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    class LaunchActivatedEventArgs : public winrt::implements<LaunchActivatedEventArgs, ActivatedEventArgsBase, ILaunchActivatedEventArgs>
+    class LaunchActivatedEventArgs : public winrt::implements<LaunchActivatedEventArgs,
+        ActivatedEventArgsBase, ILaunchActivatedEventArgs>
     {
     public:
-        LaunchActivatedEventArgs(const std::wstring& args, const std::wstring& tileId)
+        LaunchActivatedEventArgs(const std::wstring& args) :
+            m_args(args)
         {
             m_kind = ActivationKind::Launch;
-            m_args = args;
-            m_tileId = tileId;
         }
 
         // ILaunchActivatedEventArgs
@@ -26,11 +26,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         winrt::hstring TileId()
         {
-            return m_tileId.c_str();
+            // This implementation is only used for Win32 which don't support secondary tiles.
+            return L"";
         }
 
     private:
         std::wstring m_args;
-        std::wstring m_tileId;
     };
 }

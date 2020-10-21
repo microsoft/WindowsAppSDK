@@ -3,6 +3,7 @@
 #include <ShObjIdl_core.h>
 #include <thread>
 #include <mutex>
+#include <list>
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
