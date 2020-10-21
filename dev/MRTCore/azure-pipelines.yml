@@ -82,6 +82,13 @@ jobs:
       arguments: '$(MRTSourcesDirectory)\.buildtools'
       modifyEnvironment: true
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish install logs'
+    condition: Failed()
+    inputs:
+      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
+      artifactName: 'logs'
+
   - task: powershell@2
     displayName: 'Installing .NET SDK'
     inputs:
