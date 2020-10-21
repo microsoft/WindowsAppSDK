@@ -6,4 +6,19 @@
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.C.props" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.WinRt.props" />
 
+  <ItemGroup>
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\x64\Release\Microsoft.ProjectReunion.0.1.appx">
+      <Architecture>x64</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\arm\Release\Microsoft.ProjectReunion.0.1.appx">
+      <Architecture>arm</Architecture>
+      <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
+      <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
+    </AppxPackageRegistration>
+  </ItemGroup>
+
 </Project>
