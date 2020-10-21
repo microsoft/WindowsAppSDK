@@ -69,6 +69,11 @@ jobs:
       arguments: /envonly $(buildPlatform)fre
       modifyEnvironment: true
 
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.8'
+    inputs:
+      versionSpec: '5.8.0-preview.3'
+
   - task: powershell@2
     displayName: 'Install the VS build tools'
     inputs:
@@ -108,12 +113,6 @@ jobs:
 #    displayName: 'Debug'
 #    inputs:
 #      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
-
-  - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet 5.8'
-    inputs:
-      versionSpec: 5.8
-    continueOnError: true
 
   # NuGetCommand@2
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
