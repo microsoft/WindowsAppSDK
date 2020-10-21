@@ -110,9 +110,9 @@ jobs:
 #      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
 
   - task: NuGetToolInstaller@1
-    displayName: 'Use NuGet 5.6'
+    displayName: 'Use NuGet 5.8'
     inputs:
-      versionSpec: 5.6
+      versionSpec: 5.8
     continueOnError: true
 
   # NuGetCommand@2
@@ -124,9 +124,11 @@ jobs:
       feedsToUse: 'config'
       nugetConfigPath: '$(Build.SourcesDirectory)\nuget.config'
 
-  - task: VSBuild@1
+  - task: MSBuild@1
     displayName: 'build MrtCore'
     inputs:
+      msbuildLocationMethod: 'location'
+      msbuildLocation: $(MRTSourcesDirectory)\.buildtools\MSBuild\Current\Bin\MSBuild.exe
       platform: '$(buildPlatform)'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
