@@ -18,7 +18,9 @@ Remove the script code below from the build\Microsoft.WinUI.AppX.targets file in
 2. Install the Microsoft.ApplicationModel.Resources NuGet package.
     a. Connect to the following feed: https://mscodehub.visualstudio.com/mrtcore/_packaging?_a=feed&feed=MRTCore.
     b. Make sure you have the “Include prerelease” checkbox selected.
-Note: nuget.config in the root dir of the Reunion repo does not contain this feed as it is internal. So, you need to add it by yourself.
+Note:
+- nuget.config in the root dir of the Reunion repo does not contain this feed as it is internal. So, you need to add it by yourself.
+- The feed above is temporary, it will be moved soon.
 
 3. Now, simply build and run!
 
