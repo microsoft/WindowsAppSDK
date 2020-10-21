@@ -63,6 +63,27 @@ jobs:
 #      modifyEnvironment: true
 
   - task: powershell@2
+    displayName: 'Install the VS build tools'
+    inputs:
+      targetType: filePath
+      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
+      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
+      
+  - task: BatchScript@1
+    displayName: Add the VS build tools to the path
+    inputs:
+      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
+      arguments: '$(MRTSourcesDirectory)\.buildtools'
+      modifyEnvironment: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish install logs'
+    condition: Failed()
+    inputs:
+      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
+      artifactName: 'installlogs'
+
+  - task: powershell@2
     displayName: 'Installing .NET SDK'
     inputs:
       targetType: filePath
@@ -102,27 +123,6 @@ jobs:
       filename: '$(MRTSourcesDirectory)\build\init.cmd'
       arguments: /envonly $(buildPlatform)fre
       modifyEnvironment: true
-
-  - task: powershell@2
-    displayName: 'Install the VS build tools'
-    inputs:
-      targetType: filePath
-      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
-      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
-      
-  - task: BatchScript@1
-    displayName: Add the VS build tools to the path
-    inputs:
-      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
-      arguments: '$(MRTSourcesDirectory)\.buildtools'
-      modifyEnvironment: true
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish install logs'
-    condition: Failed()
-    inputs:
-      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
-      artifactName: 'logs'
 
   - task: VSBuild@1
     displayName: 'build MrtCore'
