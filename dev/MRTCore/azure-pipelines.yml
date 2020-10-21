@@ -62,6 +62,13 @@ jobs:
 #      arguments: '$(Build.SourcesDirectory)'
 #      modifyEnvironment: true
 
+  - task: BatchScript@1
+    displayName: Set up environment
+    inputs:
+      filename: '$(MRTSourcesDirectory)\build\init.cmd'
+      arguments: /envonly $(buildPlatform)fre
+      modifyEnvironment: true
+
   - task: powershell@2
     displayName: 'Install the VS build tools'
     inputs:
@@ -116,13 +123,6 @@ jobs:
       restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       feedsToUse: 'config'
       nugetConfigPath: '$(Build.SourcesDirectory)\nuget.config'
-
-  - task: BatchScript@1
-    displayName: Set up environment
-    inputs:
-      filename: '$(MRTSourcesDirectory)\build\init.cmd'
-      arguments: /envonly $(buildPlatform)fre
-      modifyEnvironment: true
 
   - task: VSBuild@1
     displayName: 'build MrtCore'
