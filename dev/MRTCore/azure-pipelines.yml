@@ -133,7 +133,7 @@ jobs:
       platform: '$(buildPlatform)'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+      msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish mrtcore binlog'
