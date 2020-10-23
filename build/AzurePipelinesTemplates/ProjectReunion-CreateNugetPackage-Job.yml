@@ -78,7 +78,7 @@ jobs:
         include\**
         lib\**
         LICENSE
-      TargetFolder: ${{ parameters.thinnupkgdir }}
+      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\thinnuget'
       flattenFolders: false
 
   # Extract framework package from fat nuget package
@@ -90,7 +90,7 @@ jobs:
         runtimes\**
         lib\uap10.0\**
         LICENSE
-      TargetFolder: ${{ parameters.fwpdir }}
+      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\fwp'
       flattenFolders: false
 
   # debugging - remove or comment out before completing PR      
