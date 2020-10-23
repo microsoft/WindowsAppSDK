@@ -5,6 +5,7 @@ parameters:
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
   fatnupkgdir: '$(build.artifactStagingDirectory)\fatnuget' 
   thinnupkgdir: '$(build.artifactStagingDirectory)\thinnuget'
+  fwpnupkgdir: '$(build.artifactStagingDirectory)\fwp'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
@@ -46,8 +47,9 @@ jobs:
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
-      echo parameters.fatnupkgdir '${{ parameters.thinnupkgdir }}'
+      echo parameters.thinnupkgdir '${{ parameters.thinnupkgdir }}'
       echo parameters.fatnupkgdir '${{ parameters.fatnupkgdir }}'
+      echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
