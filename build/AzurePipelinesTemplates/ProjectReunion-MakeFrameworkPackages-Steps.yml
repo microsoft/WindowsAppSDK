@@ -1,5 +1,6 @@
 parameters:
-  buildOutputDir: '$(Build.ArtifactStagingDirectory)\fwp'
+  appxInputDir: ''$(Build.SourcesDirectory)\AppXContents'
+  appxOutputDir: '$(Build.ArtifactStagingDirectory)\appx'
 
 steps:
   - powershell: |
@@ -12,13 +13,15 @@ steps:
         foreach ($config in $configs)
         {
           Write-Host "Checking $config"
-          $rootPath = "${{ parameters.buildOutputDir }}"
+          $appxInputDir = "${{ parameters.appxInputDir }}"
+          $appxOutputDir = "${{ parameters.appxOutputDir }}"
           Write-Host ""
           Write-Host "Checking for $rootPath\runtimes\win10-$platform\native\MRM.dll"
           Write-Host ""
           if (Test-Path "$rootPath\runtimes\win10-$platform\native\MRM.dll")
           {
-            $env:BUILDOUTPUT_OVERRIDE = $rootPath
+            $env:APPXINPUT_OVERRIDE = $rootPath
+            $env:APPXOUTPUT_OVERRIDE = $rootPath
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose
             if ($lastexitcode -ne 0) {
                 Write-Host ##vso[task.logissue type=error;] Make AppxHelper $platform $config failed with exit code $lastexitcode

@@ -3,8 +3,9 @@ parameters:
   jobName: ''
   dependsOn: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  fatnupkgdir: '$(build.artifactStagingDirectory)\fatnuget' 
-  thinnupkgdir: '$(build.artifactStagingDirectory)\thinnuget'
+  fatnupkgdir: '$(build.artifactStagingDirectory)\Nuget'
+  fwpdir: '$(build.artifactStagingDirectory)\FrameworkPackage'
+  appxdir: '$(build.artifactStagingDirectory)\AppX'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
@@ -46,8 +47,8 @@ jobs:
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
-      echo parameters.fatnupkgdir '${{ parameters.thinnupkgdir }}'
       echo parameters.fatnupkgdir '${{ parameters.fatnupkgdir }}'
+      echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
@@ -56,11 +57,11 @@ jobs:
 
   - task: DownloadBuildArtifacts@0 
     inputs: 
-      artifactName: fatnuget
+      artifactName: Nuget
       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
   - task: CopyFiles@2
-    displayName: 'copy license to fat nuget'
+    displayName: 'Copy license to fat nuget'
     inputs:
       SourceFolder: '$(Build.SourcesDirectory)'
       Contents: |
@@ -77,18 +78,28 @@ jobs:
         include\**
         lib\**
         LICENSE
-      TargetFolder: '${{ parameters.thinnupkgdir }}'
+      TargetFolder: '${{ parameters.fwpnupkgdir }}'
       flattenFolders: false
 
-  # Extract framework package from fat nuget package
+  # Extract framework package from fat nuget package into temp directory
   - task: CopyFiles@2
-    displayName: 'Extract Framework Package from Fat Nuget'
+    displayName: 'Extract Framework Package AppX contents from Fat Nuget'
     inputs:
       SourceFolder: '${{ parameters.fatnupkgdir }}'
       Contents: |
         runtimes\**
         lib\uap10.0\**
         LICENSE
+      TargetFolder: '$(Build.SourcesDirectory)\AppXContents'
+      flattenFolders: false
+
+  # Copy AppX into FWP
+  - task: CopyFiles@2
+    displayName: 'Copy AppX into FWP'
+    inputs:
+      SourceFolder: '${{ parameters.appxdir }}'
+      Contents: |
+        appx asdfasdf
       TargetFolder: '${{ parameters.fwpdir }}'
       flattenFolders: false
 
@@ -131,7 +142,7 @@ jobs:
       packDestination: ${{ parameters.fatnupkgdir }}
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'Pack thin nuget package'
+    displayName: 'Pack framework package'
     inputs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
@@ -139,8 +150,8 @@ jobs:
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
       patchVersion: ${{ parameters.patch }}
-      basePath: '${{ parameters.thinnupkgdir }}'
-      packDestination: ${{ parameters.thinnupkgdir }}
+      basePath: '${{ parameters.fwpdir }}'
+      packDestination: ${{ parameters.fwpdir }}
 
   - ${{if parameters.signConfig }}:
     - task: PkgESCodeSign@10
@@ -149,26 +160,20 @@ jobs:
       displayName: CodeSign
       inputs:
         signConfigXml: ${{ parameters.signConfig }}
-        inPathRoot: '${{ parameters.nupkgdir }}'
-        outPathRoot: '${{ parameters.nupkgdir }}'
+        inPathRoot: '${{ parameters.fwpdir }}'
+        outPathRoot: '${{ parameters.fwpdir }}'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: fat nuget'
     inputs:
       PathtoPublish: '${{ parameters.fatnupkgdir }}'
-      artifactName: 'fatnuget'
+      artifactName: 'Nuget'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: thin nuget'
+    displayName: 'Publish artifact: framework package'
     inputs:
-      PathtoPublish: '${{ parameters.thinnupkgdir }}'
-      artifactName: 'thinnuget'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: fwp'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)\Artifacts\fwp'
-      artifactName: 'fwp'
+      PathtoPublish: '${{ parameters.fwp }}'
+      artifactName: 'FrameworkPackage'
       
   - ${{if parameters.signConfig }}:
     # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(

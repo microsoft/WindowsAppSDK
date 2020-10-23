@@ -29,13 +29,18 @@ if "%TFS_BUILDCONFIGURATION%" EQU "" (
 
 set BasePackageName=Microsoft.ProjectReunion
 
-if "%BUILDOUTPUT_OVERRIDE%" EQU "" (
-	echo Expecting BUILDOUTPUT_OVERRIDE to be set
+if "%APPXINPUT_OVERRIDE%" EQU "" (
+	echo Expecting APPXINPUT_OVERRIDE to be set
 	exit /b 1
 )
 
-set InputDirectory=%BUILDOUTPUT_OVERRIDE%\
-set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\AppX\win10-%TFS_PLATFORM%
+if "%APPXOUTPUT_OVERRIDE%" EQU "" (
+	echo Expecting APPXOUTPUT_OVERRIDE to be set
+	exit /b 1
+)
+
+set InputDirectory=%APPXINPUT_OVERRIDE%\
+set OutputDirectory=%APPXOUTPUT_OVERRIDE%\win10-%TFS_PLATFORM%
 
 call ..\build\FrameworkPackage\MakeFrameworkPackage.cmd -InputDirectory '%InputDirectory%' ^
 -OutputDirectory '%OutputDirectory%' -BasePackageName '%BasePackageName%' ^
