@@ -5,7 +5,6 @@ parameters:
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
   fatnupkgdir: '$(build.artifactStagingDirectory)\fatnuget' 
   thinnupkgdir: '$(build.artifactStagingDirectory)\thinnuget'
-  fwpdir: '$(build.artifactStagingDirectory)\fwp'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
@@ -168,7 +167,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: fwp'
     inputs:
-      PathtoPublish: '${{ parameters.fwpdir }}'
+      PathtoPublish: '$(Build.SourcesDirectory)\Artifacts\fwp'
       artifactName: 'fwp'
       
   - ${{if parameters.signConfig }}:
