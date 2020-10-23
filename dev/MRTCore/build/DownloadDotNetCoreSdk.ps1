@@ -6,9 +6,9 @@ $versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\versions
 $dotNetSdkVersion = $versionPropsFilePropertyGroup.DotNetCoreSdkVersion
 $dotNetSdkVersionLkg = $versionPropsFilePropertyGroup.DotNetCoreSdkLkgVersion
 
-if ($dotNetSdkVersion -imatch "5.0.100-preview.6.20323.1")
+if ($dotNetSdkVersion -imatch "5.0.100-rc.2.20480.7")
 {
-    $dotNetSdkVersionString = "preview6"
+    $dotNetSdkVersionString = "rc"
 }
 elseif ($dotNetSdkVersion -imatch "5.0.100-preview.5.20279.10")
 {
