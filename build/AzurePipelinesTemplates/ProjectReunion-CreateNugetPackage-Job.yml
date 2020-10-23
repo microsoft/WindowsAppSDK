@@ -121,7 +121,7 @@ jobs:
   #   displayName: 'build-nupkg.ps1'
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'Pack fat nuget package'
+    displayName: 'Pack Fat Nuget Package'
     inputs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
@@ -133,7 +133,7 @@ jobs:
       packDestination: ${{ parameters.fatnupkgdir }}
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'Pack thin nuget package'
+    displayName: 'Pack Thin Nuget Package'
     inputs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
@@ -151,26 +151,26 @@ jobs:
       displayName: CodeSign
       inputs:
         signConfigXml: ${{ parameters.signConfig }}
-        inPathRoot: '${{ parameters.nupkgdir }}'
-        outPathRoot: '${{ parameters.nupkgdir }}'
+        inPathRoot: '${{ parameters.fatnupkgdir }}'
+        outPathRoot: '${{ parameters.fatnupkgdir }}'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: fat nuget'
+    displayName: 'Publish artifact: Fat Nuget'
     inputs:
       PathtoPublish: '${{ parameters.fatnupkgdir }}'
-      artifactName: 'fatnuget'
+      artifactName: 'FatNuget'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: thin nuget'
     inputs:
       PathtoPublish: '${{ parameters.thinnupkgdir }}'
-      artifactName: 'thinnuget'
+      artifactName: 'ThinNuget'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: fwp'
     inputs:
       PathtoPublish: '${{ parameters.fwpdir }}'
-      artifactName: 'fwp'
+      artifactName: 'AppX'
       
   - ${{if parameters.signConfig }}:
     # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(

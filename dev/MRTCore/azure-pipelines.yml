@@ -205,7 +205,7 @@ jobs:
     displayName: 'Publish Artifact: Binaries'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
-      ArtifactName: 'binaries_raw'
+      ArtifactName: 'mrtcore_binaries'
 
 - job: SignMRT
   condition: and(succeeded(), eq(${{ parameters.doCodeSign }}, 'true'))
@@ -231,7 +231,7 @@ jobs:
     inputs:
       buildType: 'current'
       downloadType: 'single'
-      artifactName: 'binaries_raw'
+      artifactName: 'mrtcore_binaries'
       downloadPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
 
   - ${{if eq(parameters.doCodeSign, 'true')}}:
@@ -240,13 +240,13 @@ jobs:
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
         signConfigXml: '$(MRTSourcesDirectory)\SignConfig.xml'
-        inPathRoot: '$(BUILD.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib'
+        inPathRoot: '$(BUILD.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Signed Binaries'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw'
-      ArtifactName: 'binaries_raw'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries'
+      ArtifactName: 'mrtcore_binaries'
 
 - job: PublishMRT
   dependsOn:
@@ -284,7 +284,7 @@ jobs:
     inputs:
       buildType: 'current'
       downloadType: 'single'
-      artifactName: 'binaries_raw'
+      artifactName: 'mrtcore_binaries'
       downloadPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
 
 # START of copying files into their final package location.
@@ -292,7 +292,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy winmd'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\uap10.0\'
@@ -301,7 +301,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy winmd'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\uap10.0\'
@@ -310,7 +310,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy .net 5 projection DLL and PDB'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
@@ -320,7 +320,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy x86'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
@@ -332,7 +332,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy x64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
@@ -344,7 +344,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy ARM'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\ARM'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
@@ -356,7 +356,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy ARM64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\ARM64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
@@ -368,7 +368,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy import lib x86'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-x86'
@@ -377,7 +377,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy import lib x64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-x64'
@@ -386,7 +386,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy import lib ARM'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\ARM'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM'
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-arm'
@@ -395,7 +395,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'copy import lib ARM64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\ARM64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-arm64'
