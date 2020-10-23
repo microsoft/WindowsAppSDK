@@ -760,7 +760,7 @@
       _GetSdkToolPaths;
       <!--_GetPriConfigXmlSnippets;
       -->
-      GetPackagingOutputs;
+      GetMrtPackagingOutputs;
       _GetDefaultResourceLanguage;
       <!--_GetPackageProperties;
       -->
@@ -1872,7 +1872,7 @@
     </GetPackagingOutputsDependsOn>
   </PropertyGroup>
 
-  <Target Name="GetPackagingOutputs"
+  <Target Name="GetMrtPackagingOutputs"
           Returns="@(PackagingOutputs)"
           DependsOnTargets="$(GetPackagingOutputsDependsOn)">
 
@@ -2096,7 +2096,7 @@
 
     <MSBuild
       Projects="@(ProjectReferenceWithConfiguration)"
-      Targets="GetPackagingOutputs"
+      Targets="GetMrtPackagingOutputs"
       BuildInParallel="$(BuildInParallel)"
       Properties="%(ProjectReferenceWithConfiguration.SetConfiguration); %(ProjectReferenceWithConfiguration.SetPlatform)"
       Condition="'@(ProjectReferenceWithConfiguration)' != ''

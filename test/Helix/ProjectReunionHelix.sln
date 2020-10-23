@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunionHelix", "ProjectReunionHelix.vcxproj", "{064C0A6B-10EA-4A40-826C-CF53903EBCB9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|arm = Debug|arm
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|arm = Release|arm
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Debug|arm.ActiveCfg = Debug|arm
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Debug|arm.Build.0 = Debug|arm
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Debug|x64.ActiveCfg = Debug|x64
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Debug|x64.Build.0 = Debug|x64
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Debug|x86.ActiveCfg = Debug|Win32
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Debug|x86.Build.0 = Debug|Win32
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Release|arm.ActiveCfg = Release|arm
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Release|arm.Build.0 = Release|arm
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Release|x64.ActiveCfg = Release|x64
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Release|x64.Build.0 = Release|x64
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Release|x86.ActiveCfg = Release|Win32
+		{064C0A6B-10EA-4A40-826C-CF53903EBCB9}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {516C60FE-2881-4019-9F5D-8007991498EC}
+	EndGlobalSection
+EndGlobal
