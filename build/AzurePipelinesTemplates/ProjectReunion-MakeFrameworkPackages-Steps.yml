@@ -1,5 +1,5 @@
 parameters:
-  appxInputDir: ''$(Build.SourcesDirectory)\AppXContents'
+  appxInputDir: '$(Build.SourcesDirectory)\AppXContents'
   appxOutputDir: '$(Build.ArtifactStagingDirectory)\appx'
 
 steps:
