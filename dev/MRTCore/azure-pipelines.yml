@@ -254,7 +254,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\uap10.0\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\uap10.0\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -263,7 +263,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fwp\lib\uap10.0\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\uap10.0\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -273,7 +273,7 @@ jobs:
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\net5.0-windows\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\net5.0-windows\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -283,7 +283,7 @@ jobs:
       Contents: |
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\netstandard2.0\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\netstandard2.0\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -295,7 +295,7 @@ jobs:
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fwp\runtimes\win10-x86\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-x86\native'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -307,7 +307,7 @@ jobs:
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fwp\runtimes\win10-x64\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-x64\native'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -319,7 +319,7 @@ jobs:
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fwp\runtimes\win10-arm\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-arm\native'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -331,7 +331,7 @@ jobs:
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fwp\runtimes\win10-arm64\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-arm64\native'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -340,7 +340,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x86'
       Contents: |
         mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\win10-x86'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-x86'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -349,7 +349,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x64'
       Contents: |
         mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\win10-x64'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-x64'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -358,7 +358,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\ARM'
       Contents: |
         mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\win10-arm'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-arm'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -367,7 +367,7 @@ jobs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\ARM64'
       Contents: |
         mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\lib\win10-arm64'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-arm64'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -383,7 +383,7 @@ jobs:
         native\Microsoft.ApplicationModel.Resources.targets
         native\Microsoft.ApplicationModel.Resources.WinRt.props
         README.md
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\build'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\build'
       flattenFolders: false
 
   - task: CopyFiles@2
@@ -392,17 +392,12 @@ jobs:
       SourceFolder: '$(MRTSourcesDirectory)\mrt\core\src'
       Contents: |
         mrm.h
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\thin_nuget\include'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\include'
   
   - task: PublishBuildArtifacts@1
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\thin_nuget'
-      ArtifactName: 'thin_nuget'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\fwp'
-      ArtifactName: 'fwp'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\fatnuget'
+      ArtifactName: 'fatnuget'
 
   # NuGetCommand@2
 #  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2

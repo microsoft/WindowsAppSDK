@@ -3,7 +3,8 @@ parameters:
   jobName: ''
   dependsOn: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  nupkgdir: '$(build.artifactStagingDirectory)\thin_nuget'
+  fatnupkgdir: '$(build.artifactStagingDirectory)\fatnuget' 
+  thinnupkgdir: '$(build.artifactStagingDirectory)\thinnuget'
   fwpdir: '$(build.artifactStagingDirectory)\fwp'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
@@ -46,7 +47,7 @@ jobs:
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
-      echo parameters.nupkgdir '${{ parameters.nupkgdir }}'
+      echo parameters.fatnupkgdir '${{ parameters.fatnupkgdir }}'
       echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
@@ -56,13 +57,41 @@ jobs:
 
   - task: DownloadBuildArtifacts@0 
     inputs: 
-      artifactName: thin_nuget
+      artifactName: fatnuget
       downloadPath: '$(Build.SourcesDirectory)\Artifacts'
 
-  - task: DownloadBuildArtifacts@0 
-    inputs: 
-      artifactName: fwp
-      downloadPath: '$(Build.SourcesDirectory)\Artifacts'
+  - task: CopyFiles@2
+    displayName: 'copy license to fat nuget'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: |
+        LICENSE
+      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\fatnuget'
+
+  # Extract thin nuget package from fat nuget package
+  - task: CopyFiles@2
+    displayName: 'Extract Thin Nuget from Fat Nuget'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\Artifacts\fatnuget'
+      Contents: |
+        build\**
+        include\**
+        lib\**
+        LICENSE
+      TargetFolder: ${{ parameters.thinnupkgdir }}
+      flattenFolders: false
+
+  # Extract framework package from fat nuget package
+  - task: CopyFiles@2
+    displayName: 'Extract Framework Package from Fat Nuget'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\Artifacts\fatnuget'
+      Contents: |
+        runtimes\**
+        lib\uap10.0\**
+        LICENSE
+      TargetFolder: ${{ parameters.fwpdir }}
+      flattenFolders: false
 
   # debugging - remove or comment out before completing PR      
   - script: |
@@ -74,13 +103,6 @@ jobs:
   # - ${{if parameters.signConfig }}:
     # Re-create framework packages because we made them in the build step against unsigned binaries.
   - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
-
-  # Copy the re-made framework packages into the same location in the artifact drop to be republished at the end of the job.
-  - task: CopyFiles@2
-    inputs:
-      targetFolder: '${{ parameters.fwpdir }}'
-      sourceFolder: '$(Build.SourcesDirectory)\Artifacts\fwp'
-      Contents: '**\**'
 
   # - powershell: |
   #     $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
@@ -96,14 +118,7 @@ jobs:
   #       -BuildFlavor ${{ parameters.buildFlavor }}
 
   #   displayName: 'build-nupkg.ps1'
-
-  - task: CopyFiles@2
-    displayName: 'copy license'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)'
-      Contents: |
-        LICENSE
-      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\thin_nuget'
+      
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     inputs:
       command: 'pack'
@@ -126,10 +141,16 @@ jobs:
         outPathRoot: '${{ parameters.nupkgdir }}'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: thin_nupkg'
+    displayName: 'Publish artifact: fat nuget'
     inputs:
-      PathtoPublish: '${{ parameters.nupkgdir }}'
-      artifactName: 'thin_nuget'
+      PathtoPublish: '${{ parameters.fatnupkgdir }}'
+      artifactName: 'fatnuget'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: thin nuget'
+    inputs:
+      PathtoPublish: '${{ parameters.thinnupkgdir }}'
+      artifactName: 'thinnuget'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: fwp'
@@ -143,7 +164,7 @@ jobs:
       displayName: 'NuGet push to Project.Reunion.nuget.internal'
       inputs:
         command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/thin_nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/thin_nuget/*.symbols.nupkg'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/fatnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fatnuget/*.symbols.nupkg'
         verbosityPush: 'Detailed' 
         nuGetFeedType: 'internal'
         #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
