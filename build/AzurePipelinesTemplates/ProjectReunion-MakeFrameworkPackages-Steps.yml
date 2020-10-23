@@ -1,5 +1,5 @@
 parameters:
-  buildOutputDir: '$(Build.SourcesDirectory)\Artifacts\fwp'
+  buildOutputDir: '$(Build.ArtifactStagingDirectory)\fwp'
 
 steps:
   - powershell: |
