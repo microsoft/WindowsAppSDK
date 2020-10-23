@@ -77,7 +77,7 @@ jobs:
         include\**
         lib\**
         LICENSE
-      TargetFolder: ''${{ parameters.thinnugetdir }}''
+      TargetFolder: '${{ parameters.thinnugetdir }}'
       flattenFolders: false
 
   # Extract framework package from fat nuget package
