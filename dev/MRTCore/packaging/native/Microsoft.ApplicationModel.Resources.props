@@ -6,7 +6,7 @@
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.C.props" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.WinRt.props" />
   
-  <ItemGroup>
+  <!-- <ItemGroup>
     <AppxPackageRegistration Include="$(MSBuildThisFileDirectory)..\tools\AppX\x86\Release\Microsoft.ProjectReunion.0.1.appx">
       <Architecture>x86</Architecture>
       <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
@@ -40,6 +40,6 @@
       <Version>$(MicrosoftProjectReunionAppxVersion)</Version>
       <Publisher>'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'</Publisher>
     </AppxPackageRegistration>
-  </ItemGroup>
+  </ItemGroup> -->
 
 </Project>

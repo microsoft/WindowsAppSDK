@@ -46,8 +46,8 @@ jobs:
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
+      echo parameters.fatnupkgdir '${{ parameters.thinnugetdir }}'
       echo parameters.fatnupkgdir '${{ parameters.fatnupkgdir }}'
-      echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)

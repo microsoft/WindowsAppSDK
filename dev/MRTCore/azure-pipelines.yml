@@ -318,19 +318,6 @@ jobs:
       flattenFolders: true
 
   - task: CopyFiles@2
-<<<<<<< HEAD
-    displayName: 'copy .net 2 projection DLL and PDB'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\anycpu'
-      Contents: |
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\netstandard2.0\'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-=======
->>>>>>> master
     displayName: 'copy x86'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\binaries_raw\lib\x86'

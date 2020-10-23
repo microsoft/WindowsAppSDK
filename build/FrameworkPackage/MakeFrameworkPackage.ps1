@@ -58,7 +58,6 @@ $ActivatableTypes = ""
 # Copy over and add to the manifest file list the .dll, .winmd for the inputs. 
 
 Write-Output "Input: $inputDirectory"
-# $inputBaseFileName = "MRM"
 $inputBasePath = $inputDirectory
 
 Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.dll" $fullOutputPath\PackageContents
