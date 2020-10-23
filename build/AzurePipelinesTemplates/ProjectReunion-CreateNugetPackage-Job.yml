@@ -169,7 +169,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: fwp'
     inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)\Artifacts\fwp'
+      PathtoPublish: '${{ parameters.fwpdir }}'
       artifactName: 'fwp'
       
   - ${{if parameters.signConfig }}:
