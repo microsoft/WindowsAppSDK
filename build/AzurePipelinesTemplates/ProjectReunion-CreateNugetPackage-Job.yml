@@ -58,7 +58,7 @@ jobs:
 
   - task: DownloadBuildArtifacts@0 
     inputs: 
-      artifactName: fatnuget
+      artifactName: FatNuget
       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
   - task: CopyFiles@2
@@ -90,6 +90,7 @@ jobs:
       Contents: |
         runtimes\**
         lib\uap10.0\**
+        lib\net5.0-windows\**
         LICENSE
       TargetFolder: '${{ parameters.fwpdir }}'
       flattenFolders: false
