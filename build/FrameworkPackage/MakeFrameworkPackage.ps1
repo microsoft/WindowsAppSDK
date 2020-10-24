@@ -67,6 +67,8 @@ Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.pdb" $fullOutputPath\PackageContents
 
 #Write-Verbose "Copying $inputBasePath\Themes"
 #Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
@@ -107,7 +109,9 @@ Write-Host $classes.Length Types found.
 "Microsoft.ApplicationModel.Resources.pdb" "Microsoft.ApplicationModel.Resources.pdb"
 "MRM.dll" "MRM.dll"
 "MRM.pdb" "MRM.pdb"
-"Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ApplicationModel.Resources.winmd" 
+"Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ApplicationModel.Resources.winmd"
+"Microsoft.ApplicationModel.Resources.Projection.dll" "Microsoft.ApplicationModel.Projection.dll"
+"Microsoft.ApplicationModel.Resources.Projection.pdb" "Microsoft.ApplicationModel.Projection.pdb"
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 
     $ActivatableTypes += @"
