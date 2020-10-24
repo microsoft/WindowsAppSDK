@@ -1,4 +1,5 @@
 parameters:
+  buildInputDir: '$(Build.ArtifactStagingDirectory)\AppXContents'
   buildOutputDir: '$(Build.ArtifactStagingDirectory)\fwp'
 
 steps:
@@ -12,13 +13,15 @@ steps:
         foreach ($config in $configs)
         {
           Write-Host "Checking $config"
-          $rootPath = "${{ parameters.buildOutputDir }}"
+          $inputPath = "${{ parameters.buildInputDir }}"
+          $outputPath = "${{ parameters.buildOutputDir }}"
           Write-Host ""
           Write-Host "Checking for $rootPath\runtimes\win10-$platform\native\MRM.dll"
           Write-Host ""
           if (Test-Path "$rootPath\runtimes\win10-$platform\native\MRM.dll")
           {
             $env:BUILDOUTPUT_OVERRIDE = $rootPath
+            $env:BUILDINPUT_OVERRIDE = $(Build.ArtifactStagingDirectory)\AppXContents
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose
             if ($lastexitcode -ne 0) {
                 Write-Host ##vso[task.logissue type=error;] Make AppxHelper $platform $config failed with exit code $lastexitcode

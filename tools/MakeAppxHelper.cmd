@@ -34,7 +34,12 @@ if "%BUILDOUTPUT_OVERRIDE%" EQU "" (
 	exit /b 1
 )
 
-set InputDirectory=%BUILDOUTPUT_OVERRIDE%\
+if "%BUILDINPUT_OVERRIDE%" EQU "" (
+	echo Expecting BUILDINPUT_OVERRIDE to be set
+	exit /b 1
+)
+
+set InputDirectory=%BUILDINPUT_OVERRIDE%\
 set OutputDirectory=%BUILDOUTPUT_OVERRIDE%\AppX\win10-%TFS_PLATFORM%
 
 call ..\build\FrameworkPackage\MakeFrameworkPackage.cmd -InputDirectory '%InputDirectory%' ^

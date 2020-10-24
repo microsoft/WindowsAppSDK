@@ -84,7 +84,7 @@ jobs:
 
   # Extract framework package from fat nuget package
   - task: CopyFiles@2
-    displayName: 'Extract Framework Package from Fat Nuget'
+    displayName: 'Extract Framework Package from Fat Nuget into temp Directory'
     inputs:
       SourceFolder: '${{ parameters.fatnupkgdir }}'
       Contents: |
@@ -92,7 +92,7 @@ jobs:
         lib\uap10.0\**
         lib\net5.0-windows\**
         LICENSE
-      TargetFolder: '${{ parameters.fwpdir }}'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\AppXContents'
       flattenFolders: false
 
   # debugging - remove or comment out before completing PR      
