@@ -16,9 +16,9 @@ steps:
           $inputPath = "${{ parameters.buildInputDir }}"
           $outputPath = "${{ parameters.buildOutputDir }}"
           Write-Host ""
-          Write-Host "Checking for $rootPath\runtimes\win10-$platform\native\MRM.dll"
+          Write-Host "Checking for $inputPath\runtimes\win10-$platform\native\MRM.dll"
           Write-Host ""
-          if (Test-Path "$rootPath\runtimes\win10-$platform\native\MRM.dll")
+          if (Test-Path "$inputPath\runtimes\win10-$platform\native\MRM.dll")
           {
             $env:BUILDINPUT_OVERRIDE = $inputPath
             $env:BUILDOUTPUT_OVERRIDE = $outputPath
