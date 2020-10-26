@@ -1,5 +1,6 @@
 parameters:
-  artifactName: 'reunion_binaries'
+  buildOutputArtifactName: 'reunion_binaries'
+  fatNugetArtifactName: 'FatNuget'
 
 steps:
   - task: powershell@2
@@ -7,10 +8,16 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\CopyFilesToStagingDir.ps1
-      arguments: -BuildOutputDir '$(buildOutputDir)' -PublishDir '$(Build.ArtifactStagingDirectory)' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+      arguments: -BuildOutputDir '$(buildOutputDir)' -BinaryDir '$(Build.ArtifactStagingDirectory)\${{ parameters.buildOutputArtifactName }}' -NugetDir '$(Build.ArtifactStagingDirectory)\${{ parameters.fatNugetArtifactName }}' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: ${{ parameters.artifactName }}'
+    displayName: 'Publish artifact: ${{ parameters.fatNugetArtifactName }}'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: ${{ parameters.artifactName }}
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.fatNugetArtifactName }}'
+      artifactName: ${{ parameters.fatNugetArtifactName }}
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: ${{ parameters.buildOutputArtifactName }}'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.buildOutputArtifactName }}'
+      artifactName: ${{ parameters.buildOutputArtifactName }}

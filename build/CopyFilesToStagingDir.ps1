@@ -1,16 +1,17 @@
 [CmdLetBinding()]
 Param(
     [string]$BuildOutputDir,
-    [string]$PublishDir,
+    [string]$BinaryDir,
+    [string]$NugetDir,
     [string]$Platform,
     [string]$Configuration,
     [switch]$PublishAppxFiles=$false
 )
 
 $FullBuildOutput = "$($BuildOutputDir)\$($Configuration)\$($Platform)"
-$FullPublishDir = "$($PublishDir)\$($Configuration)\$($Platform)"
+$FullBinaryDir = "$($BinaryDir)\$($Configuration)\$($Platform)"
 
-if (!(Test-Path $FullPublishDir)) { mkdir $FullPublishDir }
+if (!(Test-Path $FullBinaryDir)) { mkdir $FullBinaryDir }
 
 
 function PublishFile {
@@ -31,29 +32,29 @@ function PublishFile {
     }
 }
 
-PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile -IfExists $FullBuildOutput\projectreunion_dll\SampleFlatC.h $FullPublishDir\Microsoft.ProjectReunion\
-#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $FullBinaryDir\Microsoft.ProjectReunion\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $FullBinaryDir\Microsoft.ProjectReunion\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\SampleFlatC.h $FullBinaryDir\Microsoft.ProjectReunion\
+#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pri $FullBinaryDir\Microsoft.ProjectReunion\
 #UNDONE - xaml vcxproj re-runs an mdmerge into the sdk node, we are skipping this for now and leaving the winmd in its normal outdir
-#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\sdk\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\sdk\
-PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\
+#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\sdk\Microsoft.ProjectReunion.winmd $FullBinaryDir\Microsoft.ProjectReunion\sdk\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.winmd $FullBinaryDir\Microsoft.ProjectReunion\
 
-#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Generic.xaml $FullPublishDir\Microsoft.ProjectReunion\
-#PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.Design.dll $FullPublishDir\Microsoft.ProjectReunion.Design\
-#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
+#PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Generic.xaml $FullBinaryDir\Microsoft.ProjectReunion\
+#PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.Design.dll $FullBinaryDir\Microsoft.ProjectReunion.Design\
+#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullBinaryDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
 
 #UNDONE - PGO etc. later PR
 # pgosweep and vcruntime are required to run pgo instrumented test run. They are placed from the
 # cx test app instead of releasetest.dll since these are architecture specific and the ReleaseTest assembly is AnyCPU.
-#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\pgosweep.exe $FullPublishDir\Test\
-#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\vcruntime140.dll $FullPublishDir\Test\
+#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\pgosweep.exe $FullBinaryDir\Test\
+#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\vcruntime140.dll $FullBinaryDir\Test\
 
-PublishFile -IfExists $FullBuildOutput\FrameworkPackage\*.* $FullPublishDir\FrameworkPackage
+PublishFile -IfExists $FullBuildOutput\FrameworkPackage\*.* $FullBinaryDir\FrameworkPackage
 
 if($PublishAppxFiles)
 {
-    $AppxPackagesDir = "$FullPublishDir\AppxPackages"
+    $AppxPackagesDir = "$FullBinaryDir\AppxPackages"
 
 #    PublishFile -IfExists $FullBuildOutput\MUXControlsTestApp.TAEF\AppPackages\MUXControlsTestApp_Test\ $AppxPackagesDir
 #    PublishFile -IfExists $FullBuildOutput\IXMPTestApp.TAEF\AppPackages\IXMPTestApp_Test\ $AppxPackagesDir
@@ -65,6 +66,10 @@ if($PublishAppxFiles)
 }
 
 # Publish pdbs:
-$symbolsOutputDir = "$($FullPublishDir)\Symbols\"
+$symbolsOutputDir = "$($FullBinaryDir)\Symbols\"
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pdb $symbolsOutputDir
 
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $NugetDir\runtimes\win10-$Platform\native\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Symbols\Microsoft.ProjectReunion.pdb $NugetDir\runtimes\win10-$Platform\native\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $NugetDir\lib\win10-$Platform\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.winmd $NugetDir\lib\uap10.0\ 

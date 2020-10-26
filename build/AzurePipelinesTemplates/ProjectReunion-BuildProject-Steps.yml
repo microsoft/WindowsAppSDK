@@ -3,7 +3,6 @@ parameters:
   nugetConfigPath: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
   appxPackageDir: '$(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages'
-  artifactName: 'drop'
 
 steps:
   - template: ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
