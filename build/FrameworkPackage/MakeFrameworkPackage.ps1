@@ -64,9 +64,12 @@ Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.dll" $
 Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.pdb" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.dll" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.pdb" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ProjectReunion.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ProjectReunion.pdb" $fullOutputPath\PackageContents
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ProjectReunion.winmd" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll" $fullOutputPath\PackageContents
 Copy-IntoNewDirectory "$inputBasePath\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.pdb" $fullOutputPath\PackageContents
 
@@ -104,12 +107,16 @@ $refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
 Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd' '$refrenceWinmds'"
 $classes = Get-ActivatableTypes $inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd  $refrenceWinmds  | Sort-Object -Property FullName
 Write-Host $classes.Length Types found.
+
 @"
 "Microsoft.ApplicationModel.Resources.dll" "Microsoft.ApplicationModel.Resources.dll"
 "Microsoft.ApplicationModel.Resources.pdb" "Microsoft.ApplicationModel.Resources.pdb"
+"Microsoft.ApplicationModel.Resources.dll" "Microsoft.ProjectReunion.dll"
+"Microsoft.ApplicationModel.Resources.pdb" "Microsoft.ProjectReunion.pdb"
 "MRM.dll" "MRM.dll"
 "MRM.pdb" "MRM.pdb"
 "Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ApplicationModel.Resources.winmd"
+"Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ProjectReunion.winmd"
 "Microsoft.ApplicationModel.Resources.Projection.dll" "Microsoft.ApplicationModel.Projection.dll"
 "Microsoft.ApplicationModel.Resources.Projection.pdb" "Microsoft.ApplicationModel.Projection.pdb"
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
