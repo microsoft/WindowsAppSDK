@@ -96,7 +96,7 @@ jobs:
     condition:
       eq(variables['useBuildOutputFromBuildId'],'')
     inputs:
-      artifactName: drop
+      artifactName: FatNuget
       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
   - task: DownloadBuildArtifacts@0
@@ -108,7 +108,7 @@ jobs:
       project: $(System.TeamProjectId)
       pipeline: $(System.DefinitionId)
       buildId: $(useBuildOutputFromBuildId)
-      artifactName: drop
+      artifactName: FatNuget
       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
   - task: CmdLine@1
@@ -125,7 +125,7 @@ jobs:
     displayName: 'Copy symbols to artifact staging directory'
     condition: always()
     inputs:
-      sourceFolder: $(Build.ArtifactStagingDirectory)\drop
+      sourceFolder: $(Build.ArtifactStagingDirectory)\FatNuget
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
@@ -154,15 +154,15 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(system.accesstoken)
     inputs:
       signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
-      inPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
-      outPathRoot: '$(Build.ArtifactStagingDirectory)\drop'
+      inPathRoot: '$(Build.ArtifactStagingDirectory)\FatNuget'
+      outPathRoot: '$(Build.ArtifactStagingDirectory)\FatNuget'
 
-  # Re-publish signed artifacts to the drop.
+  # Re-publish signed artifacts to the FatNuget.
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: drop'
+    displayName: 'Publish artifact: FatNuget'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\drop'
-      artifactName: 'drop'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\FatNuget'
+      artifactName: 'FatNuget'
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
