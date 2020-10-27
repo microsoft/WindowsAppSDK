@@ -1,24 +1,27 @@
 parameters:
-  buildOutputDir: '$(Build.SourcesDirectory)\Artifacts\drop'
+  buildInputDir: '$(Build.ArtifactStagingDirectory)\AppXContents'
+  buildOutputDir: '$(Build.ArtifactStagingDirectory)\fwp'
 
 steps:
   - powershell: |
       $platforms = @("x86", "x64", "arm", "arm64")
-      $configs = @("debug", "release")
+      $configs = @("release")
       Write-Host "powershell step in ProjectReunion-MakeFrameworkPackages-Steps.yml - rootPath = $rootPath"
       foreach ($platform in $platforms)
       {
-        Write-Host "Checking $platform"
+        Write-Host "Checking win10-$platform"
         foreach ($config in $configs)
         {
           Write-Host "Checking $config"
-          $rootPath = "${{ parameters.buildOutputDir }}\$config\$platform"
+          $inputPath = "${{ parameters.buildInputDir }}"
+          $outputPath = "${{ parameters.buildOutputDir }}"
           Write-Host ""
-          Write-Host "Checking for $rootPath\ProjectReunion_dll"
+          Write-Host "Checking for $inputPath\runtimes\win10-$platform\native\MRM.dll"
           Write-Host ""
-          if (Test-Path "$rootPath\ProjectReunion_dll")
+          if (Test-Path "$inputPath\runtimes\win10-$platform\native\MRM.dll")
           {
-            $env:BUILDOUTPUT_OVERRIDE = $rootPath
+            $env:BUILDINPUT_OVERRIDE = $inputPath
+            $env:BUILDOUTPUT_OVERRIDE = $outputPath
             & $env:Build_SourcesDirectory\tools\MakeAppxHelper.cmd $platform $config -builddate_yymm $env:BUILDDATE_YYMM -builddate_dd $env:BUILDDATE_DD -subversion $env:BUILDREVISION -verbose
             if ($lastexitcode -ne 0) {
                 Write-Host ##vso[task.logissue type=error;] Make AppxHelper $platform $config failed with exit code $lastexitcode

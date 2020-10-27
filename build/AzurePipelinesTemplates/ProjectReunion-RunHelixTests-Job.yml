@@ -5,8 +5,7 @@ parameters:
   testSuite: 'DevTestSuite'
   # If a Pipeline runs this template more than once, this parameter should be unique per build flavor to differentiate the
   # the different test runs:
-  helixType: 'test/devtest' 
-  artifactName: 'drop'
+  helixType: 'test/devtest'
   maxParallel: 4
   rerunPassesRequiredToAvoidFailure: 5
   taefQuery: ''

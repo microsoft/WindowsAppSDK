@@ -58,13 +58,17 @@ $ActivatableTypes = ""
 # Copy over and add to the manifest file list the .dll, .winmd for the inputs. 
 
 Write-Output "Input: $inputDirectory"
-$inputBaseFileName = "Microsoft.ProjectReunion"
 $inputBasePath = $inputDirectory
 
-Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\MRM.pdb" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\runtimes\win10-$Platform\native\Microsoft.ApplicationModel.Resources.pdb" $fullOutputPath\PackageContents
 #UNDONE- not processing into sdk subdir
 #Copy-IntoNewDirectory "$inputBasePath\sdk\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
-Copy-IntoNewDirectory "$inputBasePath\$inputBaseFileName.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll" $fullOutputPath\PackageContents
+Copy-IntoNewDirectory "$inputBasePath\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.pdb" $fullOutputPath\PackageContents
 
 #Write-Verbose "Copying $inputBasePath\Themes"
 #Copy-IntoNewDirectory -IfExists $inputBasePath\Themes $fullOutputPath\PackageContents\Microsoft.ProjectReunion
@@ -97,18 +101,23 @@ $refrenceWinmds = $foundationWinmdPath + ";" + $universalWinmdPath
 #UNDONE - not re-writing to sdk dir
 #Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\sdk\$inputBaseFileName.winmd' '$refrenceWinmds'"
 #$classes = Get-ActivatableTypes $inputBasePath\sdk\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
-Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\$inputBaseFileName.winmd' '$refrenceWinmds'"
-$classes = Get-ActivatableTypes $inputBasePath\$inputBaseFileName.winmd  $refrenceWinmds  | Sort-Object -Property FullName
+Write-Verbose "Calling Get-ActivatableTypes with '$inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd' '$refrenceWinmds'"
+$classes = Get-ActivatableTypes $inputBasePath\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd  $refrenceWinmds  | Sort-Object -Property FullName
 Write-Host $classes.Length Types found.
 @"
-"$inputBaseFileName.dll" "$inputBaseFileName.dll"
-"$inputBaseFileName.winmd" "$inputBaseFileName.winmd" 
+"Microsoft.ApplicationModel.Resources.dll" "Microsoft.ApplicationModel.Resources.dll"
+"Microsoft.ApplicationModel.Resources.pdb" "Microsoft.ApplicationModel.Resources.pdb"
+"MRM.dll" "MRM.dll"
+"MRM.pdb" "MRM.pdb"
+"Microsoft.ApplicationModel.Resources.winmd" "Microsoft.ApplicationModel.Resources.winmd"
+"Microsoft.ApplicationModel.Resources.Projection.dll" "Microsoft.ApplicationModel.Projection.dll"
+"Microsoft.ApplicationModel.Resources.Projection.pdb" "Microsoft.ApplicationModel.Projection.pdb"
 "@ | Out-File -Append -Encoding "UTF8" $fullOutputPath\PackageContents\FrameworkPackageFiles.txt
 
     $ActivatableTypes += @"
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>$inputBaseFileName.dll</Path>
+        <Path>Microsoft.ApplicationModel.Resources.dll</Path>
 
 "@
 
