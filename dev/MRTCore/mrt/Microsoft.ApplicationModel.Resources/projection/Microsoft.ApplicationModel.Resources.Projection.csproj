@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0-windows10.0.18362</TargetFrameworks>
     <Platforms>x64;x86</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
