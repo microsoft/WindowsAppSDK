@@ -2102,6 +2102,7 @@
       Condition="'@(ProjectReferenceWithConfiguration)' != ''
                  and '%(ProjectReferenceWithConfiguration.BuildReference)' == 'true'
                  and '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == 'true'"
+      SkipNonexistentTargets="true"
       ContinueOnError="$(_ContinueOnError)">
       <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherProjects"/>
     </MSBuild>
