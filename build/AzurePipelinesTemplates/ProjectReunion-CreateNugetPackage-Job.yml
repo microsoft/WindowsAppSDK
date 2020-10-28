@@ -3,7 +3,9 @@ parameters:
   jobName: ''
   dependsOn: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  nupkgdir: '$(build.artifactStagingDirectory)\nuget'
+  fatnupkgdir: '$(build.artifactStagingDirectory)\fatnuget' 
+  thinnupkgdir: '$(build.artifactStagingDirectory)\thinnuget'
+  fwpdir: '$(build.artifactStagingDirectory)\fwp'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
@@ -45,7 +47,9 @@ jobs:
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
-      echo parameters.nupkgdir '${{ parameters.nupkgdir }}'
+      echo parameters.thinnupkgdir '${{ parameters.thinnupkgdir }}'
+      echo parameters.fatnupkgdir '${{ parameters.fatnupkgdir }}'
+      echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
@@ -54,8 +58,42 @@ jobs:
 
   - task: DownloadBuildArtifacts@0 
     inputs: 
-      artifactName: drop
-      downloadPath: '$(Build.SourcesDirectory)\Artifacts'
+      artifactName: FatNuget
+      downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+  - task: CopyFiles@2
+    displayName: 'copy license to fat nuget'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: |
+        LICENSE
+      TargetFolder: '${{ parameters.fatnupkgdir }}'
+
+  # Extract thin nuget package from fat nuget package
+  - task: CopyFiles@2
+    displayName: 'Extract Thin Nuget from Fat Nuget'
+    inputs:
+      SourceFolder: '${{ parameters.fatnupkgdir }}'
+      Contents: |
+        build\**
+        include\**
+        lib\**
+        LICENSE
+      TargetFolder: '${{ parameters.thinnupkgdir }}'
+      flattenFolders: false
+
+  # Extract framework package from fat nuget package
+  - task: CopyFiles@2
+    displayName: 'Extract Framework Package from Fat Nuget into temp Directory'
+    inputs:
+      SourceFolder: '${{ parameters.fatnupkgdir }}'
+      Contents: |
+        runtimes\**
+        lib\uap10.0\**
+        lib\net5.0-windows\**
+        LICENSE
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\AppXContents'
+      flattenFolders: false
 
   # debugging - remove or comment out before completing PR      
   - script: |
@@ -65,15 +103,8 @@ jobs:
 
   # UNDONE to move MRTCore into Project Reunion nuget package
   # - ${{if parameters.signConfig }}:
-  #   # Re-create framework packages because we made them in the build step against unsigned binaries.
-  #   - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
-
-  #   # Copy the re-made framework packages into the same location in the artifact drop to be republished at the end of the job.
-  #   - task: CopyFiles@2
-  #     inputs:
-  #       targetFolder: '${{ parameters.nupkgdir }}'
-  #       sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
-  #       Contents: '**\Microsoft.ProjectReunion*.appx'
+    # Re-create framework packages because we made them in the build step against unsigned binaries.
+  - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
 
   # - powershell: |
   #     $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
@@ -89,15 +120,9 @@ jobs:
   #       -BuildFlavor ${{ parameters.buildFlavor }}
 
   #   displayName: 'build-nupkg.ps1'
-  
-  - task: CopyFiles@2
-    displayName: 'copy license'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)'
-      Contents: |
-        LICENSE
-      TargetFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
+
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'Pack Fat Nuget Package'
     inputs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
@@ -105,12 +130,20 @@ jobs:
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
       patchVersion: ${{ parameters.patch }}
-      basePath: '$(Build.SourcesDirectory)\Artifacts\drop'
-      packDestination: ${{ parameters.nupkgdir }}
-  - task: PublishBuildArtifacts@1
+      basePath: '${{ parameters.fatnupkgdir }}'
+      packDestination: ${{ parameters.fatnupkgdir }}
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'Pack Thin Nuget Package'
     inputs:
-      PathtoPublish: ${{ parameters.nupkgdir }}
-      ArtifactName: 'nuget' 
+      command: 'pack'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
+      versioningScheme: 'byPrereleaseNumber'
+      majorVersion: ${{ parameters.major }}
+      minorVersion: ${{ parameters.minor }}
+      patchVersion: ${{ parameters.patch }}
+      basePath: '${{ parameters.thinnupkgdir }}'
+      packDestination: ${{ parameters.thinnupkgdir }}
 
   - ${{if parameters.signConfig }}:
     - task: PkgESCodeSign@10
@@ -119,14 +152,26 @@ jobs:
       displayName: CodeSign
       inputs:
         signConfigXml: ${{ parameters.signConfig }}
-        inPathRoot: '${{ parameters.nupkgdir }}'
-        outPathRoot: '${{ parameters.nupkgdir }}'
+        inPathRoot: '${{ parameters.fatnupkgdir }}'
+        outPathRoot: '${{ parameters.fatnupkgdir }}'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: nupkg'
+    displayName: 'Publish artifact: Fat Nuget'
     inputs:
-      PathtoPublish: '${{ parameters.nupkgdir }}'
-      artifactName: 'nuget'
+      PathtoPublish: '${{ parameters.fatnupkgdir }}'
+      artifactName: 'FatNuget'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: thin nuget'
+    inputs:
+      PathtoPublish: '${{ parameters.thinnupkgdir }}'
+      artifactName: 'ThinNuget'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: fwp'
+    inputs:
+      PathtoPublish: '${{ parameters.fwpdir }}'
+      artifactName: 'AppX'
       
   - ${{if parameters.signConfig }}:
     # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
@@ -134,7 +179,7 @@ jobs:
       displayName: 'NuGet push to Project.Reunion.nuget.internal'
       inputs:
         command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/nuget/*.symbols.nupkg'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/fatnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fatnuget/*.symbols.nupkg'
         verbosityPush: 'Detailed' 
         nuGetFeedType: 'internal'
         #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
