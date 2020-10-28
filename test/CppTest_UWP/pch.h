@@ -20,5 +20,4 @@
 #include <CppUnitTest.h>
 
 // Test-specific headers, lifted here
-#include <SampleFlatC.h>
 #include <winrt/Microsoft.ProjectReunion.h>

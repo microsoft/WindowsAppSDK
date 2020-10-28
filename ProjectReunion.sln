@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{448ED2E5-0B37-4D97-9E6B-8C10A507976A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleWinRT", "SampleWinRT", "{428CCA9E-ADC5-4917-B51B-7D13E35950C5}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F3659DFF-232D-46E0-967E-61FCC9A1132F}"
 	ProjectSection(SolutionItems) = preProject
 		docs\contributor-guide.md = docs\contributor-guide.md
@@ -14,12 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F3659DFF-2
 		docs\README.md = docs\README.md
 		docs\roadmap.md = docs\roadmap.md
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleWinRT", "dev\SampleWinRT\SampleWinRT.vcxitems", "{0DE4FEFE-5471-4B50-B74B-D817A02B7F0D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleFlatC", "SampleFlatC", "{8A5C2FE6-86D7-4AAA-BE2E-924B8E03B888}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleFlatC", "dev\SampleFlatC\SampleFlatC.vcxitems", "{CDCE22EC-F7BF-43D4-95D8-2E786229A4E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8630F7AA-2969-4DC9-8700-9B468C1DC21D}"
 EndProject
@@ -39,14 +31,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycle", "test\AppLif
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		dev\SampleWinRT\SampleWinRT.vcxitems*{0de4fefe-5471-4b50-b74b-d817a02b7f0d}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
 		test\AppLifecycle\AppLifecycle.vcxitems*{80e07022-9e99-44fe-b875-901fb6c82f52}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{b1a6f5ec-5418-4354-bacf-f7d998ee960d}*SharedItemsImports = 4
-		dev\SampleFlatC\SampleFlatC.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
-		dev\SampleWinRT\SampleWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
-		dev\SampleFlatC\SampleFlatC.vcxitems*{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -165,10 +153,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{428CCA9E-ADC5-4917-B51B-7D13E35950C5} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
-		{0DE4FEFE-5471-4B50-B74B-D817A02B7F0D} = {428CCA9E-ADC5-4917-B51B-7D13E35950C5}
-		{8A5C2FE6-86D7-4AAA-BE2E-924B8E03B888} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
-		{CDCE22EC-F7BF-43D4-95D8-2E786229A4E5} = {8A5C2FE6-86D7-4AAA-BE2E-924B8E03B888}
 		{682DED8C-3A27-48CD-866D-E853EA2024DE} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{C62688A1-16A0-4729-B6ED-842F4FAA29F3} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}

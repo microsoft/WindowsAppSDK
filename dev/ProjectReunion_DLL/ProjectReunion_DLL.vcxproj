@@ -104,8 +104,6 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-    <Import Project="..\SampleFlatC\SampleFlatC.vcxitems" Label="Shared" />
-    <Import Project="..\SampleWinRT\SampleWinRT.vcxitems" Label="Shared" />
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
