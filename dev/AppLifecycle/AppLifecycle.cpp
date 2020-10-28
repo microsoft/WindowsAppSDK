@@ -7,7 +7,6 @@
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
-#include "FileActivatedEventArgs.h"
 #include "AssocCommon.h"
 
 namespace winrt::Microsoft::ProjectReunion::implementation
@@ -34,10 +33,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         if (contractId.compare(MS_PROTOCOL_ARG_STR) == 0)
         {
             return winrt::make<ProtocolActivatedEventArgs>(contractData);
-        }
-        else if (contractId.compare(MS_FILE_ARG_STR) == 0)
-        {
-            return winrt::make<FileActivatedEventArgs>(contractData);
         }
 
         return winrt::make<LaunchActivatedEventArgs>(commandLine);
