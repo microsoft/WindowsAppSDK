@@ -253,15 +253,9 @@ jobs:
     - BuildMRT
     - SignMRT
   condition: and(in(dependencies.BuildMRT.result, 'Succeeded'), in(dependencies.SignMRT.result, 'Succeeded', 'Skipped'))
+  pool:
+    vmImage: 'windows-latest'
 
-  ${{if eq(parameters.doCodeSign, 'false')}}:
-    pool:
-      vmImage: 'windows-latest'
-
-  ${{if eq(parameters.doCodeSign, 'true')}}:
-    pool:
-      name: Package ES Lab E
-  
   variables:
     solution: '**/*.sln'
     buildPlatform: 'Any CPU'
