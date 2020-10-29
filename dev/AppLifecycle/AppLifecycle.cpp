@@ -7,7 +7,7 @@
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
-#include "AssocCommon.h"
+#include "Shared.h"
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -25,16 +25,24 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     Windows::ApplicationModel::Activation::IActivatedEventArgs AppLifecycle::GetActivatedEventArgs()
     {
-        std::wstring contractId;
-        std::wstring contractData;
-        auto commandLine = std::wstring(GetCommandLine());
-        std::tie(contractId, contractData) = ParseCommandLine(commandLine);
-
-        if (contractId.compare(MS_PROTOCOL_ARG_STR) == 0)
+        if (HasIdentity())
         {
-            return winrt::make<ProtocolActivatedEventArgs>(contractData);
+            return Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
         }
+        else
+        {
+            // Generate IActivatedEventArgs for non-Packaged applications.
+            std::wstring contractId;
+            std::wstring contractData;
+            auto commandLine = std::wstring(GetCommandLine());
+            std::tie(contractId, contractData) = ParseCommandLine(commandLine);
 
-        return winrt::make<LaunchActivatedEventArgs>(commandLine);
+            if (contractId.compare(MS_PROTOCOL_ARG_STR) == 0)
+            {
+                return winrt::make<ProtocolActivatedEventArgs>(contractData);
+            }
+
+            return winrt::make<LaunchActivatedEventArgs>(commandLine);
+        }
     }
 }

@@ -6,7 +6,7 @@
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
-#include "AssocCommon.h"
+#include "Shared.h"
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -25,7 +25,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw winrt::hresult_invalid_argument();
         }
 
-        register_protocol(scheme.c_str(), displayName.c_str());
+        if (HasIdentity())
+        {
+            throw hresult_not_implemented();
+        }
+
+        RegisterProtocol(scheme.c_str(), displayName.c_str());
     }
 
     void ActivationRegistrationManager::RegisterForStartupActivation(hstring const& taskId,
@@ -51,7 +56,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw winrt::hresult_invalid_argument();
         }
 
-        unregister_protocol(scheme.c_str());
+        if (HasIdentity())
+        {
+            throw hresult_not_implemented();
+        }
+
+        UnregisterProtocol(scheme.c_str());
     }
 
     void ActivationRegistrationManager::UnregisterForStartupActivation()
