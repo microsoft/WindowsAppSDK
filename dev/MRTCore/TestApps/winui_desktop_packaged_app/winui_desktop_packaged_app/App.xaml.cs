@@ -12,7 +12,6 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Microsoft.ApplicationModel.Resources;
-using Microsoft.UI.Threading;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -54,14 +53,14 @@ namespace winui_desktop_packaged_app
 
             // Fall back to other resource loaders if the resource is not found in MRT, in this case .net.
             // This enables carrying forward existing assets without the need to convert them.
-            m_resourceManager.ResourceNotFound += (sender, args) =>
+            /*m_resourceManager.ResourceNotFound += (sender, args) =>
             {
                 var candidate = new ResourceCandidate(
                     ResourceCandidateKind.String,
                     LegacyResources.ResourceManager.GetString(args.Name, LegacyResources.Culture));
 
                 args.SetResolvedCandidate(candidate);
-            };
+            };*/
 
             m_window = new MainWindow(m_resourceLoader, m_resourceManager);
             m_window.Activate();
