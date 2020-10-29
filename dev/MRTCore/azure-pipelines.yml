@@ -416,12 +416,3 @@ jobs:
 #    configuration: '$(buildConfiguration)'
 #    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
-#  - task: PkgESSerializeForPostBuild@10
-#    displayName: 'PkgES Post Build Serialization'
-#    continueOnError: true
-
-#  - task: PkgESLateTasks@10
-#    displayName: 'PkgES Finalize and Cleanup'
-#    inputs:
-#      enablePostBuild: false
-#      dfsReleaseInPb: true
