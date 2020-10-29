@@ -6,6 +6,7 @@
 #include <unknwn.h>
 #include <appmodel.h>
 
+#include <filesystem>
 #include <thread>
 #include <mutex>
 
@@ -18,6 +19,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>

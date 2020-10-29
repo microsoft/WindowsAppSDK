@@ -30,7 +30,34 @@
     <ClCompile Include="TestPackages.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicDependency_Test_Win32.cpp">
+    <ClCompile Include="Test_Win32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_Add_Rank_A0_B10.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_Add_Rank_B0prepend_A0.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_Add_Rank_B-10_A0.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_Create_Add_Architectures_Current.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_Create_Add_Architectures_Explicit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_Create_DoNotVerifyDependencyResolution.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_FullLifecycle_FilePathLifetime_Frameworks_2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_FullLifecycle_ProcessLifetime_Frameworks_2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_Win32_FullLifecycle_RegistryLifetime_Frameworks_2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestFilesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Test_Win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

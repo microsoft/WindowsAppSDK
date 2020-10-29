@@ -153,9 +153,19 @@ public:
         return m_packageFamilyName;
     }
 
+    void PackageFamilyName(const std::wstring& packageFamilyName)
+    {
+        m_packageFamilyName = packageFamilyName;
+    }
+
     const PACKAGE_VERSION& MinVersion() const
     {
         return m_minVersion;
+    }
+
+    void MinVersion(const PACKAGE_VERSION& minVersion)
+    {
+        m_minVersion = minVersion;
     }
 
     MddPackageDependencyProcessorArchitectures Architectures() const
@@ -163,9 +173,19 @@ public:
         return m_packageDependencyProcessorArchitectures;
     }
 
+    void Architectures(const MddPackageDependencyProcessorArchitectures packageDependencyProcessorArchitectures)
+    {
+        m_packageDependencyProcessorArchitectures = packageDependencyProcessorArchitectures;
+    }
+
     MddPackageDependencyLifetimeKind LifetimeKind() const
     {
         return m_lifetimeKind;
+    }
+
+    void LifetimeKind(const MddPackageDependencyLifetimeKind lifetimeKind)
+    {
+        m_lifetimeKind = lifetimeKind;
     }
 
     const std::wstring& LifetimeArtifact() const
@@ -173,14 +193,29 @@ public:
         return m_lifetimeArtifact;
     }
 
+    void LifetimeArtifact(const std::wstring& lifetimeArtifact)
+    {
+        m_lifetimeArtifact = lifetimeArtifact;
+    }
+
     MddCreatePackageDependencyOptions Options() const
     {
         return m_options;
     }
 
+    void Options(const MddCreatePackageDependencyOptions options)
+    {
+        m_options = options;
+    }
+
     const std::wstring& Id() const
     {
         return m_packageDependencyId;
+    }
+
+    void Id(const std::wstring& id)
+    {
+        m_packageDependencyId = id;
     }
 
     const std::wstring& PackageFullName() const
@@ -214,6 +249,45 @@ public:
     bool operator!() const
     {
         return m_packageDependencyId.empty();
+    }
+
+    std::wstring ToJSON() const;
+
+    static PackageDependency FromJSON(const winrt::hstring& json);
+
+private:
+    static winrt::hstring ToString(const MddPackageDependencyLifetimeKind lifetimeKind);
+
+    void LifetimeKind(const winrt::hstring& lifetimeKind);
+
+    static int32_t int32_from_string(PCWSTR s)
+    {
+        if (!s)
+        {
+            return 0;
+        }
+        int base = (((s[0] == L'0') && s[1] == L'x') ? 16 : 10);
+        return wcstol(s, nullptr, base);
+    }
+
+    static uint32_t uint32_from_string(PCWSTR s)
+    {
+        if (!s)
+        {
+            return 0;
+        }
+        int base = (((s[0] == L'0') && s[1] == L'x') ? 16 : 10);
+        return wcstoul(s, nullptr, base);
+    }
+
+    static uint64_t uint64_from_string(PCWSTR s)
+    {
+        if (!s)
+        {
+            return 0;
+        }
+        int base = (((s[0] == L'0') && s[1] == L'x') ? 16 : 10);
+        return wcstoull(s, nullptr, base);
     }
 
 private:

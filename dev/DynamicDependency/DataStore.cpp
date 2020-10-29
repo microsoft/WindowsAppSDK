@@ -9,6 +9,8 @@
 
 #include <wil/winrt.h>
 
+#include <fstream>
+
 namespace MddCore::DataStore
 {
     winrt::Windows::Storage::ApplicationData GetDataStore()
@@ -21,36 +23,52 @@ namespace MddCore::DataStore
 
         return winrt::Windows::Storage::ApplicationData{ applicationData_iunknown.detach(), winrt::take_ownership_from_abi };
     }
+
+    std::filesystem::path GetDataStorePath()
+    {
+        auto dataStore{ GetDataStore() };
+        return std::filesystem::path(dataStore.LocalFolder().Path().c_str());
+    }
 }
 
 MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
 {
-    //TODO
-    return MddCore::PackageDependency();
+    auto path{ GetDataStorePath() };
+    path /= L"DynamicDependency";
+    auto filename{ path / (std::wstring(packageDependencyId) + L".ddpd") };
+
+    const auto c_bufferSize = 32 * 1024;    // Way more than we need
+    auto buffer{ wil::make_process_heap_string(nullptr, c_bufferSize) };
+    memset(buffer.get(), 0, c_bufferSize * sizeof(*buffer.get()));
+    {
+        std::wifstream file(filename);
+        file.read(buffer.get(), c_bufferSize);
+        file.close();
+    }
+
+    return MddCore::PackageDependency::FromJSON(winrt::hstring(buffer.get()));
 }
 
 void MddCore::DataStore::Save(const MddCore::PackageDependency& packageDependency)
 {
-    auto dataStore = GetDataStore();
-    auto persisted = dataStore.LocalSettings().CreateContainer(winrt::hstring(packageDependency.Id()), winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
-    auto values = persisted.Values();
+    auto json = packageDependency.ToJSON();
 
-    auto userSid = packageDependency.User();
-    const BYTE* userSidAsBytes = static_cast<const BYTE*>(userSid);
-    if (userSid)
+    auto path{ GetDataStorePath() };
+    path /= L"DynamicDependency";
+    std::filesystem::create_directory(path);
+
+    auto filename = path / (packageDependency.Id() + L".ddpd");
     {
-        winrt::array_view<uint8_t const> user{ userSidAsBytes, userSidAsBytes + GetLengthSid(userSid) };
-        //TODO: values.Insert(winrt::hstring(L"User"), winrt::box_value(user));
+        std::wofstream file(filename, std::wofstream::trunc);
+        file.write(json.c_str(), json.length());
+        file.close();
     }
-    values.Insert(winrt::hstring(L"PackageFamilyName"), winrt::box_value(packageDependency.PackageFamilyName()));
-    values.Insert(winrt::hstring(L"MinVersion"), winrt::box_value(packageDependency.MinVersion().Version));
-    values.Insert(winrt::hstring(L"ProcessorArchitectures"), winrt::box_value(static_cast<int32_t>(packageDependency.Architectures())));
-    values.Insert(winrt::hstring(L"LifetimeKind"), winrt::box_value(static_cast<int32_t>(packageDependency.LifetimeKind())));
-    values.Insert(winrt::hstring(L"LifetimeArtifact"), winrt::box_value(packageDependency.LifetimeArtifact()));
-    values.Insert(winrt::hstring(L"Options"), winrt::box_value(static_cast<int32_t>(packageDependency.Options())));
 }
 
 void MddCore::DataStore::Delete(PCWSTR packageDependencyId)
 {
-    //TODO
+    auto path = GetDataStorePath();
+    path /= packageDependencyId;
+
+    THROW_IF_WIN32_BOOL_FALSE_MSG(DeleteFileW(path.c_str()), "Error deleting file %ls", path.c_str());
 }

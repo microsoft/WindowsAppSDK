@@ -7,6 +7,8 @@
 
 #include "PackageDependency.h"
 
+namespace JSON = winrt::Windows::Data::Json;
+
 void MddCore::PackageDependency::GenerateId()
 {
     GUID id{};
@@ -43,4 +45,63 @@ std::vector<std::wstring> MddCore::PackageDependency::FindPackagesByFamily() con
         packageFullNamesList.push_back(std::wstring(packageFullName));
     }
     return packageFullNamesList;
+}
+
+std::wstring MddCore::PackageDependency::ToJSON() const
+{
+    JSON::JsonObject json;
+    json.SetNamedValue(winrt::hstring(L"PackageFamilyName"), JSON::JsonValue::CreateStringValue(winrt::hstring(m_packageFamilyName)));
+    json.SetNamedValue(winrt::hstring(L"MinVersion"), JSON::JsonValue::CreateStringValue(winrt::hstring(std::to_wstring(m_minVersion.Version))));
+    json.SetNamedValue(winrt::hstring(L"ProcessorArchitectures"), JSON::JsonValue::CreateStringValue(std::wstring(L"0x") + std::to_wstring(static_cast<uint32_t>(m_packageDependencyProcessorArchitectures))));
+    json.SetNamedValue(winrt::hstring(L"LifetimeKind"), JSON::JsonValue::CreateStringValue(winrt::hstring(ToString(m_lifetimeKind))));
+    json.SetNamedValue(winrt::hstring(L"LifetimeArtifact"), JSON::JsonValue::CreateStringValue(winrt::hstring(m_lifetimeArtifact)));
+    json.SetNamedValue(winrt::hstring(L"Options"), JSON::JsonValue::CreateStringValue(std::wstring(L"0x") + std::to_wstring(static_cast<uint32_t>(m_options))));
+    return std::wstring(json.ToString());
+}
+
+MddCore::PackageDependency MddCore::PackageDependency::FromJSON(const winrt::hstring& json)
+{
+    MddCore::PackageDependency packageDependency;
+
+    JSON::JsonObject object{ JSON::JsonObject::Parse(json) };
+    packageDependency.m_packageFamilyName = object.GetNamedString(winrt::hstring(L"PackageFamilyName"));
+    packageDependency.m_minVersion = PACKAGE_VERSION{ uint64_from_string(object.GetNamedString(winrt::hstring(L"MinVersion")).c_str()) };
+    packageDependency.m_packageDependencyProcessorArchitectures = static_cast<MddPackageDependencyProcessorArchitectures>(uint32_from_string(object.GetNamedString(winrt::hstring(L"ProcessorArchitectures")).c_str()));
+    packageDependency.LifetimeKind(object.GetNamedString(winrt::hstring(L"LifetimeKind")));
+    packageDependency.m_lifetimeArtifact = object.GetNamedString(winrt::hstring(L"LifetimeArtifact"));
+    packageDependency.m_options = static_cast<MddCreatePackageDependencyOptions>(uint32_from_string(object.GetNamedString(winrt::hstring(L"Options")).c_str()));
+
+    return packageDependency;
+}
+
+winrt::hstring MddCore::PackageDependency::ToString(const MddPackageDependencyLifetimeKind lifetimeKind)
+{
+    switch (lifetimeKind)
+    {
+    case MddPackageDependencyLifetimeKind::Process:     return winrt::hstring(L"Process");
+    case MddPackageDependencyLifetimeKind::FilePath:    return winrt::hstring(L"FilePath");
+    case MddPackageDependencyLifetimeKind::RegistryKey: return winrt::hstring(L"RegistryKey");
+    default: FAIL_FAST_HR(E_UNEXPECTED);
+    }
+}
+
+void MddCore::PackageDependency::LifetimeKind(const winrt::hstring& lifetimeKind)
+{
+    auto s = lifetimeKind.c_str();
+    if (CompareStringOrdinal(s, -1, L"Process", -1, TRUE) == CSTR_EQUAL)
+    {
+        m_lifetimeKind = MddPackageDependencyLifetimeKind::Process;
+    }
+    else if (CompareStringOrdinal(s, -1, L"FilePath", -1, TRUE) == CSTR_EQUAL)
+    {
+        m_lifetimeKind = MddPackageDependencyLifetimeKind::FilePath;
+    }
+    else if (CompareStringOrdinal(s, -1, L"RegistryKey", -1, TRUE) == CSTR_EQUAL)
+    {
+        m_lifetimeKind = MddPackageDependencyLifetimeKind::RegistryKey;
+    }
+    else
+    {
+        THROW_WIN32(ERROR_INVALID_DATA);
+    }
 }
