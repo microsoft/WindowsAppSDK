@@ -1,69 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
-    <Platforms>AnyCPU</Platforms>
-    <LangVersion>8</LangVersion>
-    <OutputPath>$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <GenerateTestProjection Condition="'$(GenerateTestProjection)$(Configuration)' == 'Release'">true</GenerateTestProjection>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <NoWarn>8305;0618</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <TargetFrameworks>net5.0-windows10.0.18362</TargetFrameworks>
+    <Platforms>x64;x86</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="0.1.0-prerelease.200629.3" />
-    <PackageReference Include="Microsoft.Windows.SDK.NET" Version="10.0.18362.3-preview" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.0.2-prerelease.201021.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" RuntimeFrameworkVersion="10.0.18362.10" />
+    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" TargetingPackVersion="10.0.18362.10" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.ApplicationModel.Resources.vcxproj" />
   </ItemGroup>
-  
-  <Target Name="GenerateProjection" Condition="'$(GenerateTestProjection)' == 'true'">
-    <ItemGroup>
-      <ReferenceWinMDs Include="$(OutDir)/**/*.winmd" />
-    </ItemGroup>
-    <PropertyGroup>
-      <CsWinRTVerbosity>high</CsWinRTVerbosity>
-      <CsWinRTResponseFile>$(GeneratedFilesDir)cswinrt_test.rsp</CsWinRTResponseFile>
-      <CsWinRTCommand>$(CsWinRTExe) %40"$(CsWinRTResponseFile)"</CsWinRTCommand>
-    </PropertyGroup>
-    <PropertyGroup>
-      <CsWinRTParams>
-        -verbose
-        -in 10.0.18362.0
-        -in @(ReferenceWinMDs->'"%(FullPath)"', ' ')
-        -out "$(IntermediateOutputPath)Generated Files"
-        -exclude Windows
-        -exclude Microsoft
-        -include Microsoft.ApplicationModel.Resources
-      </CsWinRTParams>
-    </PropertyGroup>
-    <MakeDir Directories="$(IntermediateOutputPath)Generated Files" />
-    <WriteLinesToFile File="$(CsWinRTResponseFile)" Lines="$(CsWinRTParams)" Overwrite="true" WriteOnlyWhenDifferent="true" />
-    <Message Text="$(CsWinRTCommand)" Importance="$(CsWinRTVerbosity)" />
-    <Exec Command="$(CsWinRTCommand)" />
-  </Target>
 
-  <Target Name="IncludeProjection" DependsOnTargets="GenerateProjection" BeforeTargets="CoreCompile">
-    <ItemGroup>
-      <Compile Include="$(IntermediateOutputPath)Generated Files\*.cs" Exclude="@(Compile)" />
-    </ItemGroup>
-  </Target>
+  <PropertyGroup>
+    <CSWinRTIncludes>Microsoft.ApplicationModel.Resources</CSWinRTIncludes>
+    <CSWinRTWindowsMetadata>10.0.18362.0</CSWinRTWindowsMetadata>
+  </PropertyGroup>	
 
-  <Target Name="RemoveWinMDReferences" BeforeTargets="ResolveReferences" AfterTargets="AfterResolveReferences">
-    <ItemGroup>
-      <ReferenceWinMDs Include="@(ReferencePath)" Condition="'%(ReferencePath.WinMDFile)' == 'true'" />
-      <ReferencePath Remove="@(ReferencePath)" Condition="'%(ReferencePath.WinMDFile)' == 'true'" />
-    </ItemGroup>
-  </Target>
+  <ItemGroup>
+    <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+  </ItemGroup>
 
 </Project>

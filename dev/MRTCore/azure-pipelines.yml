@@ -8,52 +8,43 @@
 #trigger:
 #- master
 
+parameters:
+  doCodeSign: "false"
+
 jobs:
 - job: BuildMRT
   pool:
     vmImage: 'windows-latest'
-  
+
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm:
+        buildPlatform: 'ARM'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+        
   variables:
     solution: '**/*.sln'
-    buildConfiguration: 'Release'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
     MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
     MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
   steps:
-#  - task: PkgESSetupBuild@10
-#    displayName: 'Package ES - Setup Build'
-#    inputs:
-#      ProductName: MRT Core
-#      useDfs: false
-#      branchVersion: false
-#      extSync: false
-  
-#  - task: powershell@2
-#    displayName: 'Installing .NET SDK'
-#    inputs:
-#      targetType: filePath
-#      workingDirectory: $(Build.SourcesDirectory)\build
-#      filePath: $(Build.SourcesDirectory)\build\DownloadDotNetCoreSdk.ps1
-  
-#  - task: BatchScript@1
-#    displayName: 'Use .NET SDK'
-#    inputs:
-#      filename: '$(Build.SourcesDirectory)\build\SetDotnetVars.cmd'
-#      arguments: '$(Build.SourcesDirectory)'
-#      modifyEnvironment: true
-
-  - task: UseDotNet@2
+  - task: BatchScript@1
+    displayName: Set up environment
     inputs:
-      packageType: 'sdk'
-      useGlobalJson: true
-      workingDirectory: '$(Build.SourcesDirectory)'
-
-#  - task: BatchScript@1
-#    displayName: 'Debug'
-#    inputs:
-#      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
+      filename: '$(MRTSourcesDirectory)\build\init.cmd'
+      arguments: /envonly $(buildPlatform)fre
+      modifyEnvironment: true
 
   - task: NuGetToolInstaller@1
     displayName: 'Use NuGet 5.6'
@@ -61,51 +52,102 @@ jobs:
       versionSpec: 5.6
     continueOnError: true
 
+  # Start restoring packages for C++ projects. The C# ones will be restored by the build task
   # NuGetCommand@2
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore of MrtCore'
+    displayName: 'NuGet restore of core'
     inputs:
-      command: 'restore'
-      restoreSolution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
-      feedsToUse: 'config'
-      nugetConfigPath: '$(Build.SourcesDirectory)\nuget.config'
-  
-  - task: VSBuild@1
-    displayName: 'build MrtCore x86'
+      command: 'custom'
+      arguments: 'restore $(MRTSourcesDirectory)\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of applicationmodel'
     inputs:
-      platform: 'x86'
-      buildPlatform: 'x86'
+      command: 'custom'
+      arguments: 'restore $(MRTSourcesDirectory)\mrt\microsoft.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of mrmex'
+    inputs:
+      command: 'custom'
+      arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of mrmmin'
+    inputs:
+      command: 'custom'
+      arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+
+  # NuGetCommand@2
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of mrm unittests'
+    inputs:
+      command: 'custom'
+      arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+
+  - task: powershell@2
+    displayName: 'Install the VS build tools'
+    inputs:
+      targetType: filePath
+      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
+      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
+      
+  - task: BatchScript@1
+    displayName: Add the VS build tools to the path
+    inputs:
+      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
+      arguments: '$(MRTSourcesDirectory)\.buildtools'
+      modifyEnvironment: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish install logs'
+    condition: Failed()
+    inputs:
+      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
+      artifactName: 'installlogs'
+
+  - task: powershell@2
+    displayName: 'Installing .NET SDK'
+    inputs:
+      targetType: filePath
+      workingDirectory: $(MRTSourcesDirectory)\build
+      filePath: $(MRTSourcesDirectory)\build\DownloadDotNetCoreSdk.ps1 
+
+  - task: BatchScript@1
+    displayName: 'Use .NET SDK'
+    inputs:
+      filename: '$(MRTSourcesDirectory)\build\SetDotnetVars.cmd'
+      arguments: '$(MRTSourcesDirectory)'
+      modifyEnvironment: true
+
+#  - task: BatchScript@1
+#    displayName: 'Debug'
+#    inputs:
+#      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
+
+  - task: MSBuild@1
+    displayName: 'build MrtCore'
+    inputs:
+      msbuildLocationMethod: 'location'
+      msbuildLocation: $(MRTSourcesDirectory)\.buildtools\MSBuild\Current\Bin\MSBuild.exe
+      platform: '$(buildPlatform)'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.binlog'
+      msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish mrtcore binlog'
     condition: succeededOrFailed()
     inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.binlog
-      artifactName: drop
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      artifactName: binlogs
 
-  - task: VSBuild@1
-    displayName: 'build MrtCore x64'
-    inputs:
-      platform: 'x64'
-      buildPlatform: 'x64'
-      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
-      configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
-
-  - task: VSBuild@1
-    displayName: 'build MrtCore ARM64'
-    inputs:
-      platform: 'ARM64'
-      buildPlatform: 'x64'
-      solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
-      configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxBundlePlatforms="ARM64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
-  
   - task: VSTest@2
-    displayName: 'test x86'
+    displayName: 'test MRT'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: |
@@ -113,24 +155,10 @@ jobs:
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
-      searchFolder: '$(MRTBinariesDirectory)\Release\x86'
-      testRunTitle: 'test x86'
-      platform: 'x86'
-      configuration: 'Release'
-  
-  - task: VSTest@2
-    displayName: 'test x64'
-    inputs:
-      testSelector: 'testAssemblies'
-      testAssemblyVer2: |
-        **\*test*.dll
-        !**\*TestAdapter.dll
-        !**\TE.*.dll
-        !**\obj\**
-      searchFolder: '$(MRTBinariesDirectory)\Release\x64'
-      testRunTitle: 'test x64'
-      platform: 'x64'
-      configuration: 'Release'
+      searchFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
+      testRunTitle: 'test MRT $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
   - task: ComponentGovernanceComponentDetection@0
     inputs:
@@ -140,98 +168,62 @@ jobs:
       failOnAlert: true
 
   - task: CopyFiles@2
-    displayName: 'copy x86 for signing'
+    displayName: 'copy binaries for signing'
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\x86'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
       Contents: |
         mrm\mrm.dll
         mrm\mrm.lib
         mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll        
+        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
         Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x86'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
       flattenFolders: true
 
   - task: CopyFiles@2
     displayName: 'copy projection binaries and symbols for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
       Contents: |
-        net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
-        net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
+        Microsoft.ApplicationModel.Resources.Projection.dll
+        Microsoft.ApplicationModel.Resources.Projection.pdb
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
       flattenFolders: false
 
   - task: CopyFiles@2
     displayName: 'copy winmd for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
     inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\AnyCPU\Microsoft.ApplicationModel.Resources.Projection'
+      SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\anycpu'
-      flattenFolders: true
-  
-  - task: CopyFiles@2
-    displayName: 'copy x64 for signing'
-    inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\x64'
-      Contents: |
-        mrm\mrm.dll
-        mrm\mrm.lib
-        mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\x64'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'copy ARM64 for signing'
-    inputs:
-      SourceFolder: '$(MRTBinariesDirectory)\Release\ARM64'
-      Contents: |
-        mrm\mrm.dll
-        mrm\mrm.lib
-        mrm\mrm.pdb
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\raw\lib\ARM64'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
       flattenFolders: true
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Binaries'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw'
-      ArtifactName: 'binaries_raw'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
+      ArtifactName: 'mrtcore_binaries'
 
 - job: SignMRT
-  condition: and(succeeded(), eq(variables.codeSign, true))
+  condition: and(succeeded(), eq(${{ parameters.doCodeSign }}, 'true'))
   dependsOn:
     - BuildMRT
-  pool:
-    vmImage: 'windows-latest'
+
+  ${{if eq(parameters.doCodeSign, 'false')}}:
+    pool:
+      vmImage: 'windows-latest'
+
+  ${{if eq(parameters.doCodeSign, 'true')}}:
+    pool:
+      name: Package ES Lab E
   
   variables:
     solution: '**/*.sln'
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    codeSign: false
-
-  strategy:
-    maxParallel: 4
-    matrix:
-      Release_ANYCPU:
-        buildPlatform: 'anycpu'
-        buildConfiguration: 'Release'
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-      Release_ARM64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   steps:
   - task: DownloadBuildArtifacts@0
@@ -239,29 +231,36 @@ jobs:
     inputs:
       buildType: 'current'
       downloadType: 'single'
-      artifactName: 'binaries_raw'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
-  
-#  - task: PkgESCodeSign@10
-#    env:
-#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-#    inputs:
-#      signConfigXml: 'SignConfig.xml'
-#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\raw\binaries_raw\lib'
+      artifactName: 'mrtcore_binaries'
+      downloadPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
+
+  - ${{if eq(parameters.doCodeSign, 'true')}}:
+    - task: PkgESCodeSign@10
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      inputs:
+        signConfigXml: '$(MRTSourcesDirectory)\SignConfig.xml'
+        inPathRoot: '$(BUILD.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: Signed Binaries'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw'
-      ArtifactName: 'signedbinaries_$(BuildPlatform)'
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries'
+      ArtifactName: 'mrtcore_binaries'
 
 - job: PublishMRT
   dependsOn:
     - BuildMRT
     - SignMRT
   condition: and(in(dependencies.BuildMRT.result, 'Succeeded'), in(dependencies.SignMRT.result, 'Succeeded', 'Skipped'))
-  pool:
-    vmImage: 'windows-latest'
+
+  ${{if eq(parameters.doCodeSign, 'false')}}:
+    pool:
+      vmImage: 'windows-latest'
+
+  ${{if eq(parameters.doCodeSign, 'true')}}:
+    pool:
+      name: Package ES Lab E
   
   variables:
     solution: '**/*.sln'
@@ -271,257 +270,126 @@ jobs:
     Major: '1'
     Minor: '0'
     Patch: '0'
-    codeSign: ${{ eq(variables['System.definitionId'], '1356') }}
     MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
   steps:
-  - task: DownloadBuildArtifacts@0
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'Download: Signed Binaries AnyCPU'
+  - task: NuGetToolInstaller@1
+    displayName: 'Use NuGet 5.6'
     inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'signedbinaries_anycpu'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
+      versionSpec: 5.6
+    continueOnError: true
 
   - task: DownloadBuildArtifacts@0
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'Download: Signed Binaries x86'
+    displayName: 'Download Binaries'
     inputs:
       buildType: 'current'
       downloadType: 'single'
-      artifactName: 'signedbinaries_x86'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
-
-  - task: DownloadBuildArtifacts@0
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'Download: Signed Binaries x64'
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'signedbinaries_x64'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
-
-  - task: DownloadBuildArtifacts@0
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'Download: Signed Binaries ARM64'
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'signedbinaries_ARM64'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
+      artifactName: 'mrtcore_binaries'
+      downloadPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
 
 # START of copying files into their final package location.
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
     displayName: 'copy winmd'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_anycpu\lib\anycpu'
-      Contents: |
-        signed\Microsoft.ApplicationModel.Resources.winmd
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\uap10.0\'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy .net 5 projection DLL and PDB'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_anycpu\lib\anycpu'
-      Contents: |
-        net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        signed\net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\net5.0-windows\'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy .net 2 projection DLL and PDB'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_anycpu\lib\anycpu'
-      Contents: |
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        signed\netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0\'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy x86'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x86\lib\x86'
-      Contents: |
-        mrm.pdb
-        Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-x86\native'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy x64'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x64\lib\x64'
-      Contents: |
-        mrm.pdb
-        Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-x64\native'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy ARM64'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM64\lib\ARM64'
-      Contents: |
-        mrm.pdb
-        Microsoft.ApplicationModel.Resources.pdb
-        signed\mrm.dll
-        signed\Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm64\native'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy import lib x86'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x86\lib\x86'
-      Contents: |
-        mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x86'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy import lib x64'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_x64\lib\x64'
-      Contents: |
-        mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x64'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'copy import lib ARM64'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\signedbinaries_ARM64\lib\ARM64'
-      Contents: |
-        mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-arm64'
-      flattenFolders: true
-
-  - task: DownloadBuildArtifacts@0
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'Download: Unsigned Binaries'
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'binaries_raw'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\raw'
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned winmd'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\uap10.0\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\uap10.0\'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned .net 5 projection DLL and PDB'
+    displayName: 'copy .net 5 projection DLL and PDB'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
       Contents: |
         net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
         net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\net5.0-windows\'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\net5.0-windows\'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned .net 2 projection DLL and PDB'
+    displayName: 'copy x86'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\anycpu'
-      Contents: |
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.pdb
-        netstandard2.0\Microsoft.ApplicationModel.Resources.Projection.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\netstandard2.0\'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned x86'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-x86\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-x86\native'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned x64'
+    displayName: 'copy x64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-x64\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-x64\native'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned ARM64'
+    displayName: 'copy ARM'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM'
       Contents: |
         mrm.pdb
         Microsoft.ApplicationModel.Resources.pdb
         mrm.dll
         Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\runtimes\win10-arm64\native'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-arm\native'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned import lib x86'
+    displayName: 'copy ARM64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x86'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
       Contents: |
-        mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x86'
+        mrm.pdb
+        Microsoft.ApplicationModel.Resources.pdb
+        mrm.dll
+        Microsoft.ApplicationModel.Resources.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\runtimes\win10-arm64\native'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned import lib x64'
+    displayName: 'copy import lib x86'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\x64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
       Contents: |
         mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-x64'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-x86'
       flattenFolders: true
 
   - task: CopyFiles@2
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    displayName: 'copy unsigned import lib ARM64'
+    displayName: 'copy import lib x64'
     inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\raw\binaries_raw\lib\ARM64'
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
       Contents: |
         mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\lib\win10-arm64'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-x64'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: 'copy import lib ARM'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM'
+      Contents: |
+        mrm.lib
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-arm'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: 'copy import lib ARM64'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
+      Contents: |
+        mrm.lib
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\lib\win10-arm64'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -537,7 +405,7 @@ jobs:
         native\Microsoft.ApplicationModel.Resources.targets
         native\Microsoft.ApplicationModel.Resources.WinRt.props
         README.md
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\build'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\build'
       flattenFolders: false
 
   - task: CopyFiles@2
@@ -546,60 +414,22 @@ jobs:
       SourceFolder: '$(MRTSourcesDirectory)\mrt\core\src'
       Contents: |
         mrm.h
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt\include'
-
-  - task: CopyFiles@2
-    displayName: 'copy license'
-    inputs:
-      SourceFolder: '$(MRTSourcesDirectory)'
-      Contents: |
-        LICENSE.txt
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt'
-
-# END of copying files into their final package location.
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fatnuget\include'
   
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\fatnuget'
+      ArtifactName: 'FatNuget'
+
   # NuGetCommand@2
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    inputs:
-      command: 'pack'
-      packagesToPack: '$(MRTSourcesDirectory)\mrt\nuget\Microsoft.ApplicationModel.Resources.nuspec'
-      versioningScheme: 'byPrereleaseNumber'
-      majorVersion: '$(Major)'
-      minorVersion: '$(Minor)'
-      patchVersion: '$(Patch)'
-      basePath: '$(Build.ArtifactStagingDirectory)\mrt'
-      packDestination: '$(Build.ArtifactStagingDirectory)\nuget'
-  
-#  - task: PkgESCodeSign@10
+#  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
 #    condition: and(succeeded(), eq(variables.codeSign, true))
-#    env:
-#      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+#    displayName: 'publish to MRTCore feed'
 #    inputs:
-#      signConfigXml: 'SignConfig-nuget.xml'
-#      inPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
-#      outPathRoot: '$(BUILD.ArtifactStagingDirectory)\nuget'
-  
-  - task: PublishBuildArtifacts@1
-    condition: and(succeeded(), eq(variables.codeSign, false))
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\nuget'
-      ArtifactName: 'drop'
-
-  - task: PublishBuildArtifacts@1
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\nuget\signed'
-      ArtifactName: 'drop'
-
-  # NuGetCommand@2
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    condition: and(succeeded(), eq(variables.codeSign, true))
-    displayName: 'publish to MRTCore feed'
-    inputs:
-      command: 'push'
-      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/signed/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-      nuGetFeedType: 'internal'
-      publishVstsFeed: '2771a91e-5705-4d88-a3e9-70623b166f8d/659bea81-0d99-4dc0-b32f-200cd635e5ad'
+#      command: 'push'
+#      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+#      nuGetFeedType: 'internal'
+#      publishVstsFeed: '2771a91e-5705-4d88-a3e9-70623b166f8d/659bea81-0d99-4dc0-b32f-200cd635e5ad'
 
 # TODO: get the test app to build using the NuGet package generated earlier in the pipeline.
 #- task: NuGetCommand@2

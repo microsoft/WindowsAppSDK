@@ -1,5 +1,5 @@
 parameters:
-  artifactName: 'drop'
+  artifactName: 'reunion_binaries'
 
 steps:
   - task: powershell@2
