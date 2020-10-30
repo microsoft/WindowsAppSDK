@@ -47,7 +47,6 @@ stages:
       
 
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
-  dependsOn: Build
   parameters:
     name: 'RunTestsInHelix'
     dependsOn: Build
