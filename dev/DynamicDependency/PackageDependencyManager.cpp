@@ -91,11 +91,8 @@ const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageD
         if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
         {
             // Has it expired?
-            if (!packageDependency.IsExpired())
+            if (packageDependency.IsExpired())
             {
-                // Remove it from the in-memory list
-                g_packageDependencies.erase(g_packageDependencies.begin() + index);
-
                 // GC the expired package dependency
                 MddCore::DataStore::Delete(packageDependencyId);
 
@@ -124,7 +121,7 @@ const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageD
     // We're guaranteed it's not in the in-memory list at this point
 
     // Has it expired?
-    if (!packageDependency.IsExpired())
+    if (packageDependency.IsExpired())
     {
         // GC the expired package dependency
         MddCore::DataStore::Delete(packageDependencyId);

@@ -244,6 +244,13 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR p
     Assert::AreEqual(expectedPath, pathEnvironmentVariable);
 }
 
+void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path3, PCWSTR path)
+{
+    std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
+    std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path3 + L";" + path };
+    Assert::AreEqual(expectedPath, pathEnvironmentVariable);
+}
+
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(const std::wstring& path1, PCWSTR path)
 {
     VerifyPathEnvironmentVariable(path1.c_str(), path);
@@ -252,6 +259,11 @@ void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(const st
 void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(const std::wstring& path1, const std::wstring& path2, PCWSTR path)
 {
     VerifyPathEnvironmentVariable(path1.c_str(), path2.c_str(), path);
+}
+
+void Test::DynamicDependency::Test_Win32::VerifyPathEnvironmentVariable(const std::wstring& path1, const std::wstring& path2, const std::wstring& path3, PCWSTR path)
+{
+    VerifyPathEnvironmentVariable(path1.c_str(), path2.c_str(), path3.c_str(), path);
 }
 
 void Test::DynamicDependency::Test_Win32::VerifyPackageInPackageGraph(
@@ -448,24 +460,24 @@ HKEY Test::DynamicDependency::Test_Win32::Registry_Key_Parse(
     Assert::AreNotEqual(std::wstring::npos, offset);
     Assert::AreNotEqual(size_t{0}, offset);
     auto prefix{ key.substr(0, offset) };
-    if (prefix == L"HKCR\\")
+    if (prefix == L"HKCR")
     {
         root = HKEY_CLASSES_ROOT;
     }
-    else if (prefix == L"HKCU\\")
+    else if (prefix == L"HKCU")
     {
         root = HKEY_CURRENT_USER;
     }
-    else if (prefix == L"HKLM\\")
+    else if (prefix == L"HKLM")
     {
         root = HKEY_LOCAL_MACHINE;
     }
-    else if (prefix == L"HKU\\")
+    else if (prefix == L"HKU")
     {
         root = HKEY_USERS;
     }
     Assert::IsTrue(root != HKEY{});
-    Assert::IsTrue(key.length() > prefix.length());
+    Assert::IsTrue(key.length() > prefix.length() + 1);
 
     offsetToSubkey = ++offset;
     return root;

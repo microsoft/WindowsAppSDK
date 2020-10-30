@@ -37,6 +37,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />

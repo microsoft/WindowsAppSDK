@@ -16,6 +16,7 @@ namespace MddCore
         std::unique_ptr<WCHAR[]> s{ new WCHAR[lengthIncludingNullTerminator] };
 
         THROW_IF_WIN32_BOOL_FALSE(MultiByteToWideChar(CP_UTF8, 0, utf8, -1, s.get(), lengthIncludingNullTerminator));
+        s[lengthIncludingNullTerminator - 1] = L'\0';
         return winrt::hstring(s.get());
     }
 
@@ -28,13 +29,12 @@ namespace MddCore
 
         const auto lengthIncludingNullTerminator{ WideCharToMultiByte(CP_UTF8, 0, s, -1, nullptr, 0, nullptr, nullptr) };
         THROW_IF_WIN32_BOOL_FALSE(lengthIncludingNullTerminator);
-        auto length{ lengthIncludingNullTerminator - 1 };
 
-        std::string utf8{};
-        utf8.reserve(length);
+        std::unique_ptr<char[]> utf8(new char[lengthIncludingNullTerminator]);
 
-        THROW_IF_WIN32_BOOL_FALSE(WideCharToMultiByte(CP_UTF8, 0, s, -1, const_cast<char*>(utf8.c_str()), lengthIncludingNullTerminator, nullptr, nullptr));
-        return utf8;
+        THROW_IF_WIN32_BOOL_FALSE(WideCharToMultiByte(CP_UTF8, 0, s, -1, utf8.get(), lengthIncludingNullTerminator, nullptr, nullptr));
+        utf8[lengthIncludingNullTerminator - 1] = '\0';
+        return std::string(utf8.get());
     }
 
     inline std::string to_utf8(const std::wstring& s)

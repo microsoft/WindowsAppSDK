@@ -49,6 +49,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h" />
   </ItemGroup>
   <ItemGroup>

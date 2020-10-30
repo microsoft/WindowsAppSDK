@@ -5,6 +5,7 @@
 
 #include "msixdynamicdependency.h"
 
+#include "MddDetourPackageGraph.h"
 #include "PackageDependencyManager.h"
 #include "PackageGraphManager.h"
 
@@ -12,8 +13,11 @@ namespace MddCore
 {
 bool IsStaticPackageGraphEmpty()
 {
-    //TODO Check the static package graph
-    return true;
+    // Check the static package graph
+    UINT32 n = 0;
+    const auto rc{ GetCurrentStaticPackageInfo(PACKAGE_FILTER_HEAD, &n, nullptr, nullptr) };
+    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc == APPMODEL_ERROR_NO_PACKAGE) || (rc == ERROR_INSUFFICIENT_BUFFER), "GetCurrentStaticPackageInfo rc=%d", rc);
+    return rc == APPMODEL_ERROR_NO_PACKAGE;
 }
 }
 

@@ -5,11 +5,26 @@
 
 #include "PackageDependency.h"
 
-namespace MddCore::DataStore
+namespace MddCore
 {
-MddCore::PackageDependency Load(PCWSTR packageDependencyId);
+    class DataStore
+    {
+    public:
+        DataStore() = delete;
+        ~DataStore() = delete;
 
-void Save(const MddCore::PackageDependency& packageDependency);
+    public:
+        static constexpr PCWSTR fileExtension{ L".mdd" };
 
-void Delete(PCWSTR packageDependencyId);
+        static MddCore::PackageDependency Load(PCWSTR packageDependencyId);
+
+        static void Save(const MddCore::PackageDependency& packageDependency);
+
+        static void Delete(PCWSTR packageDependencyId);
+
+    private:
+        static void DeleteFileIfExists(PCWSTR filename);
+
+        static std::filesystem::path GetDataStorePath();
+    };
 }

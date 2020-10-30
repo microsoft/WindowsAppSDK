@@ -6,48 +6,16 @@
 #include "DataStore.h"
 
 #include "DynamicDependencyDataStore_h.h"
-
 #include "utf8.h"
+#include "winrt_msixdynamicdepednency.h"
 
 #include <wil/winrt.h>
-
-#include <fstream>
-
-namespace winrt
-{
-    template <typename T>
-    T convert_from_abi(::IUnknown* from)
-    {
-        T to{ nullptr }; // `T` is a projected type.
-
-        winrt::check_hresult(from->QueryInterface(winrt::guid_of<T>(),
-            winrt::put_abi(to)));
-
-        return to;
-    }
-}
-
-namespace MddCore::DataStore
-{
-    std::filesystem::path GetDataStorePath()
-    {
-        wil::com_ptr<IUnknown> dataStore_iunknown{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
-        auto dataStore{ dataStore_iunknown.query<IDynamicDependencyDataStore>() };
-
-        wil::com_ptr<IUnknown> applicationData_iunknown;
-        THROW_IF_FAILED(dataStore->GetApplicationData(applicationData_iunknown.addressof()));
-
-        auto applicationData{ winrt::convert_from_abi<winrt::Windows::Storage::ApplicationData>(applicationData_iunknown.get()) };
-
-        return std::filesystem::path(applicationData.LocalFolder().Path().c_str());
-    }
-}
 
 MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
 {
     auto path{ GetDataStorePath() };
     path /= L"DynamicDependency";
-    auto filename{ path / (std::wstring(packageDependencyId) + L".ddpd") };
+    auto filename{ path / (std::wstring(packageDependencyId) + DataStore::fileExtension) };
 
     wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr) };
     if (!file)
@@ -74,7 +42,7 @@ MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
         return PackageDependency();
     }
 
-    const auto bufferSize{ static_cast<size_t>(dataSize) + 1 };
+    const auto bufferSize{ static_cast<DWORD>(dataSize) + 1 };
     std::unique_ptr<char[]> bufferUtf8{ new char[bufferSize] };
 
     DWORD bytesRead{};
@@ -88,13 +56,19 @@ MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
 
 void MddCore::DataStore::Save(const MddCore::PackageDependency& packageDependency)
 {
+    // Package depednencies with LifetimeKind.Process are never saved to disk. They live in memory and end with the process
+    if (packageDependency.LifetimeKind() == MddPackageDependencyLifetimeKind::Process)
+    {
+        return;
+    }
+
     auto json{ packageDependency.ToJSONUtf8() };
 
     auto path{ GetDataStorePath() };
     path /= L"DynamicDependency";
     std::filesystem::create_directory(path);
 
-    auto filename{ path / (packageDependency.Id() + L".ddpd") };
+    auto filename{ path / (packageDependency.Id() + DataStore::fileExtension) };
 
     wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_WRITE, FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
     if (!file)
@@ -103,7 +77,7 @@ void MddCore::DataStore::Save(const MddCore::PackageDependency& packageDependenc
     }
 
     DWORD bytesWritten{};
-    THROW_IF_WIN32_BOOL_FALSE_MSG(::WriteFile(file.get(), json.c_str(), json.length(), &bytesWritten, nullptr), "%ls", filename.c_str());
+    THROW_IF_WIN32_BOOL_FALSE_MSG(::WriteFile(file.get(), json.c_str(), static_cast<DWORD>(json.length()), &bytesWritten, nullptr), "%ls", filename.c_str());
 }
 
 void MddCore::DataStore::Delete(PCWSTR packageDependencyId)
@@ -111,5 +85,30 @@ void MddCore::DataStore::Delete(PCWSTR packageDependencyId)
     auto path{ GetDataStorePath() };
     path /= packageDependencyId;
 
-    THROW_IF_WIN32_BOOL_FALSE_MSG(DeleteFileW(path.c_str()), "Error deleting file %ls", path.c_str());
+    DeleteFileIfExists(path.c_str());;
+}
+
+void MddCore::DataStore::DeleteFileIfExists(PCWSTR filename)
+{
+    if (!::DeleteFileW(filename))
+    {
+        auto const lastError{ GetLastError() };
+        if ((lastError != ERROR_FILE_NOT_FOUND) && (lastError != ERROR_PATH_NOT_FOUND))
+        {
+            THROW_HR_MSG(HRESULT_FROM_WIN32(lastError), "Error %d deleting file %ls", lastError, filename);
+        }
+    }
+}
+
+std::filesystem::path MddCore::DataStore::GetDataStorePath()
+{
+    wil::com_ptr<IUnknown> dataStore_iunknown{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
+    auto dataStore{ dataStore_iunknown.query<IDynamicDependencyDataStore>() };
+
+    wil::com_ptr<IUnknown> applicationData_iunknown;
+    THROW_IF_FAILED(dataStore->GetApplicationData(applicationData_iunknown.addressof()));
+
+    auto applicationData{ winrt::convert_from_abi<winrt::Windows::Storage::ApplicationData>(applicationData_iunknown.get()) };
+
+    return std::filesystem::path(applicationData.LocalFolder().Path().c_str());
 }

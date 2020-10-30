@@ -82,7 +82,24 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Framewo
     lifetimeArtifactFile.reset();
     Assert::IsFalse(lifetimeArtifactFile.is_valid());
     Assert::IsFalse(std::filesystem::exists(lifetimeArtifactFilename));
-    Assert::IsNull(Mdd_Add(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), packageDependencyId_FrameworkMathAdd.get()));
+
+    // Add it a 2nd time. The package dependency is deleted but still resolved so this should succeed. PackageGraph = [ Fwk, MathAdd, MathAdd ]
+    wil::unique_process_heap_string packageFullName;
+    auto context{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName) };
+    Assert::IsNotNull(packageFullName.get());
+    std::wstring actualPackageFullName{ packageFullName.get() };
+    Assert::AreEqual(actualPackageFullName, expectedPackageFullName_FrameworkMathAdd);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, packagePath_FrameworkMathAdd, pathEnvironmentVariable.get());
+    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
+
+    // Remove our 2nd instance. PackageGraph = [ Fwk, MathAdd ]
+    MddRemovePackageDependency(context);
+    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.get());
+    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
+    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Use it
 

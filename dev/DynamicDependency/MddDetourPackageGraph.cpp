@@ -112,3 +112,12 @@ LONG DynamicGetCurrentPackageInfo2(
 {
     return WIN32_FROM_HRESULT(MddCore::PackageGraphManager::GetCurrentPackageInfo2(flags, packagePathType, bufferLength, buffer, count, TrueGetCurrentPackageInfo2));
 }
+
+LONG GetCurrentStaticPackageInfo(
+    const UINT32 flags,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count) noexcept
+{
+    return TrueGetCurrentPackageInfo(flags, bufferLength, buffer, count);
+}

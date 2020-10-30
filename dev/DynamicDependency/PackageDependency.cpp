@@ -92,11 +92,11 @@ bool MddCore::PackageDependency::IsExpired() const
     switch (m_lifetimeKind)
     {
     case MddPackageDependencyLifetimeKind::Process:
-        return true;
+        return false;
     case MddPackageDependencyLifetimeKind::FilePath:
-        return std::filesystem::exists(m_packageFullName);
+        return !std::filesystem::exists(m_packageFullName);
     case MddPackageDependencyLifetimeKind::RegistryKey:
-        return IsRegistryKeyExists(m_lifetimeArtifact);
+        return !IsRegistryKeyExists(m_lifetimeArtifact);
     default:
         FAIL_FAST_HR(E_UNEXPECTED);
     }
@@ -110,12 +110,18 @@ bool MddCore::PackageDependency::IsRegistryKeyExists(
 
     wil::unique_hkey hkey;
     auto rc{ ::RegOpenKeyExW(root, subkey, 0, KEY_READ, wil::out_param(hkey)) };
-    if ((rc == ERROR_FILE_NOT_FOUND) || (rc == ERROR_PATH_NOT_FOUND))
+    if (rc == ERROR_SUCCESS)
     {
-        return false;
+        return true;
     }
-    RETURN_IF_WIN32_ERROR(rc);
-    return true;
+    else
+    {
+        if ((rc != ERROR_FILE_NOT_FOUND) && (rc != ERROR_PATH_NOT_FOUND))
+        {
+            (void)LOG_WIN32_MSG(rc, "RegOpenKey failed %d", rc);
+            return false;
+        }
+    }
 }
 
 HKEY MddCore::PackageDependency::ParseRegistryKey(
@@ -137,19 +143,19 @@ HKEY MddCore::PackageDependency::ParseRegistryKey(
     THROW_HR_IF_MSG(E_INVALIDARG, offset == std::wstring::npos, "Invalid RegistryKey %ls", key.c_str());
     THROW_HR_IF_MSG(E_INVALIDARG, offset == 0, "Invalid RegistryKey %ls", key.c_str());
     auto prefix{ key.substr(0, offset) };
-    if (prefix == L"HKCR\\")
+    if (prefix == L"HKCR")
     {
         root = HKEY_CLASSES_ROOT;
     }
-    else if (prefix == L"HKCU\\")
+    else if (prefix == L"HKCU")
     {
         root = HKEY_CURRENT_USER;
     }
-    else if (prefix == L"HKLM\\")
+    else if (prefix == L"HKLM")
     {
         root = HKEY_LOCAL_MACHINE;
     }
-    else if (prefix == L"HKU\\")
+    else if (prefix == L"HKU")
     {
         root = HKEY_USERS;
     }

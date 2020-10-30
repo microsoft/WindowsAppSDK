@@ -8,4 +8,10 @@ HRESULT MddDetourPackageGraphInitialize() noexcept;
 
 void MddDetourPackageGraphShutdown() noexcept;
 
+LONG GetCurrentStaticPackageInfo(
+    const UINT32 flags,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count) noexcept;
+
 #endif // MDDDETOURPACKAGEGRAPH_H

@@ -50,9 +50,13 @@ namespace Test::DynamicDependency
 
         static void VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path);
 
+        static void VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path3, PCWSTR path);
+
         static void VerifyPathEnvironmentVariable(const std::wstring& path1, PCWSTR path);
 
         static void VerifyPathEnvironmentVariable(const std::wstring& path1, const std::wstring& path2, PCWSTR path);
+
+        static void VerifyPathEnvironmentVariable(const std::wstring& path1, const std::wstring& path2, const std::wstring& path3, PCWSTR path);
 
         static void VerifyPackageInPackageGraph(
             const std::wstring& packageFullName,
