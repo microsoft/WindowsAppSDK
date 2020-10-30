@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201026.6-CI" />
+    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview4.201029.8-CI" />
   </ItemGroup>
 
   <ItemGroup>

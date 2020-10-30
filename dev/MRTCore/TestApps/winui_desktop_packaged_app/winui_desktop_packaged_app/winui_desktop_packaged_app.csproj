@@ -12,13 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.7" />
-    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201026.6-CI" />
+    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview4.201029.8-CI" />
     <Manifest Include="$(ApplicationManifest)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- This is a workaround. In the final version this reference will be included in the WinUI package. Then this can be removed. -->
-    <Reference Include="$(PkgMicrosoft_WinUI)\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll" />
   </ItemGroup>
 
   <ItemGroup>
