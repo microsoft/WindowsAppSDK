@@ -27,9 +27,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         }
 
     protected:
-        ActivatedEventArgsBase()
-        {
-        }
+        ActivatedEventArgsBase() = default;
 
         ActivationKind m_kind;
         ApplicationExecutionState m_previousState;
