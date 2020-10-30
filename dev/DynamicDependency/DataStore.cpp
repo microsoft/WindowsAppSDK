@@ -7,13 +7,29 @@
 
 #include "DynamicDependencyDataStore_h.h"
 
+#include "utf8.h"
+
 #include <wil/winrt.h>
 
 #include <fstream>
 
+namespace winrt
+{
+    template <typename T>
+    T convert_from_abi(::IUnknown* from)
+    {
+        T to{ nullptr }; // `T` is a projected type.
+
+        winrt::check_hresult(from->QueryInterface(winrt::guid_of<T>(),
+            winrt::put_abi(to)));
+
+        return to;
+    }
+}
+
 namespace MddCore::DataStore
 {
-    winrt::Windows::Storage::ApplicationData GetDataStore()
+    std::filesystem::path GetDataStorePath()
     {
         wil::com_ptr<IUnknown> dataStore_iunknown{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
         auto dataStore{ dataStore_iunknown.query<IDynamicDependencyDataStore>() };
@@ -21,13 +37,9 @@ namespace MddCore::DataStore
         wil::com_ptr<IUnknown> applicationData_iunknown;
         THROW_IF_FAILED(dataStore->GetApplicationData(applicationData_iunknown.addressof()));
 
-        return winrt::Windows::Storage::ApplicationData{ applicationData_iunknown.detach(), winrt::take_ownership_from_abi };
-    }
+        auto applicationData = winrt::convert_from_abi<winrt::Windows::Storage::ApplicationData>(applicationData_iunknown.get());
 
-    std::filesystem::path GetDataStorePath()
-    {
-        auto dataStore{ GetDataStore() };
-        return std::filesystem::path(dataStore.LocalFolder().Path().c_str());
+        return std::filesystem::path(applicationData.LocalFolder().Path().c_str());
     }
 }
 
@@ -37,32 +49,61 @@ MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
     path /= L"DynamicDependency";
     auto filename{ path / (std::wstring(packageDependencyId) + L".ddpd") };
 
-    const auto c_bufferSize = 32 * 1024;    // Way more than we need
-    auto buffer{ wil::make_process_heap_string(nullptr, c_bufferSize) };
-    memset(buffer.get(), 0, c_bufferSize * sizeof(*buffer.get()));
+    wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr) };
+    if (!file)
     {
-        std::wifstream file(filename);
-        file.read(buffer.get(), c_bufferSize);
-        file.close();
+        const auto lastError{ GetLastError() };
+        if ((lastError == ERROR_FILE_NOT_FOUND) || (lastError == ERROR_PATH_NOT_FOUND))
+        {
+            // Not found
+            return PackageDependency();
+        }
+        THROW_WIN32(lastError);
     }
 
-    return MddCore::PackageDependency::FromJSON(winrt::hstring(buffer.get()));
+    LARGE_INTEGER fileSize{};
+    THROW_IF_WIN32_BOOL_FALSE(::GetFileSizeEx(file.get(), &fileSize));
+    const auto dataSize{ fileSize.QuadPart };
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_INVALID_DATA), dataSize > INT32_MAX);
+    if (dataSize == 0)
+    {
+        // 0-byte file is invalid. Perhaps power was lost when written but before flushed?
+        // 'Fix' it i.e. delete it and report not-found
+        file.reset();
+        std::filesystem::remove(filename);
+        return PackageDependency();
+    }
+
+    const auto bufferSize{ static_cast<size_t>(dataSize) + 1 };
+    std::unique_ptr<char[]> bufferUtf8{ new char[bufferSize] };
+
+    DWORD bytesRead{};
+    THROW_IF_WIN32_BOOL_FALSE(::ReadFile(file.get(), bufferUtf8.get(), bufferSize, &bytesRead, nullptr));
+    file.reset();
+    bufferUtf8[bytesRead] = '\0';
+    auto json{ bufferUtf8.get() };
+
+    return MddCore::PackageDependency::FromJSON(json);
 }
 
 void MddCore::DataStore::Save(const MddCore::PackageDependency& packageDependency)
 {
-    auto json = packageDependency.ToJSON();
+    auto json = packageDependency.ToJSONUtf8();
 
     auto path{ GetDataStorePath() };
     path /= L"DynamicDependency";
     std::filesystem::create_directory(path);
 
     auto filename = path / (packageDependency.Id() + L".ddpd");
+
+    wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_WRITE, FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
+    if (!file)
     {
-        std::wofstream file(filename, std::wofstream::trunc);
-        file.write(json.c_str(), json.length());
-        file.close();
+        THROW_HR_MSG(HRESULT_FROM_WIN32(GetLastError()), "%ls", filename.c_str());
     }
+
+    DWORD bytesWritten{};
+    THROW_IF_WIN32_BOOL_FALSE_MSG(::WriteFile(file.get(), json.c_str(), json.length(), &bytesWritten, nullptr), "%ls", filename.c_str());
 }
 
 void MddCore::DataStore::Delete(PCWSTR packageDependencyId)

@@ -5,6 +5,8 @@
 
 #include "pch.h"
 
+#include "utf8.h"
+
 #include "PackageDependency.h"
 
 namespace JSON = winrt::Windows::Data::Json;
@@ -16,7 +18,8 @@ void MddCore::PackageDependency::GenerateId()
     const size_t idAsStringLength{ ARRAYSIZE(L"{33221100-5544-7766-8899-aabbccddeeff}") - 1 };
     WCHAR idAsString[idAsStringLength + 1]{};
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), StringFromGUID2(id, idAsString, idAsStringLength + 1) != idAsStringLength + 1);
-    m_packageDependencyId.assign(idAsString);
+    idAsString[idAsStringLength - 1] = L'\0';
+    m_packageDependencyId.assign(idAsString + 1);
 }
 
 std::vector<std::wstring> MddCore::PackageDependency::FindPackagesByFamily() const
@@ -59,6 +62,11 @@ std::wstring MddCore::PackageDependency::ToJSON() const
     return std::wstring(json.ToString());
 }
 
+std::string MddCore::PackageDependency::ToJSONUtf8() const
+{
+    return to_utf8(ToJSON());
+}
+
 MddCore::PackageDependency MddCore::PackageDependency::FromJSON(const winrt::hstring& json)
 {
     MddCore::PackageDependency packageDependency;
@@ -72,6 +80,87 @@ MddCore::PackageDependency MddCore::PackageDependency::FromJSON(const winrt::hst
     packageDependency.m_options = static_cast<MddCreatePackageDependencyOptions>(uint32_from_string(object.GetNamedString(winrt::hstring(L"Options")).c_str()));
 
     return packageDependency;
+}
+
+MddCore::PackageDependency MddCore::PackageDependency::FromJSON(PCSTR jsonUtf8)
+{
+    return FromJSON(utf8_to_hstring(jsonUtf8));
+}
+
+bool MddCore::PackageDependency::IsExpired() const
+{
+    switch (m_lifetimeKind)
+    {
+    case MddPackageDependencyLifetimeKind::Process:
+        return true;
+    case MddPackageDependencyLifetimeKind::FilePath:
+        return std::filesystem::exists(m_packageFullName);
+    case MddPackageDependencyLifetimeKind::RegistryKey:
+        return IsRegistryKeyExists(m_lifetimeArtifact);
+    default:
+        FAIL_FAST_HR(E_UNEXPECTED);
+    }
+}
+
+bool MddCore::PackageDependency::IsRegistryKeyExists(
+    const std::wstring& key)
+{
+    PCWSTR subkey{};
+    auto root{ ParseRegistryKey(key, subkey) };
+
+    wil::unique_hkey hkey;
+    auto rc = ::RegOpenKeyExW(root, subkey, 0, KEY_READ, wil::out_param(hkey));
+    if ((rc == ERROR_FILE_NOT_FOUND) || (rc == ERROR_PATH_NOT_FOUND))
+    {
+        return false;
+    }
+    RETURN_IF_WIN32_ERROR(rc);
+    return true;
+}
+
+HKEY MddCore::PackageDependency::ParseRegistryKey(
+    const std::wstring& key,
+    PCWSTR& subkey)
+{
+    size_t offset{};
+    auto root = ParseRegistryKey(key, offset);
+    subkey = key.c_str() + offset;
+    return root;
+}
+
+HKEY MddCore::PackageDependency::ParseRegistryKey(
+    const std::wstring& key,
+    size_t& offsetToSubkey)
+{
+    HKEY root{};
+    auto offset = key.find(L'\\');
+    THROW_HR_IF_MSG(E_INVALIDARG, offset == std::wstring::npos, "Invalid RegistryKey %ls", key.c_str());
+    THROW_HR_IF_MSG(E_INVALIDARG, offset == 0, "Invalid RegistryKey %ls", key.c_str());
+    auto prefix{ key.substr(0, offset) };
+    if (prefix == L"HKCR\\")
+    {
+        root = HKEY_CLASSES_ROOT;
+    }
+    else if (prefix == L"HKCU\\")
+    {
+        root = HKEY_CURRENT_USER;
+    }
+    else if (prefix == L"HKLM\\")
+    {
+        root = HKEY_LOCAL_MACHINE;
+    }
+    else if (prefix == L"HKU\\")
+    {
+        root = HKEY_USERS;
+    }
+    else
+    {
+        THROW_HR_MSG(E_INVALIDARG, "Invalid RegistryKey %ls", key.c_str());
+    }
+    THROW_HR_IF_MSG(E_INVALIDARG, key.length() == prefix.length(), "Invalid RegistryKey %ls", key.c_str());
+
+    offsetToSubkey = ++offset;
+    return root;
 }
 
 winrt::hstring MddCore::PackageDependency::ToString(const MddPackageDependencyLifetimeKind lifetimeKind)

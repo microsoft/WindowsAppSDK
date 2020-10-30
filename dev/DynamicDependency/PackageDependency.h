@@ -138,7 +138,7 @@ public:
         }
     }
 
-    const PSID User() const
+    PSID User() const
     {
         return m_user.get();
     }
@@ -252,8 +252,24 @@ public:
     }
 
     std::wstring ToJSON() const;
+    std::string ToJSONUtf8() const;
 
     static PackageDependency FromJSON(const winrt::hstring& json);
+    static PackageDependency FromJSON(PCSTR jsonUtf8);
+
+    bool IsExpired() const;
+
+private:
+    static bool IsRegistryKeyExists(
+        const std::wstring& key);
+
+    static HKEY ParseRegistryKey(
+        const std::wstring& key,
+        PCWSTR& subkey);
+
+    static HKEY ParseRegistryKey(
+        const std::wstring& key,
+        size_t& offsetToSubkey);
 
 private:
     static winrt::hstring ToString(const MddPackageDependencyLifetimeKind lifetimeKind);
