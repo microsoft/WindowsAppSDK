@@ -43,8 +43,6 @@
     <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
     <AppxTargetsLocation Condition="'$(AppxTargetsLocation)'==''">$(MSBuildThisFileDirectory)build\</AppxTargetsLocation>
     <EntryPointProjectUniqueName>..\winui_desktop_packaged_app_cpp\winui_desktop_packaged_app_cpp.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>6BCD6BC3E772A37FDC912F67535EF206182EC416</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>winui_desktop_packaged_app_cpp %28Package%29_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
