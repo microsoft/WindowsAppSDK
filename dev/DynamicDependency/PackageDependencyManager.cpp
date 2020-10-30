@@ -27,11 +27,11 @@ void MddCore::PackageDependencyManager::CreatePackageDependency(
 
     MddCore::DataStore::Save(packageDependency);
 
-    auto lock = std::unique_lock<std::mutex>(g_lock);
+    auto lock{ std::unique_lock<std::mutex>(g_lock) };
 
     g_packageDependencies.push_back(packageDependency);
 
-    auto id = wil::make_process_heap_string(packageDependency.Id().c_str());
+    auto id{ wil::make_process_heap_string(packageDependency.Id().c_str()) };
     *packageDependencyId = id.release();
 }
 
@@ -54,11 +54,11 @@ void MddCore::PackageDependencyManager::DeletePackageDependency(
         return;
     }
 
-    auto lock = std::unique_lock<std::mutex>(g_lock);
+    auto lock{ std::unique_lock<std::mutex>(g_lock) };
 
     for (size_t index=0; index < g_packageDependencies.size(); ++index)
     {
-        const auto& packageDependency = g_packageDependencies[index];
+        const auto& packageDependency{ g_packageDependencies[index] };
         if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
         {
             g_packageDependencies.erase(g_packageDependencies.begin() + index);
@@ -87,7 +87,7 @@ const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageD
     // Check the in-memory list
     for (size_t index=0; index < g_packageDependencies.size(); ++index)
     {
-        const auto& packageDependency = g_packageDependencies[index];
+        const auto& packageDependency{ g_packageDependencies[index] };
         if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
         {
             // Has it expired?

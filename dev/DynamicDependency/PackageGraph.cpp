@@ -45,7 +45,7 @@ HRESULT MddCore::PackageGraph::Add(
     int index{};
     for (; index < m_packageGraphNodes.size(); ++index)
     {
-        auto& node = m_packageGraphNodes[index];
+        auto& node{ m_packageGraphNodes[index] };
         if (node.Rank() < rank)
         {
             // Too soon. Keep looking
@@ -70,7 +70,7 @@ HRESULT MddCore::PackageGraph::Add(
                 // Append to items of this rank
                 for (int nextIndex=index+1; nextIndex < m_packageGraphNodes.size(); ++nextIndex)
                 {
-                    auto& nextNode = m_packageGraphNodes[nextIndex];
+                    auto& nextNode{ m_packageGraphNodes[nextIndex] };
                     if (nextNode.Rank() > rank)
                     {
                         // Gotcha!
@@ -92,7 +92,7 @@ HRESULT MddCore::PackageGraph::Add(
     }
 
     // The DLL Search Order must be updated when we update the package graph
-    auto& node = m_packageGraphNodes[index];
+    auto& node{ m_packageGraphNodes[index] };
     AddToDllSearchOrder(node);
 
     context = node.Context();
@@ -111,7 +111,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !foundPackageDependency);
 
     // Is the package dependency already resolved?
-    const auto& packageDependency = *foundPackageDependency;
+    const auto& packageDependency{ *foundPackageDependency };
     if (!packageDependency.PackageFullName().empty())
     {
         packageFullName = wil::make_process_heap_string(packageDependency.PackageFullName().c_str());
@@ -183,7 +183,7 @@ HRESULT MddCore::PackageGraph::Remove(
 {
     for (int index=0; index < m_packageGraphNodes.size(); ++index)
     {
-        auto& node = m_packageGraphNodes[index];
+        auto& node{ m_packageGraphNodes[index] };
         if (node.Context() == context)
         {
             // Detach the node from the package graph before updating the DLL Search Order
@@ -290,7 +290,7 @@ void MddCore::PackageGraph::UpdatePath()
                 {
                     continue;
                 }
-                auto offsetAfterOldPathList = offset + oldPathList.length();
+                auto offsetAfterOldPathList{ offset + oldPathList.length() };
                 if ((offsetAfterOldPathList < path.length()) && (path[offsetAfterOldPathList] != L';'))
                 {
                     continue;
@@ -329,7 +329,7 @@ void MddCore::PackageGraph::UpdatePath()
     }
 
     // Update the PATH enironment variable
-    PCWSTR newPathEnvironmentVariable = (newPath.length() > 0 ? newPath.c_str() : nullptr);
+    PCWSTR newPathEnvironmentVariable{ (newPath.length() > 0 ? newPath.c_str() : nullptr) };
     THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPathEnvironmentVariable));
 
     // Remember the path list we added to PATH for future updates
@@ -350,7 +350,7 @@ std::wstring MddCore::PackageGraph::BuildPathList()
     std::wstring pathlist;
     for (size_t index=0; index < m_packageGraphNodes.size(); ++index)
     {
-        const auto& node = m_packageGraphNodes[index];
+        const auto& node{ m_packageGraphNodes[index] };
         if (index > 0)
         {
             pathlist += L';';

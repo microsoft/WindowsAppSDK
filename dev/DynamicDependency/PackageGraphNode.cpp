@@ -71,7 +71,7 @@ void MddCore::PackageGraphNode::AddDllDirectories()
 {
     for (size_t index=0; index < m_packageInfo.Count(); ++index)
     {
-        const auto& package = m_packageInfo.Package(index);
+        const auto& package{ m_packageInfo.Package(index) };
 
         wil::unique_dll_directory_cookie cookie(AddDllDirectory(package.path));
 
@@ -93,7 +93,7 @@ void MddCore::PackageGraphNode::BuildPathList()
     std::wstring pathList;
     for (size_t index=0; index < m_packageInfo.Count(); ++index)
     {
-        const auto& package = m_packageInfo.Package(index);
+        const auto& package{ m_packageInfo.Package(index) };
         if (index > 0)
         {
             pathList += L';';

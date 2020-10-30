@@ -109,7 +109,7 @@ bool MddCore::PackageDependency::IsRegistryKeyExists(
     auto root{ ParseRegistryKey(key, subkey) };
 
     wil::unique_hkey hkey;
-    auto rc = ::RegOpenKeyExW(root, subkey, 0, KEY_READ, wil::out_param(hkey));
+    auto rc{ ::RegOpenKeyExW(root, subkey, 0, KEY_READ, wil::out_param(hkey)) };
     if ((rc == ERROR_FILE_NOT_FOUND) || (rc == ERROR_PATH_NOT_FOUND))
     {
         return false;
@@ -123,7 +123,7 @@ HKEY MddCore::PackageDependency::ParseRegistryKey(
     PCWSTR& subkey)
 {
     size_t offset{};
-    auto root = ParseRegistryKey(key, offset);
+    auto root{ ParseRegistryKey(key, offset) };
     subkey = key.c_str() + offset;
     return root;
 }
@@ -133,7 +133,7 @@ HKEY MddCore::PackageDependency::ParseRegistryKey(
     size_t& offsetToSubkey)
 {
     HKEY root{};
-    auto offset = key.find(L'\\');
+    auto offset{ key.find(L'\\') };
     THROW_HR_IF_MSG(E_INVALIDARG, offset == std::wstring::npos, "Invalid RegistryKey %ls", key.c_str());
     THROW_HR_IF_MSG(E_INVALIDARG, offset == 0, "Invalid RegistryKey %ls", key.c_str());
     auto prefix{ key.substr(0, offset) };
@@ -176,7 +176,7 @@ winrt::hstring MddCore::PackageDependency::ToString(const MddPackageDependencyLi
 
 void MddCore::PackageDependency::LifetimeKind(const winrt::hstring& lifetimeKind)
 {
-    auto s = lifetimeKind.c_str();
+    auto s{ lifetimeKind.c_str() };
     if (CompareStringOrdinal(s, -1, L"Process", -1, TRUE) == CSTR_EQUAL)
     {
         m_lifetimeKind = MddPackageDependencyLifetimeKind::Process;

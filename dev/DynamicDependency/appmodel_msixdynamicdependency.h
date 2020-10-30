@@ -11,7 +11,7 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName)
     // Paths can be long but typically short(ish). We can use a quick fixed buffer
     // as an optimization and fallback to dynamic allocation if need be
     WCHAR path[MAX_PATH];
-    UINT32 pathLength = ARRAYSIZE(path);
+    UINT32 pathLength{ ARRAYSIZE(path) };
     const auto rc{ ::GetPackagePathByFullName(packageFullName, &pathLength, path) };
     if (rc == ERROR_SUCCESS)
     {

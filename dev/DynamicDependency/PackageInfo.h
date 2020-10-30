@@ -21,7 +21,7 @@ public:
         UINT32 count{};
         THROW_IF_WIN32_ERROR(::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, buffer.get(), &count));
 
-        auto packageInfo = PackageInfo(buffer.get(), count);
+        auto packageInfo{ PackageInfo(buffer.get(), count) };
         buffer.release();
         return packageInfo;
     }

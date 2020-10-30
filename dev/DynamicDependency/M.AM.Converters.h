@@ -47,7 +47,7 @@ namespace Microsoft::ApplicationModel::DynamicDependency
 
     inline MddCreatePackageDependencyOptions ToCreateOptions(winrt::Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions const& options, MddCreatePackageDependencyOptions const& defaultValue = MddCreatePackageDependencyOptions::None)
     {
-        auto mddOptions = defaultValue;
+        auto mddOptions{ defaultValue };
         if (!options.VerifyDependencyResolution())
         {
             WI_SetFlag(mddOptions, MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution);
@@ -57,7 +57,7 @@ namespace Microsoft::ApplicationModel::DynamicDependency
 
     inline MddAddPackageDependencyOptions ToAddOptions(winrt::Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options)
     {
-        auto mddOptions = MddAddPackageDependencyOptions::None;
+        auto mddOptions{ MddAddPackageDependencyOptions::None };
         if (options.PrependIfRankCollision())
         {
             WI_SetFlag(mddOptions, MddAddPackageDependencyOptions::PrependIfRankCollision);

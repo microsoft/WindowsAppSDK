@@ -37,7 +37,7 @@ namespace MddCore::DataStore
         wil::com_ptr<IUnknown> applicationData_iunknown;
         THROW_IF_FAILED(dataStore->GetApplicationData(applicationData_iunknown.addressof()));
 
-        auto applicationData = winrt::convert_from_abi<winrt::Windows::Storage::ApplicationData>(applicationData_iunknown.get());
+        auto applicationData{ winrt::convert_from_abi<winrt::Windows::Storage::ApplicationData>(applicationData_iunknown.get()) };
 
         return std::filesystem::path(applicationData.LocalFolder().Path().c_str());
     }
@@ -88,13 +88,13 @@ MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
 
 void MddCore::DataStore::Save(const MddCore::PackageDependency& packageDependency)
 {
-    auto json = packageDependency.ToJSONUtf8();
+    auto json{ packageDependency.ToJSONUtf8() };
 
     auto path{ GetDataStorePath() };
     path /= L"DynamicDependency";
     std::filesystem::create_directory(path);
 
-    auto filename = path / (packageDependency.Id() + L".ddpd");
+    auto filename{ path / (packageDependency.Id() + L".ddpd") };
 
     wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_WRITE, FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
     if (!file)
@@ -108,7 +108,7 @@ void MddCore::DataStore::Save(const MddCore::PackageDependency& packageDependenc
 
 void MddCore::DataStore::Delete(PCWSTR packageDependencyId)
 {
-    auto path = GetDataStorePath();
+    auto path{ GetDataStorePath() };
     path /= packageDependencyId;
 
     THROW_IF_WIN32_BOOL_FALSE_MSG(DeleteFileW(path.c_str()), "Error deleting file %ls", path.c_str());

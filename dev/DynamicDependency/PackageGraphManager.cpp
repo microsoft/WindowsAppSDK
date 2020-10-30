@@ -141,8 +141,8 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
     }
 
     // Compute the buffer length used/needed and fill buffer (if we can)
-    auto bufferNeeded = SerializePackageInfoToBuffer(flags, packagePathType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount);
-    const auto isInsufficientBuffer = (*bufferLength < bufferNeeded);
+    auto bufferNeeded{ SerializePackageInfoToBuffer(flags, packagePathType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount) };
+    const auto isInsufficientBuffer{ *bufferLength < bufferNeeded };
     *bufferLength = bufferNeeded;
     RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), isInsufficientBuffer);
 
@@ -219,7 +219,7 @@ void MddCore::PackageGraphManager::SerializeStringToBuffer(
 {
     if (from)
     {
-        const auto bufferUsed = bufferNeeded;
+        const auto bufferUsed{ bufferNeeded };
         const auto size{ wcssize(from) };
         bufferNeeded += size;
         if (bufferNeeded <= bufferLength)

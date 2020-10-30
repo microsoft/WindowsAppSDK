@@ -227,7 +227,7 @@ public:
 
     bool IsArchitectureInArchitectures(const MddCore::Architecture architecture) const
     {
-        const auto architectureAsArchitectures = ToArchitectures(architecture);
+        const auto architectureAsArchitectures{ ToArchitectures(architecture) };
         return WI_IsAnyFlagSet(m_packageDependencyProcessorArchitectures, architectureAsArchitectures);
     }
 
@@ -282,7 +282,7 @@ private:
         {
             return 0;
         }
-        int base = (((s[0] == L'0') && s[1] == L'x') ? 16 : 10);
+        auto base{ (((s[0] == L'0') && s[1] == L'x') ? 16 : 10) };
         return wcstol(s, nullptr, base);
     }
 
@@ -292,7 +292,7 @@ private:
         {
             return 0;
         }
-        int base = (((s[0] == L'0') && s[1] == L'x') ? 16 : 10);
+        auto base{ (((s[0] == L'0') && s[1] == L'x') ? 16 : 10) };
         return wcstoul(s, nullptr, base);
     }
 
@@ -302,7 +302,7 @@ private:
         {
             return 0;
         }
-        int base = (((s[0] == L'0') && s[1] == L'x') ? 16 : 10);
+        auto base{ (((s[0] == L'0') && s[1] == L'x') ? 16 : 10) };
         return wcstoull(s, nullptr, base);
     }
 
