@@ -47,7 +47,9 @@ jobs:
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
-    dependsOn: BuildMRT
+    dependsOn: 
+      - Build
+      - PublishMRT
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     testSuite: 'DevTestSuite'
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
