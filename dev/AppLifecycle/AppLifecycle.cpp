@@ -14,9 +14,18 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     std::tuple<std::wstring, std::wstring> AppLifecycle::ParseCommandLine(std::wstring commandLine)
     {
         auto argsStart = commandLine.rfind(L"----") + 4;
+        if (argsStart == std::wstring::npos)
+        {
+            return {nullptr, nullptr};
+        }
 
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
         auto argsEnd = commandLine.find_first_of(L":", argsStart);
+        if (argsEnd == std::wstring::npos)
+        {
+            return { nullptr, nullptr };
+        }
+
         auto argsLength = argsEnd - argsStart;
         auto dataStart = argsEnd + 1;
 
@@ -36,6 +45,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             std::wstring contractData;
             auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
+
+            if (contractId.empty())
+            {
+                return nullptr;
+            }
 
             if (contractId == c_protocolArgumentString)
             {
