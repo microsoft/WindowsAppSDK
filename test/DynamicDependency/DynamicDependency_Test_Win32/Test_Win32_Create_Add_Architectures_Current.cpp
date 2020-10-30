@@ -50,7 +50,6 @@ void Test::DynamicDependency::Test_Win32::Create_Add_Architectures_Current()
 
     // -- Add
 
-    //TODO architecture=...current...
     wil::unique_process_heap_string packageFullName_ProjectReunionFramework;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_ProjectReunionFramework{ Mdd_Add(packageDependencyId_ProjectReunionFramework.get(), packageFullName_ProjectReunionFramework) };
     Assert::IsNotNull(packageFullName_ProjectReunionFramework.get());
