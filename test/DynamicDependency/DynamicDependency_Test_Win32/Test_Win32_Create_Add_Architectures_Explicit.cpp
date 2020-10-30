@@ -36,7 +36,17 @@ void Test::DynamicDependency::Test_Win32::Create_Add_Architectures_Explicit()
     VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
     VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
 
-    wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd() };
+    // We include the Neutral arhitecture as that's our test package's defined architecture.
+    // That's OK, what matters is we're not using MddPackageDependencyProcessorArchitectures::None
+    // so we exercise the not-default-whatever-deemed-appropriate architecture codepath.
+    auto architectures{
+        MddPackageDependencyProcessorArchitectures::Neutral |
+        MddPackageDependencyProcessorArchitectures::X86 |
+        MddPackageDependencyProcessorArchitectures::X64 |
+        MddPackageDependencyProcessorArchitectures::Arm |
+        MddPackageDependencyProcessorArchitectures::Arm64
+    };
+    wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(architectures) };
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));

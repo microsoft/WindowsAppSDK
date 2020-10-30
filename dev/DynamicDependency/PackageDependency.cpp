@@ -94,7 +94,7 @@ bool MddCore::PackageDependency::IsExpired() const
     case MddPackageDependencyLifetimeKind::Process:
         return false;
     case MddPackageDependencyLifetimeKind::FilePath:
-        return !std::filesystem::exists(m_packageFullName);
+        return !std::filesystem::exists(m_lifetimeArtifact);
     case MddPackageDependencyLifetimeKind::RegistryKey:
         return !IsRegistryKeyExists(m_lifetimeArtifact);
     default:

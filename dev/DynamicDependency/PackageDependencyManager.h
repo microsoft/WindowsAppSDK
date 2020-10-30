@@ -42,5 +42,8 @@ private:
 
     static const PackageDependency* GetPackageDependencyInDataStore(
         _In_ PCWSTR packageDependencyId);
+
+    static void Verify(
+        const MddCore::PackageDependency& packageDependency);
 };
 }

@@ -339,13 +339,34 @@ int Test::DynamicDependency::Test_Win32::FindPackageFullNameInPackageInfoArray(
 wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate(
     PCWSTR packageFamilyName,
     const MddPackageDependencyLifetimeKind lifetimeKind,
-    PCWSTR lifetimeArtifact)
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
+{
+    return Mdd_TryCreate(S_OK, packageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate(
+    const HRESULT expectedHR,
+    PCWSTR packageFamilyName,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
+{
+    const MddPackageDependencyProcessorArchitectures architectures{};
+    return Mdd_TryCreate(expectedHR, packageFamilyName, architectures, lifetimeKind, lifetimeArtifact, options);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate(
+    const HRESULT expectedHR,
+    PCWSTR packageFamilyName,
+    MddPackageDependencyProcessorArchitectures architectures,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
 {
     PACKAGE_VERSION minVersion{};
-    const MddPackageDependencyProcessorArchitectures architectureFilter{};
-    const MddCreatePackageDependencyOptions createOptions{};
     wil::unique_process_heap_string packageDependencyId;
-    Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId));
+    Assert::AreEqual(expectedHR, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
     return packageDependencyId;
 }
 
@@ -357,10 +378,35 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
 }
 
 wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkMathAdd(
+    MddCreatePackageDependencyOptions options)
+{
+    const MddPackageDependencyLifetimeKind lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+    PCWSTR lifetimeArtifact{};
+    return Mdd_TryCreate(S_OK, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkMathAdd(
     const MddPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
     return Mdd_TryCreate(TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkMathAdd(
+    const MddPackageDependencyProcessorArchitectures architectures,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact)
+{
+    return Mdd_TryCreate(S_OK, TP::FrameworkMathAdd::c_PackageFamilyName, architectures, lifetimeKind, lifetimeArtifact);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkMathAdd(
+    const HRESULT expectedHR,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
+{
+    return Mdd_TryCreate(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
 }
 
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
@@ -438,7 +484,8 @@ void Test::DynamicDependency::Test_Win32::Registry_DeleteKey(
     PCWSTR subkey{};
     auto root{ Registry_Key_Parse(key, subkey) };
 
-    Assert::AreEqual(ERROR_SUCCESS, ::RegDeleteKeyExW(root, subkey, 0, 0));
+    auto rc{ ::RegDeleteKeyExW(root, subkey, 0, 0) };
+    Assert::IsTrue((rc == ERROR_SUCCESS) || (rc == ERROR_FILE_NOT_FOUND));
 }
 
 HKEY Test::DynamicDependency::Test_Win32::Registry_Key_Parse(
@@ -481,4 +528,19 @@ HKEY Test::DynamicDependency::Test_Win32::Registry_Key_Parse(
 
     offsetToSubkey = ++offset;
     return root;
+}
+
+MddPackageDependencyProcessorArchitectures Test::DynamicDependency::Test_Win32::GetCurrentArchitectureAsFilter()
+{
+#if defined(_M_ARM)
+    return MddPackageDependencyProcessorArchitectures::Arm;
+#elif defined(_M_ARM64)
+    return MddPackageDependencyProcessorArchitectures::Arm64;
+#elif defined(_M_IX86)
+    return MddPackageDependencyProcessorArchitectures::X86;
+#elif defined(_M_X64)
+    return MddPackageDependencyProcessorArchitectures::X64;
+#else
+#   error "Unknown processor architecture"
+#endif
 }

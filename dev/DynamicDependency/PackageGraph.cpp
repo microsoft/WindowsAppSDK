@@ -101,7 +101,7 @@ HRESULT MddCore::PackageGraph::Add(
 
 HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     PCWSTR packageDependencyId,
-    MddAddPackageDependencyOptions /*options*/,
+    MddAddPackageDependencyOptions options,
     wil::unique_process_heap_string& packageFullName) noexcept try
 {
     packageFullName.reset();
@@ -118,6 +118,16 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
         return S_OK;
     }
 
+    // Rewsolve it
+    return ResolvePackageDependency(packageDependency, options, packageFullName);
+}
+CATCH_RETURN();
+
+HRESULT MddCore::PackageGraph::ResolvePackageDependency(
+    const MddCore::PackageDependency& packageDependency,
+    MddAddPackageDependencyOptions /*options*/,
+    wil::unique_process_heap_string& packageFullName)
+{
     // Determine the packages in the family
     const auto foundPackageFullNames{ packageDependency.FindPackagesByFamily() };
 
@@ -176,7 +186,6 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
     packageFullName = std::move(wil::make_process_heap_string(bestFit.PackageFullName().c_str()));
     return S_OK;
 }
-CATCH_RETURN();
 
 HRESULT MddCore::PackageGraph::Remove(
     MDD_PACKAGEDEPENDENCY_CONTEXT context)

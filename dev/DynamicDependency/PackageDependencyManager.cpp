@@ -6,6 +6,7 @@
 #include "PackageDependencyManager.h"
 
 #include "DataStore.h"
+#include "PackageGraph.h"
 
 static std::mutex g_lock;
 std::vector<MddCore::PackageDependency> g_packageDependencies;
@@ -23,6 +24,7 @@ void MddCore::PackageDependencyManager::CreatePackageDependency(
     *packageDependencyId = nullptr;
 
     MddCore::PackageDependency packageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options);
+    Verify(packageDependency);
     packageDependency.GenerateId();
 
     MddCore::DataStore::Save(packageDependency);
@@ -90,16 +92,7 @@ const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageD
         const auto& packageDependency{ g_packageDependencies[index] };
         if (CompareStringOrdinal(packageDependency.Id().c_str(), -1, packageDependencyId, -1, TRUE) == CSTR_EQUAL)
         {
-            // Has it expired?
-            if (packageDependency.IsExpired())
-            {
-                // GC the expired package dependency
-                MddCore::DataStore::Delete(packageDependencyId);
-
-                // Not found
-                return nullptr;
-            }
-
+            // Gotcha!
             return &packageDependency;
         }
     }
@@ -135,4 +128,19 @@ const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageD
 
     // Gotcha!
     return &g_packageDependencies.back();
+}
+
+void MddCore::PackageDependencyManager::Verify(
+    const MddCore::PackageDependency& packageDependency)
+{
+    // Verify the package dependency's lifetime artifact
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), packageDependency.IsExpired());
+
+    // Verify the package dependency's dependency resolution (if necessary)
+    if (WI_IsFlagClear(packageDependency.Options(), MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution))
+    {
+        MddAddPackageDependencyOptions options{};
+        wil::unique_process_heap_string packageFullName;
+        THROW_IF_FAILED(MddCore::PackageGraph::ResolvePackageDependency(packageDependency, options, packageFullName));
+    }
 }

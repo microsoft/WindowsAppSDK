@@ -311,6 +311,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Create_FilePathLifetime_NoExist.cpp" />
+    <ClCompile Include="Create_RegistryLifetime_NoExist.cpp" />
     <ClCompile Include="Test_Win32.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

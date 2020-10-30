@@ -8,6 +8,7 @@
 
 #include "PackageId.h"
 #include "PackageGraphNode.h"
+#include "PackageDependency.h"
 
 namespace MddCore
 {
@@ -38,11 +39,17 @@ public:
         MddAddPackageDependencyOptions options,
         wil::unique_process_heap_string& packageFullName) noexcept;
 
+    static HRESULT ResolvePackageDependency(
+        const MddCore::PackageDependency& packageDependency,
+        MddAddPackageDependencyOptions options,
+        wil::unique_process_heap_string& packageFullName);
+
+public:
     HRESULT Remove(
         MDD_PACKAGEDEPENDENCY_CONTEXT context);
 
 private:
-    bool IsPackageABetterFitPerArchitecture(
+    static bool IsPackageABetterFitPerArchitecture(
         const MddCore::PackageId& bestFit,
         const MddCore::PackageId& candidate);
 
@@ -50,7 +57,7 @@ private:
 
     void RemoveFromDllSearchOrder(PackageGraphNode& package);
 
-    inline MddCore::Architecture GetCurrentArchitecture()
+    inline static MddCore::Architecture GetCurrentArchitecture()
     {
 #if defined(_M_ARM)
         return Architecture::Arm;

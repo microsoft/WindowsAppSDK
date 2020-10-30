@@ -25,6 +25,8 @@ namespace Test::DynamicDependency
         TEST_METHOD(Add_Rank_B0prepend_A0);
         TEST_METHOD(Add_Rank_Bneg10_A0);
 
+        TEST_METHOD(Create_FilePathLifetime_NoExist);
+        TEST_METHOD(Create_RegistryLifetime_NoExist);
         TEST_METHOD(Create_DoNotVerifyDependencyResolution);
 
         TEST_METHOD(Create_Add_Architectures_Explicit);
@@ -88,15 +90,45 @@ namespace Test::DynamicDependency
         wil::unique_process_heap_string Mdd_TryCreate(
             PCWSTR packageFamilyName,
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
-            PCWSTR lifetimeArtifact = nullptr);
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
+        wil::unique_process_heap_string Mdd_TryCreate(
+            const HRESULT expectedHR,
+            PCWSTR packageFamilyName,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
+        wil::unique_process_heap_string Mdd_TryCreate(
+            const HRESULT expectedHR,
+            PCWSTR packageFamilyName,
+            MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
         wil::unique_process_heap_string Mdd_TryCreate_ProjectReunionFramework(
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
             PCWSTR lifetimeArtifact = nullptr);
 
         wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            MddCreatePackageDependencyOptions options);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
             PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const HRESULT expectedHR,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
     private:
         // Overloads and conveniences for TryCreate to simplify test readability
@@ -148,6 +180,9 @@ namespace Test::DynamicDependency
         static HKEY Registry_Key_Parse(
             const std::wstring& key,
             size_t& offsetToSubkey);
+
+    private:
+        static MddPackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
 
     private:
         static wil::unique_hmodule m_bootstrapDll;

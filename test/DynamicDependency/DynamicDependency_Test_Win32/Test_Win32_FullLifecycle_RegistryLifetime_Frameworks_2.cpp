@@ -80,7 +80,6 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     // -- Delete the lifetime artifact
 
     Registry_DeleteKey(lifetimeArtifactRegistryKey);
-    Assert::IsNull(Mdd_Add(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), packageDependencyId_FrameworkMathAdd.get()));
 
     // Add it a 2nd time. The package dependency is deleted but still resolved so this should succeed. PackageGraph = [ Fwk, MathAdd, MathAdd ]
     wil::unique_process_heap_string packageFullName;
