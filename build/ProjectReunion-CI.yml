@@ -45,7 +45,6 @@ stages:
     parameters:
       buildJobName: 'BuildMRTCore'
       
-stages:
 - stage: Test
   dependsOn: Build
 
