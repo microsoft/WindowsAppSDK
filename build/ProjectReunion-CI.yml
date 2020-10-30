@@ -36,16 +36,10 @@ jobs:
   steps:
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
-
-- job: BuildMRTCore
-  pool: 
-    vmImage: 'windows-2019'
-  steps:
-  
-# MRTCore build pipeline
   - template: ..\dev\MRTCore\azure-pipelines.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+
 
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
