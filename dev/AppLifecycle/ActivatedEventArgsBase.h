@@ -7,7 +7,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     using namespace winrt::Windows::ApplicationModel::Activation;
 
     class ActivatedEventArgsBase : public winrt::implements<ActivatedEventArgsBase,
-        IActivatedEventArgs, IActivatedEventArgsWithUser>
+        IActivatedEventArgs>
     {
     public:
         // IActivatedEventArgs
@@ -24,12 +24,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         SplashScreen SplashScreen()
         {
             return m_splashScreen;
-        }
-
-        // IActivatedEventArgsWithUser
-        winrt::Windows::System::User User()
-        {
-            return { nullptr }; // TODO: Implement!
         }
 
     protected:

@@ -11,8 +11,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     using namespace winrt::Windows::ApplicationModel::Activation;
 
     class ProtocolActivatedEventArgs : public winrt::implements<ProtocolActivatedEventArgs, 
-        ActivatedEventArgsBase, IProtocolActivatedEventArgs,
-        IProtocolActivatedEventArgsWithCallerPackageFamilyNameAndData>
+        ActivatedEventArgsBase, IProtocolActivatedEventArgs>
     {
     public:
         ProtocolActivatedEventArgs(const std::wstring& uri) : m_uri(winrt::Windows::Foundation::Uri(uri))
@@ -24,17 +23,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         winrt::Windows::Foundation::Uri Uri()
         {
             return m_uri;
-        }
-
-        // IProtocolActivatedEventArgsWithCallerPackageFamilyNameAndData
-        winrt::hstring CallerPackageFamilyName()
-        {
-            return L""; // TODO: Implement!
-        }
-
-        ValueSet Data()
-        {
-            return { nullptr }; // TODO: Implement!
         }
 
     private:
