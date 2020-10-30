@@ -24,88 +24,92 @@ parameters:
       openHelixTargetQueues: 'windows.10.amd64.clientrs4.open.xaml'
       outputDirectory: BuildOutput\release\x64\BaseUnitTests\
       closedHelixTargetQueues: 'windows.10.amd64.clientrs4.xaml'
-
-jobs:
-- job: ${{ parameters.name }}
-  dependsOn: ${{ parameters.dependsOn }}
-  condition: ${{ parameters.condition }}
-  pool:
-    vmImage: 'windows-2019'
-  timeoutInMinutes: 120
-  strategy:
-    maxParallel: ${{ parameters.maxParallel }}
-    matrix: ${{ parameters.matrix }}
-  variables:
-    artifactsDir: $(Build.SourcesDirectory)\Artifacts
-    taefPath: $(Build.SourcesDirectory)\build\Helix\packages\taef.redist.wlk.10.31.180822002\build\Binaries\$(buildPlatform)
-    helixCommonArgs: '/binaryLogger:$(Build.SourcesDirectory)/${{parameters.name}}.$(buildPlatform).$(buildConfiguration).binlog /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:HelixType=${{parameters.helixType}} /p:TestSuite=${{parameters.testSuite}} /p:ProjFilesPath=$(Build.ArtifactStagingDirectory) /p:rerunPassesRequiredToAvoidFailure=${{parameters.rerunPassesRequiredToAvoidFailure}}'
-
       
-  steps:
-  - task: CmdLine@1
-    displayName: 'Display build machine environment variables'
-    inputs:
-      filename: 'set'
-      
-  - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet 5.2.0'
-    inputs:
-      versionSpec: 5.2.0
+stages:
+- stage: RunTests
+  displayName: Run Helix Tests
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore build/Helix/packages.config'
-    inputs:
-      restoreSolution: test/Helix/packages.config
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-      restoreDirectory: packages
-  - task: VSBuild@1
-    displayName: Build solution ProjectReunionHelix.sln
-    inputs:
-      solution: test/helix/ProjectReunionHelix.sln
-      platform: $(buildPlatform)
-      configuration: $(buildConfiguration)      
-  - task: PowerShell@2
-    displayName: Collect Build Outputs
-    inputs:
-      targetType: inline
-      script: >
-        mkdir $(buildPlatform)-$(buildConfiguration)-taeftest
+  jobs:
+  - job: ${{ parameters.name }}
+    dependsOn: ${{ parameters.dependsOn }}
+    condition: ${{ parameters.condition }}
+    pool:
+      vmImage: 'windows-2019'
+    timeoutInMinutes: 120
+    strategy:
+      maxParallel: ${{ parameters.maxParallel }}
+      matrix: ${{ parameters.matrix }}
+    variables:
+      artifactsDir: $(Build.SourcesDirectory)\Artifacts
+      taefPath: $(Build.SourcesDirectory)\build\Helix\packages\taef.redist.wlk.10.31.180822002\build\Binaries\$(buildPlatform)
+      helixCommonArgs: '/binaryLogger:$(Build.SourcesDirectory)/${{parameters.name}}.$(buildPlatform).$(buildConfiguration).binlog /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:HelixType=${{parameters.helixType}} /p:TestSuite=${{parameters.testSuite}} /p:ProjFilesPath=$(Build.ArtifactStagingDirectory) /p:rerunPassesRequiredToAvoidFailure=${{parameters.rerunPassesRequiredToAvoidFailure}}'
 
-        cp $(outputDirectory)/*.dll $(buildPlatform)-$(buildConfiguration)-taeftest
+        
+    steps:
+    - task: CmdLine@1
+      displayName: 'Display build machine environment variables'
+      inputs:
+        filename: 'set'
+        
+    - task: NuGetToolInstaller@0
+      displayName: 'Use NuGet 5.2.0'
+      inputs:
+        versionSpec: 5.2.0
 
-        cp $(outputDirectory)/*.pdb $(buildPlatform)-$(buildConfiguration)-taeftest
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'NuGet restore build/Helix/packages.config'
+      inputs:
+        restoreSolution: test/Helix/packages.config
+        feedsToUse: config
+        nugetConfigPath: nuget.config
+        restoreDirectory: packages
+    - task: VSBuild@1
+      displayName: Build solution ProjectReunionHelix.sln
+      inputs:
+        solution: test/helix/ProjectReunionHelix.sln
+        platform: $(buildPlatform)
+        configuration: $(buildConfiguration)      
+    - task: PowerShell@2
+      displayName: Collect Build Outputs
+      inputs:
+        targetType: inline
+        script: >
+          mkdir $(buildPlatform)-$(buildConfiguration)-taeftest
 
-        dir $(buildPlatform)-$(buildConfiguration)-taeftest
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Build Outputs
-    inputs:
-      PathtoPublish: $(buildPlatform)-$(buildConfiguration)-taeftest
-      ArtifactName: $(buildPlatform)-$(buildConfiguration)-taeftest
-      publishLocation: Container
+          cp $(outputDirectory)/*.dll $(buildPlatform)-$(buildConfiguration)-taeftest
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: Restore NuGet Packages
-    inputs:
-      restoreSolution: build/Helix/packages.config
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-      restoreDirectory: packages
-  - task: powershell@2
-    displayName: 'PrepareHelixPayload.ps1'
-    inputs:
-      targetType: filePath
-      filePath: build\Helix\PrepareHelixPayload.ps1
-      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
-      
-  - task: DotNetCoreCLI@2
-    displayName: Run tests in Helix
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      HELIXACCESSTOKEN: $(HelixApiAccessToken)
-    inputs:
-      command: custom
-      projects: build/Helix/RunTestsInHelix.proj
-      custom: msbuild
-      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)  /p:TestSuite=${{parameters.TestSuite}}
- 
+          cp $(outputDirectory)/*.pdb $(buildPlatform)-$(buildConfiguration)-taeftest
+
+          dir $(buildPlatform)-$(buildConfiguration)-taeftest
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Build Outputs
+      inputs:
+        PathtoPublish: $(buildPlatform)-$(buildConfiguration)-taeftest
+        ArtifactName: $(buildPlatform)-$(buildConfiguration)-taeftest
+        publishLocation: Container
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: Restore NuGet Packages
+      inputs:
+        restoreSolution: build/Helix/packages.config
+        feedsToUse: config
+        nugetConfigPath: nuget.config
+        restoreDirectory: packages
+    - task: powershell@2
+      displayName: 'PrepareHelixPayload.ps1'
+      inputs:
+        targetType: filePath
+        filePath: build\Helix\PrepareHelixPayload.ps1
+        arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+        
+    - task: DotNetCoreCLI@2
+      displayName: Run tests in Helix
+      env:
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        HELIXACCESSTOKEN: $(HelixApiAccessToken)
+      inputs:
+        command: custom
+        projects: build/Helix/RunTestsInHelix.proj
+        custom: msbuild
+        arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)  /p:TestSuite=${{parameters.TestSuite}}
+   
