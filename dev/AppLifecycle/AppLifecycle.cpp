@@ -37,7 +37,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
 
-            if (contractId.compare(MS_PROTOCOL_ARG_STR) == 0)
+            if (contractId == c_protocolArgumentString)
             {
                 return winrt::make<ProtocolActivatedEventArgs>(contractData);
             }

@@ -4,8 +4,8 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-#define MS_PROTOCOL_ARG_STR L"ms-protocol"
-#define MS_FILE_ARG_STR L"ms-file"
+
+    static const std::wstring c_protocolArgumentString = L"ms-protocol"; //L"ms-protocol"
 
     std::wstring GetFullIdentityString();
     bool HasIdentity();

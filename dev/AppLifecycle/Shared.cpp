@@ -77,7 +77,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             KEY_WRITE, nullptr, key.put(), nullptr));
 
         auto command = GetModulePath();
-        command += L" ----" MS_PROTOCOL_ARG_STR ":%1";
+        command += L" ----" + c_protocolArgumentString + L":%1";
         THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), nullptr, 0, REG_SZ,
             reinterpret_cast<BYTE const*>(command.c_str()),
             static_cast<uint32_t>((command.size() + 1) * sizeof(wchar_t))));
