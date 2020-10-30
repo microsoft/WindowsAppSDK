@@ -41,7 +41,7 @@ App::App()
 
 App::~App()
 {
-    MrmDestroyResourceManager(m_resourceManagerMrm);
+    //MrmDestroyResourceManager(m_resourceManagerMrm);
 }
 
 /// <summary>
@@ -52,7 +52,7 @@ App::~App()
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
     m_resourceManagerWinRT = ResourceManager(L"resources.pri");
-    check_hresult(MrmCreateResourceManager(L"resources.pri", &m_resourceManagerMrm));
+    //check_hresult(MrmCreateResourceManager(L"resources.pri", &m_resourceManagerMrm));
 
     m_resourceManagerWinRT.ResourceNotFound([](ResourceManager const&, ResourceNotFoundEventArgs const& args)
         {
@@ -68,7 +68,7 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     m_window = make<MainWindow>();
 
     auto window = m_window.as<winrt::winui_desktop_packaged_app_cpp::implementation::MainWindow>();
-    window->InitializeResourceLoaders(m_resourceManagerWinRT, m_resourceManagerMrm);   
+    window->InitializeResourceLoaders(m_resourceManagerWinRT/*, m_resourceManagerMrm*/);
 
     m_window.Activate();
 }

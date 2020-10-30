@@ -10,7 +10,7 @@
 
 #pragma pop_macro("GetCurrentTime")
 
-#include "MRM.h"
+//#include "MRM.h"
 #include "winrt/Microsoft.ApplicationModel.resources.h"
 
 namespace winrt::winui_desktop_packaged_app_cpp::implementation
@@ -28,6 +28,6 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         winrt::Microsoft::UI::Xaml::Window m_window{ nullptr };
 
         winrt::Microsoft::ApplicationModel::Resources::ResourceManager m_resourceManagerWinRT{ nullptr };
-        MrmManagerHandle m_resourceManagerMrm{ nullptr };
+        //MrmManagerHandle m_resourceManagerMrm{ nullptr };
     };
 }
