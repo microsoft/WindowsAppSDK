@@ -8,7 +8,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     std::wstring GetFullIdentityString()
     {
         std::wstring identityString;
-        WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH];
+        WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH+1];
         UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
         if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
         {
