@@ -175,18 +175,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -208,18 +200,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -241,18 +225,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -274,18 +250,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -311,18 +279,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -348,18 +308,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -385,18 +337,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -422,18 +366,10 @@
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-    </Midl>
-    <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
-    </Midl>
-    <Midl>
       <GenerateServerFiles>None</GenerateServerFiles>
+      <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
-      <ClientStubFile>
-      </ClientStubFile>
-      <ServerStubFile>
-      </ServerStubFile>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>

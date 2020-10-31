@@ -9,7 +9,12 @@
 #include <thread>
 #include <mutex>
 
+// Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
+//   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
+#pragma warning(push)
+#pragma warning(disable:4324)
 #include <wrl.h>
+#pragma warning(pop)
 
 #include <wil/token_helpers.h>
 #include <wil/resource.h>

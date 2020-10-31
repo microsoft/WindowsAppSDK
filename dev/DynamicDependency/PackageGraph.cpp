@@ -42,7 +42,7 @@ HRESULT MddCore::PackageGraph::Add(
     packageGraphNode.GenerateContext();
 
     // Find the insertion point where to add the new package graph node to the package graph
-    int index{};
+    size_t index{};
     for (; index < m_packageGraphNodes.size(); ++index)
     {
         auto& node{ m_packageGraphNodes[index] };
@@ -68,7 +68,7 @@ HRESULT MddCore::PackageGraph::Add(
             else
             {
                 // Append to items of this rank
-                for (int nextIndex=index+1; nextIndex < m_packageGraphNodes.size(); ++nextIndex)
+                for (size_t nextIndex=index+1; nextIndex < m_packageGraphNodes.size(); ++nextIndex)
                 {
                     auto& nextNode{ m_packageGraphNodes[nextIndex] };
                     if (nextNode.Rank() > rank)
@@ -190,7 +190,7 @@ HRESULT MddCore::PackageGraph::ResolvePackageDependency(
 HRESULT MddCore::PackageGraph::Remove(
     MDD_PACKAGEDEPENDENCY_CONTEXT context)
 {
-    for (int index=0; index < m_packageGraphNodes.size(); ++index)
+    for (size_t index=0; index < m_packageGraphNodes.size(); ++index)
     {
         auto& node{ m_packageGraphNodes[index] };
         if (node.Context() == context)

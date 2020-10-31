@@ -176,9 +176,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -200,9 +199,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -228,9 +226,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -252,9 +249,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -280,9 +276,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -308,9 +303,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -335,7 +329,6 @@
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
-      <TypeLibraryName />
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
     </Midl>
   </ItemDefinitionGroup>
@@ -362,9 +355,8 @@
     </Link>
     <Midl>
       <AdditionalIncludeDirectories>$(OutDir)\..\ProjectReunion_BootstrapDLL</AdditionalIncludeDirectories>
-      <TypeLibraryName />
+      <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <DllDataFileName>%(Filename)_dlldata.c</DllDataFileName>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>

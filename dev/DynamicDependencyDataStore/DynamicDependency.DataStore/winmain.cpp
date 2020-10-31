@@ -52,7 +52,7 @@ void EndOfTheLine()
     g_endOfTheLine.SetEvent();
 }
 
-int WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
+int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
     ::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 
