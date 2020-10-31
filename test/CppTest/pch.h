@@ -10,6 +10,7 @@
 #include <wil/resource.h>
 #include "CppUnitTest.h"
 
+#include <winrt/Windows.ApplicationModel.Activation.h>
+
 // Test-specific headers, lifted here
-#include <SampleFlatC.h>
 #include <winrt/Microsoft.ProjectReunion.h>
