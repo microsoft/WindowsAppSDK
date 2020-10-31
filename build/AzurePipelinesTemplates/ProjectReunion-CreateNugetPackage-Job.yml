@@ -186,7 +186,7 @@ jobs:
       verbosityPush: 'Detailed' 
       nuGetFeedType: 'internal'
       #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
-      publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+      publishVstsFeed: 'microsoft/ProjectReunion/Project.Reunion.nuget.internal'
 
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\ProjectReunion-BuildAndPublishPGONuGet-Job.yml
