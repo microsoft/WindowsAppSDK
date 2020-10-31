@@ -16,14 +16,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         auto argsStart = commandLine.rfind(L"----") + 4;
         if (argsStart == std::wstring::npos)
         {
-            return {nullptr, nullptr};
+            return {L"", L""};
         }
 
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
         auto argsEnd = commandLine.find_first_of(L":", argsStart);
         if (argsEnd == std::wstring::npos)
         {
-            return { nullptr, nullptr };
+            return {L"", L""};
+        }
+
+        if (argsStart > argsEnd)
+        {
+            throw std::overflow_error("commandLine");
         }
 
         auto argsLength = argsEnd - argsStart;
@@ -46,12 +51,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
 
-            if (contractId.empty())
-            {
-                return nullptr;
-            }
-
-            if (contractId == c_protocolArgumentString)
+            if (!contractId.empty() && contractId == c_protocolArgumentString)
             {
                 return winrt::make<ProtocolActivatedEventArgs>(contractData);
             }

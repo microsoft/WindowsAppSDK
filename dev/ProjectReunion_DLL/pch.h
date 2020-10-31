@@ -4,6 +4,7 @@
 #include <thread>
 #include <mutex>
 #include <list>
+#include <stdexcept>
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
