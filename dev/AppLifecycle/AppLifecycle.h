@@ -11,9 +11,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         AppLifecycle() = default;
 
         static Windows::ApplicationModel::Activation::IActivatedEventArgs GetActivatedEventArgs();
-
-    private:
-        static std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine);
     };
 }
 

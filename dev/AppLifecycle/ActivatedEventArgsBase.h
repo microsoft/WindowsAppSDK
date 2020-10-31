@@ -29,7 +29,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     protected:
         ActivatedEventArgsBase() = default;
 
-        ActivationKind m_kind;
+        ActivationKind m_kind = ActivationKind::Launch;
         ApplicationExecutionState m_previousState;
         winrt::Windows::ApplicationModel::Activation::SplashScreen m_splashScreen{ nullptr };
     };

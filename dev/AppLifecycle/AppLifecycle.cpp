@@ -11,7 +11,7 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    std::tuple<std::wstring, std::wstring> AppLifecycle::ParseCommandLine(std::wstring commandLine)
+    std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
     {
         auto argsStart = commandLine.rfind(L"----") + 4;
         if (argsStart == std::wstring::npos)
