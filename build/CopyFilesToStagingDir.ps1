@@ -2,6 +2,7 @@
 Param(
     [string]$BuildOutputDir,
     [string]$PublishDir,
+    [string]$NugetDir,
     [string]$Platform,
     [string]$Configuration,
     [switch]$PublishAppxFiles=$false
@@ -67,3 +68,9 @@ if($PublishAppxFiles)
 $symbolsOutputDir = "$($FullPublishDir)\Symbols\"
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pdb $symbolsOutputDir
 
+
+# Copy files to Full Nuget package
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pdb $NugetDir\runtimes\win10-$Platform\native\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $NugetDir\lib\win10-$Platform
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.winmd $NugetDir\lib\uap10.0
