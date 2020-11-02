@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{E3A522A3-6635-4A42-BDED-1AF46A15F63C}</ItemsProjectGuid>
+    <ItemsProjectName>AppLifecycle</ItemsProjectName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Shared.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LaunchActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />
+    <Midl Include="$(MSBuildThisFileDirectory)AppLifecycle.idl" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle.cpp" />
+  </ItemGroup>
+</Project>
