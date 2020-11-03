@@ -64,7 +64,13 @@ jobs:
     inputs:
       solution: test/helix/ProjectReunionHelix.sln
       platform: $(buildPlatform)
-      configuration: $(buildConfiguration)      
+      configuration: $(buildConfiguration)
+  - task: VSBuild@1
+    displayName: Build solution UnitBaseTest
+    inputs:
+      solution: dev/MRTCore/mrt/mrm/UnitTests/BaseUnitTests.vcxproj
+      platform: $(buildPlatform)
+      configuration: $(buildConfiguration)          
   - task: PowerShell@2
     displayName: Collect Build Outputs
     inputs:
