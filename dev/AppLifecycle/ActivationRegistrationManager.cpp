@@ -7,7 +7,6 @@
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
-#include "FileType.h"
 #include "Shared.h"
 
 namespace winrt::Microsoft::ProjectReunion::implementation
@@ -16,11 +15,25 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         hstring const& logo, array_view<hstring const> supportedFileTypes,
         array_view<hstring const> supportedVerbs)
     {
-        //throw hresult_not_implemented();
+        if (groupName.empty())
+        {
+            throw hresult_invalid_argument();
+        }
+
+        if (HasIdentity())
+        {
+            throw hresult_illegal_method_call();
+        }
 
         for (auto extension : supportedFileTypes)
         {
-            FileType type(extension.c_str());
+            RegisterFileExtension(extension.c_str());
+
+            for (auto verb : supportedVerbs)
+            {
+                // TODO: Add support for the logo and groupName
+                RegisterFileHandler(extension.c_str(), verb.c_str());
+            }
         }
     }
 
@@ -29,55 +42,46 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         if (scheme.empty() || displayName.empty())
         {
-            throw winrt::hresult_invalid_argument();
+            throw hresult_invalid_argument();
         }
 
         if (HasIdentity())
         {
-            throw hresult_not_implemented();
+            throw hresult_illegal_method_call();
         }
 
         RegisterProtocol(scheme.c_str(), displayName.c_str());
     }
 
-    void ActivationRegistrationManager::RegisterForStartupActivation(hstring const& taskId,
-        bool isEnabled, hstring const& displayName)
+    void ActivationRegistrationManager::UnregisterForFileTypeActivation(hstring const& groupName,
+        hstring const& fileType)
     {
-        throw hresult_not_implemented();
-    }
+        if (groupName.empty())
+        {
+            throw hresult_invalid_argument();
+        }
 
-    void ActivationRegistrationManager::RegisterForToastActivation(hstring const& displayName)
-    {
-        throw hresult_not_implemented();
-    }
+        if (HasIdentity())
+        {
+            throw hresult_illegal_method_call();
+        }
 
-    void ActivationRegistrationManager::UnregisterForFileTypeActivation(hstring const& groupName)
-    {
-        throw hresult_not_implemented();
+        // TODO: Support groups
+        UnregisterFileHandler(fileType.c_str());
     }
 
     void ActivationRegistrationManager::UnregisterForProtocolActivation(hstring const& scheme)
     {
         if (scheme.empty())
         {
-            throw winrt::hresult_invalid_argument();
+            throw hresult_invalid_argument();
         }
 
         if (HasIdentity())
         {
-            throw hresult_not_implemented();
+            throw hresult_illegal_method_call();
         }
 
         UnregisterProtocol(scheme.c_str());
-    }
-
-    void ActivationRegistrationManager::UnregisterForStartupActivation()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void ActivationRegistrationManager::UnregisterForToastActivation()
-    {
-        throw hresult_not_implemented();
     }
 }

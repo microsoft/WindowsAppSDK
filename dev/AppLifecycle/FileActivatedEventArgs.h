@@ -10,9 +10,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     using namespace winrt::Windows::ApplicationModel::Activation;
 
     class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs,
-        ActivatedEventArgsBase, IFileActivatedEventArgs,
-        IFileActivatedEventArgsWithCallerPackageFamilyName,
-        IFileActivatedEventArgsWithNeighboringFiles>
+        ActivatedEventArgsBase, IFileActivatedEventArgs>
     {
     public:
         FileActivatedEventArgs([[maybe_unused]] const std::wstring contractData)
@@ -30,19 +28,5 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             return L"";
         }
-
-        // IFileActivatedEventArgsWithCallerPackageFamilyName
-        winrt::hstring CallerPackageFamilyName()
-        {
-            return L""; // TODO: Implement!
-        }
-
-        // IFileActivatedEventArgsWithNeighboringFiles
-        winrt::Windows::Storage::Search::StorageFileQueryResult NeighboringFilesQuery()
-        {
-            return { nullptr }; // TODO: Implement!
-        }
-
-    private:
     };
 }

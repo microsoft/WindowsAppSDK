@@ -12,8 +12,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         ActivatedEventArgsBase, ILaunchActivatedEventArgs>
     {
     public:
-        LaunchActivatedEventArgs(const std::wstring& args) :
-            m_args(args)
+        LaunchActivatedEventArgs(const std::wstring& args) : m_args(args)
         {
             m_kind = ActivationKind::Launch;
         }
