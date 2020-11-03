@@ -14,13 +14,13 @@ parameters:
   matrix: 
     Release_x86:
       buildPlatform: 'x86'
-      buildConfiguration: 'release'
+      buildConfiguration: 'Release'
       openHelixTargetQueues: 'windows.10.amd64.client19h1.open.xaml%3bwindows.10.amd64.clientrs3.open.xaml'
       outputDirectory: BuildOutput\Release\x86\ProjectReunionHelix\
       closedHelixTargetQueues: 'windows.10.amd64.client19h1.xaml%3bwindows.10.amd64.clientrs3.xaml'
     Release_x64:
       buildPlatform: 'x64'
-      buildConfiguration: 'release'
+      buildConfiguration: 'Release'
       openHelixTargetQueues: 'windows.10.amd64.clientrs4.open.xaml'
       outputDirectory: BuildOutput\Release\x64\ProjectReunionHelix\
       closedHelixTargetQueues: 'windows.10.amd64.clientrs4.xaml'
