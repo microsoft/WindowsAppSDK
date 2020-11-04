@@ -10,7 +10,7 @@
 #include "FileActivatedEventArgs.h"
 #include "Shared.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
     {

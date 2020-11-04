@@ -5,7 +5,7 @@
 
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace ProjectReunionCppTest
@@ -16,17 +16,17 @@ namespace ProjectReunionCppTest
         // UWP currently is not supported by these tests.
         TEST_METHOD(GetActivatedEventArgsIsNull)
         {
-            Assert::IsTrue(winrt::Microsoft::ProjectReunion::AppLifecycle::GetActivatedEventArgs() == nullptr);
+            Assert::IsTrue(AppLifecycle::GetActivatedEventArgs() == nullptr);
         }
 #else
         TEST_METHOD(GetActivatedEventArgsIsNotNull)
         {
-            Assert::IsTrue(winrt::Microsoft::ProjectReunion::AppLifecycle::GetActivatedEventArgs() != nullptr);
+            Assert::IsTrue(AppLifecycle::GetActivatedEventArgs() != nullptr);
         }
 
         TEST_METHOD(GetActivatedEventArgsForLaunch)
         {
-            auto args = winrt::Microsoft::ProjectReunion::AppLifecycle::GetActivatedEventArgs();
+            auto args = AppLifecycle::GetActivatedEventArgs();
             Assert::IsTrue(args != nullptr);
             Assert::IsTrue(args.Kind() == ActivationKind::Launch);
 

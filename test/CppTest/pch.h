@@ -13,4 +13,4 @@
 #include <winrt/Windows.ApplicationModel.Activation.h>
 
 // Test-specific headers, lifted here
-#include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Microsoft.ApplicationModel.Activation.h>

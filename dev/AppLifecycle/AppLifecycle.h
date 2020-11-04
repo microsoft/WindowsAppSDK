@@ -4,7 +4,7 @@
 
 #include <AppLifecycle.g.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     struct AppLifecycle
     {
@@ -14,7 +14,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     };
 }
 
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::factory_implementation
 {
     struct AppLifecycle : AppLifecycleT<AppLifecycle, implementation::AppLifecycle>
     {

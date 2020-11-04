@@ -9,7 +9,7 @@
 #include "FileActivatedEventArgs.h"
 #include "Shared.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     void ActivationRegistrationManager::RegisterForFileTypeActivation(hstring const& groupName,
         hstring const& logo, array_view<hstring const> supportedFileTypes,

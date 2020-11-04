@@ -4,7 +4,7 @@
 
 #include <ActivationRegistrationManager.g.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     struct ActivationRegistrationManager
     {
@@ -19,7 +19,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     };
 }
 
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::factory_implementation
 {
     struct ActivationRegistrationManager : ActivationRegistrationManagerT<ActivationRegistrationManager,
         implementation::ActivationRegistrationManager>
