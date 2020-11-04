@@ -78,7 +78,7 @@ jobs:
       restoreSolution: build/Helix/packages.config
       feedsToUse: config
       nugetConfigPath: nuget.config
-      restoreDirectory: dev\MRTCore\mrt\packages
+      restoreDirectory: packages
   - task: VSBuild@1
     displayName: Build solution UnitBaseTest
     inputs:
