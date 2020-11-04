@@ -34,4 +34,6 @@ cp build/Helix/packages/Taef.Redist.Wlk.10.57.200918006-develop/build/Binaries/$
 
 cp build/Helix/packages/Taef.Redist.Wlk.10.57.200918006-develop/build/Binaries/$Platform/CoreClr/* $payloadDir
 
+cp dev/MRTCore/mrt/mrm/UnitTests/*.xml $payloadDir
+
 dir $payloadDir
