@@ -65,7 +65,7 @@ jobs:
     displayName: 'NuGet restore of core'
     inputs:
       command: 'custom'
-      arguments: 'restore $(MRTSourcesDirectory)\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory packages'
+      arguments: 'restore dev\MRTCore\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory packages'
   - task: VSBuild@1
     displayName: Build solution ProjectReunionHelix.sln
     inputs:
