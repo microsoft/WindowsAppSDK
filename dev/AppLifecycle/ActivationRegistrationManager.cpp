@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include <ActivationRegistrationManager.h>
-#include <ActivationRegistrationManager.g.cpp>
+#include <Activation.ActivationRegistrationManager.g.cpp>
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
@@ -32,7 +32,12 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             for (auto verb : supportedVerbs)
             {
                 // TODO: Add support for the logo and groupName
-                RegisterFileHandler(extension.c_str(), verb.c_str());
+                auto progId = GenerateProgIdName();
+                RegisterProgId(progId, L"");
+
+                auto command = GetModulePath();
+                command += L" ----" + c_fileArgumentString + L":" + verb.c_str() + L",%1";
+                RegisterVerb(progId, verb.c_str(), command);
             }
         }
     }
@@ -50,7 +55,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw hresult_illegal_method_call();
         }
 
-        RegisterProtocol(scheme.c_str(), displayName.c_str());
+        RegisterProgId(scheme.c_str(), displayName.c_str(), true);
+
+        auto command = GetModulePath();
+        command += L" ----" + c_protocolArgumentString + L":%1";
+        RegisterVerb(scheme.c_str(), L"open", command);
     }
 
     void ActivationRegistrationManager::UnregisterForFileTypeActivation(hstring const& groupName,
@@ -67,7 +76,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         }
 
         // TODO: Support groups
-        UnregisterFileHandler(fileType.c_str());
+        //UnregisterFileHandler(fileType.c_str());
     }
 
     void ActivationRegistrationManager::UnregisterForProtocolActivation(hstring const& scheme)
@@ -82,6 +91,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw hresult_illegal_method_call();
         }
 
-        UnregisterProtocol(scheme.c_str());
+        // TODO: Support Unregister!
+        //UnregisterProtocol(scheme.c_str());
     }
 }

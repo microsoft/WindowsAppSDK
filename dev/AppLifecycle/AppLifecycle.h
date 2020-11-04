@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-#include <AppLifecycle.g.h>
+#include <Activation.AppLifecycle.g.h>
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {

@@ -11,10 +11,13 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     bool HasIdentity();
     std::wstring GetModulePath();
     std::wstring CreateAssocKeyPath(const std::wstring& assocName);
+    std::wstring GenerateProgIdName();
+    void RegisterProgId(const std::wstring& progId, const std::wstring& displayName, bool isProtocol = false);
+    void UnregisterProgId(const std::wstring& progId);
+    void RegisterVerb(const std::wstring& progId, const std::wstring& verb, const std::wstring& command, _In_opt_ const GUID* delegateExecute = nullptr);
+    void UnregisterVerb(const std::wstring& progId, const std::wstring& verb);
     void RegisterFileExtension(const std::wstring& extension);
     void UnregisterFileExtension(const std::wstring& extension);
-    void RegisterFileHandler(const std::wstring& extension, const std::wstring& verb, _In_opt_ const GUID* delegateExecute = nullptr);
-    void UnregisterFileHandler(const std::wstring& extension);
-    void RegisterProtocol(const std::wstring& scheme, const std::wstring& displayName, _In_opt_ const GUID* delegateExecute = nullptr);
-    void UnregisterProtocol(const std::wstring& scheme);
+    void RegisterProgidAsHandler(const std::wstring& extension, const std::wstring& progId);
+    void UnregisterProgidAsHandler(const std::wstring& extension, const std::wstring& progId);
 }

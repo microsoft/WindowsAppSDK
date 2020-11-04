@@ -3,7 +3,7 @@
 
 #include <pch.h>
 #include <AppLifecycle.h>
-#include <AppLifecycle.g.cpp>
+#include <Activation.AppLifecycle.g.cpp>
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
