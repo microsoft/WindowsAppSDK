@@ -86,12 +86,6 @@ jobs:
       platform: $(buildPlatform)
       configuration: $(buildConfiguration)
   - task: VSBuild@1
-    displayName: Build solution ManagedTests
-    inputs:
-      solution: dev/MRTCore/mrt/mrm/Microsoft.ApplicationModel.Resources/unittests/ManagedTest.csproj
-      platform: $(buildPlatform)
-      configuration: $(buildConfiguration)
-  - task: VSBuild@1
     displayName: Build solution UnitTests
     inputs:
       solution: dev/MRTCore/mrt/core/unittests/UnitTest.vcxproj
