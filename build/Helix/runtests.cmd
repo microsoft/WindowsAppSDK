@@ -2,6 +2,9 @@ robocopy %HELIX_CORRELATION_PAYLOAD% . /s
 
 ::This script file is what runs on the helix machine to start our tests.
 te BaseUnitTests.dll /unicodeOutput:false /enableWttLogging /screenCaptureOnError /reportLoadingIssue
+
+te UnitTest.dll /unicodeOutput:false /enableWttLogging /screenCaptureOnError /reportLoadingIssue
+
 set _helixExitCode=%ERRORLEVEL%
 
 dir
