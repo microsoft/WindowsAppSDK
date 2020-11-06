@@ -91,7 +91,7 @@ jobs:
       solution: dev/MRTCore/mrt/core/unittests/UnitTest.vcxproj
       platform: $(buildPlatform)
       configuration: $(buildConfiguration)
-  - task: VSBuild@1
+  - task: MSBuild@1
     displayName: Build solution ManagedTests
     inputs:
       solution: dev/MRTCore/mrt/Microsoft.ApplicationModel.Resources/unittests/ManagedTest.csproj
