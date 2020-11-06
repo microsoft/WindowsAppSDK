@@ -26,13 +26,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dlldata.c">
+    <ClCompile Include="$(PlatformTarget)\$(IntDir)\dlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainSidecar_i.c">
+    <ClCompile Include="$(PlatformTarget)\$(IntDir)\MainSidecar_i.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainSidecar_p.c">
+    <ClCompile Include="$(PlatformTarget)\$(IntDir)\MainSidecar_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
