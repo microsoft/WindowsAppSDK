@@ -180,7 +180,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -204,7 +203,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -232,7 +230,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -256,7 +253,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -284,7 +280,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -312,7 +307,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -338,7 +332,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -366,7 +359,6 @@
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-      <MinimumTargetSystem>NT100</MinimumTargetSystem>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
