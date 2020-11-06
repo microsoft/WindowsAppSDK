@@ -48,8 +48,6 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
     $namesOfProcessedTestRuns.Add($testRun.name)
 
     $totalTestsExecutedCount += $testRun.totalTests
-    
-    Write-Host "Test name: $testRun.name, total tests: $testRun.totalTests"
 
     $testRunResultsUri = "$($testRun.url)/results?api-version=5.0"
     $testResults = Invoke-RestMethod -Uri "$($testRun.url)/results?api-version=5.0" -Method Get -Headers $azureDevOpsRestApiHeaders
