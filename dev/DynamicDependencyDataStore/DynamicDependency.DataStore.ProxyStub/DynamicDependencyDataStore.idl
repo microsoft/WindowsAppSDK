@@ -12,7 +12,7 @@ interface IDynamicDependencyDataStore : IUnknown
     HRESULT GetApplicationData([out, retval] IUnknown** applicationData);
 
     HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
-}
+};
 
 [uuid(1BF712E5-41ED-46a5-8402-2D40725F691E)]
 [version(1.0)]

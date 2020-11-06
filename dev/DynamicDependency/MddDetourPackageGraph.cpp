@@ -33,7 +33,7 @@ static LONG (WINAPI * TrueGetCurrentPackageInfo)(
     BYTE* buffer,
     UINT32* count) = GetCurrentPackageInfo;
 
-LONG DynamicGetCurrentPackageInfo(
+LONG WINAPI DynamicGetCurrentPackageInfo(
     const UINT32 flags,
     UINT32* bufferLength,
     BYTE* buffer,
@@ -46,14 +46,14 @@ static LONG (WINAPI * TrueGetCurrentPackageInfo2)(
     BYTE* buffer,
     UINT32* count) = GetCurrentPackageInfo2;
 
-LONG DynamicGetCurrentPackageInfo2(
+LONG WINAPI DynamicGetCurrentPackageInfo2(
     const UINT32 flags,
     PackagePathType packagePathType,
     UINT32* bufferLength,
     BYTE* buffer,
     UINT32* count);
 
-HRESULT MddDetourPackageGraphInitialize() noexcept
+HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 {
     // Do we need to detour package graph APIs?
     if (DetourIsHelperProcess())
@@ -89,12 +89,12 @@ HRESULT _MddDetourPackageGraphShutdown() noexcept
     return S_OK;
 }
 
-void MddDetourPackageGraphShutdown() noexcept
+void WINAPI MddDetourPackageGraphShutdown() noexcept
 {
     _MddDetourPackageGraphShutdown();
 }
 
-LONG DynamicGetCurrentPackageInfo(
+LONG WINAPI DynamicGetCurrentPackageInfo(
     const UINT32 flags,
     UINT32* bufferLength,
     BYTE* buffer,
@@ -103,7 +103,7 @@ LONG DynamicGetCurrentPackageInfo(
     return DynamicGetCurrentPackageInfo2(flags, PackagePathType_Install, bufferLength, buffer, count);
 }
 
-LONG DynamicGetCurrentPackageInfo2(
+LONG WINAPI DynamicGetCurrentPackageInfo2(
     const UINT32 flags,
     PackagePathType packagePathType,
     UINT32* bufferLength,
@@ -113,7 +113,7 @@ LONG DynamicGetCurrentPackageInfo2(
     return WIN32_FROM_HRESULT(MddCore::PackageGraphManager::GetCurrentPackageInfo2(flags, packagePathType, bufferLength, buffer, count, TrueGetCurrentPackageInfo2));
 }
 
-LONG GetCurrentStaticPackageInfo(
+LONG WINAPI GetCurrentStaticPackageInfo(
     const UINT32 flags,
     UINT32* bufferLength,
     BYTE* buffer,

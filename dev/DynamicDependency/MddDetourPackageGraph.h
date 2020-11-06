@@ -4,11 +4,11 @@
 #if !defined(MDDDETOURPACKAGEGRAPH_H)
 #define MDDDETOURPACKAGEGRAPH_H
 
-HRESULT MddDetourPackageGraphInitialize() noexcept;
+HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept;
 
-void MddDetourPackageGraphShutdown() noexcept;
+void WINAPI MddDetourPackageGraphShutdown() noexcept;
 
-LONG GetCurrentStaticPackageInfo(
+LONG WINAPI GetCurrentStaticPackageInfo(
     const UINT32 flags,
     UINT32* bufferLength,
     BYTE* buffer,
