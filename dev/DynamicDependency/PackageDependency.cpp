@@ -110,12 +110,15 @@ bool MddCore::PackageDependency::IsRegistryKeyExists(
 
     wil::unique_hkey hkey;
     auto rc{ ::RegOpenKeyExW(root, subkey, 0, KEY_READ, wil::out_param(hkey)) };
-    if ((rc != ERROR_SUCCESS) && (rc != ERROR_FILE_NOT_FOUND) && (rc != ERROR_PATH_NOT_FOUND))
+    if (rc == ERROR_SUCCESS)
     {
-        (void)LOG_WIN32_MSG(rc, "RegOpenKey failed %d", rc);
+        return true;
+    }
+    else if ((rc == ERROR_FILE_NOT_FOUND) || (rc == ERROR_PATH_NOT_FOUND))
+    {
         return false;
     }
-    return true;
+    THROW_HR_MSG(HRESULT_FROM_WIN32(rc), "RegOpenKey failed %d", rc);
 }
 
 HKEY MddCore::PackageDependency::ParseRegistryKey(
