@@ -90,6 +90,12 @@ jobs:
     inputs:
       solution: dev/MRTCore/mrt/core/unittests/UnitTest.vcxproj
       platform: $(buildPlatform)
+      configuration: $(buildConfiguration)
+  - task: VSBuild@1
+    displayName: Build solution ManagedTests
+    inputs:
+      solution: dev/MRTCore/mrt/Microsoft.ApplicationModel.Resources/unittests/ManagedTest.csproj
+      platform: $(buildPlatform)
       configuration: $(buildConfiguration)  
   - task: PowerShell@2
     displayName: Collect Build Outputs
