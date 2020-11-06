@@ -64,7 +64,7 @@
   </Target>
   <Target Name="_FixWinmdPackaging" BeforeTargets="_ComputeAppxPackagePayload">
     <ItemGroup>
-      <ProjevtReunionWinmdPackagingOutput Include="@(PackagingOutputs)" Condition="'%(PackagingOutputs.Filename)%(PackagingOutputs.Extension)' == '$(ProjectReunionWinmdName)'" />
+      <ProjectReunionWinmdPackagingOutput Include="@(PackagingOutputs)" Condition="'%(PackagingOutputs.Filename)%(PackagingOutputs.Extension)' == '$(ProjectReunionWinmdName)'" />
     </ItemGroup>
     <ItemGroup Condition="'@(ProjectReunionWinmdPackagingOutput)' != ''">
       <PackagingOutputs Remove="@(ProjectReunionWinmdPackagingOutput)" />
