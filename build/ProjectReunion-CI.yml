@@ -43,7 +43,6 @@ jobs:
   parameters:
     buildJobName: 'BuildMRTCore'
     
-
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
