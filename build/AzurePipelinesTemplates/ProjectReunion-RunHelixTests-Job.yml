@@ -95,18 +95,6 @@ jobs:
 #      platform: $(buildPlatform)
 #      configuration: $(buildConfiguration)  
 
-  - task: PowerShell@2
-    displayName: Collect Build Outputs
-    inputs:
-      targetType: inline
-      script: >
-        mkdir $(buildPlatform)-$(buildConfiguration)-taeftest
-
-        cp $(outputDirectory)/*.dll $(buildPlatform)-$(buildConfiguration)-taeftest
-
-        cp $(outputDirectory)/*.pdb $(buildPlatform)-$(buildConfiguration)-taeftest
-
-        dir $(buildPlatform)-$(buildConfiguration)-taeftest
         
   - task: PublishBuildArtifacts@1
     displayName: Publish Build Outputs
