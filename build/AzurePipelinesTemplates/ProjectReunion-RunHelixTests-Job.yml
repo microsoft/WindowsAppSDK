@@ -16,13 +16,13 @@ parameters:
       buildPlatform: 'x86'
       buildConfiguration: 'Release'
       openHelixTargetQueues: 'windows.10.amd64.client19h1.open.xaml%3bwindows.10.amd64.clientrs3.open.xaml'
-      outputDirectory: BuildOutput\Release\x86\ProjectReunionHelix\
+      outputDirectory: BuildOutput\Release\x86\BaseUnitTests\
       closedHelixTargetQueues: 'windows.10.amd64.client19h1.xaml%3bwindows.10.amd64.clientrs3.xaml'
     Release_x64:
       buildPlatform: 'x64'
       buildConfiguration: 'Release'
       openHelixTargetQueues: 'windows.10.amd64.clientrs4.open.xaml'
-      outputDirectory: BuildOutput\Release\x64\ProjectReunionHelix\
+      outputDirectory: BuildOutput\Release\x64\BaseUnitTests\
       closedHelixTargetQueues: 'windows.10.amd64.clientrs4.xaml'
 
 jobs:
@@ -95,6 +95,18 @@ jobs:
 #      platform: $(buildPlatform)
 #      configuration: $(buildConfiguration)  
 
+  - task: PowerShell@2
+    displayName: Collect Build Outputs
+    inputs:
+      targetType: inline
+      script: >
+        mkdir $(buildPlatform)-$(buildConfiguration)-taeftest
+
+        cp $(outputDirectory)/*.dll $(buildPlatform)-$(buildConfiguration)-taeftest
+
+        cp $(outputDirectory)/*.pdb $(buildPlatform)-$(buildConfiguration)-taeftest
+
+        dir $(buildPlatform)-$(buildConfiguration)-taeftest
         
   - task: PublishBuildArtifacts@1
     displayName: Publish Build Outputs
