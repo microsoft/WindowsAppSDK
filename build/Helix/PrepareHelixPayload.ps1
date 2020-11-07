@@ -26,8 +26,6 @@ cp build/Helix/ConvertWttLogToXUnit.cs $payloadDir
 
 cp build/Helix/ConvertWttLogToXUnit.ps1 $payloadDir
 
-cp $Platform-$Configuration-taeftest/ProjectReunionHelix.dll $payloadDir
-
 cp BuildOutput/$Configuration/$Platform/BaseUnitTests/BaseUnitTests.dll $payloadDir
 
 cp BuildOutput/$Configuration/$Platform/UnitTest/UnitTest.dll $payloadDir
