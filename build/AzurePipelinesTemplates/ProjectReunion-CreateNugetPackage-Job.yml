@@ -155,6 +155,36 @@ jobs:
         inPathRoot: '${{ parameters.fullnupkgdir }}'
         outPathRoot: '${{ parameters.fullnupkgdir }}'
 
+  - ${{if parameters.signConfigPattern }}:
+    - task: EsrpCodeSigning@1
+      inputs:
+        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+        FolderPath: '${{ parameters.fullnupkgdir }}'
+        Pattern: |
+          ${{ parameters.signConfigPattern }}
+        UseMinimatch: true
+        signConfigType: 'inlineSignParams'
+        inlineOperation: |
+          [
+            {
+              "KeyCode" : "CP-401405",
+              "OperationCode" : "NuGetSign",
+              "Parameters" : {},
+              "ToolName" : "sign",
+              "ToolVersion" : "1.0"
+            },
+            {
+                "KeyCode" : "CP-401405",
+                "OperationCode" : "NuGetVerify",
+                "Parameters" : {},
+                "ToolName" : "sign",
+                "ToolVersion" : "1.0"
+            }
+          ]
+        SessionTimeout: '60'
+        MaxConcurrency: '50'
+        MaxRetryAttempts: '5'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget'
     inputs:
