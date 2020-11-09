@@ -12,8 +12,7 @@
     <HelixCorrelationPayload Include="..\..\HelixPayload\$(Platform)\" />
     <HelixWorkItem Include="HelixBaseUnitTests">
       <Timeout>00:20:00</Timeout>
-      <PreCommands>set helixworkitem="HelixBaseUnitTest"</PreCommands>
-      <PreCommands>set testBinary="BaseUnitTests.dll"</PreCommands>
+      <PreCommands>set helixworkitem="HelixBaseUnitTest"; set testBinary="BaseUnitTests.dll"</PreCommands>
       <Command>call %HELIX_CORRELATION_PAYLOAD%\runtests.cmd</Command>
     </HelixWorkItem>
   </ItemGroup>
