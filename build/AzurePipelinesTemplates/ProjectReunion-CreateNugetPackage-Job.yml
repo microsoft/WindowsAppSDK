@@ -93,7 +93,6 @@ jobs:
 #      TargetFolder: '${{ parameters.fullnupkgdir }}'
 #      flattenFolders: false
 
-  steps:
   - powershell: |
       $fullpackagePath = "${{ parameters.fullnupkgdir }}"
       $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
