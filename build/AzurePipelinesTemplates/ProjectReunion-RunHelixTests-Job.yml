@@ -75,7 +75,7 @@ jobs:
       restoreDirectory: dev\MRTCore\mrt\packages
       
   - task: VSBuild@1
-    displayName: Build solution UnitBaseTest
+    displayName: Build solution BaseUnitTest
     inputs:
       solution: dev/MRTCore/mrt/mrm/UnitTests/BaseUnitTests.vcxproj
       platform: $(buildPlatform)
