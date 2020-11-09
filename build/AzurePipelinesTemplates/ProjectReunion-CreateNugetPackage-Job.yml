@@ -82,6 +82,25 @@ jobs:
       TargetFolder: '${{ parameters.thinnupkgdir }}'
       flattenFolders: false
 
+  # Add the targets file to the full nuget package
+#  - task: CopyFiles@2
+#    displayName: 'Add Project Reunion target files to full package'
+#    inputs:
+#      SourceFolder: '$(Build.SourcesDirectory)\build\NuSpecs\
+#      Contents: |
+#        ProjectReunion-Nuget-Native.targets
+#        ProjectReunion-Nuget-Common.targets
+#      TargetFolder: '${{ parameters.fullnupkgdir }}'
+#      flattenFolders: false
+
+  steps:
+  - powershell: |
+      $fullpackagePath = "${{ parameters.fullnupkgdir }}"
+      $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
+      Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
+      Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
+    displayName: 'Copy ProjectReunion full package targets'
+
   # Extract framework package from full nuget package
   - task: CopyFiles@2
     displayName: 'Extract Framework Package from Full Nuget into temp Directory'
