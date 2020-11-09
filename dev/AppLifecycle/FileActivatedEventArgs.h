@@ -15,18 +15,37 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     public:
         FileActivatedEventArgs([[maybe_unused]] const std::wstring contractData)
         {
+            if (contractData.empty())
+            {
+                throw std::invalid_argument("contractData");
+            }
+
             m_kind = ActivationKind::File;
+
+            auto delimPos = contractData.find_first_of(L",");
+            m_verb = contractData.substr(0, delimPos);
+            m_paths = contractData.substr(delimPos + 1);
+            m_files = winrt::single_threaded_vector<winrt::Windows::Storage::IStorageItem>();
+
+            //  TODO: Support multiple files?
+            m_files.Append(winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
+
         }
 
         // IFileActivatedEventArgs
         IVectorView<Windows::Storage::IStorageItem> Files()
         {
-            return nullptr;
+            return m_files.GetView();
         }
 
         winrt::hstring Verb()
         {
-            return L"";
+            return m_verb.c_str();
         }
+
+    private:
+        std::wstring m_verb;
+        std::wstring m_paths;
+        IVector<winrt::Windows::Storage::IStorageItem> m_files;
     };
 }
