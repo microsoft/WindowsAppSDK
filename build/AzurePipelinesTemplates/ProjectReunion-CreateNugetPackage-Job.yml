@@ -95,12 +95,16 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\AppXContents'
       flattenFolders: false
 
-  - powershell: |
+  # Copy the Project Reunion full package specific target files into the full package folder
+  - task: PowerShell@2
+    displayName: 'Copy Project Reunion full package targets'
+    inputs:
+      targetType: inline
+      script: >
       $fullpackagePath = "${{ parameters.fullnupkgdir }}"
       $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
       Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
       Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
-    displayName: 'Copy Project Reunion full package targets'
 
   # debugging - remove or comment out before completing PR      
   - script: |
