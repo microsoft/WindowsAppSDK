@@ -152,14 +152,16 @@ jobs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\drop'
       Pattern: |
-        Release\x86\ReunionPal_DLL\Microsoft.ProjectReunion.Pal.dll
-        Release\x86\ReunionPal_DLL\Microsoft.ProjectReunion.winmd
-        Release\x64\ReunionPal_DLL\Microsoft.ProjectReunion.Pal.dll
-        Release\x64\ReunionPal_DLL\Microsoft.ProjectReunion.winmd
-        Release\arm\ReunionPal_DLL\Microsoft.ProjectReunion.Pal.dll
-        Release\arm\ReunionPal_DLL\Microsoft.ProjectReunion.winmd
-        Release\arm64\ReunionPal_DLL\Microsoft.ProjectReunion.Pal.dll
-        Release\arm64\ReunionPal_DLL\Microsoft.ProjectReunion.winmd
+        lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd
+        lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll
+        runtimes\win10-x86\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-x86\native\MRM.dll
+        runtimes\win10-x64\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-x64\native\MRM.dll
+        runtimes\win10-arm\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-arm\native\MRM.dll
+        runtimes\win10-arm64\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-arm64\native\MRM.dll
       UseMinimatch: true
       signConfigType: 'inlineSignParams'
       inlineOperation: |
