@@ -99,12 +99,12 @@ jobs:
   - task: PowerShell@2
     displayName: 'Copy Project Reunion full package targets'
     inputs:
-      targetType: inline
+      targetType: 'inline'
       script: |
-      $fullpackagePath = "${{ parameters.fullnupkgdir }}"
-      $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
-      Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
-      Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
+        $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
+        $fullpackagePath = "${{ parameters.fullnupkgdir }}"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
 
   # debugging - remove or comment out before completing PR      
   - script: |
