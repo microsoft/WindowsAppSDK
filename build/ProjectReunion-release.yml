@@ -84,13 +84,6 @@ jobs:
     name: Package ES Lab E
 
   steps:
-  - task: PkgESSetupBuild@10
-    displayName: 'XESSetupBuild'
-    inputs:
-      productName: projectreunion
-      branchVersion: false
-      nugetVer: true
-
   - task: DownloadBuildArtifacts@0
     condition:
       eq(variables['useBuildOutputFromBuildId'],'')
