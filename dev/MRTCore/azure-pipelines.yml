@@ -139,6 +139,13 @@ jobs:
       PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
       artifactName: binlogs
 
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish ManagedTest.build.appxrecipe'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'))
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\ManagedTest\ManagedTest.build.appxrecipe
+      artifactName: binlogs
+
   - task: VSTest@2
     displayName: 'test MRT (Managed)'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
