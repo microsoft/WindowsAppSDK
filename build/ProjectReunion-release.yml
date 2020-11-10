@@ -150,7 +150,7 @@ jobs:
   - task: EsrpCodeSigning@1
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
-      FolderPath: '$(Build.ArtifactStagingDirectory)\drop'
+      FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
       Pattern: |
         lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd
         lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll
