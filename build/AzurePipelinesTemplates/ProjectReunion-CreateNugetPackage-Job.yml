@@ -100,7 +100,7 @@ jobs:
     displayName: 'Copy Project Reunion full package targets'
     inputs:
       targetType: inline
-      script: >
+      script: |
       $fullpackagePath = "${{ parameters.fullnupkgdir }}"
       $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
       Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
