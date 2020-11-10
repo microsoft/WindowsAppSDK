@@ -21,16 +21,9 @@ jobs:
   dependsOn:
     - ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
-
+  pool:
+    vmImage: 'windows-2019'
   steps:
-  - ${{if parameters.signConfig }}:
-    - task: PkgESSetupBuild@10
-      displayName: 'XESSetupBuild'
-      inputs:
-        productName: microsoft.projectreunion
-        branchVersion: false
-        nugetVer: true
-
   - template: ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
 
   - script: |
@@ -114,7 +107,7 @@ jobs:
     displayName: 'Pack Full Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
@@ -126,7 +119,7 @@ jobs:
     displayName: 'Pack Thin Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
