@@ -94,15 +94,15 @@ jobs:
 #      flattenFolders: false
 
   # Copy the Project Reunion full package specific target files into the full package folder
-- task: PowerShell@2
-  displayName: 'Copy Project Reunion full package targets'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $targetsFilePath = "$(Build.SourcesDirectory)/build/NuSpecs"
-      $fullpackagePath = "${{ parameters.fullnupkgdir }}"
-      Copy-Item -Path "$targetsFilePath/ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath/build/native/Microsoft.ProjectReunion.Foundation.targets"
-      Copy-Item -Path "$targetsFilePath/ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath/build/Microsoft.ProjectReunion.targets"
+  - task: PowerShell@2
+    displayName: 'Copy Project Reunion full package targets'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $targetsFilePath = "$(Build.SourcesDirectory)/build/NuSpecs"
+        $fullpackagePath = "${{ parameters.fullnupkgdir }}"
+        Copy-Item -Path "$targetsFilePath/ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath/build/native/Microsoft.ProjectReunion.Foundation.targets"
+        Copy-Item -Path "$targetsFilePath/ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath/build/Microsoft.ProjectReunion.targets"
 
   # Extract framework package from full nuget package
   - task: CopyFiles@2
