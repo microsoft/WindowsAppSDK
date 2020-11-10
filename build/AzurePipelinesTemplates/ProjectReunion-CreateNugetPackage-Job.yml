@@ -23,6 +23,14 @@ jobs:
   condition: ${{ parameters.condition }}
 
   steps:
+  - ${{if parameters.signConfig }}:
+    - task: PkgESSetupBuild@10
+      displayName: 'XESSetupBuild'
+      inputs:
+        productName: microsoft.projectreunion
+        branchVersion: false
+        nugetVer: true
+
   - template: ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
 
   - script: |
