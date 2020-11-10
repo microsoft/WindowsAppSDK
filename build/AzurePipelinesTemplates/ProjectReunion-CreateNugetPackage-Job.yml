@@ -101,8 +101,8 @@ jobs:
       script: |
         $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
         $fullpackagePath = "${{ parameters.fullnupkgdir }}"
-        Copy-Item -Path "$targetsFilePath/ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath/build/native/Microsoft.ProjectReunion.Foundation.targets"
-        Copy-Item -Path "$targetsFilePath/ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath/build/Microsoft.ProjectReunion.targets"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
 
   # Extract framework package from full nuget package
   - task: CopyFiles@2
