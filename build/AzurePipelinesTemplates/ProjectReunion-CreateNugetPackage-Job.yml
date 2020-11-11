@@ -3,9 +3,7 @@ parameters:
   jobName: ''
   dependsOn: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  fullnupkgdir: '$(build.artifactStagingDirectory)\fullnuget' 
-  thinnupkgdir: '$(build.artifactStagingDirectory)\thinnuget'
-  fwpdir: '$(build.artifactStagingDirectory)\fwp'
+  fullnupkgdir: '$(build.artifactStagingDirectory)\fullnuget'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
@@ -47,9 +45,7 @@ jobs:
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
-      echo parameters.thinnupkgdir '${{ parameters.thinnupkgdir }}'
       echo parameters.fullnupkgdir '${{ parameters.fullnupkgdir }}'
-      echo parameters.fwpdir '${{ parameters.fwpdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
@@ -69,32 +65,6 @@ jobs:
         LICENSE
       TargetFolder: '${{ parameters.fullnupkgdir }}'
 
-  # Extract thin nuget package from full nuget package
-  - task: CopyFiles@2
-    displayName: 'Extract Thin Nuget from Full Nuget'
-    inputs:
-      SourceFolder: '${{ parameters.fullnupkgdir }}'
-      Contents: |
-        build\**
-        include\**
-        lib\**
-        LICENSE
-      TargetFolder: '${{ parameters.thinnupkgdir }}'
-      flattenFolders: false
-
-  # Extract framework package from full nuget package
-  - task: CopyFiles@2
-    displayName: 'Extract Framework Package from Full Nuget into temp Directory'
-    inputs:
-      SourceFolder: '${{ parameters.fullnupkgdir }}'
-      Contents: |
-        runtimes\**
-        lib\uap10.0\**
-        lib\net5.0-windows\**
-        LICENSE
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\AppXContents'
-      flattenFolders: false
-
   # Copy the Project Reunion full package specific target files into the full package folder
   - task: PowerShell@2
     displayName: 'Copy Project Reunion full package targets'
@@ -107,15 +77,10 @@ jobs:
         Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
 
   # debugging - remove or comment out before completing PR      
-  - script: |
-      dir /s $(Build.SourcesDirectory)
+  # - script: |
+  #     dir /s $(Build.SourcesDirectory)
 
   - template: ProjectReunion-InstallNuget-Steps.yml
-
-  # UNDONE to move MRTCore into Project Reunion nuget package
-  # - ${{if parameters.signConfig }}:
-    # Re-create framework packages because we made them in the build step against unsigned binaries.
-  - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
 
   # - powershell: |
   #     $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
@@ -144,18 +109,6 @@ jobs:
       basePath: '${{ parameters.fullnupkgdir }}'
       packDestination: ${{ parameters.fullnupkgdir }}
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'Pack Thin Nuget Package'
-    inputs:
-      command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
-      versioningScheme: 'byPrereleaseNumber'
-      majorVersion: ${{ parameters.major }}
-      minorVersion: ${{ parameters.minor }}
-      patchVersion: ${{ parameters.patch }}
-      basePath: '${{ parameters.thinnupkgdir }}'
-      packDestination: ${{ parameters.thinnupkgdir }}
-
   - ${{if parameters.signConfig }}:
     - task: PkgESCodeSign@10
       env:
@@ -172,18 +125,6 @@ jobs:
       PathtoPublish: '${{ parameters.fullnupkgdir }}'
       artifactName: 'FullNuget'
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: thin nuget'
-    inputs:
-      PathtoPublish: '${{ parameters.thinnupkgdir }}'
-      artifactName: 'ThinNuget'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: fwp'
-    inputs:
-      PathtoPublish: '${{ parameters.fwpdir }}'
-      artifactName: 'AppX'
-      
   - ${{if parameters.signConfig }}:
     # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
     - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
