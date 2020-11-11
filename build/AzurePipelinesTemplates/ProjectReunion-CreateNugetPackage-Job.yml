@@ -95,6 +95,17 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\AppXContents'
       flattenFolders: false
 
+  # Copy the Project Reunion full package specific target files into the full package folder
+  - task: PowerShell@2
+    displayName: 'Copy Project Reunion full package targets'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
+        $fullpackagePath = "${{ parameters.fullnupkgdir }}"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
+
   # debugging - remove or comment out before completing PR      
   - script: |
       dir /s $(Build.SourcesDirectory)
@@ -125,7 +136,7 @@ jobs:
     displayName: 'Pack Full Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
@@ -137,7 +148,7 @@ jobs:
     displayName: 'Pack Thin Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
