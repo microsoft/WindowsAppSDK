@@ -206,7 +206,7 @@ jobs:
   parameters:
     jobName: CreateNugetPackage
     dependsOn: SignBinariesAndPublishSymbols
-    signConfigPattern: 'FrameworkPackage\Microsoft.ProjectReunion*.nupkg'
+    signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
     useReleaseTag: '$(ProjectReunionFinalRelease)'
     prereleaseVersionTag: prerelease
 

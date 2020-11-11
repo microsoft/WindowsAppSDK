@@ -107,7 +107,7 @@ jobs:
     displayName: 'Pack Full Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
@@ -119,7 +119,7 @@ jobs:
     displayName: 'Pack Thin Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
