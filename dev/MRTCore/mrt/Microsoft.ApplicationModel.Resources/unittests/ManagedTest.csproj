@@ -171,6 +171,15 @@
       <Name>Microsoft.ApplicationModel.Resources</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup Condition="'$(BuildingInsideVisualStudio)' == '' Or '$(BuildingInsideVisualStudio)' == true">
+    <ProjectReference Include="..\..\core\src\MRM.vcxproj">
+      <Project>{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}</Project>
+      <Name>MRM</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
