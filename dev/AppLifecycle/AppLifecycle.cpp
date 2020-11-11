@@ -8,7 +8,7 @@
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
-#include "Shared.h"
+#include "Association.h"
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {

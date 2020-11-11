@@ -16,10 +16,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Shared.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Association.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Association.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LaunchActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />

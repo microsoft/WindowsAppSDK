@@ -10,10 +10,10 @@ namespace Microsoft.ApplicationModel.Activation
 
     static runtimeclass ActivationRegistrationManager
     {
-        static void RegisterForFileTypeActivation(String groupName, String logo, String[] supportedFileTypes, String[] supportedVerbs);
+        static void RegisterForFileTypeActivation(String logo, String[] supportedFileTypes, String[] supportedVerbs);
         static void RegisterForProtocolActivation(String scheme, String displayName);
 
-        static void UnregisterForFileTypeActivation(String groupName, String fileType);
+        static void UnregisterForFileTypeActivation(String fileType);
         static void UnregisterForProtocolActivation(String scheme);
     };
 }

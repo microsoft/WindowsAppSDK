@@ -10,11 +10,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     {
         ActivationRegistrationManager() = default;
 
-        static void RegisterForFileTypeActivation(hstring const& groupName, hstring const& logo,
+        static void RegisterForFileTypeActivation(hstring const& logo,
             array_view<hstring const> supportedFileTypes, array_view<hstring const> supportedVerbs);
         static void RegisterForProtocolActivation(hstring const& scheme, hstring const& displayName);
 
-        static void UnregisterForFileTypeActivation(hstring const& groupName, hstring const& fileType);
+        static void UnregisterForFileTypeActivation(hstring const& fileType);
         static void UnregisterForProtocolActivation(hstring const& scheme);
     };
 }

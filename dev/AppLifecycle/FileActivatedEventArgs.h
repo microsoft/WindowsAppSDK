@@ -8,6 +8,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;
+    using namespace winrt::Windows::Storage;
 
     class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs,
         ActivatedEventArgsBase, IFileActivatedEventArgs>
@@ -25,15 +26,15 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             auto delimPos = contractData.find_first_of(L",");
             m_verb = contractData.substr(0, delimPos);
             m_paths = contractData.substr(delimPos + 1);
-            m_files = winrt::single_threaded_vector<winrt::Windows::Storage::IStorageItem>();
+            m_files = winrt::single_threaded_vector<IStorageItem>();
 
             //  TODO: Support multiple files?
-            m_files.Append(winrt::Windows::Storage::StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
+            m_files.Append(StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
 
         }
 
         // IFileActivatedEventArgs
-        IVectorView<Windows::Storage::IStorageItem> Files()
+        IVectorView<IStorageItem> Files()
         {
             return m_files.GetView();
         }
@@ -46,6 +47,6 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     private:
         std::wstring m_verb;
         std::wstring m_paths;
-        IVector<winrt::Windows::Storage::IStorageItem> m_files;
+        IVector<IStorageItem> m_files;
     };
 }
