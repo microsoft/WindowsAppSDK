@@ -11,8 +11,9 @@
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
-    void ActivationRegistrationManager::RegisterForFileTypeActivation(hstring const& logo,
-        array_view<hstring const> supportedFileTypes, array_view<hstring const> supportedVerbs)
+    void ActivationRegistrationManager::RegisterForFileTypeActivation(
+        array_view<hstring const> supportedFileTypes, array_view<hstring const> supportedVerbs,
+        hstring const& logo)
     {
         if (HasIdentity())
         {
@@ -26,19 +27,20 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             for (auto verb : supportedVerbs)
             {
                 // TODO: Add support for the logo
-                auto progId = ComputeProgId();
-                RegisterProgId(progId, L"");
+                auto type = AssociationType::File;
+                auto progId = ComputeProgId(type);
+                RegisterApplication(progId);
 
                 auto command = GetModulePath();
                 command += L" ----" + c_fileArgumentString + L":" + verb.c_str() + L",%1";
                 RegisterVerb(progId, verb.c_str(), command);
-                RegisterProgidAsHandler(extension.c_str(), progId);
+                RegisterAssociationHandler(extension.c_str(), type, progId);
             }
         }
     }
 
     void ActivationRegistrationManager::RegisterForProtocolActivation(hstring const& scheme,
-        hstring const& displayName)
+        hstring const& displayName, hstring const& logo)
     {
         if (scheme.empty() || displayName.empty())
         {
@@ -52,13 +54,17 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
         RegisterProtocol(scheme.c_str(), displayName.c_str());
 
-        auto progId = ComputeProgId();
-        RegisterApplication(ComputeProgId());
+        auto type = AssociationType::Protocol;
+        auto progId = ComputeProgId(type);
+        RegisterApplication(progId);
+        RegisterAssociationHandler(scheme.c_str(), type, progId);
 
-        // TODO: Register the generated progId and capabilities.
+        // TODO: Set logo
+
         auto command = GetModulePath();
         command += L" ----" + c_protocolArgumentString + L":%1";
-        RegisterVerb(scheme.c_str(), L"open", command);
+        RegisterVerb(progId.c_str(), L"open", command);
+        
     }
 
     void ActivationRegistrationManager::UnregisterForFileTypeActivation(hstring const& fileType)
@@ -68,8 +74,9 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw hresult_illegal_method_call();
         }
 
-        auto progId = ComputeProgId();
-        UnregisterProgidAsHandler(fileType.c_str(), progId);
+        auto type = AssociationType::File;
+        auto progId = ComputeProgId(type);
+        UnregisterAssociationHandler(fileType.c_str(), type, progId);
         UnregisterProgId(progId);
         UnregisterFileExtension(fileType.c_str());
     }
@@ -86,6 +93,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw hresult_illegal_method_call();
         }
 
+        // TODO: Fix this
         UnregisterProgId(scheme.c_str());
     }
 }

@@ -5,6 +5,11 @@
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
+    HKEY GetRegistrationRoot()
+    {
+        return HKEY_CURRENT_USER;
+    }
+
     bool IsFileExtension(const std::wstring& extension)
     {
         return (extension.at(0) == L'.');
@@ -50,15 +55,25 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     }
 
     // Compute a stable progId.
-    std::wstring ComputeProgId()
+    std::wstring ComputeProgId(AssociationType type)
     {
+        std::wstring typeSuffix{ L"." };
+        if (type == AssociationType::File)
+        {
+            typeSuffix += L"File";
+        }
+        else if (type == AssociationType::Protocol)
+        {
+            typeSuffix += L"Protocol";
+        }
+
         // TODO: Compute progIds based on the path of the executable and possibly more data.
-        return std::wstring(L"ScoDarGenerated1");
+        return std::wstring(L"ScoDarGenerated1" + typeSuffix);
     }
 
     std::wstring CreateAssocKeyPath(const std::wstring& assoc)
     {
-        std::wstring path{ LR"(SOFTWARE\Classes\)" };
+        std::wstring path{ LR"(Software\Classes\)" };
         path += assoc;
         return path;
     }
@@ -68,7 +83,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         auto path = CreateAssocKeyPath(assoc.c_str());
         wil::unique_hkey key;
 
-        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(HKEY_CURRENT_USER, path.c_str(), 0, nullptr, 0,
+        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(GetRegistrationRoot(), path.c_str(), 0, nullptr, 0,
             samDesired, nullptr, key.put(), nullptr));
         return key;
     }
@@ -78,7 +93,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         auto path = CreateAssocKeyPath(assoc.c_str());
         wil::unique_hkey key;
 
-        THROW_IF_WIN32_ERROR(::RegOpenKeyEx(HKEY_CURRENT_USER, path.c_str(), 0, samDesired,
+        THROW_IF_WIN32_ERROR(::RegOpenKeyEx(GetRegistrationRoot(), path.c_str(), 0, samDesired,
             key.put()));
         return key;
     }
@@ -87,8 +102,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     {
         auto path = CreateAssocKeyPath(assoc.c_str());
         wil::unique_hkey key;
-        if (SUCCEEDED(::RegOpenKeyEx(HKEY_CURRENT_USER, path.c_str(), 0, KEY_READ,
-            key.put())))
+        if (::RegOpenKeyEx(GetRegistrationRoot(), path.c_str(), 0, KEY_READ,
+            key.put()) == ERROR_SUCCESS)
         {
             return true;
         }
@@ -99,10 +114,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     {
         auto path = CreateAssocKeyPath(assoc.c_str());
         wil::unique_hkey key;
-        if (SUCCEEDED(::RegOpenKeyEx(HKEY_CURRENT_USER, path.c_str(), 0, KEY_READ,
-            key.put())))
+        if (::RegOpenKeyEx(GetRegistrationRoot(), path.c_str(), 0, KEY_READ, key.put())
+            == ERROR_SUCCESS)
         {
-            if (SUCCEEDED(::RegQueryValueEx(key.get(), value.c_str(), 0, nullptr, nullptr, nullptr)))
+            if (::RegQueryValueEx(key.get(), value.c_str(), 0, nullptr, nullptr, nullptr)
+                == ERROR_SUCCESS)
             {
                 return true;
             }
@@ -113,7 +129,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     void DeleteAssocKey(const std::wstring& assoc)
     {
         auto path = CreateAssocKeyPath(assoc);
-        ::RegDeleteTree(HKEY_CURRENT_USER, path.c_str());
+        ::RegDeleteTree(GetRegistrationRoot(), path.c_str());
     }
 
     wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& displayName)
@@ -130,34 +146,71 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         DeleteAssocKey(progId);
     }
 
+    std::wstring CreateApplicationKeyPath(const std::wstring& progId)
+    {
+        return std::wstring(LR"(Software\Microsoft\ReunionApplications\)" + progId + LR"(\Capabilties)");
+    }
+
+    wil::unique_hkey CreateApplicationKey(const std::wstring& progId, REGSAM samDesired)
+    {
+        if (!AssocExists(progId))
+        {
+            throw std::invalid_argument("progId");
+        }
+
+        wil::unique_hkey registeredAppsKey;
+        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(GetRegistrationRoot(), LR"(Software\RegisteredApplications\)",
+            0, nullptr, 0, samDesired, nullptr, registeredAppsKey.put(), nullptr));
+
+        std::wstring applicationKeyPath = CreateApplicationKeyPath(progId);
+        wil::unique_hkey applicationKey;
+        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(GetRegistrationRoot(), applicationKeyPath.c_str(),
+            0, nullptr, 0, samDesired, nullptr, applicationKey.put(), nullptr));
+
+        THROW_IF_WIN32_ERROR(::RegSetValueEx(registeredAppsKey.get(), progId.c_str(), 0, REG_SZ,
+            reinterpret_cast<BYTE const*>(applicationKeyPath.c_str()),
+            static_cast<uint32_t>((applicationKeyPath.size() + 1) * sizeof(wchar_t))));
+
+        return applicationKey;
+    }
+
+    wil::unique_hkey OpenApplicationKey(const std::wstring& progId, REGSAM samDesired)
+    {
+        wil::unique_hkey registeredAppsKey;
+        THROW_IF_WIN32_ERROR(::RegOpenKeyEx(GetRegistrationRoot(), LR"(Software\RegisteredApplications\)",
+            0, samDesired, registeredAppsKey.put()));
+
+        DWORD pathSize{ 0 };
+        THROW_IF_WIN32_ERROR(::RegQueryValueEx(registeredAppsKey.get(), progId.c_str(), 0, nullptr,
+            nullptr, &pathSize));
+
+        std::wstring applicationKeyPath(pathSize, L'\0');
+        THROW_IF_WIN32_ERROR(::RegQueryValueEx(registeredAppsKey.get(), progId.c_str(), 0, nullptr,
+            reinterpret_cast<BYTE*>(applicationKeyPath.data()),
+            &pathSize));
+
+        wil::unique_hkey applicationKey;
+        THROW_IF_WIN32_ERROR(::RegOpenKeyEx(GetRegistrationRoot(), applicationKeyPath.c_str(),
+            0, samDesired, applicationKey.put()));
+
+        return applicationKey;
+    }
+
     void RegisterApplication(const std::wstring& progId)
     {
         RegisterProgId(progId, L"");
-
-        wil::unique_hkey registeredAppsKey;
-        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(HKEY_CURRENT_USER, LR"(SOFTWARE\RegisteredApplications\)",
-            0, nullptr, 0, KEY_WRITE, nullptr, registeredAppsKey.put(), nullptr));
-
-        // TODO: Turn this into a helper for the RegisterProgidAsHandler usage
-        std::wstring capabilitiesKeyPath = LR"(Software\Microsoft\ReunionApplications\)" + progId + LR"(\Capabilties)";
-        wil::unique_hkey capabilitiesKey;
-        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(HKEY_CURRENT_USER, capabilitiesKeyPath.c_str(),
-            0, nullptr, 0, KEY_WRITE, nullptr, capabilitiesKey.put(), nullptr));
-
-        THROW_IF_WIN32_ERROR(::RegSetValueEx(registeredAppsKey.get(), progId.c_str(), 0, REG_SZ,
-            reinterpret_cast<BYTE const*>(capabilitiesKeyPath.c_str()),
-            static_cast<uint32_t>((capabilitiesKeyPath.size() + 1) * sizeof(wchar_t))));
+        CreateApplicationKey(progId);
     }
 
     // TODO: Do we really want to support this?  When would it be safe to call?
     void UnregisterApplication(const std::wstring& progId)
     {
         std::wstring capabilitiesKeyPath = LR"(Software\Microsoft\ReunionApplications\)" + progId + LR"(\Capabilties)";
-        ::RegDeleteTree(HKEY_CURRENT_USER, capabilitiesKeyPath.c_str());
+        ::RegDeleteTree(GetRegistrationRoot(), capabilitiesKeyPath.c_str());
 
         wil::unique_hkey registeredAppsKey;
-        if (SUCCEEDED(::RegOpenKeyEx(HKEY_CURRENT_USER, LR"(SOFTWARE\RegisteredApplications\)",
-            0, KEY_WRITE, registeredAppsKey.put())))
+        if (::RegOpenKeyEx(GetRegistrationRoot(), LR"(Software\RegisteredApplications\)", 0,
+            KEY_WRITE, registeredAppsKey.put()) == ERROR_SUCCESS)
         {
             ::RegDeleteValue(registeredAppsKey.get(), progId.c_str());
         }
@@ -169,7 +222,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         _In_opt_ const GUID* delegateExecute)
     {
         auto assocKey = OpenAssocKey(progId, KEY_WRITE);
-        auto key_path = LR"(\shell\)" + verb + LR"(\command)";
+        auto key_path = LR"(shell\)" + verb + LR"(\command)";
         wil::unique_hkey key;
 
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(assocKey.get(), key_path.c_str(), 0, nullptr, 0,
@@ -193,7 +246,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     void UnregisterVerb(const std::wstring& progId, const std::wstring& verb)
     {
         auto key_path = CreateAssocKeyPath(progId) + LR"(\shell\)" + verb + LR"(\command)";
-        ::RegDeleteTree(HKEY_CURRENT_USER, key_path.c_str());
+        ::RegDeleteTree(GetRegistrationRoot(), key_path.c_str());
     }
 
     void RegisterProtocol(const std::wstring& scheme, const std::wstring& displayName)
@@ -255,42 +308,69 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         }
     }
 
-    void RegisterProgidAsHandler(const std::wstring& extension, const std::wstring& progId)
+    std::wstring CreateCapabilitySubKeyPath(AssociationType type)
     {
-        // TODO: Fail if the extension doesn't already exist.
+        std::wstring subKeyPath;
+        if (type == AssociationType::File)
+        {
+            subKeyPath = L"FileAssociations";
+        }
+        else if (type == AssociationType::Protocol)
+        {
+            subKeyPath = L"UrlAssociations";
+        }
+        else
+        {
+            throw winrt::hresult_illegal_method_call();
+        }
 
-        // Link the progId as a handler for the extension.
-        auto handlers_list_path = CreateAssocKeyPath(extension.c_str()) + LR"(\OpenWithProgids)";
-        wil::unique_hkey handlers_list_key;
-
-        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(HKEY_CURRENT_USER, handlers_list_path.c_str(), 0, nullptr,
-            0, KEY_WRITE, nullptr, handlers_list_key.put(), nullptr));
-
-        THROW_IF_WIN32_ERROR(::RegSetValueEx(handlers_list_key.get(), progId.c_str(), 0, REG_SZ,
-            nullptr, 0));
+        return subKeyPath;
     }
 
-    void UnregisterProgidAsHandler(const std::wstring& extension, const std::wstring& progId)
+    void RegisterAssociationHandler(const std::wstring& association, AssociationType type,
+        const std::wstring& handlerProgId)
     {
-        if (!IsFileExtension(extension))
+        if (type == AssociationType::File && !IsFileExtension(association))
         {
-            throw winrt::hresult_invalid_argument();
+            throw std::invalid_argument("association");
         }
 
-        auto handlers_list_path = CreateAssocKeyPath(extension.c_str()) + LR"(\OpenWithProgids)";
-        wil::unique_hkey handlers_list_key;
-
-        if (SUCCEEDED(::RegOpenKeyEx(HKEY_CURRENT_USER, handlers_list_path.c_str(), 0, KEY_WRITE,
-            handlers_list_key.put())))
+        if (!AssocExists(association))
         {
-            ::RegDeleteValue(handlers_list_key.get(), progId.c_str());
+            throw std::invalid_argument("association");
         }
 
-        // TODO: Make sure we only remove if no handlers exist.
-        auto openWithProgidsIsEmpty = false;
-        if (openWithProgidsIsEmpty)
+        if (!AssocExists(handlerProgId))
         {
-            ::RegDeleteTree(HKEY_CURRENT_USER, handlers_list_path.c_str());
+            throw std::invalid_argument("handlerProgId");
+        }
+
+        auto subKeyPath = CreateCapabilitySubKeyPath(type);
+        auto applicationKey = OpenApplicationKey(handlerProgId, KEY_READ | KEY_WRITE);
+        wil::unique_hkey subKey;
+        THROW_IF_WIN32_ERROR(::RegCreateKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, nullptr,
+            0, KEY_WRITE, nullptr, subKey.put(), nullptr));
+
+        THROW_IF_WIN32_ERROR(::RegSetValueEx(subKey.get(), association.c_str(), 0, REG_SZ,
+            reinterpret_cast<BYTE const*>(handlerProgId.c_str()),
+            static_cast<uint32_t>((handlerProgId.size() + 1) * sizeof(wchar_t))));
+    }
+
+    void UnregisterAssociationHandler(const std::wstring& association, AssociationType type,
+        const std::wstring& handlerProgId)
+    {
+        if (type == AssociationType::File && !IsFileExtension(association))
+        {
+            throw std::invalid_argument("association");
+        }
+
+        auto subKeyPath = CreateCapabilitySubKeyPath(type);
+        auto applicationKey = OpenApplicationKey(handlerProgId, KEY_READ | KEY_WRITE);
+        wil::unique_hkey subKey;
+        if (::RegOpenKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, KEY_WRITE,
+            subKey.put()) == ERROR_SUCCESS)
+        {
+            ::RegDeleteValue(subKey.get(), association.c_str());
         }
     }
 }
