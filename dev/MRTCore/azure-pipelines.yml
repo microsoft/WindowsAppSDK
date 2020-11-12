@@ -158,7 +158,6 @@ jobs:
       testSelector: 'testAssemblies'
       testAssemblyVer2: |
         **\*test*.dll
-        **\ManagedTest.build.appxrecipe
         !**\*TestAdapter.dll
         !**\TE.*.dll
         !**\obj\**
