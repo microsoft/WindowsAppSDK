@@ -149,14 +149,14 @@ jobs:
       ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
       ArtifactServices_Symbol_UseAAD: true
 
-  - task: PkgESCodeSign@10
-    displayName: CodeSign
-    env:
-      SYSTEM_ACCESSTOKEN: $(system.accesstoken)
-    inputs:
-      signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
-      inPathRoot: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      outPathRoot: '$(Build.ArtifactStagingDirectory)\fullnuget'
+  #- task: PkgESCodeSign@10
+  #  displayName: CodeSign
+  #  env:
+  #    SYSTEM_ACCESSTOKEN: $(system.accesstoken)
+  #  inputs:
+  #    signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
+  #    inPathRoot: '$(Build.ArtifactStagingDirectory)\fullnuget'
+  #    outPathRoot: '$(Build.ArtifactStagingDirectory)\fullnuget'
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
