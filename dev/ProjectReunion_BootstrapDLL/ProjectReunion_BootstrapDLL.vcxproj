@@ -161,7 +161,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -179,6 +179,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -186,7 +187,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -204,6 +205,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -211,7 +213,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -229,6 +231,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -236,7 +239,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -254,6 +257,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -263,7 +267,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -283,6 +287,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -292,7 +297,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -312,6 +317,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -321,7 +327,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -341,6 +347,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -350,7 +357,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -370,6 +377,7 @@
       <GenerateServerFiles>None</GenerateServerFiles>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <HeaderFileName>%(Filename).h</HeaderFileName>
+      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -412,7 +420,7 @@
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)IDynamicDependencyLifetimeManager.idl" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)IDynamicDependencyLifetimeManager.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\IDynamicDependencyLifetimeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IDynamicDependencyLifetimeManager.idl" />
