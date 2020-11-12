@@ -3,13 +3,14 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap5 com rescap">
+  IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="ProjectReunion.DDLM.4.1.1967.333.x64"
+    Name="ProjectReunion.DDLM-4.1.1967.333-x64"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333"
     ProcessorArchitecture="x64" />
@@ -43,6 +44,12 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
       </uap:VisualElements>
       <Extensions>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.projectreunion.ddlm.1.x64"
+                             Id="ddlm-4.1.1967.333-x64"
+                             PublicFolder="public\ddlm"
+                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (1.* x64)"/>
+        </uap3:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
             <com:ExeServer Executable="DynamicDependencyLifetimeManager.exe" DisplayName="ProjectReunion DynamicDependency LifetimeManager">
