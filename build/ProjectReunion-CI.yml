@@ -3,6 +3,7 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
+  
 jobs:
 - job: Build
   pool:
@@ -37,10 +38,16 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
+# MRTCore build pipeline
+- template: ..\dev\MRTCore\azure-pipelines.yml
+  parameters:
+    buildJobName: 'BuildMRTCore'
+    
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
-    dependsOn: Build
+    dependsOn: 
+      - Build
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     testSuite: 'DevTestSuite'
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
@@ -50,11 +57,6 @@ jobs:
     dependsOn: RunTestsInHelix
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
     minimumExpectedTestsExecutedCount: 2
-
-# MRTCore build pipeline
-- template: ..\dev\MRTCore\azure-pipelines.yml
-  parameters:
-    buildJobName: 'BuildMRTCore'
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
