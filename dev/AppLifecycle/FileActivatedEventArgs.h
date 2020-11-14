@@ -28,7 +28,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             m_paths = contractData.substr(delimPos + 1);
             m_files = winrt::single_threaded_vector<IStorageItem>();
 
-            //  TODO: Support multiple files?
+            // Currently we only support one file in the array, because the
+            // activation method forces a new process for each item in the array.
             m_files.Append(StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
 
         }

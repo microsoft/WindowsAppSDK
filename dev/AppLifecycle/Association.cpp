@@ -132,12 +132,38 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         ::RegDeleteTree(GetRegistrationRoot(), path.c_str());
     }
 
-    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& displayName)
+    // TODO: Elliot's feedback about moving constants out of the calls to one locaiton.
+    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& defaultValue,
+        const std::wstring& applicationDisplayName, const std::wstring& logo)
     {
         auto key = CreateAssocKey(progId, KEY_WRITE);
-        THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), nullptr, 0, REG_SZ,
-            reinterpret_cast<BYTE const*>(displayName.c_str()),
-            static_cast<uint32_t>((displayName.size() + 1) * sizeof(wchar_t))));
+
+        if (!defaultValue.empty())
+        {
+            THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), nullptr, 0, REG_SZ,
+                reinterpret_cast<BYTE const*>(defaultValue.c_str()),
+                static_cast<uint32_t>((defaultValue.size() + 1) * sizeof(wchar_t))));
+        }
+
+        if (!applicationDisplayName.empty())
+        {
+            wil::unique_hkey applicationKey;
+            THROW_IF_WIN32_ERROR(::RegCreateKeyEx(key.get(), L"Application", 0, nullptr, 0,
+                KEY_WRITE, nullptr, applicationKey.put(), nullptr));
+            THROW_IF_WIN32_ERROR(::RegSetValueEx(applicationKey.get(), L"ApplicationName", 0,
+                REG_SZ, reinterpret_cast<BYTE const*>(applicationDisplayName.c_str()),
+                static_cast<uint32_t>((applicationDisplayName.size() + 1) * sizeof(wchar_t))));
+        }
+
+        if (!logo.empty())
+        {
+            wil::unique_hkey defaultIconKey;
+            THROW_IF_WIN32_ERROR(::RegCreateKeyEx(key.get(), L"DefaultIcon", 0, nullptr, 0,
+                KEY_WRITE, nullptr, defaultIconKey.put(), nullptr));
+            THROW_IF_WIN32_ERROR(::RegSetValueEx(defaultIconKey.get(), nullptr, 0, REG_SZ,
+                reinterpret_cast<BYTE const*>(logo.c_str()),
+                static_cast<uint32_t>((logo.size() + 1) * sizeof(wchar_t))));
+        }
         return key;
     }
 
@@ -196,13 +222,12 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return applicationKey;
     }
 
-    void RegisterApplication(const std::wstring& progId)
+    void RegisterApplication(const std::wstring& progId, const std::wstring& applicationDisplayName, const std::wstring& logo)
     {
-        RegisterProgId(progId, L"");
+        RegisterProgId(progId, L"", applicationDisplayName, logo);
         CreateApplicationKey(progId);
     }
 
-    // TODO: Do we really want to support this?  When would it be safe to call?
     void UnregisterApplication(const std::wstring& progId)
     {
         std::wstring capabilitiesKeyPath = LR"(Software\Microsoft\ReunionApplications\)" + progId + LR"(\Capabilties)";
@@ -249,7 +274,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         ::RegDeleteTree(GetRegistrationRoot(), key_path.c_str());
     }
 
-    void RegisterProtocol(const std::wstring& scheme, const std::wstring& displayName)
+    void RegisterProtocol(const std::wstring& scheme)
     {
         const std::wstring c_urlProtocolValueName = L"URL Protocol";
 
@@ -265,11 +290,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw std::invalid_argument("scheme");
         }
 
-        auto key = RegisterProgId(scheme, displayName);            
-        std::wstring defaultValue = L"URL:" + displayName;
-        THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), nullptr, 0, REG_SZ,
-            reinterpret_cast<BYTE const*>(defaultValue.c_str()),
-            static_cast<uint32_t>((defaultValue.size() + 1) * sizeof(wchar_t))));
+        std::wstring defaultValue = L"URL:" + scheme;
+        auto key = RegisterProgId(scheme, defaultValue);
         
         std::wstring emptyValue{ L"" };
         THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), c_urlProtocolValueName.c_str(), 0,
@@ -277,7 +299,6 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             static_cast<uint32_t>((emptyValue.size() + 1) * sizeof(wchar_t))));
     }
 
-    // TODO: Do we really want to support this?  When would it be safe to call?
     void UnregisterProtocol(const std::wstring& scheme)
     {
         DeleteAssocKey(scheme);
@@ -300,12 +321,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw winrt::hresult_invalid_argument();
         }
 
-        // TODO: Make sure we only remove if no handlers exist.
-        auto openWithProgidsIsEmpty = false;
-        if (openWithProgidsIsEmpty)
-        {
-            DeleteAssocKey(extension);
-        }
+        DeleteAssocKey(extension);
     }
 
     std::wstring CreateCapabilitySubKeyPath(AssociationType type)

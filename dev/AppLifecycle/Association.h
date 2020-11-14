@@ -17,21 +17,26 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     std::wstring GetFullIdentityString();
     bool HasIdentity();
     std::wstring GetModulePath();
+    std::wstring ComputeAppId();
     std::wstring ComputeProgId(AssociationType type);
+    std::wstring ComputeProgId(std::wstring appId, AssociationType type);
     std::wstring CreateAssocKeyPath(const std::wstring& assoc);
     wil::unique_hkey CreateAssocKey(const std::wstring& assoc, REGSAM samDesired = KEY_WRITE);
     wil::unique_hkey OpenAssocKey(const std::wstring& assoc, REGSAM samDesired = KEY_READ);
     void DeleteAssocKey(const std::wstring& assoc);
-    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& displayName);
+    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& displayName = L"",
+        const std::wstring& applicationDisplayName = L"", const std::wstring& logo = L"");
     void UnregisterProgId(const std::wstring& progId);
-    std::wstring CreateApplicationKeyPath(const std::wstring& progId);
+    std::wstring CreateApplicationKeyPath();
     wil::unique_hkey CreateApplicationKey(const std::wstring& progId, REGSAM samDesired = KEY_WRITE);
     wil::unique_hkey OpenApplicationKey(const std::wstring& progId, REGSAM samDesired = KEY_READ);
-    void RegisterApplication(const std::wstring& progId);
+    void RegisterApplication(const std::wstring& progId, const std::wstring& applicationDisplayName = L"",
+        const std::wstring& logo = L"");
     void UnregisterApplication(const std::wstring& progId);
-    void RegisterVerb(const std::wstring& progId, const std::wstring& verb, const std::wstring& command, _In_opt_ const GUID* delegateExecute = nullptr);
+    void RegisterVerb(const std::wstring& progId, const std::wstring& verb, const std::wstring& command,
+        _In_opt_ const GUID* delegateExecute = nullptr);
     void UnregisterVerb(const std::wstring& progId, const std::wstring& verb);
-    void RegisterProtocol(const std::wstring& scheme, const std::wstring& displayName);
+    void RegisterProtocol(const std::wstring& scheme);
     void UnregisterProtocol(const std::wstring& scheme);
     void RegisterFileExtension(const std::wstring& extension);
     void UnregisterFileExtension(const std::wstring& extension);
