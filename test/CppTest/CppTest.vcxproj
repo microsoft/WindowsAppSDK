@@ -329,6 +329,7 @@
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\..\packages\Taef.Redist.Wlk.10.52.200221001\build\Taef.Redist.Wlk.targets" Condition="Exists('..\..\packages\Taef.Redist.Wlk.10.52.200221001\build\Taef.Redist.Wlk.targets')" />
+    <Import Project="..\..\packages\Taef.TestAdapter.10.57.201103002-develop\build\Taef.TestAdapter.targets" Condition="Exists('..\..\packages\Taef.TestAdapter.10.57.201103002-develop\build\Taef.TestAdapter.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
