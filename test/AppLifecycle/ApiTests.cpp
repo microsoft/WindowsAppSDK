@@ -17,20 +17,35 @@ namespace ProjectReunionCppTest
     {
         TEST_CLASS(AppLifecycleApiTests)
 
-#if PRTEST_MODE_UWP
         // UWP currently is not supported by these tests.
         TEST_METHOD(GetActivatedEventArgsIsNull)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+            END_TEST_METHOD_PROPERTIES();
+
             VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
         }
-#else
+
         TEST_METHOD(GetActivatedEventArgsIsNotNull)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+                TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
+                TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
+            END_TEST_METHOD_PROPERTIES();
+
             VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
         }
 
         TEST_METHOD(GetActivatedEventArgsForLaunch)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+                TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
+                TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
+            END_TEST_METHOD_PROPERTIES();
+
             auto args = AppLifecycle::GetActivatedEventArgs();
             VERIFY_IS_NOT_NULL(args);
             VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
@@ -38,6 +53,5 @@ namespace ProjectReunionCppTest
             auto launchArgs = args.as<LaunchActivatedEventArgs>();
             VERIFY_IS_NOT_NULL(launchArgs);
         }
-#endif
     };
 }
