@@ -25,6 +25,7 @@ This part of Reunion AppLifecycle makes rich UWP activation functionality availa
 - Which activation kinds will unpackaged apps be able to use?
 - How does the app tell the system which activation kinds it wants to use?
 
+
 ### Supported activation kinds
 
 The first release focuses on the most commonly-used rich activation kinds. The AppLifecycle component will provide a converged GetActivatedEventArgs API which will get all args, regardless of activation kind, effectively merging in the functionality of GetCommandLineArgs/GetCommandLineW. It will also be decoupled from multi-instancing.
@@ -41,6 +42,10 @@ Of the 44 UWP activation kinds, 5 of the most commonly-used kinds are also suppo
     
 
 ### Activation registration
+Apps can start using supported modern activation phases by:
+- Calling a method to register activation.
+- Calling a method in their entrypoint to handle activation.
+
 From a Win32 app perspective, the 2 activation kinds that do not require any registration (Shortcut/Tile Launch and CommandLine) are effectively the same in terms of activation payload. Indeed, it is not possible to distinguish a launch activation of a Win32 app from a commandline activation. Therefore, the AppLifecycle implementation will merge Launch and CommandLine into one (Launch) activation kind. 
 
 UWP apps can only register for activation kinds via manifest declarations, and therefore this happens during app install. Conversely, traditional app types can write registry entries at any time.
