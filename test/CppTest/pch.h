@@ -8,7 +8,7 @@
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
-#include "CppUnitTest.h"
+#include <WexTestClass.h>
 
 #include <winrt/Windows.ApplicationModel.Activation.h>
 

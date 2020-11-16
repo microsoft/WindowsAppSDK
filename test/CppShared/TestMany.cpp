@@ -3,8 +3,6 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 namespace ProjectReunionCppTest
 {
 }
