@@ -38,6 +38,10 @@ jobs:
     appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
+    ${{ if  eq(variables['ReleaseSign'], 'true') }}:
+      cpCode: CP-230217
+    ${{ if eq(variables['ReleaseSign'], false) }}:
+      cpCode: CP-230072
   steps:
 
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
@@ -155,7 +159,7 @@ jobs:
       inlineOperation: |
         [
           {
-            "keyCode": "CP-230217",
+            "keyCode": "$(cpCode)",
             "operationSetCode": "SigntoolSign",
             "parameters": [
               {
@@ -186,7 +190,6 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
-    condition: eq(variables['ReleaseSign'], 'true')
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
