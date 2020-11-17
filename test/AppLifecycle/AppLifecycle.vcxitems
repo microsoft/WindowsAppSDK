@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{cdce22ec-f7bf-43d4-95d8-2e786229a4e5}</ItemsProjectGuid>
+    <ItemsProjectGuid>{80E07022-9E99-44FE-B875-901FB6C82F52}</ItemsProjectGuid>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -14,16 +14,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)SampleFlatC.h"/>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)SampleFlatC.cpp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)SampleFlatC.h"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ApiTests.cpp" />
   </ItemGroup>
 </Project>

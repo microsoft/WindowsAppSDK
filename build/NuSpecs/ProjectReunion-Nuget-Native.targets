@@ -12,5 +12,4 @@
     <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.dll" />
     <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.pri" />
   </ItemGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.ProjectReunion.targets"/>
 </Project>

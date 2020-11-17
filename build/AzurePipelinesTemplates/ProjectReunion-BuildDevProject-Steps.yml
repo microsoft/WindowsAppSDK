@@ -6,7 +6,3 @@ steps:
       appxPackageDir: $(appxPackageDir)
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
-
-  - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
-    parameters:
-      buildOutputDir: $(buildOutputDir)

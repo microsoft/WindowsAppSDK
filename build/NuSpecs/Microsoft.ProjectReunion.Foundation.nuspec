@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
      <metadata minClientVersion="3.3">
-         <id>Microsoft.ProjectReunion</id>
+         <id>Microsoft.ProjectReunion.Foundation.TransportPackage</id>
          <version>1.0</version>
          <title>$id$</title>
          <authors>Microsoft</authors>

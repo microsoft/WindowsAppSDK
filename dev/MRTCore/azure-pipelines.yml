@@ -5,12 +5,6 @@
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 
-#trigger:
-#- master
-
-parameters:
-  doCodeSign: "false"
-
 jobs:
 - job: BuildMRT
   pool:
@@ -146,6 +140,18 @@ jobs:
       artifactName: binlogs
 
   - task: VSTest@2
+    displayName: 'test MRT (Managed)'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: |
+        **\ManagedTest.build.appxrecipe
+      searchFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
+      testRunTitle: 'test MRT $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - task: VSTest@2
     displayName: 'test MRT'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
@@ -207,61 +213,13 @@ jobs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
       ArtifactName: 'mrtcore_binaries'
 
-- job: SignMRT
-  condition: and(succeeded(), eq(${{ parameters.doCodeSign }}, 'true'))
-  dependsOn:
-    - BuildMRT
-
-  ${{if eq(parameters.doCodeSign, 'false')}}:
-    pool:
-      vmImage: 'windows-latest'
-
-  ${{if eq(parameters.doCodeSign, 'true')}}:
-    pool:
-      name: Package ES Lab E
-  
-  variables:
-    solution: '**/*.sln'
-    appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
-
-  steps:
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download: Raw Binaries'
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: 'mrtcore_binaries'
-      downloadPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
-
-  - ${{if eq(parameters.doCodeSign, 'true')}}:
-    - task: PkgESCodeSign@10
-      env:
-        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-      inputs:
-        signConfigXml: '$(MRTSourcesDirectory)\SignConfig.xml'
-        inPathRoot: '$(BUILD.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: Signed Binaries'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries'
-      ArtifactName: 'mrtcore_binaries'
-
 - job: PublishMRT
   dependsOn:
     - BuildMRT
-    - SignMRT
-  condition: and(in(dependencies.BuildMRT.result, 'Succeeded'), in(dependencies.SignMRT.result, 'Succeeded', 'Skipped'))
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  pool:
+    vmImage: 'windows-latest'
 
-  ${{if eq(parameters.doCodeSign, 'false')}}:
-    pool:
-      vmImage: 'windows-latest'
-
-  ${{if eq(parameters.doCodeSign, 'true')}}:
-    pool:
-      name: Package ES Lab E
-  
   variables:
     solution: '**/*.sln'
     buildPlatform: 'Any CPU'
@@ -470,12 +428,3 @@ jobs:
 #    configuration: '$(buildConfiguration)'
 #    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
-#  - task: PkgESSerializeForPostBuild@10
-#    displayName: 'PkgES Post Build Serialization'
-#    continueOnError: true
-
-#  - task: PkgESLateTasks@10
-#    displayName: 'PkgES Finalize and Cleanup'
-#    inputs:
-#      enablePostBuild: false
-#      dfsReleaseInPb: true
