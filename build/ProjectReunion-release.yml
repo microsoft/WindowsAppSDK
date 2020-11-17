@@ -159,7 +159,7 @@ jobs:
       inlineOperation: |
         [
           {
-            "keyCode": "$(cpCode)",
+            "keyCode": $(cpCode),
             "operationSetCode": "SigntoolSign",
             "parameters": [
               {
