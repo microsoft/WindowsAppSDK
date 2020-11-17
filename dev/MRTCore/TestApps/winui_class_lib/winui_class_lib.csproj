@@ -7,14 +7,8 @@
     <RootNamespace>winui_class_lib</RootNamespace>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview4.201029.8-CI" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- This is a workaround. In the final version this reference will be included in the WinUI package. Then this can be removed. -->
-    <Reference Include="$(PkgMicrosoft_WinUI)\lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll" />
+    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201113.0" />
   </ItemGroup>
 
 </Project>
