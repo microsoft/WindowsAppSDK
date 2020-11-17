@@ -17,7 +17,7 @@ namespace ProjectReunionCppTest
     {
         TEST_CLASS(AppLifecycleApiTests)
 
-        // UWP currently is not supported by these tests.
+        // Validate that UWP is not a supported scenario.
         TEST_METHOD(GetActivatedEventArgsIsNull)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
@@ -59,17 +59,14 @@ namespace ProjectReunionCppTest
         TEST_METHOD(GetActivatedEventArgsForProtocol)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
                 TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
                 TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedWin32Manifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            auto args = AppLifecycle::GetActivatedEventArgs();
-            VERIFY_IS_NOT_NULL(args);
-            VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
-
-            auto launchArgs = args.as<LaunchActivatedEventArgs>();
-            VERIFY_IS_NOT_NULL(launchArgs);
+            // TODO: Create a named event in the global namespace for communicating with test app.
+            // TODO: Launch the test app to register for protocol launches.
+            // TODO: Launch a protocol and wait for the event to fire.
         }
     };
 }
