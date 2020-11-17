@@ -42,7 +42,7 @@
     <RootNamespace>ProjectReunionCppTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>CppTest_Win32</ProjectName>
+    <ProjectName>CppTest</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -339,5 +339,6 @@
     <Error Condition="!Exists('..\..\packages\Taef.Redist.Wlk.10.52.200221001\build\Taef.Redist.Wlk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Taef.Redist.Wlk.10.52.200221001\build\Taef.Redist.Wlk.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.200703.9\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Taef.TestAdapter.10.57.201103002-develop\build\Taef.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Taef.TestAdapter.10.57.201103002-develop\build\Taef.TestAdapter.targets'))" />
   </Target>
 </Project>
