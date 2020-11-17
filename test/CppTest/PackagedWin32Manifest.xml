@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" 
+    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" 
+    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" 
+    IgnorableNamespaces="uap">
+  <Identity Name="ProjectReunionPackagedWin32TestApp"
+          ProcessorArchitecture="neutral"
+          Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+          Version="1.0.0.0"
+          ResourceId="en-us" />
+  <Properties>
+    <DisplayName>ProjectReunion Packaged Win32 Test Host Process</DisplayName>
+    <PublisherDisplayName>Microsoft Corp.</PublisherDisplayName>
+    <Logo>taef.png</Logo>
+    <Description>ProjectReunion Packaged Win32 Test Host Process</Description>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14257.0" MaxVersionTested="12.0.0.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="TE.ProcessHost" Executable="TE.ProcessHost.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ProjectReunion Packaged Win32 Test Host Process" Square150x150Logo="taef.png" Square44x44Logo="taef.png" Description="ProjectReunion Packaged Win32 Test Host Process" BackgroundColor="#222222">
+        <uap:SplashScreen Image="taef.png" />
+      </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="testfiletypeassociations">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.projectreunionfile</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="projectreunionprotocol"/>
+        </uap:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust"/>
+  </Capabilities>
+</Package>

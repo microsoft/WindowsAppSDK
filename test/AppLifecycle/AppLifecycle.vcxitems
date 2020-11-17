@@ -16,4 +16,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ApiTests.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)foo.xml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

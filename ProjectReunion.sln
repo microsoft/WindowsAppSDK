@@ -19,7 +19,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppShared", "test\CppShared
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunion_DLL", "dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj", "{B73AD907-6164-4294-88FB-F3C9C10DA1F1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest_Win32", "test\CppTest\CppTest.vcxproj", "{C62688A1-16A0-4729-B6ED-842F4FAA29F3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest", "test\CppTest\CppTest.vcxproj", "{C62688A1-16A0-4729-B6ED-842F4FAA29F3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppLifecycle", "AppLifecycle", "{3DE93B2F-F887-437D-B512-6B1024ABA290}"
 EndProject
