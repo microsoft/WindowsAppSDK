@@ -38,10 +38,10 @@ jobs:
     appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
-    ${{ if  eq(variables['ReleaseSign'], 'true') }}:
-      cpCode: CP-230217
-    ${{ if eq(variables['ReleaseSign'], false) }}:
-      cpCode: CP-230072
+    ${{ if eq(variables['ReleaseSign'], 'true') }}:
+      cpCode: 'CP-230217'
+    ${{ if ne(variables['ReleaseSign'], 'true') }}:
+      cpCode: 'CP-230072'
   steps:
 
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
