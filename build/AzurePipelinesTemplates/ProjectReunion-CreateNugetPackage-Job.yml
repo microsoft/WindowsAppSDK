@@ -56,7 +56,6 @@ jobs:
         $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
         $fullpackagePath = "${{ parameters.fullnupkgdir }}"
         Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
-        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Common.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.targets"
 
   # debugging - remove or comment out before completing PR      
   # - script: |
