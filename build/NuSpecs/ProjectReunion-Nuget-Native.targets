@@ -9,7 +9,8 @@
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ProjectReunion.winmd">
       <Implementation>Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
-    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.dll" />
-    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.pri" />
+    <!--  Figure out the right long term approach for VS to not pick these up when using them with a framework package. -->
+    <!-- <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.dll" /> -->
+    <!-- <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.pri" /> -->
   </ItemGroup>
 </Project>
