@@ -1,26 +1,162 @@
-$dotnetInstallScript = "$PSScriptRoot\dotnet-install.ps1"
-$dotnetInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
-$x86dotnetInstallDir  = "$dotnetInstallDir\x86"
+param(
+    [Parameter(Position=0)] 
+    [string]$version = "",
+    [switch]$skipLKG
+)
 
+$dotnetInstallScript = "$env:TEMP\dotnet-install.ps1"
+
+$repoInstallDir  = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\.dotnet")
 $versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\versions.props")).Project.PropertyGroup[0]
 $dotNetSdkVersion = $versionPropsFilePropertyGroup.DotNetCoreSdkVersion
-$dotNetSdkVersionLkg = $versionPropsFilePropertyGroup.DotNetCoreSdkLkgVersion
-$dotNetSdkVersionString = "rtm"
+$dotNetSdkVersionLkg =  if (-not $skipLKG) { $versionPropsFilePropertyGroup.DotNetCoreSdkLkgVersion }
 
-if (-not $dotNetSdkVersionString)
+if ($version -ne "")
 {
-    Write-Error "The .NET SDK version $dotNetSdkVersion does not have an installer associated with it.  Please update the version number to one matching a release at https://github.com/dotnet/installer."
-    exit 1
+    $dotNetSdkVersion = $version
+}
+# Use-RunAs function from TechNet Script Gallery
+# https://gallery.technet.microsoft.com/scriptcenter/63fd1c0d-da57-4fb4-9645-ea52fc4f1dfb
+function Use-RunAs {    
+    # Check if script is running as Adminstrator and if not use RunAs 
+    # Use Check Switch to check if admin 
+    param([Switch]$Check) 
+     
+    $IsAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()` 
+        ).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator") 
+         
+    if ($Check) { 
+        return $IsAdmin 
+    }     
+    if ($MyInvocation.ScriptName -ne "") {  
+        if (-not $IsAdmin) {  
+          
+            try {  
+                $arg = "-file `"$($MyInvocation.ScriptName)`"" 
+                Write-Host "Installing .NET SDK (requires elevation)..."
+
+                Write-Verbose "$psHome\powershell.exe -Verb RunAs -ArgumentList $arg -ErrorAction 'stop' -Wait"
+                Start-Process "$psHome\powershell.exe" -Verb RunAs -ArgumentList $arg -ErrorAction 'stop' -Wait
+
+                if (-not $latestAlreadyInstalled)
+                {
+                    Write-Host "Installed SDK (x64) version $dotNetSdkVersion to $x64InstallDir."
+                    Write-Host "Installed SDK (x86) version $dotNetSdkVersion to $x86InstallDir."
+                }
+
+                if (-not $lkgAlreadyInstalled)
+                {
+                    Write-Host "Installed SDK (x64) version $dotNetSdkVersionLkg to $x64InstallDir."
+                    Write-Host "Installed SDK (x86) version $dotNetSdkVersionLkg to $x86InstallDir."
+                }
+            } 
+            catch { 
+                Write-Warning "Error - Failed to restart script with runas"
+
+                Write-Warning "$Error[0]"
+                break               
+            } 
+            Exit # Quit this session of powershell 
+        }  
+    }  
+    else {  
+        Write-Warning "Error - Script must be saved as a .ps1 file first"  
+        break  
+    }  
+} 
+function Is-Installed
+{
+    param ([string]$version)
+    $dotNetSdkVersionRegex = ([regex]"(.*?) \[(.*?)\]")
+
+    $installed = $false
+    Invoke-Expression "dotnet --list-sdks" | ForEach-Object {
+        $sdkVersionMatch = $dotNetSdkVersionRegex.Match($_)
+        $versionNumber = $sdkVersionMatch.Groups[1].Value
+        $installPath = $sdkVersionMatch.Groups[2].Value
+
+        # Ignore any SDKs installed to the repo directory - those ones won't be picked up by Visual Studio by default.
+        if (-not $installPath.StartsWith($repoInstallDir, [StringComparison]::OrdinalIgnoreCase))
+        {
+            if ($versionNumber -imatch $version)
+            {
+                $installed = $true
+            }
+            elseif ($version.Contains("rtm") -and $version.StartsWith($versionNumber))
+            {
+                # For rtm version, the sdk version we could install with the script looks like
+                # 5.0.100-rtm.20522.4, but the final version of the sdk will just be something like
+                # 5.0.100.
+                $installed = $true
+            }
+        }
+    }
+
+    return $installed
 }
 
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
+$x64InstallDir  = $repoInstallDir
+$x86InstallDir  = "$x64InstallDir\x86"
+
+# If we're not on a lab machine, we'll install to the program files directory,
+# which enables solution files built using this .NET SDK to be opened directly from Visual Studio
+# without needing to go through a command line that has run init.cmd.
+
+$latestAlreadyInstalled = Is-Installed $dotNetSdkVersion
+$lkgAlreadyInstalled = $true
+
+# Only try to install the lkg sdk if specified
+if (-not [string]::IsNullOrEmpty($dotNetSdkVersionLkg))
+{
+    $lkgAlreadyInstalled = Is-Installed $dotNetSdkVersionLkg
+}
+
+if (-not $env:AGENT_BUILDDIRECTORY)
+{
+    $x64InstallDir  = "$env:ProgramFiles\dotnet"
+    $x86InstallDir  = "${env:ProgramFiles(x86)}\dotnet"
+    $sdksAlreadyInstalled = Is-Installed $dotNetSdkVersion
+
+    # Only try to install the lkg sdk if specified
+    if (-not [string]::IsNullOrEmpty($dotNetSdkVersionLkg))
+    {
+        $lkgInstalled = Is-Installed $dotNetSdkVersionLkg
+        $sdksAlreadyInstalled = $sdksAlreadyInstalled -And $lkgInstalled
+    }
+
+    if ($latestAlreadyInstalled -And $lkgAlreadyInstalled)
+    {
+        Write-Host ".NET SDKs already installed"
+        Exit
+    }
+
+    Use-RunAs
+}
+function Install-SDK
+{
+    param ([string]$version, [string]$channel)
+    . $dotnetInstallScript -Channel $channel -Version $version -InstallDir $x64InstallDir -Architecture x64
+    Write-Host "Installed SDK (x64) version $version from channel $channel to $x64InstallDir."
+    
+    . $dotnetInstallScript -Channel $channel -Version $version -InstallDir $x86InstallDir -Architecture x86
+    Write-Host "Installed SDK (x86) version $version to $x86InstallDir."
+
+    Write-Host -ForegroundColor Green Done.
+}
 
 Write-Host "Installing .NET SDK..."
 
-. $dotnetInstallScript -Channel Master -Version $dotNetSdkVersion -InstallDir $dotnetInstallDir -Architecture x64
-Write-Host "Installed SDK (x64) version $dotNetSdkVersion to $dotnetInstallDir."
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
 
-. $dotnetInstallScript -Channel Master -Version $dotNetSdkVersion -InstallDir $x86dotnetInstallDir -Architecture x86
-Write-Host "Installed SDK (x86) version $dotNetSdkVersion to $x86dotnetInstallDir."
+Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile $dotnetInstallScript
 
-Write-Host -ForegroundColor Green Done.
+if (-not $latestAlreadyInstalled)
+{
+    Install-SDK -version $dotNetSdkVersion -channel "release\5.0.1xx" 
+}
+
+if (-not $lkgAlreadyInstalled)
+{
+    Install-SDK -version $dotNetSdkVersionLkg -channel "master"
+}
+
