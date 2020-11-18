@@ -69,7 +69,6 @@ jobs:
 - template: ..\dev\MRTCore\azure-pipelines.yml
   parameters:
     buildJobName: 'BuildMRTCore'
-    doCodeSign: 'true'
 
 - job: SignBinariesAndPublishSymbols
   dependsOn:
@@ -85,13 +84,6 @@ jobs:
     name: Package ES Lab E
 
   steps:
-  - task: PkgESSetupBuild@10
-    displayName: 'XESSetupBuild'
-    inputs:
-      productName: projectreunion
-      branchVersion: false
-      nugetVer: true
-
   - task: DownloadBuildArtifacts@0
     condition:
       eq(variables['useBuildOutputFromBuildId'],'')
@@ -147,15 +139,64 @@ jobs:
     # To work around this issue, we just force LIB to be any dir that we know exists.
     env:
       LIB: $(Build.SourcesDirectory)
+      ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
+      ArtifactServices_Symbol_UseAAD: true
 
-  - task: PkgESCodeSign@10
-    displayName: CodeSign
-    env:
-      SYSTEM_ACCESSTOKEN: $(system.accesstoken)
+  - task: EsrpCodeSigning@1
     inputs:
-      signConfigXml: '$(Build.SourcesDirectory)\build\SignConfig.xml'
-      inPathRoot: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      outPathRoot: '$(Build.ArtifactStagingDirectory)\fullnuget'
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
+      Pattern: |
+        lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd
+        lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll
+        runtimes\win10-x86\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-x86\native\Microsoft.ProjectReunion.dll
+        runtimes\win10-x86\native\MRM.dll
+        runtimes\win10-x64\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-x64\native\Microsoft.ProjectReunion.dll
+        runtimes\win10-x64\native\MRM.dll
+        runtimes\win10-arm\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-arm\native\Microsoft.ProjectReunion.dll
+        runtimes\win10-arm\native\MRM.dll
+        runtimes\win10-arm64\native\Microsoft.ApplicationModel.Resources.dll
+        runtimes\win10-arm64\native\Microsoft.ProjectReunion.dll
+        runtimes\win10-arm64\native\MRM.dll
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230217",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd sha256"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
@@ -169,7 +210,7 @@ jobs:
   parameters:
     jobName: CreateNugetPackage
     dependsOn: SignBinariesAndPublishSymbols
-    signConfig: '$(Build.SourcesDirectory)\build\NuGetSignConfig.xml'
+    signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
     useReleaseTag: '$(ProjectReunionFinalRelease)'
     prereleaseVersionTag: prerelease
 

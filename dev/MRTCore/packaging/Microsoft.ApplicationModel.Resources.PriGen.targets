@@ -2104,14 +2104,31 @@
                  and '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == 'true'"
       SkipNonexistentTargets="true"
       ContinueOnError="$(_ContinueOnError)">
-      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherProjects"/>
+      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherMrtCoreProjects"/>
+    </MSBuild>
+
+    <!-- The referenced project may not be using MRTCore. In that case, GetMrtPackagingOutputs won't be defined. However, if the
+         project is of type UWP, it'll have GetPackagingOutputs defined. So, try calling GetPackagingOutputs. If it does not exist,
+         we simply no-op - see the SkipNonexistentTargets parameter below. -->
+    <MSBuild
+      Projects="@(ProjectReferenceWithConfiguration)"
+      Targets="GetPackagingOutputs"
+      BuildInParallel="$(BuildInParallel)"
+      Properties="%(ProjectReferenceWithConfiguration.SetConfiguration); %(ProjectReferenceWithConfiguration.SetPlatform)"
+      Condition="'@(ProjectReferenceWithConfiguration)' != ''
+                 and '%(ProjectReferenceWithConfiguration.BuildReference)' == 'true'
+                 and '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == 'true'"
+      SkipNonexistentTargets="true"
+      ContinueOnError="$(_ContinueOnError)">
+      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherUwpProjects"/>
     </MSBuild>
 
     <ItemGroup>
       <_PackagingOutputsOutsideLayout Include="@(ProjectPriFile)" />
       <_PackagingOutputsOutsideLayout Include="@(_PackagingOutputsExpanded)" />
       <_PackagingOutputsOutsideLayout Include="@(_GetResolvedSDKReferencesOutput)" />
-      <_PackagingOutputsOutsideLayout Include="@(_PackagingOutputsFromOtherProjects)" />
+      <_PackagingOutputsOutsideLayout Include="@(_PackagingOutputsFromOtherMrtCoreProjects)" />
+      <_PackagingOutputsOutsideLayout Include="@(_PackagingOutputsFromOtherUwpProjects)" />
     </ItemGroup>
 
     <ItemGroup>
