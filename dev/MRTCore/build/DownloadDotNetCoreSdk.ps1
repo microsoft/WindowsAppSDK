@@ -81,6 +81,7 @@ function Is-Installed
             if ($versionNumber -imatch $version)
             {
                 $installed = $true
+                Write-Host ".NET SDK $versionNumber already installed"
             }
             elseif ($version.Contains("rtm") -and $version.StartsWith($versionNumber))
             {
@@ -88,6 +89,7 @@ function Is-Installed
                 # 5.0.100-rtm.20522.4, but the final version of the sdk will just be something like
                 # 5.0.100.
                 $installed = $true
+                Write-Host ".NET SDK $versionNumber already installed"
             }
         }
     }
