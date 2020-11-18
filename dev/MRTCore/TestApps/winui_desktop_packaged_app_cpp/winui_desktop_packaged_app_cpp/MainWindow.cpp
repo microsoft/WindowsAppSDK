@@ -20,8 +20,10 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
     }
 
     MainWindow::~MainWindow()
-    {        
-        //MrmDestroyResourceContext(m_overrideResourceContextMrm);
+    {
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+        MrmDestroyResourceContext(m_overrideResourceContextMrm);
+#endif
     }
 
 #ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
@@ -41,8 +43,8 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         m_overrideResourceContext.QualifierValues().Insert(L"Language", L"de-DE");
 
 #ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
-        //check_hresult(MrmCreateResourceContext(m_resourceManagerMrm, &m_overrideResourceContextMrm));
-        //check_hresult(MrmSetQualifier(m_overrideResourceContextMrm, L"Language", L"de-DE"));
+        check_hresult(MrmCreateResourceContext(m_resourceManagerMrm, &m_overrideResourceContextMrm));
+        check_hresult(MrmSetQualifier(m_overrideResourceContextMrm, L"Language", L"de-DE"));
 #endif
     }
 

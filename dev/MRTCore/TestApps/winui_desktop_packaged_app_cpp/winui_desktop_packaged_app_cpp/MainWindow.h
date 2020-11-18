@@ -41,8 +41,8 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         winrt::Microsoft::ApplicationModel::Resources::ResourceManager m_resourceManagerWinRT{ nullptr };
 
 #ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
-        //MrmManagerHandle m_resourceManagerMrm{ nullptr };
-        //MrmContextHandle m_overrideResourceContextMrm{ nullptr };
+        MrmManagerHandle m_resourceManagerMrm{ nullptr };
+        MrmContextHandle m_overrideResourceContextMrm{ nullptr };
 #endif
     };
 }

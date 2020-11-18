@@ -54,7 +54,10 @@ App::~App()
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
     m_resourceManagerWinRT = ResourceManager(L"resources.pri");
-    //check_hresult(MrmCreateResourceManager(L"resources.pri", &m_resourceManagerMrm));
+
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+    check_hresult(MrmCreateResourceManager(L"resources.pri", &m_resourceManagerMrm));
+#endif
 
     m_resourceManagerWinRT.ResourceNotFound([](ResourceManager const&, ResourceNotFoundEventArgs const& args)
         {
