@@ -33,6 +33,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycleTestApp", "test
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AppLifecycleTestPackage", "test\TestApps\AppLifecycleTestPackage\AppLifecycleTestPackage.wapproj", "{A3FBA80D-5B35-471F-9A45-DB4B29E195B9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "inc", "inc", "{55C0ED09-695B-47B9-806E-E6F463677DD8}"
+	ProjectSection(SolutionItems) = preProject
+		test\inc\TestDef.h = test\inc\TestDef.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
@@ -195,6 +200,7 @@ Global
 		{AC5FFC80-92FE-4933-BED2-EC5519AC4440} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{7C502995-59C3-483B-86BA-815985353633} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
+		{55C0ED09-695B-47B9-806E-E6F463677DD8} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

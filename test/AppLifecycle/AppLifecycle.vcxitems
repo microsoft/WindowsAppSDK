@@ -16,4 +16,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ApiTests.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" />
+  </ItemGroup>
 </Project>
