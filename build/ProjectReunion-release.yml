@@ -144,7 +144,7 @@ jobs:
 
   - task: EsrpCodeSigning@1
     inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Release Signing Connection'
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
       Pattern: |
         lib\uap10.0\*.winmd
