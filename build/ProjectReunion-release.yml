@@ -71,6 +71,11 @@ jobs:
     buildJobName: 'BuildMRTCore'
 
 - job: SignBinariesAndPublishSymbols
+  variables:
+    signingPattern: |
+        lib\uap10.0\*.winmd
+        lib\net5.0-windows\*.dll
+        runtimes\*\*\*.dll
   dependsOn:
     - Build
     - PublishMRT
@@ -146,10 +151,7 @@ jobs:
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      Pattern: |
-        lib\uap10.0\*.winmd
-        lib\net5.0-windows\*.dll
-        runtimes\*\*\*.dll
+      Pattern: $(signingPattern)
       UseMinimatch: true
       signConfigType: 'inlineSignParams'
       inlineOperation: |
@@ -193,10 +195,7 @@ jobs:
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      Pattern: |
-        lib\uap10.0\*.winmd
-        lib\net5.0-windows\*.dll
-        runtimes\*\*\*.dll
+      Pattern: $(signingPattern)
       UseMinimatch: true
       signConfigType: 'inlineSignParams'
       inlineOperation: |
