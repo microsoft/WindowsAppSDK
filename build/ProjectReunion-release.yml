@@ -74,11 +74,6 @@ jobs:
   dependsOn:
     - Build
     - PublishMRT
-  variables:
-    ${{ if eq(variables['ReleaseSign'], true) }}:
-      cpCode: 'CP-230217'
-    ${{ if ne(variables['ReleaseSign'], true) }}:
-      cpCode: 'CP-230072'
   condition: |
     and
     (
@@ -149,7 +144,7 @@ jobs:
 
   - task: EsrpCodeSigning@1
     inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      ConnectedServiceName: 'Project Reunion ESRP Code Release Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
       Pattern: |
         lib\uap10.0\*.winmd
@@ -160,7 +155,7 @@ jobs:
       inlineOperation: |
         [
           {
-            "keyCode": "$(cpCode)",
+            "keyCode": "CP-230012",
             "operationSetCode": "SigntoolSign",
             "parameters": [
               {
@@ -191,6 +186,55 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
+    condition: 
+      eq(variables['ReleaseSign'], true)
+
+  - task: EsrpCodeSigning@1
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
+      Pattern: |
+        lib\uap10.0\*.winmd
+        lib\net5.0-windows\*.dll
+        runtimes\*\*\*.dll
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230072",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd sha256"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
+    condition: 
+      ne(variables['ReleaseSign'], true)
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
