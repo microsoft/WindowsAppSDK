@@ -5,15 +5,7 @@ $x86dotnetInstallDir  = "$dotnetInstallDir\x86"
 $versionPropsFilePropertyGroup = ([xml](Get-Content -Raw "$PSScriptRoot\versions.props")).Project.PropertyGroup[0]
 $dotNetSdkVersion = $versionPropsFilePropertyGroup.DotNetCoreSdkVersion
 $dotNetSdkVersionLkg = $versionPropsFilePropertyGroup.DotNetCoreSdkLkgVersion
-
-if ($dotNetSdkVersion -imatch "5.0.100-rc.2.20480.7")
-{
-    $dotNetSdkVersionString = "rc"
-}
-elseif ($dotNetSdkVersion -imatch "5.0.100-preview.5.20279.10")
-{
-    $dotNetSdkVersionString = "preview5"
-}
+$dotNetSdkVersionString = "rtm"
 
 if (-not $dotNetSdkVersionString)
 {
