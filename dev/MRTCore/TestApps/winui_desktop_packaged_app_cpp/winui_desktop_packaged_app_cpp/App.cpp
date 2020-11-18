@@ -41,7 +41,9 @@ App::App()
 
 App::~App()
 {
-    //MrmDestroyResourceManager(m_resourceManagerMrm);
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+    MrmDestroyResourceManager(m_resourceManagerMrm);
+#endif
 }
 
 /// <summary>
@@ -68,7 +70,12 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     m_window = make<MainWindow>();
 
     auto window = m_window.as<winrt::winui_desktop_packaged_app_cpp::implementation::MainWindow>();
-    window->InitializeResourceLoaders(m_resourceManagerWinRT/*, m_resourceManagerMrm*/);
+
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+    window->InitializeResourceLoaders(m_resourceManagerWinRT, m_resourceManagerMrm);
+#else
+    window->InitializeResourceLoaders(m_resourceManagerWinRT);
+#endif
 
     m_window.Activate();
 }

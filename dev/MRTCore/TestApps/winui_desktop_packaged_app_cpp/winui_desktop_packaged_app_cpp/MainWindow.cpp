@@ -24,17 +24,26 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         //MrmDestroyResourceContext(m_overrideResourceContextMrm);
     }
 
-    void MainWindow::InitializeResourceLoaders(winrt::Microsoft::ApplicationModel::Resources::ResourceManager resourceManagerWinRT/*, MrmManagerHandle resourceManagerMrm*/)
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+    void MainWindow::InitializeResourceLoaders(winrt::Microsoft::ApplicationModel::Resources::ResourceManager resourceManagerWinRT, MrmManagerHandle resourceManagerMrm)
+#else
+    void MainWindow::InitializeResourceLoaders(winrt::Microsoft::ApplicationModel::Resources::ResourceManager resourceManagerWinRT)
+#endif 
     {
         m_resourceManagerWinRT = resourceManagerWinRT;
-        //m_resourceManagerMrm = resourceManagerMrm;
+
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+        m_resourceManagerMrm = resourceManagerMrm;
+#endif
 
         // Create custom resource context for the window. Set the language to German.
         m_overrideResourceContext = m_resourceManagerWinRT.CreateResourceContext();
         m_overrideResourceContext.QualifierValues().Insert(L"Language", L"de-DE");
 
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
         //check_hresult(MrmCreateResourceContext(m_resourceManagerMrm, &m_overrideResourceContextMrm));
         //check_hresult(MrmSetQualifier(m_overrideResourceContextMrm, L"Language", L"de-DE"));
+#endif
     }
 
     void MainWindow::defaultWinrtApi_Click(IInspectable const&, RoutedEventArgs const&)
@@ -51,20 +60,22 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
 
     void MainWindow::defaultCApi_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        // This API is not yet part of the published feed.
-        /*wchar_t* resourceString = nullptr;
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+        wchar_t* resourceString = nullptr;
         check_hresult(MrmLoadStringResource(m_resourceManagerMrm, nullptr, nullptr, L"Resources/SampleString", &resourceString));
         output().Text(hstring(resourceString));
-        MrmFreeResource(resourceString);*/
+        MrmFreeResource(resourceString);
+#endif
     }
 
     void MainWindow::overrideCApi_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        // This API is not yet part of the published feed.
-        /*wchar_t* resourceString = nullptr;
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+        wchar_t* resourceString = nullptr;
         check_hresult(MrmLoadStringResource(m_resourceManagerMrm, m_overrideResourceContextMrm, nullptr, L"Resources/SampleString", &resourceString));
         output().Text(hstring(resourceString));
-        MrmFreeResource(resourceString);*/
+        MrmFreeResource(resourceString);
+#endif
     }
 
     void MainWindow::fallbackWinrt_Click(IInspectable const&, RoutedEventArgs const&)

@@ -10,7 +10,10 @@
 
 #pragma pop_macro("GetCurrentTime")
 
-//#include "MRM.h"
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+#include "MRM.h"
+#endif
+
 #include "winrt/Microsoft.ApplicationModel.resources.h"
 
 namespace winrt::winui_desktop_packaged_app_cpp::implementation
@@ -28,6 +31,9 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
         winrt::Microsoft::UI::Xaml::Window m_window{ nullptr };
 
         winrt::Microsoft::ApplicationModel::Resources::ResourceManager m_resourceManagerWinRT{ nullptr };
-        //MrmManagerHandle m_resourceManagerMrm{ nullptr };
+
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+        MrmManagerHandle m_resourceManagerMrm{ nullptr };
+#endif 
     };
 }
