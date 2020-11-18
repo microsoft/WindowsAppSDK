@@ -75,9 +75,9 @@ jobs:
     - Build
     - PublishMRT
   variables:
-    ${{ if eq(variables['ReleaseSign'], 'true') }}:
+    ${{ if eq(variables['ReleaseSign'], true) }}:
       cpCode: 'CP-230217'
-    ${{ if ne(variables['ReleaseSign'], 'true') }}:
+    ${{ if ne(variables['ReleaseSign'], true) }}:
       cpCode: 'CP-230072'
   condition: |
     and
