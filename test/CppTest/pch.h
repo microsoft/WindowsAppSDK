@@ -15,4 +15,4 @@
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
-#include <winrt/Microsoft.ApplicationModel.Activation.h>
+#include <winrt/Microsoft.ProjectReunion.h>

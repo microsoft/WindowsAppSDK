@@ -13,13 +13,13 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::ProjectReunion;
 
 namespace ProjectReunionCppTest
 {
     class AppLifecycleApiTests
     {
-        TEST_CLASS(AppLifecycleApiTests)
+        TEST_CLASS(AppLifecycleApiTests);
 
         static wil::unique_event CreateTestEvent(const std::wstring& eventName)
         {
@@ -38,6 +38,15 @@ namespace ProjectReunionCppTest
             wil::unique_event event;
             event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
             return event;
+        }
+
+        void WaitForEvent(const wil::unique_event& event)
+        {
+            if (!event.wait(g_phaseTimeout))
+            {
+                auto lastError = GetLastError();
+                VERIFY_WIN32_FAILED(lastError);
+            }
         }
 
         static std::wstring GetModulePath()
@@ -65,6 +74,13 @@ namespace ProjectReunionCppTest
             return path;
         }
 
+        static std::wstring GetModuleDirectoryPath()
+        {
+            auto modulePath = GetModulePath();
+            auto filenamePos = modulePath.rfind(L"\\");
+            return modulePath.substr(0, filenamePos);
+        }
+
         // Validate that UWP is not a supported scenario.
         TEST_METHOD(GetActivatedEventArgsIsNull)
         {
@@ -80,6 +96,8 @@ namespace ProjectReunionCppTest
             BEGIN_TEST_METHOD_PROPERTIES()
                 // Run this test for both PackagedWin32 and Win32.
                 TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+
+                // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
                 TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
                 TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
@@ -92,6 +110,8 @@ namespace ProjectReunionCppTest
             BEGIN_TEST_METHOD_PROPERTIES()
                 // Run this test for both PackagedWin32 and Win32.
                 TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+
+                // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
                 TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
                 TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
@@ -104,32 +124,23 @@ namespace ProjectReunionCppTest
             VERIFY_IS_NOT_NULL(launchArgs);
         }
 
+        // TODO: Ensure all manifests have proper version requirements for the project!
+
         TEST_METHOD(GetActivatedEventArgsForProtocol_Win32)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-            END_TEST_METHOD_PROPERTIES();
-
             // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testProtocolActivatedEventName);
+            auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            SHELLEXECUTEINFO ei{};
-            ei.cbSize = sizeof(SHELLEXECUTEINFO);
-            ei.lpFile = L"AppLifecycleTestApp.exe";
-            ei.lpParameters = L"/RegisterProtocol";
-            ei.nShow = SW_SHOW;
-
-            auto modulePath = GetModulePath();
-            auto filenamePos = modulePath.rfind(L"\\");
-            auto moduleDirectory = modulePath.substr(0, filenamePos);
-            ei.lpDirectory = moduleDirectory.c_str();
-
-            if (!ShellExecuteEx(&ei))
+            if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterProtocol",
+                GetModuleDirectoryPath().c_str(), SW_SHOW))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
             }
+
+            // Wait for the register event.
+            WaitForEvent(event);
 
             // Launch a protocol and wait for the event to fire.
             Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
@@ -137,11 +148,88 @@ namespace ProjectReunionCppTest
             VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
-            if (!event.wait(g_activationTimeout))
+            WaitForEvent(event);
+
+            // TODO: Test unregister scenario.
+            if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/UnregisterProtocol",
+                GetModuleDirectoryPath().c_str(), SW_SHOW))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
             }
+
+            // Wait for the unregister event.
+            WaitForEvent(event);
+
+            // TODO: Validate it was unregistered properly.
+        }
+
+        TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
+        {
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testProtocolPhaseEventName_Packaged);
+
+            // TODO: Deploy packaged app to register handler through the manifest.
+
+            // TODO: Validate register scenario before continuing.
+
+            // Launch a protocol and wait for the event to fire.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            // Wait for the protocol activation.
+            WaitForEvent(event);
+
+            // TODO: Test unregister scenario.
+        }
+
+        TEST_METHOD(GetActivatedEventArgsForFile_Win32)
+        {
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testFilePhaseEventName);
+
+            // Launch the test app to register for protocol launches.
+            if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterFile",
+                GetModuleDirectoryPath().c_str(), SW_SHOW))
+            {
+                auto lastError = GetLastError();
+                VERIFY_WIN32_FAILED(lastError);
+            }
+
+            // TODO: Validate register scenario before continuing.
+
+            // Launch the file and wait for the event to fire.
+
+            // TODO: LaunchFileAsync
+            /*Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);*/
+
+            // Wait for the protocol activation.
+            WaitForEvent(event);
+
+            // TODO: Test unregister scenario.
+        }
+
+        TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
+        {
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testFilePhaseEventName_Packaged);
+
+            // TODO: Deploy packaged app to register handler through the manifest.
+
+            // TODO: Validate register scenario before continuing.
+
+            // Launch the file and wait for the event to fire.
+
+            // TODO: LaunchFileAsync
+
+
+            // Wait for the protocol activation.
+            WaitForEvent(event);
+
+            // TODO: Test unregister scenario.
         }
     };
 }

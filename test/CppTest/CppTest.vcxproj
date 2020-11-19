@@ -110,6 +110,7 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
     <Import Project="..\CppShared\CppShared.vcxitems" Label="Shared" />
+    <Import Project="..\inc\inc.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="AppLifecycle">
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />

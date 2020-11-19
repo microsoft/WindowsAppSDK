@@ -6,7 +6,16 @@
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::ProjectReunion;
+
+void SignalPhase(const std::wstring& phaseEventName)
+{
+    wil::unique_event phaseEvent;
+    if(phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
+    {
+        phaseEvent.SetEvent();
+    }
+}
 
 int main()
 {
@@ -26,38 +35,46 @@ int main()
                 // TODO: Figure out how to properly test the logo icon support.
                 ActivationRegistrationManager::RegisterForProtocolActivation(c_testProtocolScheme,
                     L"Project Reunion Test Protocol", L"logo");
+
+                // Signal event that protocol was registered.
+                SignalPhase(c_testProtocolPhaseEventName);
             }
             else if (argument.compare(L"UnregisterProtocol"))
             {
                 ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme);
+
+                // Signal event that protocol was unregistered.
+                SignalPhase(c_testProtocolPhaseEventName);
             }
             else if (argument.compare(L"RegisterFile"))
             {
                 // TODO: Figure out how to properly test the logo icon support.
                 ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension.c_str() },
                     { L"open" }, L"Project Reunion Test File Type", L"logo");
+
+                // Signal event that file was registered.
+                SignalPhase(c_testFilePhaseEventName);
             }
             else if (argument.compare(L"UnregisterFile"))
             {
                 ActivationRegistrationManager::UnregisterForFileTypeActivation(c_testFileExtension);
+
+                // Signal event that file was unregistered.
+                SignalPhase(c_testFilePhaseEventName);
             }
         }
     }
     else if (kind == ActivationKind::Protocol)
     {
-        // Signal even that file was activated.
-        wil::unique_event activatedEvent;
-        activatedEvent.open(c_testProtocolActivatedEventName.c_str(), EVENT_MODIFY_STATE, false);
-        activatedEvent.SetEvent();
+        // Signal event that protocol was activated.
+        SignalPhase(c_testProtocolPhaseEventName);
     }
     else if (kind == ActivationKind::File)
     {
         // TODO: Validate access to the files on the arguments.
 
-        // Signal even that file was activated.
-        wil::unique_event activatedEvent;
-        activatedEvent.open(c_testFileActivatedEventName.c_str(), EVENT_MODIFY_STATE, false);
-        activatedEvent.SetEvent();
+        // Signal event that file was activated.
+        SignalPhase(c_testFilePhaseEventName);
     }
 
     return 0;

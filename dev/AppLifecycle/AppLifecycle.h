@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-#include <Activation.AppLifecycle.g.h>
+#include <AppLifecycle.g.h>
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct AppLifecycle
     {
@@ -14,7 +14,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     };
 }
 
-namespace winrt::Microsoft::ApplicationModel::Activation::factory_implementation
+namespace winrt::Microsoft::ProjectReunion::factory_implementation
 {
     struct AppLifecycle : AppLifecycleT<AppLifecycle, implementation::AppLifecycle>
     {

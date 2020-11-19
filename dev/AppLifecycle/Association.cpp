@@ -3,7 +3,7 @@
 #include <pch.h>
 #include "Association.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     HKEY GetRegistrationRoot()
     {
@@ -54,8 +54,29 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return path;
     }
 
+    std::wstring ComputeAppId()
+    {
+        // PRF = Project Reunion Framework.  A simple acronym to help identify ProgIds we compute here.
+        // AppId = Prefix + Hash(modulePath)
+        auto modulePath = GetModulePath();
+        std::hash<std::wstring> hasher;
+        auto hash = hasher(modulePath);
+;
+        wchar_t hashString[17]{}; // 16 + 1 characters for 64bit value represented as a string with a null terminator.
+        THROW_IF_FAILED(StringCchPrintf(hashString, sizeof(hashString), L"%I64x", hash));
+
+        std::wstring result{ L"PRF" };
+        result += hashString;
+        return result;
+    }
+
     // Compute a stable progId.
     std::wstring ComputeProgId(AssociationType type)
+    {
+        return ComputeProgId(ComputeAppId(), type);
+    }
+
+    std::wstring ComputeProgId(const std::wstring& appId, AssociationType type)
     {
         std::wstring typeSuffix{ L"." };
         if (type == AssociationType::File)
@@ -67,8 +88,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             typeSuffix += L"Protocol";
         }
 
-        // TODO: Compute progIds based on the path of the executable and possibly more data.
-        return std::wstring(L"ScoDarGenerated1" + typeSuffix);
+        return std::wstring(appId + typeSuffix.c_str());
     }
 
     std::wstring CreateAssocKeyPath(const std::wstring& assoc)
@@ -172,46 +192,41 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         DeleteAssocKey(progId);
     }
 
-    std::wstring CreateApplicationKeyPath(const std::wstring& progId)
+    std::wstring CreateApplicationKeyPath(const std::wstring& appId)
     {
-        return std::wstring(LR"(Software\Microsoft\ReunionApplications\)" + progId + LR"(\Capabilties)");
+        return std::wstring(LR"(Software\Microsoft\ReunionApplications\)" + appId + LR"(\Capabilties)");
     }
 
-    wil::unique_hkey CreateApplicationKey(const std::wstring& progId, REGSAM samDesired)
+    wil::unique_hkey CreateApplicationKey(const std::wstring& appId, REGSAM samDesired)
     {
-        if (!AssocExists(progId))
-        {
-            throw std::invalid_argument("progId");
-        }
-
         wil::unique_hkey registeredAppsKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(GetRegistrationRoot(), LR"(Software\RegisteredApplications\)",
             0, nullptr, 0, samDesired, nullptr, registeredAppsKey.put(), nullptr));
 
-        std::wstring applicationKeyPath = CreateApplicationKeyPath(progId);
+        std::wstring applicationKeyPath = CreateApplicationKeyPath(appId);
         wil::unique_hkey applicationKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(GetRegistrationRoot(), applicationKeyPath.c_str(),
             0, nullptr, 0, samDesired, nullptr, applicationKey.put(), nullptr));
 
-        THROW_IF_WIN32_ERROR(::RegSetValueEx(registeredAppsKey.get(), progId.c_str(), 0, REG_SZ,
+        THROW_IF_WIN32_ERROR(::RegSetValueEx(registeredAppsKey.get(), appId.c_str(), 0, REG_SZ,
             reinterpret_cast<BYTE const*>(applicationKeyPath.c_str()),
             static_cast<uint32_t>((applicationKeyPath.size() + 1) * sizeof(wchar_t))));
 
         return applicationKey;
     }
 
-    wil::unique_hkey OpenApplicationKey(const std::wstring& progId, REGSAM samDesired)
+    wil::unique_hkey OpenApplicationKey(const std::wstring& appId, REGSAM samDesired)
     {
         wil::unique_hkey registeredAppsKey;
         THROW_IF_WIN32_ERROR(::RegOpenKeyEx(GetRegistrationRoot(), LR"(Software\RegisteredApplications\)",
             0, samDesired, registeredAppsKey.put()));
 
         DWORD pathSize{ 0 };
-        THROW_IF_WIN32_ERROR(::RegQueryValueEx(registeredAppsKey.get(), progId.c_str(), 0, nullptr,
+        THROW_IF_WIN32_ERROR(::RegQueryValueEx(registeredAppsKey.get(), appId.c_str(), 0, nullptr,
             nullptr, &pathSize));
 
         std::wstring applicationKeyPath(pathSize, L'\0');
-        THROW_IF_WIN32_ERROR(::RegQueryValueEx(registeredAppsKey.get(), progId.c_str(), 0, nullptr,
+        THROW_IF_WIN32_ERROR(::RegQueryValueEx(registeredAppsKey.get(), appId.c_str(), 0, nullptr,
             reinterpret_cast<BYTE*>(applicationKeyPath.data()),
             &pathSize));
 
@@ -222,25 +237,22 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return applicationKey;
     }
 
-    void RegisterApplication(const std::wstring& progId, const std::wstring& applicationDisplayName, const std::wstring& logo)
+    void RegisterApplication(const std::wstring& appId)
     {
-        RegisterProgId(progId, L"", applicationDisplayName, logo);
-        CreateApplicationKey(progId);
+        CreateApplicationKey(appId);
     }
 
-    void UnregisterApplication(const std::wstring& progId)
+    void UnregisterApplication(const std::wstring& appId)
     {
-        std::wstring capabilitiesKeyPath = LR"(Software\Microsoft\ReunionApplications\)" + progId + LR"(\Capabilties)";
+        std::wstring capabilitiesKeyPath = LR"(Software\Microsoft\ReunionApplications\)" + appId + LR"(\Capabilties)";
         ::RegDeleteTree(GetRegistrationRoot(), capabilitiesKeyPath.c_str());
 
         wil::unique_hkey registeredAppsKey;
         if (::RegOpenKeyEx(GetRegistrationRoot(), LR"(Software\RegisteredApplications\)", 0,
             KEY_WRITE, registeredAppsKey.put()) == ERROR_SUCCESS)
         {
-            ::RegDeleteValue(registeredAppsKey.get(), progId.c_str());
+            ::RegDeleteValue(registeredAppsKey.get(), appId.c_str());
         }
-
-        UnregisterProgId(progId);
     }
 
     void RegisterVerb(const std::wstring& progId, const std::wstring& verb, const std::wstring& command,
@@ -343,8 +355,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return subKeyPath;
     }
 
-    void RegisterAssociationHandler(const std::wstring& association, AssociationType type,
-        const std::wstring& handlerProgId)
+    void RegisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
+        AssociationType type, const std::wstring& handlerProgId)
     {
         if (type == AssociationType::File && !IsFileExtension(association))
         {
@@ -362,7 +374,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         }
 
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
-        auto applicationKey = OpenApplicationKey(handlerProgId, KEY_READ | KEY_WRITE);
+        auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
         wil::unique_hkey subKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, nullptr,
             0, KEY_WRITE, nullptr, subKey.put(), nullptr));
@@ -372,8 +384,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             static_cast<uint32_t>((handlerProgId.size() + 1) * sizeof(wchar_t))));
     }
 
-    void UnregisterAssociationHandler(const std::wstring& association, AssociationType type,
-        const std::wstring& handlerProgId)
+    void UnregisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
+        AssociationType type)
     {
         if (type == AssociationType::File && !IsFileExtension(association))
         {
@@ -381,7 +393,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         }
 
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
-        auto applicationKey = OpenApplicationKey(handlerProgId, KEY_READ | KEY_WRITE);
+        auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
         wil::unique_hkey subKey;
         if (::RegOpenKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, KEY_WRITE,
             subKey.put()) == ERROR_SUCCESS)

@@ -3,14 +3,14 @@
 
 #include <pch.h>
 #include <AppLifecycle.h>
-#include <Activation.AppLifecycle.g.cpp>
+#include <AppLifecycle.g.cpp>
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
     {
