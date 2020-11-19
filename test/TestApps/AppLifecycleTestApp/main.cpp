@@ -8,6 +8,24 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Microsoft::ProjectReunion;
 
+std::wstring GetFullIdentityString()
+{
+    std::wstring identityString;
+    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
+    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
+    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
+    {
+        identityString = idNameBuffer;
+    }
+
+    return identityString;
+}
+
+bool HasIdentity()
+{
+    return !(GetFullIdentityString()).empty();
+}
+
 void SignalPhase(const std::wstring& phaseEventName)
 {
     wil::unique_event phaseEvent;
@@ -67,14 +85,28 @@ int main()
     else if (kind == ActivationKind::Protocol)
     {
         // Signal event that protocol was activated.
-        SignalPhase(c_testProtocolPhaseEventName);
+        if (HasIdentity())
+        {
+            SignalPhase(c_testProtocolPhaseEventName_Packaged);
+        }
+        else
+        {
+            SignalPhase(c_testProtocolPhaseEventName);
+        }
     }
     else if (kind == ActivationKind::File)
     {
         // TODO: Validate access to the files on the arguments.
 
         // Signal event that file was activated.
-        SignalPhase(c_testFilePhaseEventName);
+        if (HasIdentity())
+        {
+            SignalPhase(c_testFilePhaseEventName_Packaged);
+        }
+        else
+        {
+            SignalPhase(c_testFilePhaseEventName);
+        }
     }
 
     return 0;

@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
+#include <windows.h>
+#include <unknwn.h>
+#include <appmodel.h>
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
