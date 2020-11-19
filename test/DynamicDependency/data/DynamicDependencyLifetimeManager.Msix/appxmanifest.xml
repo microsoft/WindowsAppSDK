@@ -10,13 +10,13 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="ProjectReunion.DDLM-4.1.1967.333-x64"
+    Name="ProjectReunion.Test.DDLM-4.1.1967.333-x64"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>ProjectReunion DynamicDependency LifetimeManager</DisplayName>
+    <DisplayName>ProjectReunion.Test.DynamicDependency.LifetimeManager</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
@@ -48,7 +48,11 @@
           <uap3:AppExtension Name="com.microsoft.projectreunion.ddlm.1.x64"
                              Id="ddlm-4.1.1967.333-x64"
                              PublicFolder="public\ddlm"
-                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (1.* x64)"/>
+                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (1.* x64)">
+            <uap3:Properties>
+              <CLSID>32E7CF70-038C-429a-BD49-88850F1B4A11</CLSID>
+            </uap3:Properties>
+          </uap3:AppExtension>
         </uap3:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>

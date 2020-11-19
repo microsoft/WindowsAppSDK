@@ -26,13 +26,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(IntDir)\dlldata.c">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(IntDir)\DynamicDependencyLifetimeManager_i.c">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\DynamicDependencyLifetimeManager_i.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(IntDir)\DynamicDependencyLifetimeManager_p.c">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\DynamicDependencyLifetimeManager_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

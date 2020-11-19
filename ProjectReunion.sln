@@ -71,9 +71,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyLifetimeMa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager", "dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.vcxproj", "{2E5BF0D2-78FA-4B60-A341-F65A0D58BD86}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager.Msix", "dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.Msix\DynamicDependencyLifetimeManager.Msix.vcxproj", "{A7391725-4EF5-438F-8DE1-645423E46955}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager.Msix", "test\DynamicDependency\data\DynamicDependencyLifetimeManager.Msix\DynamicDependencyLifetimeManager.Msix.vcxproj", "{A7391725-4EF5-438F-8DE1-645423E46955}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager.ProxyStub", "dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.vcxproj", "{8C79C46D-1577-44CA-83DF-88B74C3E4586}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IDynamicDependencyLifetimeManager", "dev\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj", "{CCD23028-B9D3-410B-836E-20B2E7C08451}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -594,6 +596,30 @@ Global
 		{8C79C46D-1577-44CA-83DF-88B74C3E4586}.Release|x64.Build.0 = Release|x64
 		{8C79C46D-1577-44CA-83DF-88B74C3E4586}.Release|x86.ActiveCfg = Release|Win32
 		{8C79C46D-1577-44CA-83DF-88B74C3E4586}.Release|x86.Build.0 = Release|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|Any CPU.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|Any CPU.Build.0 = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|ARM.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|ARM.Build.0 = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|ARM64.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|ARM64.Build.0 = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|x64.ActiveCfg = Debug|x64
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|x64.Build.0 = Debug|x64
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|x86.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug_test|x86.Build.0 = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|ARM.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|x64.ActiveCfg = Debug|x64
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|x64.Build.0 = Debug|x64
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|x86.ActiveCfg = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Debug|x86.Build.0 = Debug|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|ARM.ActiveCfg = Release|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|ARM64.ActiveCfg = Release|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|x64.ActiveCfg = Release|x64
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|x64.Build.0 = Release|x64
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|x86.ActiveCfg = Release|Win32
+		{CCD23028-B9D3-410B-836E-20B2E7C08451}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -627,8 +653,9 @@ Global
 		{B71E818A-882E-456A-87E5-4DE4A6602B99} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 		{D043D403-31F1-43F1-B2D4-FA8F7090006D} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{2E5BF0D2-78FA-4B60-A341-F65A0D58BD86} = {D043D403-31F1-43F1-B2D4-FA8F7090006D}
-		{A7391725-4EF5-438F-8DE1-645423E46955} = {D043D403-31F1-43F1-B2D4-FA8F7090006D}
+		{A7391725-4EF5-438F-8DE1-645423E46955} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 		{8C79C46D-1577-44CA-83DF-88B74C3E4586} = {D043D403-31F1-43F1-B2D4-FA8F7090006D}
+		{CCD23028-B9D3-410B-836E-20B2E7C08451} = {D043D403-31F1-43F1-B2D4-FA8F7090006D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

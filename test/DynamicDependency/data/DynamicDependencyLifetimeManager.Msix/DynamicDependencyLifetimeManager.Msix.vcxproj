@@ -149,10 +149,10 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.vcxproj">
+    <ProjectReference Include="..\..\..\..\dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.vcxproj">
       <Project>{8c79c46d-1577-44ca-83df-88b74c3e4586}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.vcxproj">
+    <ProjectReference Include="..\..\..\..\dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.vcxproj">
       <Project>{2e5bf0d2-78fa-4b60-a341-f65a0d58bd86}</Project>
     </ProjectReference>
   </ItemGroup>
