@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <Reference Include="winui_class_lib">
-      <HintPath>..\..\winui_class_lib\obj\$(Configuration)\net5.0\winui_class_lib.dll</HintPath>
+      <HintPath>..\..\winui_class_lib\obj\$(Configuration)\net5-windows10.0.18362.0\winui_class_lib.dll</HintPath>
     </Reference>
   </ItemGroup>
 

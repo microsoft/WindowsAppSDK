@@ -34,6 +34,8 @@ namespace winrt::winui_desktop_packaged_app_cpp::implementation
 
 #ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
         MrmManagerHandle m_resourceManagerMrm{ nullptr };
-#endif 
+#endif
+
+        void SetWindowSize(const HWND& hwnd, int width, int height);
     };
 }

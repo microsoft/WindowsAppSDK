@@ -5,6 +5,7 @@
 
 #include "App.h"
 #include "MainWindow.h"
+#include "microsoft.ui.xaml.window.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -81,6 +82,14 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 #endif
 
     m_window.Activate();
+    m_window.Title(L"MRT Core C++ sample");
+
+    HWND hwnd;
+    m_window.as<IWindowNative>()->get_WindowHandle(&hwnd);
+    // Window doesn't have Height and Weight properties in WInUI 3 Desktop yet,
+    // to set the Width and Height you can use the Win32 API SetWindowPos.
+    // However, you should have to take care of the DPI scale factor.
+    SetWindowSize(hwnd, 600, 400);
 }
 
 /// <summary>
@@ -93,4 +102,16 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 void App::OnSuspending([[maybe_unused]] IInspectable const& sender, [[maybe_unused]] Windows::ApplicationModel::SuspendingEventArgs const& e)
 {
     // Save application state and stop any background activity
+}
+
+void App::SetWindowSize(const HWND& hwnd, int width, int height)
+{
+    auto dpi = GetDpiForWindow(hwnd);
+    float scalingFactor = static_cast<float>(dpi) / 96;
+    RECT scale;
+    scale.left = 0;
+    scale.top = 0;
+    scale.right = static_cast<LONG>(width * scalingFactor);
+    scale.bottom = static_cast<LONG>(height * scalingFactor);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, scale.right - scale.left, scale.bottom - scale.top, SWP_NOMOVE);
 }
