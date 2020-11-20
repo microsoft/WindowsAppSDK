@@ -71,6 +71,11 @@ jobs:
     buildJobName: 'BuildMRTCore'
 
 - job: SignBinariesAndPublishSymbols
+  variables:
+    signingPattern: |
+        lib\uap10.0\*.winmd
+        lib\net5.0-windows\*.dll
+        runtimes\*\*\*.dll
   dependsOn:
     - Build
     - PublishMRT
@@ -146,27 +151,13 @@ jobs:
     inputs:
       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      Pattern: |
-        lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd
-        lib\net5.0-windows\Microsoft.ApplicationModel.Resources.Projection.dll
-        runtimes\win10-x86\native\Microsoft.ApplicationModel.Resources.dll
-        runtimes\win10-x86\native\Microsoft.ProjectReunion.dll
-        runtimes\win10-x86\native\MRM.dll
-        runtimes\win10-x64\native\Microsoft.ApplicationModel.Resources.dll
-        runtimes\win10-x64\native\Microsoft.ProjectReunion.dll
-        runtimes\win10-x64\native\MRM.dll
-        runtimes\win10-arm\native\Microsoft.ApplicationModel.Resources.dll
-        runtimes\win10-arm\native\Microsoft.ProjectReunion.dll
-        runtimes\win10-arm\native\MRM.dll
-        runtimes\win10-arm64\native\Microsoft.ApplicationModel.Resources.dll
-        runtimes\win10-arm64\native\Microsoft.ProjectReunion.dll
-        runtimes\win10-arm64\native\MRM.dll
+      Pattern: $(signingPattern)
       UseMinimatch: true
       signConfigType: 'inlineSignParams'
       inlineOperation: |
         [
           {
-            "keyCode": "CP-230217",
+            "keyCode": "CP-230012",
             "operationSetCode": "SigntoolSign",
             "parameters": [
               {
@@ -197,6 +188,52 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
+    condition: 
+      eq(variables['ReleaseSign'], true)
+
+  - task: EsrpCodeSigning@1
+    inputs:
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
+      Pattern: $(signingPattern)
+      UseMinimatch: true
+      signConfigType: 'inlineSignParams'
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-230072",
+            "operationSetCode": "SigntoolSign",
+            "parameters": [
+              {
+                "parameterName": "OpusName",
+                "parameterValue": "Microsoft"
+              },
+              {
+                "parameterName": "OpusInfo",
+                "parameterValue": "http://www.microsoft.com"
+              },
+              {
+                "parameterName": "PageHash",
+                "parameterValue": "/NPH"
+              },
+              {
+                "parameterName": "FileDigest",
+                "parameterValue": "/fd sha256"
+              },
+              {
+                "parameterName": "TimeStamp",
+                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+              }
+            ],
+            "toolName": "signtool.exe",
+            "toolVersion": "6.2.9304.0"
+          }
+        ]
+      SessionTimeout: '60'
+      MaxConcurrency: '50'
+      MaxRetryAttempts: '5'
+    condition: 
+      ne(variables['ReleaseSign'], true)
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
