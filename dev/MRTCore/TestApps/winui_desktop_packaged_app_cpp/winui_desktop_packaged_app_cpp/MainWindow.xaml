@@ -10,8 +10,8 @@
     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Button x:Name="defaultWinrtApiButton" Click="defaultWinrtApi_Click" Width="400">Default Language (uses WinRT APIs)</Button>
         <Button x:Name="overrideWinrtApiButton" Click="overrideWinrtApi_Click" Width="400" Margin="0,20,0,0" >Override Language (uses WinRT APIs)</Button>
-        <Button x:Name="defaultCApiButton" Click="defaultCApi_Click" Width="400" Margin="0,20,0,0" >Default Language (uses C APIs)</Button>
-        <Button x:Name="overrideCApiButton" Click="overrideCApi_Click" Width="400" Margin="0,20,0,0" >Override Language (uses C APIs)</Button>
+        <Button x:Name="defaultCApiButton" Click="defaultCApi_Click" Width="400" Margin="0,20,0,0" IsEnabled="False" >Default Language (uses C APIs)</Button>
+        <Button x:Name="overrideCApiButton" Click="overrideCApi_Click" Width="400" Margin="0,20,0,0" IsEnabled="False" >Override Language (uses C APIs)</Button>
         <Button x:Name="fallbackWinrtApiButton" Click="fallbackWinrt_Click" Width="400" Margin="0,20,0,0" >Resource fallback (uses WinRT APIs)</Button>
         <TextBox x:Name="output" Width="400" Margin="0,20,0,0" Text="" />
     </StackPanel>

@@ -7,12 +7,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.InteropServices;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Microsoft.ApplicationModel.Resources;
-using Microsoft.UI.Threading;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -21,6 +21,8 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using WinRT;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -64,7 +66,16 @@ namespace winui_desktop_packaged_app
             };
 
             m_window = new MainWindow(m_resourceLoader, m_resourceManager);
+
+            //Get the Window's HWND
+            var windowNative = m_window.As<IWindowNative>();
+            m_window.Title = "MRT Core C# sample";
             m_window.Activate();
+
+            // The Window object doesn't have Width and Height properties in WInUI 3 Desktop yet.
+            // To set the Width and Height, you can use the Win32 API SetWindowPos.
+            // Note, you should apply the DPI scale factor if you are thinking of DPI instead of pixels.
+            SetWindowSize(windowNative.WindowHandle, 600, 400);
         }
 
         /// <summary>
@@ -77,6 +88,30 @@ namespace winui_desktop_packaged_app
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             // Save application state and stop any background activity
+        }
+
+        private void SetWindowSize(IntPtr hwnd, int width, int height)
+        {
+            var dpi = GetDpiForWindow(hwnd);
+            float scalingFactor = (float)dpi / 96;
+            width = (int)(width * scalingFactor);
+            height = (int)(height * scalingFactor);
+
+            SetWindowPos(hwnd, System.IntPtr.Zero, 0, 0, width, height, 2);
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetDpiForWindow(IntPtr hWnd);
+
+        [ComImport]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        [Guid("EECDBF0E-BAE9-4CB6-A68E-9598E1CB57BB")]
+        internal interface IWindowNative
+        {
+            IntPtr WindowHandle { get; }
         }
 
         private Window m_window;

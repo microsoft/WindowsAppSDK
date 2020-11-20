@@ -8,11 +8,11 @@
     mc:Ignorable="d">
 
     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="defaultButton" Click="default_Click" Width="200">Default Language</Button>
-        <Button x:Name="overrideButton" Click="override_Click" Width="200" Margin="0,20,0,0" >Override Language</Button>
-        <Button x:Name="fallbackButton" Click="fallback_Click" Width="200" Margin="0,20,0,0" >Resource Fallback</Button>
-        <Button x:Name="defaultViaLibButton" Click="defaultViaLib_Click" Width="210" Margin="0,20,0,0" >Default Language via Class Lib</Button>
-        <TextBox x:Name="output" Width="200" Margin="0,20,0,0" Text="" />
+        <Button x:Name="defaultButton" Click="default_Click" Width="400">Default Language</Button>
+        <Button x:Name="overrideButton" Click="override_Click" Width="400" Margin="0,20,0,0" >Override Language</Button>
+        <Button x:Name="fallbackButton" Click="fallback_Click" Width="400" Margin="0,20,0,0" >Resource Fallback</Button>
+        <Button x:Name="defaultViaLibButton" Click="defaultViaLib_Click" Width="400" Margin="0,20,0,0" >Load Resource from Class Library</Button>
+        <TextBox x:Name="output" Width="400" Margin="0,20,0,0" Text="" />
     </StackPanel>
     
 </Window>

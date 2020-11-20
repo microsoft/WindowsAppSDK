@@ -5,6 +5,7 @@
 
 #include "App.h"
 #include "MainWindow.h"
+#include "microsoft.ui.xaml.window.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -41,7 +42,9 @@ App::App()
 
 App::~App()
 {
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
     MrmDestroyResourceManager(m_resourceManagerMrm);
+#endif
 }
 
 /// <summary>
@@ -52,7 +55,10 @@ App::~App()
 void App::OnLaunched(LaunchActivatedEventArgs const&)
 {
     m_resourceManagerWinRT = ResourceManager(L"resources.pri");
+
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
     check_hresult(MrmCreateResourceManager(L"resources.pri", &m_resourceManagerMrm));
+#endif
 
     m_resourceManagerWinRT.ResourceNotFound([](ResourceManager const&, ResourceNotFoundEventArgs const& args)
         {
@@ -68,9 +74,22 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
     m_window = make<MainWindow>();
 
     auto window = m_window.as<winrt::winui_desktop_packaged_app_cpp::implementation::MainWindow>();
-    window->InitializeResourceLoaders(m_resourceManagerWinRT, m_resourceManagerMrm);   
+
+#ifdef MRM_C_API_AVAILABLE // This API is not present in the current release package.
+    window->InitializeResourceLoaders(m_resourceManagerWinRT, m_resourceManagerMrm);
+#else
+    window->InitializeResourceLoaders(m_resourceManagerWinRT);
+#endif
 
     m_window.Activate();
+    m_window.Title(L"MRT Core C++ sample");
+
+    HWND hwnd;
+    m_window.as<IWindowNative>()->get_WindowHandle(&hwnd);
+    // Window doesn't have Height and Weight properties in WInUI 3 Desktop yet,
+    // to set the Width and Height you can use the Win32 API SetWindowPos.
+    // However, you should have to take care of the DPI scale factor.
+    SetWindowSize(hwnd, 600, 400);
 }
 
 /// <summary>
@@ -83,4 +102,16 @@ void App::OnLaunched(LaunchActivatedEventArgs const&)
 void App::OnSuspending([[maybe_unused]] IInspectable const& sender, [[maybe_unused]] Windows::ApplicationModel::SuspendingEventArgs const& e)
 {
     // Save application state and stop any background activity
+}
+
+void App::SetWindowSize(const HWND& hwnd, int width, int height)
+{
+    auto dpi = GetDpiForWindow(hwnd);
+    float scalingFactor = static_cast<float>(dpi) / 96;
+    RECT scale;
+    scale.left = 0;
+    scale.top = 0;
+    scale.right = static_cast<LONG>(width * scalingFactor);
+    scale.bottom = static_cast<LONG>(height * scalingFactor);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, scale.right - scale.left, scale.bottom - scale.top, SWP_NOMOVE);
 }
