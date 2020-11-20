@@ -10,6 +10,7 @@ using namespace WEX::TestExecution;
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
@@ -19,7 +20,23 @@ namespace ProjectReunionCppTest
 {
     class AppLifecycleApiTests
     {
+    private:
+        wil::unique_event m_failed;
+
+    public:
         TEST_CLASS(AppLifecycleApiTests);
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            m_failed = CreateTestEvent(c_testFailureEventName);
+            return true;
+        }
+
+        TEST_METHOD_CLEANUP(MethodUninit)
+        {
+            DeleteContentFile(L"testfile" + c_testFileExtension);
+            return true;
+        }
 
         static wil::unique_event CreateTestEvent(const std::wstring& eventName)
         {
@@ -28,10 +45,8 @@ namespace ProjectReunionCppTest
             wil::unique_hlocal_security_descriptor descriptor;
 
             // Grant access to world and appcontainer.
-            THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(L"D:(A;;GA;;;WD)(A;;GA;;;AC)",
-                SDDL_REVISION_1,
-                &descriptor,
-                nullptr));
+            THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
+                L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
             attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
             attributes.lpSecurityDescriptor = descriptor.get();
 
@@ -42,11 +57,24 @@ namespace ProjectReunionCppTest
 
         void WaitForEvent(const wil::unique_event& event)
         {
-            if (!event.wait(g_phaseTimeout))
+            HANDLE waitEvents[2] = { event.get(), m_failed.get() };
+            auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
+                g_phaseTimeout);
+
+            // If waitResult == failureEventIndex, it means the remote test process signaled a
+            // failure event while we were waiting for a different event.
+            auto failureEventIndex = WAIT_OBJECT_0 + 1;
+            VERIFY_ARE_NOT_EQUAL(waitResult, failureEventIndex);
+
+            VERIFY_ARE_NOT_EQUAL(waitResult, WAIT_TIMEOUT);
+            if (waitResult == WAIT_FAILED)
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
             }
+
+            event.ResetEvent();
+            m_failed.ResetEvent();
         }
 
         static std::wstring GetModulePath()
@@ -79,6 +107,19 @@ namespace ProjectReunionCppTest
             auto modulePath = GetModulePath();
             auto filenamePos = modulePath.rfind(L"\\");
             return modulePath.substr(0, filenamePos);
+        }
+
+        StorageFile WriteContentFile(std::wstring filename)
+        {
+            auto file = KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
+            FileIO::WriteTextAsync(file, L"Hello, World!").get();
+            return file;
+        }
+
+        void DeleteContentFile(std::wstring filename)
+        {
+            auto file = KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
+            file.DeleteAsync().get();
         }
 
         // Validate that UWP is not a supported scenario.
@@ -167,14 +208,14 @@ namespace ProjectReunionCppTest
         TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
         {
             // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testProtocolPhaseEventName_Packaged);
+            auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // TODO: Deploy packaged app to register handler through the manifest.
 
             // TODO: Validate register scenario before continuing.
 
             // Launch a protocol and wait for the event to fire.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
+            Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
             auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
@@ -197,14 +238,17 @@ namespace ProjectReunionCppTest
                 VERIFY_WIN32_FAILED(lastError);
             }
 
+            // Wait for the register event.
+            WaitForEvent(event);
+
             // TODO: Validate register scenario before continuing.
 
-            // Launch the file and wait for the event to fire.
+            // Write a file into the documents folder for file type association launches.
+            auto file = WriteContentFile(L"testfile" + c_testFileExtension);
 
-            // TODO: LaunchFileAsync
-            /*Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);*/
+            // Launch the file and wait for the event to fire.
+            auto launchResult = Launcher::LaunchFileAsync(file).get();
+            VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
             WaitForEvent(event);
@@ -215,11 +259,14 @@ namespace ProjectReunionCppTest
         TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
         {
             // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testFilePhaseEventName_Packaged);
+            auto event = CreateTestEvent(c_testFilePhaseEventName);
 
             // TODO: Deploy packaged app to register handler through the manifest.
 
             // TODO: Validate register scenario before continuing.
+
+            // Write a file into the documents folder for file type association launches.
+            WriteContentFile(L"testfile" + c_testFileExtension);
 
             // Launch the file and wait for the event to fire.
 

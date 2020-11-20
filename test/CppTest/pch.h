@@ -12,7 +12,9 @@
 #include <wil/resource.h>
 #include <WexTestClass.h>
 
-#include <winrt/Windows.System.h>
-#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.System.h>
+
 #include <winrt/Microsoft.ProjectReunion.h>

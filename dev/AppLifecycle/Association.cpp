@@ -56,7 +56,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     std::wstring ComputeAppId()
     {
-        // PRF = Project Reunion Framework.  A simple acronym to help identify ProgIds we compute here.
+        // PRF = Project Reunion Framework.  A simple prefix to help identify ProgIds we compute here.
         // AppId = Prefix + Hash(modulePath)
         auto modulePath = GetModulePath();
         std::hash<std::wstring> hasher;
