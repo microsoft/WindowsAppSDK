@@ -82,26 +82,26 @@ jobs:
       command: 'custom'
       arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
 
-  - task: powershell@2
-    displayName: 'Install the VS build tools'
-    inputs:
-      targetType: filePath
-      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
-      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
+#  - task: powershell@2
+#    displayName: 'Install the VS build tools'
+#    inputs:
+#      targetType: filePath
+#      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
+#      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
       
-  - task: BatchScript@1
-    displayName: Add the VS build tools to the path
-    inputs:
-      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
-      arguments: '$(MRTSourcesDirectory)\.buildtools'
-      modifyEnvironment: true
+#  - task: BatchScript@1
+#    displayName: Add the VS build tools to the path
+#    inputs:
+#      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
+#      arguments: '$(MRTSourcesDirectory)\.buildtools'
+#      modifyEnvironment: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish install logs'
-    condition: Failed()
-    inputs:
-      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
-      artifactName: 'installlogs'
+#  - task: PublishBuildArtifacts@1
+#    displayName: 'Publish install logs'
+#    condition: Failed()
+#    inputs:
+#      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
+#      artifactName: 'installlogs'
 
   - task: powershell@2
     displayName: 'Installing .NET SDK'
@@ -125,8 +125,8 @@ jobs:
   - task: MSBuild@1
     displayName: 'build MrtCore'
     inputs:
-      msbuildLocationMethod: 'location'
-      msbuildLocation: $(MRTSourcesDirectory)\.buildtools\MSBuild\Current\Bin\MSBuild.exe
+#      msbuildLocationMethod: 'location'
+#      msbuildLocation: $(MRTSourcesDirectory)\.buildtools\MSBuild\Current\Bin\MSBuild.exe
       platform: '$(buildPlatform)'
       solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
       configuration: '$(buildConfiguration)'
