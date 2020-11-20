@@ -1,6 +1,6 @@
  pool:
     vmImage: 'windows-2019'
-
+steps:
   - task: NuGetToolInstaller@0
     displayName: 'Use NuGet 5.2.0'
     inputs:
