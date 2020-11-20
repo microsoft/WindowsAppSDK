@@ -34,7 +34,14 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            DeleteContentFile(L"testfile" + c_testFileExtension);
+            try
+            {
+                DeleteContentFile(L"testfile" + c_testFileExtension);
+            }
+            catch (...)
+            {
+                // Swallow errors in cleanup.
+            }
             return true;
         }
 
