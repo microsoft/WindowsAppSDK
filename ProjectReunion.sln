@@ -20,6 +20,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunion_DLL", "dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj", "{B73AD907-6164-4294-88FB-F3C9C10DA1F1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppTest", "test\CppTest\CppTest.vcxproj", "{C62688A1-16A0-4729-B6ED-842F4FAA29F3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9} = {A3FBA80D-5B35-471F-9A45-DB4B29E195B9}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppLifecycle", "AppLifecycle", "{3DE93B2F-F887-437D-B512-6B1024ABA290}"
 EndProject
@@ -32,6 +35,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycleTestApp", "test\TestApps\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj", "{7C502995-59C3-483B-86BA-815985353633}"
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AppLifecycleTestPackage", "test\TestApps\AppLifecycleTestPackage\AppLifecycleTestPackage.wapproj", "{A3FBA80D-5B35-471F-9A45-DB4B29E195B9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "inc", "test\inc\inc.vcxitems", "{B567FE2E-3A03-48D0-B2B5-760CDEC35891}"
 EndProject

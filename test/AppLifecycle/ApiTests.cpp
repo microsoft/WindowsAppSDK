@@ -9,12 +9,14 @@ using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
 using namespace winrt;
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::System;
+using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Management::Deployment;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::System;
 
 namespace ProjectReunionCppTest
 {
@@ -45,6 +47,58 @@ namespace ProjectReunionCppTest
             return true;
         }
 
+        wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
+            const std::wstring& directory)
+        {
+            SHELLEXECUTEINFO ei{};
+            ei.cbSize = sizeof(SHELLEXECUTEINFO);
+            ei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
+            ei.lpFile = command.c_str();
+            ei.lpParameters = args.c_str();
+            ei.lpDirectory = directory.c_str();
+
+            if (!ShellExecuteEx(&ei))
+            {
+                auto lastError = GetLastError();
+                VERIFY_WIN32_FAILED(lastError);
+            }
+
+            wil::unique_handle process{ ei.hProcess };
+            return process;
+        }
+
+        void InstallCert(const std::wstring& path)
+        {
+            std::wstring args{ L"-addstore TrustedRoot " + path };
+            auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
+                args.c_str(), GetModuleDirectory());
+
+            // Wait for the cer to be installed.
+            auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
+            if (waitResult != WAIT_OBJECT_0)
+            {
+                auto lastError = GetLastError();
+                VERIFY_WIN32_FAILED(lastError);
+            }
+
+            // Make sure the exitcode for the tool is success.
+            DWORD exitCode{};
+            THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(process.get(), &exitCode));
+            VERIFY_ARE_EQUAL(exitCode, 0);
+        }
+
+        void DeployPackage(const std::wstring& packagePath)
+        {
+            // Deploy packaged app to register handler through the manifest.
+            PackageManager manager;
+            IVector<Uri> depPackagePaths;
+            auto result = manager.AddPackageAsync(Uri(packagePath), depPackagePaths,
+                DeploymentOptions::ForceApplicationShutdown).get();
+            auto errorText = result.ErrorText();
+            auto errorCode = result.ExtendedErrorCode();
+            VERIFY_SUCCEEDED(errorCode, errorText.c_str());
+        }
+
         static wil::unique_event CreateTestEvent(const std::wstring& eventName)
         {
             bool alreadyExists = false;
@@ -66,7 +120,7 @@ namespace ProjectReunionCppTest
         {
             HANDLE waitEvents[2] = { event.get(), m_failed.get() };
             auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
-                g_phaseTimeout);
+                c_phaseTimeout);
 
             // If waitResult == failureEventIndex, it means the remote test process signaled a
             // failure event while we were waiting for a different event.
@@ -84,36 +138,11 @@ namespace ProjectReunionCppTest
             m_failed.ResetEvent();
         }
 
-        static std::wstring GetModulePath()
+        static std::wstring GetModuleDirectory()
         {
-            std::wstring path(100, L'?');
-            uint32_t path_size{};
-            DWORD actual_size{};
-
-            do
-            {
-                path_size = static_cast<uint32_t>(path.size());
-
-                wil::unique_hmodule module;
-                THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-                    reinterpret_cast<LPCWSTR>(GetModulePath), &module));
-                actual_size = ::GetModuleFileName(module.get(), path.data(), path_size);
-
-                if (actual_size + 1 > path_size)
-                {
-                    path.resize(path_size * 2, L'?');
-                }
-            } while (actual_size + 1 > path_size);
-
-            path.resize(actual_size);
-            return path;
-        }
-
-        static std::wstring GetModuleDirectoryPath()
-        {
-            auto modulePath = GetModulePath();
-            auto filenamePos = modulePath.rfind(L"\\");
-            return modulePath.substr(0, filenamePos);
+            WEX::Common::String testDeploymentDir;
+            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
+            return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
         }
 
         StorageFile WriteContentFile(std::wstring filename)
@@ -180,8 +209,7 @@ namespace ProjectReunionCppTest
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterProtocol",
-                GetModuleDirectoryPath().c_str(), SW_SHOW))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetModuleDirectory()))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -199,8 +227,7 @@ namespace ProjectReunionCppTest
             WaitForEvent(event);
 
             // TODO: Test unregister scenario.
-            if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/UnregisterProtocol",
-                GetModuleDirectoryPath().c_str(), SW_SHOW))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetModuleDirectory()))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -214,10 +241,19 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                // Must run elevated to deploy the package.
+                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,ElevatedUserOrSystem}")
+            END_TEST_METHOD_PROPERTIES();
+
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
-            // TODO: Deploy packaged app to register handler through the manifest.
+            InstallCert(L"AppLifecycleTestPackage.cer");
+
+            // Deploy packaged app to register handler through the manifest.
+            std::wstring packagePath{ GetModuleDirectory() + L"\\AppLifecycleTestPackage.msixbundle" };
+            DeployPackage(packagePath);
 
             // TODO: Validate register scenario before continuing.
 
@@ -239,7 +275,7 @@ namespace ProjectReunionCppTest
 
             // Launch the test app to register for protocol launches.
             if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterFile",
-                GetModuleDirectoryPath().c_str(), SW_SHOW))
+                GetModuleDirectory().c_str(), SW_SHOW))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -268,17 +304,20 @@ namespace ProjectReunionCppTest
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testFilePhaseEventName);
 
-            // TODO: Deploy packaged app to register handler through the manifest.
+            InstallCert(L"AppLifecycleTestPackage.cer");
+
+            // Deploy packaged app to register handler through the manifest.
+            std::wstring packagePath{ GetModuleDirectory() + L"\\AppLifecycleTestPackage.msixbundle" };
+            DeployPackage(packagePath);
 
             // TODO: Validate register scenario before continuing.
 
             // Write a file into the documents folder for file type association launches.
-            WriteContentFile(L"testfile" + c_testFileExtension);
+            auto file = WriteContentFile(L"testfile" + c_testFileExtension);
 
             // Launch the file and wait for the event to fire.
-
-            // TODO: LaunchFileAsync
-
+            auto launchResult = Launcher::LaunchFileAsync(file).get();
+            VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
             WaitForEvent(event);
