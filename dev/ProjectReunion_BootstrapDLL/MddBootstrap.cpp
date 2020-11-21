@@ -282,6 +282,12 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
             continue;
         }
 
+        // Does the version meet the minVersion criteria?
+        if (version.Version < minVersion.Version)
+        {
+            continue;
+        }
+
         // Does the architecture match?
         const auto architecture{ ParseArchitecture(architectureAsString) };
         if (architecture != GetCurrentArchitecture())

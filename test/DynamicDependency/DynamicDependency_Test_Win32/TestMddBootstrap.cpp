@@ -35,10 +35,10 @@ namespace Test::DynamicDependency
             const auto lastError{ GetLastError() };
             Assert::IsNotNull(bootstrapDll.get());
 
-            TP::RemovePackage_MainSidecar();
+            TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_ProjectReunionFramework();
             TP::AddPackage_ProjectReunionFramework();
-            TP::AddPackage_MainSidecar();
+            TP::AddPackage_DynamicDependencyLifetimeManager();
 
             m_bootstrapDll = std::move(bootstrapDll);
         }
@@ -53,15 +53,31 @@ namespace Test::DynamicDependency
             winrt::uninit_apartment();
         }
 
-        TEST_METHOD(Initialize_ClassNotFound)
+        TEST_METHOD(Initialize_DDLMNotFound)
         {
-            const GUID doesNotExist{};
-            Assert::AreEqual(REGDB_E_CLASSNOTREG, MddBootstrapInitialize(doesNotExist));
+            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Version 0.0.0.0 == Major version 0 == No such framework package
+            const PACKAGE_VERSION doesNotExist{};
+            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist));
+        }
+
+        TEST_METHOD(Initialize_DDLMMinVersionNoMatch)
+        {
+            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Version <major>.65535.65535.65535 to find framework packages for the major version but none meeting this minVersion criteria
+            PACKAGE_VERSION minVersionNoMatch{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 | 0x0000FFFFFFFFFFFFuI64 };
+            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(minVersionNoMatch));
         }
 
         TEST_METHOD(Initialize)
         {
-            Assert::AreEqual(S_OK, MddBootstrapInitialize(Test::Packages::MainSidecar::c_MyLifetimeManagerClsid));
+            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Version <major>.0.0.0 to find any framework package for this major version
+            PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
+            Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
 
             MddBootstrapShutdown();
         }

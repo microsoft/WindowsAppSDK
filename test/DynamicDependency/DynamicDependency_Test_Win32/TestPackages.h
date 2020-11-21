@@ -15,18 +15,12 @@ namespace Test::Packages::FrameworkMathMultiply
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
+//TODO Remove?
 namespace Test::Packages::MainSidecar
 {
     constexpr PCWSTR c_PackageDirName = L"Main.Sidecar";
     constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.Main.Sidecar_8wekyb3d8bbwe";
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Main.Sidecar_4.1.1967.333_neutral__8wekyb3d8bbwe";
-
-    // coclass MyLifetimeManager == CLSID {32E7CF70-038C-429a-BD49-88850F1B4A11}
-    // See winmain.cpp in Main.Sidecar.LifetimeManager project for more details
-    constexpr GUID c_MyLifetimeManagerClsid
-    {
-        0x32e7cf70, 0x038c, 0x429a, { 0xbd, 0x49, 0x88, 0x85, 0x0f, 0x1b, 0x4a, 0x11 }
-    };
 }
 
 namespace Test::Packages::ProjectReunionFramework
@@ -41,6 +35,42 @@ namespace Test::Packages::DynamicDependencyDataStore
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_8wekyb3d8bbwe";
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_10.1.2004.0_neutral__8wekyb3d8bbwe";
+}
+
+#define TEST_PACKAGE_DDLM_NAMEPREFIX    L"ProjectReunion.Test.DDLM"
+#define TEST_PACKAGE_DDLM_VERSION       L"4.1.1967.333"
+#if defined(_M_X64)
+#define TEST_PACKAGE_DDLM_ARCHITECTURE  L"x64"
+#elif defined(_M_IX86)
+#define TEST_PACKAGE_DDLM_ARCHITECTURE  L"x86"
+#elif defined(_M_ARM64)
+#define TEST_PACKAGE_DDLM_ARCHITECTURE  L"arm64"
+#elif defined(_M_ARM)
+#define TEST_PACKAGE_DDLM_ARCHITECTURE  L"arm"
+#else
+#   error "Unknown processor architecture"
+#endif
+#define TEST_PACKAGE_DDLM_NAME          TEST_PACKAGE_DDLM_NAMEPREFIX L"-" TEST_PACKAGE_DDLM_VERSION L"-" TEST_PACKAGE_DDLM_ARCHITECTURE
+#define TEST_PACKAGE_DDLM_PUBLISHERID   L"8wekyb3d8bbwe"
+#define TEST_PACKAGE_DDLM_FAMILYNAME    TEST_PACKAGE_DDLM_NAME L"_" TEST_PACKAGE_DDLM_PUBLISHERID
+#define TEST_PACKAGE_DDLM_FULLNAME      TEST_PACKAGE_DDLM_NAME L"_" TEST_PACKAGE_DDLM_VERSION L"_" TEST_PACKAGE_DDLM_ARCHITECTURE L"__" TEST_PACKAGE_DDLM_PUBLISHERID
+namespace Test::Packages::DynamicDependencyLifetimeManager
+{
+    constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManager";
+    constexpr PCWSTR c_PackageNamePrefix = TEST_PACKAGE_DDLM_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = TEST_PACKAGE_DDLM_FAMILYNAME;
+    constexpr PCWSTR c_PackageFullName = TEST_PACKAGE_DDLM_FULLNAME;
+    constexpr const PACKAGE_VERSION GetPackageVersion()
+    {
+        PACKAGE_VERSION version{};
+        version.Major = 4;
+        version.Minor = 1;
+        version.Build = 1967;
+        version.Revision = 333;
+        return version;
+    }
+    constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
 }
 
 namespace Test::Packages
@@ -62,6 +92,10 @@ namespace Test::Packages
     void AddPackage_MainSidecar();
 
     void RemovePackage_MainSidecar();
+
+    void AddPackage_DynamicDependencyLifetimeManager();
+
+    void RemovePackage_DynamicDependencyLifetimeManager();
 
     void AddPackage_ProjectReunionFramework();
 

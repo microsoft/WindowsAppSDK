@@ -26,6 +26,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <MddBootstrap.h>
+#include <MddBootstrapTest.h>
 
 #include "CppUnitTest.h"
 
