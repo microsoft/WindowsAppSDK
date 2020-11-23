@@ -25,26 +25,61 @@ namespace ProjectReunionCppTest
     private:
         wil::unique_event m_failed;
 
+        const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
+        const std::wstring c_testPackageFile = GetDeploymentDir() + L"AppLifecycleTestPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = GetDeploymentDir() + L"AppLifecycleTestPackage.cer";
+
     public:
-        TEST_CLASS(AppLifecycleApiTests);
+        BEGIN_TEST_CLASS(AppLifecycleApiTests)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
+        END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
+        {
+            // Deploy packaged app to register handler through the manifest.
+            RunCertUtil(c_testPackageCertFile);
+            InstallPackage(c_testPackageFile);
+
+            // Write out some test content.
+            WriteContentFile(c_testDataFileName);
+
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            // Swallow errors in cleanup.
+            try
+            {
+                DeleteContentFile(c_testDataFileName);
+                UninstallPackage(c_testPackageFile);
+                RunCertUtil(c_testPackageCertFile, true);
+            }
+            catch (const std::exception&)
+            {
+            }
+            catch (const winrt::hresult_error&)
+            {
+            }
+
+            return true;
+        }
+
+        TEST_METHOD_SETUP(MethodInit)
         {
             m_failed = CreateTestEvent(c_testFailureEventName);
             return true;
         }
 
-        TEST_METHOD_CLEANUP(MethodUninit)
+        StorageFile CreateDocFile(std::wstring filename)
         {
-            try
-            {
-                DeleteContentFile(L"testfile" + c_testFileExtension);
-            }
-            catch (...)
-            {
-                // Swallow errors in cleanup.
-            }
-            return true;
+            return KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
+        }
+
+        StorageFile OpenDocFile(std::wstring filename)
+        {
+            return KnownFolders::DocumentsLibrary().GetFileAsync(filename).get();
         }
 
         wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
@@ -67,11 +102,12 @@ namespace ProjectReunionCppTest
             return process;
         }
 
-        void InstallCert(const std::wstring& path)
+        void RunCertUtil(const std::wstring& path, bool removeCert = false)
         {
-            std::wstring args{ L"-addstore TrustedRoot " + path };
+            std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
+            std::wstring args{ action + L" TrustedPeople " + path };
             auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
-                args.c_str(), GetModuleDirectory());
+                args.c_str(), GetDeploymentDir());
 
             // Wait for the cer to be installed.
             auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
@@ -87,7 +123,19 @@ namespace ProjectReunionCppTest
             VERIFY_ARE_EQUAL(exitCode, 0);
         }
 
-        void DeployPackage(const std::wstring& packagePath)
+        void InstallPackage(const std::wstring& packagePath)
+        {
+            // Deploy packaged app to register handler through the manifest.
+            PackageManager manager;
+            IVector<Uri> depPackagePaths;
+            auto result = manager.AddPackageAsync(Uri(packagePath), depPackagePaths,
+                DeploymentOptions::ForceApplicationShutdown).get();
+            auto errorText = result.ErrorText();
+            auto errorCode = result.ExtendedErrorCode();
+            VERIFY_SUCCEEDED(errorCode, errorText.c_str());
+        }
+
+        void UninstallPackage(const std::wstring& packagePath)
         {
             // Deploy packaged app to register handler through the manifest.
             PackageManager manager;
@@ -138,23 +186,22 @@ namespace ProjectReunionCppTest
             m_failed.ResetEvent();
         }
 
-        static std::wstring GetModuleDirectory()
+        static std::wstring GetDeploymentDir()
         {
             WEX::Common::String testDeploymentDir;
             WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
             return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
         }
 
-        StorageFile WriteContentFile(std::wstring filename)
+        void WriteContentFile(std::wstring filename)
         {
-            auto file = KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
+            auto file = CreateDocFile(filename);
             FileIO::WriteTextAsync(file, L"Hello, World!").get();
-            return file;
         }
 
         void DeleteContentFile(std::wstring filename)
         {
-            auto file = KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
+            auto file = CreateDocFile(filename);
             file.DeleteAsync().get();
         }
 
@@ -209,7 +256,7 @@ namespace ProjectReunionCppTest
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetModuleDirectory()))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetDeploymentDir()))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -227,7 +274,7 @@ namespace ProjectReunionCppTest
             WaitForEvent(event);
 
             // TODO: Test unregister scenario.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetModuleDirectory()))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetDeploymentDir()))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -241,19 +288,14 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                // Must run elevated to deploy the package.
-                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,ElevatedUserOrSystem}")
-            END_TEST_METHOD_PROPERTIES();
-
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
-            InstallCert(L"AppLifecycleTestPackage.cer");
+            RunCertUtil(L"AppLifecycleTestPackage.cer");
 
             // Deploy packaged app to register handler through the manifest.
-            std::wstring packagePath{ GetModuleDirectory() + L"\\AppLifecycleTestPackage.msixbundle" };
-            DeployPackage(packagePath);
+            std::wstring packagePath{ GetDeploymentDir() + L"\\AppLifecycleTestPackage.msixbundle" };
+            InstallPackage(packagePath);
 
             // TODO: Validate register scenario before continuing.
 
@@ -275,7 +317,7 @@ namespace ProjectReunionCppTest
 
             // Launch the test app to register for protocol launches.
             if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterFile",
-                GetModuleDirectory().c_str(), SW_SHOW))
+                GetDeploymentDir().c_str(), SW_SHOW))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -286,10 +328,8 @@ namespace ProjectReunionCppTest
 
             // TODO: Validate register scenario before continuing.
 
-            // Write a file into the documents folder for file type association launches.
-            auto file = WriteContentFile(L"testfile" + c_testFileExtension);
-
             // Launch the file and wait for the event to fire.
+            auto file = OpenDocFile(c_testDataFileName);
             auto launchResult = Launcher::LaunchFileAsync(file).get();
             VERIFY_IS_TRUE(launchResult);
 
@@ -304,18 +344,10 @@ namespace ProjectReunionCppTest
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testFilePhaseEventName);
 
-            InstallCert(L"AppLifecycleTestPackage.cer");
-
-            // Deploy packaged app to register handler through the manifest.
-            std::wstring packagePath{ GetModuleDirectory() + L"\\AppLifecycleTestPackage.msixbundle" };
-            DeployPackage(packagePath);
-
             // TODO: Validate register scenario before continuing.
-
-            // Write a file into the documents folder for file type association launches.
-            auto file = WriteContentFile(L"testfile" + c_testFileExtension);
-
+            
             // Launch the file and wait for the event to fire.
+            auto file = OpenDocFile(c_testDataFileName);
             auto launchResult = Launcher::LaunchFileAsync(file).get();
             VERIFY_IS_TRUE(launchResult);
 

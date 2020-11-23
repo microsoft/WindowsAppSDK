@@ -12,6 +12,8 @@
 #include <wil/resource.h>
 #include <WexTestClass.h>
 
+#include <string>
+
 #include <winrt/Microsoft.ProjectReunion.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Foundation.h>
