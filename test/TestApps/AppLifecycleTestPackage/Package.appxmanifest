@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="f2878b14-60cd-431a-acb5-3f7b1e361684"
+    Name="AppLifecycleTestPackage"
     Publisher="CN=Microsoft"
     Version="1.0.0.0" />
 

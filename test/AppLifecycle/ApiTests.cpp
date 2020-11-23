@@ -26,8 +26,10 @@ namespace ProjectReunionCppTest
         wil::unique_event m_failed;
 
         const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
-        const std::wstring c_testPackageFile = GetDeploymentDir() + L"AppLifecycleTestPackage.msixbundle";
-        const std::wstring c_testPackageCertFile = GetDeploymentDir() + L"AppLifecycleTestPackage.cer";
+        const std::wstring c_deploymentDir = GetDeploymentDir();
+        const std::wstring c_testPackageFile = c_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = c_deploymentDir + L"AppLifecycleTestPackage.cer";
+        const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
 
     public:
         BEGIN_TEST_CLASS(AppLifecycleApiTests)
@@ -53,7 +55,7 @@ namespace ProjectReunionCppTest
             try
             {
                 DeleteContentFile(c_testDataFileName);
-                UninstallPackage(c_testPackageFile);
+                UninstallPackage(c_testPackageFullName);
                 RunCertUtil(c_testPackageCertFile, true);
             }
             catch (const std::exception&)
@@ -107,7 +109,7 @@ namespace ProjectReunionCppTest
             std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
             std::wstring args{ action + L" TrustedPeople " + path };
             auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
-                args.c_str(), GetDeploymentDir());
+                args.c_str(), c_deploymentDir);
 
             // Wait for the cer to be installed.
             auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
@@ -135,13 +137,12 @@ namespace ProjectReunionCppTest
             VERIFY_SUCCEEDED(errorCode, errorText.c_str());
         }
 
-        void UninstallPackage(const std::wstring& packagePath)
+        void UninstallPackage(const std::wstring& packageFullName)
         {
             // Deploy packaged app to register handler through the manifest.
             PackageManager manager;
             IVector<Uri> depPackagePaths;
-            auto result = manager.AddPackageAsync(Uri(packagePath), depPackagePaths,
-                DeploymentOptions::ForceApplicationShutdown).get();
+            auto result = manager.RemovePackageAsync(packageFullName).get();
             auto errorText = result.ErrorText();
             auto errorCode = result.ExtendedErrorCode();
             VERIFY_SUCCEEDED(errorCode, errorText.c_str());
@@ -256,7 +257,7 @@ namespace ProjectReunionCppTest
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetDeploymentDir()))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", c_deploymentDir))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -274,7 +275,7 @@ namespace ProjectReunionCppTest
             WaitForEvent(event);
 
             // TODO: Test unregister scenario.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", GetDeploymentDir()))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", c_deploymentDir))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
@@ -294,7 +295,7 @@ namespace ProjectReunionCppTest
             RunCertUtil(L"AppLifecycleTestPackage.cer");
 
             // Deploy packaged app to register handler through the manifest.
-            std::wstring packagePath{ GetDeploymentDir() + L"\\AppLifecycleTestPackage.msixbundle" };
+            std::wstring packagePath{ c_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
             InstallPackage(packagePath);
 
             // TODO: Validate register scenario before continuing.
@@ -317,7 +318,7 @@ namespace ProjectReunionCppTest
 
             // Launch the test app to register for protocol launches.
             if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterFile",
-                GetDeploymentDir().c_str(), SW_SHOW))
+                c_deploymentDir.c_str(), SW_SHOW))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
