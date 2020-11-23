@@ -53,8 +53,13 @@ void Test::DynamicDependency::Test_Win32::Setup()
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, bootstrapDllAbsoluteFilename.c_str()) };
         Assert::IsNotNull(bootstrapDll.get(), message.get());
     }
+
     Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
-    Assert::AreEqual(S_OK, MddBootstrapInitialize(PACKAGE_VERSION{}));
+
+    // Version <major>.0.0.0 to find any framework package for this major version
+    PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
+    Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
+
     m_bootstrapDll = std::move(bootstrapDll);
 
     // We want to find Microsoft.ProjectReunion.dll from out test build
