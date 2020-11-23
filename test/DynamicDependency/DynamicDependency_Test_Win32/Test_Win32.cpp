@@ -28,7 +28,7 @@ void Test::DynamicDependency::Test_Win32::Setup()
     COM::CoSuperInitialize();
 
     // Remove our packages in case they were previously installed and incompletely removed
-    TP::RemovePackage_MainSidecar();
+    TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_ProjectReunionFramework();
     TP::RemovePackage_FrameworkMathMultiply();
@@ -39,7 +39,7 @@ void Test::DynamicDependency::Test_Win32::Setup()
     TP::AddPackage_FrameworkMathMultiply();
     TP::AddPackage_ProjectReunionFramework();
     TP::AddPackage_DynamicDependencyDataStore();
-    TP::AddPackage_MainSidecar();
+    TP::AddPackage_DynamicDependencyLifetimeManager();
 
     // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
     // Normally it's colocated with the application (i.e. same dir as the exe)
@@ -62,6 +62,7 @@ void Test::DynamicDependency::Test_Win32::Setup()
 
     m_bootstrapDll = std::move(bootstrapDll);
 
+#if 0
     // We want to find Microsoft.ProjectReunion.dll from out test build
     // and not the framework's package location so let's force it...
     // Explicitly load the dll so future references find it already
@@ -74,6 +75,7 @@ void Test::DynamicDependency::Test_Win32::Setup()
         Assert::IsNotNull(projectReunionDll.get(), message.get());
     }
     m_projectReunionDll = std::move(projectReunionDll);
+#endif
 }
 
 void Test::DynamicDependency::Test_Win32::Cleanup()
@@ -83,7 +85,7 @@ void Test::DynamicDependency::Test_Win32::Cleanup()
     m_projectReunionDll.reset();
     m_bootstrapDll.reset();
 
-    TP::RemovePackage_MainSidecar();
+    TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_ProjectReunionFramework();
     TP::RemovePackage_FrameworkMathMultiply();

@@ -177,8 +177,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -203,8 +205,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -229,8 +233,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -255,8 +261,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -285,8 +293,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -315,8 +325,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -345,8 +357,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>
@@ -375,8 +389,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
       <GenerateClientFiles>None</GenerateClientFiles>

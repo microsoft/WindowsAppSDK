@@ -8,7 +8,7 @@
   <Identity
     Name="Microsoft.ProjectReunion.Framework"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="0.1.2.3" />
+    Version="4.1.1967.333" />
 
   <Properties>
     <DisplayName>Microsoft.ProjectReunion.Framework fake for Bootstrap API tests</DisplayName>

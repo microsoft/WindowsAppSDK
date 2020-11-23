@@ -23,20 +23,6 @@ namespace Test::Packages::MainSidecar
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Main.Sidecar_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 
-namespace Test::Packages::ProjectReunionFramework
-{
-    constexpr PCWSTR c_PackageDirName = L"Microsoft.ProjectReunion.Framework";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.ProjectReunion.Framework_0.1.2.3_neutral__8wekyb3d8bbwe";
-}
-
-namespace Test::Packages::DynamicDependencyDataStore
-{
-    constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_10.1.2004.0_neutral__8wekyb3d8bbwe";
-}
-
 #define TEST_PACKAGE_DDLM_NAMEPREFIX    L"ProjectReunion.Test.DDLM"
 #define TEST_PACKAGE_DDLM_VERSION       L"4.1.1967.333"
 #if defined(_M_X64)
@@ -71,6 +57,20 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+}
+
+namespace Test::Packages::ProjectReunionFramework
+{
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.ProjectReunion.Framework";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.ProjectReunion.Framework_4.1.1967.333_neutral__8wekyb3d8bbwe";
+}
+
+namespace Test::Packages::DynamicDependencyDataStore
+{
+    constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_10.1.2004.0_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages

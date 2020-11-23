@@ -47,7 +47,7 @@ namespace Test::DynamicDependency
         {
             m_bootstrapDll.reset();
 
-            TP::RemovePackage_MainSidecar();
+            TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_ProjectReunionFramework();
 
             winrt::uninit_apartment();

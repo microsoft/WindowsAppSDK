@@ -6,16 +6,23 @@
 #include "MddBootstrap.h"
 #include "MddBootstrapTest.h"
 
+#include "MsixDynamicDependency.h"
+
 #include "IDynamicDependencyLifetimeManager.h"
 
 HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer);
-HRESULT AddFrameworkToPath(PCWSTR  path);
+HRESULT AddFrameworkToPath(PCWSTR path);
+HRESULT RemoveFrameworkFromPath(PCWSTR path);
 CLSID FindDDLM(const PACKAGE_VERSION minVersion);
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
+wil::unique_process_heap_string g_packageDependencyId;
+MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
+#if 1 //TODO Remove
 DLL_DIRECTORY_COOKIE g_dllDirectoryCookie{};
 wil::unique_cotaskmem_string g_frameworkPath;
+#endif
 
 std::wstring g_test_ddlmPackageNamePrefix;
 std::wstring g_test_ddlmPackagePublisherId;
@@ -96,7 +103,27 @@ STDAPI MddBootstrapInitialize(
 
     THROW_IF_FAILED(AddFrameworkToPath(frameworkPackageInfo->path));
 
+    auto projectReunionDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.ProjectReunion.dll" };
+    wil::unique_hmodule projectReunionDll(LoadLibraryEx(projectReunionDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
+    if (!projectReunionDll)
+    {
+        const auto lastError{ GetLastError() };
+        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, projectReunionDllFilename);
+    }
+
+    const MddPackageDependencyProcessorArchitectures architectureFilter{};
+    const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+    const MddCreatePackageDependencyOptions createOptions{};
+    wil::unique_process_heap_string packageDependencyId;
+    THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, frameworkPackageInfo->packageFamilyName, minVersion, architectureFilter, lifetimeKind, nullptr, createOptions, &packageDependencyId));
+    //
+    const MddAddPackageDependencyOptions addOptions{};
+    MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
+    THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
+
     g_lifetimeManager = lifetimeManager.detach();
+    g_packageDependencyId = std::move(packageDependencyId);
+    g_packageDependencyContext = packageDependencyContext;
     return S_OK;
 }
 CATCH_RETURN();
@@ -118,20 +145,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 
     if (g_frameworkPath)
     {
-        //TODO: Revisit once MddAddPackageDependency is lit up
-        wil::unique_cotaskmem_string path;
-        const auto hr{ wil::TryGetEnvironmentVariableW(L"PATH", path) };
-        if (SUCCEEDED(hr) && path)
-        {
-            const auto frameworkPathLength{ wcslen(g_frameworkPath.get()) };
-            PCWSTR pathWithoutFrameworkPath{ g_frameworkPath.get() + frameworkPathLength };
-            if (*pathWithoutFrameworkPath == L';')
-            {
-                ++pathWithoutFrameworkPath;
-            }
-            (void)LOG_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", pathWithoutFrameworkPath));
-        }
-
+        (void)LOG_IF_FAILED(RemoveFrameworkFromPath(g_frameworkPath.get()));
         g_frameworkPath.reset();
     }
 }
@@ -241,6 +255,25 @@ HRESULT AddFrameworkToPath(PCWSTR frameworkPath)
     dllDirectoryCookie = 0;
     return S_OK;
 }
+
+HRESULT RemoveFrameworkFromPath(PCWSTR frameworkPath)
+{
+    //TODO: Revisit once MddAddPackageDependency is lit up
+    wil::unique_cotaskmem_string path;
+    const auto hr{ wil::TryGetEnvironmentVariableW(L"PATH", path) };
+    if (SUCCEEDED(hr) && path)
+    {
+        const auto frameworkPathLength{ wcslen(frameworkPath) };
+        PCWSTR pathWithoutFrameworkPath{ frameworkPath + frameworkPathLength };
+        if (*pathWithoutFrameworkPath == L';')
+        {
+            ++pathWithoutFrameworkPath;
+        }
+        RETURN_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", pathWithoutFrameworkPath));
+    }
+    return S_OK;
+}
+
 
 CLSID FindDDLM(const PACKAGE_VERSION minVersion)
 {
