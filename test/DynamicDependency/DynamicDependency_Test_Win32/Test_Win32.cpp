@@ -16,7 +16,6 @@ namespace TP = ::Test::Packages;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 wil::unique_hmodule Test::DynamicDependency::Test_Win32::m_bootstrapDll;
-wil::unique_hmodule Test::DynamicDependency::Test_Win32::m_projectReunionDll;
 
 void Test::DynamicDependency::Test_Win32::Setup()
 {
@@ -61,28 +60,12 @@ void Test::DynamicDependency::Test_Win32::Setup()
     Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
 
     m_bootstrapDll = std::move(bootstrapDll);
-
-#if 0
-    // We want to find Microsoft.ProjectReunion.dll from out test build
-    // and not the framework's package location so let's force it...
-    // Explicitly load the dll so future references find it already
-    // in memory and don't search the file system (and not find it)
-    auto projectReunionDllFilename{ TF::GetProjectReunionDllAbsoluteFilename() };
-    wil::unique_hmodule projectReunionDll(LoadLibrary(projectReunionDllFilename.c_str()));
-    {
-        const auto lastError{ GetLastError() };
-        auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, projectReunionDllFilename.c_str()) };
-        Assert::IsNotNull(projectReunionDll.get(), message.get());
-    }
-    m_projectReunionDll = std::move(projectReunionDll);
-#endif
 }
 
 void Test::DynamicDependency::Test_Win32::Cleanup()
 {
     MddBootstrapShutdown();
 
-    m_projectReunionDll.reset();
     m_bootstrapDll.reset();
 
     TP::RemovePackage_DynamicDependencyLifetimeManager();

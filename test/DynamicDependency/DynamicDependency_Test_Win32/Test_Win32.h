@@ -197,6 +197,5 @@ namespace Test::DynamicDependency
 
     private:
         static wil::unique_hmodule m_bootstrapDll;
-        static wil::unique_hmodule m_projectReunionDll;
     };
 }
