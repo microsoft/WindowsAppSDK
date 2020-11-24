@@ -10,7 +10,7 @@
 
 #include "IDynamicDependencyLifetimeManager.h"
 
-HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer);
+void GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
 CLSID FindDDLM(const PACKAGE_VERSION minVersion);
@@ -97,7 +97,7 @@ STDAPI MddBootstrapInitialize(
 
     wil::unique_cotaskmem_ptr<BYTE[]> packageInfoBuffer;
     const PACKAGE_INFO* frameworkPackageInfo{};
-    THROW_IF_FAILED(GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo, packageInfoBuffer));
+    GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo, packageInfoBuffer);
 
     // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
@@ -166,7 +166,7 @@ STDAPI MddBootstrapTestInitialize(
 
 //TODO:Change error handle to exceptions
 /// Determine the path for the Project Reunion Framework package
-HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer)
+void GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer)
 {
     frameworkPackageInfo = nullptr;
     packageInfoBuffer.reset();
@@ -191,15 +191,14 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
 
     // Fetch the package graph for the package (per packageFullName)
     wil::unique_package_info_reference packageInfoReference;
-    RETURN_IF_WIN32_ERROR(OpenPackageInfoByFullName(packageFullName, 0, &packageInfoReference));
+    THROW_IF_WIN32_ERROR(OpenPackageInfoByFullName(packageFullName, 0, &packageInfoReference));
     UINT32 bufferLength{};
     UINT32 packageInfoCount{};
     const auto hr{ HRESULT_FROM_WIN32(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, nullptr, &packageInfoCount)) };
-    RETURN_HR_IF(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER));
-    RETURN_HR_IF(E_UNEXPECTED, packageInfoCount == 0);
-    auto buffer{ wil::make_unique_cotaskmem_nothrow<BYTE[]>(bufferLength) };
-    RETURN_IF_NULL_ALLOC(buffer);
-    RETURN_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
+    THROW_HR_IF(hr, hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER));
+    THROW_HR_IF(E_UNEXPECTED, packageInfoCount == 0);
+    auto buffer{ wil::make_unique_cotaskmem<BYTE[]>(bufferLength) };
+    THROW_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
     // Find the Project Reunion Framework package in the package graph to determine its path
     const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
@@ -210,7 +209,7 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
         {
             packageInfoBuffer = std::move(buffer);
             frameworkPackageInfo = packageInfo;
-            return S_OK;
+            return;
         }
     }
 
@@ -219,7 +218,7 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     //
     // Verify the package providing the LifetimeManager declares
     // <PackageDependency> on the Project Reunion Framework package.
-    RETURN_WIN32(APPMODEL_ERROR_PACKAGE_NOT_AVAILABLE);
+    THROW_WIN32(APPMODEL_ERROR_PACKAGE_NOT_AVAILABLE);
 }
 
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR frameworkPath)
@@ -234,8 +233,7 @@ DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR frameworkPath)
     if (path)
     {
         // PATH = frameworkPath + ";" + path
-        wil::unique_cotaskmem_string newPath;
-        THROW_IF_FAILED(wil::str_concat_nothrow(newPath, frameworkPath, L";", path));
+        auto newPath{ wil::str_concat<wil::unique_cotaskmem_string>(frameworkPath, L";", path) };
         THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPath.get()));
     }
     else
