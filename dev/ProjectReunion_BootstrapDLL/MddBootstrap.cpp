@@ -10,7 +10,7 @@
 
 #include "IDynamicDependencyLifetimeManager.h"
 
-void GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer);
+wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
 CLSID FindDDLM(const PACKAGE_VERSION minVersion);
@@ -95,9 +95,8 @@ STDAPI MddBootstrapInitialize(
     wil::unique_cotaskmem_string packageFullName;
     THROW_IF_FAILED(lifetimeManager->GetPackageFullName(&packageFullName));
 
-    wil::unique_cotaskmem_ptr<BYTE[]> packageInfoBuffer;
     const PACKAGE_INFO* frameworkPackageInfo{};
-    GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo, packageInfoBuffer);
+    auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo) };
 
     // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
@@ -164,12 +163,10 @@ STDAPI MddBootstrapTestInitialize(
     return S_OK;
 } CATCH_RETURN();
 
-//TODO:Change error handle to exceptions
 /// Determine the path for the Project Reunion Framework package
-void GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer)
+wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo)
 {
     frameworkPackageInfo = nullptr;
-    packageInfoBuffer.reset();
 
     // We need to determine the exact Project Reunion Framework package
     // in the sidecar package's dependencies, as resolved by Windows.
@@ -207,9 +204,8 @@ void GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INF
         PCWSTR frameworkPackageFamilyName{ L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe" };
         if (CompareStringOrdinal(packageInfo->packageFamilyName, -1, frameworkPackageFamilyName, -1, TRUE) == CSTR_EQUAL)
         {
-            packageInfoBuffer = std::move(buffer);
             frameworkPackageInfo = packageInfo;
-            return;
+            return buffer;
         }
     }
 
