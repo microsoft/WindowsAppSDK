@@ -25,7 +25,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 
     hstring PackageDependencyContext::PackageFullName()
     {
-        //TODO Lookup ContextId -> PackageFullName
+        //TODO Lookup ContextId -> PackageFullName. Needs new Mdd API
         throw hresult_not_implemented();
     }
 
