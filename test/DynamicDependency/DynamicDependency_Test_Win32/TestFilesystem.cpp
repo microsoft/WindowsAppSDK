@@ -45,8 +45,8 @@ namespace Test::FileSystem
         // \...
         //    \DynamicDependency_Test_Win32
         //        DynamicDependency_Test_Win32.dll      <== This test .dll
-        //    \Main.SideCar.Msix
-        //        Main.Sidecar.Msix
+        //    \<project>.Msix
+        //        <project>.Msix
         //    \ProjectReunion_BootstrapDLL
         //        Microsoft.ProjectReunion.Bootstrap.dll
 

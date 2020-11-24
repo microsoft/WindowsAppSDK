@@ -169,16 +169,16 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     frameworkPackageInfo = nullptr;
 
     // We need to determine the exact Project Reunion Framework package
-    // in the sidecar package's dependencies, as resolved by Windows.
-    // A user can have multiple framework packages in a family registered
-    // at a time, for multiple reasons:
+    // in the Dynamic Dependency Lifetime Manager package's dependencies,
+    // as resolved by Windows. A user can have multiple framework packages
+    // in a family registered at a time, for multiple reasons:
     //
     //   * Multiple Architectures -- x86/x64 on an x64 machine, x86/arm/arm64/x86ona64 on an arm64 machine, etc
     //   * Multiple Versions -- v1.0.0.0 in use by processes running as pkg1 and v1.0.0.1 in use by runnings running as pkg2
     //                          or v1.0.0.0 in use by running processes and v1.0.0.1 in package graphs for packages w/no running process
     //
     // Thus FindPackagesByPackageFamily(pkgfamilyname,...) and PackageManager.FindPackages(user="", pkgfamilyname) could be ambiguous.
-    // We need the actual dependency graph known to Windows for the sidecar package where we got our LifetimeManager.
+    // We need the actual dependency graph known to Windows for the DDLM package where we got our LifetimeManager.
     // That leaves us few options:
     //
     //   * PackageManager.FindPackage(user="", lifetimeManager->GetPackageFullName()).Dependencies

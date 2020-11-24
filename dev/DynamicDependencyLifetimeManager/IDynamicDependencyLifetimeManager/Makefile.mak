@@ -41,6 +41,7 @@ $(OutHeader): $(ProjectDir)IDynamicDependencyLifetimeManager.idl
     @if not exist $(IntDir) md $(IntDir)
     midl.exe /env $(ENV) /out $(IntDir) /h "IDynamicDependencyLifetimeManager.h" /W1 /char signed /target "NT60" /notlb /nologo /dlldata "dlldata.c" "$(ProjectDir)IDynamicDependencyLifetimeManager.idl"
     @copy $(IntDir)IDynamicDependencyLifetimeManager.h $(OutDir)$(TargetName)\IDynamicDependencyLifetimeManager.h
+    @copy $(ProjectDir)IDynamicDependencyLifetimeManager.idl $(OutDir)$(TargetName)\IDynamicDependencyLifetimeManager.idl
 
 build: $(OutHeader)
 

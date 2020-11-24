@@ -17,4 +17,9 @@
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Midl Include="IDynamicDependencyLifetimeManager.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
 </Project>

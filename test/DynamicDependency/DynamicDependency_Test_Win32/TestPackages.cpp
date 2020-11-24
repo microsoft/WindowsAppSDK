@@ -99,23 +99,6 @@ namespace Test::Packages
         return GetPackagePath(packageFullName.c_str());
     }
 
-    //TODO Remove Sidecar (replaced by DynamicDependencyLifetimeManager)
-    void AddPackage_MainSidecar()
-    {
-        AddPackage(Test::Packages::MainSidecar::c_PackageDirName, Test::Packages::MainSidecar::c_PackageFullName);
-    }
-
-    void RemovePackage_MainSidecar()
-    {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::MainSidecar::c_PackageFullName);
-    }
-
     void AddPackage_DynamicDependencyLifetimeManager()
     {
         AddPackage(Test::Packages::DynamicDependencyLifetimeManager::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
@@ -194,15 +177,6 @@ namespace Test::Packages
         //
         // Thus, do a *IfNecessary removal
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
-    }
-
-    std::filesystem::path GetMainSidecarMsixPath()
-    {
-        // Determine the location of the Main.Sidecar's msix. See GetSolutionOutDirPath() for more details.
-        auto path = TF::GetSolutionOutDirPath();
-        path /= L"Main.Sidecar.Msix";
-        path /= L"Main.Sidecar.msix";
-        return path;
     }
 
     std::filesystem::path GetProjectReunionFrameworkMsixPath()

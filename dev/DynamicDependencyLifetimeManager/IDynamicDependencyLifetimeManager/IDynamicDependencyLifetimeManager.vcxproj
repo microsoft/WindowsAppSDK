@@ -152,15 +152,6 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\IDynamicDependencyLifetimeManager.h" />
+    <Midl Include="IDynamicDependencyLifetimeManager.idl" />
   </ItemGroup>
-  <ItemGroup>
-    <PublishGeneratedFiles Include="$(IntDir)IDynamicDependencyLifetimeManager.h" />
-  </ItemGroup>
-  <!-- Include header files from the dev chunks -->
-  <Target Name="CopyFiles" AfterTargets="AfterBuild">
-    <!-- <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" /> -->
-    <Copy SourceFiles="@(PublishGeneratedFiles)" DestinationFolder="$(OutDir)" />
-    <Error Text="@(PublishGeneratedFiles) DestinationFolder=$(OutDir)$(TargetName)" />
-  </Target>
 </Project>

@@ -15,14 +15,6 @@ namespace Test::Packages::FrameworkMathMultiply
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
-//TODO Remove?
-namespace Test::Packages::MainSidecar
-{
-    constexpr PCWSTR c_PackageDirName = L"Main.Sidecar";
-    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.Main.Sidecar_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Main.Sidecar_4.1.1967.333_neutral__8wekyb3d8bbwe";
-}
-
 #define TEST_PACKAGE_DDLM_NAMEPREFIX    L"ProjectReunion.Test.DDLM"
 #define TEST_PACKAGE_DDLM_VERSION       L"4.1.1967.333"
 #if defined(_M_X64)
@@ -89,10 +81,6 @@ namespace Test::Packages
 
     std::wstring GetPackagePath(const std::wstring& packageFullName);
 
-    void AddPackage_MainSidecar();
-
-    void RemovePackage_MainSidecar();
-
     void AddPackage_DynamicDependencyLifetimeManager();
 
     void RemovePackage_DynamicDependencyLifetimeManager();
@@ -112,8 +100,6 @@ namespace Test::Packages
     void AddPackage_DynamicDependencyDataStore();
 
     void RemovePackage_DynamicDependencyDataStore();
-
-    std::filesystem::path GetMainSidecarMsixPath();
 
     std::filesystem::path GetProjectReunionFrameworkMsixPath();
 }
