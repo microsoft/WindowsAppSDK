@@ -7,5 +7,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)FunctionalTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Shared.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
   </ItemGroup>
 </Project>

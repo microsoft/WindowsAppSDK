@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include <testdef.h>
+#include "Shared.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -27,9 +28,8 @@ namespace ProjectReunionCppTest
 
         const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
         const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
-        const std::wstring c_deploymentDir = GetDeploymentDir();
-        const std::wstring c_testPackageFile = c_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
-        const std::wstring c_testPackageCertFile = c_deploymentDir + L"AppLifecycleTestPackage.cer";
+        const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"AppLifecycleTestPackage.cer";
         const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
 
     public:
@@ -75,138 +75,6 @@ namespace ProjectReunionCppTest
         {
             m_failed = CreateTestEvent(c_testFailureEventName);
             return true;
-        }
-
-        StorageFile CreateDocFile(std::wstring filename)
-        {
-            return KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
-        }
-
-        StorageFile OpenDocFile(std::wstring filename)
-        {
-            return KnownFolders::DocumentsLibrary().GetFileAsync(filename).get();
-        }
-
-        wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
-            const std::wstring& directory)
-        {
-            SHELLEXECUTEINFO ei{};
-            ei.cbSize = sizeof(SHELLEXECUTEINFO);
-            ei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-            ei.lpFile = command.c_str();
-            ei.lpParameters = args.c_str();
-            ei.lpDirectory = directory.c_str();
-
-            if (!ShellExecuteEx(&ei))
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_FAILED(lastError);
-            }
-
-            wil::unique_handle process{ ei.hProcess };
-            return process;
-        }
-
-        void RunCertUtil(const std::wstring& path, bool removeCert = false)
-        {
-            std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
-            std::wstring args{ action + L" TrustedPeople " + path };
-            auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
-                args.c_str(), c_deploymentDir);
-
-            // Wait for the cer to be installed.
-            auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
-            if (waitResult != WAIT_OBJECT_0)
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_FAILED(lastError);
-            }
-
-            // Make sure the exitcode for the tool is success.
-            DWORD exitCode{};
-            THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(process.get(), &exitCode));
-            VERIFY_ARE_EQUAL(exitCode, 0);
-        }
-
-        void InstallPackage(const std::wstring& packagePath)
-        {
-            // Deploy packaged app to register handler through the manifest.
-            PackageManager manager;
-            IVector<Uri> depPackagePaths;
-            auto result = manager.AddPackageAsync(Uri(packagePath), depPackagePaths,
-                DeploymentOptions::ForceApplicationShutdown).get();
-            auto errorText = result.ErrorText();
-            auto errorCode = result.ExtendedErrorCode();
-            VERIFY_SUCCEEDED(errorCode, errorText.c_str());
-        }
-
-        void UninstallPackage(const std::wstring& packageFullName)
-        {
-            // Deploy packaged app to register handler through the manifest.
-            PackageManager manager;
-            IVector<Uri> depPackagePaths;
-            auto result = manager.RemovePackageAsync(packageFullName).get();
-            auto errorText = result.ErrorText();
-            auto errorCode = result.ExtendedErrorCode();
-            VERIFY_SUCCEEDED(errorCode, errorText.c_str());
-        }
-
-        static wil::unique_event CreateTestEvent(const std::wstring& eventName)
-        {
-            bool alreadyExists = false;
-            SECURITY_ATTRIBUTES attributes = {};
-            wil::unique_hlocal_security_descriptor descriptor;
-
-            // Grant access to world and appcontainer.
-            THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
-                L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
-            attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
-            attributes.lpSecurityDescriptor = descriptor.get();
-
-            wil::unique_event event;
-            event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
-            return event;
-        }
-
-        void WaitForEvent(const wil::unique_event& event)
-        {
-            HANDLE waitEvents[2] = { event.get(), m_failed.get() };
-            auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
-                c_phaseTimeout);
-
-            // If waitResult == failureEventIndex, it means the remote test process signaled a
-            // failure event while we were waiting for a different event.
-            auto failureEventIndex = WAIT_OBJECT_0 + 1;
-            VERIFY_ARE_NOT_EQUAL(waitResult, failureEventIndex);
-
-            VERIFY_ARE_NOT_EQUAL(waitResult, WAIT_TIMEOUT);
-            if (waitResult == WAIT_FAILED)
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_FAILED(lastError);
-            }
-
-            event.ResetEvent();
-            m_failed.ResetEvent();
-        }
-
-        static std::wstring GetDeploymentDir()
-        {
-            WEX::Common::String testDeploymentDir;
-            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
-            return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
-        }
-
-        void WriteContentFile(std::wstring filename)
-        {
-            auto file = CreateDocFile(filename);
-            FileIO::WriteTextAsync(file, L"Hello, World!").get();
-        }
-
-        void DeleteContentFile(std::wstring filename)
-        {
-            auto file = CreateDocFile(filename);
-            file.DeleteAsync().get();
         }
 
         // Validate that UWP is not a supported scenario.
@@ -260,14 +128,14 @@ namespace ProjectReunionCppTest
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", c_deploymentDir))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
             }
 
             // Wait for the register event.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // Launch a protocol and wait for the event to fire.
             Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
@@ -275,17 +143,17 @@ namespace ProjectReunionCppTest
             VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // TODO: Test unregister scenario.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", c_deploymentDir))
+            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
             }
 
             // Wait for the unregister event.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // TODO: Validate it was unregistered properly.
         }
@@ -298,7 +166,7 @@ namespace ProjectReunionCppTest
             RunCertUtil(L"AppLifecycleTestPackage.cer");
 
             // Deploy packaged app to register handler through the manifest.
-            std::wstring packagePath{ c_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
+            std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
             InstallPackage(packagePath);
 
             // TODO: Validate register scenario before continuing.
@@ -309,7 +177,7 @@ namespace ProjectReunionCppTest
             VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // TODO: Test unregister scenario.
         }
@@ -321,14 +189,14 @@ namespace ProjectReunionCppTest
 
             // Launch the test app to register for protocol launches.
             if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterFile",
-                c_deploymentDir.c_str(), SW_SHOW))
+                g_deploymentDir.c_str(), SW_SHOW))
             {
                 auto lastError = GetLastError();
                 VERIFY_WIN32_FAILED(lastError);
             }
 
             // Wait for the register event.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // TODO: Validate register scenario before continuing.
 
@@ -338,7 +206,7 @@ namespace ProjectReunionCppTest
             VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // TODO: Test unregister scenario.
         }
@@ -356,7 +224,7 @@ namespace ProjectReunionCppTest
             VERIFY_IS_TRUE(launchResult);
 
             // Wait for the protocol activation.
-            WaitForEvent(event);
+            WaitForEvent(event, m_failed);
 
             // TODO: Test unregister scenario.
         }
