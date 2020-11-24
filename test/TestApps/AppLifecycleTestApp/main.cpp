@@ -47,7 +47,6 @@ int main()
 
             if (argument.compare(L"RegisterProtocol") == 0)
             {
-                // TODO: Figure out how to properly test the logo icon support.
                 ActivationRegistrationManager::RegisterForProtocolActivation(c_testProtocolScheme,
                     L"Project Reunion Test Protocol", L"logo");
 
@@ -65,7 +64,6 @@ int main()
             }
             else if (argument.compare(L"RegisterFile") == 0)
             {
-                // TODO: Figure out how to properly test the logo icon support.
                 ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension.c_str() },
                     { L"open" }, L"Project Reunion Test File Type", L"logo");
 

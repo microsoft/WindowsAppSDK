@@ -19,6 +19,8 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
+// TODO: Write Register/Unregister tests that utilize the Assoc APIs to validate results.
+
 namespace ProjectReunionCppTest
 {
     class AppLifecycleFunctionalTests
@@ -120,8 +122,6 @@ namespace ProjectReunionCppTest
             VERIFY_IS_NOT_NULL(launchArgs);
         }
 
-        // TODO: Ensure all manifests have proper version requirements for the project!
-
         TEST_METHOD(GetActivatedEventArgsForProtocol_Win32)
         {
             // Create a named event for communicating with test app.
@@ -145,7 +145,6 @@ namespace ProjectReunionCppTest
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
 
-            // TODO: Test unregister scenario.
             if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir))
             {
                 auto lastError = GetLastError();
@@ -154,8 +153,6 @@ namespace ProjectReunionCppTest
 
             // Wait for the unregister event.
             WaitForEvent(event, m_failed);
-
-            // TODO: Validate it was unregistered properly.
         }
 
         TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
@@ -169,8 +166,6 @@ namespace ProjectReunionCppTest
             std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
             InstallPackage(packagePath);
 
-            // TODO: Validate register scenario before continuing.
-
             // Launch a protocol and wait for the event to fire.
             Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
             auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
@@ -178,8 +173,6 @@ namespace ProjectReunionCppTest
 
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
-
-            // TODO: Test unregister scenario.
         }
 
         TEST_METHOD(GetActivatedEventArgsForFile_Win32)
@@ -198,8 +191,6 @@ namespace ProjectReunionCppTest
             // Wait for the register event.
             WaitForEvent(event, m_failed);
 
-            // TODO: Validate register scenario before continuing.
-
             // Launch the file and wait for the event to fire.
             auto file = OpenDocFile(c_testDataFileName);
             auto launchResult = Launcher::LaunchFileAsync(file).get();
@@ -207,8 +198,6 @@ namespace ProjectReunionCppTest
 
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
-
-            // TODO: Test unregister scenario.
         }
 
         TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
@@ -216,8 +205,6 @@ namespace ProjectReunionCppTest
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testFilePhaseEventName);
 
-            // TODO: Validate register scenario before continuing.
-            
             // Launch the file and wait for the event to fire.
             auto file = OpenDocFile(c_testDataFileName_Packaged);
             auto launchResult = Launcher::LaunchFileAsync(file).get();
@@ -225,8 +212,6 @@ namespace ProjectReunionCppTest
 
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
-
-            // TODO: Test unregister scenario.
         }
     };
 }
