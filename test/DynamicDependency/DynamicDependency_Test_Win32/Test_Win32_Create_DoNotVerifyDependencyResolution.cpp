@@ -22,19 +22,13 @@ void Test::DynamicDependency::Test_Win32::Create_DoNotVerifyDependencyResolution
     std::wstring expectedPackageFullName_ProjectReunionFramework{ TP::ProjectReunionFramework::c_PackageFullName };
     std::wstring expectedPackageFullName_FrameworkMathAdd{ TP::FrameworkMathAdd::c_PackageFullName };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
+    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
+    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusProjectReunionFramework() };
+    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(expectedPackageFullName_ProjectReunionFramework) };
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
 
     // -- TryCreate
-
-    wil::unique_process_heap_string packageDependencyId_ProjectReunionFramework{ Mdd_TryCreate_ProjectReunionFramework() };
-
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
 
     // Create a package dependency without verifying its resolution
     TP::RemovePackage_FrameworkMathAdd();
@@ -43,28 +37,14 @@ void Test::DynamicDependency::Test_Win32::Create_DoNotVerifyDependencyResolution
     auto options{ MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution };
     wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(options) };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
+    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 
     TP::AddPackage_FrameworkMathAdd();
 
     // -- Add
-
-    wil::unique_process_heap_string packageFullName_ProjectReunionFramework;
-    MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_ProjectReunionFramework{ Mdd_Add(packageDependencyId_ProjectReunionFramework.get(), packageFullName_ProjectReunionFramework) };
-    Assert::IsNotNull(packageFullName_ProjectReunionFramework.get());
-    std::wstring actualPackageFullName_ProjectReunionFramework{ packageFullName_ProjectReunionFramework.get() };
-    Assert::AreEqual(actualPackageFullName_ProjectReunionFramework, expectedPackageFullName_ProjectReunionFramework);
-
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
-    VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(expectedPackageFullName_ProjectReunionFramework) };
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName_FrameworkMathAdd) };
@@ -75,8 +55,7 @@ void Test::DynamicDependency::Test_Win32::Create_DoNotVerifyDependencyResolution
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     auto packagePath_FrameworkMathAdd{ TP::GetPackagePath(expectedPackageFullName_FrameworkMathAdd) };
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Use it
@@ -105,33 +84,15 @@ void Test::DynamicDependency::Test_Win32::Create_DoNotVerifyDependencyResolution
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
-
-    MddRemovePackageDependency(packageDependencyContext_ProjectReunionFramework);
-
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Delete
 
     MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
-
-    MddDeletePackageDependency(packageDependencyId_ProjectReunionFramework.get());
-
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 }

@@ -22,19 +22,13 @@ void Test::DynamicDependency::Test_Win32::Create_FilePathLifetime_NoExist()
     std::wstring expectedPackageFullName_ProjectReunionFramework{ TP::ProjectReunionFramework::c_PackageFullName };
     std::wstring expectedPackageFullName_FrameworkMathAdd{ TP::FrameworkMathAdd::c_PackageFullName };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    auto pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH") };
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
+    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
+    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusProjectReunionFramework() };
+    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(expectedPackageFullName_ProjectReunionFramework) };
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
 
     // -- TryCreate
-
-    wil::unique_process_heap_string packageDependencyId_ProjectReunionFramework{ Mdd_TryCreate_ProjectReunionFramework() };
-
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
 
     auto lifetimeArtifactPath{ std::filesystem::temp_directory_path() };
     auto lifetimeArtifactFilename{ lifetimeArtifactPath / L"Test-MathAdd-LifetimeArtifact.tmp" };
@@ -42,19 +36,7 @@ void Test::DynamicDependency::Test_Win32::Create_FilePathLifetime_NoExist()
     auto packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), MddPackageDependencyLifetimeKind::FilePath, lifetimeArtifactFilename.c_str()) };
     Assert::IsNull(packageDependencyId_FrameworkMathAdd.get());
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), S_OK, expectedPackageFullName_ProjectReunionFramework);
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), E_INVALIDARG);
-
-    // -- Delete
-
-    MddDeletePackageDependency(packageDependencyId_ProjectReunionFramework.get());
-
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
-    VerifyPathEnvironmentVariable(pathEnvironmentVariable.get());
-    VerifyPackageDependency(packageDependencyId_ProjectReunionFramework.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
-    VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), E_INVALIDARG);
+    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
+    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
 }
