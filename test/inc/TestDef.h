@@ -6,7 +6,9 @@ static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 static const std::wstring c_testFailureEventName = L"ReunionTestFailureEventName";
 
 static const std::wstring c_testProtocolScheme = L"reuniontestprotocol";
+static const std::wstring c_testProtocolScheme_Packaged = L"reuniontestprotocol-packaged";
 static const std::wstring c_testProtocolPhaseEventName = L"ReunionTestProtocolPhaseEventName";
 
 static const std::wstring c_testFileExtension = L".reuniontestfile";
+static const std::wstring c_testFileExtension_Packaged = L".reuniontestfile-packaged";
 static const std::wstring c_testFilePhaseEventName = L"ReunionTestFilePhaseEventName";

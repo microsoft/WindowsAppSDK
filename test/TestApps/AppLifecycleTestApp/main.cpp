@@ -19,6 +19,18 @@ void SignalPhase(const std::wstring& phaseEventName)
     }
 }
 
+bool IsPackagedProcess()
+{
+    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
+    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
+    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 int main()
 {
     auto succeeded = false;
@@ -74,9 +86,19 @@ int main()
     else if (kind == ActivationKind::Protocol)
     {
         auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
-        auto expectedUri = Uri(c_testProtocolScheme + L"://this_is_a_test");
+
+        std::wstring expectedUri;
+        if (IsPackagedProcess())
+        {
+            expectedUri = c_testProtocolScheme_Packaged + L"://this_is_a_test";
+        }
+        else
+        {
+            expectedUri = c_testProtocolScheme + L"://this_is_a_test";
+        }
+
         auto actualUri = protocolArgs.Uri();
-        if (actualUri.Equals(expectedUri))
+        if (actualUri.Equals(Uri(expectedUri)))
         {
             // Signal event that protocol was activated and valid.
             SignalPhase(c_testProtocolPhaseEventName);

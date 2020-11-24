@@ -20,19 +20,20 @@ using namespace winrt::Windows::System;
 
 namespace ProjectReunionCppTest
 {
-    class AppLifecycleApiTests
+    class AppLifecycleFunctionalTests
     {
     private:
         wil::unique_event m_failed;
 
         const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
+        const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
         const std::wstring c_deploymentDir = GetDeploymentDir();
         const std::wstring c_testPackageFile = c_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
         const std::wstring c_testPackageCertFile = c_deploymentDir + L"AppLifecycleTestPackage.cer";
         const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
 
     public:
-        BEGIN_TEST_CLASS(AppLifecycleApiTests)
+        BEGIN_TEST_CLASS(AppLifecycleFunctionalTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
         END_TEST_CLASS()
@@ -45,6 +46,7 @@ namespace ProjectReunionCppTest
 
             // Write out some test content.
             WriteContentFile(c_testDataFileName);
+            WriteContentFile(c_testDataFileName_Packaged);
 
             return true;
         }
@@ -54,6 +56,7 @@ namespace ProjectReunionCppTest
             // Swallow errors in cleanup.
             try
             {
+                DeleteContentFile(c_testDataFileName_Packaged);
                 DeleteContentFile(c_testDataFileName);
                 UninstallPackage(c_testPackageFullName);
                 RunCertUtil(c_testPackageCertFile, true);
@@ -301,7 +304,7 @@ namespace ProjectReunionCppTest
             // TODO: Validate register scenario before continuing.
 
             // Launch a protocol and wait for the event to fire.
-            Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
             auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
@@ -348,7 +351,7 @@ namespace ProjectReunionCppTest
             // TODO: Validate register scenario before continuing.
             
             // Launch the file and wait for the event to fire.
-            auto file = OpenDocFile(c_testDataFileName);
+            auto file = OpenDocFile(c_testDataFileName_Packaged);
             auto launchResult = Launcher::LaunchFileAsync(file).get();
             VERIFY_IS_TRUE(launchResult);
 

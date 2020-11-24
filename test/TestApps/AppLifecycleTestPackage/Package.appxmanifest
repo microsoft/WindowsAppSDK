@@ -43,12 +43,12 @@
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="testfiletypeassociations">
             <uap:SupportedFileTypes>
-              <uap:FileType>.projectreunionfile</uap:FileType>
+              <uap:FileType>.reuniontestfile-packaged</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="projectreunionprotocol"/>
+          <uap:Protocol Name="reuniontestprotocol-packaged"/>
         </uap:Extension>
       </Extensions>
     </Application>
