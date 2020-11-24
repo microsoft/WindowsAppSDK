@@ -11,18 +11,15 @@
 #include "IDynamicDependencyLifetimeManager.h"
 
 HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo, wil::unique_cotaskmem_ptr<BYTE[]>& packageInfoBuffer);
-HRESULT AddFrameworkToPath(PCWSTR path);
-HRESULT RemoveFrameworkFromPath(PCWSTR path);
+DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
+void RemoveFrameworkFromPath(PCWSTR frameworkPath);
 CLSID FindDDLM(const PACKAGE_VERSION minVersion);
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
+wil::unique_hmodule g_projectReunionDll{};
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
-#if 1 //TODO Remove
-DLL_DIRECTORY_COOKIE g_dllDirectoryCookie{};
-wil::unique_cotaskmem_string g_frameworkPath;
-#endif
 
 std::wstring g_test_ddlmPackageNamePrefix;
 std::wstring g_test_ddlmPackagePublisherId;
@@ -85,8 +82,9 @@ STDAPI MddBootstrapInitialize(
     const PACKAGE_VERSION minVersion) noexcept try
 {
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_dllDirectoryCookie != 0);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_frameworkPath);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
     const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(minVersion) };
 
@@ -101,14 +99,15 @@ STDAPI MddBootstrapInitialize(
     const PACKAGE_INFO* frameworkPackageInfo{};
     THROW_IF_FAILED(GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo, packageInfoBuffer));
 
-    THROW_IF_FAILED(AddFrameworkToPath(frameworkPackageInfo->path));
+    // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
+    wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
     auto projectReunionDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.ProjectReunion.dll" };
     wil::unique_hmodule projectReunionDll(LoadLibraryEx(projectReunionDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
     if (!projectReunionDll)
     {
         const auto lastError{ GetLastError() };
-        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, projectReunionDllFilename);
+        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, projectReunionDllFilename.c_str());
     }
 
     const MddPackageDependencyProcessorArchitectures architectureFilter{};
@@ -121,7 +120,12 @@ STDAPI MddBootstrapInitialize(
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext{};
     THROW_IF_FAILED(MddAddPackageDependency(packageDependencyId.get(), MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT, addOptions, &packageDependencyContext, nullptr));
 
+    // Remove out temporary path addition
+    RemoveFrameworkFromPath(frameworkPackageInfo->path);
+    dllDirectoryCookie.reset();
+
     g_lifetimeManager = lifetimeManager.detach();
+    g_projectReunionDll = std::move(projectReunionDll);
     g_packageDependencyId = std::move(packageDependencyId);
     g_packageDependencyContext = packageDependencyContext;
     return S_OK;
@@ -130,6 +134,13 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
+    MddRemovePackageDependency(g_packageDependencyContext);
+    g_packageDependencyContext = nullptr;
+
+    g_packageDependencyId.reset();
+
+    g_projectReunionDll.reset();
+
     if (g_lifetimeManager)
     {
         (void)LOG_IF_FAILED(g_lifetimeManager->Shutdown());
@@ -137,17 +148,6 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
         g_lifetimeManager = nullptr;
     }
 
-    if (g_dllDirectoryCookie != 0)
-    {
-        RemoveDllDirectory(g_dllDirectoryCookie);
-        g_dllDirectoryCookie = 0;
-    }
-
-    if (g_frameworkPath)
-    {
-        (void)LOG_IF_FAILED(RemoveFrameworkFromPath(g_frameworkPath.get()));
-        g_frameworkPath.reset();
-    }
 }
 
 STDAPI MddBootstrapTestInitialize(
@@ -222,56 +222,60 @@ HRESULT GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_
     RETURN_WIN32(APPMODEL_ERROR_PACKAGE_NOT_AVAILABLE);
 }
 
-//TODO:Change error handle to exceptions
-HRESULT AddFrameworkToPath(PCWSTR frameworkPath)
+DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR frameworkPath)
 {
     // Add the framework to the Loader's DllDirectory list
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddDllDirectory(frameworkPath) };
-    RETURN_LAST_ERROR_IF_NULL(dllDirectoryCookie);
-
-    // Make a copy of the framework path to save for later
-    wil::unique_cotaskmem_string frameworkPathCopy(wil::make_cotaskmem_string_nothrow(frameworkPath));
-    RETURN_IF_NULL_ALLOC(frameworkPathCopy);
+    THROW_LAST_ERROR_IF_NULL(dllDirectoryCookie);
 
     // Add the framework the the PATH environment variable
     wil::unique_cotaskmem_string path;
-    RETURN_IF_FAILED(wil::GetEnvironmentVariableW(L"PATH", path));
+    THROW_IF_FAILED(wil::GetEnvironmentVariableW(L"PATH", path));
     if (path)
     {
         // PATH = frameworkPath + ";" + path
         wil::unique_cotaskmem_string newPath;
-        RETURN_IF_FAILED(wil::str_concat_nothrow(newPath, frameworkPathCopy, L";", path));
-        RETURN_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPath.get()));
+        THROW_IF_FAILED(wil::str_concat_nothrow(newPath, frameworkPath, L";", path));
+        THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", newPath.get()));
     }
     else
     {
         const auto lastError{ GetLastError() };
-        RETURN_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != ERROR_ENVVAR_NOT_FOUND);
-        RETURN_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", frameworkPath));
+        THROW_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != ERROR_ENVVAR_NOT_FOUND);
+        THROW_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", frameworkPath));
     }
 
-    g_frameworkPath = std::move(frameworkPathCopy);
-    g_dllDirectoryCookie = dllDirectoryCookie.release();
-    dllDirectoryCookie = 0;
-    return S_OK;
+    return dllDirectoryCookie.release();
 }
 
-HRESULT RemoveFrameworkFromPath(PCWSTR frameworkPath)
+void RemoveFrameworkFromPath(PCWSTR frameworkPath)
 {
-    //TODO: Revisit once MddAddPackageDependency is lit up
+    // Remove frameworkPath from PATH (previously added by AddFrameworkToPath())
+
+    // PATH should start with frameworkPath since we just prepended it. Remove it
     wil::unique_cotaskmem_string path;
     const auto hr{ wil::TryGetEnvironmentVariableW(L"PATH", path) };
     if (SUCCEEDED(hr) && path)
     {
+        const auto pathLength{ wcslen(path.get()) };
         const auto frameworkPathLength{ wcslen(frameworkPath) };
-        PCWSTR pathWithoutFrameworkPath{ frameworkPath + frameworkPathLength };
-        if (*pathWithoutFrameworkPath == L';')
+        if (pathLength >= frameworkPathLength)
         {
-            ++pathWithoutFrameworkPath;
+            if (CompareStringOrdinal(path.get(), static_cast<int>(frameworkPathLength), frameworkPath, static_cast<int>(frameworkPathLength), TRUE) == CSTR_EQUAL)
+            {
+                PCWSTR pathWithoutFrameworkPath{ path.get() + frameworkPathLength };
+                if (*pathWithoutFrameworkPath == L';')
+                {
+                    ++pathWithoutFrameworkPath;
+                }
+                (void)LOG_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", pathWithoutFrameworkPath));
+            }
+            else
+            {
+                (void)LOG_HR_MSG(E_UNEXPECTED, "PATH doesn't start with %ls", frameworkPath);
+            }
         }
-        RETURN_IF_WIN32_BOOL_FALSE(SetEnvironmentVariableW(L"PATH", pathWithoutFrameworkPath));
     }
-    return S_OK;
 }
 
 

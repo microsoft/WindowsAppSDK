@@ -182,6 +182,17 @@ namespace Test::DynamicDependency
             size_t& offsetToSubkey);
 
     private:
+        static std::wstring GetPathEnvironmentVariable();
+
+        static std::wstring GetPathEnvironmentVariableMinusPathPrefix(
+            PCWSTR pathPrefix);
+
+        static std::wstring GetPathEnvironmentVariableMinusPathPrefix(
+            const std::wstring& pathPrefix);
+
+        static std::wstring GetPathEnvironmentVariableMinusProjectReunionFramework();
+
+    private:
         static MddPackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
 
     private:

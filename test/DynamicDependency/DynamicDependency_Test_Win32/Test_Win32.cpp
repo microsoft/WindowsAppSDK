@@ -538,6 +538,40 @@ HKEY Test::DynamicDependency::Test_Win32::Registry_Key_Parse(
     return root;
 }
 
+std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariable()
+{
+    return std::wstring{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
+}
+
+std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariableMinusPathPrefix(
+    PCWSTR pathPrefix)
+{
+    const auto pathPrefixLength{ wcslen(pathPrefix) };
+
+    auto pathEnvironmentVariable{ GetPathEnvironmentVariable() };
+    Assert::IsTrue(pathEnvironmentVariable.length() >= pathPrefixLength);
+
+    auto pathMinusPrefix{ pathEnvironmentVariable.c_str() + pathPrefixLength };
+    if (*pathMinusPrefix == L';')
+    {
+        ++pathMinusPrefix;
+    }
+
+    return std::wstring(pathMinusPrefix);
+}
+
+std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariableMinusPathPrefix(
+    const std::wstring& pathPrefix)
+{
+    return GetPathEnvironmentVariableMinusPathPrefix(pathPrefix.c_str());
+}
+
+std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariableMinusProjectReunionFramework()
+{
+    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(TP::ProjectReunionFramework::c_PackageFullName) };
+    return GetPathEnvironmentVariableMinusPathPrefix(packagePath_ProjectReunionFramework);
+}
+
 MddPackageDependencyProcessorArchitectures Test::DynamicDependency::Test_Win32::GetCurrentArchitectureAsFilter()
 {
 #if defined(_M_ARM)
