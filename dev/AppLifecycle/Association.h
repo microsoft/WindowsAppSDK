@@ -6,6 +6,22 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 {
     static const std::wstring c_protocolArgumentString = L"ms-protocol";
     static const std::wstring c_fileArgumentString = L"ms-file";
+    static const std::wstring c_openWithProgIdsKeyName = L"OpenWithProgids";
+    static const std::wstring c_softwareClassesKeyPath = LR"(Software\Classes\)";
+    static const std::wstring c_progIdPrefix = L"PRF";
+    static const std::wstring c_fileTypeProgIdSuffix = L".File";
+    static const std::wstring c_protocolProgIdSuffix = L".Protocol";
+    static const std::wstring c_applicationKeyName = L"Application";
+    static const std::wstring c_applicationNameKeyName = L"ApplicationName";
+    static const std::wstring c_defaultIconKeyName = L"DefaultIcon";
+    static const std::wstring c_applicationsKeyPath = LR"(Software\Microsoft\ReunionApplications\)";
+    static const std::wstring c_capabilitiesKeyPath = LR"(\Capabilties)";
+    static const std::wstring c_registeredApplicationsKeyPath = LR"(Software\RegisteredApplications\)";
+    static const std::wstring c_shellKeyName = L"shell";
+    static const std::wstring c_commandKeyName = L"command";
+    static const std::wstring c_delegateExecuteValueName = L"DelegateExecute";
+    static const std::wstring c_urlProtocolValueName = L"URL Protocol";
+    static const std::wstring c_urlDefaultValuePrefix = L"URL:";
 
     enum AssociationType
     {
