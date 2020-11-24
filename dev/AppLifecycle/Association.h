@@ -40,7 +40,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void RegisterFileExtension(const std::wstring& extension);
     void UnregisterFileExtension(const std::wstring& extension);
     void RegisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
-        AssociationType type, const std::wstring& handlerProgId);
+        AssociationType type);
     void UnregisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
         AssociationType type);
 }

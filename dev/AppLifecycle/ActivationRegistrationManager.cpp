@@ -41,7 +41,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 RegisterVerb(progId, verb.c_str(), command);
             }
 
-            RegisterAssociationHandler(appId, extension.c_str(), type, progId);
+            RegisterAssociationHandler(appId, extension.c_str(), type);
         }
     }
 
@@ -71,7 +71,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         RegisterVerb(progId.c_str(), L"open", command);
 
         RegisterApplication(appId.c_str());
-        RegisterAssociationHandler(appId, scheme.c_str(), type, progId);
+        RegisterAssociationHandler(appId, scheme.c_str(), type);
     }
 
     void ActivationRegistrationManager::UnregisterForFileTypeActivation(hstring const& fileType)

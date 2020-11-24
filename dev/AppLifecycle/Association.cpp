@@ -356,7 +356,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     }
 
     void RegisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
-        AssociationType type, const std::wstring& handlerProgId)
+        AssociationType type)
     {
         if (type == AssociationType::File && !IsFileExtension(association))
         {
@@ -368,20 +368,29 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw std::invalid_argument("association");
         }
 
-        if (!AssocExists(handlerProgId))
-        {
-            throw std::invalid_argument("handlerProgId");
-        }
-
+        // Enable the handler to be a part of user choice.
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
         auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
         wil::unique_hkey subKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, nullptr,
             0, KEY_WRITE, nullptr, subKey.put(), nullptr));
 
+        auto progId = ComputeProgId(handlerAppId, type);
         THROW_IF_WIN32_ERROR(::RegSetValueEx(subKey.get(), association.c_str(), 0, REG_SZ,
-            reinterpret_cast<BYTE const*>(handlerProgId.c_str()),
-            static_cast<uint32_t>((handlerProgId.size() + 1) * sizeof(wchar_t))));
+            reinterpret_cast<BYTE const*>(progId.c_str()),
+            static_cast<uint32_t>((progId.size() + 1) * sizeof(wchar_t))));
+
+        // If it's a file type handler, it needs additional entries in order to be enumerated.
+        if (type == AssociationType::File)
+        {
+            wil::unique_hkey openWithKey;
+            auto assocKey = OpenAssocKey(association, KEY_WRITE);
+            THROW_IF_WIN32_ERROR(::RegCreateKeyEx(assocKey.get(), L"OpenWithProgids", 0, nullptr,
+                0, KEY_WRITE, nullptr, openWithKey.put(), nullptr));
+
+            THROW_IF_WIN32_ERROR(::RegSetValueEx(openWithKey.get(), progId.c_str(), 0, REG_SZ,
+                nullptr, 0));
+        }
     }
 
     void UnregisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
@@ -399,6 +408,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             subKey.put()) == ERROR_SUCCESS)
         {
             ::RegDeleteValue(subKey.get(), association.c_str());
+        }
+
+        // Remove file type handler specific values.
+        if (type == AssociationType::File)
+        {
+            wil::unique_hkey openWithKey;
+            auto assocKey = OpenAssocKey(association, KEY_WRITE);
+            if (::RegOpenKeyEx(assocKey.get(), L"OpenWithProgids", 0, KEY_WRITE,
+                openWithKey.put()) == ERROR_SUCCESS)
+            {
+                auto progId = ComputeProgId(handlerAppId, type);
+                ::RegDeleteValue(openWithKey.get(), progId.c_str());
+            }
         }
     }
 }

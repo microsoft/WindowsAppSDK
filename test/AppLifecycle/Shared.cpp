@@ -22,7 +22,8 @@ namespace ProjectReunionCppTest
 {
     StorageFile CreateDocFile(std::wstring filename)
     {
-        return KnownFolders::DocumentsLibrary().CreateFileAsync(filename, CreationCollisionOption::OpenIfExists).get();
+        return KnownFolders::DocumentsLibrary().CreateFileAsync(filename,
+            CreationCollisionOption::OpenIfExists).get();
     }
 
     StorageFile OpenDocFile(std::wstring filename)
