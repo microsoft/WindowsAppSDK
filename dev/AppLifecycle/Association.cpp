@@ -63,7 +63,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         auto hash = hasher(modulePath);
 ;
         wchar_t hashString[17]{}; // 16 + 1 characters for 64bit value represented as a string with a null terminator.
-        THROW_IF_FAILED(StringCchPrintf(hashString, sizeof(hashString), L"%I64x", hash));
+        THROW_IF_FAILED(StringCchPrintf(hashString, _countof(hashString), L"%I64x", hash));
 
         std::wstring result{ c_progIdPrefix };
         result += hashString;
@@ -93,6 +93,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     std::wstring CreateAssocKeyPath(const std::wstring& assoc)
     {
+        // Example: Software\Classes\<assoc>
         std::wstring path = c_softwareClassesKeyPath + assoc;
         return path;
     }
@@ -151,13 +152,16 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         ::RegDeleteTree(GetRegistrationRoot(), path.c_str());
     }
 
+    // Registers a ProgId definition under the classes root in the registry.
     wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& defaultValue,
         const std::wstring& applicationDisplayName, const std::wstring& logo)
     {
+        // Example: HKEY_CURRENT_USER\Software\Classes\<progId>
         auto key = CreateAssocKey(progId, KEY_WRITE);
 
         if (!defaultValue.empty())
         {
+            // Example: HKEY_CURRENT_USER\Software\Classes\<progId>\(Default)
             THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), nullptr, 0, REG_SZ,
                 reinterpret_cast<BYTE const*>(defaultValue.c_str()),
                 static_cast<uint32_t>((defaultValue.size() + 1) * sizeof(wchar_t))));
@@ -165,6 +169,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (!applicationDisplayName.empty())
         {
+            // Example: HKEY_CURRENT_USER\Software\Classes\<progId>\Application\ApplicationName
             wil::unique_hkey applicationKey;
             THROW_IF_WIN32_ERROR(::RegCreateKeyEx(key.get(), c_applicationKeyName.c_str(), 0,
                 nullptr, 0, KEY_WRITE, nullptr, applicationKey.put(), nullptr));
@@ -175,6 +180,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (!logo.empty())
         {
+            // Example: HKEY_CURRENT_USER\Software\Classes\<progId>\DefaultIcon\(Default)
             wil::unique_hkey defaultIconKey;
             THROW_IF_WIN32_ERROR(::RegCreateKeyEx(key.get(), c_defaultIconKeyName.c_str(), 0,
                 nullptr, 0, KEY_WRITE, nullptr, defaultIconKey.put(), nullptr));
@@ -192,11 +198,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     std::wstring CreateApplicationKeyPath(const std::wstring& appId)
     {
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>
         return std::wstring(c_applicationsKeyPath + appId + c_capabilitiesKeyPath);
     }
 
+    // Creates application defined capabilities key, and registers it as a RegisteredApplication.
     wil::unique_hkey CreateApplicationKey(const std::wstring& appId, REGSAM samDesired)
     {
+        // Example: HKEY_CURRENT_USER\Software\RegisterApplications\<appId>
         wil::unique_hkey registeredAppsKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(GetRegistrationRoot(), c_registeredApplicationsKeyPath.c_str(),
             0, nullptr, 0, samDesired, nullptr, registeredAppsKey.put(), nullptr));
@@ -213,6 +222,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return applicationKey;
     }
 
+    // Looks up and opens a RegisteredApplication's capability key based on the AppId.
     wil::unique_hkey OpenApplicationKey(const std::wstring& appId, REGSAM samDesired)
     {
         wil::unique_hkey registeredAppsKey;
@@ -242,6 +252,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void UnregisterApplication(const std::wstring& appId)
     {
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>\Capabilities
         std::wstring capabilitiesKeyPath = c_applicationsKeyPath + appId + c_capabilitiesKeyPath;
         ::RegDeleteTree(GetRegistrationRoot(), capabilitiesKeyPath.c_str());
 
@@ -256,6 +267,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void RegisterVerb(const std::wstring& progId, const std::wstring& verb, const std::wstring& command,
         _In_opt_ const GUID* delegateExecute)
     {
+        // Example: HKEY_CURRENT_USER\Software\Classes\<progId>\shell\<verb>\command
         auto assocKey = OpenAssocKey(progId, KEY_WRITE);
         auto key_path = c_shellKeyName + L"\\" + verb + L"\\" + c_commandKeyName;
         wil::unique_hkey key;
@@ -280,6 +292,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void UnregisterVerb(const std::wstring& progId, const std::wstring& verb)
     {
+        // Example: HKEY_CURRENT_USER\Software\Classes\<progId>\shell\<verb>\command
         auto key_path = CreateAssocKeyPath(progId) + L"\\" + c_shellKeyName + L"\\" + verb +
             L"\\" + c_commandKeyName;
         ::RegDeleteTree(GetRegistrationRoot(), key_path.c_str());
@@ -299,9 +312,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw std::invalid_argument("scheme");
         }
 
+        // A protocol is defined as a special progId that contains a value at the root named
+        // "URL Protocol".  This is similar to how file types are defined in the same location,
+        // but always start with a period.
+
+        // Example: HKEY_CURRENT_USER\Software\Classes\<scheme>
         std::wstring defaultValue = c_urlDefaultValuePrefix + scheme;
         auto key = RegisterProgId(scheme, defaultValue);
-        
+
+        // Example: HKEY_CURRENT_USER\Software\Classes\<scheme>\URL Protocol
         std::wstring emptyValue{ L"" };
         THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), c_urlProtocolValueName.c_str(), 0,
             REG_SZ, reinterpret_cast<BYTE const*>(emptyValue.c_str()),
@@ -368,10 +387,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         // Enable the handler to be a part of user choice.
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
         auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
+
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>\Capabilities\[URLAssociations/FileAssociations]
         wil::unique_hkey subKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, nullptr,
             0, KEY_WRITE, nullptr, subKey.put(), nullptr));
 
+        // The entries here link a file extension or protocol scheme to a specific ProgId that handles the activation.
+        // Example: Name: <association>
+        // Example: Value: <progId>
         auto progId = ComputeProgId(handlerAppId, type);
         THROW_IF_WIN32_ERROR(::RegSetValueEx(subKey.get(), association.c_str(), 0, REG_SZ,
             reinterpret_cast<BYTE const*>(progId.c_str()),
@@ -382,9 +406,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             wil::unique_hkey openWithKey;
             auto assocKey = OpenAssocKey(association, KEY_WRITE);
+
+            // Example: HKEY_CURRENT_USER\Software\Classes\<association>\OpenWithProgids
             THROW_IF_WIN32_ERROR(::RegCreateKeyEx(assocKey.get(), c_openWithProgIdsKeyName.c_str(),
                 0, nullptr, 0, KEY_WRITE, nullptr, openWithKey.put(), nullptr));
 
+            // Example: Name: <progId>
+            // Value is unused.
             THROW_IF_WIN32_ERROR(::RegSetValueEx(openWithKey.get(), progId.c_str(), 0, REG_SZ,
                 nullptr, 0));
         }
@@ -398,6 +426,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw std::invalid_argument("association");
         }
 
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>\Capabilities\[URLAssociations/FileAssociations]\<association>
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
         auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
         wil::unique_hkey subKey;
@@ -410,6 +439,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         // Remove file type handler specific values.
         if (type == AssociationType::File)
         {
+            // Example: HKEY_CURRENT_USER\Software\Classes\<association>\OpenWithProgids
             wil::unique_hkey openWithKey;
             auto assocKey = OpenAssocKey(association, KEY_WRITE);
             if (::RegOpenKeyEx(assocKey.get(), c_openWithProgIdsKeyName.c_str(), 0, KEY_WRITE,

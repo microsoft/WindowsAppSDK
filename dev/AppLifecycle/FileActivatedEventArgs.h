@@ -14,7 +14,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         ActivatedEventArgsBase, IFileActivatedEventArgs>
     {
     public:
-        FileActivatedEventArgs([[maybe_unused]] const std::wstring contractData)
+        FileActivatedEventArgs(const std::wstring contractData)
         {
             if (contractData.empty())
             {
