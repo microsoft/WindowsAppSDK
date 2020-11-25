@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -19,6 +19,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         PackageDependencyContext(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContextId const& contextId);
 
         winrt::PackageDependencyContextId ContextId();
+        hstring PackageDependencyId();
         hstring PackageFullName();
         void Remove();
 

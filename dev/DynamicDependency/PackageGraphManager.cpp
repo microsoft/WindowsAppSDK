@@ -38,6 +38,15 @@ void MddCore::PackageGraphManager::RemoveFromPackageGraph(
     (void) LOG_IF_FAILED(s_packageGraph.Remove(context));
 }
 
+HRESULT MddCore::PackageGraphManager::GetPackageDependencyForContext(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context,
+    wil::unique_process_heap_string& packageDependencyId)
+{
+    std::unique_lock<std::mutex> lock(s_lock);
+
+    return s_packageGraph.GetPackageDependencyForContext(context, packageDependencyId);
+}
+
 // On success, buffer is a byte[] containing PACKAGE_INFO[count] followed by all variable length data.
 // Pointers in PACKAGE_INFO (all PWSTR) are null or point to their value in the variable length data.
 //

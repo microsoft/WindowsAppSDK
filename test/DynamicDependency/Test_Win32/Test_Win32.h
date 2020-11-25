@@ -35,6 +35,9 @@ namespace Test::DynamicDependency
         TEST_METHOD(GetResolvedPackageFullName_Null);
         TEST_METHOD(GetResolvedPackageFullName_NotFound);
 
+        TEST_METHOD(GetIdForPackageDependencyContext_Null);
+        TEST_METHOD(GetIdForPackageDependencyContext);
+
     private:
         static void VerifyPackageDependency(
             PCWSTR packageDependencyId,
@@ -131,30 +134,29 @@ namespace Test::DynamicDependency
             MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
     private:
-        // Overloads and conveniences for TryCreate to simplify test readability
+        // Overloads and conveniences for Add to simplify test readability
+        MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
+            PCWSTR packageDependencyId);
+
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
             const HRESULT expectedHR,
             PCWSTR packageDependencyId);
 
-        // Overloads and conveniences for TryCreate to simplify test readability
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
             PCWSTR packageDependencyId,
             wil::unique_process_heap_string& packageFullName);
 
-        // Overloads and conveniences for TryCreate to simplify test readability
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
             PCWSTR packageDependencyId,
             const INT32 rank,
             wil::unique_process_heap_string& packageFullName);
 
-        // Overloads and conveniences for TryCreate to simplify test readability
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
             PCWSTR packageDependencyId,
             const INT32 rank,
             const MddAddPackageDependencyOptions options,
             wil::unique_process_heap_string& packageFullName);
 
-        // Overloads and conveniences for TryCreate to simplify test readability
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(
             const HRESULT expectedHR,
             PCWSTR packageDependencyId,

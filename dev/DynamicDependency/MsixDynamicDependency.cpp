@@ -100,3 +100,22 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     return S_OK;
 }
 CATCH_RETURN();
+
+STDAPI MddGetIdForPackageDependencyContext(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
+{
+    *packageDependencyId = nullptr;
+
+    // Dynamic Dependencies requires a non-packaged process
+    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+
+    RETURN_HR_IF(E_INVALIDARG, !packageDependencyContext);
+
+    wil::unique_process_heap_string id;
+    RETURN_IF_FAILED(MddCore::PackageGraphManager::GetPackageDependencyForContext(packageDependencyContext, id));
+
+    *packageDependencyId = id.release();
+    return S_OK;
+}
+CATCH_RETURN();

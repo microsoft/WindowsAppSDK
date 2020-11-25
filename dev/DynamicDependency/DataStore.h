@@ -18,13 +18,21 @@ namespace MddCore
 
         static MddCore::PackageDependency Load(PCWSTR packageDependencyId);
 
-        static void Save(const MddCore::PackageDependency& packageDependency);
+        static void Save(
+                const MddCore::PackageDependency& packageDependency,
+                const MddCreatePackageDependencyOptions options);
 
         static void Delete(PCWSTR packageDependencyId);
 
     private:
-        static void DeleteFileIfExists(PCWSTR filename);
+        static bool DeleteFileIfExists(PCWSTR filename);
 
-        static std::filesystem::path GetDataStorePath();
+        static HANDLE OpenFileIfExists(PCWSTR filename);
+
+        static std::filesystem::path GetDataStorePath(const MddCreatePackageDependencyOptions options);
+
+        static std::filesystem::path GetDataStorePathForSystem();
+
+        static std::filesystem::path GetDataStorePathForUser();
     };
 }

@@ -23,10 +23,19 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         return m_contextId;
     }
 
+    hstring PackageDependencyContext::PackageDependencyId()
+    {
+        wil::unique_process_heap_string id;
+        THROW_IF_FAILED(MddGetIdForPackageDependencyContext(::Microsoft::ApplicationModel::DynamicDependency::ToContext(m_contextId), wil::out_param(id)));
+        return winrt::hstring(id.get());
+    }
+
     hstring PackageDependencyContext::PackageFullName()
     {
-        //TODO Lookup ContextId -> PackageFullName. Needs new Mdd API
-        throw hresult_not_implemented();
+        auto id{ PackageDependencyId() };
+        wil::unique_process_heap_string packageFullName;
+        THROW_IF_FAILED(MddGetResolvedPackageFullNameForPackageDependency(id.c_str(), wil::out_param(packageFullName)));
+        return winrt::hstring(packageFullName.get());
     }
 
     void PackageDependencyContext::Remove()

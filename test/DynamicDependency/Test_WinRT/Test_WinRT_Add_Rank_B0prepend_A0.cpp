@@ -46,7 +46,7 @@ void Test::DynamicDependency::Test_WinRT::Add_Rank_B0prepend_A0()
     addOptions.PrependIfRankCollision(true);
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add(addOptions) };
     Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
-    //TODO Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.Id(), expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.PackageDependencyId(), expectedPackageFullName_FrameworkMathAdd);
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);

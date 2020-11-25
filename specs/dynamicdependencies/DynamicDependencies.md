@@ -1113,6 +1113,15 @@ STDAPI_(void) MddRemovePackageDependency(
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName);
+
+/// Return the package dependency for the context.
+///
+/// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate.
+///                            If the package dependency context cannot be resolved
+///                            the function succeeds but packageDependencyId is nullptr.
+STDAPI MddGetIdForPackageDependencyContext(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId);
 ```
 
 ## 6.2. WinRT API

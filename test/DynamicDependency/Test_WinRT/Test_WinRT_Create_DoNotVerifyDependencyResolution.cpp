@@ -52,7 +52,7 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
 
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add() };
     Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
-    //TODO Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.Id(), expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.PackageDependencyId(), expectedPackageFullName_FrameworkMathAdd);
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);

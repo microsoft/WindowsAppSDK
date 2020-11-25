@@ -145,15 +145,15 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     // -- Use it
 
     // Let's use resources from the dynamically added package
-    auto mathAddDllFilename{ L"Microsoft.ProjectReunion.dll" };
-    wil::unique_hmodule mathAddDll(LoadLibrary(mathAddDllFilename));
+    auto projectReunionDllFilename{ L"Microsoft.ProjectReunion.dll" };
+    wil::unique_hmodule projectReunionDll(LoadLibrary(projectReunionDllFilename));
     {
         const auto lastError{ GetLastError() };
-        auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
-        Assert::IsNotNull(mathAddDll.get(), message.get());
+        auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, projectReunionDllFilename) };
+        Assert::IsNotNull(projectReunionDll.get(), message.get());
     }
 
-    auto mddGetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), MddGetResolvedPackageFullNameForPackageDependency) };
+    auto mddGetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(projectReunionDll.get(), MddGetResolvedPackageFullNameForPackageDependency) };
     Assert::IsNotNull(mddGetResolvedPackageFullNameForPackageDependency);
 
     wil::unique_process_heap_string resolvedPackageFullName;
@@ -196,6 +196,25 @@ void Test::DynamicDependency::Test_Win32::GetResolvedPackageFullName_NotFound()
     PCWSTR packageDependencyId{ L"This.Does.Not.Exist" };
     wil::unique_process_heap_string packageFullName;
     Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+}
+
+void Test::DynamicDependency::Test_Win32::GetIdForPackageDependencyContext_Null()
+{
+    wil::unique_process_heap_string id;                                   
+    Assert::AreEqual(E_INVALIDARG, MddGetIdForPackageDependencyContext(nullptr, wil::out_param(id)));
+}
+
+void Test::DynamicDependency::Test_Win32::GetIdForPackageDependencyContext()
+{
+    wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd() };
+    MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get()) };
+
+    wil::unique_process_heap_string id;
+    Assert::AreEqual(S_OK, MddGetIdForPackageDependencyContext(packageDependencyContext_FrameworkMathAdd, wil::out_param(id)));
+    Assert::AreEqual(std::wstring(packageDependencyId_FrameworkMathAdd.get()), std::wstring(id.get()));
+
+    MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
+    MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
 }
 
 void Test::DynamicDependency::Test_Win32::VerifyPackageDependency(
@@ -407,6 +426,12 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
     MddCreatePackageDependencyOptions options)
 {
     return Mdd_TryCreate(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
+MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
+    PCWSTR packageDependencyId)
+{
+    return Mdd_Add(S_OK, packageDependencyId);
 }
 
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(

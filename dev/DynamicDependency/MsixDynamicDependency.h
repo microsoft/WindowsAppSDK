@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #if !defined(MSIXDYNAMICDEPENDENCY_H)
@@ -177,5 +177,14 @@ STDAPI_(void) MddRemovePackageDependency(
 STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept;
+
+/// Return the package dependency for the context.
+///
+/// @param packageDependencyId allocated via HeapAlloc; use HeapFree to deallocate.
+///                            If the package dependency context cannot be resolved
+///                            the function succeeds but packageDependencyId is nullptr.
+STDAPI MddGetIdForPackageDependencyContext(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
+    _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
 #endif // MSIXDYNAMICDEPENDENCY_H

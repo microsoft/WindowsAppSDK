@@ -26,6 +26,10 @@ public:
     static void RemoveFromPackageGraph(
         MDD_PACKAGEDEPENDENCY_CONTEXT context);
 
+    static HRESULT GetPackageDependencyForContext(
+        _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context,
+        wil::unique_process_heap_string& packageDependencyId);
+
 public:
     typedef LONG (WINAPI * GetCurrentPackageInfo2Function)(
         const UINT32 flags,

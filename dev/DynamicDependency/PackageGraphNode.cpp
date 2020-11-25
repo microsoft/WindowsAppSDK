@@ -10,9 +10,11 @@
 volatile MDD_PACKAGEDEPENDENCY_CONTEXT MddCore::PackageGraphNode::s_lastContext{};
 
 MddCore::PackageGraphNode::PackageGraphNode(
-    PCWSTR packageFullName,
-    INT32 rank) :
-    m_rank(rank)
+    _In_ PCWSTR packageFullName,
+    INT32 rank,
+    _In_ PCWSTR packageDependencyId) :
+    m_rank(rank),
+    m_id(packageDependencyId)
 {
     THROW_IF_WIN32_ERROR(OpenPackageInfoByFullName(packageFullName, 0, &m_packageInfoReference));
     m_packageInfo = std::move(MddCore::PackageInfo::FromPackageInfoReference(m_packageInfoReference.get()));

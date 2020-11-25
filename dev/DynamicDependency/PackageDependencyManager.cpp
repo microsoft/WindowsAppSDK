@@ -27,7 +27,7 @@ void MddCore::PackageDependencyManager::CreatePackageDependency(
     Verify(packageDependency);
     packageDependency.GenerateId();
 
-    MddCore::DataStore::Save(packageDependency);
+    MddCore::DataStore::Save(packageDependency, options);
 
     auto lock{ std::unique_lock<std::mutex>(g_lock) };
 

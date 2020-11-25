@@ -28,9 +28,10 @@ public:
 
 private:
     HRESULT Add(
-        PCWSTR packageFullName,
+        _In_ PCWSTR packageFullName,
         INT32 rank,
         MddAddPackageDependencyOptions options,
+        _In_ PCWSTR packageDependencyId,
         MDD_PACKAGEDEPENDENCY_CONTEXT& context);
 
 public:
@@ -47,6 +48,11 @@ public:
 public:
     HRESULT Remove(
         MDD_PACKAGEDEPENDENCY_CONTEXT context);
+
+public:
+    HRESULT GetPackageDependencyForContext(
+        _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context,
+        wil::unique_process_heap_string& packageDependencyId);
 
 private:
     static bool IsPackageABetterFitPerArchitecture(

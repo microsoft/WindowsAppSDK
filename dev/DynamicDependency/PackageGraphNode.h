@@ -32,13 +32,15 @@ public:
         m_rank(std::move(other.m_rank)),
         m_pathList(std::move(other.m_pathList)),
         m_context(std::move(other.m_context)),
-        m_addDllDirectoryCookies(std::move(other.m_addDllDirectoryCookies))
+        m_addDllDirectoryCookies(std::move(other.m_addDllDirectoryCookies)),
+        m_id(std::move(other.m_id))
     {
     }
 
     PackageGraphNode(
-        PCWSTR packageFullName,
-        INT32 rank);
+        _In_ PCWSTR packageFullName,
+        INT32 rank,
+        _In_ PCWSTR packageDependencyId);
 
     PackageGraphNode& operator=(PackageGraphNode& other) = delete;
 
@@ -53,6 +55,7 @@ public:
             m_pathList = std::move(other.m_pathList);
             m_context = std::move(other.m_context);
             m_addDllDirectoryCookies = std::move(other.m_addDllDirectoryCookies);
+            m_id = std::move(other.m_id);
         }
         return *this;
     }
@@ -65,6 +68,7 @@ public:
         m_rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
         m_packageInfo.Reset();
         m_packageInfoReference.reset();
+        m_id.clear();
     }
 
     bool IsDynamic() const
@@ -106,6 +110,11 @@ public:
         return m_context.get();
     }
 
+    const std::wstring Id() const
+    {
+        return m_id;
+    }
+
     void GenerateContext();
 
     void AddDllDirectories();
@@ -125,5 +134,6 @@ private:
     std::wstring m_pathList;
     wil::unique_package_dependency_context m_context;
     std::vector<wil::unique_dll_directory_cookie> m_addDllDirectoryCookies;
+    std::wstring m_id;
 };
 }

@@ -21,7 +21,7 @@ HRESULT MddCore::PackageGraph::Add(
     wil::unique_process_heap_string fullName;
     RETURN_IF_FAILED(ResolvePackageDependency(packageDependencyId, options, fullName));
     MDD_PACKAGEDEPENDENCY_CONTEXT context{};
-    RETURN_IF_FAILED(Add(fullName.get(), rank, options, context));
+    RETURN_IF_FAILED(Add(fullName.get(), rank, options, packageDependencyId, context));
 
     packageDependencyContext = std::move(context);
     if (packageFullName)
@@ -32,13 +32,14 @@ HRESULT MddCore::PackageGraph::Add(
 }
 
 HRESULT MddCore::PackageGraph::Add(
-    PCWSTR packageFullName,
+    _In_ PCWSTR packageFullName,
     INT32 rank,
     MddAddPackageDependencyOptions options,
+    _In_ PCWSTR packageDependencyId,
     MDD_PACKAGEDEPENDENCY_CONTEXT& context)
 {
     // Load the package's information
-    PackageGraphNode packageGraphNode(packageFullName, rank);
+    PackageGraphNode packageGraphNode(packageFullName, rank, packageDependencyId);
     packageGraphNode.GenerateContext();
 
     // Find the insertion point where to add the new package graph node to the package graph
@@ -202,6 +203,22 @@ HRESULT MddCore::PackageGraph::Remove(
             // The DLL Search Order must be updated when we update the package graph
             RemoveFromDllSearchOrder(node);
 
+            return S_OK;
+        }
+    }
+    RETURN_WIN32(ERROR_INVALID_HANDLE);
+}
+
+HRESULT MddCore::PackageGraph::GetPackageDependencyForContext(
+    _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context,
+    wil::unique_process_heap_string& packageDependencyId)
+{
+    for (size_t index=0; index < m_packageGraphNodes.size(); ++index)
+    {
+        auto& node{ m_packageGraphNodes[index] };
+        if (node.Context() == context)
+        {
+            packageDependencyId = wil::make_process_heap_string(node.Id().c_str());
             return S_OK;
         }
     }
