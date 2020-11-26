@@ -44,7 +44,7 @@ namespace ProjectReunionCppTest
         if (!ShellExecuteEx(&ei))
         {
             auto lastError = GetLastError();
-            VERIFY_WIN32_FAILED(lastError);
+            VERIFY_WIN32_SUCCEEDED(lastError);
         }
 
         wil::unique_handle process{ ei.hProcess };
