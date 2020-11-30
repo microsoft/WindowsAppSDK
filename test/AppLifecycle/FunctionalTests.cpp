@@ -128,11 +128,7 @@ namespace ProjectReunionCppTest
             auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir))
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_FAILED(lastError);
-            }
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
 
             // Wait for the register event.
             WaitForEvent(event, m_failed);
@@ -145,11 +141,7 @@ namespace ProjectReunionCppTest
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
 
-            if (!Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir))
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_FAILED(lastError);
-            }
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
 
             // Wait for the unregister event.
             WaitForEvent(event, m_failed);
@@ -181,12 +173,7 @@ namespace ProjectReunionCppTest
             auto event = CreateTestEvent(c_testFilePhaseEventName);
 
             // Launch the test app to register for protocol launches.
-            if (!ShellExecute(nullptr, nullptr, L"AppLifecycleTestApp.exe", L"/RegisterFile",
-                g_deploymentDir.c_str(), SW_SHOW))
-            {
-                auto lastError = GetLastError();
-                VERIFY_WIN32_FAILED(lastError);
-            }
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterFile", g_deploymentDir);
 
             // Wait for the register event.
             WaitForEvent(event, m_failed);
