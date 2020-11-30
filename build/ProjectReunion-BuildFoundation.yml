@@ -1,9 +1,13 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 35  # Sanity check for minimum expected tests to be reported
-  
-jobs:
 
+parameters:
+  - name: "ReleaseSign"
+    type: boolean
+    default: False
+
+jobs:
 - job: Build
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
@@ -189,7 +193,7 @@ jobs:
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
     condition: 
-      eq(variables['ReleaseSign'], true)
+      eq(${{ parameters.ReleaseSign }}, true)
 
   - task: EsrpCodeSigning@1
     inputs:
@@ -233,7 +237,7 @@ jobs:
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
     condition: 
-      ne(variables['ReleaseSign'], true)
+      eq(${{ parameters.ReleaseSign }}, false)
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
