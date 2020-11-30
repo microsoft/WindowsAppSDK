@@ -3,7 +3,7 @@ variables:
   minimumExpectedTestsExecutedCount: 35  # Sanity check for minimum expected tests to be reported
 
 parameters:
-  - name: "ReleaseSign"
+  - name: "ReleaseSigning"
     type: boolean
     default: False
 
@@ -193,7 +193,7 @@ jobs:
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
     condition: 
-      eq(${{ parameters.ReleaseSign }}, true)
+      eq(${{ parameters.ReleaseSigning }}, true)
 
   - task: EsrpCodeSigning@1
     inputs:
@@ -237,7 +237,7 @@ jobs:
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
     condition: 
-      eq(${{ parameters.ReleaseSign }}, false)
+      eq(${{ parameters.ReleaseSigning }}, false)
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
