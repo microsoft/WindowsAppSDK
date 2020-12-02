@@ -31,10 +31,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).cer">
-      <Filter>CopyFiles</Filter>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle">
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform).msixbundle">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe">
