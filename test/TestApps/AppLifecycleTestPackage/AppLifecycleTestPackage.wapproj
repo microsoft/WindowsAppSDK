@@ -54,7 +54,7 @@
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj</EntryPointProjectUniqueName>
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
