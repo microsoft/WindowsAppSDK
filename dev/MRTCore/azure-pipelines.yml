@@ -121,6 +121,9 @@ jobs:
 #    displayName: 'Debug'
 #    inputs:
 #      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'WindowsES'
 
   - task: MSBuild@1
     displayName: 'build MrtCore'
