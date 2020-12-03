@@ -4,9 +4,10 @@ variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
 
-- task: NuGetAuthenticate@0
-  inputs:
-    nuGetServiceConnections: 'NugetOrg'
+steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'NugetOrg'
 
 jobs:
 - job: Build
