@@ -324,12 +324,6 @@
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\TestApps\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj">
-      <Project>{7c502995-59c3-483b-86ba-815985353633}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\TestApps\AppLifecycleTestPackage\AppLifecycleTestPackage.wapproj">
-      <Project>{a3fba80d-5b35-471f-9a45-db4b29e195b9}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
