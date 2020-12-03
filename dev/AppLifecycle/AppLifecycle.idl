@@ -10,14 +10,11 @@ namespace Microsoft.ProjectReunion
 
     static runtimeclass ActivationRegistrationManager
     {
-        static void RegisterForFileTypeActivation(String groupName, String logo, String[] supportedFileTypes, String[] supportedVerbs);
-        static void RegisterForProtocolActivation(String scheme, String displayName);
-        static void RegisterForStartupActivation(String taskId, Boolean isEnabled, String displayName);
-        static void RegisterForToastActivation(String displayName);
+        static void RegisterForFileTypeActivation(String[] supportedFileTypes, String[] supportedVerbs,
+            String applicationDisplayName, String logo);
+        static void RegisterForProtocolActivation(String scheme, String applicationDisplayName, String logo);
 
-        static void UnregisterForFileTypeActivation(String groupName);
+        static void UnregisterForFileTypeActivation(String fileType);
         static void UnregisterForProtocolActivation(String scheme);
-        static void UnregisterForStartupActivation();
-        static void UnregisterForToastActivation();
     };
 }

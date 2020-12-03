@@ -14,4 +14,5 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Storage.h>
 #include <NotificationActivationCallback.h>

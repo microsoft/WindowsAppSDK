@@ -44,7 +44,7 @@ function LaunchSetupAndWait([string]$exePath, [string[]]$ArgumentList)
 function Install-MSBuild([string]$installDir, [string]$vs_buildtools, [string]$logsDir)
 {
     New-Item -Path $installDir -Force -ItemType 'Directory' | Out-Null
-    $installed = LaunchSetupAndWait $vs_buildtools -ArgumentList "$([string]::Format($MSBuildInstallParams, $installDir)) --nickname WinUI"
+    $installed = LaunchSetupAndWait $vs_buildtools -ArgumentList "$([string]::Format($MSBuildInstallParams, $installDir))"
     if (!$installed)
     {
         Write-InstallError $logsDir

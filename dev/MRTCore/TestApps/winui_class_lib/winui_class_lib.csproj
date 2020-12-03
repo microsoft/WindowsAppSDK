@@ -1,19 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
+    <TargetFramework>net5-windows10.0.18362.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
     <RootNamespace>winui_class_lib</RootNamespace>
-
-    <Platforms>AnyCPU;x86;x64</Platforms>
-    <RuntimeIdentifiers>win-x86;win-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationModel.Resources" Version="1.0.0-CI-20201013-202350" />
-    <PackageReference Include="Microsoft.VCRTForwarders.140" Version="1.0.6" />
-    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview2.200713.0" />
+    <PackageReference Include="Microsoft.WinUI" Version="3.0.0-preview3.201113.0" />
   </ItemGroup>
 
 </Project>

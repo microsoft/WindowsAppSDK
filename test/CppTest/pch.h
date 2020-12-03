@@ -5,12 +5,19 @@
 #define PCH_H
 #endif //PCH_H
 
+#include <windows.h>
+#include <sddl.h>
 #include <wil/result.h>
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
-#include "CppUnitTest.h"
+#include <WexTestClass.h>
 
-#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <string>
 
-// Test-specific headers, lifted here
 #include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Management.Deployment.h>
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.System.h>

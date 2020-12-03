@@ -10,17 +10,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         ActivationRegistrationManager() = default;
 
-        static void RegisterForFileTypeActivation(hstring const& groupName, hstring const& logo,
-            array_view<hstring const> supportedFileTypes, array_view<hstring const> supportedVerbs);
-        static void RegisterForProtocolActivation(hstring const& scheme, hstring const& displayName);
-        static void RegisterForStartupActivation(hstring const& taskId, bool isEnabled,
-            hstring const& displayName);
-        static void RegisterForToastActivation(hstring const& displayName);
+        static void RegisterForFileTypeActivation(array_view<hstring const> supportedFileTypes,
+            array_view<hstring const> supportedVerbs, hstring const& applicationDisplayName,
+            hstring const& logo);
+        static void RegisterForProtocolActivation(hstring const& scheme,
+            hstring const& applicationDisplayName, hstring const& logo);
 
-        static void UnregisterForFileTypeActivation(hstring const& groupName);
+        static void UnregisterForFileTypeActivation(hstring const& fileType);
         static void UnregisterForProtocolActivation(hstring const& scheme);
-        static void UnregisterForStartupActivation();
-        static void UnregisterForToastActivation();
     };
 }
 

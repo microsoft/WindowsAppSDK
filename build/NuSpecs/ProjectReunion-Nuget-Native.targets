@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ProjectReunion.winmd">
+      <Private>false</Private>
       <Implementation>Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
     <!--  Figure out the right long term approach for VS to not pick these up when using them with a framework package. -->

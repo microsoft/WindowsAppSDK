@@ -7,7 +7,8 @@
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
-#include "Shared.h"
+#include "FileActivatedEventArgs.h"
+#include "Association.h"
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -51,12 +52,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
 
-            if (!contractId.empty() && contractId == c_protocolArgumentString)
+            if (!contractId.empty())
             {
-                return winrt::make<ProtocolActivatedEventArgs>(contractData);
+                if (contractId == c_protocolArgumentString)
+                {
+                    return make<ProtocolActivatedEventArgs>(contractData);
+                }
+                else if (contractId == c_fileArgumentString)
+                {
+                    return make<FileActivatedEventArgs>(contractData);
+                }
             }
 
-            return winrt::make<LaunchActivatedEventArgs>(commandLine);
+            return make<LaunchActivatedEventArgs>(commandLine);
         }
     }
 }
