@@ -4,11 +4,6 @@ variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
 
-steps:
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'NugetOrg'
-
 jobs:
 - job: Build
   pool:
@@ -40,6 +35,9 @@ jobs:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'NugetOrg'
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
