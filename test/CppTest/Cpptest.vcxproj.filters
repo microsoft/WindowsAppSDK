@@ -36,9 +36,9 @@
     </CopyFileToFolders>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle">
       <Filter>CopyFiles</Filter>
-    </CopyFileToFolders>
+    </CopyFileToFolders> -->
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe">
       <Filter>CopyFiles</Filter>
-    </CopyFileToFolders> -->
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
