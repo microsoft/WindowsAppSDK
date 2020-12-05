@@ -60,6 +60,12 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Never /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode)'
 
+  - task: CmdLine@2
+    displayName: 'Run AppLifeCycleTest'
+    inputs:
+      script: 'te.exe CppTest.dll'
+      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(Configuration)\$(Platform)\CppTest'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ${{ parameters.solutionPath }} binlog'
     condition: succeededOrFailed()
