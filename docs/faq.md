@@ -116,9 +116,9 @@ Referenced throughout this repo, the term "UWP" references a
 [Universal Windows Platform App](https://docs.microsoft.com/en-us/windows/uwp/get-started/) -
 an app running inside an app container, at a lower privilege level, with
 package identity, delivered via an MSIX. It is the only app type supported on Windows devices 
-such as Xbox, HoloLens and Surface Hub (Windows 10 Team). This app's lifecycle from activation
-through termination is controlled by the platform for best power and resource
-usage. Its access to the user's resources are gated by a Request model so the
+such as Xbox, HoloLens, Surface Hub (Windows 10 Team) and devices running Windows 10 IoT Core.
+This app's lifecycle from activation through termination is controlled by the platform for best power
+and resource usage. Its access to the user's resources are gated by a Request model so the
 user is in control. Windows and views created by the app are positioned by the
 OS shell. Its UX is either drawn using XAML or Composition objects or a
 framework that produces XAML or Composition objects.
