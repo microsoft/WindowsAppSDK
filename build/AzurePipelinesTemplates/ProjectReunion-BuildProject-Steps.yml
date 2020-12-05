@@ -64,7 +64,7 @@ steps:
     displayName: 'Run AppLifeCycleTest'
     inputs:
       script: 'te.exe CppTest.dll'
-      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(Configuration)\$(Platform)\CppTest'
+      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\CppTest'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ${{ parameters.solutionPath }} binlog'
