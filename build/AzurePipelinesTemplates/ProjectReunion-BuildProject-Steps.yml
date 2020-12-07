@@ -65,7 +65,7 @@ steps:
     inputs:
       script: 'te.exe CppTest.dll'
       workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\CppTest'
-    condition: or(eq(${{ variables.buildPlatform }}, 'x64'), eq(${{ variables.buildPlatform }}, 'x86'))
+    condition: or(eq($[ variables.buildPlatform ], 'x64'), eq($[ variables.buildPlatform ], 'x86'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ${{ parameters.solutionPath }} binlog'
