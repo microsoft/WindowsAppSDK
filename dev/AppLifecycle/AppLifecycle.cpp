@@ -4,7 +4,7 @@
 #include <pch.h>
 #include <AppLifecycle.h>
 #include <AppLifecycle.g.cpp>
-
+#include <iostream>
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
@@ -40,8 +40,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     Windows::ApplicationModel::Activation::IActivatedEventArgs AppLifecycle::GetActivatedEventArgs()
     {
+        std::cout << "Starting" << std::endl;
         if (HasIdentity())
         {
+            std::cout << "HasIdentity" << std::endl;
             return Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
         }
         else
@@ -51,19 +53,21 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             std::wstring contractData;
             auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
-
+            std::cout << "Has NO Identity" << std::endl;
             if (!contractId.empty())
             {
                 if (contractId == c_protocolArgumentString)
                 {
+                    std::cout << "ProtocolActivatedEventArgs" << std::endl;
                     return make<ProtocolActivatedEventArgs>(contractData);
                 }
                 else if (contractId == c_fileArgumentString)
                 {
+                    std::cout << "FileActivatedEventArgs" << std::endl;
                     return make<FileActivatedEventArgs>(contractData);
                 }
             }
-
+            std::cout << "LaunchActivatedEventArgs" << std::endl;
             return make<LaunchActivatedEventArgs>(commandLine);
         }
     }
