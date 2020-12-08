@@ -43,8 +43,8 @@ namespace ProjectReunionCppTest
         TEST_CLASS_SETUP(ClassInit)
         {
             // Deploy packaged app to register handler through the manifest.
-            RunCertUtil(c_testPackageCertFile);
-            InstallPackage(c_testPackageFile);
+            //RunCertUtil(c_testPackageCertFile);
+            //InstallPackage(c_testPackageFile);
 
             // Write out some test content.
             WriteContentFile(c_testDataFileName);
@@ -60,8 +60,8 @@ namespace ProjectReunionCppTest
             {
                 DeleteContentFile(c_testDataFileName_Packaged);
                 DeleteContentFile(c_testDataFileName);
-                UninstallPackage(c_testPackageFullName);
-                RunCertUtil(c_testPackageCertFile, true);
+                //UninstallPackage(c_testPackageFullName);
+                //RunCertUtil(c_testPackageCertFile, true);
             }
             catch (const std::exception&)
             {
@@ -92,12 +92,13 @@ namespace ProjectReunionCppTest
         TEST_METHOD(GetActivatedEventArgsIsNotNull)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                // Run this test for both PackagedWin32 and Win32.
-                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
+                //// Run this test for both PackagedWin32 and Win32.
+                //TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
 
-                // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
+                //// UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
+                //TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
+                //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
 
             VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
@@ -106,12 +107,13 @@ namespace ProjectReunionCppTest
         TEST_METHOD(GetActivatedEventArgsForLaunch)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
-                // Run this test for both PackagedWin32 and Win32.
-                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
+                //// Run this test for both PackagedWin32 and Win32.
+                //TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
 
-                // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
+                //// UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
+                //TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
+                //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
 
             auto args = AppLifecycle::GetActivatedEventArgs();
@@ -147,25 +149,25 @@ namespace ProjectReunionCppTest
             WaitForEvent(event, m_failed);
         }
 
-        TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
-        {
-            // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testProtocolPhaseEventName);
+        //TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
+        //{
+        //    // Create a named event for communicating with test app.
+        //    auto event = CreateTestEvent(c_testProtocolPhaseEventName);
 
-            RunCertUtil(L"AppLifecycleTestPackage.cer");
+        //    RunCertUtil(L"AppLifecycleTestPackage.cer");
 
-            // Deploy packaged app to register handler through the manifest.
-            std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
-            InstallPackage(packagePath);
+        //    // Deploy packaged app to register handler through the manifest.
+        //    std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
+        //    InstallPackage(packagePath);
 
-            // Launch a protocol and wait for the event to fire.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
+        //    // Launch a protocol and wait for the event to fire.
+        //    Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
+        //    auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+        //    VERIFY_IS_TRUE(launchResult);
 
-            // Wait for the protocol activation.
-            WaitForEvent(event, m_failed);
-        }
+        //    // Wait for the protocol activation.
+        //    WaitForEvent(event, m_failed);
+        //}
 
         TEST_METHOD(GetActivatedEventArgsForFile_Win32)
         {
@@ -187,18 +189,18 @@ namespace ProjectReunionCppTest
             WaitForEvent(event, m_failed);
         }
 
-        TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
-        {
-            // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testFilePhaseEventName);
+        //TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
+        //{
+        //    // Create a named event for communicating with test app.
+        //    auto event = CreateTestEvent(c_testFilePhaseEventName);
 
-            // Launch the file and wait for the event to fire.
-            auto file = OpenDocFile(c_testDataFileName_Packaged);
-            auto launchResult = Launcher::LaunchFileAsync(file).get();
-            VERIFY_IS_TRUE(launchResult);
+        //    // Launch the file and wait for the event to fire.
+        //    auto file = OpenDocFile(c_testDataFileName_Packaged);
+        //    auto launchResult = Launcher::LaunchFileAsync(file).get();
+        //    VERIFY_IS_TRUE(launchResult);
 
-            // Wait for the protocol activation.
-            WaitForEvent(event, m_failed);
-        }
+        //    // Wait for the protocol activation.
+        //    WaitForEvent(event, m_failed);
+        //}
     };
 }
