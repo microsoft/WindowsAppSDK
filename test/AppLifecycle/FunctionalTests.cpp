@@ -89,38 +89,38 @@ namespace ProjectReunionCppTest
             VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
         }
 
-        TEST_METHOD(GetActivatedEventArgsIsNotNull)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                // Run this test for both PackagedWin32 and Win32.
-                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+        // TEST_METHOD(GetActivatedEventArgsIsNotNull)
+        // {
+        //     BEGIN_TEST_METHOD_PROPERTIES()
+        //         // Run this test for both PackagedWin32 and Win32.
+        //         TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
 
-                // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
-            END_TEST_METHOD_PROPERTIES();
+        //         // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
+        //         TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
+        //         TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
+        //     END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
-        }
+        //     VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
+        // }
 
-        TEST_METHOD(GetActivatedEventArgsForLaunch)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                // Run this test for both PackagedWin32 and Win32.
-                TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
+        // TEST_METHOD(GetActivatedEventArgsForLaunch)
+        // {
+        //     BEGIN_TEST_METHOD_PROPERTIES()
+        //         // Run this test for both PackagedWin32 and Win32.
+        //         TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
 
-                // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
-            END_TEST_METHOD_PROPERTIES();
+        //         // UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
+        //         TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
+        //         TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
+        //     END_TEST_METHOD_PROPERTIES();
 
-            auto args = AppLifecycle::GetActivatedEventArgs();
-            VERIFY_IS_NOT_NULL(args);
-            VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
+        //     auto args = AppLifecycle::GetActivatedEventArgs();
+        //     VERIFY_IS_NOT_NULL(args);
+        //     VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
 
-            auto launchArgs = args.as<LaunchActivatedEventArgs>();
-            VERIFY_IS_NOT_NULL(launchArgs);
-        }
+        //     auto launchArgs = args.as<LaunchActivatedEventArgs>();
+        //     VERIFY_IS_NOT_NULL(launchArgs);
+        // }
 
         TEST_METHOD(GetActivatedEventArgsForProtocol_Win32)
         {
