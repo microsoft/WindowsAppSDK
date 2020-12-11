@@ -24,14 +24,10 @@ Steps to reproduce the behavior:
 <!-- If applicable, add screenshots here to help explain your problem -->
 
 **Version Info**
-<!-- Please enter your WinUI NuGet package version, Windows app type (when using WinUI 3+), OS version(s), and form factor(s) -->
+<!-- Please enter your Project-Reunion NuGet package version and OS version(s) -->
 
 NuGet package version: 
-
-Windows app type:
-| UWP              | Win32            |
-| :--------------- | :--------------- |
-| <!-- Yes/No? --> | <!-- Yes/No? --> |
+<!-- Example: [Microsoft.ProjectReunion 0.1.0-prerelease2] -->
 
 <!-- Which Windows versions did you see the issue on? Leave blank if you didn't try that version. -->
 | Windows 10 version                  | Saw the problem? |
@@ -41,16 +37,6 @@ Windows app type:
 | November 2019 Update (18363)       | <!-- Yes/No? -->   |
 | May 2019 Update (18362)            | <!-- Yes/No? -->   |
 | October 2018 Update (17763)        | <!-- Yes/No? -->   |
-| April 2018 Update (17134)          | <!-- Yes/No? -->   |
-
-<!-- Which device form factors did you see the issue on? Leave blank if you didn't try that device. -->
-| Device form factor | Saw the problem? |
-| :----------------- | :--------------- |
-| Desktop            | <!-- Yes/No? --> |
-| Xbox               | <!-- Yes/No? --> |
-| Surface Hub        | <!-- Yes/No? --> |
-| IoT                | <!-- Yes/No? --> |
-
 
 **Additional context**
 <!-- Enter any other applicable info here -->
