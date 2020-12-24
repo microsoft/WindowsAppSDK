@@ -6,6 +6,8 @@
 #include "TypeResolution.h"
 #include "catalog.h"
 
+#include <wil/com.h>
+
 #define METADATA_FILE_EXTENSION L"winmd"
 #define METADATA_FILE_PATH_FORMAT L"%s%s."  METADATA_FILE_EXTENSION
 #define METADATA_FILE_SEARCH_FORMAT L"%s%s*."  METADATA_FILE_EXTENSION
@@ -63,7 +65,7 @@ namespace UndockedRegFreeWinRT
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
         HRESULT hr = S_OK;
-        Microsoft::WRL::ComPtr<IMetaDataImport2> spMetaDataImport;
+        wil::com_ptr_nothrow<IMetaDataImport2> spMetaDataImport;
         MetaDataImportersLRUCache* pMetaDataImporterCache = MetaDataImportersLRUCache::GetMetaDataImportersLRUCacheInstance();
         if (pMetaDataImporterCache != nullptr)
         {
@@ -130,7 +132,7 @@ namespace UndockedRegFreeWinRT
                         }
                         if (ppMetaDataImport != nullptr)
                         {
-                            *ppMetaDataImport = spMetaDataImport.Detach();
+                            *ppMetaDataImport = spMetaDataImport.detach();
                         }
                     }
                 }

@@ -1,15 +1,9 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <activationregistration.h>
-#include <string>
-#include <string_view>
 #include <cor.h>
 #include <xmllite.h>
-#include <Shlwapi.h>
-
-#include "wil/result.h"
-#include "wil/resource.h"
 
 HRESULT LoadManifestFromPath(std::wstring path);
 
@@ -23,9 +17,9 @@ HRESULT WinRTLoadComponentFromString(std::string_view xmlStringValue);
 
 HRESULT ParseRootManifestFromXmlReaderInput(IUnknown* pInput);
 
-HRESULT ParseFileTag(Microsoft::WRL::ComPtr<IXmlReader> xmlReader);
+HRESULT ParseFileTag(IXmlReader* xmlReader);
 
-HRESULT ParseActivatableClassTag(Microsoft::WRL::ComPtr<IXmlReader> xmlReader, PCWSTR fileName);
+HRESULT ParseActivatableClassTag(IXmlReader* xmlReader, PCWSTR fileName);
 
 HRESULT WinRTGetThreadingModel(
     HSTRING activatableClassId,
@@ -37,7 +31,7 @@ HRESULT WinRTGetActivationFactory(
     void** factory);
 
 HRESULT WinRTGetMetadataFile(
-    const HSTRING        name,
+    const HSTRING name,
     IMetaDataDispenserEx* metaDataDispenser,
     HSTRING* metaDataFilePath,
     IMetaDataImport2** metaDataImport,

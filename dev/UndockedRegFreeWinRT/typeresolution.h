@@ -1,19 +1,9 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
 
 #include <RoMetadataApi.h>
-#include <hstring.h>
-#include <windows.foundation.h>
-#include <Windows.h>
-#include <wil/result.h>
-#include <wil/resource.h>
-#include <wil/filesystem.h>
-#include <wrl.h>
-#include <Synchapi.h>
-#include <unordered_map>
-#include <Appmodel.h>
 
 namespace UndockedRegFreeWinRT
 {
