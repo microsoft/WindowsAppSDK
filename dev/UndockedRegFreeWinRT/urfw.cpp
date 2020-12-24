@@ -1,23 +1,20 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#include <Windows.h>
-#include <synchapi.h>
+#include <pch.h>
+
 #include <roapi.h>
-#include <windows.foundation.h>
-#include <activationregistration.h>
-#include <combaseapi.h>
 #include <wrl.h>
 #include <ctxtcall.h>
-#include <Processthreadsapi.h>
 #include <activation.h>
-#include <hstring.h>
 #include <VersionHelpers.h>
-#include <memory>
-#include "../detours/detours.h"
+
+#include "urfw.h"
+
 #include "catalog.h"
-#include "extwinrt.h"
 #include "TypeResolution.h"
+
+#include <../Detours/detours.h>
 
 #define WIN1019H1_BLDNUM 18362
 
@@ -97,9 +94,9 @@ VERSIONHELPERAPI IsWindows1019H1OrGreater()
 
 VOID CALLBACK EnsureMTAInitializedCallBack
 (
-    PTP_CALLBACK_INSTANCE instance,
-    PVOID                 parameter,
-    PTP_WORK              work
+    PTP_CALLBACK_INSTANCE /*instance*/,
+    PVOID                 /*parameter*/,
+    PTP_WORK              /*work*/
 )
 {
     Microsoft::WRL::ComPtr<IComThreadingInfo> spThreadingInfo;
@@ -324,35 +321,6 @@ HRESULT WINAPI RoResolveNamespaceDetour(
     return hr;
 }
 
-void InstallHooks()
-{
-    if (DetourIsHelperProcess()) {
-        return;
-    }
-
-    DetourRestoreAfterWith();
-
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourAttach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
-    DetourAttach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
-    DetourAttach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
-    DetourAttach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
-    DetourTransactionCommit();
-}
-
-void RemoveHooks()
-{
-
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourDetach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
-    DetourDetach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
-    DetourDetach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
-    DetourDetach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
-    DetourTransactionCommit();
-}
-
 HRESULT ExtRoLoadCatalog()
 {
     WCHAR filePath[MAX_PATH];
@@ -443,31 +411,34 @@ HRESULT ExtRoLoadCatalog()
     return S_OK;
 }
 
-BOOL WINAPI DllMain(HINSTANCE hmodule, DWORD reason, LPVOID /*lpvReserved*/)
+HRESULT UrfwInitialize() noexcept
 {
     if (IsWindows1019H1OrGreater())
     {
-        return true;
+        return S_OK;
     }
-    if (reason == DLL_PROCESS_ATTACH)
+
+    DetourAttach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
+    DetourAttach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
+    DetourAttach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
+    DetourAttach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
+    try
     {
-        DisableThreadLibraryCalls(hmodule);
-        InstallHooks();
-        try
-        {
-            ExtRoLoadCatalog();
-        }
-        catch (...)
-        {
-            LOG_CAUGHT_EXCEPTION();
-            return false;
-        }
+        ExtRoLoadCatalog();
     }
-    if (reason == DLL_PROCESS_DETACH)
+    catch (...)
     {
-        RemoveHooks();
+        RETURN_CAUGHT_EXCEPTION();
     }
-    return true;
+    return S_OK;
+}
+
+void UrfwShutdown() noexcept
+{
+    DetourDetach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
+    DetourDetach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
+    DetourDetach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);
+    DetourDetach(&(PVOID&)TrueRoResolveNamespace, RoResolveNamespaceDetour);
 }
 
 extern "C" void WINAPI winrtact_Initialize()

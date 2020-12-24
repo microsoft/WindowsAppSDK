@@ -16,9 +16,11 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)catalog.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)typeresolution.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)urfw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)catalog.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)typeresolution.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)urfw.h" />
   </ItemGroup>
 </Project>

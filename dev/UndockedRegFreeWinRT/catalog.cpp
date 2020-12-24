@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-//#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+//TODO #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include <pch.h>
 
@@ -11,11 +11,10 @@
 #include <activation.h>
 #include <shlwapi.h>
 
-#include <wil/com.h>
+#include <wrl.h>
 
 using namespace std;
 using namespace Microsoft::WRL;
-//using namespace Microsoft::WRL::Wrappers;
 
 // TODO: Components won't respect COM lifetime. workaround to get them in the COM list?
 
@@ -131,11 +130,11 @@ HRESULT LoadFromEmbeddedManifest(PCWSTR path)
 
 HRESULT WinRTLoadComponentFromFilePath(PCWSTR manifestPath)
 {
-    wil::com_ptr_nothrow<IStream> fileStream;
+    ComPtr<IStream> fileStream;
     RETURN_IF_FAILED(SHCreateStreamOnFileEx(manifestPath, STGM_READ, FILE_ATTRIBUTE_NORMAL, false, nullptr, &fileStream));
     try
     {
-        return ParseRootManifestFromXmlReaderInput(fileStream.get());
+        return ParseRootManifestFromXmlReaderInput(fileStream.Get());
     }
     catch(...)
     {
@@ -146,17 +145,17 @@ HRESULT WinRTLoadComponentFromFilePath(PCWSTR manifestPath)
 
 HRESULT WinRTLoadComponentFromString(std::string_view xmlStringValue)
 {
-    wil::com_ptr_nothrow<IStream> xmlStream = nullptr;
+    ComPtr<IStream> xmlStream;
     auto xmlStringValueData{ xmlStringValue.data() };
     auto xmlStringValueDataLength{ strlen(xmlStringValueData) };
     auto xmlStringValueDataSize{ xmlStringValueDataLength * sizeof(*xmlStringValueData) };
-    xmlStream.attach(SHCreateMemStream(reinterpret_cast<const BYTE*>(xmlStringValue.data()), static_cast<UINT>(xmlStringValueDataSize)));
+    xmlStream.Attach(SHCreateMemStream(reinterpret_cast<const BYTE*>(xmlStringValue.data()), static_cast<UINT>(xmlStringValueDataSize)));
     RETURN_HR_IF_NULL(E_OUTOFMEMORY, xmlStream);
-    wil::com_ptr_nothrow<IXmlReaderInput> xmlReaderInput;
-    RETURN_IF_FAILED(CreateXmlReaderInputWithEncodingName(xmlStream.get(), nullptr, L"utf-8", FALSE, nullptr, &xmlReaderInput));
+    ComPtr<IXmlReaderInput> xmlReaderInput;
+    RETURN_IF_FAILED(CreateXmlReaderInputWithEncodingName(xmlStream.Get(), nullptr, L"utf-8", FALSE, nullptr, &xmlReaderInput));
     try
     {
-        return ParseRootManifestFromXmlReaderInput(xmlReaderInput.get());
+        return ParseRootManifestFromXmlReaderInput(xmlReaderInput.Get());
     }
     catch (...)
     {
@@ -170,7 +169,7 @@ HRESULT ParseRootManifestFromXmlReaderInput(IUnknown* input)
     XmlNodeType nodeType;
     PCWSTR localName = nullptr;
     auto locale = _create_locale(LC_ALL, "C");
-    wil::com_ptr_nothrow<IXmlReader> xmlReader;
+    ComPtr<IXmlReader> xmlReader;
     RETURN_IF_FAILED(CreateXmlReader(__uuidof(IXmlReader), (void**)&xmlReader, nullptr));
     RETURN_IF_FAILED(xmlReader->SetInput(input));
     while (S_OK == xmlReader->Read(&nodeType))
@@ -181,7 +180,7 @@ HRESULT ParseRootManifestFromXmlReaderInput(IUnknown* input)
 
             if (_wcsicmp_l(localName, L"file", locale) == 0)
             {
-                RETURN_IF_FAILED(ParseFileTag(xmlReader.get()));
+                RETURN_IF_FAILED(ParseFileTag(xmlReader.Get()));
             }
         }
     }
@@ -368,7 +367,7 @@ HRESULT WinRTGetMetadataFile(
         return E_INVALIDARG;
     }
 
-    wil::com_ptr_nothrow<IMetaDataDispenserEx> spMetaDataDispenser;
+    ComPtr<IMetaDataDispenserEx> spMetaDataDispenser;
     // The API uses the caller's passed-in metadata dispenser. If null, it
     // will create an instance of the metadata reader to dispense metadata files.
     if (metaDataDispenser == nullptr)
@@ -377,7 +376,7 @@ HRESULT WinRTGetMetadataFile(
             nullptr,
             CLSCTX_INPROC,
             IID_IMetaDataDispenser,
-            (void**)&spMetaDataDispenser));
+            &spMetaDataDispenser));
         {
             auto versionString{ wil::make_bstr_nothrow(L"WindowsRuntime 1.4") };
             RETURN_IF_NULL_ALLOC(versionString);
@@ -388,7 +387,7 @@ HRESULT WinRTGetMetadataFile(
         }
     }
     return UndockedRegFreeWinRT::ResolveThirdPartyType(
-        spMetaDataDispenser.get(),
+        spMetaDataDispenser.Get(),
         pszFullName,
         metaDataFilePath,
         metaDataImport,

@@ -55,37 +55,18 @@ LONG WINAPI DynamicGetCurrentPackageInfo2(
 
 HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 {
-    // Do we need to detour package graph APIs?
-    if (DetourIsHelperProcess())
-    {
-        return S_OK;
-    }
-
     // Detour package graph APIs to our implementation
-    DetourRestoreAfterWith();
-    /*FAIL_FAST_IF_WIN32_BOOL_FALSE(DetourRestoreAfterWith());*/
-    FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
     FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
     FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
-    FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
 
 HRESULT _MddDetourPackageGraphShutdown() noexcept
 {
-    // Did we detour package graph APIs?
-    if (DetourIsHelperProcess())
-    {
-        return S_OK;
-    }
-
     // Stop Detour'ing package graph APIs to our implementation
-    FAIL_FAST_IF_WIN32_ERROR(DetourTransactionBegin());
-    FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
     FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
     FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
-    FAIL_FAST_IF_WIN32_ERROR(DetourTransactionCommit());
     return S_OK;
 }
 
