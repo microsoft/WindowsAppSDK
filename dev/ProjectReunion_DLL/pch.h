@@ -29,9 +29,10 @@
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Data.Json.h>
+#include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
-#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.System.h>
 
 #include <MsixDynamicDependency.h>

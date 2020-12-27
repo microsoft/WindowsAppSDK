@@ -413,11 +413,6 @@ HRESULT ExtRoLoadCatalog()
 
 HRESULT UrfwInitialize() noexcept
 {
-    if (IsWindows1019H1OrGreater())
-    {
-        return S_OK;
-    }
-
     DetourAttach(&(PVOID&)TrueRoActivateInstance, RoActivateInstanceDetour);
     DetourAttach(&(PVOID&)TrueRoGetActivationFactory, RoGetActivationFactoryDetour);
     DetourAttach(&(PVOID&)TrueRoGetMetaDataFile, RoGetMetaDataFileDetour);

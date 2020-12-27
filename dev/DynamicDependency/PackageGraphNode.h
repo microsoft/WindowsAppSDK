@@ -11,6 +11,7 @@
 #include "wil_msixdynamicdependency.h"
 
 #include "PackageInfo.h"
+#include "WinRTInprocModule.h"
 
 namespace MddCore
 {
@@ -124,6 +125,14 @@ public:
 private:
     void BuildPathList();
 
+public:
+    HRESULT GetActivationFactory(
+        HSTRING className,
+        const std::wstring& activatableClassId,
+        REFIID iid,
+        MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+        void** factory);
+
 private:
     static volatile MDD_PACKAGEDEPENDENCY_CONTEXT s_lastContext;
 
@@ -135,5 +144,6 @@ private:
     wil::unique_package_dependency_context m_context;
     std::vector<wil::unique_dll_directory_cookie> m_addDllDirectoryCookies;
     std::wstring m_id;
+    std::vector<WinRTInprocModule> m_inprocModules;
 };
 }

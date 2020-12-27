@@ -385,3 +385,27 @@ std::wstring MddCore::PackageGraph::BuildPathList()
     }
     return pathlist;
 }
+
+HRESULT MddCore::PackageGraph::GetActivationFactory(
+    HSTRING className,
+    REFIID iid,
+    MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+    void** factory)
+{
+    threadingModel = MddCore::WinRTInprocModule::ThreadingModel::Unknown;
+    *factory = nullptr;
+
+    if (!m_packageGraphNodes.empty())
+    {
+        std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };
+        for (auto& node : m_packageGraphNodes)
+        {
+            RETURN_IF_FAILED(node.GetActivationFactory(className, activatableClassId, iid, threadingModel, factory));
+            if (*factory)
+            {
+                return S_OK;
+            }
+        }
+    }
+    return REGDB_E_CLASSNOTREG;
+}

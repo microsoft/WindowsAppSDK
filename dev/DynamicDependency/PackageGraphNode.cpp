@@ -104,3 +104,29 @@ void MddCore::PackageGraphNode::BuildPathList()
     }
     m_pathList = std::move(pathList);
 }
+
+HRESULT MddCore::PackageGraphNode::GetActivationFactory(
+    HSTRING className,
+    const std::wstring& activatableClassId,
+    REFIID iid,
+    MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+    void** factory)
+{
+    for (size_t index = 0; index < m_inprocModules.size(); ++index)
+    {
+        auto& inprocModule{ m_inprocModules[index] };
+
+        auto acidThreadingModel{ inprocModule.Find(activatableClassId) };
+        if (acidThreadingModel != MddCore::WinRTInprocModule::ThreadingModel::Unknown)
+        {
+            RETURN_IF_FAILED(inprocModule.GetActivationFactory(className, iid, factory));
+            threadingModel = acidThreadingModel;
+            return S_OK;
+        }
+    }
+
+    // Not found
+    threadingModel = MddCore::WinRTInprocModule::ThreadingModel::Unknown;
+    *factory = nullptr;
+    return S_OK;
+}

@@ -23,7 +23,7 @@ extern "C"
     typedef HRESULT(__stdcall* activation_factory_type)(HSTRING, IActivationFactory**);
 }
 
-// Intentionally no class factory cache here. That would be excessive since
+// Intentionally no class factory cache here. That would be excessive since 
 // other layers already cache.
 struct component
 {
@@ -77,12 +77,6 @@ struct component
 
 static unordered_map<wstring, shared_ptr<component>> g_types;
 
-void wstr_tolower(std::wstring& s) {
-    std::transform(s.begin(), s.end(), s.begin(),
-        [](unsigned char c) { return std::tolower(c); } // correct
-    );
-}
-
 HRESULT LoadManifestFromPath(std::wstring path)
 {
     if (path.size() < 4)
@@ -90,8 +84,8 @@ HRESULT LoadManifestFromPath(std::wstring path)
         return COR_E_ARGUMENT;
     }
     std::wstring ext(path.substr(path.size() - 4, path.size()));
-    wstr_tolower(ext);
-    if (ext.compare(L".exe") == 0 || ext.compare(L".dll") == 0)
+    if ((CompareStringOrdinal(ext.c_str(), -1, L".exe.", -1, TRUE) == CSTR_EQUAL) ||
+        (CompareStringOrdinal(ext.c_str(), -1, L".dll.", -1, TRUE) == CSTR_EQUAL))
     {
         return LoadFromEmbeddedManifest(path.c_str());
     }
@@ -343,7 +337,7 @@ HRESULT WinRTGetMetadataFile(
     {
         return hr;
     }
-    if (CompareStringOrdinal(folderPrefix, -1, L"Windows.", -1, false) == CSTR_EQUAL)
+    if (CompareStringOrdinal(folderPrefix, -1, L"Windows.", -1, FALSE) == CSTR_EQUAL)
     {
         return RO_E_METADATA_NAME_NOT_FOUND;
     }
