@@ -14,22 +14,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 {
     std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
     {
-        auto argsStart = commandLine.rfind(L"----") + 4;
+        auto argsStart = commandLine.rfind(L"----");
         if (argsStart == std::wstring::npos)
         {
             return {L"", L""};
         }
+        
+        argStart+=4;
 
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
         auto argsEnd = commandLine.find_first_of(L":", argsStart);
         if (argsEnd == std::wstring::npos)
         {
             return {L"", L""};
-        }
-
-        if (argsStart > argsEnd)
-        {
-            throw std::overflow_error("commandLine");
         }
 
         auto argsLength = argsEnd - argsStart;
