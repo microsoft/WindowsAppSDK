@@ -7,12 +7,22 @@
 #include <activationregistration.h>
 #include <activation.h>
 
+//TODO Components won't respect COM lifetime. workaround to get them in the COM list? See dev\UndockedRegFreeWinRT\catalog.cpp
+
+//TODO Removing a PackageGraphNode destroys its WinRTInprocModule objects. BadMojo(TM) if in use when destroyed. Update to handle
+
 namespace MddCore
 {
 class WinRTInprocModule
 {
 public:
     WinRTInprocModule() = default;
+
+    WinRTInprocModule(WinRTInprocModule&& other) :
+        m_dll(std::move(other.m_dll)),
+        m_dllGetActivationFactory(std::move(m_dllGetActivationFactory))
+    {
+    }
 
     ~WinRTInprocModule() = default;
 
@@ -41,22 +51,39 @@ public:
         IActivationFactory* ifactory{};
         THROW_IF_FAILED(m_dllGetActivationFactory(className, &ifactory));
 
-        //TODO optimize for IActivationFactory?
+        //TODO optimize for IActivationFactory? See GetActivationFactory() in dev\UndockedRegFreeWinRT\catalog.cpp
         const auto hr{ ifactory->QueryInterface(iid, factory) };
         ifactory->Release();
         return hr;
     }
 
 public:
-    void path(const std::wstring& path)
+    const std::wstring& Path() const
+    {
+        return m_path;
+    }
+
+    void Path(const std::wstring& path)
     {
         m_path = path;
+    }
+
+    const std::unordered_map<std::wstring, ThreadingModel>& InprocServers() const
+    {
+        return m_inprocServers;
     }
 
     void AddInprocServer(
         const std::wstring& activatableClassId,
         ThreadingModel threadingModel)
     {
+        // No dupes allowed
+        auto iterator{ m_inprocServers.find(activatableClassId) };
+        if (iterator != m_inprocServers.end())
+        {
+            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_OBJECT_ALREADY_EXISTS), "%ls", activatableClassId.c_str());
+        }
+
         m_inprocServers[activatableClassId] = threadingModel;
     }
 

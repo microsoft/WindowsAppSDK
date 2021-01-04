@@ -6,6 +6,8 @@
 #include <unknwn.h>
 
 #include <appmodel.h>
+#include <shlwapi.h>
+#include <xmllite.h>
 
 #include <ShObjIdl_core.h>
 #include <thread>
@@ -20,6 +22,7 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/filesystem.h>
+#include <wil/com.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>

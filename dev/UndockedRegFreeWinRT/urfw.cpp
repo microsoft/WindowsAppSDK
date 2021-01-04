@@ -142,9 +142,7 @@ HRESULT EnsureMTAInitialized()
         return HRESULT_FROM_WIN32(GetLastError());
     }
     SubmitThreadpoolWork(ensureMTAInitializedWork);
-    CloseThreadpoolCleanupGroupMembers(cleanupgroup,
-        false,
-        nullptr);
+    CloseThreadpoolCleanupGroupMembers(cleanupgroup, FALSE, nullptr);
     return S_OK;
 }
 

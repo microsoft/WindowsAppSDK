@@ -23,7 +23,7 @@ extern "C"
     typedef HRESULT(__stdcall* activation_factory_type)(HSTRING, IActivationFactory**);
 }
 
-// Intentionally no class factory cache here. That would be excessive since 
+// Intentionally no class factory cache here. That would be excessive since
 // other layers already cache.
 struct component
 {
@@ -125,7 +125,7 @@ HRESULT LoadFromEmbeddedManifest(PCWSTR path)
 HRESULT WinRTLoadComponentFromFilePath(PCWSTR manifestPath)
 {
     ComPtr<IStream> fileStream;
-    RETURN_IF_FAILED(SHCreateStreamOnFileEx(manifestPath, STGM_READ, FILE_ATTRIBUTE_NORMAL, false, nullptr, &fileStream));
+    RETURN_IF_FAILED(SHCreateStreamOnFileEx(manifestPath, STGM_READ, FILE_ATTRIBUTE_NORMAL, FALSE, nullptr, &fileStream));
     try
     {
         return ParseRootManifestFromXmlReaderInput(fileStream.Get());

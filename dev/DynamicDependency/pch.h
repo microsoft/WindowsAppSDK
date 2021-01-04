@@ -4,7 +4,10 @@
 #pragma once
 
 #include <Windows.h>
+
 #include <appmodel.h>
+#include <shlwapi.h>
+#include <xmllite.h>
 
 #include <unknwn.h>
 #include <appmodel.h>
@@ -19,6 +22,7 @@
 #include <wil/win32_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <wil/com.h>
 
 #include <appmodel_msixdynamicdependency.h>
 #include <wil_msixdynamicdependency.h>

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <appmodel.h>
+#include <xmllite.h>
 
 #include "MsixDynamicDependency.h"
 
@@ -125,13 +126,22 @@ public:
 private:
     void BuildPathList();
 
+private:
+    void ParseManifestsIfNecessary();
+
+    void ParseAppxManifest(const PACKAGE_INFO& package);
+
+    void ParseAppxManifest_InProcessServer(
+        IXmlReader* xmlReader,
+        const std::filesystem::path& filename);
+
 public:
     HRESULT GetActivationFactory(
         HSTRING className,
         const std::wstring& activatableClassId,
         REFIID iid,
         MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
-        void** factory);
+        void** factory) noexcept;
 
 private:
     static volatile MDD_PACKAGEDEPENDENCY_CONTEXT s_lastContext;
@@ -145,5 +155,6 @@ private:
     std::vector<wil::unique_dll_directory_cookie> m_addDllDirectoryCookies;
     std::wstring m_id;
     std::vector<WinRTInprocModule> m_inprocModules;
+    bool m_manifestsParsed{};
 };
 }
