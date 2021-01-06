@@ -793,18 +793,7 @@
 
   <Target Name="_GetPackageFileExtensions">
 
-    <PropertyGroup Condition="'$(PackageExtPrefix)' == ''">
-      <PackageExtPrefix>appx</PackageExtPrefix>
-      <PackageExtPrefix Condition="'$(TargetPlatformMinVersion)' &gt;= '10.0.17200.0'">msix</PackageExtPrefix>
-    </PropertyGroup>
-
     <PropertyGroup>
-      <AppxPackageExtension Condition="'$(AppxPackageExtension)' == ''">.$(PackageExtPrefix)</AppxPackageExtension>
-      <AppxPackageEncryptedExtension Condition="'$(AppxPackageEncryptedExtension)' == ''">.e$(PackageExtPrefix)</AppxPackageEncryptedExtension>
-      <AppxSymbolPackageExtension Condition="'$(AppxSymbolPackageExtension)' == ''">.appxsym</AppxSymbolPackageExtension>
-      <AppxBundleExtension Condition="'$(AppxBundleExtension)' == ''">.$(PackageExtPrefix)bundle</AppxBundleExtension>
-      <AppxBundleEncryptedExtension Condition="'$(AppxBundleEncryptedExtension)' == ''">.e$(PackageExtPrefix)bundle</AppxBundleEncryptedExtension>
-      <AppxStoreContainerExtension Condition="'$(AppxStoreContainerExtension)' == ''">.$(PackageExtPrefix)upload</AppxStoreContainerExtension>
       <AppxIntermediateExtension Condition="'$(AppxIntermediateExtension)' == ''">.intermediate</AppxIntermediateExtension>
     </PropertyGroup>
 
