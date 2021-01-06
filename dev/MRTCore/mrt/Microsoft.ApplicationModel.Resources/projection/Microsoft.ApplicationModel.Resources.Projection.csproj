@@ -10,11 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.1.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" RuntimeFrameworkVersion="10.0.18362.12" />
-    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" TargetingPackVersion="10.0.18362.12" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.ApplicationModel.Resources.vcxproj" />
