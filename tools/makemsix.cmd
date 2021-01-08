@@ -37,6 +37,7 @@ copy %TargetDir%%TargetFileName% %OutDirMsix%%TargetFileName%
 
 ECHO makeappx.exe pack /v /h SHA256 /d %OutDirMsix% /p %OutMsix%
 makeappx.exe pack /v /o /h SHA256 /d %OutDirMsix% /p %OutMsix%
+IF ERRORLEVEL 1 ECHO Error %ERRORLEVEL%
 
 REM REM This would be
 REM REM See https://osgwiki.com/wiki/Package_ES_Appx_Bundle#Code_sign_Appx_Bundle for details re SignCert
@@ -46,6 +47,7 @@ REM SET SignFile=%OutMsix%
 REM SimpleSign.exe -i:%SignFile% -c:%SignCert% -s:"%SignPublisher%"
 ECHO signtool.exe sign /a /v /fd SHA256 /f %ProjectDir%build\MSTest.pfx %OutMsix%
 signtool.exe sign /a /v /fd SHA256 /f %SolutionDir%build\MSTest.pfx %OutMsix%
+IF ERRORLEVEL 1 ECHO Error %ERRORLEVEL%
 
 :TheEnd
 ENDLOCAL
