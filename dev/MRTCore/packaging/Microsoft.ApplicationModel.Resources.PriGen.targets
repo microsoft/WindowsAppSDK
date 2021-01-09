@@ -8,12 +8,22 @@
   <!-- It should not display any schema warnings in error list window.            -->
   <!-- ========================================================================== -->
 
-  <!-- With .NET 5, the propery TargetPlatformIdentifier is not UAP but rather windows. This file expects UAP for all .NET versions, so adjust. -->
+  <!-- With .NET 5, the propery TargetPlatformIdentifier is not UAP but rather windows.
+       Likewise, for other console apps, TargetPlatformIdentifier is windows.
+       This file expects UAP for all .NET versions, so adjust. -->
   <PropertyGroup>
     <TargetPlatformIdentifierAdjusted>$(TargetPlatformIdentifier)</TargetPlatformIdentifierAdjusted>
-      <!-- Any .NET 5 version is valid here, hence the regex match! For example, this will match net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
+    <!-- Any .NET 5 version is valid here, hence the regex match! For example, this will match net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
     <TargetPlatformIdentifierAdjusted Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) == 'true'">UAP</TargetPlatformIdentifierAdjusted>
+    <!-- Add support for console apps. -->
+    <TargetPlatformIdentifierAdjusted Condition="'$(OutputType)' == 'Exe'">UAP</TargetPlatformIdentifierAdjusted>
   </PropertyGroup>
+
+  <!-- The win32 project system adds all images in the project to the Image array in the project file.
+       This MSBuild project file though (created originally for UWPs) requires images to be in the Content array. -->
+  <ItemGroup>
+    <Content Include="@(Image)" Condition="'$(OutputType)' == 'Exe'" />
+  </ItemGroup>
 
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -783,18 +793,7 @@
 
   <Target Name="_GetPackageFileExtensions">
 
-    <PropertyGroup Condition="'$(PackageExtPrefix)' == ''">
-      <PackageExtPrefix>appx</PackageExtPrefix>
-      <PackageExtPrefix Condition="'$(TargetPlatformMinVersion)' &gt;= '10.0.17200.0'">msix</PackageExtPrefix>
-    </PropertyGroup>
-
     <PropertyGroup>
-      <AppxPackageExtension Condition="'$(AppxPackageExtension)' == ''">.$(PackageExtPrefix)</AppxPackageExtension>
-      <AppxPackageEncryptedExtension Condition="'$(AppxPackageEncryptedExtension)' == ''">.e$(PackageExtPrefix)</AppxPackageEncryptedExtension>
-      <AppxSymbolPackageExtension Condition="'$(AppxSymbolPackageExtension)' == ''">.appxsym</AppxSymbolPackageExtension>
-      <AppxBundleExtension Condition="'$(AppxBundleExtension)' == ''">.$(PackageExtPrefix)bundle</AppxBundleExtension>
-      <AppxBundleEncryptedExtension Condition="'$(AppxBundleEncryptedExtension)' == ''">.e$(PackageExtPrefix)bundle</AppxBundleEncryptedExtension>
-      <AppxStoreContainerExtension Condition="'$(AppxStoreContainerExtension)' == ''">.$(PackageExtPrefix)upload</AppxStoreContainerExtension>
       <AppxIntermediateExtension Condition="'$(AppxIntermediateExtension)' == ''">.intermediate</AppxIntermediateExtension>
     </PropertyGroup>
 
