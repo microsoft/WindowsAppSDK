@@ -376,6 +376,14 @@ jobs:
       Contents: |
         mrm.h
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
+
+  - task: CopyFiles@2
+    displayName: 'copy winrt generated files'
+    inputs:
+      SourceFolder: '$(MRTSourcesDirectory)\mrt\Microsoft.ApplicationModel.Resources\src\Generated Files'
+      Contents: |
+        *
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
   
   - task: PublishBuildArtifacts@1
     inputs:
