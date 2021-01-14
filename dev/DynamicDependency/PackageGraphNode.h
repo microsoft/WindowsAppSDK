@@ -136,11 +136,16 @@ private:
         const std::filesystem::path& filename);
 
 public:
+    HRESULT GetActivatableClassThreadingModel(
+        HSTRING className,
+        const std::wstring& activatableClassId,
+        MddCore::WinRT::ThreadingModel& threadingModel) noexcept;
+
     HRESULT GetActivationFactory(
         HSTRING className,
         const std::wstring& activatableClassId,
         REFIID iid,
-        MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+        MddCore::WinRT::ThreadingModel& threadingModel,
         void** factory) noexcept;
 
 private:

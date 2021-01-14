@@ -25,7 +25,25 @@ HRESULT WinRTGetThreadingModel(
     HSTRING activatableClassId,
     ABI::Windows::Foundation::ThreadingType* threading_model);
 
+HRESULT WinRTGetThreadingModel_PackageGraph(
+    HSTRING activatableClassId,
+    ABI::Windows::Foundation::ThreadingType* threading_model);
+
+HRESULT WinRTGetThreadingModel_SxS(
+    HSTRING activatableClassId,
+    ABI::Windows::Foundation::ThreadingType* threading_model);
+
 HRESULT WinRTGetActivationFactory(
+    HSTRING activatableClassId,
+    REFIID  iid,
+    void** factory);
+
+HRESULT WinRTGetActivationFactory_PackageGraph(
+    HSTRING activatableClassId,
+    REFIID  iid,
+    void** factory);
+
+HRESULT WinRTGetActivationFactory_SxS(
     HSTRING activatableClassId,
     REFIID  iid,
     void** factory);

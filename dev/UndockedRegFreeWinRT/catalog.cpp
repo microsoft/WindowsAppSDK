@@ -13,6 +13,8 @@
 
 #include <wrl.h>
 
+#include <../DynamicDependency/MddWinRT.h>
+
 using namespace std;
 using namespace Microsoft::WRL;
 
@@ -299,6 +301,23 @@ HRESULT ParseActivatableClassTag(IXmlReader* xmlReader, PCWSTR fileName)
 
 HRESULT WinRTGetThreadingModel(HSTRING activatableClassId, ABI::Windows::Foundation::ThreadingType* threading_model)
 {
+    const HRESULT hr{ WinRTGetThreadingModel_PackageGraph(activatableClassId, threading_model) };
+    if (hr == REGDB_E_CLASSNOTREG)  // Not found
+    {
+        RETURN_IF_FAILED(WinRTGetThreadingModel_SxS(activatableClassId, threading_model));
+    }
+    RETURN_IF_FAILED_MSG(hr, "Error 0x%X in WinRTGetThreadingModel_PackageGraph", hr);
+    return S_OK;
+}
+
+HRESULT WinRTGetThreadingModel_PackageGraph(HSTRING activatableClassId, ABI::Windows::Foundation::ThreadingType* threading_model)
+{
+    RETURN_IF_FAILED(MddCore::WinRT::GetThreadingModel(activatableClassId, *threading_model));
+    return S_OK;
+}
+
+HRESULT WinRTGetThreadingModel_SxS(HSTRING activatableClassId, ABI::Windows::Foundation::ThreadingType* threading_model)
+{
     auto raw_class_name = WindowsGetStringRawBuffer(activatableClassId, nullptr);
     auto component_iter = g_types.find(raw_class_name);
     if (component_iter != g_types.end())
@@ -311,7 +330,31 @@ HRESULT WinRTGetThreadingModel(HSTRING activatableClassId, ABI::Windows::Foundat
 
 HRESULT WinRTGetActivationFactory(
     HSTRING activatableClassId,
-    REFIID  iid,
+    REFIID iid,
+    void** factory)
+{
+    const HRESULT hr{ WinRTGetActivationFactory_PackageGraph(activatableClassId, iid, factory) };
+    if (hr == REGDB_E_CLASSNOTREG)  // Not found
+    {
+        RETURN_IF_FAILED(WinRTGetActivationFactory_SxS(activatableClassId, iid, factory));
+    }
+    RETURN_IF_FAILED_MSG(hr, "Error 0x%X in WinRTGetThreadingModel_PackageGraph", hr);
+    return S_OK;
+
+}
+
+HRESULT WinRTGetActivationFactory_PackageGraph(
+    HSTRING activatableClassId,
+    REFIID iid,
+    void** factory)
+{
+    RETURN_IF_FAILED(MddCore::WinRT::GetActivationFactory(activatableClassId, iid, factory));
+    return S_OK;
+}
+
+HRESULT WinRTGetActivationFactory_SxS(
+    HSTRING activatableClassId,
+    REFIID iid,
     void** factory)
 {
     auto raw_class_name = WindowsGetStringRawBuffer(activatableClassId, nullptr);

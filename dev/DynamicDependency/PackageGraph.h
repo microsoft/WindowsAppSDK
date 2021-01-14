@@ -89,10 +89,14 @@ public:
     }
 
 public:
+    HRESULT GetActivatableClassThreadingModel(
+        HSTRING className,
+        MddCore::WinRT::ThreadingModel& threadingModel);
+
     HRESULT GetActivationFactory(
         HSTRING className,
         REFIID iid,
-        MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+        MddCore::WinRT::ThreadingModel& threadingModel,
         void** factory);
 
 private:

@@ -21,6 +21,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependencyManager.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddCore.Architecture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDependency.h" />

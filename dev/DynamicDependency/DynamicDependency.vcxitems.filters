@@ -14,6 +14,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependencyManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
@@ -38,6 +39,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />

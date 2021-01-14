@@ -386,13 +386,34 @@ std::wstring MddCore::PackageGraph::BuildPathList()
     return pathlist;
 }
 
+HRESULT MddCore::PackageGraph::GetActivatableClassThreadingModel(
+    HSTRING className,
+    MddCore::WinRT::ThreadingModel& threadingModel)
+{
+    threadingModel = MddCore::WinRT::ThreadingModel::Unknown;
+
+    if (!m_packageGraphNodes.empty())
+    {
+        std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };
+        for (auto& node : m_packageGraphNodes)
+        {
+            RETURN_IF_FAILED(node.GetActivatableClassThreadingModel(className, activatableClassId, threadingModel));
+            if (threadingModel != MddCore::WinRT::ThreadingModel::Unknown)
+            {
+                return S_OK;
+            }
+        }
+    }
+    return REGDB_E_CLASSNOTREG;
+}
+
 HRESULT MddCore::PackageGraph::GetActivationFactory(
     HSTRING className,
     REFIID iid,
-    MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+    MddCore::WinRT::ThreadingModel& threadingModel,
     void** factory)
 {
-    threadingModel = MddCore::WinRTInprocModule::ThreadingModel::Unknown;
+    threadingModel = MddCore::WinRT::ThreadingModel::Unknown;
     *factory = nullptr;
 
     if (!m_packageGraphNodes.empty())

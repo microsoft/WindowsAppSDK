@@ -209,7 +209,7 @@ void MddCore::PackageGraphNode::ParseAppxManifest_InProcessServer(
                 // Walk all attributes parsing those we're interested in.
                 // Use this pattern for better performance than multiple MoveToAttributeByName calls.
                 std::wstring activatableClassId;
-                MddCore::WinRTInprocModule::ThreadingModel threadingModel{};
+                MddCore::WinRT::ThreadingModel threadingModel{};
                 hr = xmlReader->MoveToFirstAttribute();
                 for (;;)
                 {
@@ -229,15 +229,15 @@ void MddCore::PackageGraphNode::ParseAppxManifest_InProcessServer(
                     {
                         if (CompareStringOrdinal(localName, -1, L"both", -1, FALSE) == CSTR_EQUAL)
                         {
-                            threadingModel = MddCore::WinRTInprocModule::ThreadingModel::Both;
+                            threadingModel = MddCore::WinRT::ThreadingModel::Both;
                         }
                         else if (CompareStringOrdinal(localName, -1, L"STA", -1, FALSE) == CSTR_EQUAL)
                         {
-                            threadingModel = MddCore::WinRTInprocModule::ThreadingModel::STA;
+                            threadingModel = MddCore::WinRT::ThreadingModel::STA;
                         }
                         else if (CompareStringOrdinal(localName, -1, L"MTA", -1, FALSE) == CSTR_EQUAL)
                         {
-                            threadingModel = MddCore::WinRTInprocModule::ThreadingModel::MTA;
+                            threadingModel = MddCore::WinRT::ThreadingModel::MTA;
                         }
                         else
                         {
@@ -248,7 +248,7 @@ void MddCore::PackageGraphNode::ParseAppxManifest_InProcessServer(
                     // Next!
                     hr =xmlReader->MoveToNextAttribute();
                 }
-                THROW_HR_IF_MSG(APPX_E_INVALID_MANIFEST, activatableClassId.empty() || (threadingModel == MddCore::WinRTInprocModule::ThreadingModel::Unknown), "Error 0x%X parsing <ActivatableClass> in %ls", hr, filename.c_str());
+                THROW_HR_IF_MSG(APPX_E_INVALID_MANIFEST, activatableClassId.empty() || (threadingModel == MddCore::WinRT::ThreadingModel::Unknown), "Error 0x%X parsing <ActivatableClass> in %ls", hr, filename.c_str());
                 winrtInProcModule.AddInprocServer(activatableClassId, threadingModel);
             }
         }
@@ -259,11 +259,38 @@ void MddCore::PackageGraphNode::ParseAppxManifest_InProcessServer(
     m_inprocModules.push_back(std::move(winrtInProcModule));
 }
 
+HRESULT MddCore::PackageGraphNode::GetActivatableClassThreadingModel(
+    HSTRING className,
+    const std::wstring& activatableClassId,
+    MddCore::WinRT::ThreadingModel& threadingModel) noexcept try
+{
+    // Load the WinRT definitions (if necessary)
+    ParseManifestsIfNecessary();
+
+    // Find the activation factory
+    for (size_t index = 0; index < m_inprocModules.size(); ++index)
+    {
+        auto& inprocModule{ m_inprocModules[index] };
+
+        auto acidThreadingModel{ inprocModule.Find(activatableClassId) };
+        if (acidThreadingModel != MddCore::WinRT::ThreadingModel::Unknown)
+        {
+            threadingModel = acidThreadingModel;
+            return S_OK;
+        }
+    }
+
+    // Not found
+    threadingModel = MddCore::WinRT::ThreadingModel::Unknown;
+    return S_OK;
+}
+CATCH_RETURN();
+
 HRESULT MddCore::PackageGraphNode::GetActivationFactory(
     HSTRING className,
     const std::wstring& activatableClassId,
     REFIID iid,
-    MddCore::WinRTInprocModule::ThreadingModel& threadingModel,
+    MddCore::WinRT::ThreadingModel& threadingModel,
     void** factory) noexcept try
 {
     // Load the WinRT definitions (if necessary)
@@ -275,7 +302,7 @@ HRESULT MddCore::PackageGraphNode::GetActivationFactory(
         auto& inprocModule{ m_inprocModules[index] };
 
         auto acidThreadingModel{ inprocModule.Find(activatableClassId) };
-        if (acidThreadingModel != MddCore::WinRTInprocModule::ThreadingModel::Unknown)
+        if (acidThreadingModel != MddCore::WinRT::ThreadingModel::Unknown)
         {
             RETURN_IF_FAILED(inprocModule.GetActivationFactory(className, iid, factory));
             threadingModel = acidThreadingModel;
@@ -284,7 +311,7 @@ HRESULT MddCore::PackageGraphNode::GetActivationFactory(
     }
 
     // Not found
-    threadingModel = MddCore::WinRTInprocModule::ThreadingModel::Unknown;
+    threadingModel = MddCore::WinRT::ThreadingModel::Unknown;
     *factory = nullptr;
     return S_OK;
 }

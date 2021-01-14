@@ -6,6 +6,7 @@
 
 #include <activationregistration.h>
 #include <activation.h>
+#include <MddWinRT.h>
 
 //TODO Components won't respect COM lifetime. workaround to get them in the COM list? See dev\UndockedRegFreeWinRT\catalog.cpp
 
@@ -26,22 +27,14 @@ public:
 
     ~WinRTInprocModule() = default;
 
-    enum class ThreadingModel
-    {
-        Unknown,
-        Both,
-        STA,
-        MTA
-    };
-
-    ThreadingModel Find(const std::wstring& activatableClassId)
+    MddCore::WinRT::ThreadingModel Find(const std::wstring& activatableClassId)
     {
         auto iterator = m_inprocServers.find(activatableClassId);
         if (iterator != m_inprocServers.end())
         {
             return iterator->second;
         }
-        return ThreadingModel::Unknown;
+        return MddCore::WinRT::ThreadingModel::Unknown;
     }
 
     HRESULT GetActivationFactory(HSTRING className, REFIID iid, void** factory)
@@ -68,14 +61,14 @@ public:
         m_path = path;
     }
 
-    const std::unordered_map<std::wstring, ThreadingModel>& InprocServers() const
+    const std::unordered_map<std::wstring, MddCore::WinRT::ThreadingModel>& InprocServers() const
     {
         return m_inprocServers;
     }
 
     void AddInprocServer(
         const std::wstring& activatableClassId,
-        ThreadingModel threadingModel)
+        MddCore::WinRT::ThreadingModel threadingModel)
     {
         // No dupes allowed
         auto iterator{ m_inprocServers.find(activatableClassId) };
@@ -107,7 +100,7 @@ private:
 
 private:
     std::wstring m_path;
-    std::unordered_map<std::wstring, ThreadingModel> m_inprocServers;
+    std::unordered_map<std::wstring, MddCore::WinRT::ThreadingModel> m_inprocServers;
 
 private:
     wil::unique_hmodule m_dll;
