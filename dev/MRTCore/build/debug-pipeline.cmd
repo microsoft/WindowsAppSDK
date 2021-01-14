@@ -7,3 +7,5 @@ set DOTNET_ROOT
 set DOTNET_ROOT(x86)
 set DOTNET_MULTILEVEL_LOOKUP
 set DOTNET_INSTALL_DIR
+
+powershell ls .\..\..\ -r Microsoft.ApplicationModel.Resources.0.h
