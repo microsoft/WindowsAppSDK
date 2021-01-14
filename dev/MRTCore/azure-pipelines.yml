@@ -117,6 +117,10 @@ jobs:
       arguments: '$(MRTSourcesDirectory)'
       modifyEnvironment: true
 
+#  - task: BatchScript@1
+#    displayName: 'Debug'
+#    inputs:
+#      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'WindowsES'
@@ -380,7 +384,7 @@ jobs:
   - task: BatchScript@1
     displayName: 'Debug'
     inputs:
-      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
+      filename: '$(MRTSourcesDirectory)\build\debug-pipeline.cmd'
 
 #  - task: CopyFiles@2
 #    displayName: 'copy winrt generated files'
