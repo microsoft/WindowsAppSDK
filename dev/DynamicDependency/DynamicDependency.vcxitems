@@ -28,6 +28,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraph.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTModuleManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTPackage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h" />
@@ -51,6 +53,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h" />
   </ItemGroup>

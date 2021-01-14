@@ -5,12 +5,12 @@
 
 #include "MddWinRT.h"
 
-#include "PackageGraphManager.h"
+#include "WinRTModuleManager.h"
 
 HRESULT MddCore::WinRT::ToThreadingType(
     MddCore::WinRT::ThreadingModel threadingModel,
     ABI::Windows::Foundation::ThreadingType& threadingType,
-    HRESULT errorIfUnknown)
+    HRESULT errorIfUnknown) noexcept
 {
     if (threadingModel == MddCore::WinRT::ThreadingModel::Both)
     {
@@ -33,19 +33,19 @@ HRESULT MddCore::WinRT::ToThreadingType(
 
 HRESULT MddCore::WinRT::GetThreadingModel(
     HSTRING activatableClassId,
-    ABI::Windows::Foundation::ThreadingType& threading_model)
+    ABI::Windows::Foundation::ThreadingType& threadingType) noexcept try
 {
-    auto threadingModel{ MddCore::WinRT::ThreadingModel::Unknown };
-    RETURN_IF_FAILED(MddCore::PackageGraphManager::GetActivatableClassThreadingModel(activatableClassId, threadingModel));
-    RETURN_HR_IF(REGDB_E_CLASSNOTREG, threadingModel == MddCore::WinRT::ThreadingModel::Unknown);
-    RETURN_IF_FAILED(ToThreadingType(threadingModel, threading_model));
+    threadingType = MddCore::WinRTModuleManager::GetThreadingType(activatableClassId);
     return S_OK;
 }
+CATCH_RETURN();
 
 HRESULT MddCore::WinRT::GetActivationFactory(
-    HSTRING /*activatableClassId*/,
-    REFIID /*iid*/,
-    void** /*factory*/)
+    HSTRING activatableClassId,
+    REFIID iid,
+    void** factory) noexcept try
 {
-    return E_NOTIMPL;
+    *factory = MddCore::WinRTModuleManager::GetActivationFactory(activatableClassId, iid);
+    return S_OK;
 }
+CATCH_RETURN();

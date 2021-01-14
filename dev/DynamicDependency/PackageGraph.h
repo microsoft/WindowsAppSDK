@@ -88,17 +88,6 @@ public:
         return m_packageGraphNodes;
     }
 
-public:
-    HRESULT GetActivatableClassThreadingModel(
-        HSTRING className,
-        MddCore::WinRT::ThreadingModel& threadingModel);
-
-    HRESULT GetActivationFactory(
-        HSTRING className,
-        REFIID iid,
-        MddCore::WinRT::ThreadingModel& threadingModel,
-        void** factory);
-
 private:
     std::vector<MddCore::PackageGraphNode> m_packageGraphNodes;
     std::wstring m_pathListLastAddedToPath;

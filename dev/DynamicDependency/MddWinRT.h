@@ -23,16 +23,16 @@ namespace MddCore::WinRT
     HRESULT ToThreadingType(
         MddCore::WinRT::ThreadingModel threadingModel,
         ABI::Windows::Foundation::ThreadingType& threadingType,
-        HRESULT errorIfUnknown = REGDB_E_CLASSNOTREG);
+        HRESULT errorIfUnknown = REGDB_E_CLASSNOTREG) noexcept;
 
     HRESULT GetThreadingModel(
         HSTRING activatableClassId,
-        ABI::Windows::Foundation::ThreadingType& threading_model);
+        ABI::Windows::Foundation::ThreadingType& threading_model) noexcept;
 
     HRESULT GetActivationFactory(
         HSTRING activatableClassId,
         REFIID iid,
-        void** factory);
+        void** factory) noexcept;
 }
 
 #endif // MDDWINRT_H

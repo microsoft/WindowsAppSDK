@@ -15,6 +15,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageGraphManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTModuleManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WinRTPackage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
@@ -40,6 +42,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />

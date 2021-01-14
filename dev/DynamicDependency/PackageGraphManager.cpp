@@ -239,23 +239,3 @@ void MddCore::PackageGraphManager::SerializeStringToBuffer(
         }
     }
 }
-
-HRESULT MddCore::PackageGraphManager::GetActivatableClassThreadingModel(
-    HSTRING className,
-    MddCore::WinRT::ThreadingModel& threadingModel)
-{
-    std::unique_lock<std::mutex> lock(s_lock);
-
-    return s_packageGraph.GetActivatableClassThreadingModel(className, threadingModel);
-}
-
-HRESULT MddCore::PackageGraphManager::GetActivationFactory(
-    HSTRING className,
-    REFIID iid,
-    MddCore::WinRT::ThreadingModel& threadingModel,
-    void** factory)
-{
-    std::unique_lock<std::mutex> lock(s_lock);
-
-    return s_packageGraph.GetActivationFactory(className, iid, threadingModel, factory);
-}

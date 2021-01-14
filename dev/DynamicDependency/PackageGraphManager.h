@@ -69,17 +69,6 @@ private:
         return static_cast<UINT32>((wcslen(s) + 1) * sizeof(*s));
     }
 
-public:
-    static HRESULT GetActivatableClassThreadingModel(
-        HSTRING className,
-        MddCore::WinRT::ThreadingModel& threadingModel);
-
-    static HRESULT GetActivationFactory(
-        HSTRING className,
-        REFIID iid,
-        MddCore::WinRT::ThreadingModel& threadingModel,
-        void** factory);
-
 private:
     static std::mutex s_lock;
     static MddCore::PackageGraph s_packageGraph;
