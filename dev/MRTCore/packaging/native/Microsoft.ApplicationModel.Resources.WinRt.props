@@ -3,6 +3,9 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- An empty '$(ApplicationType)' corresponds to a C++, Desktop app. -->
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.DesktopAppPropertySheet.props" Condition="'$(ApplicationType)'==''"/>
+
   <PropertyGroup>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>

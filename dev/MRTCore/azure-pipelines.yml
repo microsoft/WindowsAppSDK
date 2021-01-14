@@ -376,23 +376,6 @@ jobs:
       Contents: |
         mrm.h
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
-
-  # For dev purposes:
-  # Added to determine where the winrt Generated Files folder is for Microsoft.ApplicationModel.Resources.
-  # It is not in '$(MRTSourcesDirectory)\mrt\Microsoft.ApplicationModel.Resources\src\Generated Files' even though
-  # locally that's where it is.
-  - task: BatchScript@1
-    displayName: 'Debug'
-    inputs:
-      filename: '$(MRTSourcesDirectory)\build\debug-pipeline.cmd'
-
-  - task: CopyFiles@2
-    displayName: 'copy winrt generated files'
-    inputs:
-      SourceFolder: '$(MRTSourcesDirectory)\mrt\Microsoft.ApplicationModel.Resources\src\Generated Files'
-      Contents: |
-        **
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
   
   - task: PublishBuildArtifacts@1
     inputs:
