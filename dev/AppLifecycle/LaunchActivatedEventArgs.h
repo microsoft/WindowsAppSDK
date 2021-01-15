@@ -17,6 +17,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             m_kind = ActivationKind::Launch;
         }
 
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
+        {
+            auto query = protocolArgs.Uri().QueryParsed();
+            auto args = query.GetFirstValueByName(L"Arguments").c_str();
+            return make<LaunchActivatedEventArgs>(args);
+        }
+
         // ILaunchActivatedEventArgs
         winrt::hstring Arguments()
         {

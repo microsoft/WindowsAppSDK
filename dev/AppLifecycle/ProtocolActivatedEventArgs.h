@@ -19,6 +19,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             m_kind = ActivationKind::Protocol;
         }
 
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
+        {
+            return protocolArgs;
+        }
+
         // IProtocolActivatedEventArgs
         winrt::Windows::Foundation::Uri Uri()
         {

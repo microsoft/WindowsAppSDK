@@ -18,4 +18,6 @@ namespace ProjectReunionCppTest
     void DeleteContentFile(std::wstring filename);
 
     const std::wstring g_deploymentDir = GetDeploymentDir();
+
+    using namespace winrt::Windows::ApplicationModel::Activation;
 }

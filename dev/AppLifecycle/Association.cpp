@@ -154,7 +154,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     // Registers a ProgId definition under the classes root in the registry.
     wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& defaultValue,
-        const std::wstring& applicationDisplayName, const std::wstring& logo)
+        const std::wstring& appUserModelId, const std::wstring& applicationDisplayName,
+        const std::wstring& logo)
     {
         // Example: HKEY_CURRENT_USER\Software\Classes\<progId>
         auto key = CreateAssocKey(progId, KEY_WRITE);
@@ -173,8 +174,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             wil::unique_hkey applicationKey;
             THROW_IF_WIN32_ERROR(::RegCreateKeyEx(key.get(), c_applicationKeyName.c_str(), 0,
                 nullptr, 0, KEY_WRITE, nullptr, applicationKey.put(), nullptr));
-            THROW_IF_WIN32_ERROR(::RegSetValueEx(applicationKey.get(), c_applicationNameKeyName.c_str(),
-                0, REG_SZ, reinterpret_cast<BYTE const*>(applicationDisplayName.c_str()),
+            THROW_IF_WIN32_ERROR(::RegSetValueEx(applicationKey.get(),
+                c_applicationNameValueName.c_str(), 0, REG_SZ,
+                reinterpret_cast<BYTE const*>(applicationDisplayName.c_str()),
                 static_cast<uint32_t>((applicationDisplayName.size() + 1) * sizeof(wchar_t))));
         }
 
@@ -187,6 +189,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             THROW_IF_WIN32_ERROR(::RegSetValueEx(defaultIconKey.get(), nullptr, 0, REG_SZ,
                 reinterpret_cast<BYTE const*>(logo.c_str()),
                 static_cast<uint32_t>((logo.size() + 1) * sizeof(wchar_t))));
+        }
+
+        if (!appUserModelId.empty())
+        {
+            // Example: HKEY_CURRENT_USER\Software\Classes\<progId>\AppUserModelId
+            THROW_IF_WIN32_ERROR(::RegSetValueEx(key.get(), c_appUserModelIdValueName.c_str(), 0,
+                REG_SZ, reinterpret_cast<BYTE const*>(appUserModelId.c_str()),
+                static_cast<uint32_t>((appUserModelId.size() + 1) * sizeof(wchar_t))));
         }
         return key;
     }

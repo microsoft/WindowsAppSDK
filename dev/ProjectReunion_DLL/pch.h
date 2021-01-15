@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include <unknwn.h>
 #include <ShObjIdl_core.h>
+#include <shlguid.h>
+#include <shlwapi.h>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <mutex>
 #include <list>
@@ -9,6 +13,7 @@
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <shellapi.h>
 #include <appmodel.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>

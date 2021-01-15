@@ -1,3 +1,6 @@
 ﻿EXPORTS
     DllCanUnloadNow = WINRT_CanUnloadNow                    PRIVATE
     DllGetActivationFactory = WINRT_GetActivationFactory    PRIVATE
+    DllGetClassObject                                       PRIVATE
+    DllRegisterServer                                       PRIVATE
+    DllUnregisterServer                                     PRIVATE
