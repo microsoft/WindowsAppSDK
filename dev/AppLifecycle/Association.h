@@ -5,24 +5,26 @@
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     // Association registry key values.
-    static const std::wstring c_openWithProgIdsKeyName = L"OpenWithProgids";
-    static const std::wstring c_softwareClassesKeyPath = LR"(Software\Classes\)";
-    static const std::wstring c_applicationKeyName = L"Application";
-    static const std::wstring c_applicationNameValueName = L"ApplicationName";
-    static const std::wstring c_defaultIconKeyName = L"DefaultIcon";
-    static const std::wstring c_applicationsKeyPath = LR"(Software\Microsoft\ReunionApplications\)";
-    static const std::wstring c_capabilitiesKeyPath = LR"(\Capabilties)";
-    static const std::wstring c_registeredApplicationsKeyPath = LR"(Software\RegisteredApplications\)";
-    static const std::wstring c_shellKeyName = L"shell";
-    static const std::wstring c_commandKeyName = L"command";
-    static const std::wstring c_delegateExecuteValueName = L"DelegateExecute";
-    static const std::wstring c_urlProtocolValueName = L"URL Protocol";
-    static const std::wstring c_urlDefaultValuePrefix = L"URL:";
+    static LPCWSTR c_openWithProgIdsKeyName{ L"OpenWithProgids" };
+    static LPCWSTR c_softwareClassesKeyPath{ LR"(Software\Classes\)" };
+    static LPCWSTR c_applicationKeyName{ L"Application" };
+    static LPCWSTR c_applicationNameValueName{ L"ApplicationName" };
+    static LPCWSTR c_defaultIconKeyName{ L"DefaultIcon" };
+    static LPCWSTR c_appUserModelIdValueName{ L"AppUserModelId" };
+    static LPCWSTR c_applicationsKeyPath{ LR"(Software\Microsoft\ReunionApplications\)" };
+    static LPCWSTR c_capabilitiesKeyPath{ LR"(\Capabilties)" };
+    static LPCWSTR c_registeredApplicationsKeyPath{ LR"(Software\RegisteredApplications\)" };
+    static LPCWSTR c_shellKeyName{ L"shell" };
+    static LPCWSTR c_commandKeyName{ L"command" };
+    static LPCWSTR c_delegateExecuteValueName{ L"DelegateExecute" };
+    static LPCWSTR c_urlProtocolValueName{ L"URL Protocol" };
+    static LPCWSTR c_urlDefaultValuePrefix{ L"URL:" };
+    static LPCWSTR c_openVerbName{ L"open" };
 
     // ProgId generation values.
-    static const std::wstring c_progIdPrefix = L"PRF";
-    static const std::wstring c_fileTypeProgIdSuffix = L".File";
-    static const std::wstring c_protocolProgIdSuffix = L".Protocol";
+    static LPCWSTR c_progIdPrefix{ L"App." };
+    static LPCWSTR c_fileTypeProgIdSuffix{ L".File" };
+    static LPCWSTR c_protocolProgIdSuffix{ L".Protocol" };
 
     enum AssociationType
     {
@@ -34,15 +36,16 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     std::wstring GetFullIdentityString();
     bool HasIdentity();
     std::wstring GetModulePath();
-    std::wstring ComputeAppId();
+    std::wstring ComputeAppId(const std::wstring& customSeed);
     std::wstring ComputeProgId(AssociationType type);
     std::wstring ComputeProgId(const std::wstring& appId, AssociationType type);
     std::wstring CreateAssocKeyPath(const std::wstring& assoc);
     wil::unique_hkey CreateAssocKey(const std::wstring& assoc, REGSAM samDesired = KEY_WRITE);
     wil::unique_hkey OpenAssocKey(const std::wstring& assoc, REGSAM samDesired = KEY_READ);
     void DeleteAssocKey(const std::wstring& assoc);
-    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& displayName = L"",
-        const std::wstring& applicationDisplayName = L"", const std::wstring& logo = L"");
+    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& defaultValue = L"",
+        const std::wstring& appUserModelId = L"", const std::wstring& applicationDisplayName = L"",
+        const std::wstring& logo = L"");
     void UnregisterProgId(const std::wstring& progId);
     std::wstring CreateApplicationKeyPath();
     wil::unique_hkey CreateApplicationKey(const std::wstring& progId, REGSAM samDesired = KEY_WRITE);

@@ -10,10 +10,10 @@
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
     // Extension contract ids.
-    static const std::wstring c_launchContractId = L"Windows.Launch";
-    static const std::wstring c_fileContractId = L"Windows.File";
-    static const std::wstring c_protocolContractId = L"Windows.Protocol";
-    static const std::wstring c_startupTaskContractId = L"Windows.StartupTask";
+    static LPCWSTR c_launchContractId = L"Windows.Launch";
+    static LPCWSTR c_fileContractId = L"Windows.File";
+    static LPCWSTR c_protocolContractId = L"Windows.Protocol";
+    static LPCWSTR c_startupTaskContractId = L"Windows.StartupTask";
 
     // This array holds the mapping between a class factory and it's extension contract Id.
     static const struct ExtensionMap

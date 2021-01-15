@@ -51,19 +51,22 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
     bool IsEncodedLaunch(IProtocolActivatedEventArgs const& args)
     {
-        return (args.Uri().SchemeName() == c_encodedLaunchSchemeName);
+        return CompareStringOrdinal(args.Uri().SchemeName().c_str(), -1, c_encodedLaunchSchemeName,
+            -1, TRUE) == CSTR_EQUAL;
     }
 
     IActivatedEventArgs GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
     {
         for (auto const& pair : args.Uri().QueryParsed())
         {
-            if (pair.Name() == L"ContractId")
+            if (CompareStringOrdinal(pair.Name().c_str(), -1, c_contractIdKeyName, -1, TRUE)
+                == CSTR_EQUAL)
             {
                 for (int index = 0; index < _countof(c_extensionMap); index++)
                 {
                     std::wstring contractId = pair.Value().c_str();
-                    if (contractId == c_extensionMap[index].contractId)
+                    if (CompareStringOrdinal(contractId.c_str(), -1,
+                        c_extensionMap[index].contractId.c_str(), -1, TRUE) == CSTR_EQUAL)
                     {
                         return c_extensionMap[index].factory(args);
                     }
@@ -91,7 +94,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
             // All specific launch types are encoded as a URI and transported as a
             // protocol, except the catch-all LaunchActivatedEventArgs case.
-            if (!contractId.empty() && contractId == c_protocolArgumentString)
+            if (!contractId.empty() && (CompareStringOrdinal(contractId.c_str(), -1,
+                c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL))
             {
                 auto args = make<ProtocolActivatedEventArgs>(contractData);
                 auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
