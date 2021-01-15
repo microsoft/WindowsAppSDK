@@ -55,7 +55,8 @@ jobs:
       script: |
         $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
         $fullpackagePath = "${{ parameters.fullnupkgdir }}"
-        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.TransportPackage.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.TransportPackage.props" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.TransportPackage.props"
 
   # debugging - remove or comment out before completing PR      
   # - script: |
@@ -82,7 +83,7 @@ jobs:
     displayName: 'Pack Full Nuget Package'
     inputs:
       command: 'pack'
-      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.TransportPackage.nuspec'
       versioningScheme: 'byPrereleaseNumber'
       majorVersion: ${{ parameters.major }}
       minorVersion: ${{ parameters.minor }}
