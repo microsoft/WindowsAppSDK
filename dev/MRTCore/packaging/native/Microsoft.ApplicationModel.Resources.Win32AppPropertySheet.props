@@ -6,7 +6,7 @@
   <ItemDefinitionGroup />
   <ItemGroup />
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.Resources.winmd">
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(PlatformShortName)\native\Microsoft.ApplicationModel.Resources.dll">

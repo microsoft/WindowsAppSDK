@@ -259,6 +259,9 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
       flattenFolders: true
 
+  # Needed so that the NuGet package can be installed in a win32 app. It avoids this error: "You are trying to
+  # install this package into a project that targets 'native,Version=v0.0', but the package does not contain any
+  # assembly references or content files that are compatible with that framework."
   - task: CopyFiles@2
     displayName: 'copy winmd into native folder'
     inputs:
