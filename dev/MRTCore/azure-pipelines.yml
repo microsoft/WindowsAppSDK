@@ -362,6 +362,7 @@ jobs:
         Microsoft.ApplicationModel.Resources.References.targets
         Microsoft.ApplicationModel.Resources.targets
         native\Microsoft.ApplicationModel.Resources.C.props
+        native\Microsoft.ApplicationModel.Resources.DesktopAppPropertySheet.props
         native\Microsoft.ApplicationModel.Resources.props
         native\Microsoft.ApplicationModel.Resources.targets
         native\Microsoft.ApplicationModel.Resources.WinRt.props
