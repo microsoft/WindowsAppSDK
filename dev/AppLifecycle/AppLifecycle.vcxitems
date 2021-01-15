@@ -23,6 +23,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)FileActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LaunchActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StartupActivatedEventArgs.h" />
     <Midl Include="$(MSBuildThisFileDirectory)AppLifecycle.idl" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle.cpp" />

@@ -128,6 +128,22 @@ int main()
                     //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
                 }
             }
+            else if (argument.compare(L"RegisterStartup") == 0)
+            {
+                ActivationRegistrationManager::RegisterForStartupActivation(L"this_is_a_test", true);
+
+                // Signal event that file was registered.
+                SignalPhase(c_testStartupPhaseEventName);
+                succeeded = true;
+            }
+            else if (argument.compare(L"UnregisterStartup") == 0)
+            {
+                ActivationRegistrationManager::UnregisterForStartupActivation(L"this_is_a_test");
+
+                // Signal event that file was unregistered.
+                SignalPhase(c_testStartupPhaseEventName);
+                succeeded = true;
+            }
         }
     }
     else if (kind == ActivationKind::Protocol)
@@ -170,6 +186,16 @@ int main()
         // Signal event that file was activated.
         SignalPhase(c_testFilePhaseEventName);
         succeeded = true;
+    }
+    else if (kind == ActivationKind::StartupTask)
+    {
+        auto startupArgs = args.as<IStartupTaskActivatedEventArgs>();
+        if (startupArgs.TaskId() == L"this_is_a_test")
+        {
+            // Signal event that toast was activated.
+            SignalPhase(c_testStartupPhaseEventName);
+            succeeded = true;
+        }
     }
 
     if (!succeeded)

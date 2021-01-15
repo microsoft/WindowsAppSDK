@@ -31,7 +31,6 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             // Currently we only support one file in the array, because the
             // activation method forces a new process for each item in the array.
             m_files.Append(StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
-
         }
 
         // IFileActivatedEventArgs

@@ -15,9 +15,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             hstring const& logo);
         static void RegisterForProtocolActivation(hstring const& scheme,
             hstring const& applicationDisplayName, hstring const& logo);
+        static void RegisterForStartupActivation(hstring const& taskId, bool isEnabled);
 
         static void UnregisterForFileTypeActivation(hstring const& fileType);
         static void UnregisterForProtocolActivation(hstring const& scheme);
+        static void UnregisterForStartupActivation(hstring const& taskId);
     };
 }
 

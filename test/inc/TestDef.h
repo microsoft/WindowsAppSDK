@@ -12,3 +12,5 @@ static const std::wstring c_testProtocolPhaseEventName = L"ReunionTestProtocolPh
 static const std::wstring c_testFileExtension = L".reuniontestfile";
 static const std::wstring c_testFileExtension_Packaged = L".reuniontestfile-packaged";
 static const std::wstring c_testFilePhaseEventName = L"ReunionTestFilePhaseEventName";
+
+static const std::wstring c_testStartupPhaseEventName = L"ReunionTestStartupPhaseEventName";

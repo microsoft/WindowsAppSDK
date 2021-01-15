@@ -8,20 +8,29 @@
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
+#include "StartupActivatedEventArgs.h"
 #include "Association.h"
+
+namespace winrt
+{
+    using namespace Windows::Foundation;
+    using Windows::ApplicationModel::Activation::IActivatedEventArgs;
+}
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
     {
-        auto argsStart = commandLine.rfind(L"----") + 4;
+        auto argsStart = commandLine.rfind(c_argumentPrefix);
         if (argsStart == std::wstring::npos)
         {
             return {L"", L""};
         }
 
+        argsStart += 4;
+
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-        auto argsEnd = commandLine.find_first_of(L":", argsStart);
+        auto argsEnd = commandLine.find_first_of(c_argumentSuffix, argsStart);
         if (argsEnd == std::wstring::npos)
         {
             return {L"", L""};
@@ -38,7 +47,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return {commandLine.substr(argsStart, argsLength), commandLine.substr(dataStart)};
     }
 
-    Windows::ApplicationModel::Activation::IActivatedEventArgs AppLifecycle::GetActivatedEventArgs()
+    IActivatedEventArgs AppLifecycle::GetActivatedEventArgs()
     {
         if (HasIdentity())
         {
@@ -61,6 +70,10 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
                 else if (contractId == c_fileArgumentString)
                 {
                     return make<FileActivatedEventArgs>(contractData);
+                }
+                else if (contractId == c_startupArgumentString)
+                {
+                    return make<StartupActivatedEventArgs>(contractData);
                 }
             }
 
