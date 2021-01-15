@@ -251,12 +251,21 @@ jobs:
 # START of copying files into their final package location.
 
   - task: CopyFiles@2
-    displayName: 'copy winmd'
+    displayName: 'copy winmd into uap10.0 folder'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
       Contents: |
         Microsoft.ApplicationModel.Resources.winmd
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: 'copy winmd into native folder'
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
+      Contents: |
+        Microsoft.ApplicationModel.Resources.winmd
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native\'
       flattenFolders: true
 
   - task: CopyFiles@2
@@ -362,9 +371,9 @@ jobs:
         Microsoft.ApplicationModel.Resources.References.targets
         Microsoft.ApplicationModel.Resources.targets
         native\Microsoft.ApplicationModel.Resources.C.props
-        native\Microsoft.ApplicationModel.Resources.DesktopAppPropertySheet.props
         native\Microsoft.ApplicationModel.Resources.props
         native\Microsoft.ApplicationModel.Resources.targets
+        native\Microsoft.ApplicationModel.Resources.Win32AppPropertySheet.props
         native\Microsoft.ApplicationModel.Resources.WinRt.props
         README.md
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
