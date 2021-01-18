@@ -30,6 +30,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
             PACKAGE_VERSION minVersion,
             MddPackageDependencyProcessorArchitectures architectures,
             MddPackageDependencyLifetimeKind lifetimeKind,
+            PCWSTR lifetimeArtifact,
             MddCreatePackageDependencyOptions options);
 
     private:

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -31,8 +31,9 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto mddMinVersion{ ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion) };
         const auto mddArchitectures{ MddPackageDependencyProcessorArchitectures::None };
         const auto mddLifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+        const PCWSTR mddLifetimeArtifact{};
         const auto mddOptions{ MddCreatePackageDependencyOptions::None };
-        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddOptions);
+        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
     winrt::PackageDependency PackageDependency::Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options)
@@ -40,8 +41,9 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto mddMinVersion{ ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion) };
         const auto mddArchitectures{ ::Microsoft::ApplicationModel::DynamicDependency::ToArchitectures(options.Architectures()) };
         const auto mddLifetimeKind{ ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind()) };
+        const auto mddLifetimeArtifact{ options.LifetimeArtifact().c_str() };
         const auto mddOptions{ ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options) };
-        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddOptions);
+        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
     winrt::PackageDependency PackageDependency::CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options)
@@ -49,8 +51,9 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto mddMinVersion{ ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion) };
         const auto mddArchitectures{ ::Microsoft::ApplicationModel::DynamicDependency::ToArchitectures(options.Architectures()) };
         const auto mddLifetimeKind{ ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind()) };
+        const auto mddLifetimeArtifact{ options.LifetimeArtifact().c_str() };
         auto mddOptions{ ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options, MddCreatePackageDependencyOptions::ScopeIsSystem) };
-        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddOptions);
+        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
     hstring PackageDependency::Id()
@@ -90,10 +93,11 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         PACKAGE_VERSION minVersion,
         MddPackageDependencyProcessorArchitectures architectures,
         MddPackageDependencyLifetimeKind lifetimeKind,
+        PCWSTR lifetimeArtifact,
         MddCreatePackageDependencyOptions options)
     {
         wil::unique_process_heap_string packageDependencyId;
-        THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectures, lifetimeKind, nullptr, options, wil::out_param(packageDependencyId)));
+        THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, wil::out_param(packageDependencyId)));
         return GetFromId(packageDependencyId.get());
     }
 }
