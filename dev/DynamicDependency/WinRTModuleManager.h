@@ -11,8 +11,9 @@ namespace MddCore
 class WinRTModuleManager
 {
 public:
-    static ABI::Windows::Foundation::ThreadingType GetThreadingType(
-        HSTRING className);
+    static bool GetThreadingType(
+        HSTRING className,
+        ABI::Windows::Foundation::ThreadingType& threadingType);
 
     static MddCore::WinRT::ThreadingModel GetThreadingModel(
         HSTRING className);

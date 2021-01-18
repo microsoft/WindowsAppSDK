@@ -153,7 +153,7 @@ HRESULT GetActivationLocation(HSTRING activatableClassId, ActivationLocation &ac
     RETURN_IF_FAILED(CoGetApartmentType(&aptType, &aptQualifier));
 
     ABI::Windows::Foundation::ThreadingType threading_model;
-    RETURN_IF_FAILED(WinRTGetThreadingModel(activatableClassId, &threading_model)); //REGDB_E_CLASSNOTREG
+    RETURN_IF_FAILED_MSG(WinRTGetThreadingModel(activatableClassId, &threading_model), "URFW: ActivatableClassId=%ls", WindowsGetStringRawBuffer(activatableClassId, nullptr)); //REGDB_E_CLASSNOTREG
     switch (threading_model)
     {
     case ABI::Windows::Foundation::ThreadingType_BOTH:

@@ -301,19 +301,17 @@ HRESULT ParseActivatableClassTag(IXmlReader* xmlReader, PCWSTR fileName)
 
 HRESULT WinRTGetThreadingModel(HSTRING activatableClassId, ABI::Windows::Foundation::ThreadingType* threading_model)
 {
-    const HRESULT hr{ WinRTGetThreadingModel_PackageGraph(activatableClassId, threading_model) };
+    HRESULT hr{ WinRTGetThreadingModel_PackageGraph(activatableClassId, threading_model) };
     if (hr == REGDB_E_CLASSNOTREG)  // Not found
     {
-        RETURN_IF_FAILED(WinRTGetThreadingModel_SxS(activatableClassId, threading_model));
+        hr = WinRTGetThreadingModel_SxS(activatableClassId, threading_model);
     }
-    RETURN_IF_FAILED_MSG(hr, "Error 0x%X in WinRTGetThreadingModel_PackageGraph", hr);
-    return S_OK;
+    return hr;
 }
 
 HRESULT WinRTGetThreadingModel_PackageGraph(HSTRING activatableClassId, ABI::Windows::Foundation::ThreadingType* threading_model)
 {
-    RETURN_IF_FAILED(MddCore::WinRT::GetThreadingModel(activatableClassId, *threading_model));
-    return S_OK;
+    return MddCore::WinRT::GetThreadingModel(activatableClassId, *threading_model);
 }
 
 HRESULT WinRTGetThreadingModel_SxS(HSTRING activatableClassId, ABI::Windows::Foundation::ThreadingType* threading_model)
@@ -333,12 +331,11 @@ HRESULT WinRTGetActivationFactory(
     REFIID iid,
     void** factory)
 {
-    const HRESULT hr{ WinRTGetActivationFactory_PackageGraph(activatableClassId, iid, factory) };
-    if (hr == REGDB_E_CLASSNOTREG)  // Not found
+    RETURN_IF_FAILED(WinRTGetActivationFactory_PackageGraph(activatableClassId, iid, factory));
+    if (*factory == nullptr)    // Not found
     {
         RETURN_IF_FAILED(WinRTGetActivationFactory_SxS(activatableClassId, iid, factory));
     }
-    RETURN_IF_FAILED_MSG(hr, "Error 0x%X in WinRTGetThreadingModel_PackageGraph", hr);
     return S_OK;
 
 }

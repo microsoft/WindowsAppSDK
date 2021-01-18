@@ -25,8 +25,7 @@ public:
 
     WinRTPackage(WinRTPackage&& other) :
         m_context(std::move(other.m_context)),
-        m_packagePath(std::move(other.m_packagePath)),
-        m_manifestsParsed(std::move(other.m_manifestsParsed))
+        m_packagePath(std::move(other.m_packagePath))
     {
         for (auto& inprocModule : other.m_inprocModules)
         {
@@ -44,20 +43,22 @@ public:
         const std::wstring& activatableClassId,
         REFIID iid);
 
-private:
-    void ParseManifestsIfNecessary();
-
     void ParseAppxManifest();
 
+private:
     void ParseAppxManifest_InProcessServer(
         IXmlReader* xmlReader,
+        const std::filesystem::path& filename);
+
+    static std::wstring ParseAppxManifest_GetElementText(
+        IXmlReader* xmlReader,
+        PCWSTR elementName,
         const std::filesystem::path& filename);
 
 private:
     MDD_PACKAGEDEPENDENCY_CONTEXT m_context{};
     std::wstring m_packagePath;
     std::vector<WinRTInprocModule> m_inprocModules;
-    bool m_manifestsParsed{};
 };
 }
 

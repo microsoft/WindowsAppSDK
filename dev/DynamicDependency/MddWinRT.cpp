@@ -35,7 +35,10 @@ HRESULT MddCore::WinRT::GetThreadingModel(
     HSTRING className,
     ABI::Windows::Foundation::ThreadingType& threadingType) noexcept try
 {
-    threadingType = MddCore::WinRTModuleManager::GetThreadingType(className);
+    if (!MddCore::WinRTModuleManager::GetThreadingType(className, threadingType))
+    {
+        return REGDB_E_CLASSNOTREG;
+    }
     return S_OK;
 }
 CATCH_RETURN();

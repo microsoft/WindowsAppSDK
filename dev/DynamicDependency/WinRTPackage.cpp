@@ -8,9 +8,6 @@
 MddCore::WinRT::ThreadingModel MddCore::WinRTPackage::GetThreadingModel(
     const std::wstring& activatableClassId)
 {
-    // Load the WinRT definitions (if necessary)
-    ParseManifestsIfNecessary();
-
     // Find the activation factory
     if (!m_inprocModules.empty())
     {
@@ -35,9 +32,6 @@ void* MddCore::WinRTPackage::GetActivationFactory(
     const std::wstring& activatableClassId,
     REFIID iid)
 {
-    // Load the WinRT definitions (if necessary)
-    ParseManifestsIfNecessary();
-
     // Find the activation factory
     if (!m_inprocModules.empty())
     {
@@ -56,21 +50,6 @@ void* MddCore::WinRTPackage::GetActivationFactory(
 
     // Not found
     return nullptr;
-}
-
-void MddCore::WinRTPackage::ParseManifestsIfNecessary()
-{
-    if (m_manifestsParsed)
-    {
-        return;
-    }
-
-    // Reset the list (in case of previous attempt and failure)
-    m_inprocModules.clear();
-
-    // Parse the packages' manifest
-    ParseAppxManifest();
-    m_manifestsParsed = true;
 }
 
 /// Parse a package's appxmanifest for WinRT inproc server definitions e.g.
@@ -97,7 +76,7 @@ void MddCore::WinRTPackage::ParseAppxManifest()
     std::filesystem::path filename{ m_packagePath };
     filename /= L"appxmanifest.xml";
     wil::com_ptr<IStream> appxManifestStream;
-    THROW_IF_FAILED(SHCreateStreamOnFileEx(filename.c_str(), STGM_READ, FILE_ATTRIBUTE_NORMAL, FALSE, nullptr, appxManifestStream.addressof()));
+    THROW_IF_FAILED_MSG(SHCreateStreamOnFileEx(filename.c_str(), STGM_READ, FILE_ATTRIBUTE_NORMAL, FALSE, nullptr, appxManifestStream.addressof()), "Error in SHCreateSreamOnFileEx(%ls)", filename.c_str());
 
     wil::com_ptr<IXmlReader> xmlReader;
     auto appxManifestIUnknown = appxManifestStream.query<IUnknown>();
@@ -149,9 +128,8 @@ void MddCore::WinRTPackage::ParseAppxManifest_InProcessServer(
             THROW_IF_FAILED(xmlReader->GetLocalName(&localName, nullptr));
             if (CompareStringOrdinal(localName, -1, L"Path", -1, FALSE) == CSTR_EQUAL)
             {
-                PCWSTR value{};
-                THROW_IF_FAILED(xmlReader->GetValue(&value, nullptr));
-                winrtInProcModule.Path(value);
+                std::wstring path{ ParseAppxManifest_GetElementText(xmlReader, L"Path", filename) };
+                winrtInProcModule.Path(path);
             }
             else if (CompareStringOrdinal(localName, -1, L"ActivatableClass", -1, FALSE) == CSTR_EQUAL)
             {
@@ -168,23 +146,27 @@ void MddCore::WinRTPackage::ParseAppxManifest_InProcessServer(
                         // S_FALSE = end-of-input. We're done
                         break;
                     }
+
+                    THROW_IF_FAILED(xmlReader->GetLocalName(&localName, nullptr));
+
                     PCWSTR value{};
                     THROW_IF_FAILED(xmlReader->GetValue(&value, nullptr));
+
                     if (CompareStringOrdinal(localName, -1, L"ActivatableClassId", -1, FALSE) == CSTR_EQUAL)
                     {
                         activatableClassId = value;
                     }
                     else if (CompareStringOrdinal(localName, -1, L"ThreadingModel", -1, FALSE) == CSTR_EQUAL)
                     {
-                        if (CompareStringOrdinal(localName, -1, L"both", -1, FALSE) == CSTR_EQUAL)
+                        if (CompareStringOrdinal(value, -1, L"both", -1, FALSE) == CSTR_EQUAL)
                         {
                             threadingModel = MddCore::WinRT::ThreadingModel::Both;
                         }
-                        else if (CompareStringOrdinal(localName, -1, L"STA", -1, FALSE) == CSTR_EQUAL)
+                        else if (CompareStringOrdinal(value, -1, L"STA", -1, FALSE) == CSTR_EQUAL)
                         {
                             threadingModel = MddCore::WinRT::ThreadingModel::STA;
                         }
-                        else if (CompareStringOrdinal(localName, -1, L"MTA", -1, FALSE) == CSTR_EQUAL)
+                        else if (CompareStringOrdinal(value, -1, L"MTA", -1, FALSE) == CSTR_EQUAL)
                         {
                             threadingModel = MddCore::WinRT::ThreadingModel::MTA;
                         }
@@ -206,4 +188,41 @@ void MddCore::WinRTPackage::ParseAppxManifest_InProcessServer(
 
     // Gotcha!
     m_inprocModules.push_back(std::move(winrtInProcModule));
+}
+
+std::wstring MddCore::WinRTPackage::ParseAppxManifest_GetElementText(
+    IXmlReader* xmlReader,
+    PCWSTR elementName,
+    const std::filesystem::path& filename)
+{
+    std::wstring text;
+
+    for (;;)
+    {
+        XmlNodeType nodeType{};
+        HRESULT hr{ xmlReader->Read(&nodeType) };
+        THROW_IF_FAILED_MSG(hr, "Error 0x%X parsing <%ls> in %ls", hr, elementName, filename.c_str());
+        if (hr == S_FALSE)
+        {
+            // S_FALSE = end-of-input. We're done
+            break;
+        }
+
+        if (nodeType == XmlNodeType_EndElement)
+        {
+            break;
+        }
+        else if ((nodeType == XmlNodeType_Text) || (nodeType == XmlNodeType_CDATA))
+        {
+            PCWSTR value{};
+            THROW_IF_FAILED(xmlReader->GetValue(&value, nullptr));
+            text.append(value);
+        }
+        else if (nodeType == XmlNodeType_Element)
+        {
+            THROW_HR_MSG(E_UNEXPECTED, "Error 0x%X parsing <%ls> in %ls", E_UNEXPECTED, elementName, filename.c_str());
+        }
+    }
+
+    return text;
 }

@@ -42,7 +42,10 @@ HRESULT MddCore::PackageGraph::Add(
     // Load the package's information
     PackageGraphNode packageGraphNode(packageFullName, rank, packageDependencyId);
     packageGraphNode.GenerateContext();
+
+    // Load the WinRT definitions (if any)
     std::unique_ptr<MddCore::WinRTPackage> winrtPackage{ packageGraphNode.CreateWinRTPackage() };
+    winrtPackage->ParseAppxManifest();
 
     // Find the insertion point where to add the new package graph node to the package graph
     size_t index{};

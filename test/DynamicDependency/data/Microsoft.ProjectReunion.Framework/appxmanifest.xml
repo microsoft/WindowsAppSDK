@@ -29,12 +29,12 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.ProjectReunion.dll</Path>
-      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
-      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
-      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
-      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
-      <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
-    </InProcessServer>
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+      </InProcessServer>
     </Extension>
   </Extensions>
 </Package>

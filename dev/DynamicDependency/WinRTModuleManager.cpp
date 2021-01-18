@@ -7,15 +7,19 @@
 
 std::vector<std::unique_ptr<MddCore::WinRTPackage>> MddCore::WinRTModuleManager::s_winrtPackages;
 
-ABI::Windows::Foundation::ThreadingType MddCore::WinRTModuleManager::GetThreadingType(
-    HSTRING className)
+bool MddCore::WinRTModuleManager::GetThreadingType(
+    HSTRING className,
+    ABI::Windows::Foundation::ThreadingType& threadingType)
 {
     auto threadingModel{ MddCore::WinRTModuleManager::GetThreadingModel(className) };
-    THROW_HR_IF(REGDB_E_CLASSNOTREG, threadingModel == MddCore::WinRT::ThreadingModel::Unknown);
+    if (threadingModel == MddCore::WinRT::ThreadingModel::Unknown)
+    {
+        return false;
+    }
 
-    ABI::Windows::Foundation::ThreadingType threadingType{};
     THROW_IF_FAILED(ToThreadingType(threadingModel, threadingType));
-    return threadingType;
+    return true;
+
 }
 
 MddCore::WinRT::ThreadingModel MddCore::WinRTModuleManager::GetThreadingModel(
