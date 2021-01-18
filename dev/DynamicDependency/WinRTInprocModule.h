@@ -64,7 +64,7 @@ public:
         return m_path;
     }
 
-    void Path(const std::wstring& path)
+    void Path(const std::filesystem::path& path)
     {
         m_path = path;
     }

@@ -128,8 +128,9 @@ void MddCore::WinRTPackage::ParseAppxManifest_InProcessServer(
             THROW_IF_FAILED(xmlReader->GetLocalName(&localName, nullptr));
             if (CompareStringOrdinal(localName, -1, L"Path", -1, FALSE) == CSTR_EQUAL)
             {
-                std::wstring path{ ParseAppxManifest_GetElementText(xmlReader, L"Path", filename) };
-                winrtInProcModule.Path(path);
+                std::filesystem::path absoluteFilename{ m_packagePath };
+                absoluteFilename /= ParseAppxManifest_GetElementText(xmlReader, L"Path", filename);
+                winrtInProcModule.Path(absoluteFilename);
             }
             else if (CompareStringOrdinal(localName, -1, L"ActivatableClass", -1, FALSE) == CSTR_EQUAL)
             {
