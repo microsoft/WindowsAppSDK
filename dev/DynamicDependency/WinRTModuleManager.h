@@ -4,7 +4,7 @@
 #if !defined(WINRTMODULEMANAGER_H)
 #define WINRTMODULEMANAGER_H
 
-#include <WinRTPackage.h>
+#include "WinRTPackage.h"
 
 namespace MddCore
 {
@@ -21,12 +21,12 @@ public:
         HSTRING className,
         REFIID iid);
 
-    static void Add(
-        const std::wstring& packageId,
-        MddCore::WinRTPackage& winrtPackage);
+    static void Insert(
+        size_t index,
+        std::unique_ptr<MddCore::WinRTPackage>& winrtPackage);
 
 private:
-    static std::vector<MddCore::WinRTPackage> s_winrtPackages;
+    static std::vector<std::unique_ptr<MddCore::WinRTPackage>> s_winrtPackages;
 };
 }
 

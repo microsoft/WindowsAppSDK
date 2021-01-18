@@ -32,20 +32,20 @@ HRESULT MddCore::WinRT::ToThreadingType(
 }
 
 HRESULT MddCore::WinRT::GetThreadingModel(
-    HSTRING activatableClassId,
+    HSTRING className,
     ABI::Windows::Foundation::ThreadingType& threadingType) noexcept try
 {
-    threadingType = MddCore::WinRTModuleManager::GetThreadingType(activatableClassId);
+    threadingType = MddCore::WinRTModuleManager::GetThreadingType(className);
     return S_OK;
 }
 CATCH_RETURN();
 
 HRESULT MddCore::WinRT::GetActivationFactory(
-    HSTRING activatableClassId,
+    HSTRING className,
     REFIID iid,
     void** factory) noexcept try
 {
-    *factory = MddCore::WinRTModuleManager::GetActivationFactory(activatableClassId, iid);
+    *factory = MddCore::WinRTModuleManager::GetActivationFactory(className, iid);
     return S_OK;
 }
 CATCH_RETURN();

@@ -16,20 +16,32 @@ public:
     WinRTPackage() = default;
 
     WinRTPackage(
-        const std::wstring& packageGraphNodeId,
+        MDD_PACKAGEDEPENDENCY_CONTEXT context,
         const std::wstring& packagePath) :
-        m_packageGraphNodeId(packageGraphNodeId),
+        m_context(context),
         m_packagePath(packagePath)
     {
+    }
+
+    WinRTPackage(WinRTPackage&& other) :
+        m_context(std::move(other.m_context)),
+        m_packagePath(std::move(other.m_packagePath)),
+        m_manifestsParsed(std::move(other.m_manifestsParsed))
+    {
+        for (auto& inprocModule : other.m_inprocModules)
+        {
+            m_inprocModules.push_back(std::move(inprocModule));
+        }
     }
 
     ~WinRTPackage() = default;
 
     MddCore::WinRT::ThreadingModel GetThreadingModel(
-        const std::wstring& className);
+        const std::wstring& activatableClassId);
 
     void* GetActivationFactory(
-        const std::wstring& className,
+        HSTRING className,
+        const std::wstring& activatableClassId,
         REFIID iid);
 
 private:
@@ -42,7 +54,7 @@ private:
         const std::filesystem::path& filename);
 
 private:
-    std::wstring m_packageGraphNodeId;
+    MDD_PACKAGEDEPENDENCY_CONTEXT m_context{};
     std::wstring m_packagePath;
     std::vector<WinRTInprocModule> m_inprocModules;
     bool m_manifestsParsed{};

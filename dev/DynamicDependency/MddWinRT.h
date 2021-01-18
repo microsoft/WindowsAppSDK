@@ -26,11 +26,11 @@ namespace MddCore::WinRT
         HRESULT errorIfUnknown = REGDB_E_CLASSNOTREG) noexcept;
 
     HRESULT GetThreadingModel(
-        HSTRING activatableClassId,
+        HSTRING className,
         ABI::Windows::Foundation::ThreadingType& threading_model) noexcept;
 
     HRESULT GetActivationFactory(
-        HSTRING activatableClassId,
+        HSTRING className,
         REFIID iid,
         void** factory) noexcept;
 }

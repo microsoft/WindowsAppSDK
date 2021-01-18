@@ -31,6 +31,7 @@ MddCore::WinRT::ThreadingModel MddCore::WinRTPackage::GetThreadingModel(
 }
 
 void* MddCore::WinRTPackage::GetActivationFactory(
+    HSTRING className,
     const std::wstring& activatableClassId,
     REFIID iid)
 {
@@ -47,9 +48,8 @@ void* MddCore::WinRTPackage::GetActivationFactory(
             auto threadingModel{ inprocModule.Find(activatableClassId) };
             if (threadingModel != MddCore::WinRT::ThreadingModel::Unknown)
             {
-                //TODO
-                //RETURN_IF_FAILED(inprocModule.GetActivationFactory(className, iid, factory));
-                return inprocModule;
+                //TODO concurrency/reentrancy
+                return inprocModule.GetActivationFactory(className, activatableClassId, iid);
             }
         }
     }
@@ -70,6 +70,7 @@ void MddCore::WinRTPackage::ParseManifestsIfNecessary()
 
     // Parse the packages' manifest
     ParseAppxManifest();
+    m_manifestsParsed = true;
 }
 
 /// Parse a package's appxmanifest for WinRT inproc server definitions e.g.

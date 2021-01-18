@@ -5,7 +5,7 @@
 
 #include "WinRTModuleManager.h"
 
-std::vector<MddCore::WinRTPackage> MddCore::WinRTModuleManager::s_winrtPackages;
+std::vector<std::unique_ptr<MddCore::WinRTPackage>> MddCore::WinRTModuleManager::s_winrtPackages;
 
 ABI::Windows::Foundation::ThreadingType MddCore::WinRTModuleManager::GetThreadingType(
     HSTRING className)
@@ -26,7 +26,7 @@ MddCore::WinRT::ThreadingModel MddCore::WinRTModuleManager::GetThreadingModel(
         std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };
         for (auto& winrtPackage : s_winrtPackages)
         {
-            auto threadingModel{ winrtPackage.GetThreadingModel(activatableClassId) };
+            auto threadingModel{ winrtPackage->GetThreadingModel(activatableClassId) };
             if (threadingModel != MddCore::WinRT::ThreadingModel::Unknown)
             {
                 return threadingModel;
@@ -37,16 +37,34 @@ MddCore::WinRT::ThreadingModel MddCore::WinRTModuleManager::GetThreadingModel(
 }
 
 void* MddCore::WinRTModuleManager::GetActivationFactory(
-    HSTRING /*className*/,
-    REFIID /*iid*/)
+    HSTRING className,
+    REFIID iid)
 {
-    //TODO
+    if (!s_winrtPackages.empty())
+    {
+        std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };
+        for (auto& winrtPackage : s_winrtPackages)
+        {
+            auto factory{ winrtPackage->GetActivationFactory(className, activatableClassId, iid) };
+            if (factory)
+            {
+                return factory;
+            }
+        }
+    }
     return nullptr;
 }
 
-void MddCore::WinRTModuleManager::Add(
-    const std::wstring& /*packageId*/,
-    MddCore::WinRTPackage& /*winrtPackage*/)
+void MddCore::WinRTModuleManager::Insert(
+    size_t index,
+    std::unique_ptr<MddCore::WinRTPackage>& winrtPackage)
 {
-    //TODO
+    if (index < s_winrtPackages.size())
+    {
+        s_winrtPackages.insert(s_winrtPackages.begin() + index, std::move(winrtPackage));
+    }
+    else
+    {
+        s_winrtPackages.push_back(std::move(winrtPackage));
+    }
 }

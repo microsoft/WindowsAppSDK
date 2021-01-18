@@ -6,7 +6,8 @@
 
 #include <activationregistration.h>
 #include <activation.h>
-#include <MddWinRT.h>
+
+#include "MddWinRT.h"
 
 //TODO Components won't respect COM lifetime. workaround to get them in the COM list? See dev\UndockedRegFreeWinRT\catalog.cpp
 
@@ -20,9 +21,11 @@ public:
     WinRTInprocModule() = default;
 
     WinRTInprocModule(WinRTInprocModule&& other) :
+        m_path(std::move(other.m_path)),
         m_dll(std::move(other.m_dll)),
         m_dllGetActivationFactory(std::move(m_dllGetActivationFactory))
     {
+        m_inprocServers.insert(std::make_move_iterator(other.m_inprocServers.begin()), std::make_move_iterator(other.m_inprocServers.end()));
     }
 
     ~WinRTInprocModule() = default;
@@ -37,17 +40,22 @@ public:
         return MddCore::WinRT::ThreadingModel::Unknown;
     }
 
-    HRESULT GetActivationFactory(HSTRING className, REFIID iid, void** factory)
+    void* GetActivationFactory(
+        HSTRING className,
+        const std::wstring& activatableClassId,
+        REFIID iid)
     {
-        RETURN_IF_FAILED(Load());
+        Load();
 
         IActivationFactory* ifactory{};
         THROW_IF_FAILED(m_dllGetActivationFactory(className, &ifactory));
 
         //TODO optimize for IActivationFactory? See GetActivationFactory() in dev\UndockedRegFreeWinRT\catalog.cpp
-        const auto hr{ ifactory->QueryInterface(iid, factory) };
+        void* factory{};
+        const auto hr{ ifactory->QueryInterface(iid, &factory) };
         ifactory->Release();
-        return hr;
+        THROW_IF_FAILED_MSG(hr, "Error 0x%X in ifactory->QueryInterface(%ls)", hr, activatableClassId.c_str());
+        return factory;
     }
 
 public:
@@ -81,20 +89,19 @@ public:
     }
 
 private:
-    HRESULT Load()
+    void Load()
     {
         if (!m_dll)
         {
             wil::unique_hmodule dll{ LoadLibraryExW(m_path.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
-            RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dll);
+            THROW_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dll);
 
             auto dllGetActivationFactory{ reinterpret_cast<DllGetActivationFactory>(GetProcAddress(dll.get(), "DllGetActivationFactory")) };
-            RETURN_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetActivationFactory);
+            THROW_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetActivationFactory);
 
             m_dll = std::move(dll);
             m_dllGetActivationFactory = std::move(dllGetActivationFactory);
         }
-        return S_OK;
     }
 
 
@@ -102,7 +109,6 @@ private:
     std::wstring m_path;
     std::unordered_map<std::wstring, MddCore::WinRT::ThreadingModel> m_inprocServers;
 
-private:
     wil::unique_hmodule m_dll;
 
     typedef HRESULT(__stdcall* DllGetActivationFactory)(HSTRING, IActivationFactory**);

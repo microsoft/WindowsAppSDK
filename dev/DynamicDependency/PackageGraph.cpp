@@ -8,6 +8,7 @@
 #include "PackageGraphNode.h"
 #include "PackageDependencyManager.h"
 #include "PackageId.h"
+#include "WinRTModuleManager.h"
 
 #include <wil/win32_helpers.h>
 
@@ -41,6 +42,7 @@ HRESULT MddCore::PackageGraph::Add(
     // Load the package's information
     PackageGraphNode packageGraphNode(packageFullName, rank, packageDependencyId);
     packageGraphNode.GenerateContext();
+    std::unique_ptr<MddCore::WinRTPackage> winrtPackage{ packageGraphNode.CreateWinRTPackage() };
 
     // Find the insertion point where to add the new package graph node to the package graph
     size_t index{};
@@ -91,6 +93,10 @@ HRESULT MddCore::PackageGraph::Add(
     {
         m_packageGraphNodes.push_back(std::move(packageGraphNode));
     }
+
+    // Add the package's WinRT information
+    MddCore::WinRTModuleManager::Insert(index, winrtPackage);
+    winrtPackage.reset();
 
     // The DLL Search Order must be updated when we update the package graph
     auto& node{ m_packageGraphNodes[index] };
