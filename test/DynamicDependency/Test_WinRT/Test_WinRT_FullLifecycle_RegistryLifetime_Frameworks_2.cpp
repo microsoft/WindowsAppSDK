@@ -51,7 +51,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_RegistryLifetime_Framewo
 
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add() };
     Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
-    Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.PackageDependencyId(), expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -66,7 +66,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_RegistryLifetime_Framewo
     // Add it a 2nd time. The package dependency is deleted but still resolved so this should succeed. PackageGraph = [ Fwk, MathAdd, MathAdd ]
     auto context{ packageDependency_FrameworkMathAdd.Add() };
     Assert::IsFalse(!context);
-    Assert::AreEqual(context.PackageDependencyId(), expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(std::wstring(context.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
     VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);

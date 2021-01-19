@@ -78,8 +78,22 @@ namespace Microsoft.ApplicationModel.DynamicDependency
     /// TBD
     runtimeclass PackageDependency
     {
-        /// Create an intstance of the package dependency identified by id.
+        /// Create an intstance of the package dependency identified by id defined for the current user.
+        ///
+        /// @return null if the package dependency cannot be found for the user.
+        ///
+        /// @see Create(String, PackageVersion)
+        /// @see Create(String, PackageVersion, CreatePackageDependencyOptions)
+        /// @see GetFromIdForSystem()
         static PackageDependency GetFromId(String id);
+
+        /// Create an intstance of the package dependency identified by id defined for the system.
+        ///
+        /// @return null if the package dependency cannot be found for the system.
+        ///
+        /// @see CreateForSystem()
+        /// @see GetFromId()
+        static PackageDependency GetFromIdForSystem(String id);
 
         /// Return the package dependency id.
         String Id { get; };

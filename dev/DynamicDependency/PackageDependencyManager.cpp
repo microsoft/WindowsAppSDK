@@ -11,6 +11,31 @@
 static std::mutex g_lock;
 std::vector<MddCore::PackageDependency> g_packageDependencies;
 
+bool MddCore::PackageDependencyManager::ExistsPackageDependency(
+    PSID user,
+    _In_ PCWSTR packageDependencyId)
+{
+    auto lock{ std::unique_lock<std::mutex>(g_lock) };
+
+    // Find it (if we can)
+    auto packageDependency{ GetPackageDependency(packageDependencyId) };
+    if (packageDependency)
+    {
+        auto packageDependencyUser{ packageDependency->User() };
+        if (user)
+        {
+            // We're expecting a definition for the specifiedd user
+            return packageDependencyUser && !!EqualSid(user, packageDependencyUser);
+        }
+        else
+        {
+            // We're not expecting a user (i.e. it's for System)
+            return !packageDependencyUser;
+        }
+    }
+    return false;
+}
+
 void MddCore::PackageDependencyManager::CreatePackageDependency(
     PSID user,
     _In_ PCWSTR packageFamilyName,

@@ -54,7 +54,7 @@ void Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Explicit()
 
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add() };
     Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
-    Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.PackageDependencyId(), expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);

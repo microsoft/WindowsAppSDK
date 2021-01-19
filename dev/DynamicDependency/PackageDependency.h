@@ -128,7 +128,8 @@ public:
         if (user)
         {
             const auto sidLength{ GetLengthSid(user) };
-            wil::unique_any_psid sid(reinterpret_cast<PSID>(new BYTE[sidLength]));
+            wil::unique_any_psid sid{ static_cast<PSID>(::LocalAlloc(LMEM_FIXED, sidLength)) };
+            THROW_IF_NULL_ALLOC(sid);
             THROW_IF_WIN32_BOOL_FALSE(CopySid(sidLength, sid.get(), user));
             m_user = std::move(sid);
         }

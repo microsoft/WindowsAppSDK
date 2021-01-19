@@ -46,7 +46,7 @@ void Test::DynamicDependency::Test_WinRT::Add_Rank_A0_B10()
     addOptions.Rank(10);
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add(addOptions) };
     Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
-    Assert::AreEqual(packageDependencyContext_FrameworkMathAdd.PackageDependencyId(), expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);

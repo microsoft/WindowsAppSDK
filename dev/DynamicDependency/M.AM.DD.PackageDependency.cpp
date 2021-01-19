@@ -8,6 +8,8 @@
 
 #include "M.AM.DD.PackageDependencyContext.h"
 
+#include "PackageDependencyManager.h"
+
 #include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 #include <wil_msixdynamicdependency.h>
@@ -23,27 +25,45 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 
     winrt::PackageDependency PackageDependency::GetFromId(hstring const& id)
     {
+        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
+        auto exists{ MddCore::PackageDependencyManager::ExistsPackageDependency(tokenUser->User.Sid, id.c_str()) };
+        if (!exists)
+        {
+            return nullptr;
+        }
+        return winrt::make<implementation::PackageDependency>(id);
+    }
+
+    winrt::PackageDependency PackageDependency::GetFromIdForSystem(hstring const& id)
+    {
+        auto exists{ MddCore::PackageDependencyManager::ExistsPackageDependency(nullptr, id.c_str()) };
+        if (!exists)
+        {
+            return nullptr;
+        }
         return winrt::make<implementation::PackageDependency>(id);
     }
 
     winrt::PackageDependency PackageDependency::Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion)
     {
+        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
         const auto mddMinVersion{ ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion) };
         const auto mddArchitectures{ MddPackageDependencyProcessorArchitectures::None };
         const auto mddLifetimeKind{ MddPackageDependencyLifetimeKind::Process };
         const PCWSTR mddLifetimeArtifact{};
         const auto mddOptions{ MddCreatePackageDependencyOptions::None };
-        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
+        return Create(tokenUser->User.Sid, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
     winrt::PackageDependency PackageDependency::Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options)
     {
+        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
         const auto mddMinVersion{ ::Microsoft::ApplicationModel::DynamicDependency::ToVersion(minVersion) };
         const auto mddArchitectures{ ::Microsoft::ApplicationModel::DynamicDependency::ToArchitectures(options.Architectures()) };
         const auto mddLifetimeKind{ ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind()) };
         const auto mddLifetimeArtifact{ options.LifetimeArtifact().c_str() };
         const auto mddOptions{ ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options) };
-        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
+        return Create(tokenUser->User.Sid, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
     winrt::PackageDependency PackageDependency::CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options)
@@ -53,7 +73,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto mddLifetimeKind{ ::Microsoft::ApplicationModel::DynamicDependency::ToLifetimeKind(options.LifetimeArtifactKind()) };
         const auto mddLifetimeArtifact{ options.LifetimeArtifact().c_str() };
         auto mddOptions{ ::Microsoft::ApplicationModel::DynamicDependency::ToCreateOptions(options, MddCreatePackageDependencyOptions::ScopeIsSystem) };
-        return Create(packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
+        return Create(nullptr, packageFamilyName.c_str(), mddMinVersion, mddArchitectures, mddLifetimeKind, mddLifetimeArtifact, mddOptions);
     }
 
     hstring PackageDependency::Id()
@@ -89,6 +109,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     }
 
     winrt::PackageDependency PackageDependency::Create(
+        PSID userSid,
         PCWSTR packageFamilyName,
         PACKAGE_VERSION minVersion,
         MddPackageDependencyProcessorArchitectures architectures,
@@ -97,7 +118,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         MddCreatePackageDependencyOptions options)
     {
         wil::unique_process_heap_string packageDependencyId;
-        THROW_IF_FAILED(MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, wil::out_param(packageDependencyId)));
+        THROW_IF_FAILED(MddTryCreatePackageDependency(userSid, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, wil::out_param(packageDependencyId)));
         return GetFromId(packageDependencyId.get());
     }
 }

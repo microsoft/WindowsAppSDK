@@ -16,6 +16,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         PackageDependency(hstring const& id);
 
         static winrt::PackageDependency GetFromId(hstring const& id);
+        static winrt::PackageDependency GetFromIdForSystem(hstring const& id);
         static winrt::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion);
         static winrt::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
         static winrt::PackageDependency CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
@@ -26,6 +27,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 
     private:
         static winrt::PackageDependency Create(
+            PSID userSid,
             PCWSTR packageFamilyName,
             PACKAGE_VERSION minVersion,
             MddPackageDependencyProcessorArchitectures architectures,

@@ -7,8 +7,8 @@
 
 namespace MddCore
 {
-/// @note All public static methods are thread safe and acquire the global lock if necessary.
-/// @note All private static methods assume the global lock managed by their caller and held for their duration.
+/// @note Unless otherwise stated, all public static methods are thread safe and acquire the global lock if necessary.
+/// @note Unless otherwise stated, all private static methods assume the global lock managed by their caller and held for their duration.
 class PackageDependencyManager
 {
 public:
@@ -16,6 +16,10 @@ public:
     ~PackageDependencyManager() = delete;
 
 public:
+    static bool ExistsPackageDependency(
+        PSID user,
+        _In_ PCWSTR packageDependencyId);
+
     static void CreatePackageDependency(
         PSID user,
         _In_ PCWSTR packageFamilyName,
@@ -33,6 +37,8 @@ public:
     static void DeletePackageDependency(
         _In_ PCWSTR packageDependencyId);
 
+public:
+    /// @warning Unlocked data access. Caller's responsible for thread safety.
     static const PackageDependency* GetPackageDependency(
         _In_ PCWSTR packageDependencyId);
 
