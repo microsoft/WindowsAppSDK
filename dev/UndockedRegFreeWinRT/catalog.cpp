@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-//TODO #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-
 #include <pch.h>
 
 #include "catalog.h"
@@ -18,7 +16,7 @@
 using namespace std;
 using namespace Microsoft::WRL;
 
-// TODO: Components won't respect COM lifetime. workaround to get them in the COM list?
+//TODO Components won't respect COM lifetime. workaround to get them in the COM list? See dev\UndockedRegFreeWinRT\catalog.cpp
 
 extern "C"
 {

@@ -5,12 +5,15 @@
 
 #include "WinRTModuleManager.h"
 
-std::vector<std::unique_ptr<MddCore::WinRTPackage>> MddCore::WinRTModuleManager::s_winrtPackages;
+std::mutex MddCore::WinRTModuleManager::s_lock;
+std::vector<std::shared_ptr<MddCore::WinRTPackage>> MddCore::WinRTModuleManager::s_winrtPackages;
 
 bool MddCore::WinRTModuleManager::GetThreadingType(
     HSTRING className,
     ABI::Windows::Foundation::ThreadingType& threadingType)
 {
+    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+
     auto threadingModel{ MddCore::WinRTModuleManager::GetThreadingModel(className) };
     if (threadingModel == MddCore::WinRT::ThreadingModel::Unknown)
     {
@@ -25,6 +28,8 @@ bool MddCore::WinRTModuleManager::GetThreadingType(
 MddCore::WinRT::ThreadingModel MddCore::WinRTModuleManager::GetThreadingModel(
     HSTRING className)
 {
+    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+
     if (!s_winrtPackages.empty())
     {
         std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };
@@ -44,6 +49,8 @@ void* MddCore::WinRTModuleManager::GetActivationFactory(
     HSTRING className,
     REFIID iid)
 {
+    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+
     if (!s_winrtPackages.empty())
     {
         std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };
@@ -61,8 +68,10 @@ void* MddCore::WinRTModuleManager::GetActivationFactory(
 
 void MddCore::WinRTModuleManager::Insert(
     size_t index,
-    std::unique_ptr<MddCore::WinRTPackage>& winrtPackage)
+    std::shared_ptr<MddCore::WinRTPackage>& winrtPackage)
 {
+    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+
     if (index < s_winrtPackages.size())
     {
         s_winrtPackages.insert(s_winrtPackages.begin() + index, std::move(winrtPackage));

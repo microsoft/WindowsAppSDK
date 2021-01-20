@@ -24,10 +24,11 @@ public:
 
     static void Insert(
         size_t index,
-        std::unique_ptr<MddCore::WinRTPackage>& winrtPackage);
+        std::shared_ptr<MddCore::WinRTPackage>& winrtPackage);
 
 private:
-    static std::vector<std::unique_ptr<MddCore::WinRTPackage>> s_winrtPackages;
+    static std::mutex s_lock;
+    static std::vector<std::shared_ptr<MddCore::WinRTPackage>> s_winrtPackages;
 };
 }
 

@@ -126,7 +126,7 @@ private:
     void BuildPathList();
 
 public:
-    MddCore::WinRTPackage* CreateWinRTPackage() const;
+    std::shared_ptr<MddCore::WinRTPackage> CreateWinRTPackage() const;
 
 private:
     static volatile MDD_PACKAGEDEPENDENCY_CONTEXT s_lastContext;

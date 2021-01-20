@@ -42,7 +42,9 @@ void* MddCore::WinRTPackage::GetActivationFactory(
             auto threadingModel{ inprocModule.Find(activatableClassId) };
             if (threadingModel != MddCore::WinRT::ThreadingModel::Unknown)
             {
-                //TODO concurrency/reentrancy
+                //TODO change to return shared_ptr<inprocModule> rather than void*factory
+                //     so the object (and its DLL) isn't destroyed while upstack is calling the factory*.
+                //     Or perhaps caller's changed to return shared_ptr<winrtPackage>? TBD
                 return inprocModule.GetActivationFactory(className, activatableClassId, iid);
             }
         }

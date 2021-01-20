@@ -105,9 +105,9 @@ void MddCore::PackageGraphNode::BuildPathList()
     m_pathList = std::move(pathList);
 }
 
-MddCore::WinRTPackage* MddCore::PackageGraphNode::CreateWinRTPackage() const
+std::shared_ptr<MddCore::WinRTPackage> MddCore::PackageGraphNode::CreateWinRTPackage() const
 {
     const auto& package{ m_packageInfo.Package(0) };
 
-    return new MddCore::WinRTPackage(m_context.get(), package.path);
+    return std::make_shared<MddCore::WinRTPackage>(m_context.get(), package.path);
 }

@@ -11,8 +11,6 @@
 
 //TODO Components won't respect COM lifetime. workaround to get them in the COM list? See dev\UndockedRegFreeWinRT\catalog.cpp
 
-//TODO Removing a PackageGraphNode destroys its WinRTInprocModule objects. BadMojo(TM) if in use when destroyed. Update to handle
-
 namespace MddCore
 {
 class WinRTInprocModule
