@@ -91,7 +91,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
         const auto mddOptions{ MddAddPackageDependencyOptions::None };
         wil::unique_package_dependency_context packageDependencyContext;
-        THROW_IF_FAILED(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
+        winrt::check_hresult(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
         auto context{ winrt::make<implementation::PackageDependencyContext>(std::move(packageDependencyContext.get())) };
         packageDependencyContext.release();
         return context;
@@ -102,7 +102,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         const auto rank{ options.Rank() };
         const auto mddOptions{ ::Microsoft::ApplicationModel::DynamicDependency::ToAddOptions(options) };
         wil::unique_package_dependency_context packageDependencyContext;
-        THROW_IF_FAILED(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
+        winrt::check_hresult(MddAddPackageDependency(m_id.c_str(), rank, mddOptions, &packageDependencyContext, nullptr));
         auto context{ winrt::make<implementation::PackageDependencyContext>(std::move(packageDependencyContext.get())) };
         packageDependencyContext.release();
         return context;
@@ -118,7 +118,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         MddCreatePackageDependencyOptions options)
     {
         wil::unique_process_heap_string packageDependencyId;
-        THROW_IF_FAILED(MddTryCreatePackageDependency(userSid, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, wil::out_param(packageDependencyId)));
+        winrt::check_hresult(MddTryCreatePackageDependency(userSid, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, wil::out_param(packageDependencyId)));
         return GetFromId(packageDependencyId.get());
     }
 }

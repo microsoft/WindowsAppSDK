@@ -34,11 +34,18 @@ void Test::DynamicDependency::Test_WinRT::Create_FilePathLifetime_NoExist()
     auto lifetimeArtifactFilename{ lifetimeArtifactPath / L"Test-MathAdd-LifetimeArtifact.tmp" };
     std::filesystem::remove(lifetimeArtifactFilename);
 
-    const auto lifetimeKind{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::FilePath };
-    auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), lifetimeKind, lifetimeArtifactFilename.c_str()) };
-    Assert::IsTrue(!packageDependency_FrameworkMathAdd);
-    auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };
-    Assert::IsFalse(packageDependencyId_FrameworkMathAdd.empty());
+    try
+    {
+        const auto lifetimeKind{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::FilePath };
+        auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), lifetimeKind, lifetimeArtifactFilename.c_str()) };
+        auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Expected exception (value=0x%X ERROR_CONTEXT_EXPIRED) didn't occur", HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED)) };
+        Assert::Fail(message.get());
+    }
+    catch (const winrt::hresult& e)
+    {
+        const HRESULT expectedHR{ HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED) };
+        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.value);
+    }
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);

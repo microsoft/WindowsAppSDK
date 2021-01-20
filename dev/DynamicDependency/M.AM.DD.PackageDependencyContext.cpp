@@ -26,7 +26,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     hstring PackageDependencyContext::PackageDependencyId()
     {
         wil::unique_process_heap_string id;
-        THROW_IF_FAILED(MddGetIdForPackageDependencyContext(::Microsoft::ApplicationModel::DynamicDependency::ToContext(m_contextId), wil::out_param(id)));
+        winrt::check_hresult(MddGetIdForPackageDependencyContext(::Microsoft::ApplicationModel::DynamicDependency::ToContext(m_contextId), wil::out_param(id)));
         return winrt::hstring(id.get());
     }
 
@@ -34,7 +34,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
     {
         auto id{ PackageDependencyId() };
         wil::unique_process_heap_string packageFullName;
-        THROW_IF_FAILED(MddGetResolvedPackageFullNameForPackageDependency(id.c_str(), wil::out_param(packageFullName)));
+        winrt::check_hresult(MddGetResolvedPackageFullNameForPackageDependency(id.c_str(), wil::out_param(packageFullName)));
         return winrt::hstring(packageFullName.get());
     }
 
