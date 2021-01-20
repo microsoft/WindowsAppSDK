@@ -412,9 +412,9 @@ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::D
         Assert::AreEqual(expectedHR, S_OK);
         return packageDependency;
     }
-    catch (const winrt::hresult& e)
+    catch (const winrt::hresult_error& e)
     {
-        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.value);
+        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.code().value, e.message().c_str());
         throw;
     }
 }
@@ -496,9 +496,9 @@ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext 
         Assert::AreEqual(expectedHR, S_OK);
         return packageDependencyContext;
     }
-    catch (const winrt::hresult& e)
+    catch (const winrt::hresult_error& e)
     {
-        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.value);
+        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.code().value, e.message().c_str());
         throw;
     }
 }
