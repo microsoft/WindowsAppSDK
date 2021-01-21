@@ -61,12 +61,10 @@ UINT32 MddCore::PackageGraphNode::GetMatchingPackages(
 void MddCore::PackageGraphNode::GenerateContext()
 {
 #if defined(_WIN64)
-    MDD_PACKAGEDEPENDENCY_CONTEXT context{ reinterpret_cast<MDD_PACKAGEDEPENDENCY_CONTEXT>(InterlockedIncrement64(reinterpret_cast<volatile LONG64*>(&s_lastContext))) };
+    m_context = reinterpret_cast<MDD_PACKAGEDEPENDENCY_CONTEXT>(InterlockedIncrement64(reinterpret_cast<volatile LONG64*>(&s_lastContext)));
 #else
-    MDD_PACKAGEDEPENDENCY_CONTEXT context{ reinterpret_cast<MDD_PACKAGEDEPENDENCY_CONTEXT>(InterlockedIncrement(reinterpret_cast<volatile LONG*>(&s_lastContext))) };
+    m_context =  reinterpret_cast<MDD_PACKAGEDEPENDENCY_CONTEXT>(InterlockedIncrement(reinterpret_cast<volatile LONG*>(&s_lastContext)));
 #endif
-
-    m_context.reset(context);
 }
 
 void MddCore::PackageGraphNode::AddDllDirectories()
@@ -109,5 +107,5 @@ std::shared_ptr<MddCore::WinRTPackage> MddCore::PackageGraphNode::CreateWinRTPac
 {
     const auto& package{ m_packageInfo.Package(0) };
 
-    return std::make_shared<MddCore::WinRTPackage>(m_context.get(), package.path);
+    return std::make_shared<MddCore::WinRTPackage>(m_context, package.path);
 }
