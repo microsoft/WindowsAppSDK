@@ -28,8 +28,6 @@ bool MddCore::WinRTModuleManager::GetThreadingType(
 MddCore::WinRT::ThreadingModel MddCore::WinRTModuleManager::GetThreadingModel(
     HSTRING className)
 {
-    auto lock{ std::unique_lock<std::mutex>(s_lock) };
-
     if (!s_winrtPackages.empty())
     {
         std::wstring activatableClassId{ WindowsGetStringRawBuffer(className, nullptr) };

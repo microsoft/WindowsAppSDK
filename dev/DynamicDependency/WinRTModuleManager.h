@@ -15,9 +15,11 @@ public:
         HSTRING className,
         ABI::Windows::Foundation::ThreadingType& threadingType);
 
+private:
     static MddCore::WinRT::ThreadingModel GetThreadingModel(
         HSTRING className);
 
+public:
     static void* GetActivationFactory(
         HSTRING className,
         REFIID iid);
