@@ -148,8 +148,24 @@ HRESULT EnsureMTAInitialized()
 
 HRESULT GetActivationLocation(HSTRING activatableClassId, ActivationLocation &activationLocation)
 {
-    APTTYPE aptType;
-    APTTYPEQUALIFIER aptQualifier;
+    // We don't override inbox (Windows.*) runtimeclasses
+    UINT32 activatableClassIdAsStringLength{};
+    auto activatableClassIdAsString{ WindowsGetStringRawBuffer(activatableClassId, &activatableClassIdAsStringLength) };
+    {
+        // Does the activatableClassId start with "Windows."?
+        auto windowsNamespacePrefix{ L"Windows." };
+        const int windowsNamespacePrefixLength{ 8 };
+        if (activatableClassIdAsStringLength >= windowsNamespacePrefixLength)
+        {
+            if (CompareStringOrdinal(activatableClassIdAsString, windowsNamespacePrefixLength, windowsNamespacePrefix, windowsNamespacePrefixLength, FALSE) == CSTR_EQUAL)
+            {
+                return REGDB_E_CLASSNOTREG;
+            }
+        }
+    }
+
+    APTTYPE aptType{};
+    APTTYPEQUALIFIER aptQualifier{};
     RETURN_IF_FAILED(CoGetApartmentType(&aptType, &aptQualifier));
 
     ABI::Windows::Foundation::ThreadingType threading_model;
@@ -160,7 +176,7 @@ HRESULT GetActivationLocation(HSTRING activatableClassId, ActivationLocation &ac
         {
             return REGDB_E_CLASSNOTREG;
         }
-        RETURN_HR_MSG(hr, "URFW: ActivatableClassId=%ls", WindowsGetStringRawBuffer(activatableClassId, nullptr));
+        RETURN_HR_MSG(hr, "URFW: ActivatableClassId=%ls", activatableClassIdAsString);
     }
     switch (threading_model)
     {

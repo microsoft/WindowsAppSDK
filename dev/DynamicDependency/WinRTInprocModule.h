@@ -89,6 +89,8 @@ public:
 private:
     void Load()
     {
+        auto lock{ std::unique_lock<std::mutex>(m_lock) };
+
         if (!m_dll)
         {
             wil::unique_hmodule dll{ LoadLibraryExW(m_path.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
@@ -107,6 +109,7 @@ private:
     std::wstring m_path;
     std::unordered_map<std::wstring, MddCore::WinRT::ThreadingModel> m_inprocServers;
 
+    std::mutex m_lock;
     wil::unique_hmodule m_dll;
 
     typedef HRESULT(__stdcall* DllGetActivationFactory)(HSTRING, IActivationFactory**);

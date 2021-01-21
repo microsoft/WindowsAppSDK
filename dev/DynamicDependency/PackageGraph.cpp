@@ -210,7 +210,7 @@ HRESULT MddCore::PackageGraph::Remove(
             m_packageGraphNodes.erase(m_packageGraphNodes.begin() + index);
 
             // The DLL Search Order must be updated when we update the package graph
-            RemoveFromDllSearchOrder(node);
+            RemoveFromDllSearchOrder(detachedNode);
 
             return S_OK;
         }
