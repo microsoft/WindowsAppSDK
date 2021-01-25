@@ -1,10 +1,12 @@
 ---
 name: Question
-about: I have a question
+about: Please use GitHub Discussions
 title: 'Question: [your question here]'
-labels: question
+labels: ''
 assignees: ''
 
 ---
 
-<!-- Use this section to give more context for your question or other supporting materials -->
+Please use GitHub Discussions to post your question: https://github.com/microsoft/ProjectReunion/discussions/categories/q-a
+
+Thanks!
