@@ -5,6 +5,7 @@
 
 namespace Microsoft.ProjectReunion
 {
+    // Enums duplicated from IPowerManagerStatics
     enum EnergySaverStatus
     {
         Disabled = 0,
@@ -19,13 +20,89 @@ namespace Microsoft.ProjectReunion
         Idle,
         Charging
     };
+    
+    enum PowerSupplyStatus
+    {
+        NotPresent = 0,
+        Inadequate,
+        Adequate
+    };
+
+    // Enums based on on PowerSettingRegisterNotification's state
+    enum PowerSourceStatus
+    {
+        AC = 0,
+        DC,
+        ShortTerm
+    };
+    
+    enum DisplayStatus
+    {
+        Off = 0,
+        On,
+        Dimmed
+    };
+    
+    enum SystemIdleStatus
+    {
+        Idle = 0,
+        Busy
+    };
+
+    enum PowerSchemePersonality
+    {
+        HighPerformance = 0,
+        PowerSaver,
+        Balanced
+    };
+
+    enum UserPresenceStatus
+    {
+        Present = 0,
+        Absent
+    };
+
+    enum SystemAwayModeStatus
+    {
+        Entering = 0,
+        Exiting
+    };
 
     static runtimeclass PowerManager
     {
+        // Properties and events duplicated from IPowerManagerStatics
         static EnergySaverStatus EnergySaverStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> EnergySaverStatusChanged;
 
         static BatteryStatus BatteryStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> BatteryStatusChanged;
+
+        static PowerSupplyStatus PowerSupplyStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSupplyStatusChanged;
+
+        static Int32 RemainingChargePercent{ get; };
+        static event Windows.Foundation.EventHandler<Object> RemainingChargePercentChanged;
+
+        static Windows.Foundation.TimeSpan RemainingDischargeTime{ get; };
+        static event Windows.Foundation.EventHandler<Object> RemainingDischargeTimeChanged;
+
+        // Properties and events based on PowerSettingRegisterNotification's state
+        static PowerSourceStatus PowerSourceStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSourceStatusChanged;
+        
+        static DisplayStatus DisplayStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> DisplayStatusChanged;
+        
+        static SystemIdleStatus SystemIdleStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
+        
+        static PowerSchemePersonality PowerSchemePersonality{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSchemePersonalityChanged;
+        
+        static UserPresenceStatus UserPresenceStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> UserPresenceStatusChanged;
+        
+        static SystemAwayModeStatus SystemAwayModeStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> SystemAwayModeStatusChanged;
     };
 }

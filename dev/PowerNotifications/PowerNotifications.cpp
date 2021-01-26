@@ -8,6 +8,25 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    winrt::event<Windows::Foundation::EventHandler<Windows::Foundation::IInspectable>> PowerManager::m_energySaverStatusChangedEvent;
-    winrt::event<Windows::Foundation::EventHandler<Windows::Foundation::IInspectable>> PowerManager::m_batteryStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_energySaverStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_batteryStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_powerSupplyStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_remainingChargePercentChangedEvent;
+    PowerManager::eventType PowerManager::m_remainingDischargeTimeChangedEvent;
+
+    PowerManager::eventType PowerManager::m_powerSourceStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_displayStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_systemIdleStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_powerSchemePersonalityChangedEvent;
+    PowerManager::eventType PowerManager::m_userPresenceStatusChangedEvent;
+    PowerManager::eventType PowerManager::m_systemAwayModeStatusChangedEvent;
+    
+
+    void PowerManager::SystemAwayModeStatusChanged(winrt::event_token const& token)
+    {
+        m_systemAwayModeStatusChangedEvent.get().remove(token);
+
+        auto f = make<winrt::Microsoft::ProjectReunion::factory_implementation::PowerManager>().as<Microsoft::ProjectReunion::IPowerManagerStatics>();
+        m_systemAwayModeStatusChangedEvent.get()(f, nullptr);
+    }
 }
