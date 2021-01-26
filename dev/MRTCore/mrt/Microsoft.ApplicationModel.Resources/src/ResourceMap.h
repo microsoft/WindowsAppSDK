@@ -43,7 +43,7 @@ private:
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValueImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,
         hstring const& resource,
-        bool notFoundOk);
+        bool treatNotFoundAsOk);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndexImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,

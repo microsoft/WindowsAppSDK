@@ -40,7 +40,7 @@ Resources::ResourceMap ResourceMap::GetSubtree(hstring const& reference)
     return winrt::make<ResourceMap>(m_resourceManager, m_resourceManagerHandle, subtree);
 }
 
-Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::ResourceContext* context, hstring const& resource, bool notFoundOk)
+Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::ResourceContext* context, hstring const& resource, bool treatNotFoundAsOk)
 {
     // Always use a context as we override the languages.
     Resources::ResourceContext resourceContext = (context != nullptr) ? *context : m_resourceManager.CreateResourceContext();
@@ -54,7 +54,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
             return candidate;
         }
 
-        if (notFoundOk)
+        if (treatNotFoundAsOk)
         {
             return nullptr;
         }
@@ -83,7 +83,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
             return candidate;
         }
 
-        if (notFoundOk)
+        if (treatNotFoundAsOk)
         {
             return nullptr;
         }
