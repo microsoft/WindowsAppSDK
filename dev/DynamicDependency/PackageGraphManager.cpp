@@ -235,7 +235,6 @@ void MddCore::PackageGraphManager::SerializeStringToBuffer(
         {
             memcpy(buffer + bufferUsed, from, size);
             to = reinterpret_cast<PWSTR>(buffer + bufferUsed);
-            //buffer += size;
         }
     }
 }

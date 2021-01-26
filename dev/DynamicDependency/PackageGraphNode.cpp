@@ -74,6 +74,7 @@ void MddCore::PackageGraphNode::AddDllDirectories()
         const auto& package{ m_packageInfo.Package(index) };
 
         wil::unique_dll_directory_cookie cookie(AddDllDirectory(package.path));
+        THROW_LAST_ERROR_IF_NULL(cookie);
 
         m_addDllDirectoryCookies.push_back(std::move(cookie));
     }

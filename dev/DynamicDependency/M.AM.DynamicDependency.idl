@@ -70,8 +70,8 @@ namespace Microsoft.ApplicationModel.DynamicDependency
         Int32 Rank;
 
         /// If a package dependency is added to a package graph with a package of the same rank (aka a collision on rank)
-        /// and this option is true the resolve package dependency is prepended to the set of packages of the same rank.
-        /// By default resolve package dependencies are appended to the set of packages with the same rank.
+        /// and this option is true the resolved package dependency is prepended to the set of packages of the same rank.
+        /// By default resolved package dependencies are appended to the set of packages with the same rank.
         Boolean PrependIfRankCollision;
     };
 
@@ -224,7 +224,7 @@ namespace Microsoft.ApplicationModel.DynamicDependency
         /// The package dependency Id must match a package dependency defined
         /// for the calling user or the system (via CreateForSystem) or an exception is raised.
         ///
-        /// Each successful call adds the resolve packaged to the
+        /// Each successful call adds the resolved packaged to the
         /// calling process' package graph, even if already present. There is no
         /// duplicate 'detection' or 'filtering' applied by the API (multiple
         /// references to a package is not harmful). Once resolution is complete
@@ -252,7 +252,7 @@ namespace Microsoft.ApplicationModel.DynamicDependency
         /// The package dependency Id must match a package dependency defined
         /// for the calling user or the system (via CreateForSystem) or an exception is raised.
         ///
-        /// Each successful call adds the resolve packaged to the
+        /// Each successful call adds the resolved packaged to the
         /// calling process' package graph, even if already present. There is no
         /// duplicate 'detection' or 'filtering' applied by the API (multiple
         /// references to a package is not harmful). Once resolution is complete

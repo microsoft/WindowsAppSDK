@@ -20,7 +20,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 
     private:
         int32_t m_rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
-        bool m_prependIfRankCollision = false;
+        bool m_prependIfRankCollision{};
     };
 }
 namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation

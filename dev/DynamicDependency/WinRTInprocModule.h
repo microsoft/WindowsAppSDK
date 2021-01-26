@@ -21,7 +21,7 @@ public:
     WinRTInprocModule(WinRTInprocModule&& other) :
         m_path(std::move(other.m_path)),
         m_dll(std::move(other.m_dll)),
-        m_dllGetActivationFactory(std::move(m_dllGetActivationFactory))
+        m_dllGetActivationFactory(std::move(other.m_dllGetActivationFactory))
     {
         m_inprocServers.insert(std::make_move_iterator(other.m_inprocServers.begin()), std::make_move_iterator(other.m_inprocServers.end()));
     }

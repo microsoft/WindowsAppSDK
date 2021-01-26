@@ -23,9 +23,9 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         void LifetimeArtifact(hstring const& value);
 
     private:
-        winrt::PackageDependencyProcessorArchitectures m_architectures = winrt::PackageDependencyProcessorArchitectures::None;
-        bool m_verifyDependencyResolution = false;
-        winrt::PackageDependencyLifetimeArtifactKind m_lifetimeArtifactKind = winrt::PackageDependencyLifetimeArtifactKind::Process;
+        winrt::PackageDependencyProcessorArchitectures m_architectures{ winrt::PackageDependencyProcessorArchitectures::None };
+        bool m_verifyDependencyResolution{};
+        winrt::PackageDependencyLifetimeArtifactKind m_lifetimeArtifactKind{ winrt::PackageDependencyLifetimeArtifactKind::Process };
         hstring m_lifetimeArtifact;
     };
 }

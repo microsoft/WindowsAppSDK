@@ -118,7 +118,7 @@ STDAPI_(void) MddDeletePackageDependency(
 /// Package resolution is specific to a user and can return different values
 /// for different users on a system.
 ///
-/// Each successful MddAddPackageDependency() adds the resolve packaged to the
+/// Each successful MddAddPackageDependency() adds the resolved packaged to the
 /// calling process' package graph, even if already present. There is no
 /// duplicate 'detection' or 'filtering' applied by the API (multiple
 /// references from a package is not harmful). Once resolution is complete

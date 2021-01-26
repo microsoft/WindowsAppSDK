@@ -79,7 +79,7 @@ void MddCore::DataStore::Save(
     wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_WRITE, FILE_SHARE_DELETE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr) };
     if (!file)
     {
-        THROW_HR_MSG(HRESULT_FROM_WIN32(GetLastError()), "%ls", filename.c_str());
+        THROW_LAST_ERROR_MSG("%ls", filename.c_str());
     }
 
     DWORD bytesWritten{};
@@ -155,8 +155,10 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForSystem()
 
 std::filesystem::path MddCore::DataStore::GetDataStorePathForUser()
 {
-    wil::com_ptr<IUnknown> dataStore_iunknown{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
-    auto dataStore{ dataStore_iunknown.query<IDynamicDependencyDataStore>() };
+    //SEEME wil::com_ptr<IUnknown> dataStore_iunknown{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
+    //SEEME auto dataStore{ dataStore_iunknown.query<IDynamicDependencyDataStore>() };
+
+    wil::com_ptr<IDynamicDependencyDataStore> dataStore{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
 
     wil::com_ptr<IUnknown> applicationData_iunknown;
     THROW_IF_FAILED(dataStore->GetApplicationData(applicationData_iunknown.addressof()));

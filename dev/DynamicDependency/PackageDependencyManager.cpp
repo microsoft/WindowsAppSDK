@@ -136,8 +136,6 @@ const MddCore::PackageDependency* MddCore::PackageDependencyManager::GetPackageD
         return nullptr;
     }
 
-    // We're guaranteed it's not in the in-memory list at this point
-
     // Has it expired?
     if (packageDependency.IsExpired())
     {
