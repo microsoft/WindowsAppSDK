@@ -54,6 +54,10 @@ namespace Microsoft.ApplicationModel.Resources
         IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index);
         [method_name("GetValueByIndexWithContext")]
         IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index, ResourceContext context);
+
+        ResourceCandidate TryGetValue(String resource);
+        [method_name("TryGetValueWithContext")]
+        ResourceCandidate TryGetValue(String resource, ResourceContext context);
     }
 
     [contract(MrtContract, 1.0)]
