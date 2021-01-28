@@ -3,9 +3,6 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- An empty '$(ApplicationType)' and '$(WindowsAppContainer)' being false corresponds to a C++, Win32 app. -->
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.Win32AppPropertySheet.props" Condition="'$(ApplicationType)' == '' and '$(WindowsAppContainer)' == 'false'"/>
-
   <PropertyGroup>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
@@ -18,7 +15,7 @@
   <!-- OutputType Exe corresponds to C++. -->
   <ItemGroup Condition="'$(OutputType)' == 'Exe'">
     <Reference Include="Microsoft.ApplicationModel.Resources.winmd">
-      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.winmd</HintPath>
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd</HintPath>
       <Implementation>$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\Microsoft.ApplicationModel.Resources.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
