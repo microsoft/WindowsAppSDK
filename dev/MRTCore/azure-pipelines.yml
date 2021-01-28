@@ -376,7 +376,6 @@ jobs:
         native\Microsoft.ApplicationModel.Resources.C.props
         native\Microsoft.ApplicationModel.Resources.props
         native\Microsoft.ApplicationModel.Resources.targets
-        native\Microsoft.ApplicationModel.Resources.Win32AppPropertySheet.props
         native\Microsoft.ApplicationModel.Resources.WinRt.props
         README.md
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
