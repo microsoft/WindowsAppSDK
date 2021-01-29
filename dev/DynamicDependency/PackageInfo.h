@@ -17,7 +17,7 @@ public:
         UINT32 bufferLength{};
         const LONG rc{ ::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, nullptr, nullptr) };
         THROW_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_INSUFFICIENT_BUFFER);
-        std::unique_ptr<BYTE[]> buffer(new BYTE[bufferLength]);
+        std::unique_ptr<BYTE[]> buffer{ std::make_unique<BYTE[]>(bufferLength) };
         UINT32 count{};
         THROW_IF_WIN32_ERROR(::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, buffer.get(), &count));
 

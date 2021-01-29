@@ -34,7 +34,7 @@ STDAPI MddTryCreatePackageDependency(
     *packageDependencyId = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     MddCore::PackageDependencyManager::CreatePackageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options, packageDependencyId);
     return S_OK;
@@ -45,7 +45,7 @@ STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId) noexcept try
 {
     // Dynamic Dependencies requires a non-packaged process
-    THROW_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     MddCore::PackageDependencyManager::DeletePackageDependency(packageDependencyId);
 }
@@ -65,7 +65,7 @@ STDAPI MddAddPackageDependency(
     }
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     RETURN_IF_FAILED(MddCore::PackageGraphManager::AddToPackageGraph(packageDependencyId, rank, options, packageDependencyContext, packageFullName));
     return S_OK;
@@ -76,7 +76,7 @@ STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept try
 {
     // Dynamic Dependencies requires a non-packaged process
-    LOG_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     MddCore::PackageGraphManager::RemoveFromPackageGraph(packageDependencyContext);
 }
@@ -89,7 +89,7 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     *packageFullName = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     RETURN_HR_IF(E_INVALIDARG, !packageDependencyId || (packageDependencyId[0] == L'\0'));
 
@@ -108,7 +108,7 @@ STDAPI MddGetIdForPackageDependencyContext(
     *packageDependencyId = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(E_NOTIMPL, !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     RETURN_HR_IF(E_INVALIDARG, !packageDependencyContext);
 

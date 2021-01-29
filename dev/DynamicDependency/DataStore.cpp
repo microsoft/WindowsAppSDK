@@ -47,7 +47,7 @@ MddCore::PackageDependency MddCore::DataStore::Load(PCWSTR packageDependencyId)
     }
 
     const auto bufferSize{ static_cast<DWORD>(dataSize) + 1 };
-    std::unique_ptr<char[]> bufferUtf8{ new char[bufferSize] };
+    std::unique_ptr<char[]> bufferUtf8{ std::make_unique<char[]>(bufferSize) };
 
     DWORD bytesRead{};
     THROW_IF_WIN32_BOOL_FALSE(::ReadFile(file.get(), bufferUtf8.get(), bufferSize, &bytesRead, nullptr));

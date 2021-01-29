@@ -27,7 +27,7 @@ inline DWORD Win32FromHResult(const HRESULT hr)
 #define WIN32_FROM_HRESULT(hr) Win32FromHResult(hr)
 #endif
 
-static LONG (WINAPI * TrueGetCurrentPackageInfo)(
+static LONG (WINAPI* TrueGetCurrentPackageInfo)(
     const UINT32 flags,
     UINT32* bufferLength,
     BYTE* buffer,
@@ -39,7 +39,7 @@ LONG WINAPI DynamicGetCurrentPackageInfo(
     BYTE* buffer,
     UINT32* count);
 
-static LONG (WINAPI * TrueGetCurrentPackageInfo2)(
+static LONG (WINAPI* TrueGetCurrentPackageInfo2)(
     const UINT32 flags,
     PackagePathType packagePathType,
     UINT32* bufferLength,

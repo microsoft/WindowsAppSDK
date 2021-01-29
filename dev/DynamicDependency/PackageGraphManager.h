@@ -31,7 +31,7 @@ public:
         wil::unique_process_heap_string& packageDependencyId);
 
 public:
-    typedef LONG (WINAPI * GetCurrentPackageInfo2Function)(
+    typedef LONG (WINAPI* GetCurrentPackageInfo2Function)(
         const UINT32 flags,
         PackagePathType packagePathType,
         UINT32* bufferLength,

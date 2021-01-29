@@ -23,7 +23,7 @@ inline std::wstring GetPackagePath(PCWSTR packageFullName)
     }
 
     // It's bigger than a breadbox. Allocate memory
-    std::unique_ptr<WCHAR[]> pathBuffer(new WCHAR[pathLength]);
+    std::unique_ptr<WCHAR[]> pathBuffer{ std::make_unique<WCHAR[]>(pathLength) };
     THROW_IF_NULL_ALLOC(pathBuffer);
     THROW_IF_WIN32_ERROR(::GetPackagePathByFullName(packageFullName, &pathLength, pathBuffer.get()));
     return std::wstring(pathBuffer.get());
