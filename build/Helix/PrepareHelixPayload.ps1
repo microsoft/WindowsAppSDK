@@ -32,7 +32,7 @@ cp BuildOutput/$Configuration/$Platform/BaseUnitTests/BaseUnitTests.dll $payload
 
 cp dev/MRTCore/mrt/packages/Microsoft.Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/* $payloadDir
 
-cp dev/MRTCore/mrt/packages/Microsoft.Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/netstandard2.0/* $payloadDir
+cp dev/MRTCore/mrt/packages/Microsoft.Taef.Redist.Wlk.10.52.200221001/build/Binaries/$Platform/CoreClr/* $payloadDir
 
 mkdir $payloadDir/files
 
