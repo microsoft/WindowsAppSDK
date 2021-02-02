@@ -21,8 +21,8 @@ SIGNTOOL_OPTS=/v
 !MESSAGE Platform          =$(Platform)
 !ENDIF
 
-!IF "$(Platform)" == "win32" || "$(Platform)" == "x86"
-ENV=x86
+!IF "$(Platform)" == "Win32" || "$(Platform)" == "x86"
+ENV=win32
 !ELSEIF "$(Platform)" == "x64"
 ENV=x64
 !ELSEIF "$(Platform)" == "arm" || "$(Platform)" == "arm32"
