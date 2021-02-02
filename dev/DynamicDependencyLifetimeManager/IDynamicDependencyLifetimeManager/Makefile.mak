@@ -21,13 +21,13 @@ SIGNTOOL_OPTS=/v
 !MESSAGE Platform          =$(Platform)
 !ENDIF
 
-!IF "$(Platform)" == "Win32" || "$(Platform)" == "x86"
+!IF "$(Platform)" == "Win32" || "$(Platform)" == "x86" || "$(Platform)" == "X86"
 ENV=win32
-!ELSEIF "$(Platform)" == "x64"
+!ELSEIF "$(Platform)" == "x64" || "$(Platform)" == "X64"
 ENV=x64
-!ELSEIF "$(Platform)" == "arm" || "$(Platform)" == "arm32"
+!ELSEIF "$(Platform)" == "arm" || "$(Platform)" == "arm32" || "$(Platform)" == "ARM" || "$(Platform)" == "ARM32"
 ENV=arm32
-!ELSEIF "$(Platform)" == "arm64"
+!ELSEIF "$(Platform)" == "arm64" ||  "$(Platform)" == "ARM64"
 ENV=arm64
 !ELSE
 !ERROR "Unknown platform $(Platform)"
