@@ -21,8 +21,6 @@
 
 #include <wil/result_macros.h>
 
-#include "CppUnitTest.h"
-
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
