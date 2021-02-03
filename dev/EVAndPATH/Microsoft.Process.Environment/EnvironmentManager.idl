@@ -1,0 +1,23 @@
+﻿namespace Microsoft.Process.Environment
+{
+    [default_interface]
+    runtimeclass EnvironmentManager
+    {
+        static EnvironmentManager GetForProcess();
+        static EnvironmentManager GetForUser();
+        static EnvironmentManager GetForMachine();
+
+        IMapView<String, String> GetEnvironmentVariables();
+
+        String GetEnvironmentVariable(String name);
+        void SetEnvironmentVariable(String name, String value);
+
+        // Path manipulation
+        void AppendToPath(String path);
+        void RemoveFromPath(String path);
+
+        // PathExt Manipulation
+        void AppendToPathExt(String pathExt);
+        void RemoveFromPathExt(String pathExt);
+    }
+}
