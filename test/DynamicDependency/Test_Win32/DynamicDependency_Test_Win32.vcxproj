@@ -348,6 +348,12 @@
     <ProjectReference Include="..\..\..\dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\data\Framework.Math.Add\Framework.Math.Add.vcxproj">
+      <Project>{58e95711-a12f-4c0e-a978-c6b4a0842ac8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj">
+      <Project>{66d0d8b1-faf4-4c6a-8303-07f3ba356fe3}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
