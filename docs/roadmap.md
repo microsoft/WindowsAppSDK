@@ -1,47 +1,57 @@
 # Roadmap
 
-Project Reunion is an umbrella of work that we will develop together over time.
+Project Reunion is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows.
 
 The roadmap for Project Reunion supports the primary goals of breaking down the barriers between Win32 and UWP and making the Windows developer platform more agile, compatible, modern and open.
 
 For a general overview, see the [readme](https://github.com/microsoft/ProjectReunion/tree/master/docs) and [FAQ](https://github.com/microsoft/ProjectReunion/blob/master/docs/faq.md).
 
-Here's how we intend to roll out Project Reunion:
+Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*:
 
 <table>
   <tbody>
     <tr>
-      <th>//BUILD 2020</th>
-      <th>End of 2020</th>
-      <th>2021++</th>
+      <th>Reunion 0.5 (March 2021)</th>
+      <th>Reunion 0.8 (Summer 2021)</th>
+      <th>Reunion 1.0 (Fall 2021)</th>
+      <th>2022 and Beyond</th>
     </tr>
     <tr>
-      <td>
+    <td>
+      <ul>
+          <li>1st supported public release</li>
+            <li>WinUI 3 works in <a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-packaging-dot-net">Desktop Packaged (Win32)</a> Apps</li>
+            <li>Win2D will be part of Reunion</li>
+       </ul>
+     </td>
+     <td>
         <ul>
-            <li>WinUI preview for UWP & Win32</li>
-            <li>Windows Virtual Desktop</li>
-            <li>WebView2 Preview</li>
-            <li>Project Reunion repo</li>
+            <li>Better bridging the gap between Win32 and WinRT</li>
+            <li>Enabling developers to install runtime packages for MSIX, Win32</li>
+            <li>State Notifications is supported</li>
+            <li>Framework Package Support</li>
          </ul>
      </td>
-      <td>
+     <td>
         <ul>
-            <li>WinUI "go-live" Preview</li>
-            <li>Project Reunion Preview</li>
+            <li>Reunion Windowing support</li>
+            <li>New Rendering and Input features</li>
+            <li>Smooth WinUI input & composition system experience</li>
+            <li>App Lifecycle features (Power Management, Activation)</li>   
          </ul>
      </td>
     <td>
         <ul>
             <li>Multiple releases per year</li>
             <li>Continue expanding existing app compatibility</li>
-            <li>Continue delivery of new capabilities</li>
+            <li>Continuous delivery of new easier to use capabilities</li>
          </ul>
      </td>
     </tr>
   </tbody>
 </table>
 
-## 2020-2021 Focus Areas
+## 2021 Focus Areas
 
 The Windows platform team is currently focused on the four primary areas below for Project Reunion.
 
