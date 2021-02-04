@@ -19,26 +19,24 @@ Here's how we intend to roll out Project Reunion:
     <tr>
     <td>
       <ul>
-            <li>1st supported public release</li>
-            <li>WinUI 3 to work in Desktop Packaged (Win32) Apps</li>
-            <li>Updates to MSIX to easily have their apps updates and repair</li>
-            <li>WinUI 3 and Win2D will be part of Reunion</li>
+          <li>1st supported public release</li>
+            <li>WinUI 3 works in <a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-packaging-dot-net">Desktop Packaged (Win32)</a> Apps</li>
+            <li>Win2D will be part of Reunion</li>
        </ul>
      </td>
      <td>
         <ul>
             <li>Better bridging the gap between Win32 and WinRT</li>
-            <li>Delivery of Runtime dependencies for MSIX, Win32</li>
+            <li>Enabling developers to install runtime packages for MSIX, Win32</li>
             <li>State Notifications is supported</li>
             <li>Framework Package Support</li>
-            <li>Enabling developers to install the runtime packages with their app</li> 
          </ul>
      </td>
      <td>
         <ul>
-            <li>Reunion Windowing release</li>
+            <li>Reunion Windowing support</li>
             <li>New Rendering and Input features</li>
-            <li>Smooth WinUI input & composition system experiance</li>
+            <li>Smooth WinUI input & composition system experience</li>
             <li>App Lifecycle features (Power Management, Activation)</li>   
          </ul>
      </td>
@@ -46,7 +44,7 @@ Here's how we intend to roll out Project Reunion:
         <ul>
             <li>Multiple releases per year</li>
             <li>Continue expanding existing app compatibility</li>
-            <li>Continue delivery of new easier to use capabilities</li>
+            <li>Continuous delivery of new easier to use capabilities</li>
          </ul>
      </td>
     </tr>
