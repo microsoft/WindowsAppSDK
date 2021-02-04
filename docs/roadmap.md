@@ -6,7 +6,7 @@ The roadmap for Project Reunion supports the primary goals of breaking down the 
 
 For a general overview, see the [readme](https://github.com/microsoft/ProjectReunion/tree/master/docs) and [FAQ](https://github.com/microsoft/ProjectReunion/blob/master/docs/faq.md).
 
-Here's how we intend to roll out Project Reunion:
+Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*:
 
 <table>
   <tbody>
