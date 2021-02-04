@@ -12,16 +12,16 @@ Here's how we intend to roll out Project Reunion:
   <tbody>
     <tr>
       <th>Reunion 0.5 (March 2021)</th>
-      <th>Reunion 0.8 (May 2021)</th>
-      <th>Reunion 1.0 (October 2021)</th>
-      <th>Past October Release</th>
+      <th>Reunion 0.8 (Summer 2021)</th>
+      <th>Reunion 1.0 (Fall 2021)</th>
+      <th>2022 and Beyond</th>
     </tr>
     <tr>
     <td>
       <ul>
             <li>1st supported public release</li>
-            <li>UWP features available to unpackaged Win32</li>
-            <li>Enabling developers to easily have their apps updates and repair</li>
+            <li>WinUI 3 to work in Desktop Packaged (Win32) Apps</li>
+            <li>Updates to MSIX to easily have their apps updates and repair</li>
             <li>WinUI 3 and Win2D will be part of Reunion</li>
        </ul>
      </td>
@@ -39,7 +39,7 @@ Here's how we intend to roll out Project Reunion:
             <li>Reunion Windowing release</li>
             <li>New Rendering and Input features</li>
             <li>Smooth WinUI input & composition system experiance</li>
-            <li>Reunion Developers to experiance the best runtime</li>   
+            <li>App Lifecycle features (Power Management, Activation)</li>   
          </ul>
      </td>
     <td>
