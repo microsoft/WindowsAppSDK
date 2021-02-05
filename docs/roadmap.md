@@ -19,25 +19,26 @@ Here's how we intend to roll out Project Reunion *(all times/features/releases a
     <tr>
     <td>
       <ul>
-          <li>1st supported public release</li>
+            <li>1st supported public release</li>
             <li>WinUI 3 works in <a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-packaging-dot-net">Desktop Packaged (Win32)</a> Apps</li>
-            <li>Win2D will be part of Reunion</li>
+            <li>Win2D</li>
+            <li>DwriteCore</li>
+            <li>MRTCore</li>
        </ul>
      </td>
      <td>
         <ul>
-            <li>Better bridging the gap between Win32 and WinRT</li>
-            <li>Enabling developers to install runtime packages for MSIX, Win32</li>
-            <li>State Notifications is supported</li>
-            <li>Framework Package Support</li>
+            <li>WinUI improvements</li>
+            <li>Framework Package support for Unpackaged apps</li>
+            <li>App Lifecycle API</li>
+            <li>State Notifications</li>
          </ul>
      </td>
      <td>
         <ul>
             <li>Reunion Windowing support</li>
             <li>New Rendering and Input features</li>
-            <li>Smooth WinUI input & composition system experience</li>
-            <li>App Lifecycle features (Power Management, Activation)</li>   
+            <li>Smooth WinUI input & composition system experience</li>  
          </ul>
      </td>
     <td>
@@ -57,23 +58,33 @@ The Windows platform team is currently focused on the four primary areas below f
 
 This isn't an exhaustive list: it's a sampling of some of the key infrastructure work we're doing to break down the barriers between Win32 and UWP and decouple the platform from the OS, plus some of the new functionality we're adding to enable new app capabilities and address top developer issues.
 
-### 1. User experience
+### 1. Coherent, modern interactions and UX design
 
 * [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md) - the Windows 10 native UI platform for Win32 and UWP
 * [WebView2](https://docs.microsoft.com/microsoft-edge/webview2/) - embedding web content in Windows apps using the new Edge (Chromium) engine
 * [React Native Windows](https://github.com/microsoft/react-native-windows/projects/30) - now targeting WinUI
+* [Modern Windowing](https://github.com/microsoft/ProjectReunion/discussions/370)
 
-### 2. Hardware light-up and delighters
+### 2. Optimized for the device hardware
 
 * Touch, inking, display improvements
+* ARM64 support
+* Input 
 
-### 3. Platform fundamentals
+### 3. Great system performance and battery life
 
 * [Better options for app lifecycle management and power usage](https://github.com/microsoft/ProjectReunion/issues/111)
 * [DirectWrite text rendering platform](https://github.com/microsoft/ProjectReunion/issues/112)
-* Windowing [details forthcoming]
+* [Local and Push Notifications](https://github.com/microsoft/ProjectReunion/discussions/371)
+* Background Tasks
 
-### 4. Platform unification and deployment
+### 4. Hassle-free app discovery and management
+
+* Enhanced app packaging
+* Framework package deployment
+* Auto upate for all app types
+
+### 5. Platform unification and deployment
 
 * Decoupling the Windows platform from the OS
   * faster updates that you can start using on day 1
