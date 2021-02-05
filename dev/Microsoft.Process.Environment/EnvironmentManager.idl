@@ -1,6 +1,5 @@
-﻿namespace Microsoft.Process.Environment
+﻿namespace Microsoft.ProjectReunion
 {
-    [default_interface]
     runtimeclass EnvironmentManager
     {
         static EnvironmentManager GetForProcess();

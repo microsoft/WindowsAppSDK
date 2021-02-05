@@ -1,22 +1,18 @@
-﻿#include "pch.h"
-#include "Microsoft.Process.Environment.EnvironmentManager.h"
-#include "EnvironmentManager.g.cpp"
+﻿#include <pch.h>
+#include <EnvironmentManager.h>
+#include <EnvironmentManager.g.cpp>
 
-namespace winrt::Microsoft::Process::Environment::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
-
-    EnvironmentManager::EnvironmentManager(Scope const& scope)
-            : m_Scope(scope) { }
-
-    Microsoft::Process::Environment::EnvironmentManager EnvironmentManager::GetForProcess()
+    Microsoft::ProjectReunion::EnvironmentManager EnvironmentManager::GetForProcess()
     {
         throw hresult_not_implemented();
     }
-    Microsoft::Process::Environment::EnvironmentManager EnvironmentManager::GetForUser()
+    Microsoft::ProjectReunion::EnvironmentManager EnvironmentManager::GetForUser()
     {
         throw hresult_not_implemented();
     }
-    Microsoft::Process::Environment::EnvironmentManager EnvironmentManager::GetForMachine()
+    Microsoft::ProjectReunion::EnvironmentManager EnvironmentManager::GetForMachine()
     {
         throw hresult_not_implemented();
     }
