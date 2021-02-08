@@ -11,9 +11,9 @@ Here's how we intend to roll out Project Reunion *(all times/features/releases a
 <table>
   <tbody>
     <tr>
-      <th>Reunion 0.5 (March 2021)</th>
-      <th>Reunion 0.8 (Summer 2021)</th>
-      <th>Reunion 1.0 (Fall 2021)</th>
+      <th>Reunion 0.5 (Q1 2021)</th>
+      <th>Reunion 0.8 (Q2 2021)</th>
+      <th>Reunion 1.0 (Q3 2021)</th>
       <th>2022 and Beyond</th>
     </tr>
     <tr>
