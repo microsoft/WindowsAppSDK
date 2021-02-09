@@ -285,7 +285,7 @@ void MddCore::PackageGraph::UpdatePath()
     // As a pratical matter, we'll follow this algorithm:
     //
     //      Remove our previous addition to PATH (if present)
-    //      Prepend out new pathlist to PATH
+    //      Prepend our new pathlist to PATH
     //
     // We'll assume for 'removal' our previous pathlist is an unmodified
     // block and if not, we won't try to micromanage removing it piecemeal.
