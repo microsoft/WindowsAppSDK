@@ -1,4 +1,4 @@
-﻿#include <pch.h>
+﻿#include "pch.h"
 #include <EnvironmentManager.h>
 #include <EnvironmentManager.g.cpp>
 
@@ -36,11 +36,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         throw hresult_not_implemented();
     }
-    void EnvironmentManager::AppendToPathExt(hstring const& pathExt)
+    void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
         throw hresult_not_implemented();
     }
-    void EnvironmentManager::RemoveFromPathExt(hstring const& pathExt)
+    void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
         throw hresult_not_implemented();
     }

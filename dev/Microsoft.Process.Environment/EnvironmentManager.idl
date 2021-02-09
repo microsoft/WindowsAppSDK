@@ -16,7 +16,7 @@
         void RemoveFromPath(String path);
 
         // PathExt Manipulation
-        void AppendToPathExt(String pathExt);
-        void RemoveFromPathExt(String pathExt);
+        void AddExecutableFileExtension(String pathExt);
+        void RemoveExecutableFileExtension(String pathExt);
     }
 }
