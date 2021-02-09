@@ -155,9 +155,6 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForSystem()
 
 std::filesystem::path MddCore::DataStore::GetDataStorePathForUser()
 {
-    //SEEME wil::com_ptr<IUnknown> dataStore_iunknown{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
-    //SEEME auto dataStore{ dataStore_iunknown.query<IDynamicDependencyDataStore>() };
-
     wil::com_ptr<IDynamicDependencyDataStore> dataStore{ wil::CoCreateInstance<DynamicDependencyDataStore, IDynamicDependencyDataStore>(CLSCTX_LOCAL_SERVER) };
 
     wil::com_ptr<IUnknown> applicationData_iunknown;
