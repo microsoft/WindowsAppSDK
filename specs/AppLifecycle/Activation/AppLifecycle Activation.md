@@ -167,12 +167,16 @@ void RegisterForActivation()
         12,
         new string[]{ "view", "edit" });
 
-    // Register another set of filetypes, with a different
-    // icon, and no specified verbs.
+    // Register another set of filetypes, falling back to the
+    // default icon, and no specified verbs.
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        new string[]{ ".mov", ".wmv", ".mp3" },
-        "MyResources.dll",
-        18);
+        new string[]{ ".mov", ".wmv", ".mp3" });
+
+    // Register another set, and specifying the EXE path.
+    ActivationRegistrationManager::RegisterForFileTypeActivation(
+        new string[]{ ".ipa" },
+        "MyResources.dll", 34,
+        "C:\\Program Files\\Contoso\\MyApp.exe");
 
     // Register some URI schemes for protocol activation.
     ActivationRegistrationManager::RegisterForProtocolActivation("foo");
@@ -344,23 +348,35 @@ Similarly, if the app registers multiple times for startup, this is also
 idempotent (a single registration, no error, any new values supplied overwrite
 any old values).
 
-| API                                                                                                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| class ActivationRegistrationManager                                                                                                              | New class to encapsulate the activation RegisterForXXXActivation and UnregisterForXXXActivation methods.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| static void RegisterForFileTypeActivation(<br> string supportedFileTypes[],<br> string logo,<br> int? index,<br> string? supportedVerbs[]<br> ); | **supportedFileTypes**: one or more supported filetypes, specified by the file extension including the leading ".", eg ".docx".<br> **logo**: used in File Explorer for this filetype if this app is the default handler. In UWP this is a package-relative path to an image resource file. In Win32 registry-based filetype registrations, it's a filepath to a binary file plus a resource index. The caller can pass either.<br> **index**: optional - if this is not supplied, we will interpret the logo string as a package-relative path to an image resource file. If index is supplied, we will interpret the logo string as a binary filepath, and the index as the resource index in that binary.<br> **supportedVerbs**: optional - zero or more app-defined verbs. Each verb is added to the File Explorer context menu when a registered file is right-clicked; and the selected verb is passed to the app as the FileActivatedEventArgs::Verb property. |
-| static void RegisterForProtocolActivation(<br> string name<br> );                                                                                | **name**: the protocol identifier, eg "foo" or "https".                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| static void RegisterForStartupActivation(<br> string taskId,<br> bool isEnabled,<br> string displayName<br> );                                   | **taskId**: a string identifier which the app can use in the StartupTask API to request enabling or disabling of the startup behavior.<br> **isEnabled**: enables the startup behavior without a user prompt, so long as the user has activated the app at least once. Consistent with existing Desktop Bridge behavior.<br> **displayName**: used in the Settings - Apps - Startup page.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| API                                                          | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| class ActivationRegistrationManager                          | New class to encapsulate the activation RegisterForXXXActivation and UnregisterForXXXActivation methods. |
+| static void RegisterForFileTypeActivation(<br/> string supportedFileTypes[],<br/> string logo,<br/> int index,<br/> string supportedVerbs[],<br/> string exePath<br/>); | **supportedFileTypes**: one or<br/>more supported filetypes, specified by the file extension including the leading<br/>".", eg ".docx".<br/> **logo**: used in File Explorer for this filetype if this<br/>app is the default handler. In UWP this is a package-relative path to an image<br/>resource file. In Win32 registry-based filetype registrations, it's a filepath<br/>to a binary file plus a resource index. The caller can pass either.<br/><br/>**index**: if this is <0, we will interpret the logo string as a<br/>package-relative path to an image resource file. If index >= 0, we will<br/>interpret the logo string as a binary filepath, and the index as the resource<br/>index in that binary.<br/> **supportedVerbs**: zero or more app-defined verbs.<br/>Each verb is added to the File Explorer context menu when a registered file is<br/>right-clicked; and the selected verb is passed to the app as the<br/>FileActivatedEventArgs::Verb property.<br/> **exePath**: path to the executable<br/>to be activated. Typically this is specified if the caller is the app's<br/>installer rather than the app itself. |
+| static void<br/>RegisterForFileTypeActivation(<br/> string supportedFileTypes[],<br/> string logo,<br/> int index,<br/> string exePath<br/>); |                                                              |
+| static void<br/>RegisterForFileTypeActivation(<br/> string supportedFileTypes[],<br/> string logo,<br/> int index,<br/> string supportedVerbs[]<br/>); |                                                              |
+| static void<br/>RegisterForFileTypeActivation(<br/> string supportedFileTypes[],<br/> string logo,<br/> int index<br/>); |                                                              |
+| static void RegisterForFileTypeActivation(<br/> string supportedFileTypes[],<br/> string exePath<br/>); |                                                              |
+| static void RegisterForFileTypeActivation(<br/> string supportedFileTypes[]<br/>); |                                                              |
+| static void RegisterForProtocolActivation(<br/> string name,<br/> string exePath<br/>); | **name**:<br/>the protocol identifier, eg "foo" or "https".<br/> **exePath**: path to the<br/>executable to be activated. |
+| static void RegisterForProtocolActivation(<br/> string name<br/> ); |                                                              |
+| static void RegisterForStartupActivation(<br/><br/> string taskId,<br/> bool isEnabled,<br/> string displayName,<br/> string exePath); | **taskId**: a string identifier which the app can use in<br/>the StartupTask API to request enabling or disabling of the startup<br/>behavior.<br/> **isEnabled**: enables the startup behavior without a user prompt,<br/>so long as the user has activated the app at least once. Consistent with<br/>existing Desktop Bridge behavior.<br/> **displayName**: used in the Settings -<br/>Apps - Startup page.<br/> **exePath**: path to the executable to be activated. |
+| RegisterForStartupActivation(<br/> string taskId,<br/> bool isEnabled,<br/> string displayName<br/> ); |                                                              |
+
+
 
 ### Activation unregistration
 
 The new API will include UnregisterForXXXActivation methods for each of the
 supported activation kinds.
 
-| API                                                                        | Description                                                                   |
-| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| static void UnregisterForFileTypeActivation(<br> string fileTypes[]<br> ); | **fileTypes**: one or more filetypes that the caller wants to unregister.     |
-| static void UnregisterForProtocolActivation(<br> string name<br> );        | **name**: the previously-registered protocol identifier, eg "foo" or "https". |
-| static void UnregisterForStartupActivation();                              |                                                                               |
+| API                                                          | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| static void UnregisterForFileTypeActivation(<br> string fileTypes[], <br> string exePath<br> ); | **fileTypes**: one or more filetypes that the caller wants to unregister. <br>**exePath**: path to the executable that was registered for activation. |
+| static void UnregisterForFileTypeActivation(<br> string fileTypes[]<br> ); |                                                              |
+| static void UnregisterForProtocolActivation(<br> string name,<br> string exePath<br> ); | **name**: the previously-registered protocol identifier, eg "foo" or "https". <br>**exePath**: path to the executable that was registered for activation. |
+| static void UnregisterForProtocolActivation(<br> string name<br> ); |                                                              |
+| static void UnregisterForStartupActivation(<br> string exePath<br>); | **exePath**: path to the executable that was registered for activation. |
+| static void UnregisterForStartupActivation();                |                                                              |
 
 <br>
 <br>
