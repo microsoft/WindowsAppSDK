@@ -14,7 +14,7 @@
     Version="10.1.2004.0" />
 
   <Properties>
-    <DisplayName>ProjectReunion.Test.DynDep.DataStore</DisplayName>
+    <DisplayName>ProjectReunion.Test.DynDep.DataStore (aka Microsoft.ProjectReunion.Main) fake for tests</DisplayName>
     <PublisherDisplayName>Project Reunion</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>

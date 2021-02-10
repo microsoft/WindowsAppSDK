@@ -11,7 +11,7 @@
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>Microsoft.ProjectReunion.Framework fake for Bootstrap API tests</DisplayName>
+    <DisplayName>Microsoft.ProjectReunion.Framework fake for tests</DisplayName>
     <PublisherDisplayName>Project Reunion</PublisherDisplayName>
     <Logo>logo.png</Logo>
     <Framework>true</Framework>
@@ -34,6 +34,8 @@
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.AppLifecycle" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.ActivationRegistrationManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>

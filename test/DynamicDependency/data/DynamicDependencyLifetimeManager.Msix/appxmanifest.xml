@@ -16,7 +16,7 @@
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>ProjectReunion.Test.DynamicDependency.LifetimeManager</DisplayName>
+    <DisplayName>ProjectReunion.Test.DynamicDependency.LifetimeManager (aka Microsoft.ProjectReunion.DDLM) fake for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
