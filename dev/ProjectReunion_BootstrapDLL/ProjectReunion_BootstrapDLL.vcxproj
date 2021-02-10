@@ -451,8 +451,5 @@
     <ProjectReference Include="..\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj">
       <Project>{ccd23028-b9d3-410b-836e-20b2e7c08451}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj">
-      <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
-    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Microsoft.ApplicationModel.DynamicDependency.h>
 
 #include <Math.Add.h>
 #include <Math.Multiply.h>

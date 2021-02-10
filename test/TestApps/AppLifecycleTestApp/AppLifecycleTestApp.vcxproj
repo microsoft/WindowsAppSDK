@@ -317,9 +317,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj">
-      <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
-      <Private>true</Private>
+    <Reference Include="Microsoft.ApplicationModel.Activation">
+      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
+      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

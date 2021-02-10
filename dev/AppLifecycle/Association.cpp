@@ -3,7 +3,7 @@
 #include <pch.h>
 #include "Association.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     HKEY GetRegistrationRoot()
     {

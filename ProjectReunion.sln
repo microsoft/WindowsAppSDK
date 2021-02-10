@@ -40,8 +40,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency_Test_Win32", "test\DynamicDependency\Test_Win32\DynamicDependency_Test_Win32.vcxproj", "{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+		{58E95711-A12F-4C0E-A978-C6B4A0842AC8} = {58E95711-A12F-4C0E-A978-C6B4A0842AC8}
+		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+		{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3} = {66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunion_BootstrapDLL", "dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj", "{F76B776E-86F5-48C5-8FC7-D2795ECC9746}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Detours", "dev\Detours\Detours.vcxproj", "{D6BC25C5-1AA7-4C4A-A02C-B42DEDBFEA33}"
 EndProject
@@ -72,6 +81,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IDynamicDependencyLifetimeManager", "dev\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj", "{CCD23028-B9D3-410B-836E-20B2E7C08451}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency_Test_WinRT", "test\DynamicDependency\Test_WinRT\DynamicDependency_Test_WinRT.vcxproj", "{B2546322-D329-4F6C-9C2E-7EFC3C9ED214}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+		{58E95711-A12F-4C0E-A978-C6B4A0842AC8} = {58E95711-A12F-4C0E-A978-C6B4A0842AC8}
+		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+		{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3} = {66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UndockedRegFreeWinRT", "UndockedRegFreeWinRT", "{323E29A9-873F-419B-919E-D18BCE1DE120}"
 EndProject
