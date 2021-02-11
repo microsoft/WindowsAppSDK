@@ -3,6 +3,9 @@
 #include "pch.h"
 #include <testdef.h>
 
+#include <MddBootstrap.h>
+#include <MddBootstrapTest.h>
+
 using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
@@ -10,10 +13,29 @@ using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 
+HRESULT BootstrapInitialize()
+{
+    constexpr PCWSTR c_PackageNamePrefix{ L"ProjectReunion.Test.DDLM" };
+    constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
+    RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+
+    // Version <major>.0.0.0 to find any framework package for this major version
+    const UINT64 c_Version_Major{ 4 };
+    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
+    RETURN_IF_FAILED(MddBootstrapInitialize(minVersion));
+
+    return S_OK;
+}
+
+void BootstrapShutdown()
+{
+    MddBootstrapShutdown();
+}
+
 void SignalPhase(const std::wstring& phaseEventName)
 {
     wil::unique_event phaseEvent;
-    if(phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
+    if (phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
     {
         phaseEvent.SetEvent();
     }
@@ -33,6 +55,8 @@ bool IsPackagedProcess()
 
 int main()
 {
+    RETURN_IF_FAILED(BootstrapInitialize());
+
     auto succeeded = false;
     auto args = AppLifecycle::GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -127,5 +151,7 @@ int main()
     {
         SignalPhase(c_testFailureEventName);
     }
+
+    BootstrapShutdown();
     return 0;
 }

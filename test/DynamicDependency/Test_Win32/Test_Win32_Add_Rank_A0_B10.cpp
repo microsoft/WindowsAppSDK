@@ -28,7 +28,7 @@ void Test::DynamicDependency::Test_Win32::Add_Rank_A0_B10()
     auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(expectedPackageFullName_ProjectReunionFramework) };
     VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
 
-    // -- TryCreate
+    // -- Create
 
     wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd() };
 

@@ -19,7 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
-    <!-- 
+    <!--
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msixbundle" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).cer" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.cer" TreatOutputAsContent="true" /> -->
   </ItemGroup>

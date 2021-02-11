@@ -14,6 +14,9 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.FileSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Metadata.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Package.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TestDef.h" />
   </ItemGroup>
 </Project>

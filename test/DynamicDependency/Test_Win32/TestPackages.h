@@ -62,7 +62,7 @@ namespace Test::Packages::DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_10.1.2004.0_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages

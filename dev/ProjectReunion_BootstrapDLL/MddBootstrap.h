@@ -4,6 +4,8 @@
 #if !defined(MDDBOOSTRAP_H)
 #define MDDBOOSTRAP_H
 
+#include <appmodel.h>
+
 STDAPI MddBootstrapInitialize(
     const PACKAGE_VERSION minVersion) noexcept;
 
