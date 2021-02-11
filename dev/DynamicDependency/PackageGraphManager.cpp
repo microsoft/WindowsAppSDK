@@ -33,6 +33,11 @@ HRESULT MddCore::PackageGraphManager::AddToPackageGraph(
 void MddCore::PackageGraphManager::RemoveFromPackageGraph(
     MDD_PACKAGEDEPENDENCY_CONTEXT context)
 {
+    if (!context)
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock(s_lock);
 
     (void) LOG_IF_FAILED(s_packageGraph.Remove(context));
