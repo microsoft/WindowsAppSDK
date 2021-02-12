@@ -7,6 +7,7 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
+#include <ProjectReunion.Test.AppModel.h>
 #include <ProjectReunion.Test.Package.h>
 
 #include <WexTestClass.h>

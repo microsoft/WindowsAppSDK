@@ -8,9 +8,6 @@
 
 #include <wil/win32_helpers.h>
 
-namespace TA = ::Test::AppModel;
-namespace TB = ::Test::Bootstrap;
-
 using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
@@ -18,9 +15,20 @@ using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 
+bool IsPackagedProcess()
+{
+    UINT32 n{};
+    return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
+}
+
+bool NeedDynamicDependencies()
+{
+    return !IsPackagedProcess();
+}
+
 HRESULT BootstrapInitialize()
 {
-    if (!TB::NeedDynamicDependencies())
+    if (!NeedDynamicDependencies())
     {
         return S_OK;
     }
@@ -39,9 +47,9 @@ HRESULT BootstrapInitialize()
 
 void BootstrapShutdown()
 {
-    if (!TB::NeedDynamicDependencies())
+    if (!NeedDynamicDependencies())
     {
-        return S_OK;
+        return;
     }
 
     MddBootstrapShutdown();
@@ -113,7 +121,7 @@ int main()
         auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
 
         std::wstring expectedUri;
-        if (TA::IsPackagedProcess())
+        if (IsPackagedProcess())
         {
             expectedUri = c_testProtocolScheme_Packaged + L"://this_is_a_test";
         }
