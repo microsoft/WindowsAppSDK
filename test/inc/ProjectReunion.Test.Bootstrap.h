@@ -13,10 +13,16 @@
 
 namespace Test::Bootstrap
 {
+    namespace TA = ::Test::AppModel;
     namespace TF = ::Test::FileSystem;
     namespace TP = ::Test::Packages;
 
     static wil::unique_hmodule s_bootstrapDll;
+
+    bool NeedDynamicDependencies()
+    {
+        return !TA::IsPackagedProcess();
+    }
 
     void SetupPackages()
     {
@@ -41,6 +47,12 @@ namespace Test::Bootstrap
 
     void SetupBootstrap()
     {
+        // Bootstrapper's only needed for non-packaged processes to use Dynamic Dependencies
+        if (!NeedDynamicDependencies())
+        {
+            return;
+        }
+
         // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
         // Normally it's colocated with the application (i.e. same dir as the exe)
         // but that's not true of our test project (a dll) in our build environment
@@ -65,6 +77,12 @@ namespace Test::Bootstrap
 
     void CleanupBootstrap()
     {
+        // Bootstrapper's only needed for non-packaged processes to use Dynamic Dependencies
+        if (!NeedDynamicDependencies())
+        {
+            return;
+        }
+
         // Shutdown the bootstrapper
         MddBootstrapShutdown();
 

@@ -8,6 +8,9 @@
 
 #include <wil/win32_helpers.h>
 
+namespace TA = ::Test::AppModel;
+namespace TB = ::Test::Bootstrap;
+
 using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
@@ -17,6 +20,11 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 
 HRESULT BootstrapInitialize()
 {
+    if (!TB::NeedDynamicDependencies())
+    {
+        return S_OK;
+    }
+
     constexpr PCWSTR c_PackageNamePrefix{ L"ProjectReunion.Test.DDLM" };
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
     RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
@@ -31,6 +39,11 @@ HRESULT BootstrapInitialize()
 
 void BootstrapShutdown()
 {
+    if (!TB::NeedDynamicDependencies())
+    {
+        return S_OK;
+    }
+
     MddBootstrapShutdown();
 }
 
@@ -43,24 +56,9 @@ void SignalPhase(const std::wstring& phaseEventName)
     }
 }
 
-bool IsPackagedProcess()
-{
-    UINT32 n{};
-    return ::GetCurrentPackageFullName(&n, nullptr) == APPMODEL_ERROR_NO_PACKAGE;;
-}
-
-bool NeedDynamicDependencies()
-{
-    return !IsPackagedProcess();
-}
-
 int main()
 {
-    const bool c_needDynamicDependencies{ NeedDynamicDependencies() };
-    if (c_needDynamicDependencies)
-    {
-        RETURN_IF_FAILED(BootstrapInitialize());
-    }
+    RETURN_IF_FAILED(BootstrapInitialize());
 
     auto succeeded = false;
     auto args = AppLifecycle::GetActivatedEventArgs();
@@ -115,7 +113,7 @@ int main()
         auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
 
         std::wstring expectedUri;
-        if (IsPackagedProcess())
+        if (TA::IsPackagedProcess())
         {
             expectedUri = c_testProtocolScheme_Packaged + L"://this_is_a_test";
         }
@@ -157,9 +155,6 @@ int main()
         SignalPhase(c_testFailureEventName);
     }
 
-    if (c_needDynamicDependencies)
-    {
-        BootstrapShutdown();
-    }
+    BootstrapShutdown();
     return 0;
 }

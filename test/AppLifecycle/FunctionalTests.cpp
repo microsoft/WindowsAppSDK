@@ -83,23 +83,9 @@ namespace ProjectReunionCppTest
             return true;
         }
 
-        bool IsPackagedProcess()
-        {
-            UINT32 n{};
-            return ::GetCurrentPackageFullName(&n, nullptr) == APPMODEL_ERROR_NO_PACKAGE;;
-        }
-
-        bool NeedDynamicDependencies()
-        {
-            return !IsPackagedProcess();
-        }
-
         TEST_METHOD_SETUP(MethodInit)
         {
-            if (NeedDynamicDependencies())
-            {
-                ::Test::Bootstrap::SetupBootstrap();
-            }
+            ::Test::Bootstrap::SetupBootstrap();
 
             m_failed = CreateTestEvent(c_testFailureEventName);
             return true;
@@ -107,10 +93,7 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_CLEANUP(MethodShutdown)
         {
-            if (NeedDynamicDependencies())
-            {
-                ::Test::Bootstrap::CleanupBootstrap();
-            }
+            ::Test::Bootstrap::CleanupBootstrap();
             return true;
         }
 
