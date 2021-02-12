@@ -24,5 +24,12 @@
     
     <!-- Surface as errors the warnings that a ProjectReunion file is using a type defined in a later version of ProjectReunion than the min version for which we're compiling. -->
     <MSBuildWarningsAsErrors>WMC0151;XLS1105</MSBuildWarningsAsErrors>
+	
+	<!-- General platform and toolset properties -->
+	<WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+	<PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '15.0'">v141</PlatformToolset>
+    <PlatformToolset Condition="'$(VisualStudioVersion)' == '16.0'">v142</PlatformToolset>
   </PropertyGroup>
 </Project>
