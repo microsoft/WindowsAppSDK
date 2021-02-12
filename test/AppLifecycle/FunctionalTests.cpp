@@ -48,6 +48,8 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            ::Test::Bootstrap::SetupPackages();
+
             // Deploy packaged app to register handler through the manifest.
             //RunCertUtil(c_testPackageCertFile);
             //InstallPackage(c_testPackageFile);
@@ -76,16 +78,39 @@ namespace ProjectReunionCppTest
             {
             }
 
-            ::Test::Bootstrap::Cleanup();
+            ::Test::Bootstrap::CleanupPackages();
 
             return true;
         }
 
+        bool IsPackagedProcess()
+        {
+            UINT32 n{};
+            return ::GetCurrentPackageFullName(&n, nullptr) == APPMODEL_ERROR_NO_PACKAGE;;
+        }
+
+        bool NeedDynamicDependencies()
+        {
+            return !IsPackagedProcess();
+        }
+
         TEST_METHOD_SETUP(MethodInit)
         {
-            ::Test::Bootstrap::Setup();
+            if (NeedDynamicDependencies())
+            {
+                ::Test::Bootstrap::SetupBootstrap();
+            }
 
             m_failed = CreateTestEvent(c_testFailureEventName);
+            return true;
+        }
+
+        TEST_METHOD_CLEANUP(MethodShutdown)
+        {
+            if (NeedDynamicDependencies())
+            {
+                ::Test::Bootstrap::CleanupBootstrap();
+            }
             return true;
         }
 
@@ -94,6 +119,7 @@ namespace ProjectReunionCppTest
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
             VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());

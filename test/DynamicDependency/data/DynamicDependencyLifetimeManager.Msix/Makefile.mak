@@ -20,6 +20,18 @@ SIGNTOOL_OPTS=/v
 !MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
+!IF "$(Platform)" == "Win32" || "$(Platform)" == "x86" || "$(Platform)" == "X86"
+Architecture=x86
+!ELSEIF "$(Platform)" == "x64" || "$(Platform)" == "X64"
+Architecture=x64
+!ELSEIF "$(Platform)" == "arm" || "$(Platform)" == "arm32" || "$(Platform)" == "ARM" || "$(Platform)" == "ARM32"
+Architecture=arm
+!ELSEIF "$(Platform)" == "arm64" ||  "$(Platform)" == "ARM64"
+Architecture=arm64
+!ELSE
+!ERROR "Unknown platform $(Platform)"
+!endif
+
 TARGET_BASENAME=DynamicDependencyLifetimeManager
 
 TARGET_EXE=$(TARGET_BASENAME)
@@ -42,11 +54,14 @@ OutMsix=$(TargetDir)\$(TargetName)
 !MESSAGE OutMsix           =$(OutMsix)
 !ENDIF
 
+MAKE_APPXMANIFEST_FROM_TEMPLATE=$(SolutionDir)tools\MakeAppxManifestFromTemplate.cmd
+
 all: build
 
 $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir) md $(WorkDir)
-    @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml
+    REM @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml
+    @call $(MAKE_APPXMANIFEST_FROM_TEMPLATE) $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml $(Architecture)
     @if not exist $(WorkDir)\Assets md $(WorkDir)\Assets >NUL
     @copy /Y $(ProjectDir)Assets\* $(WorkDir)\Assets\* >NUL
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL

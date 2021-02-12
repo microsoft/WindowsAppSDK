@@ -18,7 +18,7 @@ namespace Test::Bootstrap
 
     static wil::unique_hmodule s_bootstrapDll;
 
-    void Setup()
+    void SetupPackages()
     {
         // Remove our packages in case they were previously installed and incompletely removed
         TP::RemovePackage_DynamicDependencyLifetimeManager();
@@ -29,7 +29,18 @@ namespace Test::Bootstrap
         TP::AddPackage_ProjectReunionFramework();
         TP::AddPackage_DynamicDependencyDataStore();
         TP::AddPackage_DynamicDependencyLifetimeManager();
+    }
 
+    void CleanupPackages()
+    {
+        // Uninstall the packages we installed via SetupPackages()
+        TP::RemovePackage_DynamicDependencyLifetimeManager();
+        TP::RemovePackage_DynamicDependencyDataStore();
+        TP::RemovePackage_ProjectReunionFramework();
+    }
+
+    void SetupBootstrap()
+    {
         // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
         // Normally it's colocated with the application (i.e. same dir as the exe)
         // but that's not true of our test project (a dll) in our build environment
@@ -52,20 +63,26 @@ namespace Test::Bootstrap
         s_bootstrapDll = std::move(bootstrapDll);
     }
 
-    void Cleanup()
+    void CleanupBootstrap()
     {
         // Shutdown the bootstrapper
         MddBootstrapShutdown();
 
         // Release our reference to the bootstrapper DLL
         s_bootstrapDll.reset();
-
-        // Uninstall the packages we installe during ModuleSetup
-        TP::RemovePackage_DynamicDependencyLifetimeManager();
-        TP::RemovePackage_DynamicDependencyDataStore();
-        TP::RemovePackage_ProjectReunionFramework();
     }
 
+    void Setup()
+    {
+        SetupPackages();
+        SetupBootstrap();
+    }
+
+    void Cleanup()
+    {
+        CleanupPackages();
+        CleanupBootstrap();
+    }
 }
 
 #endif // __PROJECTREUNION_TEST_BOOTSTRAP_H

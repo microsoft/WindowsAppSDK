@@ -343,7 +343,8 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
             continue;
         }
     }
-    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny);
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    appExtensionName, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
 }
 

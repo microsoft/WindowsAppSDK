@@ -6,6 +6,8 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
+#include <wil/win32_helpers.h>
+
 using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
@@ -43,19 +45,22 @@ void SignalPhase(const std::wstring& phaseEventName)
 
 bool IsPackagedProcess()
 {
-    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
-    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
-    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
-    {
-        return true;
-    }
+    UINT32 n{};
+    return ::GetCurrentPackageFullName(&n, nullptr) == APPMODEL_ERROR_NO_PACKAGE;;
+}
 
-    return false;
+bool NeedDynamicDependencies()
+{
+    return !IsPackagedProcess();
 }
 
 int main()
 {
-    RETURN_IF_FAILED(BootstrapInitialize());
+    const bool c_needDynamicDependencies{ NeedDynamicDependencies() };
+    if (c_needDynamicDependencies)
+    {
+        RETURN_IF_FAILED(BootstrapInitialize());
+    }
 
     auto succeeded = false;
     auto args = AppLifecycle::GetActivatedEventArgs();
@@ -152,6 +157,9 @@ int main()
         SignalPhase(c_testFailureEventName);
     }
 
-    BootstrapShutdown();
+    if (c_needDynamicDependencies)
+    {
+        BootstrapShutdown();
+    }
     return 0;
 }

@@ -37,7 +37,7 @@ namespace Test::FileSystem
     {
         wil::unique_hmodule dll(LoadLibrary(Test::FileSystem::ThisTestDllFilename));
         const auto lastError{ GetLastError() };
-        /*TODO Assert::IsNotNull*/VERIFY_IS_NOT_NULL(dll.get());
+        VERIFY_IS_NOT_NULL(dll.get());
         return GetModulePath(dll.get());
     }
 

@@ -64,80 +64,80 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>

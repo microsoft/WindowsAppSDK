@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include <sddl.h>
+#include <appmodel.h>
 
 #include <wil/result.h>
 #include <wil/cppwinrt.h>

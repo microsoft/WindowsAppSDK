@@ -12,4 +12,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" />
+  </ItemGroup>
 </Project>
