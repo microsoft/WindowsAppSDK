@@ -326,3 +326,6 @@ __pycache__/
 # Build output root
 BuildOutput/
 .nuget/
+
+# Installer build configuration header
+dev/Installer/src/project_reunion_definitions_override.h
