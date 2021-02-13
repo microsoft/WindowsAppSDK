@@ -48,6 +48,8 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            ::Test::Bootstrap::SetupPackages();
+
             // Deploy packaged app to register handler through the manifest.
             //RunCertUtil(c_testPackageCertFile);
             //InstallPackage(c_testPackageFile);
@@ -76,6 +78,7 @@ namespace ProjectReunionCppTest
             {
             }
 
+            ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
