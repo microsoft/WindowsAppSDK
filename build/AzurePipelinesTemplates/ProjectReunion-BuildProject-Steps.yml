@@ -71,7 +71,7 @@ steps:
       script: 'certutilexe -addstore TrustedPeople MSTest.cer'
       workingDirectory: '$(Build.SourcesDirectory)\build'
 
-  - task: CmdLine@3
+  - task: CmdLine@2
     displayName: 'Run AppLifeCycleTest'
     inputs:
       script: 'te.exe CppTest.dll'
