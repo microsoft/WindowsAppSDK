@@ -68,7 +68,7 @@ steps:
   - task: CmdLine@2
     displayName: 'Install Test Certificate'
     inputs:
-      script: 'certutilexe -addstore TrustedPeople MSTest.cer'
+      script: 'certutil.exe -addstore TrustedPeople MSTest.cer'
       workingDirectory: '$(Build.SourcesDirectory)\build'
 
   - task: CmdLine@2
