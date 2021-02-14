@@ -82,23 +82,22 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            WEX::Logging::Log::Comment(L"CLASS_SETUP---Begin---");
             DumpUser();
 
             ::Test::Bootstrap::SetupPackages();
-
-            // Deploy packaged app to register handler through the manifest.
-            //RunCertUtil(c_testPackageCertFile);
-            //InstallPackage(c_testPackageFile);
 
             // Write out some test content.
             WriteContentFile(c_testDataFileName);
             WriteContentFile(c_testDataFileName_Packaged);
 
+            WEX::Logging::Log::Comment(L"CLASS_SETUP ---End---");
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+            WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---Begin---");
             DumpUser();
 
             // Swallow errors in cleanup.
@@ -106,8 +105,6 @@ namespace ProjectReunionCppTest
             {
                 DeleteContentFile(c_testDataFileName_Packaged);
                 DeleteContentFile(c_testDataFileName);
-                //UninstallPackage(c_testPackageFullName);
-                //RunCertUtil(c_testPackageCertFile, true);
             }
             catch (const std::exception&)
             {
@@ -117,24 +114,29 @@ namespace ProjectReunionCppTest
             }
 
             ::Test::Bootstrap::CleanupPackages();
+            WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---End---");
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
+            WEX::Logging::Log::Comment(L"METHOD_SETUP ---Begin---");
             DumpUser();
 
             ::Test::Bootstrap::Setup();
 
             m_failed = CreateTestEvent(c_testFailureEventName);
+            WEX::Logging::Log::Comment(L"METHOD_SETUP ---End---");
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodShutdown)
         {
+            WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---Begin---");
             DumpUser();
 
             ::Test::Bootstrap::Cleanup();
+            WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---End---");
             return true;
         }
 
@@ -188,6 +190,59 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD(GetActivatedEventArgsForFile_Win32)
         {
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testFilePhaseEventName);
+
+            // Launch the test app to register for protocol launches.
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterFile", g_deploymentDir);
+
+            // Wait for the register event.
+            WaitForEvent(event, m_failed);
+
+            // Launch the file and wait for the event to fire.
+            auto file = OpenDocFile(c_testDataFileName);
+            auto launchResult = Launcher::LaunchFileAsync(file).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            // Wait for the protocol activation.
+            WaitForEvent(event, m_failed);
+        }
+
+        TEST_METHOD(GetActivatedEventArgsForProtocol_Win32_InterativeUser)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testProtocolPhaseEventName);
+
+            // Launch the test app to register for protocol launches.
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
+
+            // Wait for the register event.
+            WaitForEvent(event, m_failed);
+
+            // Launch a protocol and wait for the event to fire.
+            Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            // Wait for the protocol activation.
+            WaitForEvent(event, m_failed);
+
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
+
+            // Wait for the unregister event.
+            WaitForEvent(event, m_failed);
+        }
+
+        TEST_METHOD(GetActivatedEventArgsForFile_Win32_InteractiveUser)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
+            END_TEST_METHOD_PROPERTIES();
+
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testFilePhaseEventName);
 
