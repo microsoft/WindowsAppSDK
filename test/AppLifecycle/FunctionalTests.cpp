@@ -25,7 +25,41 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
+namespace TP = ::Test::Packages;
+
 // TODO: Write Register/Unregister tests that utilize the Assoc APIs to validate results.
+
+void DumpUser(PCWSTR context, PSID userSid)
+{
+    if (userSid)
+    {
+        wil::unique_hlocal_string userSidAsString;
+        VERIFY_WIN32_BOOL_SUCCEEDED(ConvertSidToStringSidW(userSid, &userSidAsString));
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"UserSid:%s %s", context, userSidAsString.get()));
+    }
+    else
+    {
+        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"UserSid:%s null", context));
+    }
+}
+
+void DumpUser()
+{
+    {
+        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
+        PSID effectiveUserSid{ tokenUser->User.Sid };
+        DumpUser(L"Effective", effectiveUserSid);
+    }
+
+    {
+        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentProcessToken()) };
+        PSID effectiveUserSid{ tokenUser->User.Sid };
+        DumpUser(L"Process", effectiveUserSid);
+    }
+
+    const auto isAppContainer{ wil::get_token_is_app_container() };
+    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IsAppContainer:%s", isAppContainer ? L"True" : L"False"));
+}
 
 namespace ProjectReunionCppTest
 {
@@ -48,6 +82,8 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            DumpUser();
+
             ::Test::Bootstrap::SetupPackages();
 
             // Deploy packaged app to register handler through the manifest.
@@ -63,6 +99,8 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+            DumpUser();
+
             // Swallow errors in cleanup.
             try
             {
@@ -84,6 +122,8 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_SETUP(MethodInit)
         {
+            DumpUser();
+
             ::Test::Bootstrap::Setup();
 
             m_failed = CreateTestEvent(c_testFailureEventName);
@@ -92,31 +132,16 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_CLEANUP(MethodShutdown)
         {
+            DumpUser();
+
             ::Test::Bootstrap::Cleanup();
             return true;
-        }
-
-        // Validate that UWP is not a supported scenario.
-        TEST_METHOD(GetActivatedEventArgsIsNull)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
-            END_TEST_METHOD_PROPERTIES();
-
-            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
         }
 
         TEST_METHOD(GetActivatedEventArgsIsNotNull)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-                //// Run this test for both PackagedWin32 and Win32.
-                //TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
-
-                //// UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                //TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
 
             VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
@@ -126,12 +151,6 @@ namespace ProjectReunionCppTest
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-                //// Run this test for both PackagedWin32 and Win32.
-                //TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
-
-                //// UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                //TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
 
             auto args = AppLifecycle::GetActivatedEventArgs();
@@ -167,26 +186,6 @@ namespace ProjectReunionCppTest
             WaitForEvent(event, m_failed);
         }
 
-        //TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
-        //{
-        //    // Create a named event for communicating with test app.
-        //    auto event = CreateTestEvent(c_testProtocolPhaseEventName);
-
-        //    RunCertUtil(L"AppLifecycleTestPackage.cer");
-
-        //    // Deploy packaged app to register handler through the manifest.
-        //    std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
-        //    InstallPackage(packagePath);
-
-        //    // Launch a protocol and wait for the event to fire.
-        //    Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
-        //    auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-        //    VERIFY_IS_TRUE(launchResult);
-
-        //    // Wait for the protocol activation.
-        //    WaitForEvent(event, m_failed);
-        //}
-
         TEST_METHOD(GetActivatedEventArgsForFile_Win32)
         {
             // Create a named event for communicating with test app.
@@ -206,19 +205,92 @@ namespace ProjectReunionCppTest
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
         }
+    };
 
-        //TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
-        //{
-        //    // Create a named event for communicating with test app.
-        //    auto event = CreateTestEvent(c_testFilePhaseEventName);
+    class AppLifecycleUAPFunctionalTests
+    {
+    private:
+        wil::unique_event m_failed;
 
-        //    // Launch the file and wait for the event to fire.
-        //    auto file = OpenDocFile(c_testDataFileName_Packaged);
-        //    auto launchResult = Launcher::LaunchFileAsync(file).get();
-        //    VERIFY_IS_TRUE(launchResult);
+        const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
+        const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
+        const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"AppLifecycleTestPackage.cer";
+        const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
 
-        //    // Wait for the protocol activation.
-        //    WaitForEvent(event, m_failed);
-        //}
+    public:
+        BEGIN_TEST_CLASS(AppLifecycleUAPFunctionalTests)
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            DumpUser();
+
+            ::Test::Bootstrap::SetupPackages();
+
+            // Write out some test content.
+            WriteContentFile(c_testDataFileName);
+            WriteContentFile(c_testDataFileName_Packaged);
+
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            DumpUser();
+
+            // Swallow errors in cleanup.
+            try
+            {
+                DeleteContentFile(c_testDataFileName_Packaged);
+                DeleteContentFile(c_testDataFileName);
+            }
+            catch (const std::exception&)
+            {
+            }
+            catch (const winrt::hresult_error&)
+            {
+            }
+
+            ::Test::Bootstrap::CleanupPackages();
+            return true;
+        }
+
+        TEST_METHOD_SETUP(MethodInit)
+        {
+            DumpUser();
+
+            //TP::AddPackage_ProjectReunionFramework();
+            //TP::AddPackage_DynamicDependencyDataStore();
+            //TP::AddPackage_DynamicDependencyLifetimeManager();
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            ::Test::Bootstrap::SetupBootstrap();
+
+            m_failed = CreateTestEvent(c_testFailureEventName);
+            return true;
+        }
+
+        TEST_METHOD_CLEANUP(MethodShutdown)
+        {
+            DumpUser();
+
+            ::Test::Bootstrap::Cleanup();
+            return true;
+        }
+
+        // Validate that UWP is not a supported scenario.
+        TEST_METHOD(GetActivatedEventArgsIsNull)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
+        }
     };
 }

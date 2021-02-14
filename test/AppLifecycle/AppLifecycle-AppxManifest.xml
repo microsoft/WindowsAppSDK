@@ -43,4 +43,9 @@
       </uap:VisualElements>
     </Application>
   </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="packageManagement" />
+    <rescap:Capability Name="packageQuery" />
+  </Capabilities>
 </Package>

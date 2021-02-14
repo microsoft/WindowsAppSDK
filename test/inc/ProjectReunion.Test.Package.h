@@ -125,7 +125,16 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-            VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
+WIN32_FILE_ATTRIBUTE_DATA data{};
+const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
+const auto lastError{ ::GetLastError() };
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+
+std::error_code errorcode{};
+auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
+WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
+
+            //VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
         auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
 
@@ -178,6 +187,11 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
+    bool IsPackageRegistered_DynamicDependencyLifetimeManager()
+    {
+        return IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
+    }
+
     void AddPackage_ProjectReunionFramework()
     {
         AddPackage(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
@@ -194,6 +208,11 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
     }
 
+    bool IsPackageRegistered_ProjectReunionFramework()
+    {
+        return IsPackageRegistered(Test::Packages::ProjectReunionFramework::c_PackageFullName);
+    }
+
     void AddPackage_DynamicDependencyDataStore()
     {
         AddPackage(Test::Packages::DynamicDependencyDataStore::c_PackageDirName, Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
@@ -208,6 +227,11 @@ namespace Test::Packages
         //
         // Thus, do a *IfNecessary removal
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
+    }
+
+    bool IsPackageRegistered_DynamicDependencyDataStore()
+    {
+        return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
     std::filesystem::path GetProjectReunionFrameworkMsixPath()
