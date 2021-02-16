@@ -6,51 +6,41 @@ The roadmap for Project Reunion supports the primary goals of breaking down the 
 
 For a general overview, see the [readme](https://github.com/microsoft/ProjectReunion/tree/master/docs) and [FAQ](https://github.com/microsoft/ProjectReunion/blob/master/docs/faq.md).
 
-Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*:
 
-<table>
-  <tbody>
-    <tr>
-      <th>Reunion 0.5 (Q1 2021)</th>
-      <th>Reunion 0.8 (Q2 2021)</th>
-      <th>Reunion 1.0 (Q3 2021)</th>
-      <th>2022 and Beyond</th>
-    </tr>
-    <tr>
-    <td>
-      <ul>
-            <li>1st supported public release</li>
-            <li>WinUI 3 works in <a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-packaging-dot-net">Desktop Packaged (Win32)</a> Apps</li>
-            <li>Win2D</li>
-            <li>DwriteCore</li>
-            <li>MRTCore</li>
-       </ul>
-     </td>
-     <td>
-        <ul>
-            <li>WinUI improvements</li>
-            <li>Framework Package support for Unpackaged apps</li>
-            <li>App Lifecycle API</li>
-            <li>State Notifications</li>
-         </ul>
-     </td>
-     <td>
-        <ul>
-            <li>Reunion Windowing support</li>
-            <li>New Rendering and Input features</li>
-            <li>Smooth WinUI input & composition system experience</li>  
-         </ul>
-     </td>
-    <td>
-        <ul>
-            <li>Multiple releases per year</li>
-            <li>Continue expanding existing app compatibility</li>
-            <li>Continuous delivery of new easier to use capabilities</li>
-         </ul>
-     </td>
-    </tr>
-  </tbody>
-</table>
+Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*: 
+
+✅ = Supported
+
+❌ = Not Supported 
+
+🔄 = Preview 
+
+#### Packaged Desktop Apps
+
+ 🌟 | Reunion 0.5 (Q1 2021) | Reunion 0.8 (Q2 2021) | Reunion 1.0 (Q3 2021) | 
+-- | --------------------- | --------------------- | --------------------- |
+WinUI |                ✅ |                    ✅ |                   ✅ | 
+DWriteCore |           ✅ |                    ✅ |                   ✅ | 
+MRT Core |             ✅ |                    ✅ |                   ✅ | 
+App Lifecycle APIs |   🔄 |                    🔄 |                   ✅ | 
+Power State Notifications |  ❌ |              🔄 |                   ✅ | 
+Windowing |            ❌ |                    ❌ |                   ✅ | 
+Deploy Options: |  
+• In-app |             ✅ |                    ✅ |                   ✅ | 
+• Fx Package |         ✅ |                    ✅ |                   ✅ | 
+
+#### Unpackaged Desktop Apps
+ 🌟 | Reunion 0.5 (Q1 2021) | Reunion 0.8 (Q2 2021) | Reunion 1.0 (Q3 2021) | 
+-- | --------------------- | --------------------- | --------------------- |
+WinUI |                ❌ |                    ❌ |                   ✅ | 
+DWriteCore |           🔄 |                    🔄 |                   ✅ | 
+MRT Core |             🔄 |                    🔄 |                   ✅ | 
+App Lifecycle APIs |   🔄 |                    🔄 |                   ✅ | 
+Power State Notifications |  ❌ |              🔄 |                   ✅ | 
+Windowing |            ❌ |                    ❌ |                   ✅ | 
+Deploy Options:  |  
+• In-app |             ❌ |                    🔄 |                   ✅ | 
+• Fx Package |         🔄 |                    🔄 |                   ✅ | 
 
 ## 2021 Focus Areas
 
@@ -95,3 +85,7 @@ This isn't an exhaustive list: it's a sampling of some of the key infrastructure
   
 * Moving engineering to GitHub
   * [Proposals](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22) -> [Specs](https://github.com/microsoft/ProjectReunion/tree/master/specs) -> [Code](https://github.com/microsoft/ProjectReunion/tree/master/dev)
+  
+## 2022 and Beyond
+  
+In the future you can expect multiple releases per year from the Project Reunion team. We will continue expanding existing app compatibility and have a continuous delivery of new easier to use capabilities.
