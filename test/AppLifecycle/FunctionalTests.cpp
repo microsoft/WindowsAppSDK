@@ -513,9 +513,8 @@ namespace ProjectReunionCppTest
         typedef AppLifecycleTests_UAP super;
 
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTestsUAP_DefaultUser)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"DefaultUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
@@ -555,7 +554,7 @@ namespace ProjectReunionCppTest
         typedef AppLifecycleTests_UAP super;
 
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTestsUAP_InteractiveUser)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
         END_TEST_CLASS()
@@ -597,7 +596,7 @@ namespace ProjectReunionCppTest
         typedef AppLifecycleTests_UAP super;
 
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTestsUAP_RestrictedUser)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
