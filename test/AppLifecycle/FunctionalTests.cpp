@@ -319,7 +319,7 @@ namespace ProjectReunionCppTest
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTests_InteractiveUser)
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"InteractiveUser")
         END_TEST_CLASS()
 
@@ -372,7 +372,7 @@ namespace ProjectReunionCppTest
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTests_RestrictedUser)
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
@@ -418,7 +418,7 @@ namespace ProjectReunionCppTest
     };
 
     //-----------------------------------------------------------------
-
+#if 0
     class AppLifecycleTests_UAP
     {
     protected:
@@ -631,4 +631,5 @@ namespace ProjectReunionCppTest
             super::GetActivatedEventArgsIsNull_UAP();
         }
     };
+#endif
 }
