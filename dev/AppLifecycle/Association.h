@@ -4,21 +4,9 @@
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
-    // TODO: Move to different header not association specific.
-    static const std::wstring c_argumentPrefix = L"----";
-    static const std::wstring c_argumentSuffix = L":";
-    static const std::wstring c_protocolArgumentString = L"ms-protocol";
-    static const std::wstring c_fileArgumentString = L"ms-file";
-    static const std::wstring c_startupArgumentString = L"ms-startup";
-    static const std::wstring c_runKeyPath = LR"(Software\Microsoft\Windows\CurrentVersion\Run\)";
-    static const std::wstring c_startupApprovedKeyPath = LR"(Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run\)";
-
-    // Assoc
+    // Association registry key values.
     static const std::wstring c_openWithProgIdsKeyName = L"OpenWithProgids";
     static const std::wstring c_softwareClassesKeyPath = LR"(Software\Classes\)";
-    static const std::wstring c_progIdPrefix = L"PRF";
-    static const std::wstring c_fileTypeProgIdSuffix = L".File";
-    static const std::wstring c_protocolProgIdSuffix = L".Protocol";
     static const std::wstring c_applicationKeyName = L"Application";
     static const std::wstring c_applicationNameValueName = L"ApplicationName";
     static const std::wstring c_defaultIconKeyName = L"DefaultIcon";
@@ -30,6 +18,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     static const std::wstring c_delegateExecuteValueName = L"DelegateExecute";
     static const std::wstring c_urlProtocolValueName = L"URL Protocol";
     static const std::wstring c_urlDefaultValuePrefix = L"URL:";
+
+    // ProgId generation values.
+    static const std::wstring c_progIdPrefix = L"PRF";
+    static const std::wstring c_fileTypeProgIdSuffix = L".File";
+    static const std::wstring c_protocolProgIdSuffix = L".Protocol";
 
     enum AssociationType
     {

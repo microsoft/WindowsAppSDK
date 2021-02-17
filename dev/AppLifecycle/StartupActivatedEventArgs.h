@@ -18,6 +18,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             m_kind = ActivationKind::StartupTask;
         }
 
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
+        {
+            auto query = protocolArgs.Uri().QueryParsed();
+            std::wstring taskId = query.GetFirstValueByName(L"TaskId").c_str();
+            return make<StartupActivatedEventArgs>(taskId);
+        }
+
         // IStartupTaskActivatedEventArgs
         winrt::hstring TaskId()
         {

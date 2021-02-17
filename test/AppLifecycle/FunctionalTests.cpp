@@ -34,6 +34,8 @@ namespace TD = ::Test::Diagnostics;
 
 namespace ProjectReunionCppTest
 {
+    static const std::wstring c_runKeyPath = LR"(Software\Microsoft\Windows\CurrentVersion\Run\)";
+
     class AppLifecycleTests
     {
     private:
@@ -195,9 +197,12 @@ namespace ProjectReunionCppTest
             auto launchResult = Launcher::LaunchFileAsync(file).get();
             VERIFY_IS_TRUE(launchResult);
 
-            // TODO: Add the unregister work here.
+            // Wait for the file activation.
+            WaitForEvent(event, m_failed);
 
-            // Wait for the protocol activation.
+            Execute(L"AppLifecycleTestApp.exe", L"/UnregisterFile", g_deploymentDir);
+
+            // Wait for the unregister event.
             WaitForEvent(event, m_failed);
         }
 
@@ -278,19 +283,33 @@ namespace ProjectReunionCppTest
             // Wait for the register event.
             WaitForEvent(event, m_failed);
 
-            // Launch a protocol and wait for the event to fire.
+            // Instead of managing a reboot during a test, validate the registration was
+            // written correctly.  This is done by reading the registration, splitting the
+            // command line parameters into a separate string, running the command, and
+            // waiting for the success event to be signaled.
+            DWORD size{ 0 };
+            std::wstring command;
+            auto result = RegGetValue(HKEY_CURRENT_USER, c_runKeyPath.c_str(), L"this_is_a_test",
+                RRF_RT_REG_SZ, nullptr, command.data(), &size);
+            
+            if (result == ERROR_MORE_DATA)
+            {
+                command.resize(size);
+                result = RegGetValue(HKEY_CURRENT_USER, c_runKeyPath.c_str(), L"this_is_a_test",
+                    RRF_RT_REG_SZ, nullptr, command.data(), &size);
+            }
+            THROW_IF_WIN32_ERROR(result);
 
-            std::wstring uri{ L"ms-launch://this_is_a_test?ContractId=Windows.StartupTask&TaskId=this_is_a_test" };
-            Uri launchUri{ uri };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
+            auto argsStart = command.rfind(L"----");
+            auto exe = command.substr(0, argsStart);
+            auto params = command.substr(argsStart);
+            Execute(exe, params, g_deploymentDir);
 
             // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
 
             Execute(L"AppLifecycleTestApp.exe", L"/UnregisterStartup", g_deploymentDir);
 
-            // TODO: Undo this hack once we deserialize args.
             auto protEvent = CreateTestEvent(c_testStartupPhaseEventName);
 
             // Wait for the unregister event.

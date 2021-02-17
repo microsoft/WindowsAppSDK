@@ -20,6 +20,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Association.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionContract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LaunchActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />

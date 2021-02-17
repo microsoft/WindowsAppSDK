@@ -5,11 +5,13 @@
 #include <AppLifecycle.h>
 #include <Microsoft.ApplicationModel.Activation.AppLifecycle.g.cpp>
 
+#include "ActivationRegistrationManager.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
 #include "StartupActivatedEventArgs.h"
 #include "Association.h"
+#include "ExtensionContract.h"
 
 namespace winrt
 {
@@ -47,6 +49,32 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return {commandLine.substr(argsStart, argsLength), commandLine.substr(dataStart)};
     }
 
+    bool IsEncodedLaunch(IProtocolActivatedEventArgs const& args)
+    {
+        return (args.Uri().SchemeName() == c_encodedLaunchSchemeName);
+    }
+
+    IActivatedEventArgs GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
+    {
+        for (auto const& pair : args.Uri().QueryParsed())
+        {
+            if (pair.Name() == L"ContractId")
+            {
+                for (int index = 0; index < _countof(c_extensionMap); index++)
+                {
+                    std::wstring contractId = pair.Value().c_str();
+                    if (contractId == c_extensionMap[index].contractId)
+                    {
+                        return c_extensionMap[index].factory(args);
+                    }
+                }
+            }
+        }
+
+        // Let the caller args pass through if nothing was determined here.
+        return args;
+    }
+
     IActivatedEventArgs AppLifecycle::GetActivatedEventArgs()
     {
         if (HasIdentity())
@@ -61,20 +89,24 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
 
-            if (!contractId.empty())
+            // All specific launch types are encoded as a URI and transported as a
+            // protocol, except the catch-all LaunchActivatedEventArgs case.
+            if (!contractId.empty() && contractId == c_protocolArgumentString)
             {
-                if (contractId == c_protocolArgumentString)
+                auto args = make<ProtocolActivatedEventArgs>(contractData);
+                auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
+
+                // Encoded launch is a protocol launch where the argument data is
+                // encapsulated in the Uri Query data.  We handle that here and
+                // try to return the correct IActivatedEventArgs type that is
+                // encoded in the data rather than the IProtocolActivatedEventArgs
+                // itself.
+                if (IsEncodedLaunch(protocolArgs))
                 {
-                    return make<ProtocolActivatedEventArgs>(contractData);
+                    return GetEncodedLaunchActivatedEventArgs(protocolArgs);
                 }
-                else if (contractId == c_fileArgumentString)
-                {
-                    return make<FileActivatedEventArgs>(contractData);
-                }
-                else if (contractId == c_startupArgumentString)
-                {
-                    return make<StartupActivatedEventArgs>(contractData);
-                }
+
+                return args;
             }
 
             return make<LaunchActivatedEventArgs>(commandLine);

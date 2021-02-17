@@ -8,10 +8,16 @@
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
+#include "ExtensionContract.h"
 
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
-    std::wstring GenerateCommandLine(std::wstring const& modulePath, std::wstring const& contractType)
+    std::wstring GenerateEncodedLaunchUri(std::wstring const& appUserModelId, std::wstring const& contractId)
+    {
+        return c_encodedLaunchSchemeName + L"://" + appUserModelId + L"?ContractId=" + contractId;
+    }
+
+    std::wstring GenerateCommandLine(std::wstring const& modulePath)
     {
         std::wstring command = modulePath;
 
@@ -20,7 +26,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             command = GetModulePath();
         }
 
-        command += L" " + c_argumentPrefix + contractType + c_argumentSuffix;
+        command += L" " + c_argumentPrefix + c_protocolArgumentString + c_argumentSuffix;
         return command;
     }
 
@@ -49,7 +55,9 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             
             for (auto verb : supportedVerbs)
             {
-                auto command = GenerateCommandLine(L"", c_fileArgumentString) + verb.c_str() + L",%1";
+                auto command = GenerateCommandLine(L"") + GenerateEncodedLaunchUri(L"App",
+                    c_fileContractId) + L"&Verb=" + verb.c_str() + L"&File=%1";
+
                 RegisterVerb(progId, verb.c_str(), command);
             }
 
@@ -78,7 +86,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
         RegisterProgId(progId.c_str(), L"", applicationDisplayName.c_str(), logo.c_str());
 
-        auto command = GenerateCommandLine(L"", c_protocolArgumentString) + L"%1";
+        auto command = GenerateCommandLine(L"") + L"%1";
         RegisterVerb(progId.c_str(), L"open", command);
 
         RegisterApplication(appId.c_str());
@@ -99,7 +107,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             key.put()));
 
         // Pass a command line that will make sense while constructing the args object.
-        auto command = GenerateCommandLine(L"", c_startupArgumentString) + taskId;
+        auto command = GenerateCommandLine(L"") + GenerateEncodedLaunchUri(L"App",
+            c_startupTaskContractId) + L"&TaskId=" + taskId;
 
         // Name: taskId
         // Value: commandLine
@@ -174,8 +183,6 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         {
             ::RegDeleteValue(key.get(), taskId.c_str());
         }
-
-        // TODO: Cleanup disabled value -- Maybe...
     }
 
 }

@@ -10,8 +10,6 @@
 #include <xmllite.h>
 
 #include <ShObjIdl_core.h>
-#include <string>
-#include <string_view>
 #include <thread>
 #include <mutex>
 #include <list>
