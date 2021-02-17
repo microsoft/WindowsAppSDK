@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" />
     <!-- <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle" />
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).cer" /> -->
   </ItemGroup>
@@ -11,8 +12,5 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Shared.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" />
   </ItemGroup>
 </Project>
