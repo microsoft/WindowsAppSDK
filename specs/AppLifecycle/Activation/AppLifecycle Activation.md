@@ -161,21 +161,26 @@ void RegisterForActivation()
 {
     // Register one or more supported image filetypes, an icon,
     // and zero or more verbs for the File Explorer context menu.
+    string imageFileTypes[3] = { ".jpg", ".png", ".bmp" };
+    string verbs[2] = { "view", "edit" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        new string[]{ ".jpg", ".png", ".bmp" },
-        "MyResources.dll",
-        12,
-        new string[]{ "view", "edit" });
+        imageFileTypes,
+        "MyResources.dll", 
+        0,
+        verbs);
 
     // Register another set of filetypes, falling back to the
     // default icon, and no specified verbs.
+    string videoFileTypes[3] = { ".mov", ".wmv", ".mp3" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        new string[]{ ".mov", ".wmv", ".mp3" });
+        videoFileTypes);
 
     // Register another set, and specifying the EXE path.
+    string beerFileTypes[1] = { ".ipa" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        new string[]{ ".ipa" },
-        "MyResources.dll", 34,
+        beerFileTypes,
+        "MyResources.dll", 
+        34,
         "C:\\Program Files\\Contoso\\MyApp.exe");
 
     // Register some URI schemes for protocol activation.
@@ -248,8 +253,9 @@ originally passed in when registering.
 void UnregisterForActivation()
 {
     // Unregister one or more registered filetypes.
+    string imageFileTypes[3] = { ".jpg", ".png", ".bmp" };
     ActivationRegistrationManager::UnregisterForFileTypeActivation(
-        new string[]{ ".jpg", ".png", ".bmp" });
+        imageFileTypes);
 
     ActivationRegistrationManager::UnregisterForProtocolActivation("foo");
     ActivationRegistrationManager::UnregisterForStartupActivation("MyTaskId");
