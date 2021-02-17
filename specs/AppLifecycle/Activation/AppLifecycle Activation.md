@@ -133,8 +133,8 @@ changes the combinations at a later time), where an app registers the same
 filetype multiple times, the latest registration is honored and overwrites any
 previous registrations.
 
-For startup activation, only one of each of these is allowed. If an app attempts
-to register either of these more than once, the latest registration is honored
+For startup activation, only one registration is allowed. If an app attempts
+to register more than once, the latest registration is honored
 and overwrites any previous registrations.
 
 ```c++
