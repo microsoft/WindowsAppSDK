@@ -285,7 +285,7 @@ namespace ProjectReunionCppTest
             return super::MethodInit();
         }
 
-        TEST_METHOD_CLEANUP(MethodShutdown)
+        TEST_METHOD_CLEANUP(MethodUninit)
         {
             return super::MethodUninit();
         }
@@ -338,7 +338,7 @@ namespace ProjectReunionCppTest
             return super::MethodInit();
         }
 
-        TEST_METHOD_CLEANUP(MethodShutdown)
+        TEST_METHOD_CLEANUP(MethodUninit)
         {
             return super::MethodUninit();
         }
@@ -391,7 +391,7 @@ namespace ProjectReunionCppTest
             return super::MethodInit();
         }
 
-        TEST_METHOD_CLEANUP(MethodShutdown)
+        TEST_METHOD_CLEANUP(MethodUninit)
         {
             return super::MethodUninit();
         }
@@ -419,7 +419,7 @@ namespace ProjectReunionCppTest
 
     //-----------------------------------------------------------------
 
-    class AppLifecycleTestsUAP
+    class AppLifecycleTests_UAP
     {
     protected:
         wil::unique_event m_failed;
@@ -431,15 +431,9 @@ namespace ProjectReunionCppTest
         const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
 
     public:
-        virtual ~AppLifecycleTestsUAP() = default;
+        virtual ~AppLifecycleTests_UAP() = default;
 
-        BEGIN_TEST_CLASS(AppLifecycleTestsUAP)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
-        END_TEST_CLASS()
-
-        TEST_CLASS_SETUP(ClassInit)
+        virtual bool ClassInit()
         {
             WEX::Logging::Log::Comment(L"CLASS_SETUP---Begin---");
             DumpExecutionContext();
@@ -454,7 +448,7 @@ namespace ProjectReunionCppTest
             return true;
         }
 
-        TEST_CLASS_CLEANUP(ClassUninit)
+        virtual bool ClassUninit()
         {
             WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---Begin---");
             DumpExecutionContext();
@@ -477,7 +471,7 @@ namespace ProjectReunionCppTest
             return true;
         }
 
-        TEST_METHOD_SETUP(MethodInit)
+        virtual bool MethodInit()
         {
             WEX::Logging::Log::Comment(L"METHOD_SETUP ---Begin---");
             DumpExecutionContext();
@@ -492,7 +486,7 @@ namespace ProjectReunionCppTest
             return true;
         }
 
-        TEST_METHOD_CLEANUP(MethodShutdown)
+        virtual bool MethodUninit()
         {
             WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---Begin---");
             DumpExecutionContext();
@@ -505,6 +499,45 @@ namespace ProjectReunionCppTest
             return true;
         }
 
+        virtual void GetActivatedEventArgsIsNull_UAP()
+        {
+            DumpExecutionContext();
+
+            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
+        }
+    };
+
+    class AppLifecycleFunctionalTestsUAP_DefaultUser : public AppLifecycleTests_UAP
+    {
+    public:
+        typedef AppLifecycleTests_UAP super;
+
+        BEGIN_TEST_CLASS(AppLifecycleFunctionalTestsUAP_DefaultUser)
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"DefaultUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            return super::ClassInit();
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            return super::ClassUninit();
+        }
+
+        TEST_METHOD_SETUP(MethodInit)
+        {
+            return super::MethodInit();
+        }
+
+        TEST_METHOD_CLEANUP(MethodUninit)
+        {
+            return super::MethodUninit();
+        }
+
         TEST_METHOD(GetActivatedEventArgsIsNull_UAP)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
@@ -512,9 +545,91 @@ namespace ProjectReunionCppTest
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            DumpExecutionContext();
+            super::GetActivatedEventArgsIsNull_UAP();
+        }
+    };
 
-            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
+    class AppLifecycleFunctionalTestsUAP_InteractiveUser : public AppLifecycleTests_UAP
+    {
+    public:
+        typedef AppLifecycleTests_UAP super;
+
+        BEGIN_TEST_CLASS(AppLifecycleFunctionalTestsUAP_InteractiveUser)
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            return super::ClassInit();
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            return super::ClassUninit();
+        }
+
+        TEST_METHOD_SETUP(MethodInit)
+        {
+            return super::MethodInit();
+        }
+
+        TEST_METHOD_CLEANUP(MethodUninit)
+        {
+            return super::MethodUninit();
+        }
+
+        TEST_METHOD(GetActivatedEventArgsIsNull_UAP)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            super::GetActivatedEventArgsIsNull_UAP();
+        }
+    };
+
+    class AppLifecycleFunctionalTestsUAP_RestrictedUser : public AppLifecycleTests_UAP
+    {
+    public:
+        typedef AppLifecycleTests_UAP super;
+
+        BEGIN_TEST_CLASS(AppLifecycleFunctionalTestsUAP_RestrictedUser)
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            return super::ClassInit();
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            return super::ClassUninit();
+        }
+
+        TEST_METHOD_SETUP(MethodInit)
+        {
+            return super::MethodInit();
+        }
+
+        TEST_METHOD_CLEANUP(MethodUninit)
+        {
+            return super::MethodUninit();
+        }
+
+        TEST_METHOD(GetActivatedEventArgsIsNull_UAP)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            super::GetActivatedEventArgsIsNull_UAP();
         }
     };
 }
