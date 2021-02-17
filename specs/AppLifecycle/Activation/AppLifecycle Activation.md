@@ -189,8 +189,7 @@ void RegisterForActivation()
     ActivationRegistrationManager::RegisterForProtocolActivation("foo-bar");
 
     // Register for startup activation.
-    ActivationRegistrationManager::RegisterForStartupActivation(
-        "MyTaskId", true);
+    ActivationRegistrationManager::RegisterForStartupActivation("MyTaskId");
 }
 ```
 
@@ -364,8 +363,8 @@ any old values).
 | static void RegisterForFileTypeActivation(<br/> string supportedFileTypes[]<br/>); |                                                              |
 | static void RegisterForProtocolActivation(<br/> string name,<br/> string exePath<br/>); | **name**:<br/>the protocol identifier, eg "foo" or "https".<br/> **exePath**: path to the<br/>executable to be activated. |
 | static void RegisterForProtocolActivation(<br/> string name<br/> ); |                                                              |
-| static void RegisterForStartupActivation(<br/><br/> string taskId,<br/> bool isEnabled,<br/> string exePath<br/>); | **taskId**: a string identifier which the app can use in<br/>the StartupTask API to request enabling or disabling of the startup<br/>behavior.<br/> **isEnabled**: enables the startup behavior without a user prompt,<br/>so long as the user has activated the app at least once. Consistent with<br/>existing Desktop Bridge behavior.<br/> **exePath**: path to the executable to be activated. |
-| RegisterForStartupActivation(<br/> string taskId,<br/> bool isEnabled<br/> ); |                                                              |
+| static void RegisterForStartupActivation(<br/><br/> string taskId,<br/> string exePath<br/>); | **taskId**: a string identifier which the app can use in<br/>the StartupTask API to request enabling or disabling of the startup<br/>behavior.<br/> **exePath**: path to the executable to be activated. |
+| RegisterForStartupActivation(<br/> string taskId,<br/>); |                                                              |
 
 
 
