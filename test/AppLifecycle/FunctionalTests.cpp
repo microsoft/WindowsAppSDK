@@ -260,6 +260,7 @@ namespace ProjectReunionCppTest
         }
     };
 
+#if 0
     class AppLifecycleFunctionalTests_DefaultUser : public AppLifecycleTests
     {
     public:
@@ -310,7 +311,9 @@ namespace ProjectReunionCppTest
             super::GetActivatedEventArgsForProtocol_Win32();
         }
     };
+#endif
 
+#if 0
     class AppLifecycleFunctionalTests_InteractiveUser : public AppLifecycleTests
     {
     public:
@@ -363,6 +366,7 @@ namespace ProjectReunionCppTest
             super::GetActivatedEventArgsForProtocol_Win32();
         }
     };
+#endif
 
     class AppLifecycleFunctionalTests_RestrictedUser : public AppLifecycleTests
     {
