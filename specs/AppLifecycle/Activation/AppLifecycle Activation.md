@@ -74,12 +74,12 @@ apps. The AppLifecycle implementation is based on this set. Some activation
 kinds require prior registration, others do not. The target list for v1 is as
 follows:
 
-| Activation kind | Description                                                                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Launch          | Launch from a Start tile/shortcut, from a command window, or programmatically via ShellExecute/CreateProcess.                                    |
+| Activation kind | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| Launch          | Launch from a Start tile/shortcut, from a command window, or programmatically via ShellExecute/CreateProcess. |
 | File            | The app is activated when the user double-clicks a registered file, or when a caller calls ShellExecute or LaunchFileAsync on a registered file. |
-| Protocol        | Activated via ShellExecute or LaunchUriAsync, or by specifying a protocol string on a command-line.                                              |
-| StartupTask     | The app starts on user log-in - either registered in the registry, or via shortcuts in a well-known startup folder.                              |
+| Protocol        | Activated via ShellExecute or LaunchUriAsync, or by specifying a protocol string on a command-line. |
+| StartupTask     | The app starts on user log-in - either registered in the registry, or via shortcuts in a well-known startup folder. |
 
 ### Activation registration
 
@@ -161,23 +161,20 @@ void RegisterForActivation()
 {
     // Register one or more supported image filetypes, an icon,
     // and zero or more verbs for the File Explorer context menu.
-    string imageFileTypes[3] = { ".jpg", ".png", ".bmp" };
-    string verbs[2] = { "view", "edit" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        imageFileTypes,
-        "MyResources.dll", 0,
-        verbs);
+        new string[]{ ".jpg", ".png", ".bmp" },
+        "MyResources.dll",
+        12,
+        new string[]{ "view", "edit" });
 
     // Register another set of filetypes, falling back to the
     // default icon, and no specified verbs.
-    string videoFileTypes[3] = { ".mov", ".wmv", ".mp3" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        videoFileTypes);
+        new string[]{ ".mov", ".wmv", ".mp3" });
 
     // Register another set, and specifying the EXE path.
-    string beerFileTypes[1] = { ".ipa" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        beerFileTypes,
+        new string[]{ ".ipa" },
         "MyResources.dll", 34,
         "C:\\Program Files\\Contoso\\MyApp.exe");
 
@@ -188,7 +185,7 @@ void RegisterForActivation()
 
     // Register for startup activation.
     ActivationRegistrationManager::RegisterForStartupActivation(
-        "MyTaskId", true, "Contoso Photo Viewer");
+        "MyTaskId", true);
 }
 ```
 
@@ -244,20 +241,18 @@ For filetype associations, the app can register for multiple filetypes. We will
 provide the ability to unregister one or more filetypes. For protocol
 registrations, the app can register for multiple protocols individually, so the
 API will also enable the app to unregister for each of these individually. For
-the other supported activation kinds, there can be at most one registration for
-the app. Therefore, the app does not need to pass any parameters in order to
-unregister for these activation kinds.
+unregistering for startup behavior, the app must pass the taskId that it 
+originally passed in when registering.
 
 ```c++
 void UnregisterForActivation()
 {
     // Unregister one or more registered filetypes.
-    string imageFileTypes[3] = { ".jpg", ".png", ".bmp" };
     ActivationRegistrationManager::UnregisterForFileTypeActivation(
-        imageFileTypes);
+        new string[]{ ".jpg", ".png", ".bmp" });
 
     ActivationRegistrationManager::UnregisterForProtocolActivation("foo");
-    ActivationRegistrationManager::UnregisterForStartupActivation();
+    ActivationRegistrationManager::UnregisterForStartupActivation("MyTaskId");
 }
 ```
 
@@ -276,14 +271,14 @@ This spec proposes 6 new classes and one enum:
 - The ActivationKind enum, cloned from
   Windows.ApplicationModel.Activation.ActivationKind.
 
-| API                                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| API                                                          | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
 | AppLifecycle<br> {<br> IActivatedEventArgs GetActivatedEventArgs()<br> } | New class. This is the major new class exposed in the undocked AppLifecycle component. This spec only covers activation aspects here. Additional AppLifecycle properties, methods and events are specified in other specs. GetActivatedEventArgs provides the same behavior as the existing [AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs), in that it returns the XXXActivatedEventArgs object for the current activation. The initial release of GetActivatedEventArgs must support the XXXActivatedEventArgs and corresponding ActivationKinds listed below. The Reunion implementation must not require coupling with the UWP multi-instancing behavior. |
-| class LaunchActivatedEventArgs                                           | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| class FileActivatedEventArgs                                             | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| class ProtocolActivatedEventArgs                                         | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| class StartupTaskActivatedEventArgs                                      | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| enum ActivationKind                                                      | Based on the existing [ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| class LaunchActivatedEventArgs                               | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs). |
+| class FileActivatedEventArgs                                 | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs). |
+| class ProtocolActivatedEventArgs                             | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs). |
+| class StartupTaskActivatedEventArgs                          | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
+| enum ActivationKind                                          | Based on the existing [ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind). |
 
 ### Properties, methods and sub-types
 
@@ -304,17 +299,17 @@ interfaces to a later release.
 The following table lists the existing APIs that will be implemented in
 AppLifecycle in Reunion v1.
 
-| API                                                                                                                                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API                                                          | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
 | interface IActivatedEventArgs<br> {<br> ActivationKind Kind,<br> ApplicationExecutionState PreviousExecutionState,<br> SplashScreen SplashScreen<br> } | All XXXActivatedEventArgs types implement this interface.<br> **Kind**: enum value indicating the type of this activation. <br>**PreviousExecutionState**: in UWP, this gets the execution state of the app before this activation. The app can use this information to determine whether it should restore saved state. For Win32, the value will be ApplicationExecutionState.NotRunning. <br>**SplashScreen**: in UWP, this gets the execution state of the app before this activation. The app can use this information to determine whether it should restore saved state. For Win32, the value will be ApplicationExecutionState. NotRunning. |
-| class LaunchActivatedEventArgs                                                                                                                         | Implements IActivatedEventArgs, plus the following:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| interface ILaunchActivatedEventArgs<br> {<br> string Arguments;<br> string TileId; <br> }<br>                                                          | **Arguments** is the minimum required property for this activation type. <br>**TileId** is not applicable for Win32, and will return an empty string.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| class FileActivatedEventArgs                                                                                                                           | Implements IActivatedEventArgs, plus the following:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| interface IFileActivatedEventArgs<br> {<br> IVectorView<IStorageItem> Files;<br> string Verb;<br> } <br>                                               | **Files** is the minimum required property for this activation type. <br>**Verb** is an arbitrary string that indicates the action associated with the activated file (open, delete, etc).                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| class ProtocolActivatedEventArgs                                                                                                                       | Implements IActivatedEventArgs, plus the following:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| interface IProtocolActivatedEventArgs<br> {<br> Uri Uri;<br> }<br>                                                                                     | **Uri** is the minimum required property for this activation type.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| class StartupTaskActivatedEventArgs                                                                                                                    | Implements IActivatedEventArgs, plus the following:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| interface IStartupTaskActivatedEventArgs<br> {<br> string TaskId;<br> }<br>                                                                            | **TaskId** is an app-defined value; the app can use this later in the StartupTask API to request enabling or disabling of the startup behavior.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| class LaunchActivatedEventArgs                               | Implements IActivatedEventArgs, plus the following:          |
+| interface ILaunchActivatedEventArgs<br> {<br> string Arguments;<br> string TileId; <br> }<br> | **Arguments** is the minimum required property for this activation type. <br>**TileId** is not applicable for Win32, and will return an empty string. |
+| class FileActivatedEventArgs                                 | Implements IActivatedEventArgs, plus the following:          |
+| interface IFileActivatedEventArgs<br> {<br> IVectorView<IStorageItem> Files;<br> string Verb;<br> } <br> | **Files** is the minimum required property for this activation type. <br>**Verb** is an arbitrary string that indicates the action associated with the activated file (open, delete, etc). |
+| class ProtocolActivatedEventArgs                             | Implements IActivatedEventArgs, plus the following:          |
+| interface IProtocolActivatedEventArgs<br> {<br> Uri Uri;<br> }<br> | **Uri** is the minimum required property for this activation type. |
+| class StartupTaskActivatedEventArgs                          | Implements IActivatedEventArgs, plus the following:          |
+| interface IStartupTaskActivatedEventArgs<br> {<br> string TaskId;<br> }<br> | **TaskId** is an app-defined value; the app can use this later in the StartupTask API to request enabling or disabling of the startup behavior. |
 
 Also see the related API Spec AppLifecycle - Single/Multi-instancing, which
 describes the new Activated event. An app can use GetActivatedEventArgs even if
@@ -363,8 +358,8 @@ any old values).
 | static void RegisterForFileTypeActivation(<br/> string supportedFileTypes[]<br/>); |                                                              |
 | static void RegisterForProtocolActivation(<br/> string name,<br/> string exePath<br/>); | **name**:<br/>the protocol identifier, eg "foo" or "https".<br/> **exePath**: path to the<br/>executable to be activated. |
 | static void RegisterForProtocolActivation(<br/> string name<br/> ); |                                                              |
-| static void RegisterForStartupActivation(<br/><br/> string taskId,<br/> bool isDisabled,<br/> string displayName,<br/> string exePath); | **taskId**: a string identifier which the app can use in<br/>the StartupTask API to request enabling or disabling of the startup<br/>behavior.<br/> **isDisabled**: the startup behavior defaults to isDisabled=true. Unpackaged apps can enable the behavior through this API. Centennial apps can also enable it,<br/> so long as the user has activated the app at least once. UWP apps cannot directly enable this - the user has to go to Settings to enable it. These are the 3 existing behaviors for the different app types.<br/> **displayName**: used in the Settings -<br/>Apps - Startup page.<br/> **exePath**: path to the executable to be activated. |
-| RegisterForStartupActivation(<br/> string taskId,<br/> bool isEnabled,<br/> string displayName<br/> ); |                                                              |
+| static void RegisterForStartupActivation(<br/><br/> string taskId,<br/> bool isEnabled,<br/> string exePath<br/>); | **taskId**: a string identifier which the app can use in<br/>the StartupTask API to request enabling or disabling of the startup<br/>behavior.<br/> **isEnabled**: enables the startup behavior without a user prompt,<br/>so long as the user has activated the app at least once. Consistent with<br/>existing Desktop Bridge behavior.<br/> **exePath**: path to the executable to be activated. |
+| RegisterForStartupActivation(<br/> string taskId,<br/> bool isEnabled<br/> ); |                                                              |
 
 
 
@@ -379,8 +374,7 @@ supported activation kinds.
 | static void UnregisterForFileTypeActivation(<br> string fileTypes[]<br> ); |                                                              |
 | static void UnregisterForProtocolActivation(<br> string name,<br> string exePath<br> ); | **name**: the previously-registered protocol identifier, eg "foo" or "https". <br>**exePath**: path to the executable that was registered for activation. |
 | static void UnregisterForProtocolActivation(<br> string name<br> ); |                                                              |
-| static void UnregisterForStartupActivation(<br> string exePath<br>); | **exePath**: path to the executable that was registered for activation. |
-| static void UnregisterForStartupActivation();                |                                                              |
+| static void UnregisterForStartupActivation(<br> string taskId<br>); | **taskId**: a string identifier which the app specified when it<br/>registered for startup behavior initially.<br/> |
 
 <br>
 <br>
