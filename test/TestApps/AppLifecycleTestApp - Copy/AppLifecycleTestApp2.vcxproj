@@ -37,12 +37,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{7C502995-59C3-483B-86BA-815985353633}</ProjectGuid>
+    <ProjectGuid>{850224FF-EB83-4BC4-95C6-3EF79DB25700}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>AppLifecycleTestApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>WPNWin32MSIX</ProjectName>
+    <ProjectName>AppLifecycleTestApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
