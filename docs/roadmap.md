@@ -6,6 +6,7 @@ The roadmap for Project Reunion supports the primary goals of breaking down the 
 
 For a general overview, see the [readme](https://github.com/microsoft/ProjectReunion/tree/master/docs) and [FAQ](https://github.com/microsoft/ProjectReunion/blob/master/docs/faq.md).
 
+## 2021 Roadmap
 
 Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*: 
 
@@ -15,32 +16,33 @@ Here's how we intend to roll out Project Reunion *(all times/features/releases a
 
 🔄 = Preview 
 
-#### Packaged Desktop Apps
+### Packaged Desktop Apps
+As a [packaged MSIX desktop app](https://docs.microsoft.com/en-us/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
 
- 🌟 | Reunion 0.5 (Q1 2021) | Reunion 0.8 (Q2 2021) | Reunion 1.0 (Q3 2021) | 
--- | --------------------- | --------------------- | --------------------- |
-WinUI |                ✅ |                    ✅ |                   ✅ | 
-DWriteCore |           ✅ |                    ✅ |                   ✅ | 
-MRT Core |             ✅ |                    ✅ |                   ✅ | 
-App Lifecycle APIs |   🔄 |                    🔄 |                   ✅ | 
-Power State Notifications |  ❌ |              🔄 |                   ✅ | 
-Windowing |            ❌ |                    ❌ |                   ✅ | 
+🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q3 2021)     | 
+-- | ------------------------------- | --------------------------------- | ------------------------------- |
+WinUI |                ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+DWriteCore |           ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+MRT Core |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+App Lifecycle APIs |      🔄 Preview |                        🔄 Preview|                   ✅ Supported  | 
+Power State Notifications |  ❌ Not Supported |              🔄 Preview |                   ✅ Supported  | 
+Windowing |            ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
 Deploy Options: |  
-• In-app |             ✅ |                    ✅ |                   ✅ | 
-• Fx Package |         ✅ |                    ✅ |                   ✅ | 
+• In-app |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+• Fx Package |         ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
 
-#### Unpackaged Desktop Apps
- 🌟 | Reunion 0.5 (Q1 2021) | Reunion 0.8 (Q2 2021) | Reunion 1.0 (Q3 2021) | 
--- | --------------------- | --------------------- | --------------------- |
-WinUI |                ❌ |                    ❌ |                   ✅ | 
-DWriteCore |           🔄 |                    🔄 |                   ✅ | 
-MRT Core |             🔄 |                    🔄 |                   ✅ | 
-App Lifecycle APIs |   🔄 |                    🔄 |                   ✅ | 
-Power State Notifications |  ❌ |              🔄 |                   ✅ | 
-Windowing |            ❌ |                    ❌ |                   ✅ | 
+### Unpackaged Desktop Apps
+ 🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q3 2021)    | 
+-- | ---------------------------------- | ------------------------------ | ------------------------------- |
+WinUI |                ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
+DWriteCore |                 🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
+MRT Core |                   🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
+App Lifecycle APIs |         🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
+Power State Notifications |❌ Not Supported |                🔄 Preview |                   ✅ Supported  | 
+Windowing |                ❌ Not Supported |          ❌ Not Supported |                   ✅ Supported  | 
 Deploy Options:  |  
-• In-app |             ❌ |                    🔄 |                   ✅ | 
-• Fx Package |         🔄 |                    🔄 |                   ✅ | 
+• In-app |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+• Fx Package |               🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
 
 ## 2021 Focus Areas
 
@@ -88,4 +90,4 @@ This isn't an exhaustive list: it's a sampling of some of the key infrastructure
   
 ## 2022 and Beyond
   
-In the future you can expect multiple releases per year from the Project Reunion team. We will continue expanding existing app compatibility and have a continuous delivery of new easier to use capabilities.
+In the future, you can expect multiple releases per year from the Project Reunion team. We will continue to improve app compatibility and deliver new capabilities.
