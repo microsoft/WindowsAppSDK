@@ -302,11 +302,6 @@ void OnActivated(IInspectable const& sender, IActivatedEventArgs const& args)
         auto startupArgs = args.as<StartupTaskActivatedEventArgs>();
         DoSomethingWithStartupArgs(startupArgs.TaskId());
     }
-    else if (kind == ActivationKind::ToastNotification)
-    {
-        auto toastArgs = args.as<ToastNotificationActivatedEventArgs>();
-        DoSomethingWithToastArgs(toastArgs.Argument());
-    }
 }
 ```
 
