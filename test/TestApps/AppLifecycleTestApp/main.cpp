@@ -91,11 +91,18 @@ int main()
             }
             else if (argument.compare(L"UnregisterProtocol") == 0)
             {
-                ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme);
+                try
+                {
+                    ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme);
 
-                // Signal event that protocol was unregistered.
-                SignalPhase(c_testProtocolPhaseEventName);
-                succeeded = true;
+                    // Signal event that protocol was unregistered.
+                    SignalPhase(c_testProtocolPhaseEventName);
+                    succeeded = true;
+                }
+                catch (...)
+                {
+                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                }
             }
             else if (argument.compare(L"RegisterFile") == 0)
             {
@@ -108,11 +115,18 @@ int main()
             }
             else if (argument.compare(L"UnregisterFile") == 0)
             {
-                ActivationRegistrationManager::UnregisterForFileTypeActivation(c_testFileExtension);
+                try
+                {
+                    ActivationRegistrationManager::UnregisterForFileTypeActivation(c_testFileExtension);
 
-                // Signal event that file was unregistered.
-                SignalPhase(c_testFilePhaseEventName);
-                succeeded = true;
+                    // Signal event that file was unregistered.
+                    SignalPhase(c_testFilePhaseEventName);
+                    succeeded = true;
+                }
+                catch (...)
+                {
+                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                }
             }
         }
     }

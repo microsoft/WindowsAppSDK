@@ -241,8 +241,15 @@ namespace ProjectReunionCppTest
             auto event{ CreateTestEvent(c_testProtocolPhaseEventName) };
 
             // Cleanup any leftover data from previous runs i.e. ensure we running with a clean slate
-            Execute(L"AppLifecycleTestApp.exe", L"/UnregisterProtocol", g_deploymentDir);
-            WaitForEvent(event, m_failed);
+            try
+            {
+                Execute(L"AppLifecycleTestApp.exe", L"/UnregisterProtocol", g_deploymentDir);
+                WaitForEvent(event, m_failed);
+            }
+            catch (...)
+            {
+                //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+            }
 
             // Register the protocol
             Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
@@ -260,7 +267,6 @@ namespace ProjectReunionCppTest
         }
     };
 
-#if 0
     class AppLifecycleFunctionalTests_DefaultUser : public AppLifecycleTests
     {
     public:
@@ -311,9 +317,7 @@ namespace ProjectReunionCppTest
             super::GetActivatedEventArgsForProtocol_Win32();
         }
     };
-#endif
 
-#if 0
     class AppLifecycleFunctionalTests_InteractiveUser : public AppLifecycleTests
     {
     public:
@@ -366,7 +370,6 @@ namespace ProjectReunionCppTest
             super::GetActivatedEventArgsForProtocol_Win32();
         }
     };
-#endif
 
     class AppLifecycleFunctionalTests_RestrictedUser : public AppLifecycleTests
     {
@@ -422,7 +425,6 @@ namespace ProjectReunionCppTest
     };
 
     //-----------------------------------------------------------------
-#if 0
     class AppLifecycleTests_UAP
     {
     protected:
@@ -635,5 +637,4 @@ namespace ProjectReunionCppTest
             super::GetActivatedEventArgsIsNull_UAP();
         }
     };
-#endif
 }
