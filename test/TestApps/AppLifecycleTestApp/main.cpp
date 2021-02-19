@@ -69,9 +69,9 @@ int main()
     RETURN_IF_FAILED(BootstrapInitialize());
 
     auto succeeded = false;
-    auto args = AppLifecycle::GetActivatedEventArgs();
+    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
-    if (kind == ActivationKind::Launch)
+    if (kind == ExtendedActivationKind::Launch)
     {
         auto launchArgs = args.as<ILaunchActivatedEventArgs>();
         auto commandLine = std::wstring(launchArgs.Arguments().c_str());
@@ -147,7 +147,7 @@ int main()
             }
         }
     }
-    else if (kind == ActivationKind::Protocol)
+    else if (kind == ExtendedActivationKind::Protocol)
     {
         auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
 
@@ -169,7 +169,7 @@ int main()
             succeeded = true;
         }
     }
-    else if (kind == ActivationKind::File)
+    else if (kind == ExtendedActivationKind::File)
     {
         // Validate access to the files on the arguments.
         auto fileArgs = args.as<IFileActivatedEventArgs>();
@@ -188,7 +188,7 @@ int main()
         SignalPhase(c_testFilePhaseEventName);
         succeeded = true;
     }
-    else if (kind == ActivationKind::StartupTask)
+    else if (kind == ExtendedActivationKind::StartupTask)
     {
         auto startupArgs = args.as<IStartupTaskActivatedEventArgs>();
         if (startupArgs.TaskId() == L"this_is_a_test")

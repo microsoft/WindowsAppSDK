@@ -11,8 +11,6 @@ using namespace WEX::TestExecution;
 
 using namespace winrt;
 using namespace winrt::Microsoft::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel;
-using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Management::Deployment;
@@ -99,7 +97,7 @@ namespace Test::AppLifecycle
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
+            VERIFY_IS_NULL(AppInstance::GetCurrent().GetActivatedEventArgs());
         }
     };
 }
