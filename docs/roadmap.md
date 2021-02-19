@@ -10,16 +10,10 @@ For a general overview, see the [readme](https://github.com/microsoft/ProjectReu
 
 Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*: 
 
-✅ = Supported
-
-❌ = Not Supported 
-
-🔄 = Preview 
-
 ### Packaged Desktop Apps
-As a [packaged MSIX desktop app](https://docs.microsoft.com/en-us/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
+As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
 
-🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q3 2021)     | 
+🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
 WinUI |                ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
 DWriteCore |           ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
@@ -32,7 +26,10 @@ Deploy Options: |
 • Fx Package |         ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
 
 ### Unpackaged Desktop Apps
- 🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q3 2021)    | 
+
+As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what and when you (tentatively) can expect from Project Reunion!
+
+ 🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
 WinUI |                ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
 DWriteCore |                 🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
