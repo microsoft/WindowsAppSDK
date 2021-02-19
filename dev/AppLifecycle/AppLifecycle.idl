@@ -3,9 +3,74 @@
 
 namespace Microsoft.ApplicationModel.Activation
 {
-    static runtimeclass AppLifecycle
+    enum ExtendedActivationKind
     {
-        static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
+        Launch = 0,
+        Search,
+        ShareTarget,
+        File,
+        Protocol,
+        FileOpenPicker,
+        FileSavePicker,
+        CachedFileUpdater,
+        ContactPicker,
+        Device,
+        PrintTaskSettings,
+        CameraSettings,
+        RestrictedLaunch,
+        AppointmentsProvider,
+        Contact,
+        LockScreenCall,
+        VoiceCommand,
+        LockScreen,
+        PickerReturned = 1000,
+        WalletAction,
+        PickFileContinuation,
+        PickSaveFileContinuation,
+        PickFolderContinuation,
+        WebAuthenticationBrokerContinuation,
+        WebAccountProvider,
+        ComponentUI,
+        ProtocolForResults = 1009,
+        ToastNotification,
+        Print3DWorkflow,
+        DialReceiver,
+        DevicePairing,
+        UserDataAccountsProvider,
+        FilePickerExperience,
+        LockScreenComponent,
+        ContactPanel,
+        PrintWorkflowForegroundTask,
+        GameUIProvider,
+        StartupTask,
+        CommandLineLaunch,
+        BarcodeScannerProvider,
+        PrintSupportJobUI,
+        PrintSupportSettingsUI,
+        PhoneCallActivation,
+        VpnForeground,
+        ExtensionBase = 5000,
+    };
+
+    runtimeclass ActivationArguments
+    {
+        ExtendedActivationKind Kind { get; };
+        IInspectable Data{ get; };
+    };
+
+    runtimeclass AppInstance
+    {
+        static AppInstance GetCurrent();
+        static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
+        static AppInstance FindOrRegisterForKey(String key);
+
+        void UnregisterKey(String key);
+        void RedirectTo(Microsoft.ApplicationModel.Activation.ActivationArguments args);
+        Microsoft.ApplicationModel.Activation.ActivationArguments GetActivatedEventArgs();
+        event Windows.Foundation.EventHandler<Microsoft.ApplicationModel.Activation.ActivationArguments> Activated;
+
+        String Key{ get; };
+        Boolean IsCurrent{ get; };
     }
 
     static runtimeclass ActivationRegistrationManager
