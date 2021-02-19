@@ -29,10 +29,6 @@ jobs:
         buildConfiguration: 'Release'
         normalizedConfiguration: 'fre'
         PGOBuildMode: 'Optimize'
-      Release_Arm:
-        buildPlatform: 'arm'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
