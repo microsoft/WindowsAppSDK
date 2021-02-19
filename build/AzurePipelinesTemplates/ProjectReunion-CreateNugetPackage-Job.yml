@@ -47,9 +47,9 @@ jobs:
         LICENSE
       TargetFolder: '${{ parameters.fullnupkgdir }}'
 
-  # Copy the Project Reunion full package specific target files into the full package folder
+  # Copy the Project Reunion full package specific target files and AppxManifest into the full package folder
   - task: PowerShell@2
-    displayName: 'Copy Project Reunion full package targets'
+    displayName: 'Copy Project Reunion full package assets'
     inputs:
       targetType: 'inline'
       script: |
@@ -57,8 +57,9 @@ jobs:
         $fullpackagePath = "${{ parameters.fullnupkgdir }}"
         Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.props" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.props"
+  # Include the AppxManifest in the ProjectReunion.Foundation.TransportPackage
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
-        
+
   # debugging - remove or comment out before completing PR      
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
