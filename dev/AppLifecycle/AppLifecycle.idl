@@ -3,9 +3,19 @@
 
 namespace Microsoft.ProjectReunion
 {
-    static runtimeclass AppLifecycle
+    runtimeclass AppLifecycle
     {
         static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
+
+        static Windows.Foundation.Collections.IVector<AppLifecycle> GetRegisteredInstances();
+        static AppLifecycle FindOrRegisterInstanceForKey(String key);
+        static void UnregisterInstanceForRedirection();
+
+        void RedirectActivationTo(Windows.ApplicationModel.Activation.IActivatedEventArgs args);
+        event Windows.Foundation.EventHandler<Windows.ApplicationModel.Activation.IActivatedEventArgs> Activated;
+
+        Boolean IsCurrentInstance{ get; };
+        String Key{ get; };
     }
 
     static runtimeclass ActivationRegistrationManager
