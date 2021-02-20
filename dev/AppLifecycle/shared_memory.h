@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 template <typename T>
 class shared_memory
@@ -9,7 +9,7 @@ public:
 	void open(std::wstring name)
 	{
         // TODO: Security descriptor
-        m_file = unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, sizeof(T), name.c_str()));
+        m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, sizeof(T), name.c_str()));
         THROW_LAST_ERROR_IF_NULL(m_file);
 
         bool created = (GetLastError() == ERROR_ALREADY_EXISTS) ? false : true;

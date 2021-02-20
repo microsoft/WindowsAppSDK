@@ -18,7 +18,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         BYTE stream[1024];
     };
 
-    struct AppLifecycle
+    struct AppLifecycle : AppLifecycleT<AppLifecycle>
     {
         // No interface public methods.
         AppLifecycle() = default;
