@@ -5,15 +5,15 @@ namespace Microsoft.ProjectReunion
 {
     enum ChannelStatus
     {
-       InProgress, // The request is in progress and there is no retry operation
+        InProgress, // The request is in progress and there is no retry operation
         InProgressRetry, // The request is in progress and is in a backoff retry state
         CompletedSuccess, // The request completed successfully
         CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
     };
 
-    runtimeclass PushChannelResult
+    runtimeclass ChannelResult
     {
-        PushChannelResult(
+        ChannelResult(
             Windows.Networking.PushNotifications.PushNotificationChannel channel,
             HRESULT extendedError,
             ChannelStatus status);
@@ -30,9 +30,9 @@ namespace Microsoft.ProjectReunion
         ChannelStatus Status { get; };
     };
 
-    static runtimeclass PushNotificationChannelManager
+    static runtimeclass PushManager
     {
-        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
-        static Windows.Foundation.IAsyncOperationWithProgress<PushChannelResult, PushChannelResult> CreateChannelAsync(String remoteId);
+        // Request a Push Channel with an GUID RemoteId from WNS. RemoteId is an AAD identifier GUID
+        static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(String remoteId);
     };
 }

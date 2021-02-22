@@ -18,11 +18,11 @@
     <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)PushChannelResult.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationChannelManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ChannelResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)PushChannelResult.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannelManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ChannelResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushManager.h" />
   </ItemGroup>
 </Project>
