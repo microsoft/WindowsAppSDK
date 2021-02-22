@@ -1,0 +1,38 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.ProjectReunion
+{
+    enum ChannelStatus
+    {
+       InProgress, // The request is in progress and there is no retry operation
+        InProgressRetry, // The request is in progress and is in a backoff retry state
+        CompletedSuccess, // The request completed successfully
+        CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
+    };
+
+    runtimeclass PushChannelResult
+    {
+        PushChannelResult(
+            Windows.Networking.PushNotifications.PushNotificationChannel channel,
+            HRESULT extendedError,
+            ChannelStatus status);
+
+        // The Push channel associated with the Result. Null if InProgress or completion failed
+        Windows.Networking.PushNotifications.PushNotificationChannel Channel { get; };
+
+        // Low-level information about why the operation might not
+        // have worked. Apps generally do not take action based on
+        // this value, in part because the value may not be stable.
+        HRESULT ExtendedError{ get; };
+
+        // The Status of the ChannelComplete operation
+        ChannelStatus Status { get; };
+    };
+
+    static runtimeclass PushNotificationChannelManager
+    {
+        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        static Windows.Foundation.IAsyncOperationWithProgress<PushChannelResult, PushChannelResult> CreateChannelAsync(String remoteId);
+    };
+}

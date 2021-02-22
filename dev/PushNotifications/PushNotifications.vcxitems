@@ -4,7 +4,7 @@
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <ItemsProjectGuid>{e8b129a3-edb6-4721-a088-cd6049b4907f}</ItemsProjectGuid>
-	<ItemsProjectName>PushNotifications</ItemsProjectName>
+    <ItemsProjectName>PushNotifications</ItemsProjectName>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -13,5 +13,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushChannelResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationChannelManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushChannelResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannelManager.h" />
   </ItemGroup>
 </Project>
