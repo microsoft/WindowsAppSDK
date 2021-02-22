@@ -10,7 +10,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         PushManager() = default;
 
-        static Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> CreateChannelAsync(hstring remoteId);
+        static Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> CreateChannelAsync(winrt::guid remoteId);
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

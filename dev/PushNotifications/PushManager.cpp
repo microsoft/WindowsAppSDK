@@ -7,7 +7,7 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> PushManager::CreateChannelAsync(hstring remoteId)
+    Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> PushManager::CreateChannelAsync(winrt::guid remoteId)
     {
         throw hresult_not_implemented();
     }

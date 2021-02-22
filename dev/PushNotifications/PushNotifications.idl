@@ -33,6 +33,6 @@ namespace Microsoft.ProjectReunion
     static runtimeclass PushManager
     {
         // Request a Push Channel with an GUID RemoteId from WNS. RemoteId is an AAD identifier GUID
-        static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(String remoteId);
+        static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(Guid remoteId);
     };
 }
