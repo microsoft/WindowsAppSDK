@@ -15,7 +15,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)ActivationArguments.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Association.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />

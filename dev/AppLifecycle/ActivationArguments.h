@@ -19,8 +19,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             m_data = data;
         }
 
-        Microsoft::ProjectReunion::ExtendedActivationKind Kind();
-        Windows::Foundation::IInspectable Data();
+        Microsoft::ProjectReunion::ExtendedActivationKind Kind() { return m_kind; }
+        Windows::Foundation::IInspectable Data() { return m_data; }
 
     private:
         ActivationArguments() = default;
