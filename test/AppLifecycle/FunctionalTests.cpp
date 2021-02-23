@@ -11,7 +11,6 @@ using namespace WEX::TestExecution;
 
 using namespace winrt;
 using namespace winrt::Microsoft::ProjectReunion;
-using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
