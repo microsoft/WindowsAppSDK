@@ -11,23 +11,23 @@ The Windows Push Notification Services (WNS) enable third-party developers to se
 ## Push Flow:
 In order to subscribe to Push Notifications, an app first needs to request a Push Channel with WPN client which is essentially an Http Endpoint that it can post notifications to. 
 Channel Registration Process:
-* App developer registers his application in Dev Centre portal and gets an AppSID and client secret tied to his Application’s identity
-* The application is downloaded and installed from the Microsoft Store using MSIX
-* During installation, MSIX registers the application’s identity with WPN client (AppUserModelId and PFN) in the WPN database.
-* When the app requests a channel, WPN client looks up the PFN from the WPN database and sends it to WNS as part of the channel request payload.
-* WNS encodes the PFN (or AppSID in this case derived from PFN) and a randomly generated channelId in the channel URL and sends it back down to the client.
+* App developer registers the application in Dev Centre portal and gets an AppSID and client secret tied to the Application’s identity
+* The application is downloaded to the client and installed from the Microsoft Store by the OS Deployment infrastructure
+* During installation, the Deployment infrastructure registers the application’s identity with the WNS client (AppUserModelId and PackageFamilyName).
+* When the user launches the app, the app requests a channel from WNS client. WNS client looks up the PackageFamilyName from the database and sends it to WNS as part of the channel request payload.
+* WNS encodes the PackageFamilyName (or AppSID in this case derived from it) and a randomly generated channelId in the channel URL and sends it back down to the client.
 * The client sends the channel URL to the app as part of the channel request in step 4)
 * The app sends the channel URL to it’s app server and saves it.
 
 The next step involves the application actually Pushing down a payload from the App Service to the device:
 * The App Server requests an access token from MSA using the AppSID and client secret retrieved from the developer registration process with dev center.
 * MSA returns a token to the app server
-* App server posts a notification’s to WNS’s NW with the channel url retrieved from WPN client and the access token in step 2)
+* App server posts a notification’s to WNS’s NW with the channel url retrieved from WNS client and the access token in step 2)
 * NW verifies the app token against AppSID extracted from the channel URL
 * NW sends the Post request to WNS’s NN which contains the persistent socket with the client
 * WNS’s NN maps the channel URL to the correct deviceId by decoding the deviceId from the channel URL and sends an NFY to the correct client.
-* WPN client receives the NFY and processes the channelId in the payload to retrieve the correct AppId from the WPN database.
-* WPN client routes the notification to the appropriate app. If it needs to interface with the App, it uses BI, callbacks or WNF depending on the App Registration. If the payload is a toast, it gets directly routed to the Shell.
+* WNS client receives the NFY and processes the channelId in the payload to retrieve the correct AppId from the database.
+* WNS client routes the notification to the appropriate app. If it needs to interface with the App, it uses BI, callbacks or WNF depending on the App Registration. If the payload is a toast, it gets directly routed to the Shell.
 
 ## The problems today
 
@@ -54,44 +54,45 @@ We will priorirtize the following feature set for Reunion:
 A Portal Registration flow through [AAD (Azure Active Directory)](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) will also be defined that decouples the dependence of the Push Flow with the Partner Centre Portal. 
 The following are the main steps in the Push flow with AAD:
 * The developer will first obtain a Remote Identifer GUID and a client secret as part of this Portal Registration flow. This is a one time operation by the developer to provision an app. 
-* When requesting a channel using client Reunion APIs, the developer will pass in a remoteId and the WNS service will return a specially encoded Channel URL with that Remote Identifier. 
+* When requesting a channel using WNS client Reunion APIs, the developer will pass in a remoteId and WNS will return a specially encoded Channel URL with that Remote Identifier. 
 * When the application service Pushes a notification down to the client, it will retrieve an access token with AAD using the client secret provisioned above. 
 * The application service will then pass that access token along with the payload in a Http POST operation to the channel URL. 
 * WNS will ensure that the payload is ultimately delivered to the app residing on the client device.
 
 Phase 1 (Reunion Preview):
-Our Push APIs will only support MSIX apps.
+WNS Push APIs will only support WIN32 Packaged app (MSIX).
 
 Phase 2 (Reunion V1):
-Our Push APIs will add support for Unpackaged Win32.
+Our Push APIs will add support for Unpackaged Win32 scenarios.
 
 # Examples
 
 ## Registration of the Push Activator for Win32 (Inproc)
 If a Win32 app needs to subscribe to Push triggers inproc, the code in Main would follow the pattern below:
 * The Registration will take in a CLSID of the COM server as part of the Activator setup. The registration API will simply be a thin wrapper around the BackgroundInfra WinRT APIs and abstract away the COM details from the developer.
-* The app will next query the ActivationEventArgs to check if the ActivationKind is of type Push
-* If the Activation is Push, the app will retrieve the IActivatedEventArgs and retrieve the Push payload from it. Care needs to be taken to Take a Deferral and Release the Deferral while processing the payload for Power Management compliance.
+* The app will query ApplifeCycle APIs to retrieve an ActivationKind. (Note: This is covered in a seperate AppLifeCycle API spec.)
+* If the Activation is Push, the app will QI the Arguments property to retrieve an instance of PushActivatedEventArgs and get the Push payload from it. Care needs to be taken to Take a Deferral and Release the Deferral while processing the payload for Power Management compliance.
 * If the Activation is Foreground, the app will do 2 things:
-* * It will subscribe to a Foreground In-memory Push event
-* * It will request a Push Channel Asynchronously with an implementation of Progress and Completed event handler. 
+  * It will subscribe to a Foreground In-memory Push event
+  * It will request a Push Channel Asynchronously with an implementation of Progress and Completed event handler.
+    * Expect Channel operations to take around 2-16 minutes in some rare cases (retryable errors). In the 90th percentile case, it should be fairly quick operation (in a few seconds).  
 
 ```cpp
 int main()
 {
     // Always Register the Push trigger as the first step: It sets up the Inproc COM server for subsequent Push operations
-    std::wstring activatorGuid = L"{B8E58D9D-A229-44A8-B923-2823C3791BCE}";
+    winrt::guid activatorGuid{ 0xC380465D, 0x2271, 0x428C, { 0x9B, 0x83, 0xEC, 0xEA, 0x3B, 0x4A, 0x85, 0xC1} };
     InProcActivatorDetails details(activatorGuid);
-    PushNotificationChannelManager::RegisterPushNotificationActivator(details);
+    PushManager::RegisterActivator(details);
 
     // Check to see if the WinMain activation is due to a Push Activator
-    auto args = AppLifecycle2::GetActivatedEventArgs();
-    auto kind = args.Kind2();
+    // Note: This API is currently not present in Reunion but will be included as part of the AppLifecycle Public API spec.
+    auto activation = AppLifecycle::Activation();
+    auto kind = activation.Kind();
 
-    if (kind == ActivationKindExtension::Push)
+    if (kind == ReunionActivationKind::Push)
     {
-        auto activatedEventArgs = args.ActivatedArgs();
-        auto pushArgs = args.as<IPushNotificationActivatedEventArgs>();
+        auto pushArgs = activation.Arguments().try_as<PushActivatedEventArgs>();
 
         // Call TakeDeferral to ensure that code runs in low power
         pushArgs.GetDeferral();
@@ -103,10 +104,10 @@ int main()
         // Call CompleteDeferral as good practise: Needed mainly for low power usage
         pushArgs.CompleteDeferral();
     }
-    else if (kind == ActivationKindExtension::Launch) // This indicates that the app is launching in the foreground
+    else if (kind == ReunionActivationKind::Launch) // This indicates that the app is launching in the foreground
     {
         // Register an event to Intercept Push payloads
-        auto eventToken = details.PushActivated([](const auto&, PushNotificationActivatedEventArgs args)
+        auto eventToken = details.PushActivated([](const auto&, PushActivatedEventArgs args)
         {
                 // Call TakeDeferral to ensure that code runs in low power
                 args.GetDeferral();
@@ -119,14 +120,15 @@ int main()
                 args.CompleteDeferral();
         });
 
-        auto remoteId = L"{5AB838FB-B64B-4FCD-B25F-B09781D56DD5}";
-        auto channelOperation = PushNotificationChannelManager::CreatePushNotificationChannelAsync(remoteId);
+        // {F80E541E-3606-48FB-935E-118A3C5F41F4}
+        winrt::guid remoteId{ 0xf80e541e, 0x3606, 0x48fb, {0x93, 0x5e, 0x11, 0x8a, 0x3c, 0x5f, 0x41, 0xf4} };
+        auto channelOperation = PushManager::CreateChannelAsync(remoteId);
 
         // Setup the inprogress event handler
         channelOperation.Progress(
             [](
-                IAsyncOperationWithProgress<PushNotificationChannelResult, PushNotificationChannelResult> const& /* sender */,
-                PushNotificationChannelResult const& args)
+                IAsyncOperationWithProgress<ChannelResult, ChannelResult> const& /* sender */,
+                ChannelResult const& args)
             {
                 if (args.Status() == ChannelStatus::InProgress)
                 {
@@ -142,7 +144,7 @@ int main()
         // Setup the completed event handler
         channelOperation.Completed(
             [](
-                IAsyncOperationWithProgress<PushNotificationChannelResult, PushNotificationChannelResult> const& sender,
+                IAsyncOperationWithProgress<ChannelResult, ChannelResult> const& sender,
                 AsyncStatus const /* asyncStatus */)
             {
                 auto result = sender.GetResults();
@@ -175,16 +177,16 @@ In some certain rare cases, we may want to disable the activator for Push. For e
 int main()
 {
     // Always Register the Push trigger as the first step: It sets up the Inproc COM server for subsequent Push operations
-    std::wstring activatorGuid = L"{B8E58D9D-A229-44A8-B923-2823C3791BCE}";
-    PushNotificationActivatorDetails details(activatorGuid);
-    PushNotificationChannelManager::RegisterPushNotificationActivator(details);
+    winrt::guid activatorGuid{ 0xC380465D, 0x2271, 0x428C, { 0x9B, 0x83, 0xEC, 0xEA, 0x3B, 0x4A, 0x85, 0xC1} };
+    InProcActivatorDetails details(activatorGuid);
+    PushManager::RegisterActivator(details);
 
     // Some code resides here
 
     // This unregisters the Activator above
     if (removePush)
     {
-        PushNotificationChannelManager::UnregisterPushNotificationActivator(details.Registration());
+        PushManager::UnregisterActivator(details);
     }
     return 0;
 }
@@ -270,8 +272,8 @@ For MSIX, the COM activator GUID and the exe path need to be registered in the m
 <Extensions>
   <com:Extension Category="windows.comServer">
     <com:ComServer>
-      <com:ExeServer Executable="SampleBackgroundApp\SampleBackgroundApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
-        <com:Class Id="{GUIDEntryPoint}" DisplayName="Reunion Push" />
+      <com:ExeServer Executable="SampleBackgroundApp\SampleBackgroundApp.exe" DisplayName="SampleBackgroundApp" Arguments="-PushServer">
+        <com:Class Id="{GUIDEntryPoint}" />
       </com:ExeServer>
     </com:ComServer>
   </com:Extension>
@@ -283,156 +285,94 @@ The UWP inproc activator flow differs from the Win32 inproc activator flow since
 
 # API Details
 ```c# (but really MIDL3)
-    namespace Microsoft.ProjectReunion
+
+namespace Microsoft.ProjectReunion.PushNotifications
+{
+    // Event args in WinMain activation payload.
+    runtimeclass PushActivatedEventArgs
     {
-        // The legacy ActivationKind does not support operations like Push. So we need to define an extension set
-        enum ActivationKindExtension
-        {
-            Launch = 0,
-            Search = 1,
-            ShareTarget = 2,
-            File = 3,
-            Protocol = 4,
-            FileOpenPicker = 5,
-            FileSavePicker = 6,
-            CachedFileUpdater = 7,
-            ContactPicker = 8,
-            Device = 9,
-            PrintTaskSettings = 10,
-            CameraSettings = 11,
-            RestrictedLaunch = 12,
-            AppointmentsProvider = 13,
-            Contact = 14,
-            LockScreenCall = 15,
-            VoiceCommand = 16,
-            LockScreen = 17,
-            PickerReturned = 1000,
-            WalletAction = 1001,
-            PickFileContinuation = 1002,
-            PickSaveFileContinuation = 1003,
-            PickFolderContinuation = 1004,
-            WebAuthenticationBrokerContinuation = 1005,
-            WebAccountProvider = 1006,
-            ComponentUI = 1007,
-            ProtocolForResults = 1009,
-            ToastNotification = 1010,
-            Print3DWorkflow = 1011,
-            DialReceiver = 1012,
-            DevicePairing = 1013,
-            UserDataAccountsProvider = 1014,
-            FilePickerExperience = 1015,
-            LockScreenComponent = 1016,
-            ContactPanel = 1017,
-            PrintWorkflowForegroundTask = 1018,
-            GameUIProvider = 1019,
-            StartupTask = 1020,
-            CommandLineLaunch = 1021,
-            BarcodeScannerProvider = 1022,
-            Push = 1023,
-        };
+        // Initialize using the raw byte payload
+        PushActivatedEventArgs(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
 
-        // Simply a wrapper around IActivatedEventArgs to support new Kind extensions like Push which aren't a part of Foundations today
-        runtimeclass ActivatedEventArgsExtension
-        {
-            ActivatedEventArgsExtension(Windows.ApplicationModel.Activation.IActivatedEventArgs activatedEventArgs, ActivationKindExtension kind2);
-            ActivationKindExtension Kind2 { get; };
-            Windows.ApplicationModel.Activation.IActivatedEventArgs ActivatedArgs{ get; };
-        }
+        // The Push payload
+        byte[] Payload { get; };
 
-        // This is an overload of the existing GetActivatedEventArgs in Reunion which supports new Activation Kinds
-        static runtimeclass AppLifecycle2
-        {
-            // Called during process launch in Main to determine whether the launch is in response to Protocol/Foreground/Push etc.
-            static ActivatedEventArgsExtension GetActivatedEventArgs();
-        }
+        // Takes a deferral to run under specific modes like low power mode
+        void GetDeferral();
 
-        // Event args in WinMain activation payload. It wraps around the BackgroundInstance construct and manages the task lifetime.
-        runtimeclass PushNotificationActivatedEventArgs : Windows.ApplicationModel.Activation.IActivatedEventArgs
-        {
-            // Initialize using the raw byte payload
-            PushNotificationActivatedEventArgs(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
+        // Closes the Deferral taken on a Push Trigger. If this is not called by the developer, the deferral will automatically be invoked on destruction.
+        void CompleteDeferral();
 
-            // The Push payload
-            byte[] Payload { get; };
+        // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
+        event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
 
-            // Takes a deferral to run under specific modes like low power mode
-            void GetDeferral();
+        // The number of times Resource management suspended the Task
+        UInt32 SuspendedCount { get; };
+    };
 
-            // Closes the Deferral taken on a Push Trigger. If this is not called by the developer, the deferral will automatically be invoked on destruction.
-            void CompleteDeferral();
+    // An abstraction over the inproc activation Registration flow
+    runtimeclass InProcActivatorDetails
+    {
+        // Initialize using a manifest defined activatorId to Activate the InProc COM server
+        InProcActivatorDetails(Guid taskClsid);
 
-            // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
-            event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
+        // Initialize an inproc activator for LOW-IL apps like UWP with no COM Server specified in manifest
+        InProcActivatorDetails();
 
-            // The number of times Resource management suspended the Task
-            UInt32 SuspendedCount { get; };
-        }
+        // The CLSID associated with the Client COM server that reunion will adopt
+        Guid TaskClsid{ get; };
 
-        // An abstraction over the inproc activation Registration flow
-        runtimeclass InProcActivatorDetails
-        {
-            // Initialize using a manifest defined activatorId to Activate the InProc COM server
-            InProcActivatorDetails(String taskClsid);
+        // The conditions under which Push Triggers would execute
+        Windows.ApplicationModel.Background.IBackgroundCondition Condition;
 
-            // Initialize an inproc activator for LOW-IL apps like UWP with no COM Server specified in manifest
-            InProcActivatorDetails();
+        // Event handler to subscribe to if the app is in the foreground
+        event Windows.Foundation.EventHandler<PushActivatedEventArgs> PushActivated;
 
-            // The CLSID associated with the Client COM server that reunion will adopt
-            String TaskClsid{ get; };
+        // The backgroundRegistration that gets populated on successful registration
+        Windows.ApplicationModel.Background.IBackgroundTaskRegistration Registration;
+    };
 
-            // The conditions under which Push Triggers would execute
-            Windows.ApplicationModel.Background.IBackgroundCondition Condition;
+    enum ChannelStatus
+    {
+        InProgress, // The request is in progress and there is no retry operation
+        InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
+        CompletedSuccess, // The request completed successfully
+        CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
+    };
 
-            // The in-memory Event handler to subscribe to if the app is in the foreground
-            event Windows.Foundation.EventHandler<PushNotificationActivatedEventArgs> PushActivated;
+    runtimeclass ChannelResult
+    {
+        ChannelResult(
+            Windows.Networking.PushNotifications.PushNotificationChannel channel,
+            HRESULT extendedError,
+            ChannelStatus status);
 
-            // The backgroundRegistration that gets populated on successful registration
-            Windows.ApplicationModel.Background.IBackgroundTaskRegistration Registration;
-        };
+        // The Push channel associated with the Result. Null if InProgress or completion failed
+        Windows.Networking.PushNotifications.PushNotificationChannel Channel { get; };
 
-        enum ChannelStatus
-        {
-            InProgress, // The request is in progress and there is no retry operation
-            InProgressRetry, // The request is in progress and is in a backoff retry state
-            CompletedSuccess, // The request completed successfully
-            CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
-        };
+        // More detailed error code in addition to the ChannelStatus state.
+        HRESULT ExtendedError{ get; };
 
-        runtimeclass PushNotificationChannelResult
-        {
-            PushNotificationChannelResult(
-                Windows.Networking.PushNotifications.PushNotificationChannel channel,
-                HRESULT extendedError,
-                ChannelStatus status);
+        // The Status of the ChannelComplete operation
+        ChannelStatus Status { get; };
+    };
 
-            // The Push channel associated with the Result. Null if InProgress or completion failed
-            Windows.Networking.PushNotifications.PushNotificationChannel Channel { get; };
+    static runtimeclass PushManager
+    {
+        // Register an activator using a Details context for inproc activations
+        static void RegisterActivator(InProcActivatorDetails details);
 
-            // Low-level information about why the operation might not
-            // have worked. Apps generally do not take action based on
-            // this value, in part because the value may not be stable.
-            HRESULT ExtendedError{ get; };
+        // Unregister any activator if present
+        static void UnregisterActivator(InProcActivatorDetails details);
 
-            // The Status of the ChannelComplete operation
-            ChannelStatus Status { get; };
-        };
-
-        static runtimeclass PushNotificationChannelManager
-        {
-            // Register an activator using a Details context
-            static void RegisterPushNotificationActivator(InProcActivatorDetails details);
-
-            // Unregister any activator if present
-            static void UnregisterPushNotificationActivator(Windows.ApplicationModel.Background.IBackgroundTaskRegistration registration);
-
-            // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
-            static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationChannelResult, PushNotificationChannelResult> CreatePushNotificationChannelAsync(String remoteId);
-        };
-    }
+        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(Guid remoteId);
+    };
+}
 ```
 # Appendix
-* For all OS images before Cobalt, the RemoteId will be a noop and the native platform will send the PFN (PackageFamilyName) in the channel request protocol. The WNS server will maintain an internal mapping of PFN -> RemoteId and will return a channelUri with the encoded RemoteId after querying the map.
-* For OS images after Cobalt, the Reunion component will call into newly added Closed source APIs in the OS to actually pass a RemoteId in the Channel Request operation.
+* For all OS images before 21H1 (19043), the RemoteId will be a noop and the native platform will send the PFN (PackageFamilyName) in the channel request protocol. The WNS server will maintain an internal mapping of PFN -> RemoteId and will return a channelUri with the encoded RemoteId after querying the map.
+* For OS images 21H1(19043) and beyond, the Reunion component will call into newly added Closed source APIs in the OS to actually pass a RemoteId in the Channel Request operation.
 * For unpackaged Win32 apps, the Reunion component will call into Closed source APIs to register the unpackaged Win32 process with the RemoteId.
 * A long running Reunion component will be needed to intercept Push payloads from the native platform and Launch the corresponding unpackaged Win32 app. We will be using Protocol Activation via WinMain to launch the unpackaged Win32 process from the long running service. The requirement is mainly because the native client today does not have support to launch Win32 apps directly in response to a Push payload unless they are already running in which case we simply marshall the payload back to the process via a registered callback sink.
 * For packaged applications like MSIX, we buid a thin wrapper around existing Background Manager APIs rather than re-inventing new Background Triggers. This is mainly because Background Infrastructure native client stack is built with Power Management and resourcing concerns already addressed. Building a new stack that addresses similar concerns is likely not the best use of our time or resources. Instead we should invest in Reunioninzing the Background Infra stack itself.
