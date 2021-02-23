@@ -32,8 +32,5 @@ jobs:
     - name: build x64
       run: msbuild /m /p:Configuration=Release,Platform=x64 ProjectReunion.sln
 
-    - name: build ARM
-      run: msbuild /m /p:Configuration=Release,Platform=ARM ProjectReunion.sln
-
     - name: build ARM64
       run: msbuild /m /p:Configuration=Release,Platform=ARM64 ProjectReunion.sln
