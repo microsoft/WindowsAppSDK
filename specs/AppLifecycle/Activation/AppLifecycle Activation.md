@@ -150,8 +150,7 @@ int APIENTRY wWinMain(
 
     // When the app starts, it can get its activated eventargs, and perform
     // any required operations based on the activation kind and payload.
-    AppInstance::Activated([](ActivationArguments args)
-        { OnActivated(args); });
+    RespondToActivation();
 
     ///////////////////////////////////////////////////////////////////////////
     // Standard Win32 window configuration/creation and message pump:
