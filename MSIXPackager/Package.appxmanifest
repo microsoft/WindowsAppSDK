@@ -9,7 +9,7 @@
   <Identity
     Name="841bc126-db34-4387-a43f-72360c3b2a7b"
     Publisher="CN=purifoypaul"
-    Version="1.0.1.0" />
+    Version="1.0.2.0" />
 
   <Properties>
     <DisplayName>MSIXPackager</DisplayName>

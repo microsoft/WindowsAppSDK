@@ -6,7 +6,7 @@ using namespace winrt::Microsoft::ProjectReunion;
 
 int main()
 {
-    auto args = AppLifecycle::GetActivatedEventArgs();
+    // Add your code here.
     std::cout << "Hello World!\n";
     return 0;
 }
