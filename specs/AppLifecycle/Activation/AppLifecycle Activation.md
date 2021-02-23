@@ -64,11 +64,11 @@ consider:
 The first release focuses on the most commonly-used rich activation kinds. The
 AppLifecycle component will provide a converged GetActivatedEventArgs API which
 will get all args, regardless of activation kind, effectively merging in the
-functionality of GetCommandLineArgs/GetCommandLineW. It will also be decoupled
-from multi-instancing.
+functionality of GetCommandLineArgs/GetCommandLineW and the platform 
+GetActivatedEventArgs. It will also be decoupled from multi-instancing.
 
 Of the 44 UWP activation kinds, 4 of the most commonly-used kinds are also
-supported for Desktop Bridge and Windows
+supported for Desktop Bridge and Windows 
 [reg-free WinRT](https://blogs.windows.com/windowsdeveloper/2019/04/30/enhancing-non-packaged-desktop-apps-using-windows-runtime-components/)
 apps. The AppLifecycle implementation is based on this set. Some activation
 kinds require prior registration, others do not. The target list for v1 is as
@@ -80,6 +80,8 @@ follows:
 | File            | The app is activated when the user double-clicks a registered file, or when a caller calls ShellExecute or LaunchFileAsync on a registered file. |
 | Protocol        | Activated via ShellExecute or LaunchUriAsync, or by specifying a protocol string on a command-line. |
 | StartupTask     | The app starts on user log-in - either registered in the registry, or via shortcuts in a well-known startup folder. |
+
+<br/>
 
 ### Activation registration
 
@@ -148,7 +150,8 @@ int APIENTRY wWinMain(
 
     // When the app starts, it can get its activated eventargs, and perform
     // any required operations based on the activation kind and payload.
-    RespondToActivation();
+    AppInstance::Activated([](ActivationArguments args)
+        { OnActivated(args); });
 
     ///////////////////////////////////////////////////////////////////////////
     // Standard Win32 window configuration/creation and message pump:
@@ -229,33 +232,28 @@ XXXActivatedEventArgs type, and then access the properties and methods of that
 type.
 
 ```c++
-void RespondToActivation()
+void OnActivated(ActivationArguments const& args)
 {
-    IActivatedEventArgs args = AppLifecycle::GetActivatedEventArgs();
-
-    if (args)
+    ExtendedActivationKind kind = args.Kind;
+    if (kind == ExtendedActivationKind::Launch)
     {
-        ActivationKind kind = args.Kind();
-        if (kind == ActivationKind::Launch)
-        {
-            auto launchArgs = args.as<LaunchActivatedEventArgs>();
-            DoSomethingWithLaunchArgs(launchArgs.Arguments());
-        }
-        else if (kind == ActivationKind::File)
-        {
-            auto fileArgs = args.as<FileActivatedEventArgs>();
-            DoSomethingWithFileArgs(fileArgs.Files());
-        }
-        else if (kind == ActivationKind::Protocol)
-        {
-            auto protocolArgs = args.as<ProtocolActivatedEventArgs>();
-            DoSomethingWithProtocolArgs(protocolArgs.Uri());
-        }
-        else if (kind == ActivationKind::StartupTask)
-        {
-            auto startupArgs = args.as<StartupTaskActivatedEventArgs>();
-            DoSomethingWithStartupArgs(startupArgs.TaskId());
-        }
+        LaunchActivatedEventArgs launchArgs = args.Data.as<LaunchActivatedEventArgs>();
+        DoSomethingWithLaunchArgs(launchArgs.Arguments());
+    }
+    else if (kind == ExtendedActivationKind::File)
+    {
+        FileActivatedEventArgs fileArgs = args.Data.as<FileActivatedEventArgs>();
+        DoSomethingWithFileArgs(fileArgs.Files());
+    }
+    else if (kind == ExtendedActivationKind::Protocol)
+    {
+        ProtocolActivatedEventArgs protocolArgs = args.Data.as<ProtocolActivatedEventArgs>();
+        DoSomethingWithProtocolArgs(protocolArgs.Uri());
+    }
+    else if (kind == ExtendedActivationKind::StartupTask)
+    {
+        StartupTaskActivatedEventArgs startupArgs = args.Data.as<StartupTaskActivatedEventArgs>();
+        DoSomethingWithStartupArgs(startupArgs.TaskId());
     }
 }
 ```
@@ -301,23 +299,29 @@ void UnregisterForActivation()
 
 ### Top-level types
 
-This spec proposes 6 new classes and one enum:
+This spec proposes one new enum and 6 new classes:
 
-- An AppLifecycle class to encapsulate the GetActivatedEventArgs method.
-- An XXXActivatedEventArgs class for each activation kind, modeled directly on
-  existing XXXActivatedEventArgs classes in the
-  Windows.ApplicationModel.Activation namespace.
-- The ActivationKind enum, cloned from
+- An ExtendedActivationKind enum, based off
   Windows.ApplicationModel.Activation.ActivationKind.
+- An ActivationArguments class that brings forward the core behavior of the platform's IActivatedEventArgs interface.
+- An AppInstance class to encapsulate all API functionality for an instance of an app.
+- An XXXActivatedEventArgs class for each activation kind, modeled directly on existing XXXActivatedEventArgs classes in the Windows.ApplicationModel.Activation namespace.
 
 | API                                                          | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| AppLifecycle<br> {<br> IActivatedEventArgs GetActivatedEventArgs()<br> } | New class. This is the major new class exposed in the undocked<br/> AppLifecycle component. This spec only covers activation aspects <br/>here. Additional AppLifecycle properties, methods and events are <br/>specified in other specs. GetActivatedEventArgs provides the same <br/>behavior as the existing [AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs), in that <br/>it returns the XXXActivatedEventArgs object for the current activation. <br/>The initial release of GetActivatedEventArgs must support the <br/>XXXActivatedEventArgs and corresponding ActivationKinds listed below. <br/>The Reunion implementation must not require coupling with the UWP <br/>multi-instancing behavior. |
+| enum class ExtendedActivationKind<br/>{<br/>    /\* all existing platform ActivationKind values, \*/<br/>    ExtensionBase = 5000,<br/>    /\* new Reunion ExtendedActivationKind values\*/<br/>}; | This enum is based off the platform [ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind). All platform ActivationKind values are cloned to this class. Then, we set a high-value **ExtensionBase** value which is well above the existing highest ActivationKind value (1026), to allow for new values to be added to the platform. Going forward, any new platform values will also be added to the new enum, plus any new values that are only defined in the new enum. |
+| class ActivationArguments<br/>{<br/>public:<br/>    ExtendedActivationKind Kind ;<br/>    IInspectable Data;<br/>}; | The platform defines [IActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.IActivatedEventArgs), which exposes a Kind property. Apps can get an IActivatedEventArgs reference, examine the Kind and then cast the reference to the specific concrete class type that implements IActivatedEventArgs. This enables generic functions such as GetActivatedEventArgs and the Activated event handler, which provide the app with an IActivatedEventArgs that the app can then convert to a specific concrete type. However, IActivatedEventArgs also defines other properties that are only useful in a UWP context. In addition, we need a mechanism that supports both platform ActivationKinds and also Reunion-only ExtendedActivationKinds and their corresponding concrete class types. <br />The new ActivationArguments type serves this purpose: the app can examine the Kind, and then cast the Data property to the specific concrete type (which can be either a platform IActivatedEventArgs concrete class, or a Reunion class).<br />**Kind** is the enum value that indicates the kind of activation this object represents.<br />**Data** can be cast to a specific concrete class corresponding to Kind. |
+| class AppInstance<br/>{<br/>public:<br/>    static AppInstance GetCurrent();<br/>    static IVector<AppInstance> GetInstances();<br/>    static AppInstance FindOrRegisterForKey(string key);<br/>    void UnregisterKey(string key);<br/>    void RedirectTo(ActivationArguments args);<br/>    static ActivationArguments GetActivatedEventArgs();<br/>    static void Activated(EventHandler<ActivationArguments> const& handler);<br/>    string Key;<br/>    bool IsCurrent;<br/>}; | New class. This is the major new class exposed in the AppLifecycle component in Reunion. <br />**GetCurrent** returns an AppInstance that represents the current app instance.<br />**GetInstances** returns a collection of all running instances of the app. Note: the existing platform [AppInstance.GetInstances](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getinstances) only returns instances that have explicitly registered for multi-instance redirection. However, the new AppInstance Reunion class will provide an API surface for all manner of app-instance-related behaviors, not restricted to instance redirection. For this reason, Reunion will maintain a list of all running instances and will not require explicit registration by the app.<br />**FindOrRegisterForKey** enables an app to register an app-defined key for the current instance, or if another instance has already registered that key, then return that other instance instead. This is similar to the platform [AppInstance.FindOrRegisterInstanceForKey](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.findorregisterinstanceforkey) except that that implementation is specific to instance redirection, whereas the Reunion design allows for the app to register a key for any reason.<br />**UnregisterKey** unregisters a given key for this instance. The existing  platform behavior is specific to instance redirection, and unregistering the key unregisters that instance for redirection (and removes it from the platform's collection of registered instances). In the Reunion design, unregistering a key simply removes the key for this instance; it does not have any effect on instance redirection, nor does it remove this instance from the collection that Reunion is maintaining of all running instances. <br />**RedirectTo** enables an instance of the app to redirect the current activation request to another instance. This is very similar to the existing platform [AppInstance.RedirectActivationTo](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.redirectactivationto) method, except that the Reunion implementation allows the app to pass an ActivationArguments payload, thus opening the scope to allow the app to modify or replace the activation arguments that the target instance will receive.<br />**GetActivatedEventArgs** provides similar behavior as the existing platform [AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs), except that it returns a new ActivationArguments object for the current activation instead of an IActivatedEventArgs. <br/> |
 | class LaunchActivatedEventArgs                               | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs). |
 | class FileActivatedEventArgs                                 | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs). |
 | class ProtocolActivatedEventArgs                             | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs). |
 | class StartupTaskActivatedEventArgs                          | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
-| enum ActivationKind                                          | Based on the existing [ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind). |
+
+Also see the related API Spec AppLifecycle - Single/Multi-instancing, which
+describes the new Activated event. An app can use GetActivatedEventArgs even if
+it is not choosing to use multi-instance redirection. If it is using
+multi-instance redirection, then it can use GetActivatedEventArgs and also
+handle the Activated event.
 
 ### Properties, methods and sub-types
 
@@ -349,12 +353,6 @@ AppLifecycle in Reunion v1.
 | interface IProtocolActivatedEventArgs<br/> {<br/> Uri Uri;<br/> }<br/> | **Uri** is the minimum required property for this activation type. |
 | class StartupTaskActivatedEventArgs                          | Implements IActivatedEventArgs, plus the following:          |
 | interface IStartupTaskActivatedEventArgs<br/> {<br/> string TaskId;<br/> }<br/> | **TaskId** is an app-defined value; the app can use this later in the <br/>StartupTask API to request enabling or disabling of the startup behavior. |
-
-Also see the related API Spec AppLifecycle - Single/Multi-instancing, which
-describes the new Activated event. An app can use GetActivatedEventArgs even if
-it is not choosing to use multi-instance redirection. If it is using
-multi-instance redirection, then it can use GetActivatedEventArgs and also
-handle the Activated event.
 
 ### Activation registration
 
@@ -397,7 +395,7 @@ any old values).
 
 ### Activation unregistration
 
-The new API will include UnregisterForXXXActivation methods for each of the
+The new ActivationRegistrationManager class will also include UnregisterForXXXActivation methods for each of the
 supported activation kinds.
 
 | API                                                          | Description                                                  |
