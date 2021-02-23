@@ -19,9 +19,6 @@ jobs:
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
-      Release_Arm:
-        buildPlatform: 'ARM'
-        buildConfiguration: 'Release'
       Release_Arm64:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
@@ -312,18 +309,6 @@ jobs:
       flattenFolders: true
 
   - task: CopyFiles@2
-    displayName: 'copy ARM'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM'
-      Contents: |
-        mrm.pdb
-        Microsoft.ApplicationModel.Resources.pdb
-        mrm.dll
-        Microsoft.ApplicationModel.Resources.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-arm\native'
-      flattenFolders: true
-
-  - task: CopyFiles@2
     displayName: 'copy ARM64'
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
@@ -351,15 +336,6 @@ jobs:
       Contents: |
         mrm.lib
       TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x64'
-      flattenFolders: true
-
-  - task: CopyFiles@2
-    displayName: 'copy import lib ARM'
-    inputs:
-      SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM'
-      Contents: |
-        mrm.lib
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-arm'
       flattenFolders: true
 
   - task: CopyFiles@2
