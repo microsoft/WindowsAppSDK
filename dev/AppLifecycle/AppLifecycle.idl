@@ -3,19 +3,74 @@
 
 namespace Microsoft.ProjectReunion
 {
-    runtimeclass AppLifecycle
+    enum ExtendedActivationKind
     {
-        static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
+        Launch = 0,
+        Search,
+        ShareTarget,
+        File,
+        Protocol,
+        FileOpenPicker,
+        FileSavePicker,
+        CachedFileUpdater,
+        ContactPicker,
+        Device,
+        PrintTaskSettings,
+        CameraSettings,
+        RestrictedLaunch,
+        AppointmentsProvider,
+        Contact,
+        LockScreenCall,
+        VoiceCommand,
+        LockScreen,
+        PickerReturned = 1000,
+        WalletAction,
+        PickFileContinuation,
+        PickSaveFileContinuation,
+        PickFolderContinuation,
+        WebAuthenticationBrokerContinuation,
+        WebAccountProvider,
+        ComponentUI,
+        ProtocolForResults = 1009,
+        ToastNotification,
+        Print3DWorkflow,
+        DialReceiver,
+        DevicePairing,
+        UserDataAccountsProvider,
+        FilePickerExperience,
+        LockScreenComponent,
+        ContactPanel,
+        PrintWorkflowForegroundTask,
+        GameUIProvider,
+        StartupTask,
+        CommandLineLaunch,
+        BarcodeScannerProvider,
+        PrintSupportJobUI,
+        PrintSupportSettingsUI,
+        PhoneCallActivation,
+        VpnForeground,
+        ExtensionBase = 5000,
+    };
 
-        static Windows.Foundation.Collections.IVector<AppLifecycle> GetRegisteredInstances();
-        static AppLifecycle FindOrRegisterInstanceForKey(String key);
-        static void UnregisterInstanceForRedirection();
+    runtimeclass ActivationArguments
+    {
+        ExtendedActivationKind Kind { get; };
+        IInspectable Data{ get; };
+    };
 
-        void RedirectActivationTo(Windows.ApplicationModel.Activation.IActivatedEventArgs args);
-        event Windows.Foundation.EventHandler<Windows.ApplicationModel.Activation.IActivatedEventArgs> Activated;
+    runtimeclass AppInstance
+    {
+        static AppInstance GetCurrent();
+        static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
+        static AppInstance FindOrRegisterForKey(String key);
 
-        Boolean IsCurrentInstance{ get; };
+        void UnregisterKey(String key);
+        void RedirectTo(Microsoft.ProjectReunion.ActivationArguments args);
+        Microsoft.ProjectReunion.ActivationArguments GetActivatedEventArgs();
+        event Windows.Foundation.EventHandler<Microsoft.ProjectReunion.ActivationArguments> Activated;
+
         String Key{ get; };
+        Boolean IsCurrent{ get; };
     }
 
     static runtimeclass ActivationRegistrationManager

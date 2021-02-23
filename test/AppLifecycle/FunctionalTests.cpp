@@ -86,7 +86,7 @@ namespace ProjectReunionCppTest
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
             END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
+            VERIFY_IS_NULL(AppInstance::GetCurrent().GetActivatedEventArgs());
         }
 
         TEST_METHOD(GetActivatedEventArgsIsNotNull)
@@ -101,7 +101,7 @@ namespace ProjectReunionCppTest
                 //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
+            VERIFY_IS_NOT_NULL(AppInstance::GetCurrent().GetActivatedEventArgs());
         }
 
         TEST_METHOD(GetActivatedEventArgsForLaunch)
@@ -116,9 +116,9 @@ namespace ProjectReunionCppTest
                 //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
             END_TEST_METHOD_PROPERTIES();
 
-            auto args = AppLifecycle::GetActivatedEventArgs();
+            auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
             VERIFY_IS_NOT_NULL(args);
-            VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
+            VERIFY_ARE_EQUAL(args.Kind(), ExtendedActivationKind::Launch);
 
             auto launchArgs = args.as<LaunchActivatedEventArgs>();
             VERIFY_IS_NOT_NULL(launchArgs);

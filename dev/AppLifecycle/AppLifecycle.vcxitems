@@ -15,9 +15,11 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActivationArguments.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Association.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActivationArguments.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Association.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileActivatedEventArgs.h" />
@@ -25,7 +27,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)shared_memory.h" />
     <Midl Include="$(MSBuildThisFileDirectory)AppLifecycle.idl" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppInstance.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppInstance.cpp" />
   </ItemGroup>
 </Project>
