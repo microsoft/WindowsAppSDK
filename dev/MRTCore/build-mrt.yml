@@ -4,11 +4,16 @@
 # https://aka.ms/yaml
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+  MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
+
 steps:
 - task: BatchScript@1
   displayName: Set up environment
   inputs:
-    filename: '$(MRTSourcesDirectory)\build\init.cmd'
+    filename: '${{ parameters.MRTSourcesDirectory }}\build\init.cmd'
     arguments: /envonly $(buildPlatform)fre
     modifyEnvironment: true
 
@@ -24,69 +29,69 @@ steps:
   displayName: 'NuGet restore of core'
   inputs:
     command: 'custom'
-    arguments: 'restore $(MRTSourcesDirectory)\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\core\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of applicationmodel'
   inputs:
     command: 'custom'
-    arguments: 'restore $(MRTSourcesDirectory)\mrt\microsoft.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\microsoft.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of mrmex'
   inputs:
     command: 'custom'
-    arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmex\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of mrmmin'
   inputs:
     command: 'custom'
-    arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\mrmmin\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of mrm unittests'
   inputs:
     command: 'custom'
-    arguments: 'restore $(MRTSourcesDirectory)\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory $(MRTSourcesDirectory)\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 #  - task: powershell@2
 #    displayName: 'Install the VS build tools'
 #    inputs:
 #      targetType: filePath
-#      filePath: $(MRTSourcesDirectory)\build\Initialize-InstallMSBuild.ps1
-#      arguments: '-installDir $(MRTSourcesDirectory)\.buildtools -logsDir $(MRTSourcesDirectory)\msbuild-install-logs'
+#      filePath: ${{ parameters.MRTSourcesDirectory }}\build\Initialize-InstallMSBuild.ps1
+#      arguments: '-installDir ${{ parameters.MRTSourcesDirectory }}\.buildtools -logsDir ${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
     
 #  - task: BatchScript@1
 #    displayName: Add the VS build tools to the path
 #    inputs:
-#      filename: '$(MRTSourcesDirectory)\build\SetMSBuildVars.cmd'
-#      arguments: '$(MRTSourcesDirectory)\.buildtools'
+#      filename: '${{ parameters.MRTSourcesDirectory }}\build\SetMSBuildVars.cmd'
+#      arguments: '${{ parameters.MRTSourcesDirectory }}\.buildtools'
 #      modifyEnvironment: true
 
 #  - task: PublishBuildArtifacts@1
 #    displayName: 'Publish install logs'
 #    condition: Failed()
 #    inputs:
-#      PathtoPublish: '$(MRTSourcesDirectory)\msbuild-install-logs'
+#      PathtoPublish: '${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
 #      artifactName: 'installlogs'
 
 - task: powershell@2
   displayName: 'Installing .NET SDK'
   inputs:
     targetType: filePath
-    workingDirectory: $(MRTSourcesDirectory)\build
-    filePath: $(MRTSourcesDirectory)\build\DownloadDotNetCoreSdk.ps1 
+    workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
+    filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1 
 
 - task: BatchScript@1
   displayName: 'Use .NET SDK'
   inputs:
-    filename: '$(MRTSourcesDirectory)\build\SetDotnetVars.cmd'
-    arguments: '$(MRTSourcesDirectory)'
+    filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
+    arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
 #  - task: BatchScript@1
@@ -98,11 +103,11 @@ steps:
   displayName: 'build MrtCore'
   inputs:
 #      msbuildLocationMethod: 'location'
-#      msbuildLocation: $(MRTSourcesDirectory)\.buildtools\MSBuild\Current\Bin\MSBuild.exe
+#      msbuildLocation: ${{ parameters.MRTSourcesDirectory }}\.buildtools\MSBuild\Current\Bin\MSBuild.exe
     platform: '$(buildPlatform)'
-    solution: '$(MRTSourcesDirectory)\mrt\MrtCore.sln'
+    solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
@@ -118,7 +123,7 @@ steps:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
       **\ManagedTest.build.appxrecipe
-    searchFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
     testRunTitle: 'test MRT $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -133,7 +138,7 @@ steps:
       !**\*TestAdapter.dll
       !**\TE.*.dll
       !**\obj\**
-    searchFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
     testRunTitle: 'test MRT $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -148,7 +153,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy binaries for signing'
   inputs:
-    SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
     Contents: |
       mrm\mrm.dll
       mrm\mrm.lib
@@ -162,7 +167,7 @@ steps:
   displayName: 'copy projection binaries and symbols for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
     Contents: |
       Microsoft.ApplicationModel.Resources.Projection.dll
       Microsoft.ApplicationModel.Resources.Projection.pdb
@@ -173,7 +178,7 @@ steps:
   displayName: 'copy winmd for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '$(MRTBinariesDirectory)\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
     Contents: |
       Microsoft.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'

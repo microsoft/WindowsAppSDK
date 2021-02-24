@@ -80,11 +80,6 @@ jobs:
       Release_Arm64:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
-  variables:
-    solution: '**/*.sln'
-    appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
-    MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
   steps:
   - template: ..\dev\MRTCore\build-mrt.yml
     parameters:
