@@ -2,6 +2,7 @@
 Param(
     [string]$BuildOutputDir,
     [string]$PublishDir,
+    [string]$NugetDir,
     [string]$Platform,
     [string]$Configuration,
     [switch]$PublishAppxFiles=$false
@@ -33,7 +34,6 @@ function PublishFile {
 
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile -IfExists $FullBuildOutput\projectreunion_dll\SampleFlatC.h $FullPublishDir\Microsoft.ProjectReunion\
 #PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion\
 #UNDONE - xaml vcxproj re-runs an mdmerge into the sdk node, we are skipping this for now and leaving the winmd in its normal outdir
 #PublishFile -IfExists $FullBuildOutput\projectreunion_dll\sdk\Microsoft.ProjectReunion.winmd $FullPublishDir\Microsoft.ProjectReunion\sdk\
@@ -66,14 +66,11 @@ if($PublishAppxFiles)
 
 # Publish pdbs:
 $symbolsOutputDir = "$($FullPublishDir)\Symbols\"
-PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\IXMPTestApp.TAEF\IXMPTestApp.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXTestUtilities\MUXTestUtilities.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControls.Test\MUXControls.Test.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControlsTestApp.TAEF\MUXControlsTestApp.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControlsTestAppForIslands\MUXControlsTestAppForIslands.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\MUXControlsTestAppWPF\MUXControlsTestAppWPF.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\TestAppCX\TestAppCX.pdb $symbolsOutputDir
-PublishFile -IfExists $FullBuildOutput\NugetPackageTestApp\NugetPackageTestApp.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\AppThatUsesMUXIndirectly\AppThatUsesMUXIndirectly.pdb $symbolsOutputDir
-#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\NugetPackageTestAppCX.pdb $symbolsOutputDir
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pdb $symbolsOutputDir
+
+
+# Copy files to Full Nuget package
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.pdb $NugetDir\runtimes\win10-$Platform\native\
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.lib $NugetDir\lib\win10-$Platform
+PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ProjectReunion.winmd $NugetDir\lib\uap10.0

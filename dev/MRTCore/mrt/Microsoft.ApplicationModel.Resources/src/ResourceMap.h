@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
 #include "ResourceMap.g.h"
@@ -26,20 +26,24 @@ struct ResourceMap : ResourceMapT<ResourceMap>
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValue(hstring const& resource);
 
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValue(
-        Microsoft::ApplicationModel::Resources::ResourceContext const& context,
-        hstring const& resource);
+        hstring const& resource,
+        Microsoft::ApplicationModel::Resources::ResourceContext const& context);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndex(
         uint32_t index);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndex(
-        Microsoft::ApplicationModel::Resources::ResourceContext const& context,
-        uint32_t index);
+        uint32_t index,
+        Microsoft::ApplicationModel::Resources::ResourceContext const& context);
+
+    Microsoft::ApplicationModel::Resources::ResourceCandidate TryGetValue(hstring const& resource);
+    Microsoft::ApplicationModel::Resources::ResourceCandidate TryGetValue(hstring const& resource, Microsoft::ApplicationModel::Resources::ResourceContext const& context);
 
 private:
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValueImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,
-        hstring const& resource);
+        hstring const& resource,
+        bool treatNotFoundAsOk);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndexImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,

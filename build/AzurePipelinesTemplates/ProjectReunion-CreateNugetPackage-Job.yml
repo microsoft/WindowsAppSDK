@@ -3,42 +3,31 @@ parameters:
   jobName: ''
   dependsOn: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  nupkgdir: '$(build.artifactStagingDirectory)'
+  fullnupkgdir: '$(build.artifactStagingDirectory)\fullnuget'
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
-  signConfig: ''
   useReleaseTag: 'false'
   prereleaseVersionTag: 'prerelease'
+  condition: ''
+  major: '0'
+  minor: '1'
+  patch: '0'
 
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn:
     - ${{ parameters.dependsOn }}
-
-  # XES tasks need to be on PackageES machines.
-#  ${{if parameters.signConfig }}:
-#    pool:
-#      name: Package ES Lab E
-
+  condition: ${{ parameters.condition }}
   pool:
     vmImage: 'windows-2019'
-
   steps:
-  - ${{if parameters.signConfig }}:
-    - task: PkgESSetupBuild@10
-      displayName: 'XESSetupBuild'
-      inputs:
-        productName: microsoft.projectreunion
-        branchVersion: false
-        nugetVer: true
-
   - template: ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
 
   - script: |
       echo parameters.jobName '${{ parameters.jobName }}'
       echo parameters.buildOutputDir '${{ parameters.buildOutputDir }}'
-      echo parameters.nupkgdir '${{ parameters.nupkgdir }}'
+      echo parameters.fullnupkgdir '${{ parameters.fullnupkgdir }}'
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
@@ -47,66 +36,121 @@ jobs:
 
   - task: DownloadBuildArtifacts@0 
     inputs: 
-      artifactName: drop
-      downloadPath: '$(Build.SourcesDirectory)\Artifacts'
+      artifactName: FullNuget
+      downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+  - task: CopyFiles@2
+    displayName: 'copy license to full nuget'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: |
+        LICENSE
+      TargetFolder: '${{ parameters.fullnupkgdir }}'
+
+  # Copy the Project Reunion full package specific target files and AppxManifest into the full package folder
+  - task: PowerShell@2
+    displayName: 'Copy Project Reunion full package assets'
+    inputs:
+      targetType: 'inline'
+      script: |
+        $targetsFilePath = "$(Build.SourcesDirectory)\build\NuSpecs"
+        $fullpackagePath = "${{ parameters.fullnupkgdir }}"
+        Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.targets" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.props" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.props"
+
+        Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
   # debugging - remove or comment out before completing PR      
-  - script: |
-      dir /s $(Build.SourcesDirectory)
+  # - script: |
+  #     dir /s $(Build.SourcesDirectory)
 
   - template: ProjectReunion-InstallNuget-Steps.yml
 
-  - ${{if parameters.signConfig }}:
-    # Re-create framework packages because we made them in the build step against unsigned binaries.
-    - template: ProjectReunion-MakeFrameworkPackages-Steps.yml
+  # - powershell: |
+  #     $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
+  #     if ("${{ parameters.useReleaseTag}}" -eq [bool]::TrueString) { $prereleaseTag = "" }
 
-    # Copy the re-made framework packages into the same location in the artifact drop to be republished at the end of the job.
-    - task: CopyFiles@2
+  #     & "$(Build.SourcesDirectory)\build\NuSpecs\build-nupkg.ps1" `
+  #       -BuildOutput '$(Build.SourcesDirectory)\Artifacts\drop' `
+  #       -OutputDir '${{ parameters.nupkgdir }}' `
+  #       -prereleaseversion "$prereleaseTag" `
+  #       -DateOverride '$(builddate)' `
+  #       -Subversion '$(buildrevision)' `
+  #       -BuildArch ${{ parameters.primaryBuildArch }} `
+  #       -BuildFlavor ${{ parameters.buildFlavor }}
+
+  #   displayName: 'build-nupkg.ps1'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'Pack Full Nuget Package'
+    inputs:
+      command: 'pack'
+      packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
+      versioningScheme: 'byPrereleaseNumber'
+      majorVersion: ${{ parameters.major }}
+      minorVersion: ${{ parameters.minor }}
+      patchVersion: ${{ parameters.patch }}
+      basePath: '${{ parameters.fullnupkgdir }}'
+      packDestination: ${{ parameters.fullnupkgdir }}
+
+  - ${{if parameters.signConfigPattern }}:
+    - task: EsrpCodeSigning@1
       inputs:
-        targetFolder: '${{ parameters.nupkgdir }}'
-        sourceFolder: '$(Build.SourcesDirectory)\Artifacts\drop'
-        Contents: '**\Microsoft.ProjectReunion*.appx'
-
-  - powershell: |
-      $prereleaseTag = "${{ parameters.prereleaseVersionTag }}"
-      if ("${{ parameters.useReleaseTag}}" -eq [bool]::TrueString) { $prereleaseTag = "" }
-
-      & "$(Build.SourcesDirectory)\build\NuSpecs\build-nupkg.ps1" `
-        -BuildOutput '$(Build.SourcesDirectory)\Artifacts\drop' `
-        -OutputDir '${{ parameters.nupkgdir }}' `
-        -prereleaseversion "$prereleaseTag" `
-        -DateOverride '$(builddate)' `
-        -Subversion '$(buildrevision)' `
-        -BuildArch ${{ parameters.primaryBuildArch }} `
-        -BuildFlavor ${{ parameters.buildFlavor }}
-
-    displayName: 'build-nupkg.ps1'
-
-  - ${{if parameters.signConfig }}:
-    - task: PkgESCodeSign@10
-      env:
-        SYSTEM_ACCESSTOKEN: $(system.accesstoken)
-      displayName: CodeSign
-      inputs:
-        signConfigXml: ${{ parameters.signConfig }}
-        inPathRoot: '${{ parameters.nupkgdir }}'
-        outPathRoot: '${{ parameters.nupkgdir }}\signed'
+        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+        FolderPath: '${{ parameters.fullnupkgdir }}'
+        Pattern: |
+          ${{ parameters.signConfigPattern }}
+        UseMinimatch: true
+        signConfigType: 'inlineSignParams'
+        inlineOperation: |
+          [
+            {
+              "KeyCode" : "CP-401405",
+              "OperationCode" : "NuGetSign",
+              "Parameters" : {},
+              "ToolName" : "sign",
+              "ToolVersion" : "1.0"
+            },
+            {
+                "KeyCode" : "CP-401405",
+                "OperationCode" : "NuGetVerify",
+                "Parameters" : {},
+                "ToolName" : "sign",
+                "ToolVersion" : "1.0"
+            }
+          ]
+        SessionTimeout: '60'
+        MaxConcurrency: '50'
+        MaxRetryAttempts: '5'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: nupkg'
+    displayName: 'Publish artifact: Full Nuget'
     inputs:
-      PathtoPublish: '${{ parameters.nupkgdir }}'
-      artifactName: 'drop'
+      PathtoPublish: '${{ parameters.fullnupkgdir }}'
+      artifactName: 'FullNuget'
+      
+  - ${{if parameters.signConfigPattern }}:
+    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'NuGet push to Project.Reunion.nuget.internal'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/fullnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fullnuget/*.symbols.nupkg'
+        verbosityPush: 'Detailed' 
+        nuGetFeedType: 'internal'
+        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\ProjectReunion-BuildAndPublishPGONuGet-Job.yml
 #
 # To publish the package to vsts feed, set queue time variable NuGetFeed = d62f8eac-f05c-4c25-bccb-21f98b95c95f
 # This is the magic GUID from the pipeline visual designer for this feed: https://dev.azure.com/ms/microsoft-ui-xaml/_packaging?_a=feed&feed=MUX-CI
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    condition: and(ne(variables['NuGetFeed'], ''), ne(variables['Build.Reason'], 'Manual'))
-    displayName: 'NuGet push to $(NuGetFeed)'
-    inputs:
-      command: push
-      publishVstsFeed: $(NuGetFeed)
-      packagesToPush: $(Build.ArtifactStagingDirectory)/*.nupkg
+#  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+#    condition: and(ne(variables['NuGetFeed'], ''), ne(variables['Build.Reason'], 'Manual'))
+#    displayName: 'NuGet push to $(NuGetFeed)'
+#    inputs:
+#      command: push
+#      publishVstsFeed: $(NuGetFeed)
+#      packagesToPush: $(Build.ArtifactStagingDirectory)/*.nupkg
+

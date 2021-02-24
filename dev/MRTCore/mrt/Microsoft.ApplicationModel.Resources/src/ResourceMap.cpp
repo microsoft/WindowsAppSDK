@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
 #include "Helper.h"
@@ -40,7 +40,7 @@ Resources::ResourceMap ResourceMap::GetSubtree(hstring const& reference)
     return winrt::make<ResourceMap>(m_resourceManager, m_resourceManagerHandle, subtree);
 }
 
-Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::ResourceContext* context, hstring const& resource)
+Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::ResourceContext* context, hstring const& resource, bool treatNotFoundAsOk)
 {
     // Always use a context as we override the languages.
     Resources::ResourceContext resourceContext = (context != nullptr) ? *context : m_resourceManager.CreateResourceContext();
@@ -48,7 +48,17 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
     if (m_resourceManagerHandle == nullptr)
     {
         // Resource is not managed by MRT. Handle with event handler
-        return m_resourceManager.as<ResourceManager>()->HandleResourceNotFound(resourceContext, resource);
+        Resources::ResourceCandidate candidate = m_resourceManager.as<ResourceManager>()->HandleResourceNotFound(resourceContext, resource);
+        if (candidate != nullptr)
+        {
+            return candidate;
+        }
+
+        if (treatNotFoundAsOk)
+        {
+            return nullptr;
+        }
+        winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
     }
 
     resourceContext.as<Resources::implementation::ResourceContext>()->Apply();
@@ -71,6 +81,11 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
         if (candidate != nullptr)
         {
             return candidate;
+        }
+
+        if (treatNotFoundAsOk)
+        {
+            return nullptr;
         }
     }
     winrt::check_hresult(hr);
@@ -117,11 +132,24 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
     winrt::throw_hresult(E_UNEXPECTED);
 }
 
-Resources::ResourceCandidate ResourceMap::GetValue(hstring const& resource) { return GetValueImpl(nullptr, resource); }
-
-Resources::ResourceCandidate ResourceMap::GetValue(Resources::ResourceContext const& context, hstring const& resource)
+Resources::ResourceCandidate ResourceMap::GetValue(hstring const& resource)
 {
-    return GetValueImpl(&context, resource);
+    return GetValueImpl(nullptr, resource, false);
+}
+
+Resources::ResourceCandidate ResourceMap::GetValue(hstring const& resource, Resources::ResourceContext const& context)
+{
+    return GetValueImpl(&context, resource, false);
+}
+
+Microsoft::ApplicationModel::Resources::ResourceCandidate ResourceMap::TryGetValue(hstring const& resource)
+{
+    return GetValueImpl(nullptr, resource, true);
+}
+
+Microsoft::ApplicationModel::Resources::ResourceCandidate ResourceMap::TryGetValue(hstring const& resource, Microsoft::ApplicationModel::Resources::ResourceContext const& context)
+{
+    return GetValueImpl(&context, resource, true);
 }
 
 IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByIndexImpl(
@@ -208,7 +236,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
     return GetValueByIndexImpl(nullptr, index);
 }
 
-IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByIndex(Resources::ResourceContext const& context, uint32_t index)
+IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByIndex(uint32_t index, Resources::ResourceContext const& context)
 {
     return GetValueByIndexImpl(&context, index);
 }

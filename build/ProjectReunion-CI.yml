@@ -3,6 +3,7 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
+
 jobs:
 - job: Build
   pool:
@@ -22,9 +23,6 @@ jobs:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         PGOBuildMode: 'Optimize'
-      Release_Arm:
-        buildPlatform: 'arm'
-        buildConfiguration: 'Release'
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
@@ -34,24 +32,73 @@ jobs:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'WindowsES'
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
-#UNDONE - subsequent PR
-#- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
-#  parameters:
-#    name: 'RunTestsInHelix'
-#    dependsOn: Build
-#    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-#    testSuite: 'DevTestSuite'
-#    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+- job: BuildMRT
+  pool:
+    vmImage: 'windows-latest'
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+  steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'WindowsES'
+  - template: ..\dev\MRTCore\build-mrt.yml
+    parameters:
+      buildJobName: 'BuildMRTCore'
+
+- job: PublishMRT
+  dependsOn:
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ..\dev\MRTCore\publish-mrt.yml
+
+- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
+  parameters:
+    name: 'RunTestsInHelix'
+    dependsOn: 
+      - Build
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    testSuite: 'DevTestSuite'
+    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+
+- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
+  parameters:
+    dependsOn: RunTestsInHelix
+    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+    minimumExpectedTestsExecutedCount: 2
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
   parameters:
     jobName: CreateNugetPackage
-    dependsOn: Build
+    dependsOn:
+      - Build
+      - PublishMRT
     prereleaseVersionTag: ci
+    condition: |
+      and
+      (
+        in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
+        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+      )
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml

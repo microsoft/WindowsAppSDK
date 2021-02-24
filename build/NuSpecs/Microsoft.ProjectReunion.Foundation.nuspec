@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+     <metadata minClientVersion="3.3">
+         <id>Microsoft.ProjectReunion.Foundation.TransportPackage</id>
+         <version>1.0</version>
+         <title>$id$</title>
+         <authors>Microsoft</authors>
+         <description>Project Reunion</description>
+         <license type="file">LICENSE</license>
+         <requireLicenseAcceptance>true</requireLicenseAcceptance>
+         <projectUrl>https://aka.ms/projectreunion</projectUrl>
+         <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+         <tags>Microsoft Resources Native Windows Reunion ProjectReunion</tags>
+     </metadata>       
+</package>

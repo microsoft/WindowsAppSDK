@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.DotNet.Helix.Sdk" DefaultTargets="Test">
+  <PropertyGroup>
+    <HelixSource>pr</HelixSource>
+    <HelixType>DevTestSuite</HelixType>
+    <HelixTargetQueues>Windows.10.Amd64.ClientRS5.Xaml;</HelixTargetQueues>
+    <EnableXUnitReporter>true</EnableXUnitReporter>
+    <EnableAzurePipelinesReporter>true</EnableAzurePipelinesReporter>
+    <HelixPreCommands>$(HelixPreCommands);set testnameprefix=$(Configuration).$(Platform)</HelixPreCommands>
+    <OutputPath>\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <HelixCorrelationPayload Include="..\..\HelixPayload\$(Platform)\" />
+    <HelixWorkItem Include="HelixBaseUnitTests">
+      <Timeout>00:20:00</Timeout>
+      <PreCommands>set helixworkitem="HelixBaseUnitTest"; set testBinary="BaseUnitTests.dll"</PreCommands>
+      <Command>call %HELIX_CORRELATION_PAYLOAD%\runtests.cmd</Command>
+    </HelixWorkItem>
+  </ItemGroup>
+</Project>

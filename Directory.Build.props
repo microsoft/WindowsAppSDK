@@ -9,8 +9,8 @@
     <IsTDPConfiguration Condition="'$(Configuration)' == 'Debug_test'">true</IsTDPConfiguration>
     <Configuration Condition="'$(Configuration)' == 'Debug_test'">Debug</Configuration>
     
-    <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(Configuration)\</BaseOutputPath>
-	  <BaseOutputPath Condition="'$(Configuration)' == 'Debug_test'">$(MSBuildThisFileDirectory)BuildOutput\Debug\</BaseOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(Configuration)</BaseOutputPath>
+	  <BaseOutputPath Condition="'$(Configuration)' == 'Debug_test'">$(MSBuildThisFileDirectory)BuildOutput\Debug</BaseOutputPath>
     <OutDir>$(BaseOutputPath)\$(Platform)\</OutDir>
 
     <!-- For native projects that use Win32 to mean x86, override the OutDir
@@ -19,9 +19,6 @@
 
     <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
 
-    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)BuildOutput\Int\$(MSBuildProjectName)\obj\$(Platform)$(Configuration)\</BaseIntermediateOutputPath>
-    <IntDir>$(BaseIntermediateOutputPath)</IntDir>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
   </PropertyGroup>
