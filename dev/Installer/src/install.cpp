@@ -84,6 +84,13 @@ namespace ProjectReunionInstaller {
         return false;
     }
 
+    wil::com_ptr<IStream> CreateMemoryStream(const BYTE* data, size_t size)
+    {
+        wil::com_ptr<IStream> retval;
+        retval.attach(::SHCreateMemStream(data, size));
+        return retval;
+    }
+
     wil::com_ptr<IStream> GetResourceStream(const std::wstring& resourceName, const std::wstring& resourceType)
     {
         HMODULE const hModule = GetModuleHandle(NULL);
@@ -94,8 +101,7 @@ namespace ProjectReunionInstaller {
         const BYTE* data = reinterpret_cast<BYTE*>(::LockResource(hResource));
         THROW_LAST_ERROR_IF_NULL(data);
         const DWORD size{ ::SizeofResource(hModule, hResourceSource) };
-        wil::com_ptr<IStream> stream{ ::SHCreateMemStream(data, size) };
-        return stream;
+        return CreateMemoryStream(data, size);
     }
 
     std::unique_ptr<PackageProperties> GetPackagePropertiesFromStream(wil::com_ptr<IStream>& stream)
