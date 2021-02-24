@@ -38,14 +38,30 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
-# MRTCore build pipeline
-- task: NuGetAuthenticate@0
-  inputs:
-    nuGetServiceConnections: 'WindowsES'
-- template: ..\dev\MRTCore\azure-pipelines.yml
-  parameters:
-    buildJobName: 'BuildMRTCore'
-    
+- job: BuildMRT
+  pool:
+    vmImage: 'windows-latest'
+
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+  steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'WindowsES'
+  - template: ..\dev\MRTCore\azure-pipelines.yml
+    parameters:
+      buildJobName: 'BuildMRTCore'
+
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
