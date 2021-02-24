@@ -10,6 +10,7 @@ For an application that already uses DirectWrite, switching to DWriteCore requir
  - Add a reference to the Project Reunion package.
  - Include dwrite_core.h instead of dwrite_3.h.
  - Link to DWriteCore.lib instead of DWrite.lib.
+ - Call DWriteCoreCreateFactory instead of DWriteCreateFactory.
 
 In return, the application gets the benefits of Project Reunion, namely, access to the newest APIs
 and functionality regardless of what version of Windows your customer is running.
@@ -76,6 +77,8 @@ with interoperability issues.
 
 New APIs introduced by DWriteCore include:
 
+ - The exported function is renamed `DWriteCoreCreateFactory` to avoid a naming collision with the
+   `DWriteCreateFactory` function exported by the Windows DLL (DWrite.dll).
  - A new DWRITE_FACTORY_TYPE enumeration for creating an isolated factory object
  - A new method for getting pixel data from a bitmap render target
 
@@ -97,18 +100,18 @@ interface that an application can use to access the bitmap data without going th
 
 ## Creating an isolated factory
 
-An application calls the [DWriteCreateFactory](https://docs.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-dwritecreatefactory)
-function to create a factory object, which is the entry-point to all other DirectWrite APIs. An application can
-specify the new DWRITE_FACTORY_TYPE_ISOLATED2 enum value if it wants to minimize interaction between DirectWrite
-and the host system. Specifically, the resulting factory only caches data in-process. It neither reads from nor
-writes to a cross-process cache (e.g., a font cache process) or persistent cache (i.e., a file). In addition, the
-resulting factory's sysetm font collection only includes well-known system fonts.
+An application calls the DWriteCoreCreateFactory function to create a factory object, which is the entry-point 
+to all other DirectWrite APIs. An application can specify the new DWRITE_FACTORY_TYPE_ISOLATED2 enum value if it 
+wants to minimize interaction between DirectWriteCore and the host system. Specifically, the resulting factory only 
+caches data in-process. It neither reads from nor writes to a cross-process cache (e.g., a font cache process) or 
+persistent cache (i.e., a file). In addition, the resulting factory's sysetm font collection only includes 
+well-known system fonts.
 
 The following example creates an isolated factory.
 
 ```c++
 ComPtr<IDWriteFactory7> spFactory;
-HRESULT hr = DWriteCreateFactory(
+HRESULT hr = DWriteCoreCreateFactory(
     DWRITE_FACTORY_TYPE_ISOLATED2,
     __uuidof(IDWriteFactory7),
     (IUnknown**)&spFactory
@@ -207,6 +210,27 @@ enum DWRITE_FACTORY_TYPE
     DWRITE_FACTORY_TYPE_ISOLATED2
 #endif // DWRITE_CORE
 };
+```
+
+```c++
+/// <summary>
+/// Creates a factory object that is used for subsequent creation of individual DWriteCore objects.
+/// </summary>
+/// <param name="factoryType">Identifies whether the factory object will be shared or isolated.</param>
+/// <param name="iid">Identifies the DirectWrite factory interface, such as UUIDOF(IDWriteFactory).</param>
+/// <param name="factory">Receives the DirectWrite factory object.</param>
+/// <returns>
+/// Standard HRESULT error code.
+/// </returns>
+/// <remarks>
+/// This is functionally the same as the DWriteCreateFactory function exported by the system version
+/// of DirectWrite. The DWriteCore function has a different name to avoid ambiguity.
+/// </remarks>
+EXTERN_C HRESULT DWRITE_EXPORT DWriteCoreCreateFactory(
+    _In_ DWRITE_FACTORY_TYPE factoryType,
+    _In_ REFIID iid,
+    _COM_Outptr_ IUnknown** factory
+);
 ```
 
 ```c++
