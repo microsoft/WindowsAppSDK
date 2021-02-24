@@ -80,6 +80,11 @@ jobs:
       Release_Arm64:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
+  variables:
+    solution: '**/*.sln'
+    appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+    MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
   steps:
   - template: ..\dev\MRTCore\build-mrt.yml
     parameters:
@@ -91,6 +96,15 @@ jobs:
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
   pool:
     vmImage: 'windows-latest'
+  variables:
+    solution: '**/*.sln'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+    appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+    Major: '1'
+    Minor: '0'
+    Patch: '0'
+    MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   steps:
   - template: ..\dev\MRTCore\publish-mrt.yml
 
