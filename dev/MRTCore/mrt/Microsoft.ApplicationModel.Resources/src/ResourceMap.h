@@ -36,10 +36,14 @@ struct ResourceMap : ResourceMapT<ResourceMap>
         uint32_t index,
         Microsoft::ApplicationModel::Resources::ResourceContext const& context);
 
+    Microsoft::ApplicationModel::Resources::ResourceCandidate TryGetValue(hstring const& resource);
+    Microsoft::ApplicationModel::Resources::ResourceCandidate TryGetValue(hstring const& resource, Microsoft::ApplicationModel::Resources::ResourceContext const& context);
+
 private:
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValueImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,
-        hstring const& resource);
+        hstring const& resource,
+        bool treatNotFoundAsOk);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndexImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,

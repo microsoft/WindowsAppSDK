@@ -1,6 +1,5 @@
 ﻿# Project Reunion
-  
-![Build CI Master](https://github.com/microsoft/ProjectReunion/workflows/Build%20CI%20Master/badge.svg)
+
 [![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
 [![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
@@ -20,6 +19,8 @@ down-level across supported versions of Windows.
 
 
 ### How can I use Project Reunion?
+Check out our roadmap and what's supported with Project Reunion **[here](docs/roadmap.md)**!
+
 We have already started with APIs like 
 **[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml)**,
 **[WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)** and 
