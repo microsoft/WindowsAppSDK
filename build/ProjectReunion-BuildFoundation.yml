@@ -81,7 +81,7 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: ..\dev\MRTCore\azure-pipelines.yml
+  - template: ..\dev\MRTCore\build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
 

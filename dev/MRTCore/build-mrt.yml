@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
-variables:
+parameters:
   solution: '**/*.sln'
   appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore

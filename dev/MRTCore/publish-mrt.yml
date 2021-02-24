@@ -1,4 +1,4 @@
-variables:
+parameters:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
