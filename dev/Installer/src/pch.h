@@ -2,6 +2,7 @@
 #include <wil/result.h>
 #include <wil/resource.h>
 #include <wil/com.h>
+#include <wil/win32_helpers.h>
 #include <iostream>
 #include <filesystem>
 #include <processenv.h>

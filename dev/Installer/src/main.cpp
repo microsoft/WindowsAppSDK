@@ -14,11 +14,11 @@ int wmain(int argc, wchar_t *argv[])
     for (int i = 1; i < argc; ++i)
     {
         auto arg = std::wstring_view(argv[i]);
-        if ((arg == L"--q") || (arg == L"--quiet"))
+        if ((arg == L"-q") || (arg == L"--quiet"))
         {
             quiet = true;
         }
-        else if ((arg == L"--?") || (arg == L"--help"))
+        else if ((arg == L"-?") || (arg == L"--help"))
         {
             ShowHelp();
             return 0;
@@ -31,6 +31,6 @@ int wmain(int argc, wchar_t *argv[])
         }
     }
 
-    return DeployPackages(quiet);
+    return ProjectReunionInstaller::DeployPackages(quiet);
 }
 
