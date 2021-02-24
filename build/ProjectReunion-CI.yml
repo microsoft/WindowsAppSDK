@@ -12,7 +12,6 @@ jobs:
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
-      suppressAsError: true
 
 - job: Build
   pool:
