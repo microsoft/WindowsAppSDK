@@ -1,4 +1,0 @@
-# Project Reunion
-🟥🟩                                                                                                                    
-🟦🟨           Microsoft Corporation
-
