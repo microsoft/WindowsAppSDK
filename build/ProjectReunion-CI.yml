@@ -5,6 +5,14 @@ variables:
   rerunPassesRequiredToAvoidFailure: 5
 
 jobs:
+- job: DailyDeveloperWorkflow
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: CredScan@2
+    inputs:
+      toolMajorVersion: 'V2'
+
 - job: Build
   pool:
     vmImage: 'windows-2019'
