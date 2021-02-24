@@ -39,6 +39,9 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
 # MRTCore build pipeline
+- task: NuGetAuthenticate@0
+  inputs:
+    nuGetServiceConnections: 'WindowsES'
 - template: ..\dev\MRTCore\azure-pipelines.yml
   parameters:
     buildJobName: 'BuildMRTCore'
