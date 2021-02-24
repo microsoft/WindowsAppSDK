@@ -41,7 +41,6 @@ jobs:
 - job: BuildMRT
   pool:
     vmImage: 'windows-latest'
-
   strategy:
     maxParallel: 10
     matrix:
@@ -58,9 +57,18 @@ jobs:
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'WindowsES'
-  - template: ..\dev\MRTCore\azure-pipelines.yml
+  - template: ..\dev\MRTCore\build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+
+- job: PublishMRT
+  dependsOn:
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ..\dev\MRTCore\publish-mrt.yml
 
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:

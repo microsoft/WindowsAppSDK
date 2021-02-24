@@ -85,6 +85,15 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
 
+- job: PublishMRT
+  dependsOn:
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ..\dev\MRTCore\publish-mrt.yml
+
 - job: SignBinariesAndPublishSymbols
   variables:
     signingPattern: |
