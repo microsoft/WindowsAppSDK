@@ -1,11 +1,4 @@
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
-  Major: '1'
-  Minor: '0'
-  Patch: '0'
+parameters:
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
 
 steps:
@@ -128,7 +121,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy packaging files'
   inputs:
-    SourceFolder: '$(MRTSourcesDirectory)\packaging'
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
     Contents: |
       Microsoft.ApplicationModel.Resources.PriGen.targets
       Microsoft.ApplicationModel.Resources.References.targets
@@ -144,7 +137,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy header'
   inputs:
-    SourceFolder: '$(MRTSourcesDirectory)\mrt\core\src'
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\core\src'
     Contents: |
       mrm.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
