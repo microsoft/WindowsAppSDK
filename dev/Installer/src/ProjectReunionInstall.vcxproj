@@ -10,8 +10,8 @@
     <ProjectGuid>{e6e59b30-9f55-4550-aa73-3b3b3dc89872}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ProjectReunionInstall</RootNamespace>
-    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.18362.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -110,7 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="help.h" />
+    <ClInclude Include="console.h" />
     <ClInclude Include="install.h" />
     <ClInclude Include="packages.h" />
     <ClInclude Include="pch.h" />
@@ -118,7 +118,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="help.cpp" />
+    <ClCompile Include="console.cpp" />
     <ClCompile Include="install.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
@@ -127,8 +127,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Packages\x64\Microsoft.ProjectReunion.0.1.appx" />
-    <None Include="Packages\x86\Microsoft.ProjectReunion.0.1.appx" />
     <None Include="PropertySheet.props" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="Exists('project_reunion_definitions_override.h')">

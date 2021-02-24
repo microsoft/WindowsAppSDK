@@ -1,7 +1,7 @@
-#include "pch.h"
-#include "help.h"
+﻿#include "pch.h"
+#include "console.h"
 
-void show_help()
+void ShowHelp()
 {
     std::wcout << L"Installs the Microsoft Project Reunion framework." << std::endl;
 
@@ -9,10 +9,10 @@ void show_help()
     wchar_t programName[MAX_PATH];
     if (::GetModuleFileNameW(GetModuleHandle(NULL), programName, MAX_PATH))
     {
-        printf("%ls\n", programName);
+        std::wcout << L"  " << programName << std::endl;
     }
 
-    printf("Usage:\n");
-    printf("  [-quiet] : Suppress all console output.\n");
-    printf("  [-?] or [-help] : Show this text.\n");
+    std::wcout << "Usage: " << std::endl;
+    std::wcout << "  [--quiet] : Suppress all console output." << std::endl;
+    std::wcout << "  [--?] or [--help] : Show this text." << std::endl;
 }

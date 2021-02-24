@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "packages.h"
 #include "install.h"
 
@@ -8,46 +8,73 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-winrt::hresult add_package(Uri packageUri)
+winrt::hresult AddPackage(const Uri& packageUri)
 {
-    PackageManager packageManager;
-    auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
-    deploymentOperation.get();
-    if (deploymentOperation.Status() != AsyncStatus::Completed)
+    // deploymentOperation.get() can throw.
+    try
     {
-        return deploymentOperation.ErrorCode();
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
+        deploymentOperation.get();
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            return deploymentOperation.ErrorCode();
+        }
     }
-
+    catch (wil::ResultException ex)
+    {
+        return ex.GetErrorCode();
+    }
     return S_OK;
 }
 
-winrt::hresult provision_package(std::wstring packageFamilyName)
+winrt::hresult ProvisionPackage(const std::wstring& packageFamilyName)
 {
-    PackageManager packageManager;
-    auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
-    deploymentOperation.get();
-
-    if (deploymentOperation.Status() != AsyncStatus::Completed)
+    // deploymentOperation.get() can throw.
+    try
     {
-        return deploymentOperation.ErrorCode();
-    }
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
+        deploymentOperation.get();
 
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            return deploymentOperation.ErrorCode();
+        }
+    }
+    catch (wil::ResultException ex)
+    {
+        return ex.GetErrorCode();
+    }
     return S_OK;
 }
 
-bool is_architecture_applicable(ProcessorArchitecture arch)
+bool IsArchitectureApplicable(const ProcessorArchitecture& arch)
 {
-    SYSTEM_INFO systemInfo;
+    SYSTEM_INFO systemInfo{};
     GetNativeSystemInfo(&systemInfo);
     ProcessorArchitecture systemArch = static_cast<ProcessorArchitecture>(systemInfo.wProcessorArchitecture);
 
+    // Neutral package architecture is applicable on all systems.
+    if (arch == ProcessorArchitecture::Neutral)
+    {
+        return true;
+    }
+
+    // Same-arch is always applicable.
     if (arch == systemArch)
     {
         return true;
     }
 
-    // On x64 systems, x86 architecture is also applicable
+    // On x64 systems, x86 architecture is also applicable.
     if (systemArch == ProcessorArchitecture::X64 && arch == ProcessorArchitecture::X86)
+    {
+        return true;
+    }
+
+    // On Arm64 systems, all current package architectures are applicable.
+    if (systemArch == ProcessorArchitecture::Arm64)
     {
         return true;
     }
@@ -55,21 +82,21 @@ bool is_architecture_applicable(ProcessorArchitecture arch)
     return false;
 }
 
-wil::com_ptr<IStream> get_resource_stream(std::wstring resourceName, std::wstring resourceType)
+wil::com_ptr<IStream> GetResourceStream(const std::wstring& resourceName, const std::wstring& resourceType)
 {
-    HMODULE const hmodule = GetModuleHandle(NULL);
-    HRSRC hrsrc = ::FindResource(hmodule, resourceName.c_str(), resourceType.c_str());
-    THROW_LAST_ERROR_IF_NULL(hrsrc);
-    HGLOBAL hresource = LoadResource(hmodule, hrsrc);
-    THROW_LAST_ERROR_IF_NULL(hresource);
-    const BYTE* data = reinterpret_cast<BYTE*>(::LockResource(hresource));
+    HMODULE const hModule = GetModuleHandle(NULL);
+    HRSRC hResourceSource = ::FindResource(hModule, resourceName.c_str(), resourceType.c_str());
+    THROW_LAST_ERROR_IF_NULL(hResourceSource);
+    HGLOBAL hResource = LoadResource(hModule, hResourceSource);
+    THROW_LAST_ERROR_IF_NULL(hResource);
+    const BYTE* data = reinterpret_cast<BYTE*>(::LockResource(hResource));
     THROW_LAST_ERROR_IF_NULL(data);
-    DWORD size = ::SizeofResource(hmodule, hrsrc);
+    DWORD size = ::SizeofResource(hModule, hResourceSource);
     wil::com_ptr<IStream> stream = ::SHCreateMemStream(data, size);
     return stream;
 }
 
-std::unique_ptr<PackageProperties> get_package_properites_from_stream(wil::com_ptr<IStream>& stream)
+std::unique_ptr<PackageProperties> GetPackagePropertiesFromStream(wil::com_ptr<IStream>& stream)
 {
     // Get PackageId from the manifest.
     auto factory = wil::CoCreateInstance<AppxFactory, IAppxFactory>();
@@ -82,8 +109,8 @@ std::unique_ptr<PackageProperties> get_package_properites_from_stream(wil::com_p
 
     // Populate properties from the manifest PackageId
     auto properties = std::make_unique<PackageProperties>();
-    THROW_IF_FAILED(id->GetPackageFullName(&properties->full_name));
-    THROW_IF_FAILED(id->GetPackageFamilyName(&properties->family_name));
+    THROW_IF_FAILED(id->GetPackageFullName(&properties->fullName));
+    THROW_IF_FAILED(id->GetPackageFamilyName(&properties->familyName));
     APPX_PACKAGE_ARCHITECTURE arch;
     THROW_IF_FAILED(id->GetArchitecture(&arch));
     properties->architecture = static_cast<ProcessorArchitecture>(arch);
@@ -92,22 +119,22 @@ std::unique_ptr<PackageProperties> get_package_properites_from_stream(wil::com_p
     return properties;
 }
 
-wil::com_ptr<IStream> open_temp_file(_In_ PCWSTR path)
+wil::com_ptr<IStream> OpenTempFile(PCWSTR path)
 {
     wil::com_ptr<IStream> outstream;
     THROW_IF_FAILED(SHCreateStreamOnFileEx(path, STGM_WRITE | STGM_READ | STGM_SHARE_DENY_WRITE | STGM_CREATE, FILE_ATTRIBUTE_NORMAL, TRUE, nullptr, wil::out_param(outstream)));
     return outstream;
 }
 
-winrt::hresult deploy_package_from_resource(ResourcePackageInfo resource, bool quiet) noexcept
+winrt::hresult DeployPackageFromResource(const ResourcePackageInfo& resource, const bool quiet) noexcept
 {
     // Get package properties by loading the resource as a stream and reading the manifest.
-    wil::com_ptr<IStream> pkgstream;
-    std::unique_ptr<PackageProperties> properties;
+    wil::com_ptr<IStream> packageStream;
+    std::unique_ptr<PackageProperties> packageProperties;
     try
     {
-        pkgstream = get_resource_stream(resource.Id, resource.ResourceType);
-        properties = get_package_properites_from_stream(pkgstream);
+        packageStream = GetResourceStream(resource.Id, resource.ResourceType);
+        packageProperties = GetPackagePropertiesFromStream(packageStream);
     }
     catch (wil::ResultException ex)
     {
@@ -115,58 +142,74 @@ winrt::hresult deploy_package_from_resource(ResourcePackageInfo resource, bool q
     }
 
     // Skip non-applicable architectures.
-    if (!is_architecture_applicable(properties->architecture))
+    if (!IsArchitectureApplicable(packageProperties->architecture))
     {
         return S_OK;
     }
 
+    wchar_t packageFilename[MAX_PATH];
+    RETURN_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"ProjectReunion", 0u, packageFilename));
 
-    wchar_t package_filename[MAX_PATH];
-    RETURN_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, package_filename));
+    // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
+    // From here on out if we leave scope for any reason we will attempt to delete that file.
+    auto removeTempFileOnScopeExit = wil::scope_exit([&]
+    {
+        LOG_IF_WIN32_BOOL_FALSE(::DeleteFile(packageFilename));
+    });
 
     if (!quiet)
     {
-        printf("Package Full Name: %ls\n", properties->full_name.get());
-        printf("Temp package path: %ls\n", package_filename);
+        std::wcout << "Package Full Name: " << packageProperties->fullName.get() << std::endl;
+        std::wcout << "Temp package path: " << packageFilename << std::endl;
     }
 
     // Write the package to a temp file. The PackageManager APIs require a Uri.
-    wil::com_ptr<IStream> outstream;
+    wil::com_ptr<IStream> outStream;
     try
     {
-        outstream = open_temp_file(package_filename);
+        outStream = OpenTempFile(packageFilename);
     }
     catch (wil::ResultException ex)
     {
         return ex.GetErrorCode();
     }
  
-    ULARGE_INTEGER streamSize = { 0 };
-    RETURN_IF_FAILED(::IStream_Size(pkgstream.get(), &streamSize));
-    RETURN_IF_FAILED(pkgstream.get()->CopyTo(outstream.get(), streamSize, nullptr, nullptr));
-    RETURN_IF_FAILED(outstream->Commit(STGC_OVERWRITE));
-    outstream.reset();
+    ULARGE_INTEGER streamSize{};
+    RETURN_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
+    RETURN_IF_FAILED(packageStream.get()->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
+    RETURN_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
+    outStream.reset();
 
     // Add the package
-    Uri packageUri{ package_filename };
-    hresult add_result = add_package(packageUri);
+    Uri packageUri{ packageFilename };
+    hresult hrAddResult = AddPackage(packageUri);
     if (!quiet)
     {
-        printf("Package deployment result: 0x%08x\n", add_result.value);
+        std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult.value << std::endl;
     }
-    RETURN_IF_FAILED((HRESULT)add_result);
+    RETURN_IF_FAILED((HRESULT)hrAddResult);
 
     // Best-effort provision
     // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
-    hresult provision_result = provision_package(properties->family_name.get());
+    hresult hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
     if (!quiet)
     {
-        printf("Provisioning result: 0x%08x\n", provision_result.value);
+        std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult.value << std::endl;
     }
-    LOG_IF_FAILED((HRESULT)provision_result);
-
-    // Cleanup the temp file
-    LOG_IF_WIN32_BOOL_FALSE(::DeleteFile(package_filename));
+    LOG_IF_FAILED((HRESULT)hrProvisionResult);
 
     return S_OK;
+}
+
+int DeployPackages(const bool quiet)
+{
+    for (const auto& package : c_packages)
+    {
+        auto result = DeployPackageFromResource(package, quiet);
+        if (FAILED(result.value))
+        {
+            return result.value;
+        }
+    }
+    return 0;
 }

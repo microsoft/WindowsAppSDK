@@ -2,6 +2,21 @@
 //
 #include "resource.h"
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// PACKAGE
+//
+#include "project_reunion_definitions.h"
+#if defined(PR_FRAMEWORK_X86_RCENTRY)
+PR_FRAMEWORK_X86_RCENTRY
+#endif
+#if defined(PR_FRAMEWORK_X64_RCENTRY)
+PR_FRAMEWORK_X64_RCENTRY
+#endif
+#if defined(PR_FRAMEWORK_ARM64_RCENTRY)
+PR_FRAMEWORK_ARM64_RCENTRY
+#endif
+
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -33,7 +48,6 @@ END
 2 TEXTINCLUDE 
 BEGIN
     "#include ""winres.h""\r\n"
-    "#include ""project_reunion_definitions.h""\0"
 END
 
 3 TEXTINCLUDE 
@@ -43,15 +57,6 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// PACKAGE
-//
-
-PROJECTREUNION_FRAMEWORK_X86_RCIDENTIFIER     PROJECTREUNION_FRAMEWORK_X86_RCTYPE                 PROJECTREUNION_FRAMEWORK_X86_PATH
-PROJECTREUNION_FRAMEWORK_X64_RCIDENTIFIER     PROJECTREUNION_FRAMEWORK_X64_RCTYPE                 PROJECTREUNION_FRAMEWORK_X64_PATH
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -329,3 +329,6 @@ BuildOutput/
 
 # Installer build configuration header
 dev/Installer/src/project_reunion_definitions_override.h
+
+# Installer test packages
+dev/Installer/installerpackages

@@ -1,26 +1,9 @@
 ﻿#include "pch.h"
-#include "help.h"
+#include "console.h"
 #include "install.h"
 #include "resource.h"
-#include "packages.h"
 
 using namespace winrt;
-using namespace Windows::ApplicationModel;
-using namespace Windows::Foundation;
-using namespace Windows::System;
-
-int deploy_packages(bool quiet)
-{
-    for (const auto& package : c_packages)
-    {
-        auto result = deploy_package_from_resource(package, quiet);
-        if (FAILED(result.value))
-        {
-            return result.value;
-        }
-    }
-    return 0;
-}
 
 int wmain(int argc, wchar_t *argv[])
 {
@@ -31,28 +14,23 @@ int wmain(int argc, wchar_t *argv[])
     for (int i = 1; i < argc; ++i)
     {
         auto arg = std::wstring_view(argv[i]);
-        if ((arg == L"-q") || (arg == L"-quiet"))
+        if ((arg == L"--q") || (arg == L"--quiet"))
         {
             quiet = true;
         }
-        else if ((arg == L"-?") || (arg == L"-help"))
+        else if ((arg == L"--?") || (arg == L"--help"))
         {
-            show_help();
-            return 0;
-        }
-        else if ((arg == L"-a") || (arg == L"-add"))
-        {
-            show_help();
+            ShowHelp();
             return 0;
         }
         else
         {
-            printf("Unknown argument: %ws\n", arg.data());
-            show_help();
+            std::wcerr << "Unknown argument: " << arg.data() << std::endl;
+            ShowHelp();
             return ERROR_BAD_ARGUMENTS;
         }
     }
 
-    return deploy_packages(quiet);
+    return DeployPackages(quiet);
 }
 

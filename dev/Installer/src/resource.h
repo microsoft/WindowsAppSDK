@@ -1,8 +1,7 @@
-//{{NO_DEPENDENCIES}}
+﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by ProjectReunionInstall.rc
 //
-//#define PACKAGE1                    101
 
 // Next default values for new objects
 // 

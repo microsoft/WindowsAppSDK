@@ -18,9 +18,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="help.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="install.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -33,6 +30,9 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -41,18 +41,16 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="help.cpp">
+    <ClCompile Include="install.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="install.cpp">
+    <ClCompile Include="console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
     <None Include="packages.config" />
-    <None Include="Packages\x86\Microsoft.ProjectReunion.0.1.appx" />
-    <None Include="Packages\x64\Microsoft.ProjectReunion.0.1.appx" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ProjectReunionInstall.rc">

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "pch.h"
 #include "project_reunion_definitions.h"
 
@@ -17,6 +17,13 @@ struct ResourcePackageInfo
 
 static ResourcePackageInfo c_packages[] =
 {
-    { PROJECTREUNION_FRAMEWORK_X86_IDENTIFIER, PROJECTREUNION_FRAMEWORK_X86_TYPE },
-    { PROJECTREUNION_FRAMEWORK_X64_IDENTIFIER, PROJECTREUNION_FRAMEWORK_X64_TYPE },
+#if defined(PR_FRAMEWORK_X86_LISTENTRY)
+    PR_FRAMEWORK_X86_LISTENTRY
+#endif
+#if defined(PR_FRAMEWORK_X64_LISTENTRY)
+    PR_FRAMEWORK_X64_LISTENTRY
+#endif
+#if defined(PR_FRAMEWORK_ARM64_LISTENTRY)
+    PR_FRAMEWORK_ARM64_LISTENTRY
+#endif
 };
