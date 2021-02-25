@@ -67,9 +67,9 @@ Our Push APIs will add support for Unpackaged Win32 scenarios.
 
 # Examples
 
-## Registration of the Push Activator for Win32 (Inproc)
-If a Win32 app needs to subscribe to Push triggers inproc, the code in Main would follow the pattern below:
-* The Registration will take in a CLSID of the COM server as part of the Activator setup. The registration API will simply be a thin wrapper around the BackgroundInfra WinRT APIs and abstract away the COM details from the developer.
+## In this scenario, the process that Registers the Push Activator and the process specified as the COM server are the same
+The code in Main would follow the pattern below:
+* The Registration will take in a CLSID of the COM server as part of the Activator setup. The registration API will simply be a thin wrapper around the BackgroundInfra WinRT APIs and abstract away the COM details from the developer including registration of the inproc Reunion component.
 * The app will query ApplifeCycle APIs to retrieve an ActivationKind. (Note: This is covered in a seperate AppLifeCycle API spec.)
 * If the Activation is Push, the app will QI the Arguments property to retrieve an instance of PushActivatedEventArgs and get the Push payload from it. Care needs to be taken to Take a Deferral and Release the Deferral while processing the payload for Power Management compliance.
 * If the Activation is Foreground, the app will do 2 things:
@@ -80,10 +80,10 @@ If a Win32 app needs to subscribe to Push triggers inproc, the code in Main woul
 ```cpp
 int main()
 {
-    // Always Register the Push trigger as the first step: It sets up the Inproc COM server for subsequent Push operations
-    winrt::guid activatorGuid{ 0xC380465D, 0x2271, 0x428C, { 0x9B, 0x83, 0xEC, 0xEA, 0x3B, 0x4A, 0x85, 0xC1} };
-    InProcActivatorDetails details(activatorGuid);
-    PushManager::RegisterActivator(details);
+    PushActivatorDetails details(winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+
+    // Registers a Push Trigger and sets up an inproc COM Server for Activations
+    PushManager::RegisterActivator(details, PushRegistrationType::PushTrigger | PushRegistrationType::ComActivator);
 
     // Check to see if the WinMain activation is due to a Push Activator
     // Note: This API is currently not present in Reunion but will be included as part of the AppLifecycle Public API spec.
@@ -92,7 +92,7 @@ int main()
 
     if (kind == ReunionActivationKind::Push)
     {
-        auto pushArgs = activation.Arguments().try_as<PushActivatedEventArgs>();
+        auto pushArgs = activation.Arguments().try_as<PushReceivedEventArgs>();
 
         // Call TakeDeferral to ensure that code runs in low power
         pushArgs.GetDeferral();
@@ -107,7 +107,7 @@ int main()
     else if (kind == ReunionActivationKind::Launch) // This indicates that the app is launching in the foreground
     {
         // Register an event to Intercept Push payloads
-        auto eventToken = details.PushActivated([](const auto&, PushActivatedEventArgs args)
+        auto eventToken = details.PushReceived([](const auto&, PushReceivedEventArgs args)
         {
                 // Call TakeDeferral to ensure that code runs in low power
                 args.GetDeferral();
@@ -120,9 +120,7 @@ int main()
                 args.CompleteDeferral();
         });
 
-        // {F80E541E-3606-48FB-935E-118A3C5F41F4}
-        winrt::guid remoteId{ 0xf80e541e, 0x3606, 0x48fb, {0x93, 0x5e, 0x11, 0x8a, 0x3c, 0x5f, 0x41, 0xf4} };
-        auto channelOperation = PushManager::CreateChannelAsync(remoteId);
+        auto channelOperation = PushManager::CreateChannelAsync(winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
 
         // Setup the inprogress event handler
         channelOperation.Progress(
@@ -164,34 +162,58 @@ int main()
         // Draw window and other foreground UI stuff here
 
         // Unsubscribe the foreground event
-        details.PushActivated(eventToken);
+        details.PushReceived(eventToken);
+
+        // Unregisters the inproc COM Activator
+        PushManager::UnregisterActivator(details, PushRegistrationType::ComActivator);
     }
 
     return 0;
 }
 ```
 
-## Unregistering Push Activations
-In some certain rare cases, we may want to disable the activator for Push. For example, the user disables a toggle exposed by the app. To accomplish that, we would need to call into the UnRegister API
+## In this scenario, the process that Registers the Push Activator and the process specified as the COM server are different.
+Process A (Registration only):
 ```cpp
 int main()
 {
-    // Always Register the Push trigger as the first step: It sets up the Inproc COM server for subsequent Push operations
-    winrt::guid activatorGuid{ 0xC380465D, 0x2271, 0x428C, { 0x9B, 0x83, 0xEC, 0xEA, 0x3B, 0x4A, 0x85, 0xC1} };
-    InProcActivatorDetails details(activatorGuid);
-    PushManager::RegisterActivator(details);
+    PushActivatorDetails details(winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
 
-    // Some code resides here
+    // Registers a Push Trigger and sets up an inproc COM Server for Activations
+    PushManager::RegisterActivator(details, PushRegistrationType::PushTrigger);
 
-    // This unregisters the Activator above
-    if (removePush)
-    {
-        PushManager::UnregisterActivator(details);
-    }
+    // Some app code ....
+
     return 0;
 }
 ```
+Process B (Activation only):
+```cpp
+int main()
+{
+    PushActivatorDetails details(winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
 
+    // Registers a Push Trigger and sets up an inproc COM Server for Activations
+    PushManager::RegisterActivator(details, PushRegistrationType::ComActivator);
+
+    // Check to see if the WinMain activation is due to a Push Activator
+    // Note: This API is currently not present in Reunion but will be included as part of the AppLifecycle Public API spec.
+    auto activation = AppLifecycle::Activation();
+    auto kind = activation.Kind();
+
+    if (kind == ReunionActivationKind::Push)
+    {
+        // Do Push processing stuff
+    }
+
+    // Some code ....
+
+    // Remember to Unregister the ComActivator before Process exit
+    PushManager::UnregisterActivator(details, PushRegistrationType::ComActivator);
+
+    return 0;
+}
+```
 ## Registration of the Push Activator for LOW IL apps like UWP (Inproc)
 The app will simply call into the Default implementation of InProcActivatorDetails for the Registration Flow instead of the CLSID overload.
 ```cpp
