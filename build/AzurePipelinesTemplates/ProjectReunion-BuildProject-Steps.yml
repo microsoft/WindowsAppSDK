@@ -44,6 +44,14 @@ steps:
 #      filePath: $(Build.SourcesDirectory)\tools\ProjectReunionPGODatabase\restore-pgodb.ps1
 
 #UNDONE- fix guid?
+
+  - task: NuGetCommand@2
+    inputs:
+      command: 'restore'
+      restoreSolution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
+      feedsToUse: 'nuget.config'
+      externalFeedCredentials: 'WindowsES'
+
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore ${{ parameters.solutionPath }}'
     inputs:
