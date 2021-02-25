@@ -2,5 +2,5 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- <Import Project="$(MSBuildThisFileDirectory)\MicrosoftProjectReunionVersion.props"/> -->
   <!-- <Import Project="$(MSBuildThisFileDirectory)\Common.targets"/> -->
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ProjectReunion.Foundation.FrameworkPackage.props" Condition="Exists('$(MSBuildThisFileDirectory)Microsoft.ProjectReunion.Foundation.FrameworkPackage.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)\Microsoft.ApplicationModel.Resources.props"/>
 </Project>
