@@ -12,9 +12,12 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
+  # Scans the root source folder for security vulnerability 
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
+
+  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
   - task: PostAnalysis@1
     inputs:
       AllTools: false
