@@ -12,41 +12,25 @@ namespace ProjectReunionInstaller {
 
     winrt::hresult AddPackage(const Uri& packageUri)
     {
-        // deploymentOperation.get() can throw.
-        try
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
+        deploymentOperation.get();
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            PackageManager packageManager;
-            const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
-            deploymentOperation.get();
-            if (deploymentOperation.Status() != AsyncStatus::Completed)
-            {
-                return deploymentOperation.ErrorCode();
-            }
-        }
-        catch (wil::ResultException ex)
-        {
-            return ex.GetErrorCode();
+            return deploymentOperation.ErrorCode();
         }
         return S_OK;
     }
 
     winrt::hresult ProvisionPackage(const std::wstring& packageFamilyName)
     {
-        // deploymentOperation.get() can throw.
-        try
-        {
-            PackageManager packageManager;
-            const auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
-            deploymentOperation.get();
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
+        deploymentOperation.get();
 
-            if (deploymentOperation.Status() != AsyncStatus::Completed)
-            {
-                return deploymentOperation.ErrorCode();
-            }
-        }
-        catch (wil::ResultException ex)
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            return ex.GetErrorCode();
+            return deploymentOperation.ErrorCode();
         }
         return S_OK;
     }
@@ -134,29 +118,22 @@ namespace ProjectReunionInstaller {
         return outstream;
     }
 
-    winrt::hresult DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet) noexcept
+    void DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
         wil::com_ptr<IStream> packageStream;
         std::unique_ptr<PackageProperties> packageProperties{};
-        try
-        {
-            packageStream = GetResourceStream(resource.id, resource.resourceType);
-            packageProperties = GetPackagePropertiesFromStream(packageStream);
-        }
-        catch (wil::ResultException ex)
-        {
-            return ex.GetErrorCode();
-        }
+        packageStream = GetResourceStream(resource.id, resource.resourceType);
+        packageProperties = GetPackagePropertiesFromStream(packageStream);
 
         // Skip non-applicable architectures.
         if (!IsArchitectureApplicable(packageProperties->architecture))
         {
-            return S_OK;
+            return;
         }
 
         wchar_t packageFilename[MAX_PATH];
-        RETURN_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, packageFilename));
+        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
@@ -172,20 +149,11 @@ namespace ProjectReunionInstaller {
         }
 
         // Write the package to a temp file. The PackageManager APIs require a Uri.
-        wil::com_ptr<IStream> outStream;
-        try
-        {
-            outStream = OpenFileStream(packageFilename);
-        }
-        catch (wil::ResultException ex)
-        {
-            return ex.GetErrorCode();
-        }
-
+        wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
         ULARGE_INTEGER streamSize{};
-        RETURN_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
-        RETURN_IF_FAILED(packageStream.get()->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
-        RETURN_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
+        THROW_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
+        THROW_IF_FAILED(packageStream.get()->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
+        THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
         outStream.reset();
 
         // Add the package
@@ -195,9 +163,8 @@ namespace ProjectReunionInstaller {
         {
             std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult.value << std::endl;
         }
-        RETURN_IF_FAILED(static_cast<HRESULT>(hrAddResult));
+        THROW_IF_FAILED(static_cast<HRESULT>(hrAddResult));
 
-        // Best-effort provision
         // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
         hresult hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
         if (!quiet)
@@ -206,19 +173,22 @@ namespace ProjectReunionInstaller {
         }
         LOG_IF_FAILED(static_cast<HRESULT>(hrProvisionResult));
 
-        return S_OK;
+        return;
     }
 
-    int DeployPackages(const bool quiet)
+    HRESULT DeployPackages(const bool quiet) noexcept
     {
         for (const auto& package : ProjectReunionInstaller::c_packages)
         {
-            auto result = DeployPackageFromResource(package, quiet);
-            if (FAILED(result.value))
+            try
             {
-                return result.value;
+                DeployPackageFromResource(package, quiet);
+            }
+            catch (wil::ResultException ex)
+            {
+                return ex.GetErrorCode();
             }
         }
-        return 0;
+        return S_OK;
     }
 }
