@@ -6,7 +6,7 @@
 
 ...and more, **without having to rewrite your app!**
 
-* Use your current installer *(no need to use MSIX)*
+* Use your current installer *(no requirement to be an MSIX/packaged app, but some cool stuff happens if you are!)*
 * 100% additive *(only add what you need, leave the rest of your app as-is)*
 * Works with Win32, WPF, WinForms, and UWP apps
 
@@ -28,6 +28,9 @@ App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
 [Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) |                ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  |                    ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  | ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle  | 
 Unpackaged desktop apps | 🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |                    🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |  ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle | 
+
+✅ Supported | 🔄 Preview
+
 
 See our [full roadmap](docs/roadmap.md) for a more detailed roadmap.
 
