@@ -190,7 +190,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21315.1001-210214-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21315.1001-210214-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21324.1000-210225-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21324.1000-210225-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -198,6 +198,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.200729.8\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21315.1001-210214-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21315.1001-210214-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21324.1000-210225-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.$(Udk-Arch)fre.10.0.21324.1000-210225-1000.rs-wdx-dxp-ixp1\build\native\Microsoft.FrameworkUdk.$(Udk-Arch)fre.targets'))" />
   </Target>
 </Project>

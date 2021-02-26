@@ -5,6 +5,33 @@ variables:
   rerunPassesRequiredToAvoidFailure: 5
 
 jobs:
+- job: CredScan
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  # Scans the root source folder for security vulnerability 
+  - task: CredScan@2
+    inputs:
+      toolMajorVersion: 'V2'
+
+  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: false
+      CodesignValidation: false
+      CredScan: true
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
+
 - job: Build
   pool:
     vmImage: 'windows-2019'

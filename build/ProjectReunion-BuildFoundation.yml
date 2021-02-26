@@ -8,6 +8,33 @@ parameters:
     default: False
 
 jobs:
+- job: CredScan
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  # Scans the root source folder for security vulnerability 
+  - task: CredScan@2
+    inputs:
+      toolMajorVersion: 'V2'
+
+  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: false
+      CodesignValidation: false
+      CredScan: true
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
+
 - job: Build
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
@@ -39,7 +66,6 @@ jobs:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
-
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
 #  - task: DownloadPackage@1
 #    displayName: 'Download Microsoft.Telemetry.Inbox.Native'

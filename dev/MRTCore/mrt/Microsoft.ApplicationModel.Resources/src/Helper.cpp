@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "frameworkudk\mrtcore.h"
+#include "frameworkudk\ResourceManager.h"
 
 bool IsResourceNotFound(HRESULT hr)
 {
@@ -38,7 +38,7 @@ HRESULT GetDefaultPriFileForCurentModule(winrt::hstring& filePath)
 HRESULT GetDefaultPriFileForCurrentPackage(winrt::hstring& filePath)
 {
     wchar_t* resourceFile = nullptr;
-    HRESULT hr = MrtCore_GetDefaultResourcePathForPackageFullName(nullptr, &resourceFile);
+    HRESULT hr = ResourceManager_GetDefaultResourcePathForPackageFullName(nullptr, &resourceFile);
     if (FAILED(hr))
     {
         return hr;
