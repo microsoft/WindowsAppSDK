@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <DefaultName>BlankWindow.xaml</DefaultName>
+    <Name>Blank Window (WinUI in Desktop)</Name>
+    <Description>A blank window for Desktop apps based on the Windows UI Library (WinUI).</Description>
+    <Icon>WinUI.Desktop.Cs.BlankWindow.ico</Icon>
+    <ProjectType>CSharp</ProjectType>
+    <TemplateID>WinUI.Desktop.Cs.BlankWindow</TemplateID>
+    <TemplateGroupID>WinRT-Managed-UAP</TemplateGroupID>
+    <AppliesTo>CSharp + SharedAssetsProject</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+    <ShowByDefault>true</ShowByDefault>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <AppIdFilter>blend</AppIdFilter>
+    <LanguageTag>csharp</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem OpenInEditor="true" ReplaceParameters="true" ItemType="Page" CustomTool="MSBuild:Compile" TargetFileName="$fileinputname$.xaml">BlankWindow.xaml</ProjectItem>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$fileinputname$.xaml.cs">BlankWindow.xaml.cs</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

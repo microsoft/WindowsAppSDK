@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+  <TemplateData>
+    <DefaultName>UserControl.xaml</DefaultName>
+    <Name>User Control (WinUI)</Name>
+    <Description>A user control for apps based on the Windows UI Library (WinUI).</Description>
+    <Icon>WinUI.Neutral.CppWinRT.UserControl.ico</Icon>
+    <ProjectType>VC</ProjectType>
+    <TemplateID>WinUI.Neutral.CppWinRT.UserControl</TemplateID>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+    <ShowByDefault>true</ShowByDefault>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <AppIdFilter>blend</AppIdFilter>
+    <LanguageTag>cpp</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <ProjectTypeTag>uwp</ProjectTypeTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem SubType="Designer" TargetFileName="$fileinputname$.xaml" ReplaceParameters="true">UserControl.xaml</ProjectItem>
+    <ProjectItem SubType="Code" TargetFileName="$fileinputname$.xaml\$fileinputname$.xaml.cpp" ReplaceParameters="true">UserControl.cpp</ProjectItem>
+    <ProjectItem SubType="Code" TargetFileName="$fileinputname$.xaml\$fileinputname$.xaml.h" ReplaceParameters="true">UserControl.h</ProjectItem>
+    <ProjectItem SubType="Code" TargetFileName="$fileinputname$.xaml\$fileinputname$.idl" ReplaceParameters="true">UserControl.idl</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+      <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion.Foundation" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+    </packages>
+  </WizardData>
+</VSTemplate>

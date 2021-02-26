@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- Provide default package versions for developer builds -->
+    <PropertyGroup>
+        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210211.2</CppWinRTVersion>
+        <ReunionVersion Condition="'$(ReunionVersion)' == ''">1.0.0-CI-20210225-165718</ReunionVersion>
+        <ReunionFoundationVersion Condition="'$(ReunionFoundationVersion)' == ''">1.0.0-CI-20210225-165359</ReunionFoundationVersion>
+        <ReunionDWriteVersion Condition="'$(ReunionDWriteVersion)' == ''">1.0.0-CI-20210225-165403</ReunionDWriteVersion>
+        <ReunionWinUIVersion Condition="'$(ReunionWinUIVersion)' == ''">1.0.0-CI-20210225-165405</ReunionWinUIVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <VSIXBuild>true</VSIXBuild>
+        <NuGetPackageRoot Condition="'$(NuGetPackageRoot)'==''">$(NUGET_PACKAGES)</NuGetPackageRoot>
+        <NuGetPackageRoot Condition="'$(NuGetPackageRoot)'==''">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+        <!--GeneratePathProperty no longer works...-->
+        <PkgMicrosoft_ProjectReunion_WinUI Condition="'$(PkgMicrosoft_ProjectReunion_WinUI)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'Microsoft.ProjectReunion.WinUI', '$(ReunionWinUIVersion)'))</PkgMicrosoft_ProjectReunion_WinUI>
+        <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
+        <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\</BuildOutputRoot>
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'==''">$(BuildOutputRoot)$(ProjectRelativePath)\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath Condition="'$(GenerateProjectSpecificOutputFolder)' == 'true'">$(BaseIntermediateOutputPath)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath Condition="'$(TargetFramework)' != '' and '$(IgnoreTargetFramework)' != 'true'">$(BaseIntermediateOutputPath)$(TargetFramework)\</BaseIntermediateOutputPath>
+        <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+        <OutputPath>$(IntermediateOutputPath)</OutputPath>
+        <OutDir>$(OutputPath)</OutDir>
+    </PropertyGroup>
+
+</Project>

@@ -326,3 +326,7 @@ __pycache__/
 # Build output root
 BuildOutput/
 .nuget/
+
+# Project Reunion specific files
+Microsoft.WinUI.AppX.targets
+dev/vsix/extension/LICENSE
