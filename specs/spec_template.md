@@ -5,151 +5,155 @@
 > See comments in Markdown for how to use this spec template
 
 <!-- TEMPLATE
-    The purpose of this spec is to describe a new feature and
-    its APIs that make up a new feature in Project Reunion. 
+    The purpose of this spec is to describe new APIs, in a way
+    that will transfer to docs.microsoft.com (DMC).
 
-    There are two audiences for the spec. The first are people
-    that want to evaluate and give feedback on the API, as part of
-    the submission process.  When it's complete
-    it will be incorporated into the documentation for Project Reunion.
-    Hopefully we'll be able to copy it mostly verbatim.
-    So the second audience is everyone that reads there to learn how
-    and why to use this API. 
+    There are two audiences for the spec. The first are people that want to evaluate and give feedback on the API, as part of
+    the submission process.  When it's complete it will be incorporated into the public documentation at
+    http://docs.microsoft.com (DMC).
+    Hopefully we'll be able to copy it mostly verbatim. So the second audience is everyone that reads there to learn how
+    and why to use this API. Some of this text also shows up in Visual Studio Intellisense.
+
+    For example, much of the examples and descriptions in the RadialGradientBrush API spec
+    (https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/RadialGradientBrush/RadialGradientBrush.md)
+    were carried over to the public API page on DMC
+    (https://docs.microsoft.com/en-us/windows/winui/api/microsoft.ui.xaml.media.radialgradientbrush?view=winui-2.5)
+
+    Once the API is on DMC, that becomes the official copy, and this spec becomes an archive. For example if the description is updated,
+    that only needs to happen on DMC and needn't be duplicated here.
+
+    Samples:
+    * New class (RadialGradientBrush):
+      https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/RadialGradientBrush/RadialGradientBrush.md
+    * New member on an existing class (UIElement.ProtectedCursor):
+      https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/UIElement/ElementCursor.md
+
+    Style guide:
+    * Speak to the developer who will be learning/using this API.
+    ("You use this to..." rather than "the developer uses this to...")
+    * Use hard returns to keep the page width within ~100 columns.
+    (Otherwise it's more difficult to leave comments in a GitHub PR.)
+    * Talk about an API's behavior, not its implementation
+    (Speak to the developer using this API, not to the team implementing this API)
+    * A picture says a thousand words.
+    * An example says a million words.
+    * Keep examples realistic but simple; don't add unrelated complications
+    (An example that passes a stream needn't show the process of launching the File-Open dialog.)
+
 -->
+
+Title
+==
 
 # Background
 
 <!-- TEMPLATE
-    Use this section to provide background context for the new API(s)
-    in this spec. 
+    Use this section to provide background context for the new API(s) 
+    in this spec. Try to briefly provide enough information to be able to read
+    the rest of the document.
 
     This section and the appendix are the only sections that likely
-    do not get copied into any official documentation, they're just an aid
-    to reading this spec. 
-    
-    If you're modifying an existing API, included a link here to the
-    existing page(s) or spec documentation.
+    do not get copied to DMC; they're just an aid to reading this spec.
 
-    For example, this section is a place to explain why you're adding this
-    API rather than modifying an existing API.
-
-    If you're writing a "converged" API add links into docs.microsoft.com
-    for the existing Win32 or WinRT APIs that are being converged.
--->
-
-<!-- TEMPLATE
-    For example, this is a place to provide a brief explanation of some dependent
+    For example this is a place to provide a brief explanation of some dependent
     area, just explanation enough to understand this new API, rather than telling
-    the reader "go read 100 pages of background information posted at ...". 
+    the reader "go read 100 pages of background information posted at ...".
+
+    For example this section is a place to explain why you're adding this new API rather than
+    usiung an existing related API.
+
+    For a simple example see the spec for the UIElement.ProtectedCursor property
+    (TBD)
+    which has some of the thinking about how this Xaml API relates to existing
+    Composition and WPF APIs. This is interesting background but not the kind of information
+    that would land on DMC.
 -->
 
-# Description
+# Conceptual pages (How To)
+
+_(This is conceptual documentation that will go to docs.microsoft.com "how to" page)_
 
 <!-- TEMPLATE
-    Use this section to provide a brief description of the feature.
-    For an example, see the introduction to the PasswordBox control
-    (http://docs.microsoft.com/windows/uwp/design/controls-and-patterns/password-box).
+    All APIs have a page on DMC, some APIs or groups of APIs have an additional high level,
+    conceptual page (internally called a "how-to" page). This section can be used for that content.
+
+    For example, there are several Xaml controls for different forms of text input,
+    and then there's also a conceptual pages that discusses them collectively
+    (https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/text-controls)
+
+    Another way to use this section is as a draft of a blog post that introduces the new feature.
+
+    Sometimes it's difficult to decide if text belons on a how-to page or an API page.
+    It's not important to decide on that here, we can always adjust it when copying to DMC.
 -->
 
-# Examples
+# API Pages
+
+_(Each of the following L2 sections correspond to a page that will be on docs.microsoft.com)_
 
 <!-- TEMPLATE
+  Notes:
+  * The first line of each of these sections should become that first line on the DMC page,
+    which then becomes the description you see in Intellisense.
+  * Each page can have description, examples, and remarks.
+    Remarks are where the documentation calls out special considerations that the developer should be aware of.
+  * It can be helpful at the top of an API page (or after the Intellisense text) to add the API signature in C#
+  * Add a "_Spec note: ..._" to add a note that's useful in this spec but shouldn't go to DMC.
+  * Show _examples_, not _samples_; an example is a snippet, a sample is a full working app.
 
-    Use this section to explain the features of the API, showing
-    example code with each description. The general format is:
-
-    ## FirstFeatureName
-
-    Feature explanation text goes here, including why an app would use it, how it
-    replaces or supplements existing functionality.
-
-    ```c#
-    void SampleMethod() {
-        var show = new AnExampleOf();
-        show.SomeMembers = AndWhyItMight(be, interesting)
-    }
-    ```
-
-    ## SecondFeatureName
-
-    Feature explanation text goes here, including why an app would use it, how it
-    replaces or supplements existing functionality.
-
-    ```c#
-    void SampleMethod() {
-        var show = new AnExampleOf();
-        show.SomeMembers = AndWhyItMight(be, interesting)
-    }
-    ```
-
-    Code samples should be in C# and/or C++/WinRT.
-
-    As an example of this section, see the Examples section for the PasswordBox
-    control (https://docs.microsoft.com/windows/uwp/design/controls-and-patterns/password-box#examples). 
+  It's not necessary to have a section for every class member:
+  * If its purpose and usage is obvious from it's name/type, it's not necessary to include it.
+  * If its purpose and usage is obvious other than a brief description, put it in a table in the "Other [class] Members" section.
 -->
 
-# Remarks
+## MyExample class
 
-<!-- TEMPLATE
+Brief description of this class.
 
-    Explanation and guidance that doesn't fit into the Examples section.
+Introduction to one or more example usages of a MyExample class:
 
-    APIs should only throw exceptions in exceptional conditions; basically,
-    only when there's a bug in the caller, such as argument exception.  But if for some
-    reason it's necessary for a caller to catch an exception from an API, call that
-    out with an explanation either here or in the Examples
--->
+```c#
+...
 
-# API Notes
+```
 
-<!-- TEMPLATE
+Remarks about the MyExample class
 
-    Option 1: Give a one or two line description of each API (type and member),
-        or at least the ones that aren't obvious from their name. These
-        descriptions are what show up in IntelliSense. For properties, specify
-        the default value of the property if it isn't the type's default (for
-        example an int-typed property that doesn't default to zero.) 
-        
-    Option 2: Put these descriptions in the below API Details section,
-        with a "///" comment above the member or type. 
--->
+
+## MyExample.PropertyOne property
+
+Brief description about the MyExample.PropertyOne property.
+
+_Spec note: internal comment about this property that won't go into the public docs._
+
+Introduction to one or more usages of the MyExample.PropertyOne property.
+
+
+## Other MyExample members
+
+
+| Name | Description
+|-|-|
+| PropertyTwo | Brief description of the PropertyTwo property (defaults to ...) |
+| MethodOne | Brief description of the MethodOne method |
 
 # API Details
 
-<!-- TEMPLATE
-
-    The exact API, in MIDL3 format (https://docs.microsoft.com/en-us/uwp/midl-3/)
-    when possible, or in C# if starting with an API sketch.  GitHub's markdown
-    syntax formatter does not (yet) know about MIDL3, so use ```c# instead even
-    when writing MIDL3.
-
-    Example:
-
-    ```c# (but really MIDL3)
-    namespace Microsoft.AppModel
-    {
-        /// Represents a package on the host system. See Windows.ApplicationModel.Package for more details
-        runtimeclass Package
-        {
-            /// Returns the current package, or null if the current process is not packaged
-            static Package Current { get; };
-
-            /// Returns the package from the system store with this full name or null if not found
-            static Package GetFromFullName(String fullName);
-
-            /// Returns packages in the given family, by name
-            static Package[] FindByFamilyName(String familyName);
-        }
-    }
-    ```
--->
+```c#
+runtimeclass MyExample
+{
+    int PropertyOne;
+    string PropertyTwo
+    void MethodOne();
+}
+```
 
 # Appendix
 
 <!-- TEMPLATE
+  Anything else that you want to write down about implementation notes and for posterity,
+  but that isn't necessary to understand the purpose and usage of the API.
 
-    Anything else that you want to write down for posterity, but
-    that isn't necessary to understand the purpose and usage of the API.
-    For example, implementation details.
-    
+  This or the Background section are a good place to describe alternative designs
+  and why they were rejected.
 -->
