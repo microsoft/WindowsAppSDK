@@ -8,6 +8,7 @@ jobs:
 - job: CredScan
   pool:
     vmImage: 'windows-2019'
+  steps:
   # Scans the root source folder for security vulnerability 
   - task: CredScan@2
     inputs:
