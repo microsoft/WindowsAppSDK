@@ -1,8 +1,5 @@
 ﻿# Project Reunion - Calling all Windows app developers!
 
-[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
-[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
-
 | Delight your users with modern UI | Improve multi-monitor windowing | Access new platform features | 
 |--|--|--|
 | <img src="https://docs.microsoft.com/en-us/windows/apps/images/fluent/nav_reveal_animation.gif" width=250 alt="Modern navigation"/> | <img src="https://docs.microsoft.com/en-us/windows/apps/images/fluent/thumbnail-size-classes.jpg" width=250 alt="Multiple window sizes"/> | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/> |
@@ -21,6 +18,9 @@ Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) 
 
 
 ### Roadmap
+
+[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
+[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 Here's a snippet of what we intend to deliver in the year of 2021 *(all times/features/releases are tentative and subject to change)*: 
 
