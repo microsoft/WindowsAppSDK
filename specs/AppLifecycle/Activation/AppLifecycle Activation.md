@@ -293,6 +293,32 @@ void UnregisterForActivation()
         "");
 }
 ```
+<br>
+
+### Instance information
+
+The AppInstance class is intended to represent an instance of the app. 
+In the initial release, the API is focused on instance redirection, and
+therefore exposes methods and properties relevant to that operation.
+However, the intention is that the class will expand in later releases
+to include other methods and properties that would be relevant for
+an app instance. In the first release, we also include the process ID,
+which the app may use for any purpose it sees fit, including telemetry
+or debugging.
+
+```c++
+void SomeFunction()
+{
+    auto instances = Microsoft::ProjectReunion::AppInstance::GetInstances();
+    for (Microsoft::ProjectReunion::AppInstance instance : instances)
+    {
+        wostringstream sStream;
+        sStream << L"Instance: ProcessId = " << instance.ProcessId 
+            << L", Key = " << instance.Key.c_str() << std::endl;
+        ::OutputDebugString(sStream.str().c_str());
+    }
+}
+```
 
 <br>
 
