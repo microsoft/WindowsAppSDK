@@ -39,12 +39,24 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "MSIXPackager", "test\TestAp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsWin32App", "test\TestApps\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj", "{6E36AA85-63A0-405D-925D-163F3B5BEFB4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TAEFTests", "TAEFTests", "{635DC209-31AF-4534-9D4C-45B9CE9B26CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsTests", "test\TAEFTests\PushNotificationsTests\PushNotificationsTests.vcxitems", "{3CD20CC0-813C-4918-9E3D-3330EF854F66}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsDLL", "test\TAEFTests\PushNotificationsDLL\PushNotificationsDLL.vcxproj", "{C3137C00-94D5-429E-8D1E-3D6688515CEB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Constants", "test\TAEFTests\Constants\Constants.vcxitems", "{49DF67B2-3923-4021-B215-6204A7B6B8BE}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		test\TAEFTests\PushNotificationsTests\PushNotificationsTests.vcxitems*{3cd20cc0-813c-4918-9e3d-3330ef854f66}*SharedItemsImports = 9
+		test\TAEFTests\Constants\Constants.vcxitems*{49df67b2-3923-4021-b215-6204a7b6b8be}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{6e36aa85-63a0-405d-925d-163f3b5befb4}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		test\AppLifecycle\AppLifecycle.vcxitems*{80e07022-9e99-44fe-b875-901fb6c82f52}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
+		test\TAEFTests\Constants\Constants.vcxitems*{c3137c00-94d5-429e-8d1e-3d6688515ceb}*SharedItemsImports = 4
 		test\CppShared\CppShared.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
@@ -219,6 +231,30 @@ Global
 		{6E36AA85-63A0-405D-925D-163F3B5BEFB4}.Release|x64.Build.0 = Release|x64
 		{6E36AA85-63A0-405D-925D-163F3B5BEFB4}.Release|x86.ActiveCfg = Release|Win32
 		{6E36AA85-63A0-405D-925D-163F3B5BEFB4}.Release|x86.Build.0 = Release|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|Any CPU.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|Any CPU.Build.0 = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|ARM.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|ARM.Build.0 = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|ARM64.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|ARM64.Build.0 = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|x64.ActiveCfg = Debug|x64
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|x64.Build.0 = Debug|x64
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|x86.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug_test|x86.Build.0 = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|ARM.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|x64.ActiveCfg = Debug|x64
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|x64.Build.0 = Debug|x64
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|x86.ActiveCfg = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Debug|x86.Build.0 = Debug|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|ARM.ActiveCfg = Release|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|ARM64.ActiveCfg = Release|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|x64.ActiveCfg = Release|x64
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|x64.Build.0 = Release|x64
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|x86.ActiveCfg = Release|Win32
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -236,6 +272,10 @@ Global
 		{E8B129A3-EDB6-4721-A088-CD6049B4907F} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{3610E0BD-2587-43BE-8A47-BA7EC07EA080} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{6E36AA85-63A0-405D-925D-163F3B5BEFB4} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
+		{635DC209-31AF-4534-9D4C-45B9CE9B26CF} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{3CD20CC0-813C-4918-9E3D-3330EF854F66} = {635DC209-31AF-4534-9D4C-45B9CE9B26CF}
+		{C3137C00-94D5-429E-8D1E-3D6688515CEB} = {635DC209-31AF-4534-9D4C-45B9CE9B26CF}
+		{49DF67B2-3923-4021-B215-6204A7B6B8BE} = {635DC209-31AF-4534-9D4C-45B9CE9B26CF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

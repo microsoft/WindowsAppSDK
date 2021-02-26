@@ -7,7 +7,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="24c02d9d-f630-434d-97a8-a1d83fc0bff3"
+    Name="PushNotifications"
     Publisher="CN=purifoypaul"
     Version="1.0.0.0" />
 
@@ -36,9 +36,17 @@
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" >
+        </uap:DefaultTile >
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol"  EntryPoint="$targetentrypoint$">
+          <uap:Protocol Name="reuniontestprotocol-packaged">
+            <uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
+          </uap:Protocol >
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
 

@@ -43,8 +43,8 @@ namespace ProjectReunionCppTest
         TEST_CLASS_SETUP(ClassInit)
         {
             // Deploy packaged app to register handler through the manifest.
-            //RunCertUtil(c_testPackageCertFile);
-            //InstallPackage(c_testPackageFile);
+            RunCertUtil(c_testPackageCertFile);
+            InstallPackage(c_testPackageFile);
 
             // Write out some test content.
             WriteContentFile(c_testDataFileName);
@@ -60,8 +60,8 @@ namespace ProjectReunionCppTest
             {
                 DeleteContentFile(c_testDataFileName_Packaged);
                 DeleteContentFile(c_testDataFileName);
-                //UninstallPackage(c_testPackageFullName);
-                //RunCertUtil(c_testPackageCertFile, true);
+                UninstallPackage(c_testPackageFullName);
+                RunCertUtil(c_testPackageCertFile, true);
             }
             catch (const std::exception&)
             {
