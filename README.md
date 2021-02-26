@@ -1,90 +1,37 @@
-﻿# Project Reunion
+﻿# Project Reunion - Calling all Windows app developers!
 
 [![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
 [![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
+| Delight your users with modern UI | Improve multi-monitor windowing | Access new platform features | 
+|--|--|--|
+| <img src="https://docs.microsoft.com/en-us/windows/apps/images/fluent/nav_reveal_animation.gif" width=250 alt="Modern navigation"/> | <img src="https://docs.microsoft.com/en-us/windows/apps/images/fluent/thumbnail-size-classes.jpg" width=250 alt="Multiple window sizes"/> | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/> |
 
-### What is Project Reunion?
-Project Reunion is our vision for unifying and evolving the Windows developer platform to make it easier
-to build great apps that work across all the Windows 10 versions and devices people use.
+...and more, **without having to rewrite your app!**
 
-Project Reunion makes it easier to build a great Windows app by providing a unified platform for new 
-and existing Win32 and UWP apps. It will unify access to existing Win32 and UWP APIs and make them 
-available decoupled from the OS, via tools like NuGet. 
+* Use your current installer *(no need to use MSIX)*
+* 100% additive *(only add what you need, leave the rest of your app as-is)*
+* Works with Win32, WPF, WinForms, and UWP apps
 
-Project Reunion will help you update and modernize your existing apps with the latest functionality, 
-whether they're C++, .NET (including WPF, Windows Forms, and UWP) or React Native. As we decouple 
-existing APIs and add new APIs, we are also doing the work to polyfill, as needed, so the APIs work 
-down-level across supported versions of Windows. 
+Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) of Windows 10!
 
 
-### How can I use Project Reunion?
-Check out our roadmap and what's supported with Project Reunion **[here](docs/roadmap.md)**!
-
-We have already started with APIs like 
-**[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml)**,
-**[WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)** and 
-**[MSIX](https://docs.microsoft.com/en-us/windows/msix/overview)**
-**([MSIX-Core](https://github.com/microsoft/msix-packaging))** 
-which you can start using today!
-
-WinUI 3 Preview 1 is one of the first components in the Project Reunion journey: it’s the modern 
-native UI framework for Windows, now available to all Windows app developers across both UWP and 
-Desktop apps. Using WinUI you will be able to create new apps with modern UI that adapts and scales 
-across devices, or incrementally modernize the UI of existing desktop apps including C++, WPF and 
-WinForms.
-
-[Help us figure out what Project Reunion becomes to support your application.](https://github.com/microsoft/ProjectReunion/issues/new/choose)
-
-![Project Reunion](docs/images/projectreunion.gif)
-
-### Project Reunion Principles
-
-**Compatible**
-
-Project Reunion works in all your apps - Win32, Packaged, and UWP - and across many versions of Windows.
-
-**Modern**
-
-Project Reunion supports your app's use of modern software libraries for UI, AI, ML, packaging, frameworks, 
-and libraries. Language projections for C++, Rust, C#, and JavaScript expand the benefits to all your 
-apps.  Cloud-backed apps, streaming, and edge-compute apps are all great places to use Project Reunion's 
-capabilities.
-
-**Agile**
-
-Project Reunion ships out of band with OS releases, with regular previews. You get to incrementally 
-adopt Project Reunion components for your existing apps and middleware libraries using NuGet.
-
-**Open**
-
-We're committing to engineering Project Reunion in the open on GitHub, so you have a more direct 
-say in how the platform evolves and can even help out.
-
-## Contributing
-
-_We want to hear from you!_
-
-File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
-trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
-points if there's a gist or existing repo we can look at with you.
+### Try it now!
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can try the preview of the 0.5 release now! (link to details on how to try it)
 
 
-1. **[Ask a question](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
-    Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
+### Roadmap
 
-2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/discussions)**<br>
-   Discussions can be about any topics or ideas related to Project Reunion. For example,
-   you might start a Discussion issue to see if others are interested in a cool new idea
-   you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
+Here's a snippet of what we intend to deliver in the year of 2021 *(all times/features/releases are tentative and subject to change)*: 
 
-3. **[Make a feature proposal](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=feature+proposal&template=feature-proposal.md&title=)**<br>
-   What components do you want to see in Project Reunion? For example you can propose a new API on an existing type, or an idea for a new API.
-   It's fine if you don't have all the details: you can start with a summary and rationale.
+App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
+-- | ------------------------------- | --------------------------------- | ------------------------------- |
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) |                ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  |                    ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  | ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle  | 
+Unpackaged desktop apps | 🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |                    🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |  ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle | 
 
-**Over time, we will add Project Reunion code and samples into this repo and provide code contribution/developer guidelines.**
+See our [full roadmap](docs/roadmap.md) for a more detailed roadmap.
 
-Read more about the [contribution guide here](docs/contributor-guide.md).
+
 
 ### Version Support
 
