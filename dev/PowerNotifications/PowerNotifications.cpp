@@ -3,6 +3,7 @@
 
 #include <pch.h>
 #include <PowerNotifications.h>
+#include <PowerNotificationsPal.h>
 #include <PowerManager.g.cpp>
 
 
