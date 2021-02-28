@@ -1,5 +1,5 @@
 <!--
-    Before submitting, delete all <!-- TEMPLATE marked comments in this file,
+    Before submitting, delete all "<!-- TEMPLATE marked" comments in this file,
     and the following quote banner:
 -->
 > See comments in Markdown for how to use this spec template
@@ -14,7 +14,7 @@
     Hopefully we'll be able to copy it mostly verbatim. So the second audience is everyone that reads there to learn how
     and why to use this API. Some of this text also shows up in Visual Studio Intellisense.
 
-    For example, much of the examples and descriptions in the RadialGradientBrush API spec
+    For example, much of the examples and descriptions in the `RadialGradientBrush` API spec
     (https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/RadialGradientBrush/RadialGradientBrush.md)
     were carried over to the public API page on DMC
     (https://docs.microsoft.com/windows/winui/api/microsoft.ui.xaml.media.radialgradientbrush?view=winui-2.5)
@@ -22,7 +22,7 @@
     Once the API is on DMC, that becomes the official copy, and this spec becomes an archive. For example if the description is updated,
     that only needs to happen on DMC and needn't be duplicated here.
 
-    Samples:
+    Examples:
     * New class (RadialGradientBrush):
       https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/RadialGradientBrush/RadialGradientBrush.md
     * New member on an existing class (UIElement.ProtectedCursor):
@@ -30,14 +30,14 @@
 
     Style guide:
     * Use second person; speak to the developer who will be learning/using this API.
-    ("You use this to..." rather than "the developer uses this to...")
+    (For example "you use this to..." rather than "the developer uses this to...")
     * Use hard returns to keep the page width within ~100 columns.
     (Otherwise it's more difficult to leave comments in a GitHub PR.)
-    * Talk about an API's behavior, not its implementation
-    (Speak to the developer using this API, not to the team implementing this API)
+    * Talk about an API's behavior, not its implementation.
+    (Speak to the developer using this API, not to the team implementing it.)
     * A picture is worth a thousand words.
     * An example is worth a million words.
-    * Keep examples realistic but simple; don't add unrelated complications
+    * Keep examples realistic but simple; don't add unrelated complications.
     (An example that passes a stream needn't show the process of launching the File-Open dialog.)
 
 -->
@@ -60,12 +60,13 @@ Title
     the reader "go read 100 pages of background information posted at ...".
 
     For example this section is a place to explain why you're adding this new API rather than
-    usiung an existing related API.
+    using an existing related API.
 
     For a simple example see the spec for the UIElement.ProtectedCursor property
     (https://github.com/microsoft/microsoft-ui-xaml-specs/blob/master/active/UIElement/ElementCursor.md)
     which has some of the thinking about how this Xaml API relates to existing
-    Composition and WPF APIs. This is interesting background but not the kind of information
+    Composition and WPF APIs. This is interesting background both for the current reader
+    and the future reader trying to understand why we designed it this way, but not the kind of information
     that would land on DMC.
 -->
 
@@ -74,17 +75,19 @@ Title
 _(This is conceptual documentation that will go to docs.microsoft.com "how to" page)_
 
 <!-- TEMPLATE
+    (Optional)
+
     All APIs have a page on DMC, some APIs or groups of APIs have an additional high level,
     conceptual page (called a "how-to" page). This section can be used for that content.
 
     For example, there are several Xaml controls for different forms of text input, each with an API page,
-    and then there's also a conceptual pages that discusses them collectively
+    and then there's also a conceptual page that discusses them collectively
     (https://docs.microsoft.com/en-us/windows/uwp/design/controls-and-patterns/text-controls).
 
     Another way to use this section is as a draft of a blog post that introduces the new feature.
 
-    Sometimes it's difficult to decide if text belons on a how-to page or an API page.
-    It's not important to make a final decision on that in this spec, we can always adjust it when copying to DMC.
+    Sometimes it's difficult to decide if text belongs on a how-to page or an API page.
+    It's not important to make a final decision on that in this spec; we can always adjust it when copying to DMC.
 -->
 
 # API Pages
@@ -93,12 +96,12 @@ _(Each of the following L2 sections correspond to a page that will be on docs.mi
 
 <!-- TEMPLATE
 
-  Each of the L2 sections in this "API Pages" section corresponds to a page in DMC.
+  Each of the L2 sections in this "API Pages" section corresponds to a page on DMC.
 
   It's not necessary to have a section for every class member though:
   * If its purpose and usage is obvious from it's name/type, it's not necessary to create a section for it.
-  * If its purpose and usage is obvious other than a brief description, either
-      put it in a table in the "Other [class] Members" section
+  * If its purpose and usage is fully explained by brief description, either
+      put it in a table in the "Other [class] members" section
       put it with /// comments in the IDL section
 
   Create an L2 section here for each API that needs more description or examples.
@@ -144,13 +147,17 @@ out with an explanation either here or in the Examples
 
 ## MyExample.PropertyOne property
 
-Brief description about the MyExample.PropertyOne property.
+Brief description of the MyExample.PropertyOne property.
 
-Paragraph of more detail about the property.
+Paragraph with more detail about the property.
 
 _Spec note: internal comment about this property that won't go into the public docs._
 
 Introduction to one or more usages of the MyExample.PropertyOne property.
+
+```c#
+...
+```
 
 ## Other MyExample members
 
@@ -167,10 +174,10 @@ namespace Microsoft.Name.Space
   runtimeclass MyExample
   {
       int PropertyOne;
-      string PropertyTwo
+      string PropertyTwo { get; }
       void MethodOne();
 
-    /// Brief description of the MethodTwo method
+       /// Brief description of the MethodTwo method
       void MethodTwo();
   }
 }
