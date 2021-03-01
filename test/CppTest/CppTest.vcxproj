@@ -115,7 +115,7 @@
   <ImportGroup Label="AppLifecycle">
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
   </ImportGroup>
-  <ImportGroup Label="AppLifecycle">
+  <ImportGroup Label="EnvironmentTests">
     <Import Project="..\Microsoft.Process.Environment.Tests\Microsoft.Process.Environment.Tests.vcxitems" Label="EnvironmentTests" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
