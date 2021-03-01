@@ -19,9 +19,6 @@ Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) 
 
 ### Roadmap
 
-[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
-[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
-
 Here's a snippet of what we intend to deliver in the year of 2021 *(all times/features/releases are tentative and subject to change)*: 
 
 App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
@@ -55,6 +52,9 @@ gets us to building a first version of Project Reunion exploring some basic comm
 
 
 ### Contributing
+
+[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
+[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 _We want to hear from you!_
 
