@@ -59,9 +59,6 @@ jobs:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'WindowsES'
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
@@ -81,9 +78,6 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'WindowsES'
   - template: ..\dev\MRTCore\build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
