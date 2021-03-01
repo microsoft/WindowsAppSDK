@@ -115,6 +115,9 @@
   <ImportGroup Label="AppLifecycle">
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
   </ImportGroup>
+  <ImportGroup Label="AppLifecycle">
+    <Import Project="..\Microsoft.Process.Environment.Tests\Microsoft.Process.Environment.Tests.vcxitems" Label="EnvironmentTests" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -324,9 +327,20 @@
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\TestApps\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj">	
-      <Project>{7c502995-59c3-483b-86ba-815985353633}</Project>	
+    <ProjectReference Include="..\TestApps\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj">
+      <Project>{7c502995-59c3-483b-86ba-815985353633}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Update="D:\git\microsoft\ProjectReunion\test\Microsoft.Process.Environment.Tests\AppxManifest.pkg.xml">
+      <DeploymentContent>true</DeploymentContent>
+    </Xml>
+    <Xml Update="D:\git\microsoft\ProjectReunion\test\Microsoft.Process.Environment.Tests\CentennialAppxManifest.pkg.xml">
+      <DeploymentContent>true</DeploymentContent>
+    </Xml>
+    <Xml Update="D:\git\microsoft\ProjectReunion\test\Microsoft.Process.Environment.Tests\CppTest.dll.manifest">
+      <DeploymentContent>true</DeploymentContent>
+    </Xml>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

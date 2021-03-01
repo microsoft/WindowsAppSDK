@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{2a9dee02-db37-4b9c-a0da-b17541cb12c0}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManagerCentennialTests.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManagerUWPTests.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManagerWin32Tests.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentManagerCentennialTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentManagerUWPTests.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentManagerWin32Tests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)PropertySheet.props" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)AppxManifest.pkg.xml" />
+    <Xml Include="$(MSBuildThisFileDirectory)CentennialAppxManifest.pkg.xml" />
+    <Xml Include="$(MSBuildThisFileDirectory)CppTest.dll.manifest" />
+  </ItemGroup>
+</Project>
