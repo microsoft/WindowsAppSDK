@@ -18,11 +18,19 @@
     <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ActivatedEventArgsExtension.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ChannelResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InProcActivatorDetails.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationActivatedEventArgs.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsExtension.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle2.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChannelResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)InProcActivatorDetails.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationActivatedEventArgs.h" />
   </ItemGroup>
 </Project>

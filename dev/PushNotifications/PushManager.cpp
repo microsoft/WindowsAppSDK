@@ -7,6 +7,14 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
+    void PushManager::RegisterPushNotificationActivator(Microsoft::ProjectReunion::InProcActivatorDetails const& details)
+    {
+        throw hresult_not_implemented();
+    }
+    void PushManager::UnregisterPushNotificationActivator(Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& registration)
+    {
+        throw hresult_not_implemented();
+    }
     Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> PushManager::CreateChannelAsync(winrt::guid remoteId)
     {
         throw hresult_not_implemented();

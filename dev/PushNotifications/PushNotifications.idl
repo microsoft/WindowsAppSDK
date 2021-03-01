@@ -3,6 +3,101 @@
 
 namespace Microsoft.ProjectReunion
 {
+    // The legacy ActivationKind does not support operations like Push. So we need to define an extension set
+    enum ActivationKindExtension
+    {
+        Launch = 0,
+        Search = 1,
+        ShareTarget = 2,
+        File = 3,
+        Protocol = 4,
+        FileOpenPicker = 5,
+        FileSavePicker = 6,
+        CachedFileUpdater = 7,
+        ContactPicker = 8,
+        Device = 9,
+        PrintTaskSettings = 10,
+        CameraSettings = 11,
+        RestrictedLaunch = 12,
+        AppointmentsProvider = 13,
+        Contact = 14,
+        LockScreenCall = 15,
+        VoiceCommand = 16,
+        LockScreen = 17,
+        PickerReturned = 1000,
+        WalletAction = 1001,
+        PickFileContinuation = 1002,
+        PickSaveFileContinuation = 1003,
+        PickFolderContinuation = 1004,
+        WebAuthenticationBrokerContinuation = 1005,
+        WebAccountProvider = 1006,
+        ComponentUI = 1007,
+        ProtocolForResults = 1009,
+        ToastNotification = 1010,
+        Print3DWorkflow = 1011,
+        DialReceiver = 1012,
+        DevicePairing = 1013,
+        UserDataAccountsProvider = 1014,
+        FilePickerExperience = 1015,
+        LockScreenComponent = 1016,
+        ContactPanel = 1017,
+        PrintWorkflowForegroundTask = 1018,
+        GameUIProvider = 1019,
+        StartupTask = 1020,
+        CommandLineLaunch = 1021,
+        BarcodeScannerProvider = 1022,
+        Push = 1023,
+    };
+
+    // Simply a wrapper around IActivatedEventArgs to support new Kind extensions like Push which aren't a part of Foundations today
+    runtimeclass ActivatedEventArgsExtension
+    {
+        ActivatedEventArgsExtension(Windows.ApplicationModel.Activation.IActivatedEventArgs activatedEventArgs, ActivationKindExtension kind2);
+        ActivationKindExtension Kind2 { get; };
+        Windows.ApplicationModel.Activation.IActivatedEventArgs ActivatedArgs{ get; };
+    }
+
+    // This is an overload of the existing GetActivatedEventArgs in Reunion which supports new Activation Kinds
+    static runtimeclass AppLifecycle2
+    {
+        // Called during process launch in Main to determine whether the launch is in response to Protocol/Foreground/Push etc.
+        static ActivatedEventArgsExtension GetActivatedEventArgs();
+    }
+
+    // Event args in WinMain activation payload. It wraps around the BackgroundInstance construct and manages the task lifetime.
+    runtimeclass PushNotificationActivatedEventArgs : Windows.ApplicationModel.Activation.IActivatedEventArgs
+    {
+        // Initialize using the raw byte payload
+        PushNotificationActivatedEventArgs(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
+        // The Push payload
+        byte[] Payload { get; };
+        // Takes a deferral to run under specific modes like low power mode
+        void GetDeferral();
+        // Closes the Deferral taken on a Push Trigger. If this is not called by the developer, the deferral will automatically be invoked on destruction.
+        void CompleteDeferral();
+        // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
+        event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
+        // The number of times Resource management suspended the Task
+        UInt32 SuspendedCount { get; };
+    }
+
+    // An abstraction over the inproc activation Registration flow
+    runtimeclass InProcActivatorDetails
+    {
+        // Initialize using a manifest defined activatorId to Activate the InProc COM server
+        InProcActivatorDetails(String taskClsid);
+        // Initialize an inproc activator for LOW-IL apps like UWP with no COM Server specified in manifest
+        InProcActivatorDetails();
+        // The CLSID associated with the Client COM server that reunion will adopt
+        String TaskClsid{ get; };
+        // The conditions under which Push Triggers would execute
+        Windows.ApplicationModel.Background.IBackgroundCondition Condition;
+        // The in-memory Event handler to subscribe to if the app is in the foreground
+        event Windows.Foundation.EventHandler<PushNotificationActivatedEventArgs> PushActivated;
+        // The backgroundRegistration that gets populated on successful registration
+        Windows.ApplicationModel.Background.IBackgroundTaskRegistration Registration;
+    };
+
     enum ChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
@@ -32,6 +127,10 @@ namespace Microsoft.ProjectReunion
 
     static runtimeclass PushManager
     {
+        // Register an activator using a Details context
+        static void RegisterPushNotificationActivator(InProcActivatorDetails details);
+        // Unregister any activator if present
+        static void UnregisterPushNotificationActivator(Windows.ApplicationModel.Background.IBackgroundTaskRegistration registration);
         // Request a Push Channel with an GUID RemoteId from WNS. RemoteId is an AAD identifier GUID
         static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(Guid remoteId);
     };

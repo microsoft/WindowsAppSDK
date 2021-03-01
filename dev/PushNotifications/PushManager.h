@@ -10,6 +10,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         PushManager() = default;
 
+        static void RegisterPushNotificationActivator(Microsoft::ProjectReunion::InProcActivatorDetails const& details);
+        static void UnregisterPushNotificationActivator(Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& registration);
         static Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> CreateChannelAsync(winrt::guid remoteId);
     };
 }
