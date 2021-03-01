@@ -16,6 +16,12 @@ Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) 
 ### Try it now!
 [Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can try the preview of the 0.5 release now! (link to details on how to try it)
 
+Some caveats about 0.5...
+
+* Requires using MSIX (1.0 won't require MSIX)
+* Only includes WinUI / DWriteCore / MRT Core
+* WinUI cannot be incrementally added yet (that'll come in a future version). Right now you must switch all of your UI to WinUI.
+
 
 ### Roadmap
 
