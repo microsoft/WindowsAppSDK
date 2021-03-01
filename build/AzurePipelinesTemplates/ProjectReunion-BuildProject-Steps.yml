@@ -67,6 +67,13 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\CppTest'
     condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
 
+  - task: CmdLine@2
+    displayName: 'Run ThemingTest'
+    inputs:
+      script: 'te.exe ThemingCppTest.dll'
+      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\ThemingCppTest'
+    condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ${{ parameters.solutionPath }} binlog'
     condition: succeededOrFailed()
