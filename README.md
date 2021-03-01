@@ -41,7 +41,7 @@ See our [full roadmap](docs/roadmap.md) for a more detailed roadmap.
 
 ### Version Support
 
-Project Reunion aims to work on supported versions of Windows. We'll use techniques like '_polyfills_' 
+Project Reunion aims to work on supported versions of Windows. Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10. We'll use techniques like '_polyfills_' 
 and custom implementations to do the heavy lifting for you and make sure your app works across Windows
 versions and devices.
 
