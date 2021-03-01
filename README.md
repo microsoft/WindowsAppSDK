@@ -19,8 +19,8 @@ Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) 
 Some caveats about 0.5...
 
 * Requires using MSIX (1.0 won't require MSIX)
-* Only includes WinUI / DWriteCore / MRT Core
-* WinUI cannot be incrementally added yet (that'll come in a future version). Right now you must switch all of your UI to WinUI.
+* Only includes WinUI / DWriteCore / MRT Core right now
+* WinUI cannot be incrementally added yet (that'll come in a future version). To use WinUI, you must switch all of your UI to WinUI.
 
 
 ### Roadmap
