@@ -1,4 +1,4 @@
-﻿# Project Reunion - Calling all Windows desktop app developers!
+﻿# Project Reunion - Calling all Windows desktop apps!
 
 | Delight your users with modern UI | Improve multi-monitor windowing | Access new platform features | 
 |--|--|--|
