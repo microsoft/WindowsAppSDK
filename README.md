@@ -23,8 +23,8 @@ Here's a snippet of what we intend to deliver in the year of 2021 *(all times/fe
 
 App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) |                ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  |                    ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  | ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle  | 
-Unpackaged desktop apps | 🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |                    🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |  ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle | 
+[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps (WPF, Win32, WinForms, console) |                ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  |                    ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>🔄 AppLifecycle  | ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle  | 
+Unpackaged desktop apps (WPF, Win32, WinForms, console) | 🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |                    🔄 AppLifecycle</br>🔄 DWriteCore</br>🔄 MRT Core  |  ✅ WinUI</br>✅ DWriteCore</br>✅ MRT Core</br>✅ AppLifecycle | 
 
 ✅ Supported | 🔄 Preview
 
