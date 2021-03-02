@@ -8,7 +8,7 @@ For a general overview, see the [readme](https://github.com/microsoft/ProjectReu
 
 ## 2021 Roadmap
 
-Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*: 
+Here's how we intend to roll out Project Reunion. To subscribe to updates, subscribe to [this discussion](https://github.com/microsoft/ProjectReunion/discussions/507). *(all times/features/releases are tentative and subject to change)*: 
 
 ### Packaged Desktop Apps
 As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
