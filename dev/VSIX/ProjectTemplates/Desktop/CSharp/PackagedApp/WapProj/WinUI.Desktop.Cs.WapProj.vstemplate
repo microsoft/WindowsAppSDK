@@ -24,6 +24,11 @@
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent>
+    <CustomParameters>
+      <CustomParameter Name="$ReunionNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$ReunionFoundationNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$ReunionWinUINupkgVersion$" Value="1.0.0" />
+    </CustomParameters>
     <Project File="WapProjTemplate.wapproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="false" TargetFileName="build\Microsoft.WinUI.AppX.targets">Microsoft.WinUI.AppX.targets</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-managed.appxmanifest</ProjectItem>

@@ -71,7 +71,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="$(CppWinRTVersion)" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="[$(CppWinRTVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.ProjectReunion" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
