@@ -1,0 +1,69 @@
+parameters:
+  ReunionVersion: '0.1.0-prerelease.20210301.5.CI'
+  ReunionFoundationVersion: '0.1.0-prerelease.20210301.5.CI'
+  ReunionDWriteVersion: '0.1.5-prerelease.20210301.5.CI'
+  ReunionWinUIVersion: '3.0.0-prerelease.20210301.5.CI'
+  artifactBuildConfiguration: 'Release'
+  buildConfiguration: 'Release'
+  signOutput: false
+
+steps:
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet restore ProjectReunion.Extension.sln'
+  env:
+    NUGET_RESTORE_MSBUILD_ARGS: /p:WinUIVersion=${{ parameters.winUIVersion }} /p:VSIXVersion=${{ parameters.vsixVersion }}  # Should the 4 packages to include go here?
+  inputs:
+    command: 'custom'
+    arguments: 'restore dev\VSIX\ProjectReunion.Extension.sln'
+  continueOnError: true
+
+- task: VSBuild@1
+  displayName: 'Build ProjectReunion.Extension.sln'
+  inputs:
+    solution: dev\VSIX\ProjectReunion.Extension.sln
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    msBuildArgs: '/restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}"
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Governance Detection'
+  inputs:
+    scanType: 'Register'
+    failOnAlert: true
+
+- ${{ if eq( parameters.signOutput, true) }}:
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+    displayName: 'CodeSign (vsix)'
+    inputs:
+      ConnectedServiceName: ProjectReunionSigning # Pretty sure this is not correct. 
+      FolderPath: '$(Build.BinariesDirectory)'
+      Pattern: ProjectReunion.Extension.vsix  # Might also be wrong?
+      signConfigType: inlineSignParams
+      inlineOperation: | 
+        [
+            {
+                "KeyCode" : "CP-233016",
+                "OperationCode" : "OpcSign",
+                "Parameters" : {
+                    "FileDigest" : "/fd SHA256"
+                },
+                "ToolName" : "sign",
+                "ToolVersion" : "1.0"
+            },
+            {
+                "KeyCode" : "CP-233016",
+                "OperationCode" : "OpcVerify",
+                "Parameters" : {},
+                "ToolName" : "sign",
+                "ToolVersion" : "1.0"
+            }
+        ]
+
+
+# Should this be done in the internal pipeline?
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish built binaries'
+  inputs:
+    PathtoPublish: '$(Build.BinariesDirectory)'
+    artifactName: 'VSIX'
