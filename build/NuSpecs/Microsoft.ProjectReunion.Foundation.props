@@ -1,6 +1,4 @@
 ﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- <Import Project="$(MSBuildThisFileDirectory)\MicrosoftProjectReunionVersion.props"/> -->
-  <!-- <Import Project="$(MSBuildThisFileDirectory)\Common.targets"/> -->
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ProjectReunion.Foundation.FrameworkPackage.props" Condition="Exists('$(MSBuildThisFileDirectory)Microsoft.ProjectReunion.Foundation.FrameworkPackage.props')" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ProjectReunion.Package.props" Condition="Exists('$(MSBuildThisFileDirectory)Microsoft.ProjectReunion.Package.props')" />
 </Project>
