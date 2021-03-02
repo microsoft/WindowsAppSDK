@@ -10,10 +10,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         ChannelResult() = default;
 
-        ChannelResult(Windows::Networking::PushNotifications::PushNotificationChannel const& channel, winrt::hresult const& extendedError, Microsoft::ProjectReunion::ChannelStatus const& status);
+        ChannelResult(Windows::Networking::PushNotifications::PushNotificationChannel const channel, winrt::hresult const extendedError, Microsoft::ProjectReunion::ChannelStatus const status);
         Windows::Networking::PushNotifications::PushNotificationChannel Channel();
         winrt::hresult ExtendedError();
         Microsoft::ProjectReunion::ChannelStatus Status();
+
+    private:
+        Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        winrt::hresult m_extendedError;
+        Microsoft::ProjectReunion::ChannelStatus m_channelStatus;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

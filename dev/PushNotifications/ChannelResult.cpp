@@ -4,23 +4,26 @@
 #include "pch.h"
 #include "ChannelResult.h"
 #include "ChannelResult.g.cpp"
+#include <winrt\windows.networking.pushnotifications.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    ChannelResult::ChannelResult(Windows::Networking::PushNotifications::PushNotificationChannel const& channel, winrt::hresult const& extendedError, Microsoft::ProjectReunion::ChannelStatus const& status)
+    ChannelResult::ChannelResult(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const channel, winrt::hresult const extendedError, Microsoft::ProjectReunion::ChannelStatus const status)
     {
-        throw hresult_not_implemented();
+        m_channel = channel;
+        m_extendedError = extendedError;
+        m_channelStatus = status;
     }
     Windows::Networking::PushNotifications::PushNotificationChannel ChannelResult::Channel()
     {
-        throw hresult_not_implemented();
+        return m_channel;
     }
     winrt::hresult ChannelResult::ExtendedError()
     {
-        throw hresult_not_implemented();
+        return m_extendedError;
     }
     Microsoft::ProjectReunion::ChannelStatus ChannelResult::Status()
     {
-        throw hresult_not_implemented();
+        return m_channelStatus;
     }
 }
