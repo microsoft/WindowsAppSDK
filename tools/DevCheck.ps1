@@ -26,7 +26,7 @@ Param(
     [Switch]$Verbose=$false
 )
 
-$issues = 0
+$global:issues = 0
 
 function Write-Verbose
 {
@@ -230,13 +230,11 @@ function Test-TAEFService
     if ([string]::IsNullOrEmpty($service))
     {
         Write-Host "TAEF service...Not Installed"
-        $global:issues += 1
         return 'NotFound'
     }
     elseif ($service.Status -ne "Running")
     {
         Write-Host "TAEF service...Not running ($service.Status)"
-        $global:issues += 1
         return 'NotRunning'
     }
     else
@@ -325,11 +323,12 @@ if ($test -eq 'NotRunning')
     $test = Start-TAEFService
 }
 
-if ($issues -eq 0)
+if ($global:issues -eq 0)
 {
     Write-Output "Coding time!"
 }
 else
 {
-    Write-Output "$issues issue(s) detected"
+    $n = $global:issues
+    Write-Output "$n issue(s) detected"
 }
