@@ -6,7 +6,7 @@
 
 ...and more, **without having to rewrite your app!**
 
-* Use your current installer *(no requirement to be MSIX/packaged, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
+* Use your current installer *(no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
 * 100% additive *(only add what you need, leave the rest of your app as-is)*
 * Works with Win32, WPF, WinForms, and UWP apps
 
