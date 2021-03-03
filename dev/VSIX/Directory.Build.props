@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <!-- Provide default package versions for developer builds -->
+    <!-- Provide default nuget feed (Reunion internal) and package versions for developer builds -->
     <PropertyGroup>
+        <RestoreSources Condition="'$(RestoreSources)'==''">
+            https://api.nuget.org/v3/index.json;
+            https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
+        </RestoreSources>
         <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210211.2</CppWinRTVersion>
         <ReunionVersion Condition="'$(ReunionVersion)' == ''">0.1.0-prerelease.20210301.5.CI</ReunionVersion>
         <ReunionFoundationVersion Condition="'$(ReunionFoundationVersion)' == ''">0.1.0-prerelease.20210301.5.CI</ReunionFoundationVersion>

@@ -231,7 +231,6 @@
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
-
   <!--
     VSIX manifest version does not support semver, only .Net type version numbers, so we
     need to trim the Nuget package's version number. It is then suffixed with the number of
