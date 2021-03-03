@@ -31,7 +31,6 @@
       <CustomParameter Name="$ReunionWinUINupkgVersion$" Value="1.0.0" />
     </CustomParameters>
     <Project File="WapProjTemplate.wapproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="false" TargetFileName="build\Microsoft.WinUI.AppX.targets">Microsoft.WinUI.AppX.targets</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-managed.appxmanifest</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\SplashScreen.scale-200.png">SplashScreen.scale-200.png</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="Images\LockScreenLogo.scale-200.png">LockScreenLogo.scale-200.png</ProjectItem>
