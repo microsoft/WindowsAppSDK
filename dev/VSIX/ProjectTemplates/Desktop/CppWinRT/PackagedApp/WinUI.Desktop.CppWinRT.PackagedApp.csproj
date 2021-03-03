@@ -63,20 +63,4 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-  <!--
-       Copy Microsoft.WinUI.AppX.targets from the Nuget package so that we can embed it in the WAP project template.
-       Doing this allows us to avoid requiring the project to reference the WinUI Nuget package while still ensuring 
-       that AppxManifest.xml contains the correct WinRT activation entries.
-  -->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionWinUIVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <SourceFiles Include="$(PkgMicrosoft_ProjectReunion_WinUI)\build\Microsoft.WinUI.AppX.targets" />
-    <DestinationFiles Include="$(MSBuildThisFileDirectory)\WapProj\Microsoft.WinUI.AppX.targets" />
-  </ItemGroup>
-  <Target Name="BeforeBuild">
-    <Error Condition="!Exists('%(SourceFiles.Identity)')" Text="%(SourceFiles.Identity) does not exist." />
-    <Copy SourceFiles="@(SourceFiles)" DestinationFiles="@(DestinationFiles)" />
-  </Target>
 </Project>
