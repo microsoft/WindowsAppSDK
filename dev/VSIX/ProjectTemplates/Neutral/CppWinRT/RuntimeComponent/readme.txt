@@ -1,12 +1,12 @@
 ========================================================================
-    C++/WinRT $projectname$ Project Overview
+    $projectname$ Project Overview
 ========================================================================
 
 This project demonstrates how to get started authoring Windows Runtime 
-classes directly with standard C++, using the C++/WinRT SDK component 
-to generate implementation headers from interface (IDL) files.  The
-generated Windows Runtime component binary and WinMD files should then
-be bundled with the Universal Windows Platform (UWP) app consuming them.
+classes directly with standard C++, using the Project Reunion and 
+C++/WinRT packages to generate implementation headers from interface 
+(IDL) files.  The generated Windows Runtime component binary and WinMD 
+files should then be bundled with the app consuming them.
 
 Steps:
 1. Create an interface (IDL) file to define your Windows Runtime class, 
@@ -18,6 +18,10 @@ Steps:
     Windows Runtime classes.
 
 ========================================================================
+Learn more about Project Reunion here:
+https://docs.microsoft.com/en-us/windows/apps/project-reunion/
+Learn more about WinUI3 here:
+https://docs.microsoft.com/en-us/windows/apps/winui/winui3/
 Learn more about C++/WinRT here:
 http://aka.ms/cppwinrt/
 ========================================================================

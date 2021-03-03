@@ -1,12 +1,12 @@
 ========================================================================
-    C++/WinRT $projectname$ Project Overview
+    $projectname$ Project Overview
 ========================================================================
 
-This project demonstrates how to get started writing XAML apps directly
-with standard C++, using the C++/WinRT SDK component and XAML compiler 
-support to generate implementation headers from interface (IDL) files.
-These headers can then be used to implement the local Windows Runtime 
-classes referenced in the app's XAML pages.
+This project demonstrates how to get started writing WinUI3 apps directly
+with standard C++, using the Project Reunion and C++/WinRT packages and 
+XAML compiler support to generate implementation headers from interface 
+(IDL) files. These headers can then be used to implement the local 
+Windows Runtime classes referenced in the app's XAML pages.
 
 Steps:
 1. Create an interface (IDL) file to define any local Windows Runtime 
@@ -18,6 +18,10 @@ Steps:
     Windows Runtime classes.
 
 ========================================================================
+Learn more about Project Reunion here:
+https://docs.microsoft.com/en-us/windows/apps/project-reunion/
+Learn more about WinUI3 here:
+https://docs.microsoft.com/en-us/windows/apps/winui/winui3/
 Learn more about C++/WinRT here:
 http://aka.ms/cppwinrt/
 ========================================================================
