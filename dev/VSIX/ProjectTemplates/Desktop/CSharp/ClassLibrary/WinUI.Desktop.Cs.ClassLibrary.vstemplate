@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Class Library (WinUI in Desktop)</Name>
+    <Description>A project for creating a managed class library (.dll) for Desktop apps based on the Windows UI Library (WinUI).</Description>
+    <Icon>WinUI.Desktop.Cs.ClassLibrary.ico</Icon>
+    <TemplateID>Microsoft.WinUI.Desktop.Cs.ClassLibrary</TemplateID>
+    <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <ProjectType>CSharp</ProjectType>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>ClassLibrary</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <CreateInPlace>true</CreateInPlace>
+    <PreviewImage>WinUI.Desktop.Cs.ClassLibrary.png</PreviewImage>
+    <AppIdFilter>blend</AppIdFilter>
+    <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+    <LanguageTag>csharp</LanguageTag>
+    <LanguageTag>XAML</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <PlatformTag>Project Reunion</PlatformTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent PreferedSolutionConfiguration="Debug|AnyCPU">
+    <CustomParameters>
+      <CustomParameter Name="$ReunionNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$ReunionFoundationNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$ReunionWinUINupkgVersion$" Value="1.0.0" />
+    </CustomParameters>
+    <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">Class1.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

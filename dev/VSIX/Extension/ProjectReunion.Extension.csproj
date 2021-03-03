@@ -1,0 +1,262 @@
+﻿<Project ToolsVersion="Current">
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProjectReunion.Extension</RootNamespace>
+    <AssemblyName>ProjectReunion.Extension</AssemblyName>
+    <TargetFramework>net472</TargetFramework>
+    <!-- This project may not have any C# source files, so suppress that compiler warning. -->
+    <NoWarn>2008</NoWarn>
+    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
+    <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <StartAction>Program</StartAction>
+    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  <ItemGroup>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="index.html" />
+    <Content Include="LICENSE">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Reunion.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.206" ExcludeAssets="runtime">
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.8.1017">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="[$(CppWinRTVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectReunion" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="[$(ReunionFoundationVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectReunion.DWrite" Version="[$(ReunionDWriteVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionWinUIVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ItemTemplates\Desktop\CSharp\BlankWindow\WinUI.Desktop.Cs.BlankWindow.csproj">
+      <Project>{9DE11F03-73A8-4DCA-88B3-1623A718DFD1}</Project>
+      <Name>WinUI.Desktop.Cs.BlankWindow</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\BlankPage\WinUI.Neutral.CppWinRT.BlankPage.csproj">
+      <Project>{1E071372-7CB7-47BC-9BA2-8235F9BB09C8}</Project>
+      <Name>WinUI.Neutral.CppWinRT.BlankPage</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Desktop\CppWinRT\BlankWindow\WinUI.Desktop.CppWinRT.BlankWindow.csproj">
+      <Project>{81221BE8-00A2-4841-B62C-9E751C298066}</Project>
+      <Name>WinUI.Desktop.CppWinRT.BlankWindow</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\ResourceDictionary\WinUI.Neutral.CppWinRT.ResourceDictionary.csproj">
+      <Project>{3F3F0E7F-594F-4006-A3EF-5E5624EF147C}</Project>
+      <Name>WinUI.Neutral.CppWinRT.ResourceDictionary</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\Resw\WinUI.Neutral.CppWinRT.Resw.csproj">
+      <Project>{30AB0000-148D-48BE-85DB-70D9F7BDFEC5}</Project>
+      <Name>WinUI.Neutral.CppWinRT.Resw</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\TemplatedControl\WinUI.Neutral.CppWinRT.TemplatedControl.csproj">
+      <Project>{761212D7-B5D2-4629-98C8-88F6A24982BB}</Project>
+      <Name>WinUI.Neutral.CppWinRT.TemplatedControl</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\UserControl\WinUI.Neutral.CppWinRT.UserControl.csproj">
+      <Project>{99C19C7C-6472-44F6-89E2-389AB6534F42}</Project>
+      <Name>WinUI.Neutral.CppWinRT.UserControl</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CSharp\ResourceDictionary\WinUI.Neutral.Cs.ResourceDictionary.csproj">
+      <Project>{C8DA9E71-2F7F-4E7C-8DC7-766FF0F67196}</Project>
+      <Name>WinUI.Neutral.Cs.ResourceDictionary</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CSharp\Resw\WinUI.Neutral.Cs.Resw.csproj">
+      <Project>{17320A27-C039-4973-95AA-ACB3EFA1D47E}</Project>
+      <Name>WinUI.Neutral.Cs.Resw</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CSharp\UserControl\WinUI.Neutral.Cs.UserControl.csproj">
+      <Project>{F19716E6-41A1-4320-A819-288172CE161C}</Project>
+      <Name>WinUI.Neutral.Cs.UserControl</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CSharp\BlankPage\WinUI.Neutral.Cs.BlankPage.csproj">
+      <Project>{2d9bd73d-5a5e-4113-aea9-53d059a79a41}</Project>
+      <Name>WinUI.Neutral.Cs.BlankPage</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ItemTemplates\Neutral\CSharp\TemplatedControl\WinUI.Neutral.Cs.TemplatedControl.csproj">
+      <Project>{2C5873D8-E908-41F2-B861-80F95280FBCA}</Project>
+      <Name>WinUI.Neutral.Cs.TemplatedControl</Name>
+      <VSIXSubPath>ItemTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CSharp\ClassLibrary\WinUI.Desktop.Cs.ClassLibrary.csproj">
+      <Project>{33783A04-0CB4-4CE5-A9FE-82E2E7E06D1F}</Project>
+      <Name>WinUI.Desktop.Cs.ClassLibrary</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CSharp\PackagedApp\WinUI.Desktop.Cs.PackagedApp.csproj">
+      <Project>{938DD23E-270E-488B-AC4C-CA68A545A8F2}</Project>
+      <Name>WinUI.Desktop.Cs.PackagedApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj">
+      <Project>{80195619-D4CF-4287-BA59-08077486BE1C}</Project>
+      <Name>WinUI.Desktop.CppWinRT.PackagedApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Neutral\CppWinRT\RuntimeComponent\WinUI.Neutral.CppWinRT.RuntimeComponent.csproj">
+      <Project>{FD33E535-127D-48AC-8788-0F61FA2A251C}</Project>
+      <Name>WinUI.Neutral.CppWinRT.RuntimeComponent</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\UWP\CppWinRT\BlankApp\WinUI.UWP.CppWinRT.BlankApp.csproj">
+      <Project>{627B2125-97B1-4620-97AA-AD46B37AC9D1}</Project>
+      <Name>WinUI.UWP.CppWinRT.BlankApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\UWP\CSharp\BlankApp\WinUI.UWP.Cs.BlankApp.csproj">
+      <Project>{93abc6a8-319a-4291-b8e2-607d3272a4b4}</Project>
+      <Name>WinUI.UWP.Cs.BlankApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\UWP\CSharp\RuntimeComponent\WinUI.UWP.Cs.RuntimeComponent.csproj">
+      <Project>{824C3303-D492-4806-95CD-9AA20AB34BB3}</Project>
+      <Name>WinUI.UWP.Cs.RuntimeComponent</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\UWP\CSharp\ClassLibrary\WinUI.UWP.Cs.ClassLibrary.csproj">
+      <Project>{2A3D41EE-5641-4DEB-AC2C-B433CBC9174D}</Project>
+      <Name>WinUI.UWP.Cs.ClassLibrary</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
+  <!--
+    VSIX manifest version does not support semver, only .Net type version numbers, so we
+    need to trim the Nuget package's version number. It is then suffixed with the number of
+    seconds since 2020-01-01T00:00Z to provide a monotonically increasing (mostly) unique
+    version number for the VSIX†. This versioning scheme is only used by builds inside
+    Visual Studio; the official build pipeline enforces its own versioning.
+
+    † Note: Yes, this introduces a Year 2088 problem for the locally-built VSIX because the
+    final component of the version number can wrap around after 68 years. No, this is not
+    a concern because it seems unlikely that we'll go 68 years without resetting the clock
+    by increasing the WinUI version number.
+  -->
+  <PropertyGroup Condition="'$(VSIXVersion)' == ''">
+    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
+    <VSIXVersion>$(ReunionVersion)</VSIXVersion>
+    <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-")))).$(TimeSpan)</VSIXVersion>
+  </PropertyGroup>
+  <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="..\..\..\LICENSE" DestinationFolder="$(MSBuildProjectDirectory)" />
+  </Target>
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <BinRoot Condition="$(BinRoot) == ''">$(OutputPath)</BinRoot>
+    </PropertyGroup>
+    <Message Importance="high" Text="Binplacing to: $(BinRoot)" />
+    <Copy SourceFiles="$(TargetVsixContainer)" DestinationFolder="$(BinRoot)" />
+  </Target>
+</Project>
