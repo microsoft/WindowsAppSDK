@@ -8,7 +8,7 @@ For a general overview, see the [readme](https://github.com/microsoft/ProjectReu
 
 ## 2021 Roadmap
 
-Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*: 
+Here's how we intend to roll out Project Reunion. To subscribe to updates, subscribe to [this discussion](https://github.com/microsoft/ProjectReunion/discussions/507). *(all times/features/releases are tentative and subject to change)*: 
 
 ### Packaged Desktop Apps
 As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
@@ -18,7 +18,7 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 WinUI |                ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
 DWriteCore |           ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
 MRT Core |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-App Lifecycle APIs |      🔄 Preview |                        🔄 Preview|                   ✅ Supported  | 
+App Lifecycle APIs |      ❌ Not Supported |                        🔄 Preview|                   ✅ Supported  | 
 Power State Notifications |  ❌ Not Supported |              🔄 Preview |                   ✅ Supported  | 
 Windowing |            ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
 Deploy Options: |  
@@ -32,14 +32,14 @@ As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX]
  🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
 WinUI |                ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
-DWriteCore |                 🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
-MRT Core |                   🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
-App Lifecycle APIs |         🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
+DWriteCore |           ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+MRT Core |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+App Lifecycle APIs |   ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
 Power State Notifications |❌ Not Supported |                🔄 Preview |                   ✅ Supported  | 
 Windowing |                ❌ Not Supported |          ❌ Not Supported |                   ✅ Supported  | 
 Deploy Options:  |  
 • In-app |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
-• Fx Package |               🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
+• Fx Package |         ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
 
 ## 2021 Focus Areas
 

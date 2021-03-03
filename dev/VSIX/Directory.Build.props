@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- Provide default nuget feed (Reunion internal) and package versions for developer builds -->
+    <PropertyGroup>
+        <RestoreSources Condition="'$(RestoreSources)'==''">
+            https://api.nuget.org/v3/index.json;
+            https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
+        </RestoreSources>
+        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210211.2</CppWinRTVersion>
+        <ReunionVersion Condition="'$(ReunionVersion)' == ''">0.1.0-prerelease.20210301.5.CI</ReunionVersion>
+        <ReunionFoundationVersion Condition="'$(ReunionFoundationVersion)' == ''">0.1.0-prerelease.20210301.5.CI</ReunionFoundationVersion>
+        <ReunionDWriteVersion Condition="'$(ReunionDWriteVersion)' == ''">0.1.5-prerelease.20210301.5.CI</ReunionDWriteVersion>
+        <ReunionWinUIVersion Condition="'$(ReunionWinUIVersion)' == ''">3.0.0-prerelease.20210301.5.CI</ReunionWinUIVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <VSIXBuild>true</VSIXBuild>
+        
+        <!--PackageReference.GeneratePathProperty does not support NUGET_PACKAGES env var...-->
+        <NuGetPackageRoot Condition="'$(NuGetPackageRoot)'==''">$(NUGET_PACKAGES)</NuGetPackageRoot>
+        <NuGetPackageRoot Condition="'$(NuGetPackageRoot)'==''">$(UserProfile)\.nuget\packages</NuGetPackageRoot>
+        <PkgMicrosoft_Windows_CppWinRT Condition="'$(PkgMicrosoft_Windows_CppWinRT)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'Microsoft.Windows.CppWinRT', '$(CppWinRTVersion)'))</PkgMicrosoft_Windows_CppWinRT>
+        <PkgMicrosoft_ProjectReunion Condition="'$(PkgMicrosoft_ProjectReunion)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'Microsoft.ProjectReunion', '$(ReunionVersion)'))</PkgMicrosoft_ProjectReunion>
+        <PkgMicrosoft_ProjectReunion_Foundation Condition="'$(PkgMicrosoft_ProjectReunion_Foundation)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'Microsoft.ProjectReunion.Foundation', '$(ReunionFoundationVersion)'))</PkgMicrosoft_ProjectReunion_Foundation>
+        <PkgMicrosoft_ProjectReunion_DWrite Condition="'$(PkgMicrosoft_ProjectReunion_DWrite)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'Microsoft.ProjectReunion.DWrite', '$(ReunionDWriteVersion)'))</PkgMicrosoft_ProjectReunion_DWrite>
+        <PkgMicrosoft_ProjectReunion_WinUI Condition="'$(PkgMicrosoft_ProjectReunion_WinUI)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'Microsoft.ProjectReunion.WinUI', '$(ReunionWinUIVersion)'))</PkgMicrosoft_ProjectReunion_WinUI>
+
+        <!-- TODO: determine why VSToolsPath is inconsistently defined -->
+        <VSToolsPath Condition="'$(VSToolsPath)'==''">$([MSBuild]::NormalizeDirectory('$(NuGetPackageRoot)', 'microsoft.vssdk.buildtools\16.8.1017\tools'))</VSToolsPath>
+
+        <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
+        <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\</BuildOutputRoot>
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'==''">$(BuildOutputRoot)$(ProjectRelativePath)\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath Condition="'$(GenerateProjectSpecificOutputFolder)' == 'true'">$(BaseIntermediateOutputPath)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath Condition="'$(TargetFramework)' != '' and '$(IgnoreTargetFramework)' != 'true'">$(BaseIntermediateOutputPath)$(TargetFramework)\</BaseIntermediateOutputPath>
+        <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+        <OutputPath>$(IntermediateOutputPath)</OutputPath>
+        <OutDir>$(OutputPath)</OutDir>
+    </PropertyGroup>
+
+</Project>
