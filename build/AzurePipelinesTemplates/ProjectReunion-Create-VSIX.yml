@@ -4,26 +4,27 @@ parameters:
   ReunionDWriteVersion: ''
   ReunionWinUIVersion: ''
   releaseBuild: true
-  signOutput: false
+
+variables:
+  VSIXBuildArgs: ${{ coalesce(parameters.releaseBuild, '/p:RestoreSources=https://api.nuget.org/v3/index.json;https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json', '') }}
 
 steps:
 
-- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-  displayName: 'NuGet restore ProjectReunion.Extension.sln'
-  env:
-    NUGET_RESTORE_MSBUILD_ARGS: /p:WinUIVersion=${{ parameters.winUIVersion }} /p:VSIXVersion=${{ parameters.vsixVersion }}  # Should the 4 packages to include go here?
+- task: VSBuild@1
+  displayName: 'Restore ProjectReunion.Extension.sln'
   inputs:
-    command: 'custom'
-    arguments: 'restore dev\VSIX\ProjectReunion.Extension.sln'
-  continueOnError: true
+    solution: dev\VSIX\ProjectReunion.Extension.sln
+    platform: 'Any CPU'
+    configuration: '$(buildConfiguration)'
+    msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
 - task: VSBuild@1
   displayName: 'Build ProjectReunion.Extension.sln'
   inputs:
     solution: dev\VSIX\ProjectReunion.Extension.sln
-    platform: '$(buildPlatform)'
+    platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
-    msBuildArgs: '/restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}"
+    msBuildArgs: '/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Governance Detection'
@@ -31,13 +32,13 @@ steps:
     scanType: 'Register'
     failOnAlert: true
 
-- ${{ if eq( parameters.signOutput, true) }}:
+- ${{ if eq( parameters.releaseBuild, true) }}:
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
     displayName: 'CodeSign (vsix)'
     inputs:
-      ConnectedServiceName: ProjectReunionSigning # Pretty sure this is not correct. 
-      FolderPath: '$(Build.BinariesDirectory)'
-      Pattern: ProjectReunion.Extension.vsix  # Might also be wrong?
+      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      FolderPath: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+      Pattern: ProjectReunion.Extension.vsix
       signConfigType: inlineSignParams
       inlineOperation: | 
         [
@@ -59,10 +60,8 @@ steps:
             }
         ]
 
-
-# Should this be done in the internal pipeline?
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish built binaries'
+  displayName: 'Publish ProjectReunion.Extension.VSIX'
   inputs:
-    PathtoPublish: '$(Build.BinariesDirectory)'
+    PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension.vsix'
     artifactName: 'VSIX'
