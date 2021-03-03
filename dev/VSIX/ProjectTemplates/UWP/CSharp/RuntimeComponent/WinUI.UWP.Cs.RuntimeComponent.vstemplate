@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Windows Runtime Component (WinUI in UWP)</Name>
+    <Description>A project for creating a managed Windows Runtime Component (.winmd) for Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI).</Description>
+    <Icon>WinUI.UWP.Cs.RuntimeComponent.ico</Icon>
+    <TemplateID>Microsoft.WinUI.UWP.Cs.RuntimeComponent</TemplateID>
+    <TemplateGroupID>WinRT-Managed</TemplateGroupID>
+    <ProjectType>CSharp</ProjectType>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>RuntimeComponent</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <CreateInPlace>true</CreateInPlace>
+    <PreviewImage>WinUI.UWP.Cs.RuntimeComponent.png</PreviewImage>
+    <AppIdFilter>blend</AppIdFilter>
+    <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+    <LanguageTag>csharp</LanguageTag>
+    <LanguageTag>XAML</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <PlatformTag>Project Reunion</PlatformTag>
+    <ProjectTypeTag>uwp</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent PreferedSolutionConfiguration="Debug|x86">
+    <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Class1.cs">Class1.cs</ProjectItem>
+      <Folder Name="Properties" TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      </Folder>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.CreateProjectCertificate.Wizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.Universal.TemplateWizards, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.Universal.TemplateWizards.PlatformVersion.Wizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
+    <UsePackageReferences>true</UsePackageReferences>
+    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+      <package id="Microsoft.ProjectReunion" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion.Foundation" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+    </packages>
+    <Assets>
+      <Asset Type="Microsoft.ProjectReunion.nupkg" Source="File" Path="Microsoft.ProjectReunion.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.ProjectReunion.Foundation.nupkg" Source="File" Path="Microsoft.ProjectReunion.Foundation.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.ProjectReunion.WinUI.nupkg" Source="File" Path="Microsoft.ProjectReunion.WinUI.1.0.0.nupkg" VsixSubPath="Packages" />
+    </Assets>
+  </WizardData>
+</VSTemplate>
