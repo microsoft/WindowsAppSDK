@@ -12,7 +12,7 @@ rather than creating your own.
 
 ##### Catching Exceptions and HRESULT
 
-Don't just catch winrt::hresult_error or other variations as that doesn't catch std::bad_alloc.
+Don't just catch `winrt::hresult_error` or other variations as that doesn't catch `std::bad_alloc`.
 
 Use the following snippet to catch exceptions and retrieve their HRESULT:
 
