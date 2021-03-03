@@ -2,8 +2,10 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <!--
-        This target is used to temporarily update the package version we use in the VSIX manifests.
+        This target is used to update the package version we use in the VSIX manifests for this specific build.
         It updates all *.vstemplate files in projects that include this file - ex: <VSTemplate>File.vstemplate</VSTemplate>.
+        When the build is complete, the RestorePackageVersion target reverts all version numbers to 1.0.0.
+        This prevents transient and irrelevant changes to source from being checked in.
 
         Originally, it looks like this (notice the 1.0.0):
 
