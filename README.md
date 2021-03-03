@@ -2,7 +2,7 @@
 
 | Delight users with modern UI | Access new platform features | Down-level support | 
 |:--:|:--:|:--:|
-| <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/></br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/></br>Localization + power status + more</br> | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/></br>Back to Windows 10 1809 |
+| <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br/>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br/>Localization + power status + more<br/> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br/>Back to Windows 10 1809 |
 
 ...and more, **without having to rewrite your app!**
 
@@ -19,7 +19,7 @@ Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) 
 Some caveats about 0.5...
 
 * Requires using MSIX *(1.0 won't require MSIX)*
-* Only includes WinUI 3 / Text rendering / Localization right now
+* Only includes WinUI 3 / Text rendering / Localization
 * WinUI 3 cannot yet be intermixed with other UI frameworks *(XAML Islands will enable this in the future)*.  To use WinUI 3, either start with a new app, or you can replace your existing app's UI completely with WinUI 3
 
 
@@ -29,13 +29,13 @@ Here's a snippet of what we intend to deliver in 2021 *(times/features/releases 
 
 App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps</br>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)</br>✅ [Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore)</br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)</br>✅ [Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore)</br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)</br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)</br>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)</br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)</br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
-Unpackaged desktop apps</br>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore)</br>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)</br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)</br>✅ [Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore)</br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)</br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
+[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br/>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
+Unpackaged desktop apps<br/>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
 
 ✅ Supported | 🔄 Preview
 
 
-See our [full roadmap](docs/roadmap.md) for a more detailed roadmap.
+See our [full roadmap](docs/roadmap.md) for more details.
 
 
 
@@ -110,7 +110,7 @@ may be either trademarks or registered trademarks of Microsoft in the United Sta
 The licenses for this project do not grant you rights to use any Microsoft names, logos, or trademarks.
 Microsoft's general trademark guidelines can be found at http://go.microsoft.com/fwlink/?LinkID=254653.
 
-Privacy information can be found at https://privacy.microsoft.com/en-us/
+Privacy information can be found at https://privacy.microsoft.com/
 
 Microsoft and any contributors reserve all other rights, whether under their respective copyrights, patents,
 or trademarks, whether by implication, estoppel or otherwise.
