@@ -13,15 +13,15 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 
 🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-WinUI |                ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-DWriteCore |           ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-MRT Core |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-App Lifecycle APIs |      🔄 Preview |                        🔄 Preview|                   ✅ Supported  | 
-Power State Notifications |  ❌ Not Supported |              🔄 Preview |                   ✅ Supported  | 
-Windowing |            ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported  | ✅ Supported | ✅ Supported | 
+[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported | 
+[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported | 
+[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 🔄 Preview | 🔄 Preview | ✅ Supported | 
+[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
 Deploy Options: |  
-• In-app |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-• Fx Package |         ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+• In-app | ✅ Supported | ✅ Supported | ✅ Supported | 
+• Fx Package | ✅ Supported | ✅ Supported | ✅ Supported | 
 
 ### Unpackaged Desktop Apps
 
@@ -29,15 +29,15 @@ As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX]
 
  🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
-WinUI |                ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
-DWriteCore |                 🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
-MRT Core |                   🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
-App Lifecycle APIs |         🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
-Power State Notifications |❌ Not Supported |                🔄 Preview |                   ✅ Supported  | 
-Windowing |                ❌ Not Supported |          ❌ Not Supported |                   ✅ Supported  | 
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
+[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | 🔄 Preview | 🔄 Preview | ✅ Supported | 
+[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | 🔄 Preview | 🔄 Preview | ✅ Supported | 
+[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 🔄 Preview | 🔄 Preview | ✅ Supported | 
+[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
 Deploy Options:  |  
-• In-app |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
-• Fx Package |               🔄 Preview |                    🔄 Preview |                   ✅ Supported  | 
+• In-app | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+• Fx Package | 🔄 Preview | 🔄 Preview | ✅ Supported | 
 
 ## 2021 Focus Areas
 
