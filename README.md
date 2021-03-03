@@ -25,7 +25,7 @@ Some caveats about 0.5...
 
 ### Roadmap
 
-Here's a snippet of what we intend to deliver in the year of 2021 *(all times/features/releases are tentative and subject to change)*: 
+Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*: 
 
 App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
