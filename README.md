@@ -69,7 +69,7 @@ trying to solve, how you've tried to solve it so far, and what would be the idea
 points if there's a gist or existing repo we can look at with you.
 
 
-1. **[Ask a question](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
+1. **[Ask a question](https://github.com/microsoft/ProjectReunion/discussions/categories/q-a)**<br>
     Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
 
 2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/discussions)**<br>
