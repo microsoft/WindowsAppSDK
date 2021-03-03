@@ -41,7 +41,7 @@
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-        <uap:Extension Category="windows.protocol"  EntryPoint="$targetentrypoint$">
+        <uap:Extension Category="windows.protocol"  EntryPoint="Windows.FullTrustApplication" >
           <uap:Protocol Name="reuniontestprotocol-packaged">
             <uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
           </uap:Protocol >

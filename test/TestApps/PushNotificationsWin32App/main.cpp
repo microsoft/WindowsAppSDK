@@ -32,7 +32,31 @@ bool IsPackagedProcess()
 
 int main()
 {
-    bool succeeded = true;
-    SignalPhase(c_testProtocolPhaseEventName);
+    bool succeeded = false;
+    auto args = AppLifecycle::GetActivatedEventArgs();
+    auto kind = args.Kind();
+    // Check if the process is unpackaged/packaged and test accordingly
+    if (IsPackagedProcess())
+    {
+        // This will be the only way this process is launched via TAEF
+        if (kind == ActivationKind::Protocol) {
+            auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
+            // Switch on this variable to run specific components (uri://ComponentToTest)
+            Uri actualUri = protocolArgs.Uri();
+            std::wstring expectedUri = c_testProtocolScheme_Packaged + L"://this_is_a_test";
+            if (actualUri.Equals(Uri(expectedUri)))
+            {
+                // Signal TAEF that protocol was activated and valid.
+                SignalPhase(c_testProtocolPhaseEventName);
+                succeeded = true;
+            }
+        }
+    }
+    
+    if (!succeeded)
+    {
+        // Signal TAEF that the test failed
+        SignalPhase(c_testFailureEventName);
+    }
     return 0;
 }

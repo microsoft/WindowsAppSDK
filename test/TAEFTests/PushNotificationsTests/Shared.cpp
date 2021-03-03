@@ -20,16 +20,6 @@ using namespace winrt::Windows::System;
 
 namespace ProjectReunionCppTest
 {
-    StorageFile CreateDocFile(std::wstring filename)
-    {
-        return KnownFolders::DocumentsLibrary().CreateFileAsync(filename,
-            CreationCollisionOption::OpenIfExists).get();
-    }
-
-    StorageFile OpenDocFile(std::wstring filename)
-    {
-        return KnownFolders::DocumentsLibrary().GetFileAsync(filename).get();
-    }
 
     wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
         const std::wstring& directory)
@@ -139,17 +129,5 @@ namespace ProjectReunionCppTest
         WEX::Common::String testDeploymentDir;
         WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
         return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
-    }
-
-    void WriteContentFile(std::wstring filename)
-    {
-        auto file = CreateDocFile(filename);
-        FileIO::WriteTextAsync(file, L"Hello, World!").get();
-    }
-
-    void DeleteContentFile(std::wstring filename)
-    {
-        auto file = CreateDocFile(filename);
-        file.DeleteAsync().get();
     }
 }

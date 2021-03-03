@@ -28,8 +28,6 @@ namespace ProjectReunionCppTest
     private:
         wil::unique_event m_failed;
 
-        const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
-        const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
         const std::wstring c_testPackageFile = g_deploymentDir + L"MSIXPackager_1.0.0.0_x86_Debug.msixbundle";
         const std::wstring c_testPackageCertFile = g_deploymentDir + L"MSIXPackager_1.0.0.0_x86_Debug.cer";
         const std::wstring c_testPackageFullName = L"PushNotifications_1.0.0.0_x86__e1t4my21da5bj";
@@ -56,39 +54,17 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(true);
+            m_failed = CreateTestEvent(c_testFailureEventName);
             return true;
-        }
-
-        // Validate that UWP is not a supported scenario.
-        TEST_METHOD(TestOne)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-            END_TEST_METHOD_PROPERTIES();
-
-            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
-        }
-
-        TEST_METHOD(TestTwo)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-                END_TEST_METHOD_PROPERTIES();
-
-            VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
         }
 
         TEST_METHOD(LaunchPackagedWin32)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-                END_TEST_METHOD_PROPERTIES();
-            RunCertUtil(c_testPackageCertFile);
-            InstallPackage(c_testPackageFile);
             // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testProtocolPhaseEventName);
+            wil::unique_event event = CreateTestEvent(c_testProtocolPhaseEventName);
 
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
             Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
             auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
