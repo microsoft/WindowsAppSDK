@@ -1,8 +1,8 @@
 ﻿# Project Reunion - Calling all Windows desktop apps!
 
-| Delight users with modern UI | Access new platform features | Down-level support | 
+| Delight users with modern UI | Access new platform features | Backwards compatible | 
 |:--:|:--:|:--:|
-| <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br/>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br/>Localization + power status + more<br/> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br/>Back to Windows 10 1809 |
+| <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br>Localization + power status + more<br> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br>Down to Windows 10 1809 |
 
 ...and more, **without having to rewrite your app!**
 
@@ -29,8 +29,8 @@ Here's a snippet of what we intend to deliver in 2021 *(times/features/releases 
 
 App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br/>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
-Unpackaged desktop apps<br/>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br/>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br/>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br/>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
+[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
+Unpackaged desktop apps<br>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
 
 ✅ Supported | 🔄 Preview
 
@@ -39,7 +39,7 @@ See our [full roadmap](docs/roadmap.md) for more details.
 
 
 
-### Version Support
+### Version support
 
 Project Reunion aims to work on supported versions of Windows. Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10. We'll use techniques like '_polyfills_' 
 and custom implementations to do the heavy lifting for you and make sure your app works across Windows
@@ -85,7 +85,7 @@ points if there's a gist or existing repo we can look at with you.
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 
-## Data Collection
+## Data collection
 
 The software may collect information about you and your use of the software and send it
 to Microsoft. Microsoft may use this information to provide services and improve our
@@ -98,7 +98,7 @@ at https://go.microsoft.com/fwlink/?LinkID=824704. You can learn more about data
 and use in the help documentation and our privacy statement. Your use of the software
 operates as your consent to these practices.
 
-## Legal Notices
+## Legal notices
 
 Microsoft and any contributors grant you a license to the Microsoft documentation and other content
 in this repository under the [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode),
