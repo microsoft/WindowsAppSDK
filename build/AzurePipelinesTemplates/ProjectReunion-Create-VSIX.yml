@@ -1,10 +1,9 @@
 parameters:
-  ReunionVersion: '0.1.0-prerelease.20210301.5.CI'
-  ReunionFoundationVersion: '0.1.0-prerelease.20210301.5.CI'
-  ReunionDWriteVersion: '0.1.5-prerelease.20210301.5.CI'
-  ReunionWinUIVersion: '3.0.0-prerelease.20210301.5.CI'
-  artifactBuildConfiguration: 'Release'
-  buildConfiguration: 'Release'
+  ReunionVersion: ''
+  ReunionFoundationVersion: ''
+  ReunionDWriteVersion: ''
+  ReunionWinUIVersion: ''
+  releaseBuild: true
   signOutput: false
 
 steps:
