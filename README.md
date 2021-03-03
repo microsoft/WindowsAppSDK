@@ -19,7 +19,7 @@ Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) 
 Some caveats about 0.5...
 
 * Requires using MSIX (1.0 won't require MSIX)
-* Only includes WinUI / DWriteCore / MRT Core right now
+* Only includes WinUI 3 / Text rendering / Localization right now
 * WinUI 3 cannot yet be intermixed with other UI frameworks (XAML Islands will enable this in the future).  To use WinUI 3, either start with a new app, or you can replace your existing app's UI completely with WinUI 3
 
 
