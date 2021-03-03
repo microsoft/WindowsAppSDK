@@ -1,12 +1,12 @@
 ﻿# Project Reunion - Calling all Windows desktop apps!
 
-| Delight your users with modern UI | Improve multi-monitor windowing | Access new platform features | 
-|--|--|--|
-| <img src="https://docs.microsoft.com/en-us/windows/apps/images/fluent/nav_reveal_animation.gif" width=250 alt="Modern navigation"/> | <img src="https://docs.microsoft.com/en-us/windows/apps/images/fluent/thumbnail-size-classes.jpg" width=250 alt="Multiple window sizes"/> | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/> |
+| Delight your users with modern UI | Access new platform features | Down-level support | 
+|:--:|:--:|:--:|
+| <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/></br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/></br>Localization, power status, and more</br> | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/></br>Back to Windows 10 version 1809 |
 
 ...and more, **without having to rewrite your app!**
 
-* Use your current installer *(no requirement to be MSIX/packaged, but [some cool stuff happens](https://docs.microsoft.com/windows/msix/overview#key-features) if you are!)*
+* Use your current installer *(no requirement to be MSIX/packaged, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
 * 100% additive *(only add what you need, leave the rest of your app as-is)*
 * Works with Win32, WPF, WinForms, and UWP apps
 
