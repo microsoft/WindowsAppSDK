@@ -1,6 +1,6 @@
 ﻿# Project Reunion - Calling all Windows desktop apps!
 
-| Delight your users with modern UI | Access new platform features | Down-level support | 
+| Delight users with modern UI | Access new platform features | Down-level support | 
 |:--:|:--:|:--:|
 | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/></br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/></br>Localization, power status, and more</br> | <img src="https://docs.microsoft.com/en-us/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/></br>Back to Windows 10 1809 |
 
