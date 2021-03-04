@@ -1,7 +1,8 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
+#include "frameworkudk\mrtcore.h"
 
 bool IsResourceNotFound(HRESULT hr)
 {
@@ -34,36 +35,24 @@ HRESULT GetDefaultPriFileForCurentModule(winrt::hstring& filePath)
     return S_OK;
 }
 
-// $todo: remove
-extern "C" LONG WINAPI GetCurrentPackagePath(_Inout_ UINT32* pathLength, _Out_writes_opt_(*pathLength) PWSTR path);
-
 HRESULT GetDefaultPriFileForCurrentPackage(winrt::hstring& filePath)
 {
-    wchar_t path[MAX_PATH];
-    UINT32 length = ARRAYSIZE(path);
-    std::unique_ptr<wchar_t[]> allocatedPath;
-
-    LONG ret = GetCurrentPackagePath(&length, path);
-    if (ret == ERROR_INSUFFICIENT_BUFFER)
+    wchar_t* resourceFile = nullptr;
+    HRESULT hr = MrtCore_GetDefaultResourcePathForPackageFullName(nullptr, &resourceFile);
+    if (FAILED(hr))
     {
-        allocatedPath.reset(new wchar_t[length]);
-        ret = GetCurrentPackagePath(&length, allocatedPath.get());
+        return hr;
     }
 
-    if (ret != ERROR_SUCCESS)
-    {
-        return HRESULT_FROM_WIN32(ret);
-    }
+    std::unique_ptr<wchar_t, decltype(&LocalFree)> resourceFilePtr(resourceFile, LocalFree);
 
-    winrt::hstring folderPath = allocatedPath ? allocatedPath.get() : path;
-    filePath = folderPath + L"\\resources.pri";
+    filePath = resourceFile;
 
     return S_OK;
 }
 
 HRESULT GetDefaultPriFile(winrt::hstring& filePath)
 {
-    // $todo: use IResourceLoaderStatics4 when it's available, and polyfill for downlevel.
     if (FAILED(GetDefaultPriFileForCurrentPackage(filePath)))
     {
         return GetDefaultPriFileForCurentModule(filePath);
