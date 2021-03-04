@@ -42,7 +42,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+      msBuildArgs: '/p:VSToolsPath=$(NugetPackageRoot)microsoft.vssdk.buildtools\16.8.1017\tools /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'
