@@ -11,6 +11,8 @@ namespace Test::FileSystem
 }
 #include <ProjectReunion.Test.Bootstrap.h>
 
+#include <ProjectReunion.Test.Diagnostics.h>
+
 using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
@@ -26,77 +28,9 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
 namespace TP = ::Test::Packages;
+namespace TD = ::Test::Diagnostics;
 
 // TODO: Write Register/Unregister tests that utilize the Assoc APIs to validate results.
-
-PCWSTR IntegrityLevelToString(DWORD integrityLevel)
-{
-    switch (integrityLevel)
-    {
-        case SECURITY_MANDATORY_UNTRUSTED_RID:          return L"Untrusted";
-        case SECURITY_MANDATORY_LOW_RID:                return L"Low";
-        case SECURITY_MANDATORY_MEDIUM_RID:             return L"Medium";
-        case SECURITY_MANDATORY_MEDIUM_PLUS_RID:        return L"MediumPlus";
-        case SECURITY_MANDATORY_HIGH_RID:               return L"High";
-        case SECURITY_MANDATORY_SYSTEM_RID:             return L"System";
-        case SECURITY_MANDATORY_PROTECTED_PROCESS_RID:  return L"ProtectedProcess";
-        default:                                        return L"???";
-    }
-}
-
-void DumpUser(PCWSTR context, _In_ HANDLE token, PSID userSid)
-{
-    if (userSid)
-    {
-        wil::unique_hlocal_string userSidAsString;
-        VERIFY_WIN32_BOOL_SUCCEEDED(ConvertSidToStringSidW(userSid, &userSidAsString));
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"UserSid:%s %s", context, userSidAsString.get()));
-
-        wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel;
-        VERIFY_SUCCEEDED(wil::get_token_information_nothrow(tokenMandatoryLabel, token));
-        const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IntegrityLevel: 0x%08X (%s)", integrityLevel, IntegrityLevelToString(integrityLevel)));
-    }
-    else
-    {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"UserSid:%s null", context));
-    }
-}
-
-void DumpExecutionContext()
-{
-    {
-        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentThreadEffectiveToken()) };
-        DumpUser(L"Effective", GetCurrentThreadEffectiveToken(), tokenUser->User.Sid);
-    }
-
-    {
-        auto tokenUser{ wil::get_token_information<TOKEN_USER>(GetCurrentProcessToken()) };
-        DumpUser(L"Process", GetCurrentProcessToken(), tokenUser->User.Sid);
-    }
-
-    const auto isAppContainer{ wil::get_token_is_app_container() };
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"IsAppContainer:%s", isAppContainer ? L"True" : L"False"));
-
-    WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
-    UINT32 packageFullNameLength{ static_cast<UINT32>(ARRAYSIZE(packageFullName)) };
-    const auto rc = ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName);
-    if (rc == APPMODEL_ERROR_NO_PACKAGE)
-    {
-        WEX::Logging::Log::Comment(L"PackageFullName: <none>");
-    }
-    else if (rc == ERROR_SUCCESS)
-    {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"PackageFullName: %s", packageFullName));
-    }
-    else
-    {
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetCurrentPackageFullName(): %d (0x%X)", rc, rc));
-    }
-
-    std::filesystem::path currentPath{ std::filesystem::current_path() };
-    WEX::Logging::Log::Comment(WEX::Common::String().Format(L"CurrentDirectory: %s", currentPath.c_str()));
-}
 
 namespace ProjectReunionCppTest
 {
@@ -134,7 +68,7 @@ namespace ProjectReunionCppTest
         virtual bool ClassInit()
         {
             WEX::Logging::Log::Comment(L"CLASS_SETUP---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             ::Test::Bootstrap::SetupPackages();
 
@@ -149,7 +83,7 @@ namespace ProjectReunionCppTest
         virtual bool ClassUninit()
         {
             WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             // Swallow errors in cleanup.
             try
@@ -172,7 +106,7 @@ namespace ProjectReunionCppTest
         virtual bool MethodInit()
         {
             WEX::Logging::Log::Comment(L"METHOD_SETUP ---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
@@ -188,7 +122,7 @@ namespace ProjectReunionCppTest
         virtual bool MethodUninit()
         {
             WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
@@ -377,7 +311,7 @@ namespace ProjectReunionCppTest
         typedef AppLifecycleTests super;
 
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTests_RestrictedUser)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
             TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
@@ -442,7 +376,7 @@ namespace ProjectReunionCppTest
         virtual bool ClassInit()
         {
             WEX::Logging::Log::Comment(L"CLASS_SETUP---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             ::Test::Bootstrap::SetupPackages();
 
@@ -457,7 +391,7 @@ namespace ProjectReunionCppTest
         virtual bool ClassUninit()
         {
             WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             // Swallow errors in cleanup.
             try
@@ -480,7 +414,7 @@ namespace ProjectReunionCppTest
         virtual bool MethodInit()
         {
             WEX::Logging::Log::Comment(L"METHOD_SETUP ---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
@@ -495,7 +429,7 @@ namespace ProjectReunionCppTest
         virtual bool MethodUninit()
         {
             WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---Begin---");
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
@@ -507,7 +441,7 @@ namespace ProjectReunionCppTest
 
         virtual void GetActivatedEventArgsIsNull_UAP()
         {
-            DumpExecutionContext();
+            TD::DumpExecutionContext();
 
             VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
         }

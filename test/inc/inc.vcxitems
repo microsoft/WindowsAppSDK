@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.AppModel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Bootstrap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Diagnostics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.FileSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Metadata.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Package.h" />
