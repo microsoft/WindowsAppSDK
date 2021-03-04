@@ -1,4 +1,6 @@
 parameters:
+  - name: "NugetSecurityAnalysisWarningLevel"
+    default: none
   - name: "ReunionVersion"
     type: string
     default: ''
@@ -22,7 +24,7 @@ jobs:
     vmImage: 'windows-2019'
 
   variables:
-    VSIXBuildArgs: ${{ coalesce(parameters.releaseBuild, '/p:RestoreSources=https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json', '') }}
+    VSIXBuildArgs: ${{ coalesce(parameters.releaseBuild, '/p:RestoreSources=https://api.nuget.org/v3/index.json;https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json', '') }}
 
   steps:
 
