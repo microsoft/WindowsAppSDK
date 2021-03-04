@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+  <TemplateData>
+    <DefaultName>CustomControl.cpp</DefaultName>
+    <Name>Custom Control (WinUI)</Name>
+    <Description>A custom control for apps based on the Windows UI Library (WinUI).</Description>
+    <Icon>WinUI.Neutral.CppWinRT.TemplatedControl.ico</Icon>
+    <ProjectType>VC</ProjectType>
+    <TemplateID>WinUI.Neutral.CppWinRT.TemplatedControl</TemplateID>
+    <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+    <ShowByDefault>true</ShowByDefault>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <AppIdFilter>blend</AppIdFilter>
+    <LanguageTag>cpp</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <ProjectTypeTag>uwp</ProjectTypeTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp" ReplaceParameters="true">TemplatedControl.cpp</ProjectItem>
+    <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp\$fileinputname$.h" ReplaceParameters="true">TemplatedControl.h</ProjectItem>
+    <ProjectItem SubType="Code" TargetFileName="$fileinputname$.cpp\$fileinputname$.idl" ReplaceParameters="true">TemplatedControl.idl</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=16.0.0.0, Culture=Neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.TemplatedControl.Wizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+      <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion.Foundation" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+    </packages>
+  </WizardData>
+</VSTemplate>
