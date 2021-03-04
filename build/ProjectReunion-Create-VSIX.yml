@@ -1,9 +1,19 @@
 parameters:
-  ReunionVersion: ''
-  ReunionFoundationVersion: ''
-  ReunionDWriteVersion: ''
-  ReunionWinUIVersion: ''
-  releaseBuild: true
+  - name: "ReunionVersion"
+    type: string
+    default: ''
+  - name: "ReunionFoundationVersion"
+    type: string
+    default: ''
+  - name: "ReunionDWriteVersion"
+    type: string
+    default: ''
+  - name: "ReunionWinUIVersion"
+    type: string
+    default: ''
+  -name: "releaseBuild"
+    type: boolean
+    default: True
 
 jobs:
 
