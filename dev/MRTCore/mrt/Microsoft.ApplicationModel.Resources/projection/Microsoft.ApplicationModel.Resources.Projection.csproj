@@ -18,6 +18,11 @@
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.18362.0</CSWinRTWindowsMetadata>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>	
 
   <ItemGroup>
