@@ -11,7 +11,7 @@ parameters:
   - name: "ReunionWinUIVersion"
     type: string
     default: ''
-  -name: "releaseBuild"
+  - name: "releaseBuild"
     type: boolean
     default: True
 
