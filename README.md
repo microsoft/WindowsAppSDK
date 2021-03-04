@@ -10,7 +10,7 @@
 * 100% additive *(only add what you need, leave the rest of your app as-is)*
 * Works with Win32, WPF, WinForms, and UWP apps
 
-Plus, **it works down-level** to build 17763 (version 1809/October 2018 Update) of Windows 10!
+Plus, **it's backwards compatible** to build 17763 (version 1809/October 2018 Update) of Windows 10!
 
 
 ### Try it now!
