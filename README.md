@@ -1,4 +1,4 @@
-﻿# Project Reunion - Calling all Windows desktop apps!
+﻿# Project Reunion - Calling all Windows apps!
 
 | Delight users with modern UI | Access new platform features | Backwards compatible | 
 |:--:|:--:|:--:|
