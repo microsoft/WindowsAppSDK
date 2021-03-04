@@ -31,8 +31,8 @@ jobs:
     inputs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
-      configuration: '$(buildConfiguration)'
-      msBuildArgs: '/t:restore dev\VSIX\ProjectReunion.Extension.sln /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+      configuration: $(buildConfiguration)
+      msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
