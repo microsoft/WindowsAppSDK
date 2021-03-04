@@ -121,10 +121,8 @@ namespace ProjectReunionInstaller {
     void DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
-        wil::com_ptr<IStream> packageStream;
-        std::unique_ptr<PackageProperties> packageProperties{};
-        packageStream = GetResourceStream(resource.id, resource.resourceType);
-        packageProperties = GetPackagePropertiesFromStream(packageStream);
+        auto packageStream = GetResourceStream(resource.id, resource.resourceType);
+        auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
         // Skip non-applicable architectures.
         if (!IsArchitectureApplicable(packageProperties->architecture))
@@ -152,7 +150,7 @@ namespace ProjectReunionInstaller {
         wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
         ULARGE_INTEGER streamSize{};
         THROW_IF_FAILED(::IStream_Size(packageStream.get(), &streamSize));
-        THROW_IF_FAILED(packageStream.get()->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
+        THROW_IF_FAILED(packageStream->CopyTo(outStream.get(), streamSize, nullptr, nullptr));
         THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
         outStream.reset();
 
@@ -176,19 +174,14 @@ namespace ProjectReunionInstaller {
         return;
     }
 
-    HRESULT DeployPackages(const bool quiet) noexcept
+    HRESULT DeployPackages(bool quiet) noexcept try
     {
         for (const auto& package : ProjectReunionInstaller::c_packages)
         {
-            try
-            {
-                DeployPackageFromResource(package, quiet);
-            }
-            catch (wil::ResultException ex)
-            {
-                return ex.GetErrorCode();
-            }
+            DeployPackageFromResource(package, quiet);
         }
+
         return S_OK;
     }
+    CATCH_RETURN()
 }
