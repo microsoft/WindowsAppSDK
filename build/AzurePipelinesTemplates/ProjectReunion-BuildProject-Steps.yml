@@ -72,6 +72,20 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)\build'
 
   - task: CmdLine@2
+    displayName: 'Install Test Certificate'
+    inputs:
+      script: 'certutil.exe -addstore TrustedPeople MSTest.cer'
+      workingDirectory: '$(Build.SourcesDirectory)\build'
+
+  - task: powershell@2
+    displayName: 'Setup TAEF Service (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoCheckVisualStudio -NoCheckTestCert -Offline -Verbose
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: CmdLine@2
     displayName: 'Run AppLifeCycleTest'
     inputs:
       script: 'te.exe CppTest.dll'

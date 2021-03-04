@@ -3,22 +3,47 @@
 <#
 .SYNOPSIS
     Verify the environment for Project Reunion development
+
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
     * TAEF service is installed and running
     * Test certificate to sign test MSIX packages is installed
     * Visual Studio 2019 is installed and properly configured
+
 .PARAMETER Clean
     Run as if it's the first time (ignore any previous cached artifacts from previous runs).
+
+.PARAMETER CheckAll
+    Check all. IF not specified this is set to true if all other -Check... options are false
+
+.PARAMETER CheckTAEFService
+    Check the TAEF service
+
+.PARAMETER CheckTestCert
+    Check the Test certificate
+
+.PARAMETER CheckVisualStudio
+    Check Visual Studio
+
 .PARAMETER Offline
-    Do not access the network.
+    Do not access the network
+
 .PARAMETER Verbose
-    Display detailed information.
+    Display detailed information
+
 .EXAMPLE
     DevCheck -Verbose
 #>
 
 Param(
+    [Switch]$CheckAll=$false,
+
+    [Switch]$CheckTAEFService=$false,
+
+    [Switch]$CheckTestCert=$false,
+
+    [Switch]$CheckVisualStudio=$false,
+
     [Switch]$Clean=$false,
 
     [Switch]$Offline=$false,
@@ -27,6 +52,11 @@ Param(
 )
 
 $global:issues = 0
+
+if (($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckVisualStudio -eq $false))
+{
+    $CheckAll = $true
+}
 
 function Write-Verbose
 {
@@ -305,22 +335,31 @@ Write-Verbose("Processor...$cpu")
 $project_root = Get-ProjectRoot
 Write-Output "ProjectReunion location...$project_root"
 
-Test-VisualStudio2019Install
-
-$test = Test-DevTestCert
-if ($test -ne $true)
+if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
-    Repair-DevTestCert
+    Test-VisualStudio2019Install
 }
 
-$test = Test-TAEFService
-if ($test -eq 'NotFound')
+if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
 {
-    $test = Repair-TAEFService
+    $test = Test-DevTestCert
+    if ($test -ne $true)
+    {
+        Repair-DevTestCert
+    }
 }
-if ($test -eq 'NotRunning')
+
+if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
 {
-    $test = Start-TAEFService
+    $test = Test-TAEFService
+    if ($test -eq 'NotFound')
+    {
+        $test = Repair-TAEFService
+    }
+    if ($test -eq 'NotRunning')
+    {
+        $test = Start-TAEFService
+    }
 }
 
 if ($global:issues -eq 0)
