@@ -1,6 +1,4 @@
 parameters:
-  - name: NugetSecurityAnalysisWarningLevel
-    default: none
   - name: "ReunionVersion"
     type: string
     default: ''
