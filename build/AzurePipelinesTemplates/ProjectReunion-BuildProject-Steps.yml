@@ -82,7 +82,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\DevCheck.ps1
-      arguments: -NoCheckVisualStudio -NoCheckTestCert -Offline -Verbose
+      arguments: -CheckTAEFService -Offline -Verbose
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: CmdLine@2
