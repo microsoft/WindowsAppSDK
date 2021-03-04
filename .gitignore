@@ -327,6 +327,12 @@ __pycache__/
 BuildOutput/
 .nuget/
 
+# Installer build configuration header
+installer/dev/project_reunion_definitions_override.h
+
+# Installer test packages
+!installer/test/testpackages/
+
 # Project Reunion specific files
 Microsoft.WinUI.AppX.targets
 dev/vsix/extension/LICENSE
