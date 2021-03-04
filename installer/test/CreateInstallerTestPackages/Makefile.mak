@@ -22,7 +22,7 @@ TARGET_BASENAME=Microsoft.ProjectReunion.Test.InstallerFramework
 
 TargetDir=$(OutDir)$(TargetName)
 MSTestCert=$(SolutionDir)..\..\build\MSTest.pfx
-InstallerPackagesDir=$(SolutionDir)\installerpackages
+InstallerPackagesDir=$(SolutionDir)\..\testpackages
 WorkDir_x86=$(TargetDir)\msix_x86
 WorkDir_x64=$(TargetDir)\msix_x64
 WorkDir_arm64=$(TargetDir)\msix_arm64

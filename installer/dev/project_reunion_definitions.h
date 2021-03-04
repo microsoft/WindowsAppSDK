@@ -1,4 +1,4 @@
-﻿#pragma once
+﻿  #pragma once
 
 // This header defines the packages included in the installer.
 // By default, the project will use test packages built for verification of this installer.
@@ -23,21 +23,21 @@
 #define PR_FRAMEWORK_X86_RCID PR_FWPACKAGE_X86
 #define PR_FRAMEWORK_X86_TYPE L"PACKAGE"
 #define PR_FRAMEWORK_X86_RCTYPE PACKAGE
-#define PR_FRAMEWORK_X86_PATH "..\\installerpackages\\framework_x86.msix"
+#define PR_FRAMEWORK_X86_PATH "..\\test\\testpackages\\framework_x86.msix"
 
 // x64 Framework
 #define PR_FRAMEWORK_X64_ID L"PR_FWPACKAGE_X64"
 #define PR_FRAMEWORK_X64_RCID PR_FWPACKAGE_X64
 #define PR_FRAMEWORK_X64_TYPE L"PACKAGE"
 #define PR_FRAMEWORK_X64_RCTYPE PACKAGE
-#define PR_FRAMEWORK_X64_PATH "..\\installerpackages\\framework_x64.msix"
+#define PR_FRAMEWORK_X64_PATH "..\\test\\testpackages\\framework_x64.msix"
 
 // arm64 Framework
 #define PR_FRAMEWORK_ARM64_ID L"PR_FWPACKAGE_ARM64"
 #define PR_FRAMEWORK_ARM64_RCID PR_FWPACKAGE_ARM64
 #define PR_FRAMEWORK_ARM64_TYPE L"PACKAGE"
 #define PR_FRAMEWORK_ARM64_RCTYPE PACKAGE
-#define PR_FRAMEWORK_ARM64_PATH "..\\installerpackages\\framework_arm64.msix"
+#define PR_FRAMEWORK_ARM64_PATH "..\\test\\testpackages\\framework_arm64.msix"
 
 // Package Inclusion
 // Each package has a package list entry which defines its inclusion in packages.h and the .rc script.
@@ -49,7 +49,7 @@
 
 // x64 is included on all architecture flavors
 #define PR_FRAMEWORK_X64_LISTENTRY  { PR_FRAMEWORK_X64_ID, PR_FRAMEWORK_X64_TYPE },
-#define PR_FRAMEWORK_X64_RCENTRY PR_FRAMEWORK_X64_RCID     PR_FRAMEWORK_X64_RCTYPE                 PR_FRAMEWORK_X64_PATH
+#define PR_FRAMEWORK_X64_RCENTRY PR_FRAMEWORK_X64_RCID PR_FRAMEWORK_X64_RCTYPE PR_FRAMEWORK_X64_PATH
 
 // arm64 is included only on arm64 builds
 #if defined(_M_ARM64)

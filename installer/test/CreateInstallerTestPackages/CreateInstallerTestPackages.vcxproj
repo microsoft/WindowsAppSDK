@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>InstallerTestPackages</ProjectName>
+    <ProjectName>CreateInstallerTestPackages</ProjectName>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
