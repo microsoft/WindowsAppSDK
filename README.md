@@ -53,9 +53,7 @@ however we will do our best to ensure this is the exception and not the norm, an
 
 * [More details about Project Reunion](https://github.com/microsoft/ProjectReunion/blob/master/docs/README.md) - 
 More on what the project is and how we're approaching the work.
-* [Roadmap](docs/roadmap.md) - Where we're going. We're following this roadmap that 
-gets us to building a first version of Project Reunion exploring some basic common features.
-  [You can help by filing issues for features you'd like to see](https://github.com/microsoft/ProjectReunion/issues/new/choose)!
+* [Roadmap](docs/roadmap.md) - Where we're going!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
 * [FAQ](docs/faq.md) - Frequently asked questions about Project Reunion.
 
