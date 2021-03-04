@@ -16,7 +16,7 @@ Don't just catch `winrt::hresult_error` or other variations as that doesn't catc
 
 Use the following snippet to catch exceptions and retrieve their HRESULT:
 
-```
+```c++
 catch (...)
 {
     auto e{ hresult_error(to_hresult(), take_ownership_from_abi) };
