@@ -31,11 +31,8 @@ jobs:
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
-  - task: NuGetToolInstaller@1
-    inputs:
-      checkLatest: false
-      
   - script: |
+      dotnet add package Microsoft.VSSDK.BuildTools --version 16.9.1050
       dir $(UserProfile)\.nuget\packages
 
   - task: VSBuild@1
