@@ -47,9 +47,6 @@ jobs:
       configuration: '$(buildConfiguration)'
       msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
-  - script: |
-      dir $(UserProfile)\.nuget\packages
-
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
     inputs:
