@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!--
+        This target is used to update the package version we use in the VSIX manifests for this specific build.
+        It updates all *.vstemplate files in projects that include this file - ex: <VSTemplate>File.vstemplate</VSTemplate>.
+        When the build is complete, the RestorePackageVersion target reverts all version numbers to 1.0.0.
+        This prevents transient and irrelevant changes to source from being checked in.
+
+        Originally, it looks like this (notice the 1.0.0):
+
+          <WizardData>
+            <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
+            <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+                <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
+                <package id="Microsoft.ProjectReunion" version="1.0.0" />
+                (other ProjectReunion packages...)
+            </packages>
+        </WizardData>
+
+        Then, XmlPoke changes it to the real version of the package we embed in the VSIX, like this:
+
+          <WizardData>
+            <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
+            <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+                <package id="Microsoft.Windows.CppWinRT" version="2.0.190730.2" />
+                <package id="Microsoft.ProjectReunion" version="3.0.190925000-prerelease" />
+                (other ProjectReunion packages...)
+            </packages>
+        </WizardData>
+    -->
+    <Target Name="UpdatePackageVersion" BeforeTargets="PrepareForBuild" Condition="'@(VSTemplate)' != '' or '@(LinkedVSTemplate)' != ''">
+        <ItemGroup>
+            <AllVSTemplates Include="@(VSTemplate)" Condition="'@(VSTemplate)' != ''" />
+            <AllVSTemplates Include="@(LinkedVSTemplate)" Condition="'@(LinkedVSTemplate)' != ''" />
+        </ItemGroup>
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.CppWinRT']/@version"
+            Value="$(CppWinRTVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion']/@version"
+            Value="$(ReunionVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion.Foundation']/@version"
+            Value="$(ReunionFoundationVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion.DWrite']/@version"
+            Value="$(ReunionDWriteVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion.WinUI']/@version"
+            Value="$(ReunionWinUIVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CppWinRT.nupkg']/@Path"
+            Value="Microsoft.Windows.CppWinRT.$(CppWinRTVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.$(ReunionVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.Foundation.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.Foundation.$(ReunionFoundationVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.DWrite.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.DWrite.$(ReunionDWriteVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.WinUI.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.WinUI.$(ReunionWinUIVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value"
+            Value="$(CppWinRTVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionNupkgVersion$']/@Value"
+            Value="$(ReunionVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionFoundationNupkgVersion$']/@Value"
+            Value="$(ReunionFoundationVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionDWriteNupkgVersion$']/@Value"
+            Value="$(ReunionDWriteVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionWinUINupkgVersion$']/@Value"
+            Value="$(ReunionWinUIVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+    </Target>
+
+    <!--
+        This target is used to revert those versions back to 1.0.0 so that we don't leave files modified on disk.
+    -->
+    <Target Name="RestorePackageVersion" AfterTargets="BuiltProjectOutputGroupDependencies;Build" Condition="'@(VSTemplate)' != '' or '@(LinkedVSTemplate)' != ''">
+        <PropertyGroup>
+            <DefaultVersion>1.0.0</DefaultVersion>
+        </PropertyGroup>
+        <ItemGroup>
+            <AllVSTemplates Include="@(VSTemplate)" Condition="'@(VSTemplate)' != ''" />
+            <AllVSTemplates Include="@(LinkedVSTemplate)" Condition="'@(LinkedVSTemplate)' != ''" />
+        </ItemGroup>
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.CppWinRT']/@version"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion']/@version"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion.Foundation']/@version"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion.DWrite']/@version"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.ProjectReunion.WinUI']/@version"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CppWinRT.nupkg']/@Path"
+            Value="Microsoft.Windows.CppWinRT.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.Foundation.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.Foundation.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.DWrite.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.DWrite.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.ProjectReunion.WinUI.nupkg']/@Path"
+            Value="Microsoft.ProjectReunion.WinUI.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionNupkgVersion$']/@Value"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionFoundationNupkgVersion$']/@Value"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionDWriteNupkgVersion$']/@Value"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionWinUINupkgVersion$']/@Value"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+    </Target>
+    
+</Project>

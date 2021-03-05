@@ -19,6 +19,8 @@ down-level across supported versions of Windows.
 
 
 ### How can I use Project Reunion?
+Check out our roadmap and what's supported with Project Reunion **[here](docs/roadmap.md)**!
+
 We have already started with APIs like 
 **[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml)**,
 **[WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)** and 

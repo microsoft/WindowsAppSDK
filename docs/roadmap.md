@@ -6,51 +6,40 @@ The roadmap for Project Reunion supports the primary goals of breaking down the 
 
 For a general overview, see the [readme](https://github.com/microsoft/ProjectReunion/tree/master/docs) and [FAQ](https://github.com/microsoft/ProjectReunion/blob/master/docs/faq.md).
 
-Here's how we intend to roll out Project Reunion *(all times/features/releases are tentative and subject to change)*:
+## 2021 Roadmap
 
-<table>
-  <tbody>
-    <tr>
-      <th>Reunion 0.5 (Q1 2021)</th>
-      <th>Reunion 0.8 (Q2 2021)</th>
-      <th>Reunion 1.0 (Q3 2021)</th>
-      <th>2022 and Beyond</th>
-    </tr>
-    <tr>
-    <td>
-      <ul>
-            <li>1st supported public release</li>
-            <li>WinUI 3 works in <a href="https://docs.microsoft.com/en-us/windows/msix/desktop/desktop-to-uwp-packaging-dot-net">Desktop Packaged (Win32)</a> Apps</li>
-            <li>Win2D</li>
-            <li>DwriteCore</li>
-            <li>MRTCore</li>
-       </ul>
-     </td>
-     <td>
-        <ul>
-            <li>WinUI improvements</li>
-            <li>Framework Package support for Unpackaged apps</li>
-            <li>App Lifecycle API</li>
-            <li>State Notifications</li>
-         </ul>
-     </td>
-     <td>
-        <ul>
-            <li>Reunion Windowing support</li>
-            <li>New Rendering and Input features</li>
-            <li>Smooth WinUI input & composition system experience</li>  
-         </ul>
-     </td>
-    <td>
-        <ul>
-            <li>Multiple releases per year</li>
-            <li>Continue expanding existing app compatibility</li>
-            <li>Continuous delivery of new easier to use capabilities</li>
-         </ul>
-     </td>
-    </tr>
-  </tbody>
-</table>
+Here's how we intend to roll out Project Reunion. To subscribe to updates, subscribe to [this discussion](https://github.com/microsoft/ProjectReunion/discussions/507). *(all times/features/releases are tentative and subject to change)*: 
+
+### Packaged Desktop Apps
+As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
+
+🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
+-- | ------------------------------- | --------------------------------- | ------------------------------- |
+WinUI |                ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+DWriteCore |           ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+MRT Core |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+App Lifecycle APIs |      ❌ Not Supported |                        🔄 Preview|                   ✅ Supported  | 
+Power State Notifications |  ❌ Not Supported |              🔄 Preview |                   ✅ Supported  | 
+Windowing |            ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
+Deploy Options: |  
+• In-app |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+• Fx Package |         ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+
+### Unpackaged Desktop Apps
+
+As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what and when you (tentatively) can expect from Project Reunion!
+
+ 🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
+-- | ---------------------------------- | ------------------------------ | ------------------------------- |
+WinUI |                ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
+DWriteCore |           ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+MRT Core |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+App Lifecycle APIs |   ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+Power State Notifications |❌ Not Supported |                🔄 Preview |                   ✅ Supported  | 
+Windowing |                ❌ Not Supported |          ❌ Not Supported |                   ✅ Supported  | 
+Deploy Options:  |  
+• In-app |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+• Fx Package |         ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
 
 ## 2021 Focus Areas
 
@@ -95,3 +84,7 @@ This isn't an exhaustive list: it's a sampling of some of the key infrastructure
   
 * Moving engineering to GitHub
   * [Proposals](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22) -> [Specs](https://github.com/microsoft/ProjectReunion/tree/master/specs) -> [Code](https://github.com/microsoft/ProjectReunion/tree/master/dev)
+  
+## 2022 and Beyond
+  
+In the future, you can expect multiple releases per year from the Project Reunion team. We will continue to improve app compatibility and deliver new capabilities.

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="Microsoft.ProjectReunion" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+        <DisplayName>Project Reunion</DisplayName>
+        <Description xml:space="preserve">The Microsoft Project Reunion Visual Studio extension adds project and item templates to support building Project Reunion apps and components.</Description>
+        <MoreInfo>https://github.com/microsoft/ProjectReunion/</MoreInfo>
+        <License>LICENSE</License>
+        <GettingStartedGuide>https://github.com/microsoft/ProjectReunion/</GettingStartedGuide>
+        <ReleaseNotes>https://github.com/microsoft/ProjectReunion/releases</ReleaseNotes>
+        <Icon>Reunion.png</Icon>
+        <PreviewImage>Reunion.png</PreviewImage>
+        <Tags>ProjectReunion, WinUI, UWP, XAML, C#, C++, C++/WinRT, Managed</Tags>
+        <Preview>true</Preview>
+    </Metadata>
+    <Installation AllUsers="true">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.8, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.8, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.8, 17.0)" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,17.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.ComponentGroup.UWP.Support" Version="[16.2.29003.222,17.0)" DisplayName="Universal Windows Platform tools" />
+    </Prerequisites>
+    <Reference Id="NuPackToolsVsix.Microsoft.67e54e40-0ae3-42c5-a949-fddf5739e7a5" MinVersion="1.7.30402.9028">
+        <Name>NuGet Package Manager</Name>
+        <MoreInfoUrl>http://docs.microsoft.com/nuget/</MoreInfoUrl>
+    </Reference>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.CppWinRT.BlankWindow" d:TargetPath="|WinUI.Desktop.CppWinRT.BlankWindow;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.Cs.BlankWindow" d:TargetPath="|WinUI.Desktop.Cs.BlankWindow;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.BlankPage" d:TargetPath="|WinUI.Neutral.CppWinRT.BlankPage;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.Resw" d:TargetPath="|WinUI.Neutral.CppWinRT.Resw;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.TemplatedControl" d:TargetPath="|WinUI.Neutral.CppWinRT.TemplatedControl;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.UserControl" d:TargetPath="|WinUI.Neutral.CppWinRT.UserControl;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.Cs.BlankPage" d:TargetPath="|WinUI.Neutral.Cs.BlankPage;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.Cs.Resw" d:TargetPath="|WinUI.Neutral.Cs.Resw;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.Cs.TemplatedControl" d:TargetPath="|WinUI.Neutral.Cs.TemplatedControl;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.Cs.UserControl" d:TargetPath="|WinUI.Neutral.Cs.UserControl;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.CppWinRT.PackagedApp" d:TargetPath="|WinUI.Desktop.CppWinRT.PackagedApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.Cs.ClassLibrary" d:TargetPath="|WinUI.Desktop.Cs.ClassLibrary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.Cs.PackagedApp" d:TargetPath="|WinUI.Desktop.Cs.PackagedApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.ResourceDictionary" d:TargetPath="|WinUI.Neutral.CppWinRT.ResourceDictionary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.RuntimeComponent" d:TargetPath="|WinUI.Neutral.CppWinRT.RuntimeComponent;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.Cs.ResourceDictionary" d:TargetPath="|WinUI.Neutral.Cs.ResourceDictionary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.CppWinRT.BlankApp" d:TargetPath="|WinUI.UWP.CppWinRT.BlankApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.Cs.BlankApp" d:TargetPath="|WinUI.UWP.Cs.BlankApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.Cs.ClassLibrary" d:TargetPath="|WinUI.UWP.Cs.ClassLibrary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.Cs.RuntimeComponent" d:TargetPath="|WinUI.UWP.Cs.RuntimeComponent;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    </Assets>
+</PackageManifest>

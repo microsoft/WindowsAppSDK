@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build" IgnorableNamespaces="uap build">
+  <Identity Name="Microsoft.ProjectReunion.0.5" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
+  <Properties>
+    <Framework>true</Framework>
+    <DisplayName>Microsoft.ProjectReunion.0.5</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Description>Microsoft Project Reunion Framework</Description>
+    <Logo>logo.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="en-US" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.18362.0" />
+  </Dependencies>
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.ApplicationModel.Resources.dll</Path>
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.KnownResourceQualifierName" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceCandidate" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceLoader" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>  
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.ProjectReunion.dll</Path>
+          <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.ActivationRegistrationManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.AppLifecycle" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+  </Extensions>
+</Package>
