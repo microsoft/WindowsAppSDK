@@ -205,8 +205,6 @@
     <PriInitialPath Condition="'$(PrependPriInitialPath)' == 'true' and '$(AppxPackage)' == 'true' and '$(PriInitialPath)' == ''"></PriInitialPath>
     <PriInitialPath Condition="'$(PrependPriInitialPath)' == 'true' and '$(AppxPackage)' != 'true' and '$(PriInitialPath)' == ''">$(TargetName)</PriInitialPath>
     <ProjectPriFileName Condition="'$(AppxPackage)' == 'true' and '$(ProjectPriFileName)' == ''">resources.pri</ProjectPriFileName>
-    <!-- An empty '$(ApplicationType)' and '$(WindowsAppContainer)' being false corresponds to a C++, Win32 app. -->
-    <ProjectPriFileName Condition="'$(ApplicationType)' == '' and '$(WindowsAppContainer)' == 'false' and '$(ProjectPriFileName)' == ''">resources.pri</ProjectPriFileName>
     <ProjectPriFileName Condition="'$(AppxPackage)' != 'true' and '$(ProjectPriFileName)' == '' and '$(PriInitialPath)' == ''">$(TargetName).pri</ProjectPriFileName>
     <ProjectPriFileName Condition="'$(AppxPackage)' != 'true' and '$(ProjectPriFileName)' == '' and '$(PriInitialPath)' != ''">$(PriInitialPath).pri</ProjectPriFileName>
     <ProjectPriFullPath Condition="'$(ProjectPriFullPath)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)$(ProjectPriFileName)</ProjectPriFullPath>
