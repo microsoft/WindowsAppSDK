@@ -33,7 +33,7 @@ jobs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
   - script: |
-      dotnet add dev\VSIX\ProjectReunion.Extension.sln package Microsoft.VSSDK.BuildTools --version 16.9.1050
+      dotnet add dev\VSIX\Extension\ProjectReunion.Extension.csproj package Microsoft.VSSDK.BuildTools --version 16.9.1050
       dir $(UserProfile)\.nuget\packages
 
   - task: VSBuild@1
