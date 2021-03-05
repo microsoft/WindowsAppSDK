@@ -63,10 +63,10 @@
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
     <UsePackageReferences>true</UsePackageReferences>
     <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
-      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+      <package id="Microsoft.ProjectReunion" version="1.0.0" />
     </packages>
     <Assets>
-      <Asset Type="Microsoft.WinUI.nupkg" Source="File" Path="Microsoft.WinUI.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.ProjectReunion.nupkg" Source="File" Path="Microsoft.ProjectReunion.1.0.0.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>
