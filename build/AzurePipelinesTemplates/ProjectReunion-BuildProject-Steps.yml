@@ -79,12 +79,16 @@ steps:
       arguments: -CheckTAEFService -Offline -Verbose
       workingDirectory: '$(Build.SourcesDirectory)'
 
-  - task: CmdLine@2
-    displayName: 'Run AppLifeCycleTest'
-    inputs:
-      script: 'te.exe CppTest.dll'
-      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\CppTest'
-    condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+#DISABLED - GitHub runs as a a built-in Administrator (thus Elevated and no split-token)
+# TAEF Service can't RunAs:RestrictedUser from this account thus all tests Failed or Blocked
+# and Dynamic Dependencies doesn't support Elevation so it's impossible for this test to
+# work correctly today. Disabling until we move off GitHub's pipeline for test execution
+#  - task: CmdLine@2
+#    displayName: 'Run AppLifeCycleTest'
+#    inputs:
+#      script: 'te.exe CppTest.dll'
+#      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\CppTest'
+#    condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ${{ parameters.solutionPath }} binlog'
