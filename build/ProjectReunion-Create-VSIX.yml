@@ -32,9 +32,6 @@ jobs:
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
-  - script: |
-      dotnet add dev\VSIX\Extension\ProjectReunion.Extension.csproj package Microsoft.VSSDK.BuildTools --version 16.9.1050
-      dir $(UserProfile)\.nuget\packages
 
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
@@ -44,6 +41,8 @@ jobs:
       configuration: '$(buildConfiguration)'
       msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
+  - script: |
+      dir $(UserProfile)\.nuget\packages
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
