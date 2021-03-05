@@ -33,10 +33,11 @@ jobs:
 
   - task: NuGetToolInstaller@1
     inputs:
-
+      checkLatest: false
+      
   - script: |
       dir $(UserProfile)\.nuget\packages
-      
+
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
     inputs:
