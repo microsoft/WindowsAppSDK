@@ -4,14 +4,13 @@
     <!-- Provide default nuget feed (Reunion internal) and package versions for developer builds -->
     <PropertyGroup>
         <RestoreSources Condition="'$(RestoreSources)'==''">
-            https://api.nuget.org/v3/index.json;
             https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
         </RestoreSources>
         <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210211.2</CppWinRTVersion>
-        <ReunionVersion Condition="'$(ReunionVersion)' == ''">0.1.0-prerelease.20210301.5.CI</ReunionVersion>
-        <ReunionFoundationVersion Condition="'$(ReunionFoundationVersion)' == ''">0.1.0-prerelease.20210301.5.CI</ReunionFoundationVersion>
-        <ReunionDWriteVersion Condition="'$(ReunionDWriteVersion)' == ''">0.1.5-prerelease.20210301.5.CI</ReunionDWriteVersion>
-        <ReunionWinUIVersion Condition="'$(ReunionWinUIVersion)' == ''">3.0.0-prerelease.20210301.5.CI</ReunionWinUIVersion>
+        <ReunionVersion Condition="'$(ReunionVersion)' == ''">0.5.0-prerelease.20210304.5.ci</ReunionVersion>
+        <ReunionDWriteVersion Condition="'$(ReunionDWriteVersion)' == ''">0.1.5-prerelease.20210304.5.ci</ReunionDWriteVersion>
+        <ReunionFoundationVersion Condition="'$(ReunionFoundationVersion)' == ''">0.1.0-prerelease.20210304.5.ci</ReunionFoundationVersion>
+        <ReunionWinUIVersion Condition="'$(ReunionWinUIVersion)' == ''">3.0.0-prerelease.20210304.5.ci</ReunionWinUIVersion>
     </PropertyGroup>
 
     <PropertyGroup>
