@@ -31,6 +31,12 @@ jobs:
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
+  - task: NuGetToolInstaller@1
+    inputs:
+
+  - script: |
+      dir $(UserProfile)\.nuget\packages
+      
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
     inputs:
@@ -39,8 +45,6 @@ jobs:
       configuration: '$(buildConfiguration)'
       msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
-  - script: |
-      dir $(UserProfile)\.nuget\packages
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
