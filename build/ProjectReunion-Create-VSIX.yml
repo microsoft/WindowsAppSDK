@@ -27,6 +27,9 @@ jobs:
     ${{if eq(parameters.releaseBuild, False) }}:
       VSIXBuildArgs: ''
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: Internal-ReleaseSigned
 
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
