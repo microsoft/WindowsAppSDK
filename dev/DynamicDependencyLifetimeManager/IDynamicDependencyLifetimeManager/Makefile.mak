@@ -1,16 +1,6 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-MAKEAPPX_OPTS=
-!IFDEF VERBOSE
-MAKEAPPX_OPTS=/v
-!ENDIF
-
-SIGNTOOL_OPTS=
-!IFDEF VERBOSE
-SIGNTOOL_OPTS=/v
-!ENDIF
-
 !IFDEF VERBOSE
 !MESSAGE SolutionDir       =$(SolutionDir)
 !MESSAGE ProjectDir        =$(ProjectDir)
