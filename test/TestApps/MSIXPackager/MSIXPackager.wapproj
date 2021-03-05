@@ -112,9 +112,11 @@
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.19041.8" PrivateAssets="all" />
+    <ProjectReference Include="..\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools">
+      <Version>10.0.18362.3-preview</Version>
+    </PackageReference>
   </ItemGroup>
 </Project>
