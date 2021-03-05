@@ -53,6 +53,7 @@ however we will do our best to ensure this is the exception and not the norm, an
 
 * [More details about Project Reunion](https://github.com/microsoft/ProjectReunion/blob/master/docs/README.md) - 
 More on what the project is and how we're approaching the work.
+* [Video on Project Reunion](https://aka.ms/project_reunion_ignite) - Learn about Project Reunion in a 22 minute video!
 * [Roadmap](docs/roadmap.md) - Where we're going!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
 * [FAQ](docs/faq.md) - Frequently asked questions about Project Reunion.
