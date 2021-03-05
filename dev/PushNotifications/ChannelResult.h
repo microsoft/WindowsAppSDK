@@ -18,7 +18,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     private:
         Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
         winrt::hresult m_extendedError;
-        Microsoft::ProjectReunion::ChannelStatus m_channelStatus;
+        ChannelStatus m_channelStatus{};
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

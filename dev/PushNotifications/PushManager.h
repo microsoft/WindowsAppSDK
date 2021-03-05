@@ -4,7 +4,7 @@
 #pragma once
 
 #include "PushManager.g.h"
-#include <list>
+#include <vector>
 #include <mutex>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
@@ -17,9 +17,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     private:
         static bool isChannelRequestRetryable(const winrt::hresult& hrException);
-        static std::list<winrt::guid> remoteIdList;
-        static std::mutex mtx;
-        static std::unique_lock<std::mutex> lock;
+        static std::vector<winrt::guid> s_remoteIdList;
+        static std::mutex s_mutex;
+        static std::unique_lock<std::mutex> s_lock;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation
