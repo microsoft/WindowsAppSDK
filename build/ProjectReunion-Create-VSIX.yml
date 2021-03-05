@@ -37,7 +37,7 @@ jobs:
     displayName: 'NuGet restore'
     inputs:
       command: 'custom'
-      arguments: 'restore dev\packages.config -PackagesDirectory $(UserProfile)\.nuget\packages'
+      arguments: 'restore dev\VSIX\packages.config -PackagesDirectory $(UserProfile)\.nuget\packages'
 
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
