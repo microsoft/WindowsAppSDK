@@ -19,8 +19,8 @@ Use the following snippet to catch exceptions and retrieve their HRESULT:
 ```c++
 catch (...)
 {
-    auto e{ hresult_error(to_hresult(), take_ownership_from_abi) };
-    ...e.code() contains the HRESULT...
+    auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
+    ...e.code() contains the WinRT exception or best-guess conversion from a C++ exception...
 }
 ```
 
