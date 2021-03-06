@@ -1,0 +1,96 @@
+parameters:
+  - name: "ReunionVersion"
+    type: string
+    default: ''
+  - name: "ReunionFoundationVersion"
+    type: string
+    default: ''
+  - name: "ReunionDWriteVersion"
+    type: string
+    default: ''
+  - name: "ReunionWinUIVersion"
+    type: string
+    default: ''
+  - name: "releaseBuild"
+    type: boolean
+    default: True
+
+jobs:
+
+- job: CreatingVsix
+  pool:
+    vmImage: 'windows-2019'
+
+  variables:
+    ${{if eq(parameters.releaseBuild, True) }}:
+      VSIXBuildArgs: '/p:"RestoreSources=https://api.nuget.org/v3/index.json;https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json"'
+    ${{if eq(parameters.releaseBuild, False) }}:
+      VSIXBuildArgs: ''
+      
+  steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: Internal-ReleaseSigned
+
+  # NuGetCommand@2 
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore'
+    inputs:
+      command: 'custom'
+      arguments: 'restore dev\VSIX\packages.config -PackagesDirectory $(UserProfile)\.nuget\packages'
+
+  - task: VSBuild@1
+    displayName: 'Restore ProjectReunion.Extension.sln'
+    inputs:
+      solution: dev\VSIX\ProjectReunion.Extension.sln
+      platform: 'Any CPU'
+      configuration: '$(buildConfiguration)'
+      msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+
+  - task: VSBuild@1
+    displayName: 'Build ProjectReunion.Extension.sln'
+    inputs:
+      solution: dev\VSIX\ProjectReunion.Extension.sln
+      platform: 'Any CPU'
+      configuration: '$(buildConfiguration)'
+      msBuildArgs: '/p:VSToolsPath="$(UserProfile)\.nuget\packages\microsoft.vssdk.buildtools\16.9.1050\tools" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Governance Detection'
+    inputs:
+      scanType: 'Register'
+      failOnAlert: true
+
+  - ${{ if eq( parameters.releaseBuild, true) }}:
+    - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+      displayName: 'CodeSign (vsix)'
+      inputs:
+        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+        FolderPath: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+        Pattern: ProjectReunion.Extension.vsix
+        signConfigType: inlineSignParams
+        inlineOperation: | 
+          [
+              {
+                  "KeyCode" : "CP-233016",
+                  "OperationCode" : "OpcSign",
+                  "Parameters" : {
+                      "FileDigest" : "/fd SHA256"
+                  },
+                  "ToolName" : "sign",
+                  "ToolVersion" : "1.0"
+              },
+              {
+                  "KeyCode" : "CP-233016",
+                  "OperationCode" : "OpcVerify",
+                  "Parameters" : {},
+                  "ToolName" : "sign",
+                  "ToolVersion" : "1.0"
+              }
+          ]
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish ProjectReunion.Extension.VSIX'
+    inputs:
+      PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension.vsix'
+      artifactName: 'VSIX'
