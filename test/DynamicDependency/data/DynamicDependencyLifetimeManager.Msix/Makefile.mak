@@ -67,7 +67,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL
     @copy /Y $(TARGET_PROXYSTUB_FILE) $(WorkDir) >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS) /o /h SHA256 /d $(WorkDir) /p $(OutMsix)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)build\MSTest.pfx $(OutMsix)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
 build: $(OutMsix)
 

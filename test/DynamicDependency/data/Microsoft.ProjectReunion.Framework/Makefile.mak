@@ -40,7 +40,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(OutDir)ProjectReunion_DLL\Microsoft.ProjectReunion.dll $(WorkDir)\Microsoft.ProjectReunion.dll
     @copy /Y $(OutDir)ProjectReunion_DLL\Microsoft.ProjectReunion.pdb $(WorkDir)\Microsoft.ProjectReunion.pdb
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)build\MSTest.pfx $(OutMsix)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
 build: $(OutMsix)
 
