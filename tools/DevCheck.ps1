@@ -227,7 +227,6 @@ function Repair-DevTestPfx
     {
         $args = " -v $args"
     }
-    Write-Host "*** certutil.exe $args"
     $output = Run-Process 'certutil.exe' $args
     if (Test-Path -Path $pfx -PathType Leaf)
     {

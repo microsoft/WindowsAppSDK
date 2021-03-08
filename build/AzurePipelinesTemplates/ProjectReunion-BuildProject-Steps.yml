@@ -56,6 +56,14 @@ steps:
       feedsToUse: config
       nugetConfigPath: ${{ parameters.nugetConfigPath }}
 
+  - task: powershell@2
+    displayName: 'Create pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -CheckTestPfx -Clean -Offline -Verbose
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
     inputs:
