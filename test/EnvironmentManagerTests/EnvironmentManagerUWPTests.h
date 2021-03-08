@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace ProjectReunionCppTest
+namespace ProjectReunionEnvironmentManagerTests
 {
     class EnvironmentManagerUWPTests {
         BEGIN_TEST_CLASS(EnvironmentManagerUWPTests)

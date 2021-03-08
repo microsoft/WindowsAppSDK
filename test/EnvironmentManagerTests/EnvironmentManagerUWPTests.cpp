@@ -1,26 +1,26 @@
-﻿#include <pch.h>
-#include <EnvironmentManagerUWPTests.h>
+﻿#include "pch.h"
+#include "EnvironmentManagerUWPTests.h"
 
 using namespace winrt::Microsoft::ProjectReunion;
 
-namespace ProjectReunionCppTest
+namespace ProjectReunionEnvironmentManagerTests
 {
     void EnvironmentManagerUWPTests::UWPTestGetForProcess()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
         VERIFY_IS_NOT_NULL(environmentManager);
     }
 
     void EnvironmentManagerUWPTests::UWPTestGetForUser()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
         VERIFY_IS_NOT_NULL(environmentManager);
     }
 
 
     void EnvironmentManagerUWPTests::UWPTestGetForMachine()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_IS_NOT_NULL(environmentManager);
     }
 }
