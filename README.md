@@ -16,7 +16,7 @@ Plus, **it's backwards compatible** to Windows 10 October 2018 Update (build 177
 ### Try it now!
 [Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can try the preview of the 0.5 release now! (link to details on how to try it)
 
-Some caveats about 0.5...
+Some notes about 0.5...
 
 * Requires using MSIX *(1.0 won't require MSIX)*
 * Only includes WinUI 3 / Text rendering / Localization
