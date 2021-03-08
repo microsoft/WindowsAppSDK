@@ -17,13 +17,13 @@ parameters:
 
 jobs:
 
-- job: CreatingVsix
+- job: CreateVSIX
   pool:
     vmImage: 'windows-2019'
 
   variables:
     ${{if eq(parameters.releaseBuild, True) }}:
-      VSIXBuildArgs: '/p:"RestoreSources=https://api.nuget.org/v3/index.json;https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json"'
+      VSIXBuildArgs: '/p:"RestoreSources=https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json"'
     ${{if eq(parameters.releaseBuild, False) }}:
       VSIXBuildArgs: ''
       
