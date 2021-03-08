@@ -22,6 +22,9 @@
 .PARAMETER CheckTestCert
     Check the Test certificate
 
+.PARAMETER CheckTestPfx
+    Check the MSIX Test signing certificate (to sign developer test MSIXs)
+
 .PARAMETER CheckVisualStudio
     Check Visual Studio
 
@@ -38,6 +41,8 @@
 Param(
     [Switch]$CheckAll=$false,
 
+    [Switch]$CheckTestPfx=$false,
+
     [Switch]$CheckTAEFService=$false,
 
     [Switch]$CheckTestCert=$false,
@@ -53,7 +58,7 @@ Param(
 
 $global:issues = 0
 
-if (($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckVisualStudio -eq $false))
+if (($CheckTestPfx -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckVisualStudio -eq $false))
 {
     $CheckAll = $true
 }
@@ -183,6 +188,59 @@ function Test-VisualStudio2019Install
     Write-Host "VisualStudio 2019...$path"
 }
 
+function Test-DevTestPfx
+{
+    if ($Clean -eq $true)
+    {
+        return $false
+    }
+
+    $root = Get-ProjectRoot
+    $pfx = Join-Path $root 'temp\MSTest.pfx'
+    if (Test-Path -Path $pfx -PathType Leaf)
+    {
+        Write-Host 'Test temp\MSTest.pfx...OK'
+        return $true
+    }
+    else
+    {
+        Write-Host 'Test temp\MSTest.pfx...Not Found'
+        $global:issues += 1
+        return $false
+    }
+}
+
+function Repair-DevTestPfx
+{
+    $root = Get-ProjectRoot
+    $temp = Join-Path $root 'temp'
+    if (-not(Test-Path -Path $temp -PathType Container))
+    {
+        Write-Host 'Creating $temp...'
+        New-Item -Path $temp -ItemType Directory -Force
+    }
+
+    $spfx = Join-Path $root 'build\MSTest.spfx'
+    $pfx = Join-Path $temp 'MSTest.pfx'
+    $args = " -decode $spfx $pfx"
+    if ($Verbose -eq $true)
+    {
+        $args = " -v $args"
+    }
+    Write-Host "*** certutil.exe $args"
+    $output = Run-Process 'certutil.exe' $args
+    if (Test-Path -Path $pfx -PathType Leaf)
+    {
+        Write-Host 'Create temp\MSTest.pfx...OK'
+    }
+    else
+    {
+        Write-Host 'Create temp\MSTest.pfx...Errpr'
+        Write-Verbose $output
+        $global:issues += 1
+    }
+}
+
 function Test-DevTestCert
 {
     # To manually determine the thumbprint of a *.cer file
@@ -194,7 +252,7 @@ function Test-DevTestCert
     # That 3535... value is the 'Thumbprint' property
 
     $root = Get-ProjectRoot
-    $path = Join-Path $root 'build\MSTest.pfx'
+    $path = Join-Path $root 'temp\MSTest.pfx'
     $pfx = Get-PfxCertificate -FilePath $path
     $thumbprint = $pfx.Thumbprint
 
@@ -338,6 +396,15 @@ Write-Output "ProjectReunion location...$project_root"
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
     Test-VisualStudio2019Install
+}
+
+if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
+{
+    $test = Test-DevTestPfx
+    if ($test -ne $true)
+    {
+        Repair-DevTestPfx
+    }
 }
 
 if (($CheckAll -ne $false) -Or ($CheckTestCert -ne $false))
