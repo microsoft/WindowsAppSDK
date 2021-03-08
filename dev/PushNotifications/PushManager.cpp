@@ -13,19 +13,21 @@
 #include <winerror.h>
 
 using namespace winrt::Windows::Networking::PushNotifications;
+using namespace winrt;
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    std::vector<winrt::guid> PushManager::s_remoteIdList;
+    std::vector<guid> PushManager::s_remoteIdList;
     std::mutex PushManager::s_mutex;
-    std::unique_lock<std::mutex> PushManager::s_lock (s_mutex, std::defer_lock); // Avoid locking during the constructor call
+    std::unique_lock<std::mutex> PushManager::s_lock(s_mutex, std::defer_lock); // Avoid locking during the constructor call
     inline constexpr std::uint32_t c_maxBackoffSeconds{ 960 };
+    inline constexpr std::uint32_t c_minBackoffSeconds{ 30 };
 
-    const HRESULT WNP_E_NOT_CONNECTED = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E8L);
-    const HRESULT WNP_E_RECONNECTING = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E9L);
-    const HRESULT WNP_E_BIND_USER_BUSY = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403FEL);
+    const HRESULT WNP_E_NOT_CONNECTED = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WPN, 0x880403E8L);
+    const HRESULT WNP_E_RECONNECTING = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WPN, 0x880403E9L);
+    const HRESULT WNP_E_BIND_USER_BUSY = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WPN, 0x880403FEL);
 
-    bool PushManager::isChannelRequestRetryable(const winrt::hresult& hr)
+    bool PushManager::isChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
         {
@@ -48,29 +50,29 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (rc != ERROR_INSUFFICIENT_BUFFER)
         {
-            winrt::throw_hresult(rc);
+            throw_hresult(rc);
         }
+
         return rc == ERROR_INSUFFICIENT_BUFFER;
     }
 
-    Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> PushManager::CreateChannelAsync(winrt::guid remoteId)
+    Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> PushManager::CreateChannelAsync(guid remoteId)
     {
-        winrt::Microsoft::ProjectReunion::ChannelResult channelResult{ nullptr };
-        auto progress{ co_await winrt::get_progress_token() };
+        Microsoft::ProjectReunion::ChannelResult channelResult{ nullptr };
+        auto progress{ co_await get_progress_token() };
 
-        winrt::check_pointer(&remoteId);
-      
+        check_pointer(&remoteId);
+
         s_lock.lock();
         if (std::find(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId) != s_remoteIdList.end())
         {
             s_lock.unlock();
-            progress(winrt::make<winrt::Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, ChannelStatus::InProgress));
-            channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, ChannelStatus::CompletedFailure);
+            progress(make<Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, ChannelStatus::InProgress));
+            channelResult = make<Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, ChannelStatus::CompletedFailure);
             co_return channelResult;
         }
         else
         {
-            s_lock.lock();
             s_remoteIdList.push_back(remoteId);
             s_lock.unlock();
         }
@@ -78,11 +80,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         PushNotificationChannelManager channelManager{};
         PushNotificationChannel pushChannel{ nullptr };
 
-        for (auto backOffTimeInSeconds = 30; backOffTimeInSeconds <= c_maxBackoffSeconds * 2; backOffTimeInSeconds *= 2)
+        for (auto backOffTimeInSeconds = c_minBackoffSeconds; backOffTimeInSeconds <= c_maxBackoffSeconds * 2; backOffTimeInSeconds *= 2)
         {
             try
             {
-                
                 if (IsPackagedProcess())
                 {
                     pushChannel = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
@@ -90,7 +91,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 if (pushChannel != nullptr)
                 {
-                    channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::ChannelResult>(pushChannel, S_OK, ChannelStatus::CompletedSuccess);
+                    channelResult = make<Microsoft::ProjectReunion::implementation::ChannelResult>(pushChannel, S_OK, ChannelStatus::CompletedSuccess);
                     break;
                 }
             }
@@ -100,16 +101,16 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 if ((backOffTimeInSeconds <= c_maxBackoffSeconds) && isChannelRequestRetryable(ex.code()))
                 {
-                    progress(winrt::make<winrt::Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, ex.code(), ChannelStatus::InProgressRetry));
+                    progress(make<Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, ex.code(), ChannelStatus::InProgressRetry));
                 }
                 else
                 {
-                    channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, ex.code(), ChannelStatus::CompletedFailure);
+                    channelResult = make<Microsoft::ProjectReunion::implementation::ChannelResult>(nullptr, ex.code(), ChannelStatus::CompletedFailure);
                     break;
                 }
             }
 
-            co_await winrt::resume_after(std::chrono::seconds(backOffTimeInSeconds));
+            co_await resume_after(std::chrono::seconds(backOffTimeInSeconds));
         }
 
         s_lock.lock();
