@@ -32,13 +32,6 @@ jobs:
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
-  # NuGetCommand@2 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore'
-    inputs:
-      command: 'custom'
-      arguments: 'restore dev\VSIX\packages.config -PackagesDirectory $(UserProfile)\.nuget\packages'
-
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
     inputs:
@@ -53,7 +46,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:VSToolsPath="$(UserProfile)\.nuget\packages\microsoft.vssdk.buildtools\16.9.1050\tools" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+      msBuildArgs: '/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'
