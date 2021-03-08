@@ -1,20 +1,27 @@
-#### General
+# General
 
-Project Reunion prefers using industry-standard coding styles, guidelines, and patterns for any languages used in implementation or testing.
+Project Reunion prefers using industry-standard coding styles, guidelines, and patterns for any
+languages used in implementation or testing.
 
-#### C++
+# C++
 
-Project Reunion implementations prefer C++ and C++/WinRT implementations.   New code must adhere to the **cppcoreguidelines** at 
-https://github.com/isocpp/CppCoreGuidelines and be /W4 clean (for Visual C++.)
+**DO** implement types using C++ and [C++/WinRT](https://github.com/microsoft/cppwinrt)
 
-Prefer existing std:: and gsl:: types, but use **wil** (https://github.com/Microsoft/wil) types for Windows-specific helpers and lifecycle management 
-rather than creating your own.
+**DO** follow the [CppCoreGudelines](https://github.com/isocpp/CppCoreGuidelines) for all new code.
 
-#### Markdown
+**DO** enable `/W4 /Wx` for all new code.
 
-**GUIDELINE:** The preferred line length limit is ~100 characters. GitHub formats lines regardless of individual length but GitHub diff is line oriented. 
-Keeping lines within the preferred limit makes changes easier to review.
+**CONSIDER** using the [Windows Implementation Library](https://github.com/Microsoft/wil) for
+Windows-specific helpers rather than creating your own.
 
-#### Other Languages
+**DO** use 4-space indentation instead of tab characters.
 
-If new languages become common, we will describe the coding guidelines for such languages here.  
+# Markdown
+
+**DO** wrap lines at ~100 characters. GitHub formats lines regardless of individual length but
+GitHub diff is line oriented. Keeping lines within the preferred limit makes changes easier to
+review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers."
+
+## Other Languages
+
+If new languages become common, we will describe the coding guidelines for such languages here.
