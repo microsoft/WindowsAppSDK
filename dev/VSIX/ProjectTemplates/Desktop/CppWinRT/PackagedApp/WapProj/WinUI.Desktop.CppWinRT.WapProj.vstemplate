@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Hidden>true</Hidden>
+    <Name>Windows Application Packaging Project for WinUI</Name>
+    <Description>A project that creates MSIX packages containing WinUI in Desktop applications for side-loading or distribution via the Microsoft Store</Description>
+    <Icon>WapProjTemplate.ico</Icon>
+    <ProjectType>VC</ProjectType>
+    <TemplateID>WinUI.Desktop.CppWinRT.WapProj</TemplateID>
+    <ProjectSubType>WapProj</ProjectSubType>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>WapProjTemplate</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+    <CreateInPlace>true</CreateInPlace>
+    <NumberOfParentCategoriesToRollUp>0</NumberOfParentCategoriesToRollUp>
+    <TargetPlatformName>Windows</TargetPlatformName>
+    <LanguageTag>cpp</LanguageTag>
+    <LanguageTag>XAML</LanguageTag>
+    <PlatformTag>windows</PlatformTag>
+    <PlatformTag>Project Reunion</PlatformTag>
+    <ProjectTypeTag>desktop</ProjectTypeTag>
+    <ProjectTypeTag>WinUI</ProjectTypeTag>
+  </TemplateData>
+  <TemplateContent>
+    <CustomParameters>
+      <CustomParameter Name="$ReunionNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$ReunionFoundationNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$ReunionWinUINupkgVersion$" Value="1.0.0" />
+    </CustomParameters>
+    <Project File="WapProjTemplate.wapproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-managed.appxmanifest</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\SplashScreen.scale-200.png">SplashScreen.scale-200.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\LockScreenLogo.scale-200.png">LockScreenLogo.scale-200.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square150x150Logo.scale-200.png">Square150x150Logo.scale-200.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square44x44Logo.scale-200.png">Square44x44Logo.scale-200.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\Square44x44Logo.targetsize-24_altform-unplated.png">Square44x44Logo.targetsize-24_altform-unplated.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\StoreLogo.png">StoreLogo.png</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Images\Wide310x150Logo.scale-200.png">Wide310x150Logo.scale-200.png</ProjectItem>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.Universal.TemplateWizards, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.Universal.TemplateWizards.PlatformVersion.Wizard</FullClassName>
+  </WizardExtension>
+  <WizardExtension>
+    <!-- Generates Publisher name for appxmanifest -->
+    <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+    <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.UpdatePublisherInManifestWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
+    <SkipXamlCompilerCheck>true</SkipXamlCompilerCheck>
+  </WizardData>
+</VSTemplate>
