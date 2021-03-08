@@ -24,6 +24,5 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)ChannelResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationErrorCodes.h" />
   </ItemGroup>
 </Project>
