@@ -37,14 +37,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Process.Environme
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environment", "dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems", "{01FD7E2D-CF9B-48A0-B280-B698D18B51F0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environment.Tests", "test\Microsoft.Process.Environment.Tests\Microsoft.Process.Environment.Tests.vcxitems", "{2A9DEE02-DB37-4B9C-A0DA-B17541CB12C0}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentManagerTests", "test\EnvironmentManagerTests\EnvironmentManagerTests.vcxproj", "{333C2A4D-6599-40E1-90F8-F184C3CF6031}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems*{01fd7e2d-cf9b-48a0-b280-b698d18b51f0}*SharedItemsImports = 9
-		test\Microsoft.Process.Environment.Tests\Microsoft.Process.Environment.Tests.vcxitems*{2a9dee02-db37-4b9c-a0da-b17541cb12c0}*SharedItemsImports = 9
 		test\CppShared\CppShared.vcxitems*{682ded8c-3a27-48cd-866d-e853ea2024de}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		test\AppLifecycle\AppLifecycle.vcxitems*{80e07022-9e99-44fe-b875-901fb6c82f52}*SharedItemsImports = 9
@@ -193,7 +190,6 @@ Global
 		{7C502995-59C3-483B-86BA-815985353633} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{BCE64BEB-DE10-4150-B1A5-502D151227FE} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{01FD7E2D-CF9B-48A0-B280-B698D18B51F0} = {BCE64BEB-DE10-4150-B1A5-502D151227FE}
-		{2A9DEE02-DB37-4B9C-A0DA-B17541CB12C0} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{333C2A4D-6599-40E1-90F8-F184C3CF6031} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
