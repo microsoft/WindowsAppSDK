@@ -20,7 +20,7 @@ Some notes about 0.5...
 
 * Requires using MSIX *(1.0 won't require MSIX)*
 * Only includes WinUI 3 / Text rendering / Localization
-* To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(XAML Islands will enable incrementally adopting WinUI 3 in the future)*
+* To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(in the future, XAML Islands will enable incrementally adopting WinUI 3)*
 
 
 ### Roadmap
