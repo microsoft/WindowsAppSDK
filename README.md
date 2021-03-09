@@ -20,7 +20,7 @@ Some notes about 0.5...
 
 * Requires using MSIX *(1.0 won't require MSIX)*
 * Only includes WinUI 3 / Text rendering / Localization
-* WinUI 3 can't be used alongside other UI frameworks. *(XAML Islands will enable this in the future.)* To use WinUI 3, either start with a new app, or move your app's UI to WinUI XAML.
+* To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(XAML Islands will enable incrementally adopting WinUI 3 in the future)*
 
 
 ### Roadmap
