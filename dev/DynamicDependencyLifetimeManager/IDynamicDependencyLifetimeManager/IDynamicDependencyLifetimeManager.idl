@@ -1,0 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[object]
+[uuid(06F1BAD0-DD14-11d0-AB8F-0000C0148FDB)]
+[pointer_default(unique)]
+interface IDynamicDependencyLifetimeManager : IUnknown
+{
+    HRESULT Initialize();
+
+    HRESULT Shutdown();
+
+    HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
+};

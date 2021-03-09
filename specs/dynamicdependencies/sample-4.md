@@ -9,7 +9,7 @@ The 'waffles' package dependency definition is pinned until the specified regist
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT SavePackageDependencyId(_In_ PCWSTR what, _In_ PCWSTR packageDependencyId);
@@ -56,7 +56,7 @@ HRESULT DefinePackageDependency_Muffins()
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
+    const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetMuffinsLifetimeAbsoluteFilename();
     const auto createOptions = MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
     wil::unique_process_heap_string packageDependencyId;
@@ -76,7 +76,7 @@ HRESULT DefinePackageDependency_Waffles()
     minVersion.Build = 67;
     minVersion.Revision = 0;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
+    const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
     PCWSTR lifetimeArtifact = GetWafflesLifetimeRegistryKey();
     const auto createOptions = MddCreatePackageDependencyOptions::DoNotVerifyDependencyResolution;
     wil::unique_process_heap_string packageDependencyId;
