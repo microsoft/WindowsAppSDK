@@ -17,8 +17,8 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
+using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
@@ -52,9 +52,9 @@ namespace ProjectReunionCppTest
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
+            END_TEST_CLASS()
 
-        TEST_CLASS_SETUP(ClassInit)
+            TEST_CLASS_SETUP(ClassInit)
         {
             TD::DumpExecutionContext();
 
@@ -225,7 +225,6 @@ namespace ProjectReunionCppTest
         //    // Wait for the protocol activation.
         //    WaitForEvent(event, m_failed);
         //}
-    };
 
         TEST_METHOD(GetActivatedEventArgsForStartup_Win32)
         {
@@ -246,7 +245,7 @@ namespace ProjectReunionCppTest
             std::wstring command;
             auto result = RegGetValue(HKEY_CURRENT_USER, c_runKeyPath.c_str(), L"this_is_a_test",
                 RRF_RT_REG_SZ, nullptr, command.data(), &size);
-            
+
             if (result == ERROR_MORE_DATA)
             {
                 command.resize(size);
@@ -270,6 +269,8 @@ namespace ProjectReunionCppTest
             // Wait for the unregister event.
             WaitForEvent(protEvent, m_failed);
         }
+    };
+
     //-----------------------------------------------------------------
     class AppLifecycleTests_UAP
     {

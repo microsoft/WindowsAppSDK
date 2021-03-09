@@ -4,7 +4,7 @@
 
 #include "ExecuteCommandBase.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     class EncodedLaunchExecuteCommand : public winrt::implements<EncodedLaunchExecuteCommand,
         ExecuteCommandBase>

@@ -6,7 +6,7 @@
 #include "EncodedLaunchExecuteCommand.h"
 #include "Association.h"
 
-using namespace winrt::Microsoft::ProjectReunion::implementation;
+using namespace winrt::Microsoft::ApplicationModel::Activation::implementation;
 
 std::wstring GetDllModulePath();
 std::wstring GetCoClassPath(const GUID& iid);
@@ -30,8 +30,6 @@ extern "C" HRESULT __stdcall DllGetClassObject(GUID const& clsid, GUID const& ii
     {
         return winrt::to_hresult();
     }
-
-    return S_OK;
 }
 
 extern "C" HRESULT __stdcall DllRegisterServer() noexcept try

@@ -4,7 +4,7 @@
 
 #include <winrt/base.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     class ExecuteCommandBase : public winrt::implements<ExecuteCommandBase, IExecuteCommand, IObjectWithSite,
         IObjectWithSelection>

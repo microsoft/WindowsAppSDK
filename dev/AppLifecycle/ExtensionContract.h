@@ -7,7 +7,7 @@
 #include "FileActivatedEventArgs.h"
 #include "StartupActivatedEventArgs.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     // Extension contract ids.
     static LPCWSTR c_launchContractId = L"Windows.Launch";
