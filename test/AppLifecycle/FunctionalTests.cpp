@@ -54,22 +54,23 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            WEX::Logging::Log::Comment(L"CLASS_SETUP---Begin---");
             TD::DumpExecutionContext();
 
             ::Test::Bootstrap::SetupPackages();
+
+            // Deploy packaged app to register handler through the manifest.
+            //RunCertUtil(c_testPackageCertFile);
+            //InstallPackage(c_testPackageFile);
 
             // Write out some test content.
             WriteContentFile(c_testDataFileName);
             WriteContentFile(c_testDataFileName_Packaged);
 
-            WEX::Logging::Log::Comment(L"CLASS_SETUP ---End---");
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---Begin---");
             TD::DumpExecutionContext();
 
             // Swallow errors in cleanup.
@@ -77,6 +78,8 @@ namespace ProjectReunionCppTest
             {
                 DeleteContentFile(c_testDataFileName_Packaged);
                 DeleteContentFile(c_testDataFileName);
+                //UninstallPackage(c_testPackageFullName);
+                //RunCertUtil(c_testPackageCertFile, true);
             }
             catch (const std::exception&)
             {
@@ -86,13 +89,11 @@ namespace ProjectReunionCppTest
             }
 
             ::Test::Bootstrap::CleanupPackages();
-            WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---End---");
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            WEX::Logging::Log::Comment(L"METHOD_SETUP ---Begin---");
             TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
@@ -102,13 +103,11 @@ namespace ProjectReunionCppTest
             ::Test::Bootstrap::Setup();
             m_failed = CreateTestEvent(c_testFailureEventName);
 
-            WEX::Logging::Log::Comment(L"METHOD_SETUP ---End---");
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---Begin---");
             TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
@@ -117,7 +116,6 @@ namespace ProjectReunionCppTest
 
             ::Test::Bootstrap::Cleanup();
 
-            WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---End---");
             return true;
         }
 
@@ -156,6 +154,20 @@ namespace ProjectReunionCppTest
             WaitForEvent(event, m_failed);
         }
 
+        //TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
+        //{
+        //    // Create a named event for communicating with test app.
+        //    auto event = CreateTestEvent(c_testFilePhaseEventName);
+
+        //    // Launch the file and wait for the event to fire.
+        //    auto file = OpenDocFile(c_testDataFileName_Packaged);
+        //    auto launchResult = Launcher::LaunchFileAsync(file).get();
+        //    VERIFY_IS_TRUE(launchResult);
+
+        //    // Wait for the protocol activation.
+        //    WaitForEvent(event, m_failed);
+        //}
+
         TEST_METHOD(GetActivatedEventArgsForProtocol_Win32)
         {
             // Create a named event for communicating with test app.
@@ -186,6 +198,26 @@ namespace ProjectReunionCppTest
             Execute(L"AppLifecycleTestApp.exe", L"/UnregisterProtocol", g_deploymentDir);
             WaitForEvent(event, m_failed);
         }
+
+        //TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
+        //{
+        //    // Create a named event for communicating with test app.
+        //    auto event = CreateTestEvent(c_testProtocolPhaseEventName);
+
+        //    RunCertUtil(L"AppLifecycleTestPackage.cer");
+
+        //    // Deploy packaged app to register handler through the manifest.
+        //    std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
+        //    InstallPackage(packagePath);
+
+        //    // Launch a protocol and wait for the event to fire.
+        //    Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
+        //    auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+        //    VERIFY_IS_TRUE(launchResult);
+
+        //    // Wait for the protocol activation.
+        //    WaitForEvent(event, m_failed);
+        //}
     };
 
     //-----------------------------------------------------------------
@@ -209,7 +241,6 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            WEX::Logging::Log::Comment(L"CLASS_SETUP---Begin---");
             TD::DumpExecutionContext();
 
             ::Test::Bootstrap::SetupPackages();
@@ -218,13 +249,11 @@ namespace ProjectReunionCppTest
             WriteContentFile(c_testDataFileName);
             WriteContentFile(c_testDataFileName_Packaged);
 
-            WEX::Logging::Log::Comment(L"CLASS_SETUP ---End---");
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---Begin---");
             TD::DumpExecutionContext();
 
             // Swallow errors in cleanup.
@@ -232,6 +261,7 @@ namespace ProjectReunionCppTest
             {
                 DeleteContentFile(c_testDataFileName_Packaged);
                 DeleteContentFile(c_testDataFileName);
+                //UninstallPackage(c_testPackageFullName);
             }
             catch (const std::exception&)
             {
@@ -241,13 +271,11 @@ namespace ProjectReunionCppTest
             }
 
             ::Test::Bootstrap::CleanupPackages();
-            WEX::Logging::Log::Comment(L"CLASS_CLEANUP ---End---");
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            WEX::Logging::Log::Comment(L"METHOD_SETUP ---Begin---");
             TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
@@ -256,20 +284,17 @@ namespace ProjectReunionCppTest
 
             m_failed = CreateTestEvent(c_testFailureEventName);
 
-            WEX::Logging::Log::Comment(L"METHOD_SETUP ---End---");
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---Begin---");
             TD::DumpExecutionContext();
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
 
-            WEX::Logging::Log::Comment(L"METHOD_CLEANUP ---End---");
             return true;
         }
 
