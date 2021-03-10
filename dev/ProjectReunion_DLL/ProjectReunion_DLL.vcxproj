@@ -248,6 +248,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zi /Gf  /Gy %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -257,6 +258,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
+      <AdditionalOptions>/debug /debugtype:cv,fixup /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -270,6 +272,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zi /Gf  /Gy %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -279,6 +282,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
+      <AdditionalOptions>/debug /debugtype:cv,fixup /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -292,6 +296,7 @@
       <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zi /Gf  /Gy %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -301,6 +306,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
+      <AdditionalOptions>/debug /debugtype:cv,fixup /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -314,6 +320,7 @@
       <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zi /Gf  /Gy %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -323,6 +330,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
+      <AdditionalOptions>/debug /debugtype:cv,fixup /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
