@@ -56,7 +56,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>C5B7FFBFD2B1C85A57561FC6BBA072EA0C611C37</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>E7BBF8B6E45A1D10BDB3CCEDF01F67D2336B3881</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
