@@ -1,67 +1,71 @@
-﻿# Project Reunion
+﻿# Project Reunion - Calling all Windows apps!
+
+| Delight users with modern UI | Access new platform features | Backwards compatible | 
+|:--:|:--:|:--:|
+| <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br>Localization + power status + more<br> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br>Down to Windows 10 1809 |
+
+...and more, **without having to rewrite your app!**
+
+* Use your current installer *(no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
+* 100% additive *(only add what you need, leave the rest of your app as-is)*
+* Works with Win32, WPF, WinForms, and UWP apps
+
+Plus, **it's backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
+
+
+### Try it now!
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [try the preview of the 0.5 release](https://docs.microsoft.com/en-us/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
+
+Some notes about 0.5...
+
+* Requires using MSIX *(1.0 won't require MSIX)*
+* Only includes WinUI 3 / Text rendering / Localization
+* To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(in the future, XAML Islands will enable incrementally adopting WinUI 3)*
+
+
+### Roadmap
+
+Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*: 
+
+App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
+-- | ------------------------------- | --------------------------------- | ------------------------------- |
+[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
+Unpackaged desktop apps<br>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
+
+✅ Supported | 🔄 Preview
+
+
+See our [full roadmap](docs/roadmap.md) for more details.
+
+
+
+### Version support
+
+Project Reunion aims to work on supported versions of Windows.
+Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10.
+Wherever possible, we'll use techniques like '_polyfills_' 
+and custom implementations to do the
+heavy lifting for youand make sure your app works across Windows versions and devices.
+In the future, there may be a couple APIs that are dependent on new OS features
+(like new Action Center functionality),
+however we will do our best to ensure
+this is the exception and not the norm, and provide reasonable fallbacks when possible.
+
+
+### Documentation
+
+* [More details about Project Reunion](https://github.com/microsoft/ProjectReunion/blob/master/docs/README.md) - 
+More on what the project is and how we're approaching the work.
+* [Video on Project Reunion](https://aka.ms/project_reunion_ignite) - Learn about Project Reunion in a 22 minute video!
+* [Roadmap](docs/roadmap.md) - Where we're going!
+* [Contributor guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
+* [FAQ](docs/faq.md) - Frequently asked questions about Project Reunion.
+
+
+### Contributing
 
 [![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
 [![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
-
-
-### What is Project Reunion?
-Project Reunion is our vision for unifying and evolving the Windows developer platform to make it easier
-to build great apps that work across all the Windows 10 versions and devices people use.
-
-Project Reunion makes it easier to build a great Windows app by providing a unified platform for new 
-and existing Win32 and UWP apps. It will unify access to existing Win32 and UWP APIs and make them 
-available decoupled from the OS, via tools like NuGet. 
-
-Project Reunion will help you update and modernize your existing apps with the latest functionality, 
-whether they're C++, .NET (including WPF, Windows Forms, and UWP) or React Native. As we decouple 
-existing APIs and add new APIs, we are also doing the work to polyfill, as needed, so the APIs work 
-down-level across supported versions of Windows. 
-
-
-### How can I use Project Reunion?
-Check out our roadmap and what's supported with Project Reunion **[here](docs/roadmap.md)**!
-
-We have already started with APIs like 
-**[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml)**,
-**[WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)** and 
-**[MSIX](https://docs.microsoft.com/en-us/windows/msix/overview)**
-**([MSIX-Core](https://github.com/microsoft/msix-packaging))** 
-which you can start using today!
-
-WinUI 3 Preview 1 is one of the first components in the Project Reunion journey: it’s the modern 
-native UI framework for Windows, now available to all Windows app developers across both UWP and 
-Desktop apps. Using WinUI you will be able to create new apps with modern UI that adapts and scales 
-across devices, or incrementally modernize the UI of existing desktop apps including C++, WPF and 
-WinForms.
-
-[Help us figure out what Project Reunion becomes to support your application.](https://github.com/microsoft/ProjectReunion/issues/new/choose)
-
-![Project Reunion](docs/images/projectreunion.gif)
-
-### Project Reunion Principles
-
-**Compatible**
-
-Project Reunion works in all your apps - Win32, Packaged, and UWP - and across many versions of Windows.
-
-**Modern**
-
-Project Reunion supports your app's use of modern software libraries for UI, AI, ML, packaging, frameworks, 
-and libraries. Language projections for C++, Rust, C#, and JavaScript expand the benefits to all your 
-apps.  Cloud-backed apps, streaming, and edge-compute apps are all great places to use Project Reunion's 
-capabilities.
-
-**Agile**
-
-Project Reunion ships out of band with OS releases, with regular previews. You get to incrementally 
-adopt Project Reunion components for your existing apps and middleware libraries using NuGet.
-
-**Open**
-
-We're committing to engineering Project Reunion in the open on GitHub, so you have a more direct 
-say in how the platform evolves and can even help out.
-
-## Contributing
 
 _We want to hear from you!_
 
@@ -70,7 +74,7 @@ trying to solve, how you've tried to solve it so far, and what would be the idea
 points if there's a gist or existing repo we can look at with you.
 
 
-1. **[Ask a question](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
+1. **[Ask a question](https://github.com/microsoft/ProjectReunion/discussions/categories/q-a)**<br>
     Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
 
 2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/discussions)**<br>
@@ -86,23 +90,7 @@ points if there's a gist or existing repo we can look at with you.
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 
-### Version Support
-
-Project Reunion aims to work on supported versions of Windows. We'll use techniques like '_polyfills_' 
-and custom implementations to do the heavy lifting for you and make sure your app works across Windows
-versions and devices.
-
-### Documentation
-
-* [More details about Project Reunion](https://github.com/microsoft/ProjectReunion/blob/master/docs/README.md) - 
-More on what the project is and how we're approaching the work.
-* [Roadmap](docs/roadmap.md) - Where we're going. We're following this roadmap that 
-gets us to building a first version of Project Reunion exploring some basic common features.
-  [You can help by filing issues for features you'd like to see](https://github.com/microsoft/ProjectReunion/issues/new/choose)!
-* [Contributor guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
-* [FAQ](docs/faq.md) - Frequently asked questions about Project Reunion.
-
-## Data Collection
+## Data collection
 
 The software may collect information about you and your use of the software and send it
 to Microsoft. Microsoft may use this information to provide services and improve our
@@ -115,7 +103,7 @@ at https://go.microsoft.com/fwlink/?LinkID=824704. You can learn more about data
 and use in the help documentation and our privacy statement. Your use of the software
 operates as your consent to these practices.
 
-## Legal Notices
+## Legal notices
 
 Microsoft and any contributors grant you a license to the Microsoft documentation and other content
 in this repository under the [Creative Commons Attribution 4.0 International Public License](https://creativecommons.org/licenses/by/4.0/legalcode),
@@ -127,7 +115,7 @@ may be either trademarks or registered trademarks of Microsoft in the United Sta
 The licenses for this project do not grant you rights to use any Microsoft names, logos, or trademarks.
 Microsoft's general trademark guidelines can be found at http://go.microsoft.com/fwlink/?LinkID=254653.
 
-Privacy information can be found at https://privacy.microsoft.com/en-us/
+Privacy information can be found at https://privacy.microsoft.com/
 
 Microsoft and any contributors reserve all other rights, whether under their respective copyrights, patents,
 or trademarks, whether by implication, estoppel or otherwise.
