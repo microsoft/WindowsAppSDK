@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include <ActivationRegistrationManager.h>
-#include <ActivationRegistrationManager.g.cpp>
+#include <Microsoft.ApplicationModel.Activation.ActivationRegistrationManager.g.cpp>
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     void ActivationRegistrationManager::RegisterForFileTypeActivation(
         array_view<hstring const> supportedFileTypes, array_view<hstring const> supportedVerbs,

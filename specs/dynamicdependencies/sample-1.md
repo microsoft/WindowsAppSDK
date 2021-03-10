@@ -7,7 +7,7 @@ Contoso publishes a framework package that provides Muffin-managing functionalit
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT ManageMuffins(int& countOfMuffinsManaged)
@@ -23,14 +23,14 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
+    const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
     const auto createOptions = MddCreatePackageDependencyOptions::None;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, lifetimeKind, nullptr, createOptions, &packageDependencyId));
 
-    const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
+    const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
+    const auto addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
