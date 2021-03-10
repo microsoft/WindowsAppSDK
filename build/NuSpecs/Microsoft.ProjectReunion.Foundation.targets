@@ -5,6 +5,6 @@
   
   <ItemGroup>
     <ProjectCapability Id="VersionGeneral" Include="ProjectReunion.Foundation" />
-    <ProjectCapability Id="VersionSpecific" Include="ProjectReunion.Foundation.0.1.0-prerelease" />
+    <ProjectCapability Id="VersionSpecific" Include="ProjectReunion.Foundation.0.5.0-prerelease" />
   </ItemGroup>
 </Project>
