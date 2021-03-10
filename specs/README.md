@@ -58,7 +58,7 @@ remainder.
 
 **DO** follow the authoring guidelines from [the contributor's guide](../docs/contributor-guide.md).
 
-**DO** follow the spec template guidance for authoring samples and IDL.
+**DO** follow the [spec template guidance](spec_template.md) for authoring samples and IDL.
 
 **DO NOT** create a pull request from `user/<username>/<feature>` to `main` (see "Reviewing"
 section).
