@@ -3,181 +3,97 @@
 
 #pragma once
 
+#include <mutex>
 #include <PowerManager.g.h>
-#include <wil\result_macros.h>
+#include <PowerNotificationsPal.h>
+#include <wil/resource.h>
+#include <wil/result_macros.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
+    using PowerEventHandle = Windows::Foundation::EventHandler<Windows::Foundation::IInspectable>;
+    using EventToken = winrt::event_token ;
+
     struct PowerManager
     {
         PowerManager() = default;
 
-        static EnergySaverStatus EnergySaverStatus()
-        {
-            return EnergySaverStatus::Disabled;
-        }
+        using eventType = wil::object_without_destructor_on_shutdown<winrt::event<PowerEventHandle>>;
 
-        static winrt::event_token EnergySaverStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_energySaverStatusChangedEvent.get().add(handler);
-        }
+        static winrt::Microsoft::ProjectReunion::EnergySaverStatus EnergySaverStatus();
+        static EventToken EnergySaverStatusChanged(PowerEventHandle const&);
+        static void EnergySaverStatusChanged(EventToken const&);
+        static void EnergySaverStatusChanged_Callback(::EnergySaverStatus);
 
-        static void EnergySaverStatusChanged(winrt::event_token const& token)
-        {
-            m_energySaverStatusChangedEvent.get().remove(token);
-        }
+        static winrt::Microsoft::ProjectReunion::BatteryStatus BatteryStatus();
+        static EventToken BatteryStatusChanged(PowerEventHandle const&);
+        static void BatteryStatusChanged(EventToken const&);
+        static void BatteryStatusChanged_Callback(CompositeBatteryStatus*);
 
-        static BatteryStatus BatteryStatus()
-        {
-            return BatteryStatus::Charging;
-        }
+        static winrt::Microsoft::ProjectReunion::PowerSupplyStatus PowerSupplyStatus();
+        static EventToken PowerSupplyStatusChanged(PowerEventHandle const&);
+        static void PowerSupplyStatusChanged(EventToken const&);
+        static void PowerSupplyStatusChanged_Callback();
 
-        static winrt::event_token BatteryStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_batteryStatusChangedEvent.get().add(handler);
-        }
-
-        static void BatteryStatusChanged(winrt::event_token const& token)
-        {
-            m_batteryStatusChangedEvent.get().remove(token);
-        }
-
-        static PowerSupplyStatus PowerSupplyStatus()
-        {
-            return PowerSupplyStatus::Adequate;
-        }
-
-        static winrt::event_token PowerSupplyStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_powerSupplyStatusChangedEvent.get().add(handler);
-        }
-
-        static void PowerSupplyStatusChanged(winrt::event_token const& token)
-        {
-            m_powerSupplyStatusChangedEvent.get().remove(token);
-        }
-
-        static int RemainingChargePercent()
-        {
-            return 100;
-        }
-
-        static winrt::event_token RemainingChargePercentChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_remainingChargePercentChangedEvent.get().add(handler);
-        }
-
-        static void RemainingChargePercentChanged(winrt::event_token const& token)
-        {
-            m_remainingChargePercentChangedEvent.get().remove(token);
-        }
+        static int RemainingChargePercent();
+        static EventToken RemainingChargePercentChanged(PowerEventHandle const&);
+        static void RemainingChargePercentChanged(EventToken const&);
+        static void RemainingChargePercentChanged_Callback();
         
-        static Windows::Foundation::TimeSpan RemainingDischargeTime()
-        {
-            return Windows::Foundation::TimeSpan();
-        }
+        static Windows::Foundation::TimeSpan RemainingDischargeTime();
+        static EventToken RemainingDischargeTimeChanged(PowerEventHandle const&);
+        static void RemainingDischargeTimeChanged(EventToken const&);
+        static void RemainingDischargeTimeChanged_Callback(ULONGLONG);
 
-        static winrt::event_token RemainingDischargeTimeChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_remainingDischargeTimeChangedEvent.get().add(handler);
-        }
+        static winrt::Microsoft::ProjectReunion::PowerSourceStatus PowerSourceStatus();
+        static EventToken PowerSourceStatusChanged(PowerEventHandle const&);
+        static void PowerSourceStatusChanged(EventToken const&);
+        static void PowerSourceStatusChanged_Callback(DWORD);
 
-        static void RemainingDischargeTimeChanged(winrt::event_token const& token)
-        {
-            m_remainingDischargeTimeChangedEvent.get().remove(token);
-        }
+        static winrt::Microsoft::ProjectReunion::DisplayStatus DisplayStatus();
+        static EventToken DisplayStatusChanged(PowerEventHandle const&);
+        static void DisplayStatusChanged(EventToken const&);
+        static void DisplayStatusChanged_Callback(DWORD);
 
-        static PowerSourceStatus PowerSourceStatus()
-        {
-            return PowerSourceStatus::AC;
-        }
+        static winrt::Microsoft::ProjectReunion::SystemIdleStatus SystemIdleStatus();
+        static EventToken SystemIdleStatusChanged(PowerEventHandle const&);
+        static void SystemIdleStatusChanged(EventToken const&);
+        static void SystemIdleStatusChanged_Callback();
 
-        static winrt::event_token PowerSourceStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_powerSourceStatusChangedEvent.get().add(handler);
-        }
+        static winrt::Microsoft::ProjectReunion::PowerSchemePersonality PowerSchemePersonality();
+        static EventToken PowerSchemePersonalityChanged(PowerEventHandle const&);
+        static void PowerSchemePersonalityChanged(EventToken const&);
+        static void PowerSchemePersonalityChanged_Callback(GUID);
 
-        static void PowerSourceStatusChanged(winrt::event_token const& token)
-        {
-            m_powerSourceStatusChangedEvent.get().remove(token);
-        }
+        static winrt::Microsoft::ProjectReunion::UserPresenceStatus UserPresenceStatus();
+        static EventToken UserPresenceStatusChanged(PowerEventHandle const&);
+        static void UserPresenceStatusChanged(EventToken const&);
+        static void UserPresenceStatusChanged_Callback(DWORD);
 
-        static DisplayStatus DisplayStatus()
-        {
-            return DisplayStatus::On;
-        }
+        static winrt::Microsoft::ProjectReunion::SystemAwayModeStatus SystemAwayModeStatus();
+        static EventToken SystemAwayModeStatusChanged(PowerEventHandle const&);
+        static void SystemAwayModeStatusChanged(EventToken const&);
+        static void SystemAwayModeStatusChanged_Callback(DWORD);
 
-        static winrt::event_token DisplayStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_displayStatusChangedEvent.get().add(handler);
-        }
 
-        static void DisplayStatusChanged(winrt::event_token const& token)
+        enum PowerFunction
         {
-            m_displayStatusChangedEvent.get().remove(token);
-        }
-
-        static SystemIdleStatus SystemIdleStatus()
-        {
-            return SystemIdleStatus::Busy;
-        }
-
-        static winrt::event_token SystemIdleStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_systemIdleStatusChangedEvent.get().add(handler);
-        }
-
-        static void SystemIdleStatusChanged(winrt::event_token const& token)
-        {
-            m_systemIdleStatusChangedEvent.get().remove(token);
-        }
-
-        static PowerSchemePersonality PowerSchemePersonality()
-        {
-            return PowerSchemePersonality::Balanced;
-        }
-
-        static winrt::event_token PowerSchemePersonalityChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_powerSchemePersonalityChangedEvent.get().add(handler);
-        }
-
-        static void PowerSchemePersonalityChanged(winrt::event_token const& token)
-        {
-            m_powerSchemePersonalityChangedEvent.get().remove(token);
-        }
-
-        static UserPresenceStatus UserPresenceStatus()
-        {
-            return UserPresenceStatus::Present;
-        }
-
-        static winrt::event_token UserPresenceStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_userPresenceStatusChangedEvent.get().add(handler);
-        }
-
-        static void UserPresenceStatusChanged(winrt::event_token const& token)
-        {
-            m_userPresenceStatusChangedEvent.get().remove(token);
-        }
-
-        static SystemAwayModeStatus SystemAwayModeStatus()
-        {
-            return SystemAwayModeStatus::Exiting;
-        }
-
-        static winrt::event_token SystemAwayModeStatusChanged(Windows::Foundation::EventHandler<Windows::Foundation::IInspectable> const& handler)
-        {
-            return m_systemAwayModeStatusChangedEvent.get().add(handler);
-        }
-
-        static void SystemAwayModeStatusChanged(winrt::event_token const& token);
+            EnergySaverStatusFn = 0,
+            BatteryStatusFn,
+            PowerSupplyStatusFn,
+            RemainingChargePercentFn,
+            RemainingDischargeTimeFn,
+            PowerSourceStatusFn,
+            DisplayStatusFn,
+            SystemIdleStatusFn,
+            PowerSchemePersonalityFn,
+            UserPresenceStatusFn,
+            SystemAwayModeStatusFn
+        };
 
     private:
         // REVIEW: leaks during ExitProcess, to avoid making cross-binary calls. Probably insufficient if we need to tolerate final CoUninitialize scenarios.
-        // Ultimately depends on whether Reunion binaries are persistently kept loaded by something other than COM.
-        using eventType = wil::object_without_destructor_on_shutdown<winrt::event<Windows::Foundation::EventHandler<Windows::Foundation::IInspectable>>>;
+        // Ultimately depends on whether Reunion binaries are persistently kept loaded by something other than COM.        
 
         static eventType m_energySaverStatusChangedEvent;
         static eventType m_batteryStatusChangedEvent;
@@ -191,6 +107,39 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static eventType m_powerSchemePersonalityChangedEvent;
         static eventType m_userPresenceStatusChangedEvent;
         static eventType m_systemAwayModeStatusChangedEvent;
+
+        static CompositeBatteryStatusRegistration m_batteryStatusHandle;
+        static EnergySaverStatusRegistration      m_energySaverStatusHandle;
+        static PowerConditionRegistration         m_powerConditionHandle;
+        static DischargeTimeRegistration          m_dischargeTimeHandle;
+        static DisplayStatusRegistration          m_displayStatusHandle;
+        static SystemIdleStatusRegistration       m_systemIdleStatusHandle;
+        static PowerSchemePersonalityRegistration m_powerSchemePersonalityHandle;
+        static UserPresenceStatusRegistration     m_userPresenceStatusHandle;
+        static SystemAwayModeStatusRegistration   m_systemAwayModeStatusHandle;
+
+        static std::mutex m_mutex;
+
+        static int   m_batteryChargePercent;
+        static DWORD m_cachedDisplayStatus;
+        static DWORD m_cachedUserPresenceStatus;
+        static DWORD m_cachedSystemAwayModeStatus;
+        static DWORD m_cachedPowerCondition;
+        static GUID  m_cachedPowerSchemePersonality;
+        static ULONGLONG           m_cachedDischargeTime;
+        static ::EnergySaverStatus m_cachedEnergySaverStatus;
+        static winrt::Microsoft::ProjectReunion::BatteryStatus     m_cachedBatteryStatus;
+        static winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus;
+
+        static bool       NotAlreadyRegisteredForEvents(eventType);
+        static eventType  GetEventObj(PowerFunction const&);        
+        static EventToken AddCallback(PowerFunction const&, PowerEventHandle const&);
+        static void RegisterListner(PowerFunction const&);
+        static void RemoveCallback(PowerFunction const&, EventToken const&);
+        static void UnregisterListner(PowerFunction const&);
+        static void CheckCache(PowerFunction const&);
+        static void FireEvent(PowerFunction const&);
+        static void ProcessCompositeBatteryStatus(CompositeBatteryStatus const&);
     };
 }
 
