@@ -41,7 +41,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         auto type = AssociationType::File;
         auto progId = ComputeProgId(appId, type);
 
-        RegisterProgId(progId.c_str(), L"", displayName.c_str(), logo.c_str());
+        RegisterProgId(progId.c_str(), L"", L"", displayName.c_str(), logo.c_str());
         RegisterApplication(appId.c_str());
 
         for (auto fileType : supportedFileTypes)

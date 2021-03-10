@@ -141,6 +141,17 @@ namespace ProjectReunionCppTest
             // Create a named event for communicating with test app.
             auto event = CreateTestEvent(c_testFilePhaseEventName);
 
+            // Cleanup any leftover data from previous runs i.e. ensure we running with a clean slate
+            try
+            {
+                Execute(L"AppLifecycleTestApp.exe", L"/UnregisterFile", g_deploymentDir);
+                WaitForEvent(event, m_failed);
+            }
+            catch (...)
+            {
+                //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+            }
+
             // Launch the test app to register for protocol launches.
             Execute(L"AppLifecycleTestApp.exe", L"/RegisterFile", g_deploymentDir);
 
