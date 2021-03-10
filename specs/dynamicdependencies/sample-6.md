@@ -5,7 +5,7 @@ Contoso publishes a framework package. At runtime, LolzKittens wants to use Cont
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT Install();
@@ -36,7 +36,7 @@ HRESULT Define32bitPackageDependency()
     // will only resolve to a 32-bit package regardless of the caller's bitness at runtime.
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::X86 |
         MddPackageDependencyProcessorArchitectures::Arm | MddPackageDependencyProcessorArchitectures::X86A64;
-    const UINT32 options = MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
+    const auto options = MddCreatePackageDependencyOptions::LifecycleHint_FileOrPath;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(nullptr,
         packageFamilyName, minVersion, architecture, GetLifetimeFile(), options, &packageDependencyId));

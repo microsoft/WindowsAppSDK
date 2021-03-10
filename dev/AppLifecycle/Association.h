@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     static const std::wstring c_protocolArgumentString = L"ms-protocol";
     static const std::wstring c_fileArgumentString = L"ms-file";
