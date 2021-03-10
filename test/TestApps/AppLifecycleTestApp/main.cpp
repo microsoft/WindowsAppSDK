@@ -3,36 +3,71 @@
 #include "pch.h"
 #include <testdef.h>
 
+#include <MddBootstrap.h>
+#include <MddBootstrapTest.h>
+
+#include <wil/win32_helpers.h>
+
+using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Microsoft::ProjectReunion;
+
+bool IsPackagedProcess()
+{
+    UINT32 n{};
+    return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
+}
+
+bool NeedDynamicDependencies()
+{
+    return !IsPackagedProcess();
+}
+
+HRESULT BootstrapInitialize()
+{
+    if (!NeedDynamicDependencies())
+    {
+        return S_OK;
+    }
+
+    constexpr PCWSTR c_PackageNamePrefix{ L"ProjectReunion.Test.DDLM" };
+    constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
+    RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+
+    // Version <major>.0.0.0 to find any framework package for this major version
+    const UINT64 c_Version_Major{ 4 };
+    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
+    RETURN_IF_FAILED(MddBootstrapInitialize(minVersion));
+
+    return S_OK;
+}
+
+void BootstrapShutdown()
+{
+    if (!NeedDynamicDependencies())
+    {
+        return;
+    }
+
+    MddBootstrapShutdown();
+}
 
 void SignalPhase(const std::wstring& phaseEventName)
 {
     wil::unique_event phaseEvent;
-    if(phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
+    if (phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
     {
         phaseEvent.SetEvent();
     }
 }
 
-bool IsPackagedProcess()
-{
-    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
-    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
-    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
-    {
-        return true;
-    }
-
-    return false;
-}
-
 int main()
 {
+    RETURN_IF_FAILED(BootstrapInitialize());
+
     auto succeeded = false;
     auto args = AppLifecycle::GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -56,11 +91,18 @@ int main()
             }
             else if (argument.compare(L"UnregisterProtocol") == 0)
             {
-                ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme);
+                try
+                {
+                    ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme);
 
-                // Signal event that protocol was unregistered.
-                SignalPhase(c_testProtocolPhaseEventName);
-                succeeded = true;
+                    // Signal event that protocol was unregistered.
+                    SignalPhase(c_testProtocolPhaseEventName);
+                    succeeded = true;
+                }
+                catch (...)
+                {
+                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                }
             }
             else if (argument.compare(L"RegisterFile") == 0)
             {
@@ -73,11 +115,18 @@ int main()
             }
             else if (argument.compare(L"UnregisterFile") == 0)
             {
-                ActivationRegistrationManager::UnregisterForFileTypeActivation(c_testFileExtension);
+                try
+                {
+                    ActivationRegistrationManager::UnregisterForFileTypeActivation(c_testFileExtension);
 
-                // Signal event that file was unregistered.
-                SignalPhase(c_testFilePhaseEventName);
-                succeeded = true;
+                    // Signal event that file was unregistered.
+                    SignalPhase(c_testFilePhaseEventName);
+                    succeeded = true;
+                }
+                catch (...)
+                {
+                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                }
             }
         }
     }
@@ -127,5 +176,7 @@ int main()
     {
         SignalPhase(c_testFailureEventName);
     }
+
+    BootstrapShutdown();
     return 0;
 }
