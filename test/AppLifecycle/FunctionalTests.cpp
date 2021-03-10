@@ -28,7 +28,6 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
 namespace TP = ::Test::Packages;
-namespace TD = ::Test::Diagnostics;
 
 // TODO: Write Register/Unregister tests that utilize the Assoc APIs to validate results.
 
@@ -52,12 +51,10 @@ namespace ProjectReunionCppTest
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-            END_TEST_CLASS()
+        END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(ClassInit)
+        TEST_CLASS_SETUP(ClassInit)
         {
-            TD::DumpExecutionContext();
-
             ::Test::Bootstrap::SetupPackages();
 
             // Deploy packaged app to register handler through the manifest.
@@ -73,8 +70,6 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            TD::DumpExecutionContext();
-
             // Swallow errors in cleanup.
             try
             {
@@ -96,8 +91,6 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            TD::DumpExecutionContext();
-
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
@@ -110,8 +103,6 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            TD::DumpExecutionContext();
-
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
@@ -303,8 +294,6 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            TD::DumpExecutionContext();
-
             ::Test::Bootstrap::SetupPackages();
 
             // Write out some test content.
@@ -316,8 +305,6 @@ namespace ProjectReunionCppTest
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            TD::DumpExecutionContext();
-
             // Swallow errors in cleanup.
             try
             {
@@ -338,8 +325,6 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            TD::DumpExecutionContext();
-
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
@@ -351,8 +336,6 @@ namespace ProjectReunionCppTest
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            TD::DumpExecutionContext();
-
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
@@ -366,8 +349,6 @@ namespace ProjectReunionCppTest
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
-
-            TD::DumpExecutionContext();
 
             VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
         }
