@@ -20,8 +20,30 @@ Windows-specific helpers rather than creating your own.
 
 **DO** use 4-space indentation instead of tab characters.
 
+##### Catching C++/WinRT Exceptions and HRESULT
+
+Exceptions should not be used for standard flow control.
+
+When a catch clause is required, note that `winrt::hresult_error` does not also catch
+`std::bad_alloc` or any of the other C++ standard exceptions. In cases where a single catch handler
+is desired to pull out an HRESULT, use the following:
+
+```c++
+catch (...)
+{
+    auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
+    auto hr{ e.code() };
+    // hr contains the WinRT exception or best-guess conversion from a C++ exception...
+}
+```
+
+Such cases should be rare. C++/WinRT's ABI layer automatically catches and converts exceptions
+generated during a method call and uses a similar mechanism to map a C++ exception to an `HRESULT`
+that can be delivered across the ABI.
+
 ### Markdown
 
 **DO** wrap lines at ~100 characters. GitHub formats lines regardless of individual length but
 GitHub diff is line oriented. Keeping lines within the preferred limit makes changes easier to
-review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers."
+review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers." If new
+languages become common, we will describe the coding guidelines for such languages here.
