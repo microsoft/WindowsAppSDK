@@ -14,7 +14,7 @@ Plus, **it's backwards compatible** to Windows 10 October 2018 Update (build 177
 
 
 ### Try it now!
-[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [try the preview of the 0.5 release](https://docs.microsoft.com/en-us/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [try the preview of the 0.5 release](https://docs.microsoft.com/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
 
 Some notes about 0.5...
 
