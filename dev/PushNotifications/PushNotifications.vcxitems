@@ -19,10 +19,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ChannelResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)InProcActivatorDetails.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationActivatedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ReunionPushTask.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)ChannelResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)InProcActivatorDetails.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ReunionPushTask.h" />
   </ItemGroup>
 </Project>

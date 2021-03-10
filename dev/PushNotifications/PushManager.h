@@ -6,13 +6,18 @@
 #include "PushManager.g.h"
 #include <vector>
 #include <mutex>
+#include <wil/resource.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
+    DWORD s_cookie;
+
     struct PushManager
     {
         PushManager() = default;
 
+        static void RegisterPushNotificationActivator(Microsoft::ProjectReunion::InProcActivatorDetails const& details);
+        static void UnregisterPushNotificationActivator(Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& registration);
         static Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::ChannelResult, Microsoft::ProjectReunion::ChannelResult> CreateChannelAsync(winrt::guid remoteId);
 
     private:

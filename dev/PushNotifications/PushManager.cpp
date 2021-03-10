@@ -12,8 +12,19 @@
 #include <ChannelResult.h>
 #include <winerror.h>
 
+#include <winrt/base.h>
+#include <wil/resource.h>
+#include <winrt/Windows.ApplicationModel.background.h>
+#include <winrt/Windows.Foundation.h>
+#include <ReunionPushTask.h>
+
 using namespace winrt::Windows::Networking::PushNotifications;
 using namespace winrt;
+using namespace winrt::Windows::ApplicationModel::Background;
+
+constexpr PCWSTR backgroundTaskName = L"PushNotificationBackgroundTask";
+
+extern wil::unique_handle g_waitHandleForArgs;
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -25,6 +36,74 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     const HRESULT WNP_E_NOT_CONNECTED = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E8L);
     const HRESULT WNP_E_RECONNECTING = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403FEL);
+
+    void PushManager::RegisterPushNotificationActivator(Microsoft::ProjectReunion::InProcActivatorDetails const& details)
+    {
+        bool taskRegistered = false;
+
+        for (auto task : BackgroundTaskRegistration::AllTasks())
+        {
+            if (task.Value().Name() == backgroundTaskName)
+            {
+                taskRegistered = true;
+                break;
+            }
+        }
+
+        GUID clsidAsGuid = GUID_NULL;
+        CLSIDFromString(details.TaskClsid().c_str(), static_cast<LPCLSID>(&clsidAsGuid));
+
+        if (!taskRegistered)
+        {
+            BackgroundTaskBuilder builder;
+            builder.Name(backgroundTaskName);
+
+            PushNotificationTrigger trigger{};
+            builder.SetTrigger(trigger);
+
+            if (clsidAsGuid != GUID_NULL) // Special registration for a Win32 app
+            {
+                builder.SetTaskEntryPointClsid(clsidAsGuid);
+            }
+
+            auto task = builder.Register();
+            details.Registration(task);
+        }
+
+        if (clsidAsGuid != GUID_NULL) // Register with COM for Win32
+        {
+            // Define handle that will be set during background task execution
+            g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+
+            ::CoRegisterClassObject(
+                clsidAsGuid,
+                winrt::make<ReunionPushTaskFactory>().get(),
+                CLSCTX_LOCAL_SERVER,
+                REGCLS_MULTIPLEUSE,
+                &s_cookie);
+        }
+    }
+
+    void PushManager::UnregisterPushNotificationActivator(Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& registration)
+    {
+        bool taskRegistered = false;
+
+        for (auto task : BackgroundTaskRegistration::AllTasks())
+        {
+            if (task.Value().Name() == backgroundTaskName)
+            {
+                task.Value().Unregister(false /*cancel task*/);
+
+                // Also revoke the COM registration
+                if (s_cookie != 0)
+                {
+                    ::CoRevokeClassObject(s_cookie);
+                    s_cookie = 0;
+                }
+            }
+        }
+    }
+
 
     bool PushManager::isChannelRequestRetryable(const hresult& hr)
     {
