@@ -58,7 +58,55 @@ void sendRequestToServer(winrt::hstring channel)
 
 int main()
 {
-    guid remoteId{ L"938c922a-0361-4eab-addb-29c74671c2bf" };
+    // Register activator, always the first thing here
+    std::wstring activatorGuid = L"{C54044C4-EAC7-4C4B-9996-C570A94B9305}"; // same as in app manifest
+    InProcActivatorDetails details(activatorGuid);
+    PushManager::RegisterPushNotificationActivator(details);
+
+    // Check to see if the WinMain activation is due to a Push Activator
+    auto args = AppLifecycle2::GetActivatedEventArgs();
+    auto kind = args.Kind2();
+
+    if (kind == ActivationKindExtension::Push)
+    {
+        auto activatedEventArgs = args.ActivatedArgs();
+        auto pushArgs = args.as<IPushNotificationActivatedEventArgs>();
+        // Call TakeDeferral to ensure that code runs in low power
+        pushArgs.GetDeferral();
+
+        auto payload = pushArgs.Payload();
+
+        // Do stuff to process the raw payload
+        std::vector<uint8_t> byteVector(payload.begin(), payload.end());
+        std::string payloadString(reinterpret_cast<char>(byteVector.data()), byteVector.size());
+
+        std::cout << "Payload (background case): " + payloadString << std::endl;
+        
+        // Call CompleteDeferral as good practise: Needed mainly for low power usage
+        pushArgs.CompleteDeferral();
+    }
+    else if (kind == ActivationKindExtension::Launch) // This indicates that the app is launching in the foreground
+    {
+        // Register an event to Intercept Push payloads
+        auto eventToken = details.PushActivated([](const auto&, PushNotificationActivatedEventArgs args)
+        {
+            // Call TakeDeferral to ensure that code runs in low power
+            args.GetDeferral();
+            auto payload = args.Payload();
+
+            // Do stuff to process the raw payload
+            std::vector<uint8_t> byteVector(payload.begin(), payload.end());
+            std::string payloadString(reinterpret_cast<char>(byteVector.data()), byteVector.size());
+
+            std::cout << "Payload (foreground case): " + payloadString << std::endl;
+
+            // Call CompleteDeferral as good practise: Needed mainly for low power usage
+            args.CompleteDeferral();
+        });
+    }
+
+    // Create channel
+    guid remoteId{ L"a2e4a323-b518-4799-9e80-0b37aeb0d225" };
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
 
     std::cout << "Channel Request started" << std::endl;
