@@ -3,7 +3,7 @@
 
 #include <pch.h>
 #include <AppLifecycle.h>
-#include <Microsoft.ApplicationModel.Activation.AppLifecycle.g.cpp>
+#include <Microsoft.Windows.AppLifecycle.AppLifecycle.g.cpp>
 
 #include "ActivationRegistrationManager.h"
 #include "LaunchActivatedEventArgs.h"
@@ -19,7 +19,7 @@ namespace winrt
     using Windows::ApplicationModel::Activation::IActivatedEventArgs;
 }
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
     {
