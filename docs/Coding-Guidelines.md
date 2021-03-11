@@ -29,17 +29,27 @@ When a catch clause is required, note that `winrt::hresult_error` does not also 
 desires to pull out an HRESULT, use the following:
 
 ```c++
+// For code using C++/WinRT
 catch (...)
 {
     auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
     auto hr{ e.code() };
-    // hr contains the WinRT exception or best-guess conversion from a C++ exception...
+    auto message { winrt::to_message() };
+    // hr contains the WinRT exception or best-guess conversion from a C++ exception,
+    // message contains the best-guess textual format of that exception
+}
+
+// For code using WIL
+catch (...)
+{
+    auto hr{ wil::ResultFromCaughtException() };
+    // hr contains the WinRT exception, WIL exception, or best-guess conversion from a C++ exception
 }
 ```
 
-Such cases should be rare. C++/WinRT's ABI layer automatically catches and converts exceptions
-generated during a method call and uses a similar mechanism to map a C++ exception to an `HRESULT`
-that can be delivered across the ABI.
+C++/WinRT's ABI layer automatically catches and converts exceptions generated during a method call
+and uses a similar mechanism to map a C++ exception to an `HRESULT` that can be delivered across the
+ABI.
 
 ### Markdown
 
