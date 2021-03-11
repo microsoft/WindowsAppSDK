@@ -90,49 +90,7 @@ jobs:
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-
-- job: BuildMRT
-  pool:
-    vmImage: 'windows-latest'
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-      Release_Arm64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
-  steps:
-  - template: ..\dev\MRTCore\build-mrt.yml
-    parameters:
-      buildJobName: 'BuildMRTCore'
-
-- job: PublishMRT
-  dependsOn:
-    - BuildMRT
-  condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - template: ..\dev\MRTCore\publish-mrt.yml
-
-- job: AnalyzeBinaries
-  dependsOn:
-    - Build
-    - PublishMRT
-  condition: |
-    and
-    (
-      in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-      in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-    )
-  pool:
-    vmImage: 'windows-latest'
-  steps:
+  
   - task: BinSkim@3
     inputs:
       InputType: 'Basic'
@@ -156,6 +114,60 @@ jobs:
       Semmle: false
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
+  
+
+- job: BuildMRT
+  pool:
+    vmImage: 'windows-latest'
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+  steps:
+  - template: ..\dev\MRTCore\build-mrt.yml
+    parameters:
+      buildJobName: 'BuildMRTCore'
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeVerbose: true
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
+
+- job: PublishMRT
+  dependsOn:
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ..\dev\MRTCore\publish-mrt.yml
 
 - job: SignBinariesAndPublishSymbols
   variables:
