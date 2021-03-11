@@ -54,7 +54,8 @@ We will prioritize the following feature set for Reunion:
 * Supporting Visual Cloud Toasts for unpackaged Win32 apps.
 
 A Portal Registration flow through [AAD (Azure Active Directory)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app) will also be defined that removes the dependency of the Push Flow with <br/>
-the Partner Center Portal. 
+the Partner Center Portal. The RemoteIdentifier GUID in this spec maps to the ApplicationId(ClientId) in the AAD App <br/>
+Registration process.
 ![Push Flow For Reunion](Push.png)
 
 Phase 1 (Reunion Preview):
@@ -84,9 +85,11 @@ Power Management compliance.
 int main()
 {
     // Register the COM Activator GUID
-    PushNotificationActivationInfo info(PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator, winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+    PushNotificationActivationInfo info(
+        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+        winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
 
-    // Registers a Push Trigger with the Background Infrastructure and sets up an inproc COM Server for Activations
+    // Registers a Push Trigger and sets up an inproc COM Server for Activations
     auto token = PushNotificationManager::RegisterActivator(info);
 
     // Check to see if the WinMain activation is due to a Push Activator
@@ -110,22 +113,9 @@ int main()
     }
     else if (kind == ReunionActivationKind::Launch) // This indicates that the app is launching in the foreground
     {
-        // Register an event to Intercept Push payloads
-        auto eventToken = PushNotificationManager::PushReceived([](const auto&, PushNotificationReceivedEventArgs args)
-        {
-                // Call GetDeferral to ensure that code runs in low power
-                auto deferral = args.GetDeferral();
-
-                auto payload = args.Payload();
-
-                // Do stuff to process the raw payload
-
-                // Call Complete on the deferral as good practise: Needed mainly for low power usage
-                deferral.Complete();
-        });
-
         // Register the AAD RemoteIdentifier for the App to receive Push
-        auto channelOperation = PushNotificationManager::CreateChannelAsync(winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
+        auto channelOperation = PushNotificationManager::CreateChannelAsync(
+            winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
 
         // Setup the inprogress event handler
         channelOperation.Progress(
@@ -147,48 +137,64 @@ int main()
                 }
             });
 
+        winrt::event_token pushToken;
+
         // Setup the completed event handler
         channelOperation.Completed(
-            [](
+            [&](
                 IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
                 AsyncStatus const asyncStatus)
             {
-                if (asyncStatus == AsyncStatus::Completed)
+                auto result = sender.GetResults();
+                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
                 {
-                    auto result = sender.GetResults();
-                    if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-                    {
-                        auto channelUri = result.Channel().Uri();
-                        auto channelExpiry = result.Channel().ExpirationTime();
+                    auto channelUri = result.Channel().Uri();
+                    auto channelExpiry = result.Channel().ExpirationTime();
 
-                        // Persist the channelUri and Expiry in the App Service
-                    }
-                    else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+                    // Register Push Event for Foreground
+                    pushToken = result.Channel().PushReceived([&](const auto&, PushNotificationReceivedEventArgs args)
                     {
-                        LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
-                    }
+                        auto payload = args.Payload();
+
+                        // Do stuff to process the raw payload
+
+                        // Stop the subsequent background activation from launching process again with this payload
+                        args.Handled(true);
+                    });
+
+                        // Persist the channelUri and Expiry in the App Service for subsequent Push operations
+                }
+                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+                {
+                    LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
                 }
             });
 
         // Draw window and other foreground UI stuff here
 
-        // Unsubscribe the foreground event
-        PushNotificationManager::PushReceived(eventToken);
-
-        // Unregisters the inproc COM Server
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
+        // Unregister the Push event for Foreground before exiting
+        auto result = channelOperation.GetResults();
+        if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+        {
+            result.Channel().PushReceived(pushToken);
+        }
     }
+
+    // Unregisters the inproc COM Activator before exiting
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
 
     return 0;
 }
 ```
 
-## In this scenario, the process that Registers the Push Activator and the process specified as the COM server are different.
+## In this scenario, the process that Registers the Push Trigger and the process specified as the COM server are different.
 Process A (Registration of the Push Trigger only):
 ```cpp
 int main()
 {
-    PushNotificationActivationInfo info(PushNotificationRegistrationKind::PushTrigger, winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+    PushNotificationActivationInfo info(
+        PushNotificationRegistrationKind::PushTrigger,
+        winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
 
     // Registers a Push Trigger with the Background Infra component
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -198,11 +204,13 @@ int main()
     return 0;
 }
 ```
-Process B (Register the inproc COM server and handle the activation):
+Process B (Register the inproc COM server and handle the background activation):
 ```cpp
 int main()
 {
-    PushNotificationActivationInfo info(PushNotificationRegistrationKind::ComActivator, winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+    PushNotificationActivationInfo info(
+        PushNotificationRegistrationKind::ComActivator,
+        winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
 
     // Registers the current process as an InProc COM server
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -219,7 +227,7 @@ int main()
 
     // Some code ....
 
-    // Unregisters the inproc COM Server
+    // Unregisters the inproc COM Activator
     PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
 
     return 0;
@@ -324,11 +332,14 @@ For MSIX, the COM activator GUID and the exe path need to be registered in the m
 
 namespace Microsoft.Windows.PushNotifications
 {
-    // Event args in WinMain activation payload.
+    // Event args for the Push payload.
     runtimeclass PushNotificationReceivedEventArgs
     {
-        // Initialize using the raw byte payload
-        PushNotificationReceivedEventArgs(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
+        // Initialize using the IBackgroundInstance: used specifically for the Background Activation scenario
+        static PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
+
+        // Initialize using the PushNotificationEventArgs from Windows: used specifically for in-memory event handling when app is already in foreground
+        static PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(Windows.Networking.PushNotifications.PushNotificationReceivedEventArgs args);
 
         // The Push payload
         byte[] Payload { get; };
@@ -338,6 +349,9 @@ namespace Microsoft.Windows.PushNotifications
 
         // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
+
+        // Set to true to prevent proceeding launch due to Background Activation: false by default
+        Boolean Handled;
     };
 
     [flags]
@@ -386,15 +400,32 @@ namespace Microsoft.Windows.PushNotifications
         UInt32 retryCount;
     };
 
+    runtimeclass PushNotificationChannel
+    {
+        PushNotificationChannel(String uri, Windows.Foundation.DateTime expiration);
+
+        // The Channel Uri for app to Post a notification to.
+        String Uri { get; };
+
+        // Expiration of the Channel
+        Windows.Foundation.DateTime ExpirationTime { get; };
+
+        // Unsubscribes the channel
+        void Close();
+
+        // In-memory Event handler for Push Notifications
+        event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
+    }
+
     runtimeclass PushNotificationCreateChannelResult
     {
         PushNotificationCreateChannelResult(
-            Windows.Networking.PushNotifications.PushNotificationChannel channel,
+            PushNotificationChannel channel,
             HRESULT extendedError,
             PushNotificationChannelStatus status);
 
         // The Push channel associated with the Result. Null if InProgress or completion failed
-        Windows.Networking.PushNotifications.PushNotificationChannel Channel { get; };
+        PushNotificationChannel Channel { get; };
 
         // More detailed error code in addition to the ChannelStatus state.
         HRESULT ExtendedError{ get; };
@@ -428,9 +459,6 @@ namespace Microsoft.Windows.PushNotifications
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
-
-        // Event handler to subscribe to if the app is in the foreground
-        static event Windows.Foundation.EventHandler<PushNotificationReceivedEventArgs> PushReceived;
     };
 }
 ```
