@@ -75,7 +75,7 @@ the Windows API Design community. The process to finish the review is:
    request.
 
     - As the design group is spread out we prefer giving no less than 48h notice when reviewing APIs
-    - Reviews are typically scheduled for Tuesdays 1-2pm PST/PDT or Thursdays 1-3pm PST/PDT
+    - Reviews are typically scheduled for Tuesdays 1-2pm or Thursdays 1-3pm (Seattle local time).
     - API reviewers should post in the initial issue thread with the date and time of the review and
       any group-call information.
 

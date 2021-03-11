@@ -26,7 +26,7 @@ Exceptions should not be used for standard flow control.
 
 When a catch clause is required, note that `winrt::hresult_error` does not also catch
 `std::bad_alloc` or any of the other C++ standard exceptions. In cases where a single catch handler
-is desired to pull out an HRESULT, use the following:
+desires to pull out an HRESULT, use the following:
 
 ```c++
 catch (...)
