@@ -6,9 +6,8 @@ These can be used for testing the installer itself without interfering with real
 installer are to be done using the override header, specified in project_reunion_definitions.h
 
 These packages are dummy packages that do not contain any running code and are only intended to test deployment operations done by the installer. They are built
-for all architectures and placed in the same "installerpackages" folder. The reason they are copied to this location is due to limitations with the resource
+for all architectures and placed in the same "testpackages" folder. The reason they are copied to this location is due to limitations with the resource
 compiler, which does not support the same preprocessor macros and definitions as the C++ compiler. To avoid unnecessary complexity with the resource compiler,
 the input packages for the installer are always copied to the same location where they can easily be specified in a preprocessor macro.
 
-To save build time and signing complexities, this project only needs to be built when new test packages need to be added or generated and added as test collateral.
-
+To save build time and signing complexities, this project only needs to be built when new test packages need to be added or generated and added as test collateral. For typical development you should only need to build these once.
