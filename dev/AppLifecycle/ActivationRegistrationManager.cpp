@@ -11,8 +11,6 @@
 #include "ExtensionContract.h"
 #include "EncodedLaunchExecuteCommand.h"
 
-extern "C" HRESULT __stdcall DllRegisterServer() noexcept;
-
 namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     std::wstring GenerateEncodedLaunchUri(std::wstring const& appUserModelId, std::wstring const& contractId)
@@ -161,7 +159,6 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
     void ActivationRegistrationManager::RegisterEncodedLaunchCommand()
     {
-        DllRegisterServer();
         RegisterProtocol(c_launchSchemeName);
 
         auto delegateExecute = __uuidof(EncodedLaunchExecuteCommandFactory);

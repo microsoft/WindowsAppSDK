@@ -30,3 +30,6 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.ApplicationModel.Activation.h>
+
+#include <ProjectReunion.Test.Bootstrap.h>
+namespace TP = ::Test::Packages;
