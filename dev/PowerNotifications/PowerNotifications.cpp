@@ -34,16 +34,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     std::mutex PowerManager::m_mutex;
 
-    int   PowerManager::m_batteryChargePercent;
+    int   PowerManager::m_batteryChargePercent, PowerManager::m_oldBatteryChargePercent;
     DWORD PowerManager::m_cachedDisplayStatus;
     DWORD PowerManager::m_cachedUserPresenceStatus;
     DWORD PowerManager::m_cachedSystemAwayModeStatus;
     DWORD PowerManager::m_cachedPowerCondition;
     GUID  PowerManager::m_cachedPowerSchemePersonality;
-    ULONGLONG           PowerManager::m_cachedDischargeTime;
+    ULONGLONG               PowerManager::m_cachedDischargeTime;
+    CompositeBatteryStatus *PowerManager::m_cachedCompositeBatteryStatus;
     ::EnergySaverStatus PowerManager::m_cachedEnergySaverStatus;
-    winrt::Microsoft::ProjectReunion::BatteryStatus     PowerManager::m_cachedBatteryStatus;
+    winrt::Microsoft::ProjectReunion::BatteryStatus     PowerManager::m_batteryStatus;
+    winrt::Microsoft::ProjectReunion::BatteryStatus     PowerManager::m_oldBatteryStatus = winrt::Microsoft::ProjectReunion::BatteryStatus::Uninitialized;
     winrt::Microsoft::ProjectReunion::PowerSupplyStatus PowerManager::m_powerSupplyStatus;
+    winrt::Microsoft::ProjectReunion::PowerSupplyStatus PowerManager::m_oldPowerSupplyStatus = winrt::Microsoft::ProjectReunion::PowerSupplyStatus::Uninitialized;
 
 
     bool PowerManager::NotAlreadyRegisteredForEvents(PowerManager::eventType eventObj)
@@ -51,7 +54,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return !eventObj.get();
     }
 
-    //PReview: Should the default case throw an error?
     PowerManager::eventType PowerManager::GetEventObj(PowerFunction const& fn)
     {
         switch (fn) {
@@ -66,7 +68,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         case PowerSchemePersonalityFn: return PowerManager::m_powerSchemePersonalityChangedEvent;
         case UserPresenceStatusFn:     return PowerManager::m_userPresenceStatusChangedEvent;
         case SystemAwayModeStatusFn:   return PowerManager::m_systemAwayModeStatusChangedEvent;
-        default:;
+        default: throw E_NOTIMPL;
         }
     }
 
@@ -78,46 +80,44 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         //Check prior registrations
         if (NotAlreadyRegisteredForEvents(eventObj))
         {
-            RegisterListner(fn);
+            RegisterListener(fn);
         }
         eventObj.get().add(handler);
     }
 
-    //PReview: Should the default case throw an error?
-    void PowerManager::RegisterListner(PowerFunction const& fn)
+    void PowerManager::RegisterListener(PowerFunction const& fn)
     {
-        switch (fn) {
-        case EnergySaverStatusFn:      check_hresult(RegisterEnergySaverStatusChangedListener(EnergySaverStatusChanged_Callback, &m_energySaverStatusHandle)); break;
-        case BatteryStatusFn:          check_hresult(RegisterCompositeBatteryStatusChangedListener(BatteryStatusChanged_Callback, &m_batteryStatusHandle));    break;
-        case PowerSupplyStatusFn:      break;
-        case RemainingChargePercentFn: break;
-        case RemainingDischargeTimeFn: check_hresult(RegisterDischargeTimeChangedListener(RemainingDischargeTimeChanged_Callback, &m_dischargeTimeHandle)); break;
-        case PowerSourceStatusFn:      check_hresult(RegisterPowerConditionChangedListener(PowerSourceStatusChanged_Callback, &m_powerConditionHandle));    break;
-        case DisplayStatusFn:          check_hresult(RegisterDisplayStatusChangedListener(DisplayStatusChanged_Callback, &m_displayStatusHandle));          break;
-        case SystemIdleStatusFn:       check_hresult(RegisterSystemIdleStatusChangedListener(SystemIdleStatusChanged_Callback, &m_systemIdleStatusHandle)); break;
-        case PowerSchemePersonalityFn: check_hresult(RegisterPowerSchemePersonalityChangedListener(PowerSchemePersonalityChanged_Callback, &m_powerSchemePersonalityHandle)); break;
-        case UserPresenceStatusFn:     check_hresult(RegisterUserPresenceStatusChangedListener(UserPresenceStatusChanged_Callback, &m_userPresenceStatusHandle));             break;
-        case SystemAwayModeStatusFn:   check_hresult(RegisterSystemAwayModeStatusChangedListener(SystemAwayModeStatusChanged_Callback, &m_systemAwayModeStatusHandle));       break;
-        default:;
+        switch (fn) {        
+            case BatteryStatusFn:          
+            case PowerSupplyStatusFn:      
+            case RemainingChargePercentFn: check_hresult(RegisterCompositeBatteryStatusChangedListener(CompositeBatteryStatusChanged_Callback, &m_batteryStatusHandle)); break;
+            case EnergySaverStatusFn:      check_hresult(RegisterEnergySaverStatusChangedListener(EnergySaverStatusChanged_Callback, &m_energySaverStatusHandle)); break;
+            case RemainingDischargeTimeFn: check_hresult(RegisterDischargeTimeChangedListener(RemainingDischargeTimeChanged_Callback, &m_dischargeTimeHandle));    break;
+            case PowerSourceStatusFn:      check_hresult(RegisterPowerConditionChangedListener(PowerSourceStatusChanged_Callback, &m_powerConditionHandle));       break;
+            case DisplayStatusFn:          check_hresult(RegisterDisplayStatusChangedListener(DisplayStatusChanged_Callback, &m_displayStatusHandle));             break;
+            case SystemIdleStatusFn:       check_hresult(RegisterSystemIdleStatusChangedListener(SystemIdleStatusChanged_Callback, &m_systemIdleStatusHandle));    break;
+            case PowerSchemePersonalityFn: check_hresult(RegisterPowerSchemePersonalityChangedListener(PowerSchemePersonalityChanged_Callback, &m_powerSchemePersonalityHandle)); break;
+            case UserPresenceStatusFn:     check_hresult(RegisterUserPresenceStatusChangedListener(UserPresenceStatusChanged_Callback, &m_userPresenceStatusHandle));             break;
+            case SystemAwayModeStatusFn:   check_hresult(RegisterSystemAwayModeStatusChangedListener(SystemAwayModeStatusChanged_Callback, &m_systemAwayModeStatusHandle));       break;
+            default: throw E_NOTIMPL;
         }
     }
 
-    //PReview: Should the default case throw an error?
-    void PowerManager::UnregisterListner(PowerFunction const& fn)
+    void PowerManager::UnregisterListener(PowerFunction const& fn)
     {
-        switch (fn) {
-        case EnergySaverStatusFn:      check_hresult(UnregisterEnergySaverStatusChangedListener(m_energySaverStatusHandle));  break;
-        case BatteryStatusFn:          check_hresult(UnregisterCompositeBatteryStatusChangedListener(m_batteryStatusHandle)); break;
-        case PowerSupplyStatusFn:      break;
-        case RemainingChargePercentFn: break;
-        case RemainingDischargeTimeFn: check_hresult(UnregisterDischargeTimeChangedListener(m_dischargeTimeHandle));          break;
-        case PowerSourceStatusFn:      check_hresult(UnregisterPowerConditionChangedListener(m_powerConditionHandle));        break;
-        case DisplayStatusFn:          check_hresult(UnregisterDisplayStatusChangedListener(m_displayStatusHandle));          break;
-        case SystemIdleStatusFn:       check_hresult(UnregisterSystemIdleStatusChangedListener(m_systemIdleStatusHandle));    break;
-        case PowerSchemePersonalityFn: check_hresult(UnregisterPowerSchemePersonalityChangedListener(m_powerSchemePersonalityHandle)); break;
-        case UserPresenceStatusFn:     check_hresult(UnregisterUserPresenceStatusChangedListener(m_userPresenceStatusHandle));         break;
-        case SystemAwayModeStatusFn:   check_hresult(UnregisterSystemAwayModeStatusChangedListener(m_systemAwayModeStatusHandle));     break;
-        default:;
+        switch (fn) {        
+            case BatteryStatusFn:          
+            case PowerSupplyStatusFn:      
+            case RemainingChargePercentFn: check_hresult(UnregisterCompositeBatteryStatusChangedListener(m_batteryStatusHandle)); break;
+            case EnergySaverStatusFn:      check_hresult(UnregisterEnergySaverStatusChangedListener(m_energySaverStatusHandle));  break;
+            case RemainingDischargeTimeFn: check_hresult(UnregisterDischargeTimeChangedListener(m_dischargeTimeHandle));          break;
+            case PowerSourceStatusFn:      check_hresult(UnregisterPowerConditionChangedListener(m_powerConditionHandle));        break;
+            case DisplayStatusFn:          check_hresult(UnregisterDisplayStatusChangedListener(m_displayStatusHandle));          break;
+            case SystemIdleStatusFn:       check_hresult(UnregisterSystemIdleStatusChangedListener(m_systemIdleStatusHandle));    break;
+            case PowerSchemePersonalityFn: check_hresult(UnregisterPowerSchemePersonalityChangedListener(m_powerSchemePersonalityHandle)); break;
+            case UserPresenceStatusFn:     check_hresult(UnregisterUserPresenceStatusChangedListener(m_userPresenceStatusHandle));         break;
+            case SystemAwayModeStatusFn:   check_hresult(UnregisterSystemAwayModeStatusChangedListener(m_systemAwayModeStatusHandle));     break;
+            default: throw E_NOTIMPL;
         }
     }
 
@@ -129,68 +129,65 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         //Check prior registrations
         if (NotAlreadyRegisteredForEvents(eventObj))
         {
-            UnregisterListner(fn);
+            UnregisterListener(fn);
         }
     }
 
     void PowerManager::FireEvent(PowerFunction const& fn)
     {
-        //PReview: Use tmp or nullptr?
-        //auto tmp = make<winrt::Microsoft::ProjectReunion::factory_implementation::PowerManager>();
         GetEventObj(fn).get()(nullptr, nullptr);
     }
 
     //Checks if an event is already registered. If none are, then gets the status and caches it
-    void PowerManager::CheckCache(PowerFunction const& fn)
+    void PowerManager::CheckRegistrationAndOrUpdateValue(PowerFunction const& fn)
     {
         auto eventObj = GetEventObj(fn);
         if (NotAlreadyRegisteredForEvents(eventObj))
         {
             switch (fn) {
-            case EnergySaverStatusFn:
-                check_hresult(GetEnergySaverStatus(&m_cachedEnergySaverStatus));
-                break;
+                case EnergySaverStatusFn:
+                    check_hresult(GetEnergySaverStatus(&m_cachedEnergySaverStatus));
+                    break;
 
-            case BatteryStatusFn:
-                CompositeBatteryStatus* compositeBatteryStatus;
-                check_hresult(GetCompositeBatteryStatus(&compositeBatteryStatus));
-                ProcessCompositeBatteryStatus(*compositeBatteryStatus);
-                break;
+                case BatteryStatusFn:
+                    check_hresult(GetCompositeBatteryStatus(&m_cachedCompositeBatteryStatus));
+                    ProcessCompositeBatteryStatus(*m_cachedCompositeBatteryStatus);
+                    break;
 
-            case PowerSupplyStatusFn:
-                break;
+                case PowerSupplyStatusFn:
+                    break;
 
-            case RemainingChargePercentFn:
-                break;
+                case RemainingChargePercentFn:
+                    break;
 
-            case RemainingDischargeTimeFn:
-                check_hresult(GetDischargeTime(&m_cachedDischargeTime));
-                break;
+                case RemainingDischargeTimeFn:
+                    check_hresult(GetDischargeTime(&m_cachedDischargeTime));
+                    break;
 
-            case PowerSourceStatusFn:
-                check_hresult(GetPowerCondition(&m_cachedPowerCondition));
-                break;
+                case PowerSourceStatusFn:
+                    check_hresult(GetPowerCondition(&m_cachedPowerCondition));
+                    break;
 
-            case DisplayStatusFn:
-                check_hresult(GetDisplayStatus(&m_cachedDisplayStatus));
-                break;
+                case DisplayStatusFn:
+                    check_hresult(GetDisplayStatus(&m_cachedDisplayStatus));
+                    break;
 
-            case SystemIdleStatusFn:
-                break;
+                case SystemIdleStatusFn:
+                    break;
 
-            case PowerSchemePersonalityFn:
-                check_hresult(GetPowerSchemePersonality(&m_cachedPowerSchemePersonality));
-                break;
+                case PowerSchemePersonalityFn:
+                    check_hresult(GetPowerSchemePersonality(&m_cachedPowerSchemePersonality));
+                    break;
 
-            case UserPresenceStatusFn:
-                check_hresult(GetUserPresenceStatus(&m_cachedUserPresenceStatus));
-                break;
+                case UserPresenceStatusFn:
+                    check_hresult(GetUserPresenceStatus(&m_cachedUserPresenceStatus));
+                    break;
 
-            case SystemAwayModeStatusFn:
-                check_hresult(GetSystemAwayModeStatus(&m_cachedSystemAwayModeStatus));
-                break;
+                case SystemAwayModeStatusFn:
+                    check_hresult(GetSystemAwayModeStatus(&m_cachedSystemAwayModeStatus));
+                    break;
 
-            default:;
+                default: throw E_NOTIMPL;
             }
         }
 
@@ -198,7 +195,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     EnergySaverStatus PowerManager::EnergySaverStatus()
     {
-        CheckCache(EnergySaverStatusFn);
+        CheckRegistrationAndOrUpdateValue(EnergySaverStatusFn);
         return static_cast<winrt::Microsoft::ProjectReunion::EnergySaverStatus>(m_cachedEnergySaverStatus);
     }
 
@@ -233,19 +230,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         //Set battery status
         if (compositeBatteryStatus.ActiveBatteryCount == 0)
         {
-            m_cachedBatteryStatus = BatteryStatus::NotPresent;
+            m_batteryStatus = BatteryStatus::NotPresent;
         }
         else if ((powerState & BATTERY_DISCHARGING) != FALSE)
         {
-            m_cachedBatteryStatus = BatteryStatus::Discharging;
+            m_batteryStatus = BatteryStatus::Discharging;
         }
         else if ((powerState & BATTERY_CHARGING) != FALSE)
         {
-            m_cachedBatteryStatus = BatteryStatus::Charging;
+            m_batteryStatus = BatteryStatus::Charging;
         }
         else
         {
-            m_cachedBatteryStatus = BatteryStatus::Idle;
+            m_batteryStatus = BatteryStatus::Idle;
         }
                 
         //Set power supply state
@@ -260,13 +257,34 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         else
         {
             m_powerSupplyStatus = PowerSupplyStatus::Adequate;
-        }        
+        }
+    }
+
+    void PowerManager::FireCorrespondingBatteryEvent()
+    {
+        if (m_oldBatteryChargePercent != m_batteryChargePercent)
+        {
+            m_oldBatteryChargePercent = m_batteryChargePercent;
+            FireEvent(RemainingChargePercentFn);
+        }
+
+        if (m_oldBatteryStatus != m_batteryStatus)
+        {
+            m_oldBatteryStatus = m_batteryStatus;
+            FireEvent(BatteryStatusFn);
+        }
+
+        if (m_oldPowerSupplyStatus != m_powerSupplyStatus)
+        {
+            m_oldPowerSupplyStatus = m_powerSupplyStatus;
+            FireEvent(PowerSupplyStatusFn);
+        }
     }
 
     winrt::Microsoft::ProjectReunion::BatteryStatus PowerManager::BatteryStatus()
     {
-        CheckCache(BatteryStatusFn);
-        return m_cachedBatteryStatus;        
+        CheckRegistrationAndOrUpdateValue(BatteryStatusFn);
+        return m_batteryStatus;        
     }
 
     EventToken PowerManager::BatteryStatusChanged(PowerEventHandle const& handler)
@@ -279,17 +297,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         RemoveCallback(BatteryStatusFn, token);
     }
 
-    void PowerManager::BatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
+    void PowerManager::CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
     {
         ProcessCompositeBatteryStatus(*compositeBatteryStatus);
-        FireEvent(BatteryStatusFn);
+        FireCorrespondingBatteryEvent();
     } 
 
     PowerSupplyStatus PowerManager::PowerSupplyStatus()
     {
-        CompositeBatteryStatus* compositeBatteryStatus;
-        check_hresult(GetCompositeBatteryStatus(&compositeBatteryStatus));
-        ProcessCompositeBatteryStatus(*compositeBatteryStatus);
+        CheckRegistrationAndOrUpdateValue(BatteryStatusFn);
         return m_powerSupplyStatus;
     }
 
@@ -303,17 +319,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         RemoveCallback(PowerSupplyStatusFn, token);
     }
 
-    //PReview: Who calls this?
-    void PowerManager::PowerSupplyStatusChanged_Callback()
-    {     
-        FireEvent(PowerSupplyStatusFn);
-    }
-
     int PowerManager::RemainingChargePercent()
     {
-        CompositeBatteryStatus* compositeBatteryStatus;
-        check_hresult(GetCompositeBatteryStatus(&compositeBatteryStatus));
-        ProcessCompositeBatteryStatus(*compositeBatteryStatus);
+        CheckRegistrationAndOrUpdateValue(BatteryStatusFn);
         return m_batteryChargePercent;
     }
 
@@ -327,15 +335,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         RemoveCallback(RemainingChargePercentFn, token);
     }
 
-    //PReview: Who calls this?
-    void PowerManager::RemainingChargePercentChanged_Callback()
-    {
-        FireEvent(RemainingChargePercentFn);
-    }
-
     Windows::Foundation::TimeSpan PowerManager::RemainingDischargeTime()
     {
-        CheckCache(RemainingDischargeTimeFn);
+        CheckRegistrationAndOrUpdateValue(RemainingDischargeTimeFn);
         return Windows::Foundation::TimeSpan(std::chrono::seconds(m_cachedDischargeTime));
     }
 
@@ -357,7 +359,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     PowerSourceStatus PowerManager::PowerSourceStatus()
     {
-        CheckCache(PowerSourceStatusFn);
+        CheckRegistrationAndOrUpdateValue(PowerSourceStatusFn);
         return  static_cast<winrt::Microsoft::ProjectReunion::PowerSourceStatus>(m_cachedPowerCondition);
     }
 
@@ -379,8 +381,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     DisplayStatus PowerManager::DisplayStatus()
     {
-        //PReview: Shouldn't this always return the most recent value?
-        CheckCache(DisplayStatusFn);
+        CheckRegistrationAndOrUpdateValue(DisplayStatusFn);
         return static_cast<winrt::Microsoft::ProjectReunion::DisplayStatus>(m_cachedDisplayStatus);
     }
 
@@ -423,7 +424,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     PowerSchemePersonality PowerManager::PowerSchemePersonality()
     {
-        CheckCache(PowerSchemePersonalityFn);
+        CheckRegistrationAndOrUpdateValue(PowerSchemePersonalityFn);
         if (m_cachedPowerSchemePersonality == GUID_MAX_POWER_SAVINGS)
         {
             return PowerSchemePersonality::PowerSaver;
@@ -456,7 +457,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     UserPresenceStatus PowerManager::UserPresenceStatus()
     {
-        CheckCache(UserPresenceStatusFn);
+        CheckRegistrationAndOrUpdateValue(UserPresenceStatusFn);
         return static_cast<winrt::Microsoft::ProjectReunion::UserPresenceStatus>(m_cachedUserPresenceStatus);
     }
 
@@ -478,7 +479,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     SystemAwayModeStatus PowerManager::SystemAwayModeStatus()
     {
-        CheckCache(SystemAwayModeStatusFn);
+        CheckRegistrationAndOrUpdateValue(SystemAwayModeStatusFn);
         return static_cast<winrt::Microsoft::ProjectReunion::SystemAwayModeStatus>(m_cachedSystemAwayModeStatus);
     }
 

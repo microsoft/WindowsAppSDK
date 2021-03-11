@@ -14,6 +14,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     using PowerEventHandle = Windows::Foundation::EventHandler<Windows::Foundation::IInspectable>;
     using EventToken = winrt::event_token ;
 
+    struct CompositeBatteryStats
+    {
+        int   oldBatteryChargePercent, batteryChargePercent;
+        winrt::Microsoft::ProjectReunion::BatteryStatus     oldBatteryStatus, batteryStatus;
+        winrt::Microsoft::ProjectReunion::PowerSupplyStatus oldPowerSupplyStatus, powerSupplyStatus;
+    };
+
     struct PowerManager
     {
         PowerManager() = default;
@@ -28,17 +35,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static winrt::Microsoft::ProjectReunion::BatteryStatus BatteryStatus();
         static EventToken BatteryStatusChanged(PowerEventHandle const&);
         static void BatteryStatusChanged(EventToken const&);
-        static void BatteryStatusChanged_Callback(CompositeBatteryStatus*);
+        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus*);
 
         static winrt::Microsoft::ProjectReunion::PowerSupplyStatus PowerSupplyStatus();
         static EventToken PowerSupplyStatusChanged(PowerEventHandle const&);
         static void PowerSupplyStatusChanged(EventToken const&);
-        static void PowerSupplyStatusChanged_Callback();
 
         static int RemainingChargePercent();
         static EventToken RemainingChargePercentChanged(PowerEventHandle const&);
         static void RemainingChargePercentChanged(EventToken const&);
-        static void RemainingChargePercentChanged_Callback();
         
         static Windows::Foundation::TimeSpan RemainingDischargeTime();
         static EventToken RemainingDischargeTimeChanged(PowerEventHandle const&);
@@ -74,7 +79,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static EventToken SystemAwayModeStatusChanged(PowerEventHandle const&);
         static void SystemAwayModeStatusChanged(EventToken const&);
         static void SystemAwayModeStatusChanged_Callback(DWORD);
-
 
         enum PowerFunction
         {
@@ -119,26 +123,29 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static SystemAwayModeStatusRegistration   m_systemAwayModeStatusHandle;
 
         static std::mutex m_mutex;
+        static CompositeBatteryStats m_stats;
 
-        static int   m_batteryChargePercent;
+        static int   m_batteryChargePercent, m_oldBatteryChargePercent;
         static DWORD m_cachedDisplayStatus;
         static DWORD m_cachedUserPresenceStatus;
         static DWORD m_cachedSystemAwayModeStatus;
         static DWORD m_cachedPowerCondition;
         static GUID  m_cachedPowerSchemePersonality;
-        static ULONGLONG           m_cachedDischargeTime;
-        static ::EnergySaverStatus m_cachedEnergySaverStatus;
-        static winrt::Microsoft::ProjectReunion::BatteryStatus     m_cachedBatteryStatus;
-        static winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus;
+        static ULONGLONG              m_cachedDischargeTime;
+        static ::EnergySaverStatus    m_cachedEnergySaverStatus;
+        static CompositeBatteryStatus *m_cachedCompositeBatteryStatus;
+        static winrt::Microsoft::ProjectReunion::BatteryStatus     m_batteryStatus, m_oldBatteryStatus;
+        static winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus, m_oldPowerSupplyStatus;
 
         static bool       NotAlreadyRegisteredForEvents(eventType);
         static eventType  GetEventObj(PowerFunction const&);        
         static EventToken AddCallback(PowerFunction const&, PowerEventHandle const&);
-        static void RegisterListner(PowerFunction const&);
-        static void RemoveCallback(PowerFunction const&, EventToken const&);
-        static void UnregisterListner(PowerFunction const&);
-        static void CheckCache(PowerFunction const&);
+        static void RegisterListener (PowerFunction const&);
+        static void RemoveCallback   (PowerFunction const&, EventToken const&);
+        static void UnregisterListener(PowerFunction const&);
+        static void CheckRegistrationAndOrUpdateValue(PowerFunction const&);
         static void FireEvent(PowerFunction const&);
+        static void FireCorrespondingBatteryEvent();
         static void ProcessCompositeBatteryStatus(CompositeBatteryStatus const&);
     };
 }
