@@ -10,7 +10,7 @@
 
 namespace Test::AppModel
 {
-    bool IsPackagedProcess()
+    inline bool IsPackagedProcess()
     {
         UINT32 n{};
         const auto rc = ::GetCurrentPackageFullName(&n, nullptr);

@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-namespace ProjectReunionCppTest
+namespace Test::AppLifecycle
 {
     winrt::Windows::Storage::StorageFile CreateDocFile(std::wstring filename);
     winrt::Windows::Storage::StorageFile OpenDocFile(std::wstring filename);
