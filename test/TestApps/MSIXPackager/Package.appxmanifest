@@ -4,6 +4,7 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   IgnorableNamespaces="uap rescap">
 
   <Identity
@@ -39,21 +40,19 @@
         <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
+		<Extensions>
+			<com:Extension Category="windows.comServer">
+				<com:ComServer>
+					<com:ExeServer Executable="Applications\PushNotificationsWin32App.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
+						<com:Class Id="C54044C4-EAC7-4C4B-9996-C570A94B9305" DisplayName="Reunion Push" />
+					</com:ExeServer>
+				</com:ComServer>
+			</com:Extension>
+		</Extensions>
     </Application>
   </Applications>
-
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
-
-  <Extensions>
-  <com:Extension Category="windows.comServer">
-    <com:ComServer>
-      <com:ExeServer Executable="Applications\PushNotificationsWin32App.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
-        <com:Class Id="{C54044C4-EAC7-4C4B-9996-C570A94B9305}" DisplayName="Reunion Push" />
-      </com:ExeServer>
-    </com:ComServer>
-  </com:Extension>
-</Extensions>
 </Package>
