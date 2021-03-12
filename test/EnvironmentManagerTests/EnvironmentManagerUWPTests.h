@@ -11,5 +11,8 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(UWPTestGetForProcess);
         TEST_METHOD(UWPTestGetForUser);
         TEST_METHOD(UWPTestGetForMachine);
+        TEST_METHOD(UWPTestGetEnvironmentVariablesForProcess);
+        TEST_METHOD(UWPTestGetEnvironmentVariablesForUser);
+        TEST_METHOD(UWPTestGetEnvironmentVariablesForMachine);
     };
 }

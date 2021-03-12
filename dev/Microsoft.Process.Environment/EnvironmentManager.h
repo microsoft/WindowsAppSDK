@@ -29,6 +29,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     private:
         Scope m_Scope;
+
+        std::wstring USER_EV_REG_LOCATION = L"Environment";
+        std::wstring MACHINE_EV_REG_LOCATION = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+
+        StringMap GetProcessEnvironmentVariables();
+        StringMap GetUserOrMachineEnvironmentVariables();
+        wil::unique_hkey GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess = false);
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

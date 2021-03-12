@@ -12,6 +12,9 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(CentennialTestGetForProcess);
         TEST_METHOD(CentennialTestGetForUser);
         TEST_METHOD(CentennialTestGetForMachine);
+        TEST_METHOD(CentennialTestGetEnvironmentVariablesForProcess);
+        TEST_METHOD(CentennialTestGetEnvironmentVariablesForUser);
+        TEST_METHOD(CentennialTestGetEnvironmentVariablesForMachine);
     };
 
 }
