@@ -14,4 +14,4 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
-#include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Microsoft.ApplicationModel.Activation.h>

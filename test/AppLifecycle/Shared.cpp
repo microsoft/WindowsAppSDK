@@ -8,8 +8,8 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
+using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt;
-using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
@@ -18,7 +18,7 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
-namespace ProjectReunionCppTest
+namespace Test::AppLifecycle
 {
     StorageFile CreateDocFile(std::wstring filename)
     {

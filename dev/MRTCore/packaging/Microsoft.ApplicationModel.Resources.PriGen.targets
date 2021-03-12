@@ -205,8 +205,6 @@
     <PriInitialPath Condition="'$(PrependPriInitialPath)' == 'true' and '$(AppxPackage)' == 'true' and '$(PriInitialPath)' == ''"></PriInitialPath>
     <PriInitialPath Condition="'$(PrependPriInitialPath)' == 'true' and '$(AppxPackage)' != 'true' and '$(PriInitialPath)' == ''">$(TargetName)</PriInitialPath>
     <ProjectPriFileName Condition="'$(AppxPackage)' == 'true' and '$(ProjectPriFileName)' == ''">resources.pri</ProjectPriFileName>
-    <!-- An empty '$(ApplicationType)' and '$(WindowsAppContainer)' being false corresponds to a C++, Win32 app. -->
-    <ProjectPriFileName Condition="'$(ApplicationType)' == '' and '$(WindowsAppContainer)' == 'false' and '$(ProjectPriFileName)' == ''">resources.pri</ProjectPriFileName>
     <ProjectPriFileName Condition="'$(AppxPackage)' != 'true' and '$(ProjectPriFileName)' == '' and '$(PriInitialPath)' == ''">$(TargetName).pri</ProjectPriFileName>
     <ProjectPriFileName Condition="'$(AppxPackage)' != 'true' and '$(ProjectPriFileName)' == '' and '$(PriInitialPath)' != ''">$(PriInitialPath).pri</ProjectPriFileName>
     <ProjectPriFullPath Condition="'$(ProjectPriFullPath)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)$(ProjectPriFileName)</ProjectPriFullPath>
@@ -806,7 +804,6 @@
           Condition="('$(BuildingInsideVisualStudio)' != 'true' or '$(AppxAutoIncrementPackageRevision)' != 'true') and Exists($(AppxPackageTestDir))">
 
     <RemoveDir Directories="$(AppxPackageTestDir)" />
-    <Message Importance="low" Text="Deleting $(AppxPackageTestDir)" />
   </Target>
 
   <!-- Finds SDK tool executables paths. -->
@@ -847,9 +844,6 @@
       <Output TaskParameter="ActualFileArchitecture" PropertyName="MakePriArchitecture" />
     </GetSdkFileFullPath>
 
-    <Message Importance="low" Text="MakePriExeFullPath: $(MakePriExeFullPath)" />
-    <Message Importance="low" Text="MakePriArchitecture: $(MakePriArchitecture)" />
-
     <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '$(GenerateAppxPackageOnBuild)' == 'true' or '@(BundleMappingFile)' != ''"
                         FileName="MakeAppx.exe"
                         FullFilePath="$(MakeAppxExeFullPath)"
@@ -866,8 +860,6 @@
       <Output TaskParameter="ActualFullFilePath" PropertyName="MakeAppxExeFullPath" />
     </GetSdkFileFullPath>
 
-    <Message Importance="low" Text="MakeAppxExeFullPath: $(MakeAppxExeFullPath)" />
-
     <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '$(GenerateAppxPackageOnBuild)' == 'true'"
                         FileName="signtool.exe"
                         FullFilePath="$(SignAppxPackageExeFullPath)"
@@ -883,8 +875,6 @@
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="SignAppxPackageExeFullPath" />
     </GetSdkFileFullPath>
-
-    <Message Importance="low" Text="SignAppxPackageExeFullPath: $(SignAppxPackageExeFullPath)" />
 
     <PropertyGroup Condition="'$(AppxPackagingArchitecture)' == ''">
       <AppxPackagingArchitecture Condition="$([System.Environment]::Is64BitProcess)">x64</AppxPackagingArchitecture>
@@ -906,8 +896,6 @@
       <Output TaskParameter="ActualFullFilePath" PropertyName="AppxPackagingComponentManifestPath" />
     </GetSdkFileFullPath>
 
-    <Message Importance="low" Text="AppxPackagingComponentManifestPath: $(AppxPackagingComponentManifestPath)" />
-
     <PropertyGroup Condition="'$(MrmSupportLibraryArchitecture)' == ''">
       <MrmSupportLibraryArchitecture Condition="$([System.Environment]::Is64BitProcess)">x64</MrmSupportLibraryArchitecture>
       <MrmSupportLibraryArchitecture Condition="!$([System.Environment]::Is64BitProcess)">x86</MrmSupportLibraryArchitecture>
@@ -927,8 +915,6 @@
                         VsTelemetrySession="$(VsTelemetrySession)">
       <Output TaskParameter="ActualFullFilePath" PropertyName="MrmSupportLibraryPath" />
     </GetSdkFileFullPath>
-
-    <Message Importance="low" Text="MrmSupportLibraryPath: $(MrmSupportLibraryPath)" />
 
     <GetSdkPropertyValue TargetPlatformSdkRootOverride="$(TargetPlatformSdkRootOverride)"
                          SDKIdentifier="$(SDKIdentifier)"
@@ -960,22 +946,15 @@
       <MakePriExtensionPath_x64></MakePriExtensionPath_x64>
     </PropertyGroup>
 
-    <Message Importance="low" Text="MakePriExtensionPath: $(MakePriExtensionPath)" />
-    <Message Importance="low" Text="MakePriExtensionPath_x64: $(MakePriExtensionPath_x64)" />
-
     <PropertyGroup>
       <OutOfProcessMakePriExtensionPath Condition="'$(MakePriArchitecture)' != 'amd64'">$(MakePriExtensionPath)</OutOfProcessMakePriExtensionPath>
       <OutOfProcessMakePriExtensionPath Condition="'$(MakePriArchitecture)' == 'amd64'">$(MakePriExtensionPath_x64)</OutOfProcessMakePriExtensionPath>
     </PropertyGroup>
 
-    <Message Importance="low" Text="OutOfProcessMakePriExtensionPath: $(OutOfProcessMakePriExtensionPath)" />
-
     <PropertyGroup>
       <InProcessMakePriExtensionPath Condition="!$([System.Environment]::Is64BitProcess)">$(MakePriExtensionPath)</InProcessMakePriExtensionPath>
       <InProcessMakePriExtensionPath Condition="$([System.Environment]::Is64BitProcess)">$(MakePriExtensionPath_x64)</InProcessMakePriExtensionPath>
     </PropertyGroup>
-
-    <Message Importance="low" Text="InProcessMakePriExtensionPath: $(InProcessMakePriExtensionPath)" />
 
   </Target>
 
@@ -1106,8 +1085,6 @@
       <FileWrites Include="@(ExtractedFileWrites)" />
     </ItemGroup>
 
-    <Message Importance="low" Text="Created resource files: @(CreatedResWFiles)" />
-
     <!-- Now generate a PRI file for each set of ResW files (ie, a main assembly + all satellites). -->
     <!-- Note: The task relies on some metadata set on each ITaskItem, set by GenerateResource.  -->
 
@@ -1131,8 +1108,6 @@
       <Output TaskParameter="UnprocessedReswFiles_DefaultLanguage" ItemName="_UnprocessedReswFiles_DefaultLanguage" />
       <Output TaskParameter="UnprocessedReswFiles_OtherLanguages" ItemName="_UnprocessedReswFiles_OtherLanguages" />
     </CreatePriFilesForPortableLibraries>
-
-    <Message Importance="low" Text="Created PRI files: @(_PortableLibraryCreatedPriFiles)" />
 
     <!-- Add all resw files we didn't generate a pri file for to the PRIResource group so they get included during           -->
     <!-- final pri generation, with the exception of those that need to be indexed using a language other than the project's -->
@@ -1257,15 +1232,6 @@
         SkipUnchangedFiles='true'
         />
 
-    <Message Text="$(MSBuildProjectName) -> $(_PriConfigXmlPath)" />
-    <Message Text="$(MSBuildProjectName) -> $(_UnfilteredLayoutResfilesPath)" />
-    <Message Text="$(MSBuildProjectName) -> $(_FilteredLayoutResfilesPath)" />
-    <Message Text="$(MSBuildProjectName) -> $(_ExcludedLayoutResfilesPath)" />
-    <Message Text="$(MSBuildProjectName) -> $(_ResourcesResfilesPath)" />
-    <Message Text="$(MSBuildProjectName) -> $(_PriResfilesPath)" />
-    <Message Text="$(MSBuildProjectName) -> $(_AdditionalResourceResFiles)" />
-    <Message Condition="'$(_SupportEmbedFileResources)' == 'true'" Text="$(MSBuildProjectName) -> $(_EmbedFileResfilePath)" />
-
   </Target>
 
   <!-- Calculate inputs for _GenerateProjectPriFileCore. -->
@@ -1309,8 +1275,6 @@
                             AdditionalMakepriExeParameters="$(AppxGenerateProjectPriFileAdditionalMakepriExeParameters)"
                             VsTelemetrySession="$(VsTelemetrySession)"
                             />
-
-    <Message Text="$(MSBuildProjectName) -> $(ProjectPriFileName)" />
 
   </Target>
 
@@ -1367,8 +1331,6 @@
     <PropertyGroup Condition="'$(AppxUseResourceIndexerApi)' == ''">
       <AppxUseResourceIndexerApi>true</AppxUseResourceIndexerApi>
     </PropertyGroup>
-
-    <Message Importance="low" Text="AppxUseResourceIndexerApi=$(AppxUseResourceIndexerApi)" />
 
   </Target>
 
@@ -1610,8 +1572,6 @@
         VsTelemetrySession="$(VsTelemetrySession)"
             />
 
-    <Message Text="$(ProjectName) -> $(AppxUploadBundlePriConfigXmlForSplittingFileName)" />
-
   </Target>
 
   <!-- File writes for the sideload pri config -->
@@ -1689,8 +1649,6 @@
       <Output TaskParameter="Lines" ItemName="_AppxBundleSplitResourcesGeneratedFiles" />
     </ReadLinesFromFile>
 
-    <Message Text="$(ProjectName) -> %(_AppxBundleSplitResourcesGeneratedFiles.Identity)" />
-
   </Target>
 
   <!-- Split the upload pri -->
@@ -1722,8 +1680,6 @@
                        File="$(AppxUploadBundleSplitResourcesGeneratedFilesListPath)">
       <Output TaskParameter="Lines" ItemName="_AppxUploadBundleSplitResourcesGeneratedFiles" />
     </ReadLinesFromFile>
-
-    <Message Text="$(ProjectName) -> %(_AppxUploadBundleSplitResourcesGeneratedFiles.Identity)" />
 
   </Target>
 
@@ -1780,8 +1736,6 @@
         TargetPlatformVersion="$(TargetPlatformResourceVersion)"
         VsTelemetrySession="$(VsTelemetrySession)" />
 
-    <Message Text="$(ProjectName) -> $(AppxBundlePriConfigXmlForMainPackageFileMapFileName)" />
-
   </Target>
 
   <!-- Create the upload pri config xml -->
@@ -1810,8 +1764,6 @@
         TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
         TargetPlatformVersion="$(TargetPlatformResourceVersion)"
         VsTelemetrySession="$(VsTelemetrySession)" />
-
-    <Message Text="$(ProjectName) -> $(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)" />
 
   </Target>
 
@@ -2168,8 +2120,6 @@
       <PackagingOutputs Remove="@(_PackagingOutputsXbfXaml)" />
     </ItemGroup>
 
-    <Message Text="$(ProjectName) : %(PackagingOutputs.ProjectName).%(PackagingOutputs.OutputGroup) : %(PackagingOutputs.Identity) -> %(PackagingOutputs.TargetPath)" />
-
   </Target>
 
   <!-- ========================================== -->
@@ -2224,8 +2174,6 @@
         <OutputGroup>OptionalProjectOutputGroup</OutputGroup>
       </OptionalProjectOutputs>
     </ItemGroup>
-
-    <Message Text="$(ProjectName) : %(OptionalProjectOutputs.ProjectName).%(OptionalProjectOutputs.OutputGroup) - %(OptionalProjectOutputs.FileType) : %(OptionalProjectOutputs.Identity) -> %(OptionalProjectOutputs.TargetPath)" />
 
   </Target>
 
