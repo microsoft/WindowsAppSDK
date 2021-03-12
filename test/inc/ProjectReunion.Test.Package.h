@@ -77,7 +77,7 @@ namespace Test::Packages::DynamicDependencyDataStore
 
 namespace Test::Packages
 {
-    std::wstring GetPackagePath(PCWSTR packageFullName)
+    inline std::wstring GetPackagePath(PCWSTR packageFullName)
     {
         UINT32 pathLength{};
         const auto rc{ GetPackagePathByFullName(packageFullName, &pathLength, nullptr) };
@@ -92,12 +92,12 @@ namespace Test::Packages
         return std::wstring(path.get());
     }
 
-    std::wstring GetPackagePath(const std::wstring& packageFullName)
+    inline std::wstring GetPackagePath(const std::wstring& packageFullName)
     {
         return GetPackagePath(packageFullName.c_str());
     }
 
-    bool IsPackageRegistered(PCWSTR packageFullName)
+    inline bool IsPackageRegistered(PCWSTR packageFullName)
     {
         // Check if the package is registered to the current user via GetPackagePath().
         // GetPackagePath() fails if the package isn't registerd to the current user.
@@ -106,7 +106,7 @@ namespace Test::Packages
         return !path.empty();
     }
 
-    void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
+    inline void AddPackage(PCWSTR packageDirName, PCWSTR packageFullName)
     {
         // Build the target package's .msix filename. It's under the Solution's $(OutDir)
         // NOTE: It could live in ...\Something.msix\... or ...\Something\...
@@ -145,7 +145,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
     }
 
-    void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
+    inline void AddPackageIfNecessary(PCWSTR packageDirName, PCWSTR packageFullName)
     {
         if (!IsPackageRegistered(packageFullName))
         {
@@ -153,7 +153,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         }
     }
 
-    void RemovePackage(PCWSTR packageFullName)
+    inline void RemovePackage(PCWSTR packageFullName)
     {
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
@@ -163,7 +163,7 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         }
     }
 
-    void RemovePackageIfNecessary(PCWSTR packageFullName)
+    inline void RemovePackageIfNecessary(PCWSTR packageFullName)
     {
         if (IsPackageRegistered(packageFullName))
         {
@@ -171,12 +171,12 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         }
     }
 
-    void AddPackage_DynamicDependencyLifetimeManager()
+    inline void AddPackage_DynamicDependencyLifetimeManager()
     {
         AddPackage(Test::Packages::DynamicDependencyLifetimeManager::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
-    void RemovePackage_DynamicDependencyLifetimeManager()
+    inline void RemovePackage_DynamicDependencyLifetimeManager()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -187,17 +187,17 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
-    bool IsPackageRegistered_DynamicDependencyLifetimeManager()
+    inline bool IsPackageRegistered_DynamicDependencyLifetimeManager()
     {
         return IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
-    void AddPackage_ProjectReunionFramework()
+    inline void AddPackage_ProjectReunionFramework()
     {
         AddPackage(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
     }
 
-    void RemovePackage_ProjectReunionFramework()
+    inline void RemovePackage_ProjectReunionFramework()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -208,17 +208,17 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
     }
 
-    bool IsPackageRegistered_ProjectReunionFramework()
+    inline bool IsPackageRegistered_ProjectReunionFramework()
     {
         return IsPackageRegistered(Test::Packages::ProjectReunionFramework::c_PackageFullName);
     }
 
-    void AddPackage_DynamicDependencyDataStore()
+    inline void AddPackage_DynamicDependencyDataStore()
     {
         AddPackage(Test::Packages::DynamicDependencyDataStore::c_PackageDirName, Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    void RemovePackage_DynamicDependencyDataStore()
+    inline void RemovePackage_DynamicDependencyDataStore()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -229,12 +229,12 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    bool IsPackageRegistered_DynamicDependencyDataStore()
+    inline bool IsPackageRegistered_DynamicDependencyDataStore()
     {
         return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    std::filesystem::path GetProjectReunionFrameworkMsixPath()
+    inline std::filesystem::path GetProjectReunionFrameworkMsixPath()
     {
         // Determine the location of ProjectReunion's Framework's msix. See GetSolutionOutDirPath() for more details.
         auto path = ::Test::FileSystem::GetSolutionOutDirPath();

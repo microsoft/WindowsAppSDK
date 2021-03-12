@@ -82,8 +82,8 @@ int main()
 
             if (argument.compare(L"RegisterProtocol") == 0)
             {
-                ActivationRegistrationManager::RegisterForProtocolActivation(c_testProtocolScheme,
-                    L"Project Reunion Test Protocol", L"logo");
+                ActivationRegistrationManager::RegisterForProtocolActivation(c_testProtocolScheme, L"logo",
+                    L"Project Reunion Test Protocol", L"");
 
                 // Signal event that protocol was registered.
                 SignalPhase(c_testProtocolPhaseEventName);
@@ -93,7 +93,7 @@ int main()
             {
                 try
                 {
-                    ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme);
+                    ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme, L"");
 
                     // Signal event that protocol was unregistered.
                     SignalPhase(c_testProtocolPhaseEventName);
@@ -107,7 +107,7 @@ int main()
             else if (argument.compare(L"RegisterFile") == 0)
             {
                 ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension.c_str() },
-                    { L"open" }, L"Project Reunion Test File Type", L"logo");
+                    L"logo", L"Project Reunion Test File Type", { L"open" }, L"");
 
                 // Signal event that file was registered.
                 SignalPhase(c_testFilePhaseEventName);
@@ -117,7 +117,8 @@ int main()
             {
                 try
                 {
-                    ActivationRegistrationManager::UnregisterForFileTypeActivation(c_testFileExtension);
+                    ActivationRegistrationManager::UnregisterForFileTypeActivation({ c_testFileExtension.c_str() },
+                        L"");
 
                     // Signal event that file was unregistered.
                     SignalPhase(c_testFilePhaseEventName);
@@ -127,6 +128,22 @@ int main()
                 {
                     //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
                 }
+            }
+            else if (argument.compare(L"RegisterStartup") == 0)
+            {
+                ActivationRegistrationManager::RegisterForStartupActivation(L"this_is_a_test", L"");
+
+                // Signal event that file was registered.
+                SignalPhase(c_testStartupPhaseEventName);
+                succeeded = true;
+            }
+            else if (argument.compare(L"UnregisterStartup") == 0)
+            {
+                ActivationRegistrationManager::UnregisterForStartupActivation(L"this_is_a_test");
+
+                // Signal event that file was unregistered.
+                SignalPhase(c_testStartupPhaseEventName);
+                succeeded = true;
             }
         }
     }
@@ -170,6 +187,16 @@ int main()
         // Signal event that file was activated.
         SignalPhase(c_testFilePhaseEventName);
         succeeded = true;
+    }
+    else if (kind == ActivationKind::StartupTask)
+    {
+        auto startupArgs = args.as<IStartupTaskActivatedEventArgs>();
+        if (startupArgs.TaskId() == L"this_is_a_test")
+        {
+            // Signal event that startuptask was activated.
+            SignalPhase(c_testStartupPhaseEventName);
+            succeeded = true;
+        }
     }
 
     if (!succeeded)

@@ -31,7 +31,15 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             // Currently we only support one file in the array, because the
             // activation method forces a new process for each item in the array.
             m_files.Append(StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
+        }
 
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
+        {
+            auto query = protocolArgs.Uri().QueryParsed();
+            std::wstring verb = query.GetFirstValueByName(L"Verb").c_str();
+            std::wstring file = query.GetFirstValueByName(L"File").c_str();
+            auto args = verb + L"," + file;
+            return make<FileActivatedEventArgs>(args);
         }
 
         // IFileActivatedEventArgs
