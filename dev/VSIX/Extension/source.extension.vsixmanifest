@@ -3,7 +3,7 @@
     <Metadata>
         <Identity Id="Microsoft.ProjectReunion" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
         <DisplayName>Project Reunion</DisplayName>
-        <Description xml:space="preserve">The Microsoft Project Reunion Visual Studio extension adds project and item templates to support building Project Reunion apps and components.</Description>
+        <Description xml:space="preserve">The Microsoft Project Reunion Visual Studio extension adds project and item templates to support building Windows apps and components.</Description>
         <MoreInfo>https://github.com/microsoft/ProjectReunion/</MoreInfo>
         <License>LICENSE</License>
         <GettingStartedGuide>https://github.com/microsoft/ProjectReunion/</GettingStartedGuide>
