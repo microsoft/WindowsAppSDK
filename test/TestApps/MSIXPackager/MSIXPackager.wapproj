@@ -55,15 +55,15 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <EntryPointProjectUniqueName>..\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj</EntryPointProjectUniqueName>
     <PackageCertificateThumbprint>1DE5C1C7514DC40A9E962A244C9F769ACC4DC43D</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>D:\ProjectReunion\test\TestApps\MSIXPackager\</AppxPackageDir>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>C:\Users\joayalag\Desktop\</AppxPackageDir>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <EntryPointProjectUniqueName>..\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <AppxBundle>Never</AppxBundle>
