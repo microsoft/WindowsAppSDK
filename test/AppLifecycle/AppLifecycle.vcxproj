@@ -39,10 +39,10 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{C62688A1-16A0-4729-B6ED-842F4FAA29F3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ProjectReunionCppTest</RootNamespace>
+    <RootNamespace>Test.AppLifecycle</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>CppTest</ProjectName>
+    <ProjectName>AppLifecycleTests</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -109,11 +109,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
-    <Import Project="..\CppShared\CppShared.vcxitems" Label="Shared" />
     <Import Project="..\inc\inc.vcxitems" Label="Shared" />
-  </ImportGroup>
-  <ImportGroup Label="AppLifecycle">
-    <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -320,12 +316,24 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="FunctionalTests.cpp" />
+    <ClCompile Include="APITests.cpp" />
+    <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Shared.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
+    <!--
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msixbundle" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).cer" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.cer" TreatOutputAsContent="true" />
+    -->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">

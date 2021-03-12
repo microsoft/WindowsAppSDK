@@ -20,12 +20,12 @@ namespace Test::Bootstrap
 
     static wil::unique_hmodule s_bootstrapDll;
 
-    bool NeedDynamicDependencies()
+    inline bool NeedDynamicDependencies()
     {
         return !TA::IsPackagedProcess();
     }
 
-    void SetupPackages()
+    inline void SetupPackages()
     {
         // Remove our packages in case they were previously installed and incompletely removed
         TP::RemovePackage_DynamicDependencyLifetimeManager();
@@ -38,7 +38,7 @@ namespace Test::Bootstrap
         TP::AddPackage_DynamicDependencyLifetimeManager();
     }
 
-    void CleanupPackages()
+    inline void CleanupPackages()
     {
         // Uninstall the packages we installed via SetupPackages()
         TP::RemovePackage_DynamicDependencyLifetimeManager();
@@ -46,7 +46,7 @@ namespace Test::Bootstrap
         TP::RemovePackage_ProjectReunionFramework();
     }
 
-    void SetupBootstrap()
+    inline void SetupBootstrap()
     {
         // Bootstrapper's only needed for non-packaged processes to use Dynamic Dependencies
         if (!NeedDynamicDependencies())
@@ -76,7 +76,7 @@ namespace Test::Bootstrap
         s_bootstrapDll = std::move(bootstrapDll);
     }
 
-    void CleanupBootstrap()
+    inline void CleanupBootstrap()
     {
         // Bootstrapper's only needed for non-packaged processes to use Dynamic Dependencies
         if (!NeedDynamicDependencies())
@@ -91,13 +91,13 @@ namespace Test::Bootstrap
         s_bootstrapDll.reset();
     }
 
-    void Setup()
+    inline void Setup()
     {
         SetupPackages();
         SetupBootstrap();
     }
 
-    void Cleanup()
+    inline void Cleanup()
     {
         CleanupPackages();
         CleanupBootstrap();
