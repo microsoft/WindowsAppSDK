@@ -5,7 +5,7 @@
 #include <winrt/Windows.Foundation.h>
 #include "ActivatedEventArgsBase.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;
@@ -17,6 +17,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         ProtocolActivatedEventArgs(const std::wstring& uri) : m_uri(winrt::Windows::Foundation::Uri(uri))
         {
             m_kind = ActivationKind::Protocol;
+        }
+
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
+        {
+            return protocolArgs;
         }
 
         // IProtocolActivatedEventArgs

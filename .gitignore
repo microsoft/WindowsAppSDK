@@ -331,7 +331,10 @@ BuildOutput/
 installer/dev/project_reunion_definitions_override.h
 
 # Installer test packages
-!installer/test/testpackages/
+installer/test/testpackages/
+
+# Local temp storage
+temp/
 
 # Project Reunion specific files
 Microsoft.WinUI.AppX.targets

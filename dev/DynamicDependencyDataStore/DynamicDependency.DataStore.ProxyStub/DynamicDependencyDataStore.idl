@@ -1,0 +1,26 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[object]
+[uuid(DDEB4D6A-E146-476d-B729-0BFB1A29A86E)]
+[pointer_default(unique)]
+interface IDynamicDependencyDataStore : IUnknown
+{
+    HRESULT GetApplicationData([out, retval] IUnknown** applicationData);
+
+    HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
+};
+
+[uuid(1BF712E5-41ED-46a5-8402-2D40725F691E)]
+[version(1.0)]
+library DynamicDependencyDataStoreLib
+{
+    [uuid(D1AD16C7-EC59-4765-BF95-9A243EB00507)]
+    coclass DynamicDependencyDataStore
+    {
+        [default] interface IDynamicDependencyDataStore;
+    };
+};

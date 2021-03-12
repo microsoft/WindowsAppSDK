@@ -4,7 +4,7 @@
 
 #include "ActivatedEventArgsBase.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
@@ -15,6 +15,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         LaunchActivatedEventArgs(const std::wstring& args) : m_args(args)
         {
             m_kind = ActivationKind::Launch;
+        }
+
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
+        {
+            auto query = protocolArgs.Uri().QueryParsed();
+            auto args = query.GetFirstValueByName(L"Arguments").c_str();
+            return make<LaunchActivatedEventArgs>(args);
         }
 
         // ILaunchActivatedEventArgs

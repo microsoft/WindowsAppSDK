@@ -1,7 +1,5 @@
 # Roadmap
 
-Project Reunion is a set of libraries, frameworks, components, and tools that you can use in your apps to access powerful Windows platform functionality from all kinds of apps on many versions of Windows.
-
 The roadmap for Project Reunion supports the primary goals of breaking down the barriers between Win32 and UWP and making the Windows developer platform more agile, compatible, modern and open.
 
 For a general overview, see the [readme](https://github.com/microsoft/ProjectReunion/tree/master/docs) and [FAQ](https://github.com/microsoft/ProjectReunion/blob/master/docs/faq.md).
@@ -15,15 +13,15 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 
 🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-WinUI |                ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-DWriteCore |           ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-MRT Core |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-App Lifecycle APIs |      ❌ Not Supported |                        🔄 Preview|                   ✅ Supported  | 
-Power State Notifications |  ❌ Not Supported |              🔄 Preview |                   ✅ Supported  | 
-Windowing |            ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported  | ✅ Supported | ✅ Supported | 
+[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported | 
+[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported | 
+[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 Deploy Options: |  
-• In-app |             ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
-• Fx Package |         ✅ Supported  |                    ✅ Supported  |                   ✅ Supported  | 
+• In-app | ✅ Supported | ✅ Supported | ✅ Supported | 
+• Fx Package | ✅ Supported | ✅ Supported | ✅ Supported | 
 
 ### Unpackaged Desktop Apps
 
@@ -31,15 +29,15 @@ As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX]
 
  🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
-WinUI |                ❌ Not Supported |              ❌ Not Supported |                   ✅ Supported  | 
-DWriteCore |           ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
-MRT Core |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
-App Lifecycle APIs |   ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
-Power State Notifications |❌ Not Supported |                🔄 Preview |                   ✅ Supported  | 
-Windowing |                ❌ Not Supported |          ❌ Not Supported |                   ✅ Supported  | 
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
+[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ❌ Not Supported| 🔄 Preview | ✅ Supported | 
+[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
 Deploy Options:  |  
-• In-app |             ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
-• Fx Package |         ❌ Not Supported |                    🔄 Preview |                   ✅ Supported  | 
+• In-app | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
+• Fx Package | ❌ Not Supported | 🔄 Preview | ✅ Supported |
 
 ## 2021 Focus Areas
 
