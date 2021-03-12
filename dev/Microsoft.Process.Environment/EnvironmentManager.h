@@ -1,11 +1,20 @@
 ﻿#pragma once
 #include <EnvironmentManager.g.h>
 
+using namespace winrt::Windows::Foundation::Collections;
+
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct EnvironmentManager : EnvironmentManagerT<EnvironmentManager>
     {
-        EnvironmentManager() = default;
+        enum Scope
+        {
+            Process = 0,
+            User = 1,
+            Machine = 2
+        };
+
+        EnvironmentManager(Scope const& scope);
 
         static Microsoft::ProjectReunion::EnvironmentManager GetForProcess();
         static Microsoft::ProjectReunion::EnvironmentManager GetForUser();
@@ -17,6 +26,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         void RemoveFromPath(hstring const& path);
         void AddExecutableFileExtension(hstring const& pathExt);
         void RemoveExecutableFileExtension(hstring const& pathExt);
+
+    private:
+        Scope m_Scope;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

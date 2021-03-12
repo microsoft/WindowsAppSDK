@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Process.Environme
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environment", "dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems", "{01FD7E2D-CF9B-48A0-B280-B698D18B51F0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentManagerTests", "test\EnvironmentManagerTests\EnvironmentManagerTests.vcxproj", "{333C2A4D-6599-40E1-90F8-F184C3CF6031}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems*{01fd7e2d-cf9b-48a0-b280-b698d18b51f0}*SharedItemsImports = 9
@@ -148,6 +150,30 @@ Global
 		{7C502995-59C3-483B-86BA-815985353633}.Release|x64.Build.0 = Release|x64
 		{7C502995-59C3-483B-86BA-815985353633}.Release|x86.ActiveCfg = Release|Win32
 		{7C502995-59C3-483B-86BA-815985353633}.Release|x86.Build.0 = Release|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|Any CPU.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|Any CPU.Build.0 = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|ARM.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|ARM.Build.0 = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|ARM64.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|ARM64.Build.0 = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|x64.ActiveCfg = Debug|x64
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|x64.Build.0 = Debug|x64
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|x86.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug_test|x86.Build.0 = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|ARM.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|x64.ActiveCfg = Debug|x64
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|x64.Build.0 = Debug|x64
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|x86.ActiveCfg = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Debug|x86.Build.0 = Debug|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|Any CPU.ActiveCfg = Release|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|ARM.ActiveCfg = Release|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|ARM64.ActiveCfg = Release|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|x64.ActiveCfg = Release|x64
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|x64.Build.0 = Release|x64
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|x86.ActiveCfg = Release|Win32
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,6 +190,7 @@ Global
 		{7C502995-59C3-483B-86BA-815985353633} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{BCE64BEB-DE10-4150-B1A5-502D151227FE} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{01FD7E2D-CF9B-48A0-B280-B698D18B51F0} = {BCE64BEB-DE10-4150-B1A5-502D151227FE}
+		{333C2A4D-6599-40E1-90F8-F184C3CF6031} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
