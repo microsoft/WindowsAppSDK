@@ -56,11 +56,11 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\PushNotificationsWin32App\PushNotificationsWin32App.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>C586305859740686A5B754E40FB37ADCD6CFB907</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>1DE5C1C7514DC40A9E962A244C9F769ACC4DC43D</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\purifoypaul\Desktop\</AppxPackageDir>
+    <AppxPackageDir>D:\ProjectReunion\test\TestApps\MSIXPackager\</AppxPackageDir>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>

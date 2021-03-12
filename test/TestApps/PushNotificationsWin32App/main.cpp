@@ -66,7 +66,7 @@ int main()
     // Check to see if the WinMain activation is due to a Push Activator
     auto args = AppLifecycle2::GetActivatedEventArgs();
     auto kind = args.Kind2();
-
+    
     if (kind == ActivationKindExtension::Push)
     {
         auto activatedEventArgs = args.ActivatedArgs();
@@ -141,7 +141,7 @@ int main()
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
 
-                sendRequestToServer(channelUri);
+                //sendRequestToServer(channelUri);
                 std::cout << "channelUri: " << winrt::to_string(channelUri) << std::endl;
                 // Persist the channelUri and Expiry in the App Service
             }

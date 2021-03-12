@@ -101,12 +101,17 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     winrt::Microsoft::ProjectReunion::PushNotificationActivatedEventArgs PushNotificationActivatedEventArgs::GetPushNotificationActivatedEventArgs()
     {
-        DWORD waitResult = WaitForSingleObject(g_waitHandleForArgs.get(), 1000);
-
-        if (waitResult != WAIT_OBJECT_0)
+        if (g_waitHandleForArgs == nullptr)
         {
             winrt::throw_hresult(E_UNEXPECTED);
         }
+
+        DWORD waitResult = WaitForSingleObject(g_waitHandleForArgs.get(), 1000);
+
+        //if (waitResult != WAIT_OBJECT_0)
+        //{
+        //    winrt::throw_hresult(E_UNEXPECTED);
+        //}
 
         return g_activatedEventArgs;
     }

@@ -25,8 +25,17 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             // Wait for the args from background task
             winrt::Microsoft::ProjectReunion::PushNotificationActivatedEventArgs activatedEventArgs = 
                 PushNotificationActivatedEventArgs::GetPushNotificationActivatedEventArgs();
-            winrt::Microsoft::ProjectReunion::ActivatedEventArgsExtension argsExtension{ activatedEventArgs, ActivationKindExtension::Push };
-            return argsExtension;
+
+            if (activatedEventArgs == nullptr)
+            {
+                winrt::Microsoft::ProjectReunion::ActivatedEventArgsExtension argsExtension{ activatedEventArgs, ActivationKindExtension::Launch };
+                return argsExtension;
+            }
+            else
+            {
+                winrt::Microsoft::ProjectReunion::ActivatedEventArgsExtension argsExtension{ activatedEventArgs, ActivationKindExtension::Push };
+                return argsExtension;
+            }
         }
         
         winrt::Microsoft::ProjectReunion::ActivatedEventArgsExtension argsExtension{ nullptr, ActivationKindExtension::Launch };
