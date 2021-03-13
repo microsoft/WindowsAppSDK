@@ -88,9 +88,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UndockedRegFreeWinRT", "dev
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycleTests", "test\AppLifecycle\AppLifecycle.vcxproj", "{C62688A1-16A0-4729-B6ED-842F4FAA29F3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotifications", "dev\PushNotifications\PushNotifications.vcxitems", "{79197FE2-52BA-4205-811E-598AB867F615}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
+		dev\PushNotifications\PushNotifications.vcxitems*{79197fe2-52ba-4205-811e-598ab867f615}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
@@ -607,6 +610,7 @@ Global
 		{323E29A9-873F-419B-919E-D18BCE1DE120} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{56371CA6-144B-4989-A4E9-391AD4FA7651} = {323E29A9-873F-419B-919E-D18BCE1DE120}
 		{C62688A1-16A0-4729-B6ED-842F4FAA29F3} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{79197FE2-52BA-4205-811E-598AB867F615} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
