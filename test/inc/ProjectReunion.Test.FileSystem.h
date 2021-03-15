@@ -4,15 +4,6 @@
 #ifndef __PROJECTREUNION_TEST_FILESYSTEM_H
 #define __PROJECTREUNION_TEST_FILESYSTEM_H
 
-// Before #include'ing this header you must declare
-//
-//   namespace Test::FileSystem
-//   {
-//       constexpr PCWSTR ThisTestDllFilename{ L"YourTest.dll" };
-//   }
-//
-// where "YourTest.dll" is the filename of your test DLL, e.g. "DynamicDependency_Test_Win32.dll"
-
 #include <filesystem>
 
 #include <wil/win32_helpers.h>
@@ -21,27 +12,30 @@
 
 namespace Test::FileSystem
 {
-    std::filesystem::path GetModuleFileName(HMODULE hmodule)
+    inline std::filesystem::path GetModuleFileName(HMODULE hmodule)
     {
         auto moduleFileName = wil::GetModuleFileNameW(hmodule);
         return std::filesystem::path(moduleFileName.get());
     }
 
-    std::filesystem::path GetModulePath(HMODULE hmodule)
+    inline std::filesystem::path GetModulePath(HMODULE hmodule)
     {
         auto path = GetModuleFileName(hmodule);
         return path.remove_filename();
     }
 
-    std::filesystem::path GetTestAbsoluteFilename()
+    inline std::filesystem::path GetTestAbsoluteFilename()
     {
-        wil::unique_hmodule dll(LoadLibrary(Test::FileSystem::ThisTestDllFilename));
-        const auto lastError{ GetLastError() };
+        // Get the handle of the module containing this code, not the module of the process hosting it.
+        wil::unique_hmodule dll;
+        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+            reinterpret_cast<LPCWSTR>(GetTestAbsoluteFilename), &dll));
+
         VERIFY_IS_NOT_NULL(dll.get());
         return GetModulePath(dll.get());
     }
 
-    std::filesystem::path GetTestAbsolutePath()
+    inline std::filesystem::path GetTestAbsolutePath()
     {
         auto path = GetTestAbsoluteFilename();
         path = path.remove_filename();
@@ -49,7 +43,7 @@ namespace Test::FileSystem
         return path;
     }
 
-    std::filesystem::path GetSolutionOutDirPath()
+    inline std::filesystem::path GetSolutionOutDirPath()
     {
         // We can't lookup the location of project outputs in our solution
         // but we can infer them relative to our test dll's location
@@ -73,7 +67,7 @@ namespace Test::FileSystem
         return path;
     }
 
-    std::filesystem::path GetBootstrapAbsoluteFilename()
+    inline std::filesystem::path GetBootstrapAbsoluteFilename()
     {
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
@@ -82,7 +76,7 @@ namespace Test::FileSystem
         return path;
     }
 
-    std::filesystem::path GetProjectReunionDllAbsoluteFilename()
+    inline std::filesystem::path GetProjectReunionDllAbsoluteFilename()
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();

@@ -1,15 +1,15 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-
 #pragma once
-
 #include <unknwn.h>
-
-#include <appmodel.h>
-#include <shlwapi.h>
-#include <xmllite.h>
-
 #include <ShObjIdl_core.h>
+#include <shlguid.h>
+#include <shlwapi.h>
+#include <shellapi.h>
+#include <appmodel.h>
+#include <xmllite.h>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <mutex>
 #include <list>
@@ -19,6 +19,7 @@
 
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
+#include <wil/stl.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <wil/filesystem.h>

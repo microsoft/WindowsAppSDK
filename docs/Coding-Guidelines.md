@@ -1,34 +1,59 @@
-#### General
+# General
 
-Project Reunion prefers using industry-standard coding styles, guidelines, and patterns for any languages used in implementation or testing.
+Project Reunion prefers using industry-standard coding styles, guidelines, and patterns for any
+languages used in implementation or testing.
 
-#### C++
+## Languages
 
-Project Reunion implementations prefer C++ and C++/WinRT implementations.   New code must adhere to the **cppcoreguidelines** at
-https://github.com/isocpp/CppCoreGuidelines and be /W4 clean (for Visual C++.)
+This list is non-exhaustive; new guidelines for languages will be added over time.
 
-Prefer existing std:: and gsl:: types, but use **wil** (https://github.com/Microsoft/wil) types for Windows-specific helpers and lifecycle management
-rather than creating your own.
+### C++
 
-##### Catching Exceptions and HRESULT
+**DO** implement types using C++ and [C++/WinRT](https://github.com/microsoft/cppwinrt)
 
-Don't just catch `winrt::hresult_error` or other variations as that doesn't catch `std::bad_alloc`.
+**DO** follow the [CppCoreGudelines](https://github.com/isocpp/CppCoreGuidelines) for all new code.
 
-Use the following snippet to catch exceptions and retrieve their HRESULT:
+**DO** enable `/W4 /Wx` for all new code.
+
+**CONSIDER** using the [Windows Implementation Library](https://github.com/Microsoft/wil) for
+Windows-specific helpers rather than creating your own.
+
+**DO** use 4-space indentation instead of tab characters.
+
+##### Catching C++/WinRT Exceptions and HRESULT
+
+Exceptions should not be used for standard flow control.
+
+When a catch clause is required, note that `winrt::hresult_error` does not also catch
+`std::bad_alloc` or any of the other C++ standard exceptions. In cases where a single catch handler
+desires to pull out an HRESULT, use the following:
 
 ```c++
+// For code using C++/WinRT
 catch (...)
 {
     auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
-    ...e.code() contains the WinRT exception or best-guess conversion from a C++ exception...
+    auto hr{ e.code() };
+    auto message { winrt::to_message() };
+    // hr contains the WinRT exception or best-guess conversion from a C++ exception,
+    // message contains the best-guess textual format of that exception
+}
+
+// For code using WIL
+catch (...)
+{
+    auto hr{ wil::ResultFromCaughtException() };
+    // hr contains the WinRT exception, WIL exception, or best-guess conversion from a C++ exception
 }
 ```
 
-#### Markdown
+C++/WinRT's ABI layer automatically catches and converts exceptions generated during a method call
+and uses a similar mechanism to map a C++ exception to an `HRESULT` that can be delivered across the
+ABI.
 
-**GUIDELINE:** The preferred line length limit is ~100 characters. GitHub formats lines regardless of individual length but GitHub diff is line oriented.
-Keeping lines within the preferred limit makes changes easier to review.
+### Markdown
 
-#### Other Languages
-
-If new languages become common, we will describe the coding guidelines for such languages here.
+**DO** wrap lines at ~100 characters. GitHub formats lines regardless of individual length but
+GitHub diff is line oriented. Keeping lines within the preferred limit makes changes easier to
+review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers." If new
+languages become common, we will describe the coding guidelines for such languages here.

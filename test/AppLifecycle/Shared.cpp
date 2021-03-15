@@ -18,7 +18,7 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
-namespace ProjectReunionCppTest
+namespace Test::AppLifecycle
 {
     StorageFile CreateDocFile(std::wstring filename)
     {

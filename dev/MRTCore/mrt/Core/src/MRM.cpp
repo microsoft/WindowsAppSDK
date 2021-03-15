@@ -853,7 +853,12 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
     return;
 }
 
-// Append filename to current module path
+// Append filename to current module path. If the file doesn't exist, it will
+// append the filename to parent path. If none exists, file in current module
+// path will be returned.
+// Visual Studio usually builds the executable to a subfolder with project name 
+// unless TargetPlatformIdentifier is UAP. To accommodate this behavior, we will
+// try to search resources.pri from both module path and parent path.
 STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
 {
     *filePath = nullptr;
@@ -883,10 +888,12 @@ STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
     // Remove module file name
     PWSTR pointerToPath = pathAllocated ? pathAllocated.get() : path;
     PWSTR lastSlash = nullptr;
+    PWSTR secondToLastSlash = nullptr;
     while (*pointerToPath)
     {
         if (*pointerToPath == L'\\')
         {
+            secondToLastSlash = lastSlash;
             lastSlash = pointerToPath;
         }
         pointerToPath++;
@@ -899,26 +906,53 @@ STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
 
     pointerToPath = pathAllocated ? pathAllocated.get() : path;
 
-    size_t lengthInSizeT;
-    RETURN_IF_FAILED(StringCchLengthW(pointerToPath, STRSAFE_MAX_CCH, &lengthInSizeT));
-    length = static_cast<DWORD>(lengthInSizeT);
+    std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> finalPath(nullptr, MrmFreeResource);
 
-    RETURN_IF_FAILED(StringCchLengthW(filename, STRSAFE_MAX_CCH, &lengthInSizeT));
-    DWORD lengthOfName = static_cast<DWORD>(lengthInSizeT);
+    // Will build the path at most twice.
+    // First time using current path. If not exist, do another time with parent path.
+    for (int i = 0; i < 2; i++)
+    {
+        size_t lengthInSizeT;
+        RETURN_IF_FAILED(StringCchLengthW(pointerToPath, STRSAFE_MAX_CCH, &lengthInSizeT));
+        length = static_cast<DWORD>(lengthInSizeT);
 
-    RETURN_IF_FAILED(DWordAdd(length, lengthOfName, &length));
-    RETURN_IF_FAILED(DWordAdd(length, 1, &length));
-    RETURN_IF_FAILED(DWordMult(length, sizeof(wchar_t), &size));
+        RETURN_IF_FAILED(StringCchLengthW(filename, STRSAFE_MAX_CCH, &lengthInSizeT));
+        DWORD lengthOfName = static_cast<DWORD>(lengthInSizeT);
 
-    PWSTR rawOutputPath = reinterpret_cast<PWSTR>(MrmAllocateBuffer(size));
-    RETURN_IF_NULL_ALLOC(rawOutputPath);
+        RETURN_IF_FAILED(DWordAdd(length, lengthOfName, &length));
+        RETURN_IF_FAILED(DWordAdd(length, 1, &length));
+        RETURN_IF_FAILED(DWordMult(length, sizeof(wchar_t), &size));
 
-    std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(rawOutputPath, MrmFreeResource);
+        PWSTR rawOutputPath = reinterpret_cast<PWSTR>(MrmAllocateBuffer(size));
+        RETURN_IF_NULL_ALLOC(rawOutputPath);
 
-    RETURN_IF_FAILED(StringCchCopyW(outputPath.get(), length, pointerToPath));
-    RETURN_IF_FAILED(StringCchCatW(outputPath.get(), length, filename));
+        std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(rawOutputPath, MrmFreeResource);
 
-    *filePath = outputPath.release();
+        RETURN_IF_FAILED(StringCchCopyW(outputPath.get(), length, pointerToPath));
+        RETURN_IF_FAILED(StringCchCatW(outputPath.get(), length, filename));
+
+        if (GetFileAttributes(outputPath.get()) != INVALID_FILE_ATTRIBUTES)
+        {
+            // The file exists. Done.
+            finalPath.swap(outputPath);
+            break;
+        }
+
+        if (i == 0)
+        {
+            // If none of the file exists, will return the file in current path
+            finalPath.swap(outputPath);
+        }
+
+        if (secondToLastSlash == nullptr)
+        {
+            break;
+        }
+
+        *(secondToLastSlash + 1) = 0;
+    }
+
+    *filePath = finalPath.release();
 
     return S_OK;
 }
