@@ -5,6 +5,7 @@
 #include <winerror.h>
 #include <algorithm>
 #include <vector>
+#include <iostream>
 #include <PushNotificationCreateChannelResult.h>
 
 using namespace winrt::Windows::Networking::PushNotifications;
@@ -62,6 +63,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         progress.set_result(channelResult);
 
+        std::cout << "Hello1" << std::endl;
         s_lock.lock();
 
         if (std::find(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId) != s_remoteIdList.end())
@@ -79,6 +81,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         PushNotificationChannelManager channelManager{};
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel pushChannel{ nullptr };
+        std::cout << "Hello2" << std::endl;
 
         for (auto backOffTimeInSeconds = 30; backOffTimeInSeconds <= c_maxBackoffSeconds * 2; backOffTimeInSeconds *= 2)
         {
@@ -86,6 +89,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 if (IsPackagedProcess())
                 {
+                    std::cout << "Hello3" << std::endl;
                     pushChannel = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
                 }
 
@@ -95,7 +99,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                     //channelReunion = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel> (
                                        //     pushChannel.Uri(), pushChannel.ExpirationTime());
-
+                    std::cout << "Hello4" << std::endl;
+                    //std::cout << winrt::to_string(pushChannel.Uri()) << std::endl;
                     channelResult.PushNotificationCreateChannelUpdate(nullptr, S_OK, PushNotificationChannelStatus::CompletedSuccess);
                     break;
                 }
@@ -104,6 +109,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 auto ex = hresult_error(to_hresult(), take_ownership_from_abi);
 
+                std::cout << "Hello5 " << ex.code() << std::endl;
+                std::getchar();
                 if ((backOffTimeInSeconds <= c_maxBackoffSeconds) && isChannelRequestRetryable(ex.code()))
                 {
                     channelResult.PushNotificationCreateChannelUpdate(nullptr, ex.code(), PushNotificationChannelStatus::InProgressRetry);

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.ProjectReunion
+namespace Microsoft.Windows.PushNotifications
 {
     enum PushNotificationChannelStatus
      {
@@ -26,7 +26,7 @@ namespace Microsoft.ProjectReunion
 
     runtimeclass PushNotificationChannel
     {
-        PushNotificationChannel(String uri, Windows.Foundation.DateTime expiration);
+        PushNotificationChannel(String uri, DateTime expiration);
 
     // The Channel Uri for app to Post a notification to.
     String Uri { get; };
