@@ -268,32 +268,6 @@ void UnregisterForActivation()
 }
 ```
 
-<br>
-
-### Instance information
-
-The AppInstance class is intended to represent an instance of the app. In the initial release, the
-API is focused on instance redirection, and therefore exposes methods and properties relevant to
-that operation. However, the intention is that the class will expand in later releases to include
-other methods and properties that would be relevant for an app instance. In the first release, we
-also include the process ID, which the app may use for any purpose it sees fit, including telemetry
-or debugging.
-
-```c++
-void DumpExistingInstances()
-{
-    for (AppInstance const& instance : AppInstance::GetInstances())
-    {
-        std::wostringstream sStream;
-        sStream << L"Instance: ProcessId = " << instance.ProcessId
-            << L", Key = " << instance.Key().c_str() << std::endl;
-        ::OutputDebugString(sStream.str().c_str());
-    }
-}
-```
-
-<br>
-
 ## API Details
 
 ### AppInstance
@@ -308,74 +282,19 @@ namespace Microsoft.Windows.AppLifecycle
     runtimeclass AppInstance
     {
         static AppInstance GetCurrent();
-        static Windows.Foundation.IVector<AppInstance> GetInstances();
-
-        static AppInstance FindOrRegisterForKey(String key);
-        void UnregisterKey(String key);
-
-        void RedirectTo(ActivationArguments args);
 
         ActivationArguments GetActivatedEventArgs();
-
-        static event EventHandler<ActivationArguments> Activated;
-
-        String Key;
-
-        bool IsCurrent { get; };
-        UInt32 ProcessId { get; };
     }
 }
 ```
 
-**GetCurrent** returns an AppInstance that represents the current app instance, with `IsCurrent` set
-to `true`.
-
-**GetInstances** returns a collection of all running instances of the app.
-
-> Note: the existing
-> [AppInstance.GetInstances](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getinstances)
-> only returns instances that have explicitly registered for multi-instance redirection. However,
-> the new AppInstance Reunion class will provide an API surface for all manner of
-> app-instance-related behaviors, not restricted to instance redirection. For this reason, Reunion
-> will maintain a list of all running instances and will not require explicit registration by the
-> app.
-
-**FindOrRegisterForKey** enables an app to register an app-defined key for the current instance, or
-if another instance has already registered that key, then return that other instance instead. This
-is similar to the platform
-[AppInstance.FindOrRegisterInstanceForKey](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.findorregisterinstanceforkey)
-except that that implementation is specific to instance redirection, whereas the Reunion design
-allows for the app to register a key for any reason.
-
-**UnregisterKey** unregisters a given key for this instance. The existing platform behavior is
-specific to instance redirection, and unregistering the key unregisters that instance for
-redirection (and removes it from the platform's collection of registered instances). In the Reunion
-design, unregistering a key simply removes the key for this instance; it does not have any effect on
-instance redirection, nor does it remove this instance from the collection that Reunion is
-maintaining of all running instances.
-
-**RedirectTo** enables an instance of the app to redirect the current activation request to another
-instance. This is very similar to the existing platform
-[AppInstance.RedirectActivationTo](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.redirectactivationto)
-method, except that the Reunion implementation allows the app to pass an ActivationArguments
-payload, thus opening the scope to allow the app to modify or replace the activation arguments that
-the target instance will receive.
+**GetCurrent** returns an AppInstance that represents the current app instance.
 
 **GetActivatedEventArgs** provides similar behavior as the existing platform
 [AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs),
 except that it returns a new ActivationArguments object for the current activation instead of an
 IActivatedEventArgs.
 
-**Activated** events are raised when using single/multi-instancing, or when redirecting an
-activation from another instance to this app.
-
-**Key** an app-defined string value that can be used to identify an instance for redirection
-purposes.
-
-**IsCurrent** indicates whether this instance object represents the current instance of the app or a
-different instance.
-
-**ProcessId** the process ID of the instance.
 
 ### ExtendedActivationKind
 
