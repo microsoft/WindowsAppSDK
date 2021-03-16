@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "PushNotificationChannel.g.h"
+#include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
     {
@@ -11,13 +11,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         hstring Uri();
         Windows::Foundation::DateTime ExpirationTime();
         void Close();
-
-    private:
-        hstring m_uri;
-        Windows::Foundation::DateTime m_expiration;
     };
 }
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, implementation::PushNotificationChannel>
     {

@@ -1,21 +1,20 @@
 ﻿#include "pch.h"
-#include "PushNotificationChannel.h"
-#include "PushNotificationChannel.g.cpp"
+#include "Microsoft.Windows.PushNotifications.PushNotificationChannel.h"
+#include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.cpp"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationChannel::PushNotificationChannel(hstring const& uri, Windows::Foundation::DateTime const& expiration)
     {
-        m_uri = uri;
-        m_expiration = expiration;
+        throw hresult_not_implemented();
     }
     hstring PushNotificationChannel::Uri()
     {
-        return m_uri;
+        throw hresult_not_implemented();
     }
     Windows::Foundation::DateTime PushNotificationChannel::ExpirationTime()
     {
-        return m_expiration;
+        throw hresult_not_implemented();
     }
     void PushNotificationChannel::Close()
     {

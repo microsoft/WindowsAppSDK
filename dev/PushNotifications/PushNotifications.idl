@@ -26,7 +26,7 @@ namespace Microsoft.Windows.PushNotifications
 
     runtimeclass PushNotificationChannel
     {
-        PushNotificationChannel(String uri, DateTime expiration);
+        PushNotificationChannel(String uri, Windows.Foundation.DateTime expiration);
 
     // The Channel Uri for app to Post a notification to.
     String Uri { get; };
