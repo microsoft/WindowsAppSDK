@@ -112,8 +112,6 @@ Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.ProjectR
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-x86\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-x64\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-x64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-arm\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-arm\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-arm64\native"
 Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-arm64\native"
 
@@ -163,12 +161,10 @@ if(-not $SkipFrameworkPackage)
 
     Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\x86\Release"
     Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\x64\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\arm\Release"
     Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\arm64\Release"
     # Currently we don't have a separate Debug package that we want to ship to customers
     #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x86\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\x86\Debug"
     #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x64\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\x64\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\arm\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\arm\Debug"
     #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\arm64\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\arm64\Debug"
 
     $NugetCmdLine = "$nugetExe pack ProjectReunionFrameworkPackage.nuspec $NugetArgs -version $version"

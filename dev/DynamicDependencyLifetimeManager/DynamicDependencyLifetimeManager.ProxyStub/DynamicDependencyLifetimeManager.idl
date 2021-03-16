@@ -1,0 +1,18 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "IDynamicDependencyLifetimeManager.idl"
+
+[uuid(1BF712E5-41ED-46a5-8402-2D40725F691E)]
+[version(1.0)]
+library MsixDynamicDependency
+{
+    [uuid(32E7CF70-038C-429a-BD49-88850F1B4A11)]
+    coclass DynamicDependencyLifetimeManager
+    {
+        [default] interface IDynamicDependencyLifetimeManager;
+    };
+};

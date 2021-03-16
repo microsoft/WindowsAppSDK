@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{B71E818A-882E-456a-87E5-4DE4A6602B99}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>DynamicDependency.DataStore.Msix</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
+    <NMakeOutput>$(OutputPath)DynamicDependency.DataStore.msix</NMakeOutput>
+    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <OutDir>$(OutDir)</OutDir>
+    <IntDir>$(IntDir)</IntDir>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Xml Include="appxmanifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\dev\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
+      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\dev\DynamicDependencyDataStore\DynamicDependency.DataStore\DynamicDependency.DataStore.vcxproj">
+      <Project>{51293dfa-614b-4355-a60d-b30df3228fd1}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

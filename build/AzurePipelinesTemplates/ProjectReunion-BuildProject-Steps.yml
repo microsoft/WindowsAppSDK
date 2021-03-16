@@ -44,12 +44,25 @@ steps:
 #      filePath: $(Build.SourcesDirectory)\tools\ProjectReunionPGODatabase\restore-pgodb.ps1
 
 #UNDONE- fix guid?
+
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'WindowsES'
+
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore ${{ parameters.solutionPath }}'
     inputs:
       restoreSolution: ${{ parameters.solutionPath }}
       feedsToUse: config
       nugetConfigPath: ${{ parameters.nugetConfigPath }}
+
+  - task: powershell@2
+    displayName: 'Create pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -CheckTestPfx -Clean -Offline -Verbose
+      workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
@@ -59,6 +72,31 @@ steps:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Never /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode)'
+
+  - task: CmdLine@2
+    displayName: 'Install Test Certificate'
+    inputs:
+      script: 'certutil.exe -addstore TrustedPeople MSTest.cer'
+      workingDirectory: '$(Build.SourcesDirectory)\build'
+
+  - task: powershell@2
+    displayName: 'Setup TAEF Service (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -CheckTAEFService -Offline -Verbose
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+#DISABLED - GitHub runs as a a built-in Administrator (thus Elevated and no split-token)
+# TAEF Service can't RunAs:RestrictedUser from this account thus all tests Failed or Blocked
+# and Dynamic Dependencies doesn't support Elevation so it's impossible for this test to
+# work correctly today. Disabling until we move off GitHub's pipeline for test execution
+#  - task: CmdLine@2
+#    displayName: 'Run AppLifeCycleTest'
+#    inputs:
+#      script: 'te.exe CppTest.dll'
+#      workingDirectory: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\CppTest'
+#    condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ${{ parameters.solutionPath }} binlog'

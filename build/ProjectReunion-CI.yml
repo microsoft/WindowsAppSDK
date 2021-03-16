@@ -3,7 +3,35 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
+
 jobs:
+- job: CredScan
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  # Scans the root source folder for security vulnerability 
+  - task: CredScan@2
+    inputs:
+      toolMajorVersion: 'V2'
+
+  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: false
+      CodesignValidation: false
+      CredScan: true
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
+
 - job: Build
   pool:
     vmImage: 'windows-2019'
@@ -22,9 +50,6 @@ jobs:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         PGOBuildMode: 'Optimize'
-      Release_Arm:
-        buildPlatform: 'arm'
-        buildConfiguration: 'Release'
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
@@ -37,10 +62,40 @@ jobs:
   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
+- job: BuildMRT
+  pool:
+    vmImage: 'windows-latest'
+  strategy:
+    maxParallel: 10
+    matrix:
+      Release_x86:
+        buildPlatform: 'x86'
+        buildConfiguration: 'Release'
+      Release_x64:
+        buildPlatform: 'x64'
+        buildConfiguration: 'Release'
+      Release_Arm64:
+        buildPlatform: 'ARM64'
+        buildConfiguration: 'Release'
+  steps:
+  - template: ..\dev\MRTCore\build-mrt.yml
+    parameters:
+      buildJobName: 'BuildMRTCore'
+
+- job: PublishMRT
+  dependsOn:
+    - BuildMRT
+  condition: in(dependencies.BuildMRT.result, 'Succeeded')
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - template: ..\dev\MRTCore\publish-mrt.yml
+
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
-    dependsOn: Build
+    dependsOn: 
+      - Build
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     testSuite: 'DevTestSuite'
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
@@ -50,11 +105,6 @@ jobs:
     dependsOn: RunTestsInHelix
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
     minimumExpectedTestsExecutedCount: 2
-
-# MRTCore build pipeline
-- template: ..\dev\MRTCore\azure-pipelines.yml
-  parameters:
-    buildJobName: 'BuildMRTCore'
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml

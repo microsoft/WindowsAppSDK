@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  IgnorableNamespaces="uap">
+
+  <Identity
+    Name="Microsoft.ProjectReunion.Test.InstallerFramework"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    ProcessorArchitecture="x86"
+    Version="1.0.0.0" />
+
+  <Properties>
+    <DisplayName>Microsoft.ProjectReunion.Test.InstallerFramework for tests</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>logo.png</Logo>
+    <Framework>true</Framework>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+</Package>

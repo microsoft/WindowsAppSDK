@@ -5,7 +5,7 @@ Contoso publishes a framework package. At runtime, LolzKittens wants to use Cont
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 HRESULT LoadPackageDependencyId(_In_ PCWSTR what, wil::unique_ptr<WCHAR[]>& packageDependencyId);
@@ -17,8 +17,8 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
     wil::unique_ptr<WCHAR[]> packageDependencyId;
     RETURN_IF_FAILED(LoadPackageDependencyId(L"muffins", packageDependencyId));
 
-    const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
+    const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
+    const auto addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(

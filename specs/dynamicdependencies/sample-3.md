@@ -7,7 +7,7 @@ Contoso publishes a framework package. At runtime, LolzKittens wants to use Cont
 ## Win32
 
 ```c++
-#include <MsixDynamicDependency.hpp>
+#include <MsixDynamicDependency.h>
 #include <wil/resource.h>
 
 int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
@@ -19,7 +19,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     minVersion.Build = 1234;
     minVersion.Revision = 567;
     const auto architectureFilter = MddPackageDependencyProcessorArchitectures::None;
-    const auto lifetimeKind = MddPinPackageDependencyLifetimeKind::Process;
+    const auto lifetimeKind = MddPackageDependencyLifetimeKind::Process;
     const auto createOptions = MddCreatePackageDependencyOptions::None;
     wil::unique_process_heap_string packageDependencyId;
     RETURN_IF_FAILED(MddTryCreatePackageDependency(
@@ -27,8 +27,8 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
     // lifetimeArtifact=null gives the PackageDepedency a lifetime of the current process
     // The PackageDependency is not persisted. It will be implicitly deleted when the process terminates.
 
-    const INT32 rank = PACKAGE_DEPENDENCY_RANK_DEFAULT;
-    const UINT32 addOptions = MddAddPackageDependencyOptions::None;
+    const INT32 rank = MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT;
+    const auto addOptions = MddAddPackageDependencyOptions::None;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext = nullptr;
     wil::unique_process_heap_string packageFullName;
     RETURN_IF_FAILED(MddAddPackageDependency(
