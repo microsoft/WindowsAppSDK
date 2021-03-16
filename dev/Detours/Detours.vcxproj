@@ -160,7 +160,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -180,7 +180,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -203,7 +203,7 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -228,7 +228,7 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -250,7 +250,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -270,7 +270,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -293,7 +293,7 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -318,7 +318,7 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
