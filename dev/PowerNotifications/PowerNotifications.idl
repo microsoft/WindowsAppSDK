@@ -15,8 +15,7 @@ namespace Microsoft.ProjectReunion
 
     enum BatteryStatus
     {
-        Uninitialized = -1,
-        NotPresent,
+        NotPresent = 0,
         Discharging,
         Idle,
         Charging
@@ -24,8 +23,7 @@ namespace Microsoft.ProjectReunion
     
     enum PowerSupplyStatus
     {
-        Uninitialized = -1,
-        NotPresent,
+        NotPresent = 0,
         Inadequate,
         Adequate
     };
