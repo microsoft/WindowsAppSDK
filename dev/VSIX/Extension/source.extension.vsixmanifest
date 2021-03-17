@@ -14,9 +14,9 @@
         <Preview>true</Preview>
     </Metadata>
     <Installation AllUsers="true">
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.8, 17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.8, 17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.8, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.9, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.9, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.9, 17.0)" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
@@ -46,9 +46,5 @@
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.ResourceDictionary" d:TargetPath="|WinUI.Neutral.CppWinRT.ResourceDictionary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.RuntimeComponent" d:TargetPath="|WinUI.Neutral.CppWinRT.RuntimeComponent;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
         <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.Cs.ResourceDictionary" d:TargetPath="|WinUI.Neutral.Cs.ResourceDictionary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.CppWinRT.BlankApp" d:TargetPath="|WinUI.UWP.CppWinRT.BlankApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.Cs.BlankApp" d:TargetPath="|WinUI.UWP.Cs.BlankApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.Cs.ClassLibrary" d:TargetPath="|WinUI.UWP.Cs.ClassLibrary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.UWP.Cs.RuntimeComponent" d:TargetPath="|WinUI.UWP.Cs.RuntimeComponent;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     </Assets>
 </PackageManifest>
