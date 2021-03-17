@@ -102,42 +102,65 @@ namespace Microsoft.ProjectReunion
         Windows.ApplicationModel.Background.IBackgroundTaskRegistration Registration;
     };
 
-    enum ChannelStatus
+    enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
-        InProgressRetry, // The request is in progress and is in a backoff retry state
+        InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
         CompletedSuccess, // The request completed successfully
         CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
     };
 
-    runtimeclass ChannelResult
+    // The PushNotificationChannel Progress result
+    struct PushNotificationCreateChannelStatus
     {
-        ChannelResult(
-            Windows.Networking.PushNotifications.PushNotificationChannel channel,
+        // The last extended error we failed Channel requests on that caused the inprogress retry status. S_OK if this is just progress status.
+        HRESULT extendedError;
+
+        // Either InProgress or InProgressRetry status
+        PushNotificationChannelStatus status;
+
+        // Total Retries so far
+        UInt32 retryCount;
+    };
+
+    runtimeclass PushNotificationChannel
+    {
+        PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
+        //PushNotificationChannel(String uri, Windows.Foundation.DateTime expiration);
+
+    // The Channel Uri for app to Post a notification to.
+    String Uri { get; };
+
+    // Expiration of the Channel
+    Windows.Foundation.DateTime ExpirationTime { get; };
+
+    // Unsubscribes the channel
+    void Close();
+
+    // In-memory Event handler for Push Notifications
+ //   event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
+    };
+
+    runtimeclass PushNotificationCreateChannelResult
+    {
+        PushNotificationCreateChannelResult(
+            PushNotificationChannel channel,
             HRESULT extendedError,
-            ChannelStatus status);
+            PushNotificationChannelStatus status);
 
         // The Push channel associated with the Result. Null if InProgress or completion failed
-        Windows.Networking.PushNotifications.PushNotificationChannel Channel { get; };
+        PushNotificationChannel Channel { get; };
 
-        // Low-level information about why the operation might not
-        // have worked. Apps generally do not take action based on
-        // this value, in part because the value may not be stable.
+        // More detailed error code in addition to the ChannelStatus state.
         HRESULT ExtendedError{ get; };
 
         // The Status of the ChannelComplete operation
-        ChannelStatus Status { get; };
+        PushNotificationChannelStatus Status { get; };
     };
 
-    static runtimeclass PushManager
+    static runtimeclass PushNotificationManager
     {
-        // Register an activator using a Details context
-        static void RegisterPushNotificationActivator(InProcActivatorDetails details);
-
-        // Unregister any activator if present
-        static void UnregisterPushNotificationActivator(Windows.ApplicationModel.Background.IBackgroundTaskRegistration registration);
-
-        // Request a Push Channel with an GUID RemoteId from WNS. RemoteId is an AAD identifier GUID
-        static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(Guid remoteId);
+        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
     };
 }

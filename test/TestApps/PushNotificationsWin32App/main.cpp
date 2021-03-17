@@ -59,7 +59,7 @@ void sendRequestToServer(winrt::hstring channel)
 int main()
 {
     // Register activator, always the first thing here
-    std::wstring activatorGuid = L"{C54044C4-EAC7-4C4B-9996-C570A94B9305}"; // same as in app manifest
+  /*  std::wstring activatorGuid = L"{C54044C4-EAC7-4C4B-9996-C570A94B9305}"; // same as in app manifest
     InProcActivatorDetails details(activatorGuid);
     PushManager::RegisterPushNotificationActivator(details);
 
@@ -104,39 +104,39 @@ int main()
             args.CompleteDeferral();
         });
     }
-
+    */
     // Create channel
     guid remoteId{ L"a2e4a323-b518-4799-9e80-0b37aeb0d225" };
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
 
     std::cout << "Channel Request started" << std::endl;
 
-    auto channelOperation = PushManager::CreateChannelAsync(remoteId);
+    auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId);
 
     channelOperation.Progress(
-        [&channelEvent](
-            IAsyncOperationWithProgress<ChannelResult, ChannelResult> const& /* sender */,
-            ChannelResult const& args)
+        [](
+            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& /* sender */,
+            PushNotificationCreateChannelStatus const& args)
         {
-            if (args.Status() == ChannelStatus::InProgress)
+            if (args.status == PushNotificationChannelStatus::InProgress)
             {
                 // This is basically a noop since it isn't really an error state
-                printf("The first channel request is still in progress! \n");
+                std::cout << "The channel request is in progress " << args.extendedError << std::endl;
             }
-            else if (args.Status() == ChannelStatus::InProgressRetry)
+            else if (args.status == PushNotificationChannelStatus::InProgressRetry)
             {
-                LOG_HR_MSG(args.ExtendedError(), "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it.");
+                std::cout << "The channel request is in back-off retry mode because of a retryable error code: " << args.extendedError << " Expect delays in acquiring it" << std::endl;
             }
     });
 
     // Setup the completed event handler
     channelOperation.Completed(
         [&channelEvent](
-            IAsyncOperationWithProgress<ChannelResult, ChannelResult> const& sender,
+            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
             AsyncStatus const /* asyncStatus */)
         {
             auto result = sender.GetResults();
-            if (result.Status() == ChannelStatus::CompletedSuccess)
+            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
             {
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
@@ -145,19 +145,17 @@ int main()
                 std::cout << "channelUri: " << winrt::to_string(channelUri) << std::endl;
                 // Persist the channelUri and Expiry in the App Service
             }
-            else if (result.Status() == ChannelStatus::CompletedFailure)
+            else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
                 std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
             }
 
             // Send the channel request to server
-
             SetEvent(channelEvent.get());
         });
 
-    // Handle channelOperation gracefully - if main goes out of context
-
-    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 300000))
+    // The maximum amount of time it takes for channel request to be obtained - 16mins
+    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
     {
         std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
         channelOperation.Cancel();
