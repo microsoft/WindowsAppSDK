@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)PowerNotifications.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Pal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)PowerNotifications.h" />
