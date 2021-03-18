@@ -38,6 +38,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         IBuffer rawContentAsBuffer = rawNotification.ContentBytes();
         DataReader dataReader = DataReader::FromBuffer(rawContentAsBuffer);
+
+        m_payload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
         dataReader.ReadBytes(m_payload);
     }
 
