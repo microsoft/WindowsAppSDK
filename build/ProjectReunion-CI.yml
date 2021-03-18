@@ -114,6 +114,7 @@ jobs:
     dependsOn:
       - Build
       - PublishMRT
+    versionTag: 'CI'
     versionDate: $(versionDate)
     versionCounter: $(versionCounter)
     condition: |

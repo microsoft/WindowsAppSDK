@@ -300,7 +300,7 @@ jobs:
     dependsOn: SignBinariesAndPublishSymbols
     signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
     useReleaseTag: '$(ProjectReunionFinalRelease)'
-    prereleaseVersionTag: prerelease
+    versionTag: 'CI'
     versionDate: $(versionDate)
     versionCounter: $(versionCounter)
 

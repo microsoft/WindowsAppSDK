@@ -90,8 +90,11 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $versionFinal = '${{ parameters.major }}.${{ parameters.minor }}.${{ parameters.patch }}-${{ parameters.versionTag }}.${{ parameters.versionDate }}.${{ parameters.versionCounter }}'
-
+        $versionFinal = '${{ parameters.major }}.${{ parameters.minor }}.${{ parameters.patch }}.${{ parameters.versionDate }}.${{ parameters.versionCounter }}'
+        if(-not [String]::IsNullOrEmpty('${{ parameters.versionTag }}'))
+        {
+          $versionFinal = '${{ parameters.major }}.${{ parameters.minor }}.${{ parameters.patch }}-${{ parameters.versionTag }}.${{ parameters.versionDate }}.${{ parameters.versionCounter }}'
+        }
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
         $publicNuspec.package.metadata.version = $versionFinal
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
