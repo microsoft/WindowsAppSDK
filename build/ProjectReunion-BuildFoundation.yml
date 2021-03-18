@@ -22,7 +22,7 @@ jobs:
     inputs:
       AllTools: false
       APIScan: false
-      BinSkim: true
+      BinSkim: false
       CodesignValidation: false
       CredScan: true
       FortifySCA: false
