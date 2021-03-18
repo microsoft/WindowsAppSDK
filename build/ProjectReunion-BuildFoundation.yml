@@ -2,6 +2,13 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 35  # Sanity check for minimum expected tests to be reported
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily Foundation Nightly Build
+  branches:
+    include:
+    - main
+
 parameters:
   - name: "ReleaseSigning"
     type: boolean
