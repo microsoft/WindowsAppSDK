@@ -17,7 +17,7 @@ parameters:
   minor: '5'
   patch: '0'
   versionTag: 'CI'
-  versionFinal: $[format('{0}.{1}.{2}-{3}.{4}.{5}', {{ parameters.major }}, {{ parameters.minor }}, {{ parameters.patch }}, {{ parameters.versionTag }},{{ parameters.versionDate }}, {{ parameters.versionCounter }})]
+  versionFinal: $[format('{0}.{1}.{2}-{3}.{4}.{5}', ${{ parameters.major }}, ${{ parameters.minor }}, ${{ parameters.patch }}, ${{ parameters.versionTag }}, ${{ parameters.versionDate }}, ${{ parameters.versionCounter }})]
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn:
