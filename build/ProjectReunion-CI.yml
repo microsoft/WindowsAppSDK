@@ -3,7 +3,8 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
   minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
   rerunPassesRequiredToAvoidFailure: 5
-
+  versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
+  versionCounter: $[counter(variables['versionDate'], 0)]
 jobs:
 - job: CredScan
   pool:
@@ -113,7 +114,8 @@ jobs:
     dependsOn:
       - Build
       - PublishMRT
-    prereleaseVersionTag: ci
+    versionDate: $(versionDate)
+    versionCounter: $(versionCounter)
     condition: |
       and
       (
