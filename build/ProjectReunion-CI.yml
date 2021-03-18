@@ -68,6 +68,8 @@ jobs:
       Function: 'analyze'
       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
       AnalyzeVerbose: true
+    condition: ne(variables['buildConfiguration'], 'Debug')
+    
   - task: PostAnalysis@1
     inputs:
       AllTools: false
