@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
   <TemplateData>
-    <Name>Blank App, Packaged (WinUI in Desktop)</Name>
-    <Description>A project for creating a Desktop app based on the Windows UI Library (WinUI) along with a MSIX package for side-loading or distribution via the Microsoft Store.</Description>
+    <Name>Blank App, Packaged (WinUI 3 in Desktop)</Name>
+    <Description>A project for creating a Desktop app based on the Windows UI Library (WinUI 3) along with a MSIX package for side-loading or distribution via the Microsoft Store.</Description>
     <Icon>WinUI.Desktop.CppWinRT.PackagedApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.CppWinRT.PackagedApp</TemplateID>
     <ProjectType>VC</ProjectType>
