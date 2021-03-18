@@ -21,6 +21,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyContext.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddWinRT.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PackageDependency.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.PackageDependencyRank.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddCore.Architecture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />
@@ -63,6 +65,7 @@
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
   </ItemGroup>
   <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
   </ItemGroup>
