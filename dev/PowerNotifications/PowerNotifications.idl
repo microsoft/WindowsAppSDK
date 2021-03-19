@@ -1,0 +1,113 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+// REVIEW: We're not doing doing any versioning within IDL/WinMDs, right?
+
+namespace Microsoft.ProjectReunion
+{
+    // Enums duplicated from IPowerManagerStatics
+    enum EnergySaverStatus
+    {
+        Disabled = 0,
+        Off,
+        On
+    };
+
+    enum BatteryStatus
+    {
+        NotPresent = 0,
+        Discharging,
+        Idle,
+        Charging
+    };
+    
+    enum PowerSupplyStatus
+    {
+        NotPresent = 0,
+        Inadequate,
+        Adequate
+    };
+
+    // Enums based on on PowerSettingRegisterNotification's state
+    enum PowerSourceStatus
+    {
+        AC = 0,
+        DC,
+        ShortTerm
+    };
+    
+    enum DisplayStatus
+    {
+        Off = 0,
+        On,
+        Dimmed
+    };
+    
+    enum SystemIdleStatus
+    {
+        Idle = 0,
+        Busy
+    };
+
+    enum PowerSchemePersonality
+    {
+        HighPerformance = 0,
+        PowerSaver,
+        Balanced
+    };
+
+    enum UserPresenceStatus
+    {
+        Present = 0,
+        Absent
+    };
+
+    enum SystemAwayModeStatus
+    {
+        Entering = 0,
+        Exiting
+    };
+
+    static runtimeclass PowerManager
+    {
+        // REVIEW: Properties and events duplicated from IPowerManagerStatics. That might not be the ideal API shape. We might want the BatteryStatusChanged event to
+        // be typed with BatteryStatus, and actually provide the BatteryStatus when the event is signaled. But for initial scaffolding, we have aligned with the existing
+        // IPowerManagerStatics implementation.
+        static EnergySaverStatus EnergySaverStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> EnergySaverStatusChanged;
+
+        static BatteryStatus BatteryStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> BatteryStatusChanged;
+
+        static PowerSupplyStatus PowerSupplyStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSupplyStatusChanged;
+
+        static Int32 RemainingChargePercent{ get; };
+        static event Windows.Foundation.EventHandler<Object> RemainingChargePercentChanged;
+
+        static Windows.Foundation.TimeSpan RemainingDischargeTime{ get; };
+        static event Windows.Foundation.EventHandler<Object> RemainingDischargeTimeChanged;
+
+        // Properties and events based on PowerSettingRegisterNotification's state
+        static PowerSourceStatus PowerSourceStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSourceStatusChanged;
+        
+        static DisplayStatus DisplayStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> DisplayStatusChanged;
+
+        // REVIEW: The corresponding low-level signal, GUID_IDLE_BACKGROUND_TASK, is dataless. Therefore it's unclear what this get operation could actually do.
+        // May need to be removed and have this be an event-only thing (event fires when the system is non-idle. There is no corresponding event for when the
+        // system is idle or wishes to become so).
+        static SystemIdleStatus SystemIdleStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
+        
+        static PowerSchemePersonality PowerSchemePersonality{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSchemePersonalityChanged;
+        
+        static UserPresenceStatus UserPresenceStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> UserPresenceStatusChanged;
+        
+        static SystemAwayModeStatus SystemAwayModeStatus{ get; };
+        static event Windows.Foundation.EventHandler<Object> SystemAwayModeStatusChanged;
+    };
+}
