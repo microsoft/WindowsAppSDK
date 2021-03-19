@@ -180,7 +180,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -198,7 +198,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -216,9 +216,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;PowerNotifications_ClosedSource.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;PowerNotifications_ClosedSource.libPowerNotifications_ClosedSource.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\BuildOutput\Debug\x64\PowerNotifications_ClosedSource</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir)..\PowerNotifications_ClosedSource;$(ProjectDir)..\..\BuildOutput\Debug\x64\PowerNotifications_ClosedSource</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -235,7 +235,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -257,7 +257,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -279,13 +279,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\..\PowerNotifications_ClosedSource</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -301,8 +301,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(OutDir)..\PowerNotifications_ClosedSource;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -323,7 +324,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
