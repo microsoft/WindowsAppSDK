@@ -62,20 +62,23 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     }
     Windows::ApplicationModel::Background::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        s_lock.lock();
+        //s_lock.lock();
         return m_backgroundTaskInstance.GetDeferral();
     }
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler)
     {
+        //s_lock.lock();
         if (m_backgroundTaskInstance != nullptr)
         {
             return m_backgroundTaskInstance.Canceled(handler);
         }
+        //s_lock.unlock();
 
         return winrt::event_token{};
     }
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
+        //s_lock.lock();
         if (m_backgroundTaskInstance != nullptr)
         {
             return m_backgroundTaskInstance.Canceled(token);
@@ -83,12 +86,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     }
     bool PushNotificationReceivedEventArgs::Handled()
     {
-        s_lock.lock();
+       // s_lock.lock();
         return m_handled;
     }
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        s_lock.lock();
+        //s_lock.lock();
         m_handled = value;
     }
 }

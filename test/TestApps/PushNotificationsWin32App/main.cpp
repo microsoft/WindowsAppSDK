@@ -103,22 +103,27 @@ int main()
 
                     // Register Push Event for Foreground
                     pushToken = result.Channel().PushReceived([&](const auto&, PushNotificationReceivedEventArgs args)
-                        {
-                            auto payload = args.Payload();
+                    {
+                        auto payload = args.Payload();
 
-                            // Do stuff to process the raw payload
-                            std::string payloadString(payload.begin(), payload.end());
+                        // Do stuff to process the raw payload
+                        std::string payloadString(payload.begin(), payload.end());
 
-                            std::cout << "Payload (foreground case): " + payloadString << std::endl;
+                        std::cout << "Payload (foreground case): " + payloadString << std::endl;
 
-                            args.Handled(true);
-                        });
+                        args.Handled(true);
+                    });
                 }
                 else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
                 {
                     LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
                 }
             });
+
+        while (true)
+        {
+            Sleep(500);
+        }
 
         // Unregister the Push event for Foreground before exiting
         // Weird RPC error here

@@ -13,10 +13,18 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         void Close();
 
         winrt::event_token PushReceived(Windows::Foundation::TypedEventHandler<Microsoft::ProjectReunion::PushNotificationChannel, Microsoft::ProjectReunion::PushNotificationReceivedEventArgs> const& handler);
-        void PushReceived(winrt::event_token const& token) noexcept;
+        void PushReceived(winrt::event_token const& token) noexcept;        
 
     private:
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+
+        void LambdaWrapper(
+            winrt::Windows::Networking::PushNotifications::PushNotificationChannel /*channel*/,
+            winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args);
+
+        Windows::Foundation::TypedEventHandler<
+            Microsoft::ProjectReunion::PushNotificationChannel,
+            Microsoft::ProjectReunion::PushNotificationReceivedEventArgs> s_typedEventHandler;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

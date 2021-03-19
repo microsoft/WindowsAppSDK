@@ -25,10 +25,28 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(Windows::Foundation::TypedEventHandler<Microsoft::ProjectReunion::PushNotificationChannel, Microsoft::ProjectReunion::PushNotificationReceivedEventArgs> const& handler)
     {
-        throw hresult_not_implemented();
+        s_typedEventHandler = handler;
+
+        Windows::Foundation::TypedEventHandler<
+            winrt::Windows::Networking::PushNotifications::PushNotificationChannel,
+            winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs> typedEventHandler
+            (this, &winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel::LambdaWrapper);
+        
+        return m_channel.PushNotificationReceived(typedEventHandler);
     }
+
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        throw hresult_not_implemented();
+        m_channel.PushNotificationReceived(token);
+        s_typedEventHandler = nullptr;
+    }
+
+    void PushNotificationChannel::LambdaWrapper(
+        winrt::Windows::Networking::PushNotifications::PushNotificationChannel /*channel*/,
+        winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args)
+    {
+        Microsoft::ProjectReunion::PushNotificationReceivedEventArgs reunionPushArgs = 
+            Microsoft::ProjectReunion::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
+        s_typedEventHandler(nullptr, reunionPushArgs);
     }
 }
