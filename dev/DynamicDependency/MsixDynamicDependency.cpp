@@ -19,6 +19,15 @@ bool IsStaticPackageGraphEmpty()
     (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentStaticPackageInfo rc=%d", rc);
     return rc == APPMODEL_ERROR_NO_PACKAGE;
 }
+
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+bool IsElevated(HANDLE token = nullptr)
+{
+    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel;
+    FAIL_FAST_IF_FAILED(wil::get_token_information_nothrow(tokenMandatoryLabel, !token ? GetCurrentThreadEffectiveToken() : token));
+    const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
+    return integrityLevel >= SECURITY_MANDATORY_HIGH_RID;
+}
 }
 
 STDAPI MddTryCreatePackageDependency(
@@ -31,6 +40,9 @@ STDAPI MddTryCreatePackageDependency(
     MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsElevated() || MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
     *packageDependencyId = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
@@ -44,6 +56,9 @@ CATCH_RETURN();
 STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),MddCore::IsElevated() ||MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
     // Dynamic Dependencies requires a non-packaged process
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
@@ -58,6 +73,9 @@ STDAPI MddAddPackageDependency(
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),MddCore::IsElevated() ||MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
     *packageDependencyContext = nullptr;
     if (packageFullName)
     {
@@ -75,6 +93,9 @@ CATCH_RETURN();
 STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),MddCore::IsElevated() ||MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
     // Dynamic Dependencies requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
@@ -86,6 +107,9 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),MddCore::IsElevated() ||MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
     *packageFullName = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
@@ -105,6 +129,9 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),MddCore::IsElevated() ||MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
     *packageDependencyId = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process

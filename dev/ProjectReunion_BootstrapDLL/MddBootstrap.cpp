@@ -24,6 +24,27 @@ MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 std::wstring g_test_ddlmPackageNamePrefix;
 std::wstring g_test_ddlmPackagePublisherId;
 
+namespace MddCore
+{
+inline bool IsStaticPackageGraphEmpty()
+{
+    // Check the static package graph
+    UINT32 n = 0;
+    const auto rc{ GetCurrentPackageInfo(PACKAGE_FILTER_HEAD, &n, nullptr, nullptr) };
+    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageInfo rc=%d", rc);
+    return rc == APPMODEL_ERROR_NO_PACKAGE;
+}
+
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+inline bool IsElevated(HANDLE token = nullptr)
+{
+    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel;
+    FAIL_FAST_IF_FAILED(wil::get_token_information_nothrow(tokenMandatoryLabel, !token ? GetCurrentThreadEffectiveToken() : token));
+    const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
+    return integrityLevel >= SECURITY_MANDATORY_HIGH_RID;
+}
+}
+
 inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {
 #if defined(_M_X64)
@@ -81,6 +102,12 @@ inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(PCWSTR ar
 STDAPI MddBootstrapInitialize(
     const PACKAGE_VERSION minVersion) noexcept try
 {
+    // Dynamic Dependencies Bootstrap API doesn't support elevation
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsElevated() || MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+
+    // Dynamic Dependencies Bootstrap API requires a non-packaged process
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);

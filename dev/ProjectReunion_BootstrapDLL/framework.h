@@ -15,6 +15,7 @@
 #include <mutex>
 
 #include <wil/cppwinrt.h>
+#include <wil/token_helpers.h>
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
 #include <wil/com.h>
