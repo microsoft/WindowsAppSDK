@@ -9,7 +9,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         m_channel = channel;
     }
-    hstring PushNotificationChannel::Uri()
+    Windows::Foundation::Uri PushNotificationChannel::Uri()
     {
         return m_channel.Uri();
     }

@@ -8,12 +8,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         PushNotificationChannel() = default;
 
         PushNotificationChannel(Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
-        hstring Uri();
+        Windows::Foundation::Uri Uri();
         Windows::Foundation::DateTime ExpirationTime();
         void Close();
 
     private:
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        Windows::Foundation::Uri Uri{ nullptr };
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

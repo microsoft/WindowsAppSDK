@@ -29,7 +29,7 @@ namespace Microsoft.ProjectReunion
         PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
 
         // The Channel Uri for app to Post a notification to.
-        String Uri { get; };
+        Windows.Foundation.Uri Uri { get; };
 
         // Expiration of the Channel
         Windows.Foundation.DateTime ExpirationTime { get; };
