@@ -88,6 +88,35 @@ namespace Test::DynamicDependency
             MddBootstrapShutdown();
         }
 
+        TEST_METHOD(GetCurrentPackageInfo_NotPackaged_InvalidParameter)
+        {
+            const UINT32 c_filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_INFORMATION_BASIC };
+
+            {
+                Assert::AreEqual(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, nullptr, nullptr, nullptr)));
+            }
+            {
+                UINT32 count{};
+                Assert::AreEqual(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, nullptr, nullptr, &count)));
+            }
+
+            {
+                UINT32 bufferLength{ 1 };
+                Assert::AreEqual(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, &bufferLength, nullptr, nullptr)));
+            }
+            {
+                UINT32 bufferLength{ 1 };
+                UINT32 count{};
+                Assert::AreEqual(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, &bufferLength, nullptr, &count)));
+            }
+
+            {
+                BYTE buffer[1]{};
+                UINT32 bufferLength{ static_cast<UINT32>(ARRAYSIZE(buffer)) };
+                Assert::AreEqual(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, &bufferLength, buffer, nullptr)));
+            }
+        }
+
         TEST_METHOD(GetCurrentPackageInfo_NotPackaged)
         {
             VerifyGetCurrentPackageInfo();
