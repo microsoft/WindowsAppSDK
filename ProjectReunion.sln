@@ -16,6 +16,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8630F7AA-2969-4DC9-8700-9B468C1DC21D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectReunion_DLL", "dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj", "{B73AD907-6164-4294-88FB-F3C9C10DA1F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{51293DFA-614B-4355-A60D-B30DF3228FD1} = {51293DFA-614B-4355-A60D-B30DF3228FD1}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppLifecycle", "AppLifecycle", "{3DE93B2F-F887-437D-B512-6B1024ABA290}"
 EndProject
