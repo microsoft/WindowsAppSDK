@@ -8,55 +8,63 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    auto factory = make_self<factory_implementation::PowerManager>();
 
     // EnergySaverStatus Functions
     EventType& EnergySaverStatus_Event()
     {
-        return factory->m_EnergySaverStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusChangedEvent;
     }
 
     void EnergySaverStatus_Register()
     {
-        check_hresult(RegisterEnergySaverStatusChangedListener(&PowerManager::EnergySaverStatusChanged_Callback, &factory->m_EnergySaverStatusHandle));
+        check_hresult(RegisterEnergySaverStatusChangedListener(
+            &PowerManager::EnergySaverStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusHandle));
     }
 
     void EnergySaverStatus_Unregister()
     {
-        check_hresult(UnregisterEnergySaverStatusChangedListener(factory->m_EnergySaverStatusHandle));
+        check_hresult(UnregisterEnergySaverStatusChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusHandle));
     }
 
     void EnergySaverStatus_Update()
     {
-        check_hresult(GetEnergySaverStatus(&factory->m_cachedEnergySaverStatus));
+        check_hresult(GetEnergySaverStatus(
+            &make_self<factory_implementation::PowerManager>()->m_cachedEnergySaverStatus));
     }
 
     // BatteryStatus Functions
     EventType& BatteryStatus_Event()
     {
-        return factory->m_batteryStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_batteryStatusChangedEvent;
     }
 
     void BatteryStatus_Register()
     {
-        check_hresult(RegisterCompositeBatteryStatusChangedListener(&PowerManager::CompositeBatteryStatusChanged_Callback, &factory->m_batteryStatusHandle));
+        check_hresult(RegisterCompositeBatteryStatusChangedListener(
+            &PowerManager::CompositeBatteryStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_batteryStatusHandle));
     }
 
     void BatteryStatus_Unregister()
     {
-        check_hresult(UnregisterCompositeBatteryStatusChangedListener(factory->m_batteryStatusHandle));
+        check_hresult(UnregisterCompositeBatteryStatusChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_batteryStatusHandle));
     }
 
     void BatteryStatus_Update()
     {
-        check_hresult(GetCompositeBatteryStatus(&factory->m_cachedCompositeBatteryStatus));
-        factory->ProcessCompositeBatteryStatus(*factory->m_cachedCompositeBatteryStatus);
+        check_hresult(GetCompositeBatteryStatus(
+            &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus));
+        make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(
+            *make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus);
     }
    
     // PowerSupplyStatus Functions
     EventType& PowerSupplyStatus_Event()
     {
-        return factory->m_powerSupplyStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_powerSupplyStatusChangedEvent;
     }
 
     void PowerSupplyStatus_Register()
@@ -77,7 +85,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     // RemainingChargePercent Functions
     EventType& RemainingChargePercent_Event()
     {
-        return factory->m_remainingChargePercentChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_remainingChargePercentChangedEvent;
     }
 
     void RemainingChargePercent_Register()
@@ -98,143 +106,170 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     // RemainingDischargeTime Functions
     EventType& RemainingDischargeTime_Event()
     {
-        return factory->m_remainingDischargeTimeChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_remainingDischargeTimeChangedEvent;
     }
 
     void RemainingDischargeTime_Register()
     {
-        check_hresult(RegisterDischargeTimeChangedListener(&PowerManager::RemainingDischargeTimeChanged_Callback, &factory->m_dischargeTimeHandle));
+        check_hresult(RegisterDischargeTimeChangedListener(
+            &PowerManager::RemainingDischargeTimeChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_dischargeTimeHandle));
     }
 
     void RemainingDischargeTime_Unregister()
     {
-        check_hresult(UnregisterDischargeTimeChangedListener(factory->m_dischargeTimeHandle));
+        check_hresult(UnregisterDischargeTimeChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_dischargeTimeHandle));
     }
 
     void RemainingDischargeTime_Update()
     {
-        check_hresult(GetDischargeTime(&factory->m_cachedDischargeTime));
+        check_hresult(GetDischargeTime(
+            &make_self<factory_implementation::PowerManager>()->m_cachedDischargeTime));
     }
    
     // PowerSourceStatus Functions
     EventType& PowerSourceStatus_Event()
     {
-        return factory->m_powerSourceStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_powerSourceStatusChangedEvent;
     }
 
     void PowerSourceStatus_Register()
     {
-        check_hresult(RegisterPowerConditionChangedListener(&PowerManager::PowerSourceStatusChanged_Callback, &factory->m_powerSourceStatusHandle));
+        check_hresult(RegisterPowerConditionChangedListener(
+            &PowerManager::PowerSourceStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_powerSourceStatusHandle));
     }
 
     void PowerSourceStatus_Unregister()
     {
-        check_hresult(UnregisterPowerConditionChangedListener(factory->m_powerSourceStatusHandle));
+        check_hresult(UnregisterPowerConditionChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_powerSourceStatusHandle));
     }
 
     void PowerSourceStatus_Update()
     {
-        check_hresult(GetPowerCondition(&factory->m_cachedPowerSourceStatus));
+        check_hresult(GetPowerCondition(
+            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSourceStatus));
     }
    
     // DisplayStatus Functions
     EventType& DisplayStatus_Event()
     {
-        return factory->m_displayStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_displayStatusChangedEvent;
     }
 
     void DisplayStatus_Register()
     {
-        check_hresult(RegisterDisplayStatusChangedListener(&PowerManager::DisplayStatusChanged_Callback, &factory->m_displayStatusHandle));
+        check_hresult(RegisterDisplayStatusChangedListener(
+            &PowerManager::DisplayStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_displayStatusHandle));
     }
 
     void DisplayStatus_Unregister()
     {
-        check_hresult(UnregisterDisplayStatusChangedListener(factory->m_displayStatusHandle));
+        check_hresult(UnregisterDisplayStatusChangedListener
+        (make_self<factory_implementation::PowerManager>()->m_displayStatusHandle));
     }
 
     void DisplayStatus_Update()
     {
-        check_hresult(GetDisplayStatus(&factory->m_cachedDisplayStatus));
+        check_hresult(GetDisplayStatus(
+            &make_self<factory_implementation::PowerManager>()->m_cachedDisplayStatus));
     }
    
     // SystemIdleStatus Functions
     EventType& SystemIdleStatus_Event()
     {
-        return factory->m_systemIdleStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_systemIdleStatusChangedEvent;
     }
 
     void SystemIdleStatus_Register()
     {
-        check_hresult(RegisterSystemIdleStatusChangedListener(&PowerManager::SystemIdleStatusChanged_Callback, &factory->m_systemIdleStatusHandle));
+        check_hresult(RegisterSystemIdleStatusChangedListener(
+            &PowerManager::SystemIdleStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
     void SystemIdleStatus_Unregister()
     {
-        check_hresult(UnregisterSystemIdleStatusChangedListener(factory->m_systemIdleStatusHandle));
+        check_hresult(UnregisterSystemIdleStatusChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
    
     // PowerSchemePersonality Functions
     EventType& PowerSchemePersonality_Event()
     {
-        return factory->m_powerSchemePersonalityChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityChangedEvent;
     }
 
     void PowerSchemePersonality_Register()
     {
-        check_hresult(RegisterPowerSchemePersonalityChangedListener(&PowerManager::PowerSchemePersonalityChanged_Callback, &factory->m_powerSchemePersonalityHandle));
+        check_hresult(RegisterPowerSchemePersonalityChangedListener(
+            &PowerManager::PowerSchemePersonalityChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
     }
 
     void PowerSchemePersonality_Unregister()
     {
-        check_hresult(UnregisterPowerSchemePersonalityChangedListener(factory->m_powerSchemePersonalityHandle));
+        check_hresult(UnregisterPowerSchemePersonalityChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
     }
 
     void PowerSchemePersonality_Update()
     {
-        check_hresult(GetPowerSchemePersonality(&factory->m_cachedPowerSchemePersonality));
+        check_hresult(GetPowerSchemePersonality(
+            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
     }
    
     // UserPresenceStatus Functions
     EventType& UserPresenceStatus_Event()
     {
-        return factory->m_userPresenceStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_userPresenceStatusChangedEvent;
     }
 
     void UserPresenceStatus_Register()
     {
-        check_hresult(RegisterUserPresenceStatusChangedListener(&PowerManager::UserPresenceStatusChanged_Callback, &factory->m_userPresenceStatusHandle));
+        check_hresult(RegisterUserPresenceStatusChangedListener(
+            &PowerManager::UserPresenceStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_userPresenceStatusHandle));
     }
 
     void UserPresenceStatus_Unregister()
     {
-        check_hresult(UnregisterUserPresenceStatusChangedListener(factory->m_userPresenceStatusHandle));
+        check_hresult(UnregisterUserPresenceStatusChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_userPresenceStatusHandle));
     }
 
     void UserPresenceStatus_Update()
     {
-        check_hresult(GetUserPresenceStatus(&factory->m_cachedUserPresenceStatus));
+        check_hresult(GetUserPresenceStatus(
+            &make_self<factory_implementation::PowerManager>()->m_cachedUserPresenceStatus));
     }
 
     // SystemAwayModeStatus Functions
     EventType& SystemAwayModeStatus_Event()
     {
-        return factory->m_systemAwayModeStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusChangedEvent;
     }
 
     void SystemAwayModeStatus_Register()
     {
-        check_hresult(RegisterSystemAwayModeStatusChangedListener(&PowerManager::SystemAwayModeStatusChanged_Callback, &factory->m_systemAwayModeStatusHandle));
+        check_hresult(RegisterSystemAwayModeStatusChangedListener(
+            &PowerManager::SystemAwayModeStatusChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
     }
 
     void SystemAwayModeStatus_Unregister()
     {
-        check_hresult(UnregisterSystemAwayModeStatusChangedListener(factory->m_systemAwayModeStatusHandle));
+        check_hresult(UnregisterSystemAwayModeStatusChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
     }
 
     void SystemAwayModeStatus_Update()
     {
-        check_hresult(GetSystemAwayModeStatus(&factory->m_cachedSystemAwayModeStatus));
+        check_hresult(GetSystemAwayModeStatus(
+            &make_self<factory_implementation::PowerManager>()->m_cachedSystemAwayModeStatus));
     }
 
 }

@@ -134,7 +134,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Update };
 
-        PowerFunctionDetails compostieBatteryStatusFunc{
+        PowerFunctionDetails compositeBatteryStatusFunc{
             &winrt::Microsoft::ProjectReunion::implementation::BatteryStatus_Event,
             &winrt::Microsoft::ProjectReunion::implementation::BatteryStatus_Register,
             &winrt::Microsoft::ProjectReunion::implementation::BatteryStatus_Unregister,
@@ -342,7 +342,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             if (m_oldBatteryStatus != m_batteryStatus)
             {
                 m_oldBatteryStatus = m_batteryStatus;
-                RaiseEvent(compostieBatteryStatusFunc);
+                RaiseEvent(compositeBatteryStatusFunc);
             }
 
             if (m_oldPowerSupplyStatus != m_powerSupplyStatus)
@@ -354,18 +354,18 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 
         winrt::Microsoft::ProjectReunion::BatteryStatus BatteryStatus()
         {
-            CheckRegistrationAndOrUpdateValue(compostieBatteryStatusFunc);
+            CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
             return m_batteryStatus;
         }
 
         event_token BatteryStatusChanged(PowerEventHandle const& handler)
         {
-            return AddCallback(compostieBatteryStatusFunc, handler);
+            return AddCallback(compositeBatteryStatusFunc, handler);
         }
 
         void BatteryStatusChanged(event_token const& token)
         {
-            RemoveCallback(compostieBatteryStatusFunc, token);
+            RemoveCallback(compositeBatteryStatusFunc, token);
         }
 
         void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
@@ -378,7 +378,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         // PowerSupplyStatus Functions
         winrt::Microsoft::ProjectReunion::PowerSupplyStatus PowerSupplyStatus()
         {
-            CheckRegistrationAndOrUpdateValue(compostieBatteryStatusFunc);
+            CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
             return m_powerSupplyStatus;
         }
 
@@ -396,7 +396,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         // RemainingChargePercent Functions
         int RemainingChargePercent()
         {
-            CheckRegistrationAndOrUpdateValue(compostieBatteryStatusFunc);
+            CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
             return m_batteryChargePercent;
         }
 
