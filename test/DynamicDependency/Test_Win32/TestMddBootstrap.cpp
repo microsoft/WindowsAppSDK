@@ -88,6 +88,67 @@ namespace Test::DynamicDependency
             MddBootstrapShutdown();
         }
 
+        TEST_METHOD(GetCurrentPackageInfo_NotPackaged)
+        {
+            VerifyGetCurrentPackageInfo();
+
+            winrt::hstring packageFamilyName{ Test::Packages::DynamicDependencyLifetimeManager::c_PackageFamilyName };
+            auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+
+            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Version <major>.0.0.0 to find any framework package for this major version
+            PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
+            Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
+
+            VerifyGetCurrentPackageInfo(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), 1, 700);
+
+            winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(L"Does.Not.Exist");
+
+            MddBootstrapShutdown();
+
+            VerifyGetCurrentPackageInfo();
+        }
+
+#if defined(TODO_EnableAfterConvertingToTAEF)
+        TEST_METHOD(GetCurrentPackageInfo_Packaged)
+        {
+            VerifyGetCurrentPackageInfo();
+
+            winrt::hstring packageFamilyName{ Test::Packages::DynamicDependencyLifetimeManager::c_PackageFamilyName };
+            auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+
+            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Version <major>.0.0.0 to find any framework package for this major version
+            PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
+            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(minVersion));
+
+            VerifyGetCurrentPackageInfo();
+        }
+#endif
+
+    private:
+        static void VerifyGetCurrentPackageInfo(
+            const HRESULT expectedHR = HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE),
+            const UINT32 expectedCount = 0,
+            const UINT32 minExpectedBufferLength = 0)
+        {
+            UINT32 bufferLength{};
+            UINT32 count{};
+            Assert::AreEqual(expectedHR, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_INFORMATION_BASIC, &bufferLength, nullptr, &count)));
+            Assert::AreEqual(expectedCount, count);
+            if (minExpectedBufferLength > 0)
+            {
+                auto message{ wil::str_printf<wil::unique_process_heap_string>(L"GetCurrentPackageInfo2() expectedBufferLength>=%u bufferLength=%u", minExpectedBufferLength, bufferLength) };
+                Assert::IsTrue(bufferLength >= minExpectedBufferLength, message.get());
+            }
+            else
+            {
+                Assert::AreEqual(0u, bufferLength);
+            }
+        }
+
     private:
         static wil::unique_hmodule m_bootstrapDll;
     };
