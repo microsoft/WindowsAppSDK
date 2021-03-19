@@ -19,6 +19,8 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.ApplicationModel.AppExtensions.h>
+#include <winrt/Windows.Management.Core.h>
 #include <winrt/Windows.Management.Deployment.h>
 
 #include <filesystem>
