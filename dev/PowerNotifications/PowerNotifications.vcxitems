@@ -21,6 +21,5 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)PowerNotifications.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PowerNotificationsPal.h" />
   </ItemGroup>
 </Project>

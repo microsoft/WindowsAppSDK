@@ -5,7 +5,8 @@
 
 #include <mutex>
 #include <PowerManager.g.h>
-#include <PowerNotificationsPal.h>
+//#include <PowerNotificationsPal.h>
+#include "PowerNotifications_ClosedSource.h"
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 
@@ -61,12 +62,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void PowerSchemePersonality_Register();
     void PowerSchemePersonality_Unregister();
     void PowerSchemePersonality_Update();
-	
+
     EventType& UserPresenceStatus_Event();
     void UserPresenceStatus_Register();
     void UserPresenceStatus_Unregister();
     void UserPresenceStatus_Update();
-	
+
     EventType& SystemAwayModeStatus_Event();
     void SystemAwayModeStatus_Register();
     void SystemAwayModeStatus_Unregister();
@@ -134,7 +135,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Update };
 
-        PowerFunctionDetails compositeBatteryStatusFunc{
+        PowerFunctionDetails compostieBatteryStatusFunc{
             &winrt::Microsoft::ProjectReunion::implementation::BatteryStatus_Event,
             &winrt::Microsoft::ProjectReunion::implementation::BatteryStatus_Register,
             &winrt::Microsoft::ProjectReunion::implementation::BatteryStatus_Unregister,
@@ -260,7 +261,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             RaiseEvent(energySaverStatusFunc);
         }
 
-        // BatteryStatus Functions        
+        // BatteryStatus Functions
         void ProcessCompositeBatteryStatus(CompositeBatteryStatus const& compositeBatteryStatus)
         {
             // Calculate the remaining charge capacity based on the maximum charge
@@ -342,7 +343,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             if (m_oldBatteryStatus != m_batteryStatus)
             {
                 m_oldBatteryStatus = m_batteryStatus;
-                RaiseEvent(compositeBatteryStatusFunc);
+                RaiseEvent(compostieBatteryStatusFunc);
             }
 
             if (m_oldPowerSupplyStatus != m_powerSupplyStatus)
@@ -354,18 +355,18 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 
         winrt::Microsoft::ProjectReunion::BatteryStatus BatteryStatus()
         {
-            CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
+            CheckRegistrationAndOrUpdateValue(compostieBatteryStatusFunc);
             return m_batteryStatus;
         }
 
         event_token BatteryStatusChanged(PowerEventHandle const& handler)
         {
-            return AddCallback(compositeBatteryStatusFunc, handler);
+            return AddCallback(compostieBatteryStatusFunc, handler);
         }
 
         void BatteryStatusChanged(event_token const& token)
         {
-            RemoveCallback(compositeBatteryStatusFunc, token);
+            RemoveCallback(compostieBatteryStatusFunc, token);
         }
 
         void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
@@ -378,7 +379,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         // PowerSupplyStatus Functions
         winrt::Microsoft::ProjectReunion::PowerSupplyStatus PowerSupplyStatus()
         {
-            CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
+            CheckRegistrationAndOrUpdateValue(compostieBatteryStatusFunc);
             return m_powerSupplyStatus;
         }
 
@@ -396,7 +397,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         // RemainingChargePercent Functions
         int RemainingChargePercent()
         {
-            CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
+            CheckRegistrationAndOrUpdateValue(compostieBatteryStatusFunc);
             return m_batteryChargePercent;
         }
 
@@ -411,7 +412,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         }
 
 
-        // RemainingDischargeTime Functions        
+        // RemainingDischargeTime Functions
         Windows::Foundation::TimeSpan RemainingDischargeTime()
         {
             CheckRegistrationAndOrUpdateValue(remainingDischargeTimeFunc);
@@ -489,7 +490,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             // PReview: Should this be the default value?
             // We expect a persistently-queryable value, but
             // low-level APIs provide an idle->non-idle pulse event
- 
+
             return SystemIdleStatus::Busy;
         }
 
