@@ -36,12 +36,17 @@ inline bool IsStaticPackageGraphEmpty()
 }
 
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
-inline bool IsElevated(HANDLE token = nullptr)
+bool IsElevated(HANDLE token = nullptr)
 {
-    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel;
-    FAIL_FAST_IF_FAILED(wil::get_token_information_nothrow(tokenMandatoryLabel, !token ? GetCurrentThreadEffectiveToken() : token));
+    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel{ wil::get_token_information_failfast<TOKEN_MANDATORY_LABEL>(!token ? GetCurrentThreadEffectiveToken() : token) };
     const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
     return integrityLevel >= SECURITY_MANDATORY_HIGH_RID;
+}
+
+void FailFastIfElevated()
+{
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), IsElevated() || IsElevated(GetCurrentProcessToken()),
+                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
 }
 }
 
@@ -102,8 +107,8 @@ inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(PCWSTR ar
 STDAPI MddBootstrapInitialize(
     const PACKAGE_VERSION minVersion) noexcept try
 {
-    // Dynamic Dependencies Bootstrap API doesn't support elevation
-    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsElevated() || MddCore::IsElevated(GetCurrentProcessToken()), "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
