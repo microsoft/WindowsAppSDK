@@ -14,7 +14,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     private:
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-        Windows::Foundation::Uri Uri{ nullptr };
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

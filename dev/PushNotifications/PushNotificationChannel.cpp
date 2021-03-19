@@ -11,7 +11,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     }
     Windows::Foundation::Uri PushNotificationChannel::Uri()
     {
-        return m_channel.Uri();
+        winrt::Windows::Foundation::Uri pushChannelUri{ m_channel.Uri() };
+        return pushChannelUri;
     }
     Windows::Foundation::DateTime PushNotificationChannel::ExpirationTime()
     {

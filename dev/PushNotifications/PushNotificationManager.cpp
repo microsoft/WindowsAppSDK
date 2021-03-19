@@ -8,6 +8,7 @@
 #include <vector>
 #include <iostream>
 #include "PushNotificationChannel.h"
+#include <wil/resource.h>
 
 using namespace winrt::Windows::Networking::PushNotifications;
 using namespace winrt;
@@ -50,9 +51,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::PushNotificationCreateChannelResult, Microsoft::ProjectReunion::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
     {
+        std::cout << "Request Channel" << std::endl;
+
         static std::vector<winrt::guid> s_remoteIdList;
-        static std::mutex s_mutex;
-        static std::unique_lock<std::mutex> s_lock(s_mutex, std::defer_lock); // Avoid locking during the constructor call
+        //static std::mutex s_mutex;
+        //static std::unique_lock<std::mutex> s_lock(s_mutex, std::defer_lock); // Avoid locking during the constructor call
+        static wil::critical_section s_lock;
 
         // NOTE: API supports channel requests only for packaged applications
         IsPackagedProcess();
@@ -69,7 +73,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             s_lock.lock();
             auto it = std::find(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId);
             remoteIdPresent = (it != s_remoteIdList.end()) ? true : false;
-            s_lock.unlock();
         }
 
         winrt::Microsoft::ProjectReunion::PushNotificationCreateChannelResult channelResult{ nullptr };
@@ -84,7 +87,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             s_lock.lock();
             s_remoteIdList.push_back(remoteId);
-            s_lock.unlock();
         }
 
         uint8_t retryCount = 0;
@@ -137,8 +139,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             s_lock.lock();
             std::remove(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId);
-            s_lock.unlock();
         }
+
         co_return channelResult;
     }
 }

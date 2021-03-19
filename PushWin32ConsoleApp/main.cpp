@@ -142,7 +142,7 @@ int main()
                 auto channelExpiry = result.Channel().ExpirationTime();
 
                 //sendRequestToServer(channelUri);
-                std::cout << "channelUri: " << winrt::to_string(channelUri) << std::endl;
+                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
                 // Persist the channelUri and Expiry in the App Service
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
