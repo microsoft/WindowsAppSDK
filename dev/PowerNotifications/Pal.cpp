@@ -20,7 +20,10 @@ HRESULT UnregisterCompositeBatteryStatusChangedListener(CompositeBatteryStatusRe
     return S_OK;
 }
 
-HRESULT GetDischargeTime(ULONGLONG* DischargeTimeOut) { return S_OK; }
+HRESULT GetDischargeTime(ULONGLONG* DischargeTimeOut) {
+    *DischargeTimeOut = 7;
+    return S_OK;
+}
 HRESULT RegisterDischargeTimeChangedListener(OnDischargeTimeChanged listener, DischargeTimeRegistration* registration) { return S_OK; }
 HRESULT UnregisterDischargeTimeChangedListener(DischargeTimeRegistration registration) { return S_OK; }
 
@@ -32,7 +35,10 @@ HRESULT GetPowerCondition(DWORD* powerConditionOut) { return S_OK; }
 HRESULT RegisterPowerConditionChangedListener(OnPowerConditionChanged listener, PowerConditionRegistration* registration) { return S_OK; }
 HRESULT UnregisterPowerConditionChangedListener(PowerConditionRegistration registration) { return S_OK; }
 
-HRESULT GetDisplayStatus(DWORD* displayStatusOut) { return S_OK; }
+HRESULT GetDisplayStatus(DWORD* displayStatusOut) {
+    *displayStatusOut = 5;
+    return S_OK;
+}
 HRESULT RegisterDisplayStatusChangedListener(OnDisplayStatusChanged listener, DisplayStatusRegistration* registration) { return S_OK; }
 HRESULT UnregisterDisplayStatusChangedListener(DisplayStatusRegistration registration) { return S_OK; }
 

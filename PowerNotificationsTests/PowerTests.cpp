@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include <iostream>
 
 using PowerEventHandle =
 winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
@@ -31,10 +32,28 @@ namespace PowerMangerTest
         TEST_METHOD(Foo)
         {
             //insert additional code here
-            PowerEventHandle handle;
-            auto token = winrt::Microsoft::ProjectReunion::PowerManager::BatteryStatusChanged(handle);
+            bool callback_success = false;
+            auto token = winrt::Microsoft::ProjectReunion::PowerManager::BatteryStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+                {
+                    callback_success = true;
+                    std::cout << "Reached";
+                });
+            //Add a sleep and then check if the callback was successful
+
+            //VERIFY_IS_TRUE(callback_success);
+
             winrt::Microsoft::ProjectReunion::PowerManager::BatteryStatusChanged(token);
-            VERIFY_IS_NOT_NULL(handle);
+            VERIFY_IS_NOT_NULL(token);
+        }
+
+        TEST_METHOD(GetDisplayStatus)
+        {
+            //insert additional code here
+            PowerEventHandle hand;
+            auto stat = winrt::Microsoft::ProjectReunion::PowerManager::DisplayStatus();
+            //VERIFY_ARE_EQUAL(stat, 5);
+            //std::cout << "\n Time : " << stat;
+            VERIFY_IS_NOT_NULL(hand);
         }
     };
 }
