@@ -216,7 +216,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;PowerNotifications_ClosedSource.libPowerNotifications_ClosedSource.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PowerNotifications_ClosedSource.lib;onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>ProjectReunion.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)..\PowerNotifications_ClosedSource;$(ProjectDir)..\..\BuildOutput\Debug\x64\PowerNotifications_ClosedSource</AdditionalLibraryDirectories>
     </Link>
