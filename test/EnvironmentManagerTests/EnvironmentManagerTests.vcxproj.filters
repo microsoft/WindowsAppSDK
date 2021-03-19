@@ -30,7 +30,7 @@
     <ClInclude Include="EnvironmentManagerWin32Tests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Helper.h">
+    <ClInclude Include="EnvironmentVariableHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

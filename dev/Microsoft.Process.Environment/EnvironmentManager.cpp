@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 #include <EnvironmentManager.h>
 #include <EnvironmentManager.g.cpp>
 
@@ -75,25 +78,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         throw hresult_not_implemented();
     }
 
-    StringMap EnvironmentManager::GetProcessEnvironmentVariables()
+    StringMap EnvironmentManager::GetProcessEnvironmentVariables() const
     {
         //Get the pointer to the process block
-        LPWSTR environmentVariablesString = GetEnvironmentStrings();
+        PWSTR environmentVariablesString{ GetEnvironmentStrings() };
         THROW_HR_IF_NULL(E_POINTER, environmentVariablesString);
 
-        // parse the block into a map
-        LPTSTR variable;
-        variable = (LPTSTR)environmentVariablesString;
-
         StringMap environmentVariables;
-        while (*variable)
+        for (auto environmentVariableOffset = environmentVariablesString; *environmentVariableOffset; environmentVariableOffset += wcslen(environmentVariableOffset) + 1)
         {
-            std::wstring environmentVariable(variable);
-            size_t locationOfNull = environmentVariable.find_last_of(L'=');
-
-            environmentVariables.Insert(environmentVariable.substr(0, locationOfNull), environmentVariable.substr(locationOfNull + 1));
-
-            variable += lstrlen(variable) + 1;
+            auto delimiter{ wcschr(environmentVariableOffset, L'=') };
+            FAIL_FAST_HR_IF_NULL(E_UNEXPECTED, delimiter);
+            std::wstring variableName(environmentVariableOffset, 0, delimiter - environmentVariableOffset);
+            auto variableValue{ delimiter + 1 };
+            environmentVariables.Insert(variableName, variableValue);
         }
 
         THROW_IF_WIN32_BOOL_FALSE(FreeEnvironmentStrings(environmentVariablesString));
@@ -101,7 +99,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return environmentVariables;
     }
 
-    StringMap EnvironmentManager::GetUserOrMachineEnvironmentVariables()
+    StringMap EnvironmentManager::GetUserOrMachineEnvironmentVariables() const
     {
         StringMap environmentVariables;
         wil::unique_hkey environmentVariablesHKey = GetRegHKeyForEVUserAndMachineScope();
@@ -118,31 +116,22 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         DWORD sizeOfLongestValueInCharacters;
         DWORD numberOfValues;
 
-        THROW_IF_FAILED(RegQueryInfoKeyW(
-            environmentVariablesHKey.get()
-            , nullptr // lpClass
-            , nullptr // lpcchClass
-            , nullptr // lpReserved
-            , nullptr // lpcSubKeys
-            , nullptr // lpcbMaxSubKeyLen
-            , nullptr // lpcbMaxCLassLen
-            , &numberOfValues //lpcValues
-            , &sizeOfLongestNameInCharacters
-            , &sizeOfLongestValueInCharacters
-            , nullptr // lpcmSecurityDescriptor
-            , nullptr)); // lpftLastWriteTime
+        THROW_IF_WIN32_ERROR(RegQueryInfoKeyW(environmentVariablesHKey.get(),
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+            &numberOfValues, &sizeOfLongestNameInCharacters,
+            &sizeOfLongestValueInCharacters, nullptr, nullptr));
 
         // +1 for null character
-        const DWORD NAME_LENGTH = sizeOfLongestNameInCharacters + 1;
-        const DWORD VALUE_SIZE_IN_BYTES = sizeOfLongestValueInCharacters * sizeof(WCHAR);
+        const DWORD c_nameLength = sizeOfLongestNameInCharacters + 1;
+        const DWORD c_valueSizeInBytes{ static_cast<DWORD>(sizeOfLongestValueInCharacters * sizeof(WCHAR)) };
 
-        std::unique_ptr<wchar_t[]> environmentVariableName(new wchar_t[NAME_LENGTH]);
-        std::unique_ptr<BYTE[]> environmentVariableValue(new BYTE[VALUE_SIZE_IN_BYTES]);
+        std::unique_ptr<wchar_t[]> environmentVariableName(new wchar_t[c_nameLength]);
+        std::unique_ptr<BYTE[]> environmentVariableValue(new BYTE[c_valueSizeInBytes]);
 
-        for (int valueIndex = 0; valueIndex < numberOfValues; valueIndex++)
+        for (DWORD valueIndex = 0; valueIndex < numberOfValues; valueIndex++)
         {
-            DWORD nameLength = NAME_LENGTH;
-            DWORD valueSize = VALUE_SIZE_IN_BYTES;
+            DWORD nameLength = c_nameLength;
+            DWORD valueSize = c_valueSizeInBytes;
             LSTATUS enumerationStatus = RegEnumValueW(environmentVariablesHKey.get()
                 , valueIndex
                 , environmentVariableName.get()
@@ -163,19 +152,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 THROW_HR(HRESULT_FROM_WIN32(enumerationStatus));
             }
+            environmentVariableValue.get()[valueSize] = L'\0';
+            environmentVariables.Insert(environmentVariableName.get(), reinterpret_cast<PWSTR>(environmentVariableValue.get()));
 
-            environmentVariables.Insert(environmentVariableName.get(), reinterpret_cast<LPWSTR>(environmentVariableValue.get()));
-
-            environmentVariableName.reset(new wchar_t[NAME_LENGTH]);
-            environmentVariableValue.reset(new BYTE[VALUE_SIZE_IN_BYTES]);
+            environmentVariableName.get()[0] = L'\0';
+            environmentVariableValue.reset(new BYTE[c_valueSizeInBytes]);
         }
 
         return environmentVariables;
     }
 
-    wil::unique_hkey EnvironmentManager::GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess)
+    wil::unique_hkey EnvironmentManager::GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess) const
     {
-        assert(m_Scope != Scope::Process);
+        FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == Scope::Process);
+
         REGSAM registrySecurity = KEY_READ;
 
         if (needsWriteAccess)
@@ -186,11 +176,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         wil::unique_hkey environmentVariablesHKey;
         if (m_Scope == Scope::User)
         {
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, USER_EV_REG_LOCATION.c_str(), 0, registrySecurity, environmentVariablesHKey.addressof())));
+            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, USER_EV_REG_LOCATION, 0, registrySecurity, environmentVariablesHKey.addressof())));
         }
         else //Scope is Machine
         {
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, MACHINE_EV_REG_LOCATION.c_str(), 0, registrySecurity, environmentVariablesHKey.addressof())));
+            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, MACHINE_EV_REG_LOCATION, 0, registrySecurity, environmentVariablesHKey.addressof())));
         }
 
         return environmentVariablesHKey;

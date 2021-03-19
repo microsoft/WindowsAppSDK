@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
 #include <EnvironmentManager.g.h>
 
 using namespace winrt::Windows::Foundation::Collections;
@@ -28,14 +31,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         void RemoveExecutableFileExtension(hstring const& pathExt);
 
     private:
-        Scope m_Scope;
+        Scope m_Scope{};
 
-        std::wstring USER_EV_REG_LOCATION = L"Environment";
-        std::wstring MACHINE_EV_REG_LOCATION = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+        PCWSTR USER_EV_REG_LOCATION = L"Environment";
+        PCWSTR MACHINE_EV_REG_LOCATION = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
-        StringMap GetProcessEnvironmentVariables();
-        StringMap GetUserOrMachineEnvironmentVariables();
-        wil::unique_hkey GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess = false);
+        StringMap GetProcessEnvironmentVariables() const;
+        StringMap GetUserOrMachineEnvironmentVariables() const;
+        wil::unique_hkey GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess = false) const;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation
