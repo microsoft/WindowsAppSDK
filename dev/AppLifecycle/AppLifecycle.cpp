@@ -2,13 +2,27 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <pch.h>
+
+#include "../PushNotifications/PushNotificationReceivedEventArgs.h"
+
 #include <AppLifecycle.h>
 #include <AppLifecycle.g.cpp>
+
+#include "ActivationArguments.h"
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
+
+extern wil::unique_handle g_waitHandleForArgs;
+extern winrt::Microsoft::ProjectReunion::PushNotificationReceivedEventArgs g_activatedEventArgs;
+
+namespace winrt
+{
+    using namespace Windows::Foundation;
+    using Windows::ApplicationModel::Activation::IActivatedEventArgs;
+}
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -65,6 +79,39 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
 
             return make<LaunchActivatedEventArgs>(commandLine);
+        }
+    }
+
+    Microsoft::ProjectReunion::ActivationArguments AppLifecycle::GetActivatedEventArgs2()
+    {
+        DWORD waitResult = 0;
+
+        // Read command line args to determine ActivationKind
+        std::wstring commandLineArgs = GetCommandLine();
+        auto found = commandLineArgs.find(L"-ReunionPushServer", 0);
+
+        if (found)
+        {
+            if (g_waitHandleForArgs == nullptr)
+            {
+                winrt::throw_hresult(E_UNEXPECTED);
+            }
+
+            waitResult = WaitForSingleObject(g_waitHandleForArgs.get(), 1000);
+
+            if (waitResult != WAIT_OBJECT_0)
+            {
+                IInspectable data = make<LaunchActivatedEventArgs>(commandLineArgs).as<IInspectable>();
+                return make<ActivationArguments>(ExtendedActivationKind::Launch, data);
+            }
+
+            IInspectable pushData = g_activatedEventArgs.as<IInspectable>();
+            return make<ActivationArguments>(ExtendedActivationKind::Push, pushData);
+        }
+        else
+        {
+            IInspectable data = make<LaunchActivatedEventArgs>(commandLineArgs).as<IInspectable>();
+            return make<ActivationArguments>(ExtendedActivationKind::Launch, data);
         }
     }
 }

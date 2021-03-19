@@ -3,9 +3,67 @@
 
 namespace Microsoft.ProjectReunion
 {
+    enum ExtendedActivationKind
+    {
+        Launch = 0,
+        Search,
+        ShareTarget,
+        File,
+        Protocol,
+        FileOpenPicker,
+        FileSavePicker,
+        CachedFileUpdater,
+        ContactPicker,
+        Device,
+        PrintTaskSettings,
+        CameraSettings,
+        RestrictedLaunch,
+        AppointmentsProvider,
+        Contact,
+        LockScreenCall,
+        VoiceCommand,
+        LockScreen,
+        PickerReturned = 1000,
+        WalletAction,
+        PickFileContinuation,
+        PickSaveFileContinuation,
+        PickFolderContinuation,
+        WebAuthenticationBrokerContinuation,
+        WebAccountProvider,
+        ComponentUI,
+        ProtocolForResults = 1009,
+        ToastNotification,
+        Print3DWorkflow,
+        DialReceiver,
+        DevicePairing,
+        UserDataAccountsProvider,
+        FilePickerExperience,
+        LockScreenComponent,
+        ContactPanel,
+        PrintWorkflowForegroundTask,
+        GameUIProvider,
+        StartupTask,
+        CommandLineLaunch,
+        BarcodeScannerProvider,
+        PrintSupportJobUI,
+        PrintSupportSettingsUI,
+        PhoneCallActivation,
+        VpnForeground,
+        Push,
+        ExtensionBase = 5000,
+    };
+
+    runtimeclass ActivationArguments
+    {
+        ExtendedActivationKind Kind { get; };
+        IInspectable Data{ get; };
+    };
+
     static runtimeclass AppLifecycle
     {
         static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
+
+        static Microsoft.ProjectReunion.ActivationArguments GetActivatedEventArgs2();
     }
 
     static runtimeclass ActivationRegistrationManager

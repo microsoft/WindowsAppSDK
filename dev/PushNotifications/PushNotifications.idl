@@ -3,141 +3,133 @@
 
 namespace Microsoft.ProjectReunion
 {
-    // The legacy ActivationKind does not support operations like Push. So we need to define an extension set
-    enum ActivationKindExtension
+    // Event args for the Push payload.
+    runtimeclass PushNotificationReceivedEventArgs
     {
-        Launch = 0,
-        Search = 1,
-        ShareTarget = 2,
-        File = 3,
-        Protocol = 4,
-        FileOpenPicker = 5,
-        FileSavePicker = 6,
-        CachedFileUpdater = 7,
-        ContactPicker = 8,
-        Device = 9,
-        PrintTaskSettings = 10,
-        CameraSettings = 11,
-        RestrictedLaunch = 12,
-        AppointmentsProvider = 13,
-        Contact = 14,
-        LockScreenCall = 15,
-        VoiceCommand = 16,
-        LockScreen = 17,
-        PickerReturned = 1000,
-        WalletAction = 1001,
-        PickFileContinuation = 1002,
-        PickSaveFileContinuation = 1003,
-        PickFolderContinuation = 1004,
-        WebAuthenticationBrokerContinuation = 1005,
-        WebAccountProvider = 1006,
-        ComponentUI = 1007,
-        ProtocolForResults = 1009,
-        ToastNotification = 1010,
-        Print3DWorkflow = 1011,
-        DialReceiver = 1012,
-        DevicePairing = 1013,
-        UserDataAccountsProvider = 1014,
-        FilePickerExperience = 1015,
-        LockScreenComponent = 1016,
-        ContactPanel = 1017,
-        PrintWorkflowForegroundTask = 1018,
-        GameUIProvider = 1019,
-        StartupTask = 1020,
-        CommandLineLaunch = 1021,
-        BarcodeScannerProvider = 1022,
-        Push = 1023,
-    };
+        // Initialize using the IBackgroundInstance: used specifically for the Background Activation scenario
+        static PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
 
-    // Simply a wrapper around IActivatedEventArgs to support new Kind extensions like Push which aren't a part of Foundations today
-    runtimeclass ActivatedEventArgsExtension
-    {
-        ActivatedEventArgsExtension(Windows.ApplicationModel.Activation.IActivatedEventArgs activatedEventArgs, ActivationKindExtension kind2);
-        ActivationKindExtension Kind2 { get; };
-        Windows.ApplicationModel.Activation.IActivatedEventArgs ActivatedArgs{ get; };
-    }
-    // This is an overload of the existing GetActivatedEventArgs in Reunion which supports new Activation Kinds
-    static runtimeclass AppLifecycle2
-    {
-        // Called during process launch in Main to determine whether the launch is in response to Protocol/Foreground/Push etc.
-        static ActivatedEventArgsExtension GetActivatedEventArgs();
-    }
+        // Initialize using the PushNotificationEventArgs from Windows: used specifically for in-memory event handling when app is already in foreground
+        static PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(Windows.Networking.PushNotifications.PushNotificationReceivedEventArgs args);
 
-    // Event args in WinMain activation payload. It wraps around the BackgroundInstance construct and manages the task lifetime.
-    runtimeclass PushNotificationActivatedEventArgs : Windows.ApplicationModel.Activation.IActivatedEventArgs
-    {
-        // Initialize using the raw byte payload
-        PushNotificationActivatedEventArgs(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
         // The Push payload
         byte[] Payload { get; };
-        // Takes a deferral to run under specific modes like low power mode
-        void GetDeferral();
-        // Closes the Deferral taken on a Push Trigger. If this is not called by the developer, the deferral will automatically be invoked on destruction.
-        void CompleteDeferral();
+
+        // Gets a deferral to run under specific modes like low power mode
+        Windows.ApplicationModel.Background.BackgroundTaskDeferral GetDeferral();
+
         // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
-        // The number of times Resource management suspended the Task
-        UInt32 SuspendedCount { get; };
-    }
 
-    // An abstraction over the inproc activation Registration flow
-    runtimeclass InProcActivatorDetails
-    {
-        // Initialize using a manifest defined activatorId to Activate the InProc COM server
-        InProcActivatorDetails(String taskClsid);
-
-        // Initialize an inproc activator for LOW-IL apps like UWP with no COM Server specified in manifest
-        InProcActivatorDetails();
-
-        // The CLSID associated with the Client COM server that reunion will adopt
-        String TaskClsid{ get; };
-
-        // The conditions under which Push Triggers would execute
-        Windows.ApplicationModel.Background.IBackgroundCondition Condition;
-
-        // The in-memory Event handler to subscribe to if the app is in the foreground
-        event Windows.Foundation.EventHandler<PushNotificationActivatedEventArgs> PushActivated;
-
-        // The backgroundRegistration that gets populated on successful registration
-        Windows.ApplicationModel.Background.IBackgroundTaskRegistration Registration;
+        // Set to true to prevent proceeding launch due to Background Activation: false by default
+        Boolean Handled;
     };
 
-    enum ChannelStatus
+    [flags]
+    enum PushNotificationRegistrationKind
+    {
+        PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
+        ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
+    };
+
+    // An abstraction over the activation Registration flow
+    runtimeclass PushNotificationActivationInfo
+    {
+        // Initialize using a RegistrationKind and optionally defined parameters like manifest defined activatorId
+        // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
+        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
+        PushNotificationActivationInfo(PushNotificationRegistrationKind kind, Guid taskClsid);
+
+        // The CLSID associated with the Client COM server that Project Reunion will activate
+        Guid TaskClsid{ get; };
+
+        PushNotificationRegistrationKind Kind{ get; };
+
+        // The conditions under which Push Triggers would execute
+        Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
+        void SetConditions(Windows.ApplicationModel.Background.IBackgroundCondition[] conditions);
+    };
+
+    enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
-        InProgressRetry, // The request is in progress and is in a backoff retry state
+        InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
         CompletedSuccess, // The request completed successfully
         CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
     };
 
-    runtimeclass ChannelResult
+    // The PushNotificationChannel Progress result
+    struct PushNotificationCreateChannelStatus
     {
-        ChannelResult(
-            Windows.Networking.PushNotifications.PushNotificationChannel channel,
+        // The last extended error we failed Channel requests on that caused the inprogress retry status. S_OK if this is just progress status.
+        HRESULT extendedError;
+
+        // Either InProgress or InProgressRetry status
+        PushNotificationChannelStatus status;
+
+        // Total Retries so far
+        UInt32 retryCount;
+    };
+
+    runtimeclass PushNotificationChannel
+    {
+        PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
+        //PushNotificationChannel(String uri, Windows.Foundation.DateTime expiration);
+
+        // The Channel Uri for app to Post a notification to.
+        String Uri { get; };
+
+        // Expiration of the Channel
+        Windows.Foundation.DateTime ExpirationTime { get; };
+
+        // Unsubscribes the channel
+        void Close();
+
+        // In-memory Event handler for Push Notifications
+        event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
+    }
+
+    runtimeclass PushNotificationCreateChannelResult
+    {
+        PushNotificationCreateChannelResult(
+            PushNotificationChannel channel,
             HRESULT extendedError,
-            ChannelStatus status);
+            PushNotificationChannelStatus status);
 
         // The Push channel associated with the Result. Null if InProgress or completion failed
-        Windows.Networking.PushNotifications.PushNotificationChannel Channel { get; };
+        PushNotificationChannel Channel { get; };
 
-        // Low-level information about why the operation might not
-        // have worked. Apps generally do not take action based on
-        // this value, in part because the value may not be stable.
+        // More detailed error code in addition to the ChannelStatus state.
         HRESULT ExtendedError{ get; };
 
         // The Status of the ChannelComplete operation
-        ChannelStatus Status { get; };
+        PushNotificationChannelStatus Status { get; };
     };
 
-    static runtimeclass PushManager
+    runtimeclass PushNotificationRegistrationToken
     {
-        // Register an activator using a Details context
-        static void RegisterPushNotificationActivator(InProcActivatorDetails details);
+        PushNotificationRegistrationToken(
+            UInt64 cookie,
+            Windows.ApplicationModel.Background.BackgroundTaskRegistration taskRegistration);
 
-        // Unregister any activator if present
-        static void UnregisterPushNotificationActivator(Windows.ApplicationModel.Background.IBackgroundTaskRegistration registration);
+        // The cookie from CoRegisterClassObject
+        UInt64 Cookie{ get; };
 
-        // Request a Push Channel with an GUID RemoteId from WNS. RemoteId is an AAD identifier GUID
-        static Windows.Foundation.IAsyncOperationWithProgress<ChannelResult, ChannelResult> CreateChannelAsync(Guid remoteId);
+        // The Registration token for the Push Trigger
+        Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
+    };
+
+    static runtimeclass PushNotificationManager
+    {
+        // Register an activator using an ActivationInfo context and return a RegistrationToken
+        static PushNotificationRegistrationToken RegisterActivator(PushNotificationActivationInfo details);
+
+        // Unregister any activator if present using a token and registrationKind
+        // 1) If kind = PushTrigger is specified, the trigger itself will be removed
+        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
+        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationKind kind);
+
+        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
     };
 }

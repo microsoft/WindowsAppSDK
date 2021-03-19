@@ -10,7 +10,7 @@
   <Identity
     Name="PushNotificationsWin32App"
     Publisher="CN=WNP_Reunion"
-    Version="1.1.0.0" />
+    Version="1.1.14.0" />
 
   <Properties>
     <DisplayName>PushNotificationsWin32App</DisplayName>
@@ -45,7 +45,7 @@
 			<com:Extension Category="windows.comServer">
 				<com:ComServer>
 					<com:ExeServer Executable="PushNotificationsWin32App\PushNotificationsWin32App.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
-						<com:Class Id="c54044c4-eac7-4c4b-9996-c570a94b9305" DisplayName="Reunion Push" />
+						<com:Class Id="c54044c4-eac7-4c4b-9996-c570a94b9306" DisplayName="Reunion Push" />
 					</com:ExeServer>
 				</com:ComServer>
 			</com:Extension>
