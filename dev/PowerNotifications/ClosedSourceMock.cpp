@@ -11,7 +11,14 @@ using index = ULONGLONG;
 index g_idx;
 
 unordered_map<index, OnCompositeBatteryStatusChanged> onCompositeBatteryStatusChanged_callbacks;
+unordered_map<index, OnDischargeTimeChanged> onDischargeTimeChanged_callbacks;
+unordered_map<index, OnEnergySaverStatusChanged> onEnergySaverStatusChanged_callbacks;
+unordered_map<index, OnPowerConditionChanged> onPowerConditionChanged_callbacks;
 unordered_map<index, OnDisplayStatusChanged> onDisplayStatusChanged_callbacks;
+unordered_map<index, OnSystemIdleStatusChanged> onSystemIdleStatusChanged_callbacks;
+unordered_map<index, OnPowerSchemePersonalityChanged> onPowerSchemePersonalityChanged_callbacks;
+unordered_map<index, OnUserPresenceStatusChanged> onUserPresenceStatusChanged_callbacks;
+unordered_map<index, OnSystemAwayModeStatusChanged> onSystemAwayModeStatusChanged_callbacks;
 
 HRESULT GetCompositeBatteryStatus(CompositeBatteryStatus** compositeBatteryStatusOut)
 {
@@ -47,17 +54,62 @@ HRESULT UnregisterCompositeBatteryStatusChangedListener(CompositeBatteryStatusRe
     return S_OK;
 }
 
-HRESULT GetDischargeTime(ULONGLONG* DischargeTimeOut) { return S_OK; }
-HRESULT RegisterDischargeTimeChangedListener(OnDischargeTimeChanged listener, DischargeTimeRegistration* registration) { return S_OK; }
-HRESULT UnregisterDischargeTimeChangedListener(DischargeTimeRegistration registration) { return S_OK; }
+HRESULT GetDischargeTime(ULONGLONG* dischargeTimeOut)
+{
+    *dischargeTimeOut = 57;
+    return S_OK;
+}
 
-HRESULT GetEnergySaverStatus(EnergySaverStatus* energySaverStatusOut) { return S_OK; }
-HRESULT RegisterEnergySaverStatusChangedListener(OnEnergySaverStatusChanged listener, EnergySaverStatusRegistration* registration) { return S_OK; }
-HRESULT UnregisterEnergySaverStatusChangedListener(EnergySaverStatusRegistration registration) { return S_OK; }
+HRESULT RegisterDischargeTimeChangedListener(OnDischargeTimeChanged listener, DischargeTimeRegistration* registration)
+{
+    *registration = reinterpret_cast<DischargeTimeRegistration>(g_idx++);
+    onDischargeTimeChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
 
-HRESULT GetPowerCondition(DWORD* powerConditionOut) { return S_OK; }
-HRESULT RegisterPowerConditionChangedListener(OnPowerConditionChanged listener, PowerConditionRegistration* registration) { return S_OK; }
-HRESULT UnregisterPowerConditionChangedListener(PowerConditionRegistration registration) { return S_OK; }
+HRESULT UnregisterDischargeTimeChangedListener(DischargeTimeRegistration registration)
+{
+    onDischargeTimeChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
+
+HRESULT GetEnergySaverStatus(EnergySaverStatus* energySaverStatusOut)
+{
+    *energySaverStatusOut = EnergySaverStatus::On;
+    return S_OK;
+}
+
+HRESULT RegisterEnergySaverStatusChangedListener(OnEnergySaverStatusChanged listener, EnergySaverStatusRegistration* registration)
+{
+    *registration = reinterpret_cast<EnergySaverStatusRegistration>(g_idx++);
+    onEnergySaverStatusChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
+
+HRESULT UnregisterEnergySaverStatusChangedListener(EnergySaverStatusRegistration registration)
+{
+    onEnergySaverStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
+
+HRESULT GetPowerCondition(DWORD* powerConditionOut)
+{
+    *powerConditionOut = static_cast<DWORD>(winrt::Microsoft::ProjectReunion::PowerSourceStatus::AC);
+    return S_OK;
+}
+
+HRESULT RegisterPowerConditionChangedListener(OnPowerConditionChanged listener, PowerConditionRegistration* registration)
+{
+    *registration = reinterpret_cast<PowerConditionRegistration>(g_idx++);
+    onPowerConditionChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
+
+HRESULT UnregisterPowerConditionChangedListener(PowerConditionRegistration registration)
+{
+    onPowerConditionChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
 
 HRESULT GetDisplayStatus(DWORD* displayStatusOut)
 {
@@ -87,17 +139,71 @@ HRESULT UnregisterDisplayStatusChangedListener(DisplayStatusRegistration registr
     return S_OK;
 }
 
-HRESULT RegisterSystemIdleStatusChangedListener(OnSystemIdleStatusChanged listener, SystemIdleStatusRegistration* registration) { return S_OK; }
-HRESULT UnregisterSystemIdleStatusChangedListener(SystemIdleStatusRegistration registration) { return S_OK; }
+HRESULT RegisterSystemIdleStatusChangedListener(OnSystemIdleStatusChanged listener, SystemIdleStatusRegistration* registration)
+{
+    *registration = reinterpret_cast<SystemIdleStatusRegistration>(g_idx++);
+    onSystemIdleStatusChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
 
-HRESULT GetPowerSchemePersonality(GUID* powerSchemePersonalityOut) { return S_OK; }
-HRESULT RegisterPowerSchemePersonalityChangedListener(OnPowerSchemePersonalityChanged listener, PowerSchemePersonalityRegistration* registration) { return S_OK; }
-HRESULT UnregisterPowerSchemePersonalityChangedListener(PowerSchemePersonalityRegistration registration) { return S_OK; }
+HRESULT UnregisterSystemIdleStatusChangedListener(SystemIdleStatusRegistration registration)
+{
+    onSystemIdleStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
 
-HRESULT GetUserPresenceStatus(DWORD* userPresenceStatusOut) { return S_OK; }
-HRESULT RegisterUserPresenceStatusChangedListener(OnUserPresenceStatusChanged listener, UserPresenceStatusRegistration* registration) { return S_OK; }
-HRESULT UnregisterUserPresenceStatusChangedListener(UserPresenceStatusRegistration registration) { return S_OK; }
+HRESULT GetPowerSchemePersonality(GUID* powerSchemePersonalityOut)
+{
+    *powerSchemePersonalityOut = GUID_MIN_POWER_SAVINGS;
+    return S_OK;
+}
 
-HRESULT GetSystemAwayModeStatus(DWORD* systemAwayModeStatusOut) { return S_OK; }
-HRESULT RegisterSystemAwayModeStatusChangedListener(OnSystemAwayModeStatusChanged listener, SystemAwayModeStatusRegistration* registration) { return S_OK; }
-HRESULT UnregisterSystemAwayModeStatusChangedListener(SystemAwayModeStatusRegistration registration) { return S_OK; }
+HRESULT RegisterPowerSchemePersonalityChangedListener(OnPowerSchemePersonalityChanged listener, PowerSchemePersonalityRegistration* registration)
+{
+    *registration = reinterpret_cast<PowerSchemePersonalityRegistration>(g_idx++);
+    onPowerSchemePersonalityChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
+
+HRESULT UnregisterPowerSchemePersonalityChangedListener(PowerSchemePersonalityRegistration registration)
+{
+    onPowerSchemePersonalityChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
+
+HRESULT GetUserPresenceStatus(DWORD* userPresenceStatusOut)
+{
+    *userPresenceStatusOut = static_cast<DWORD>(winrt::Microsoft::ProjectReunion::UserPresenceStatus::Present);
+    return S_OK;
+}
+
+HRESULT RegisterUserPresenceStatusChangedListener(OnUserPresenceStatusChanged listener, UserPresenceStatusRegistration* registration)
+{
+    *registration = reinterpret_cast<UserPresenceStatusRegistration>(g_idx++);
+    onUserPresenceStatusChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
+HRESULT UnregisterUserPresenceStatusChangedListener(UserPresenceStatusRegistration registration)
+{
+    onUserPresenceStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
+
+HRESULT GetSystemAwayModeStatus(DWORD* systemAwayModeStatusOut)
+{
+    *systemAwayModeStatusOut = static_cast<DWORD>(winrt::Microsoft::ProjectReunion::SystemAwayModeStatus::Entering);
+    return S_OK;
+}
+
+HRESULT RegisterSystemAwayModeStatusChangedListener(OnSystemAwayModeStatusChanged listener, SystemAwayModeStatusRegistration* registration)
+{
+    *registration = reinterpret_cast<SystemAwayModeStatusRegistration>(g_idx++);
+    onSystemAwayModeStatusChanged_callbacks[g_idx] = listener;
+    return S_OK;
+}
+
+HRESULT UnregisterSystemAwayModeStatusChangedListener(SystemAwayModeStatusRegistration registration)
+{
+    onSystemAwayModeStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
+    return S_OK;
+}
