@@ -9,6 +9,7 @@ namespace ProjectReunionEnvironmentManagerTests
         BEGIN_TEST_CLASS(EnvironmentManagerWin32Tests)
             TEST_CLASS_PROPERTY(L"ActivationContext", L"EnvironmentManagerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs", L"{Restricted,Elevated,InteractiveUser}")
         END_TEST_CLASS()
 
         TEST_METHOD(TestGetForProcess);
