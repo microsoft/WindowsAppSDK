@@ -51,6 +51,14 @@ In the future, there may be a couple APIs that are dependent on new OS features
 however we will do our best to ensure
 this is the exception and not the norm, and provide reasonable fallbacks when possible.
 
+## Support
+
+### How to file issues and get help
+This project uses GitHub Issues to track bugs and feature requests. Please search the existing issues before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new Issue.
+### Microsoft Support Policy
+Technical Support for the use of Project Reunion - only in packaged desktop apps for version 0.5 - may be available from Microsoft's Customer Support Services (CSS). If you are a Premier or Unified Support customer, please reach out to your account manager for further assistance.
+
+
 
 ### Documentation
 
