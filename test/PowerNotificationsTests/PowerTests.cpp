@@ -17,6 +17,40 @@ namespace ProjectReunionPowerTests
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             END_TEST_CLASS()
 
+        TEST_METHOD(GetBatteryStatus)
+        {
+            auto stat = PowerManager::BatteryStatus();
+            VERIFY_ARE_EQUAL(stat, BatteryStatus::Discharging);
+        }
+
+        TEST_METHOD(GetPowerSupplyStatus)
+        {
+            auto stat = PowerManager::PowerSupplyStatus();
+            VERIFY_ARE_EQUAL(stat, PowerSupplyStatus::Inadequate);
+        }
+
+        TEST_METHOD(GetRemainingChargePercent)
+        {
+            auto stat = PowerManager::RemainingChargePercent();
+            VERIFY_ARE_EQUAL(stat, 77);
+        }
+
+        TEST_METHOD(BatteryStatusChangedTest)
+        {
+            bool callbackSuccessful = false;
+            auto token = PowerManager::BatteryStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+                {
+                    callbackSuccessful = true;
+                });
+            PowerManager::BatteryStatusChanged(token);
+            VERIFY_ARE_EQUAL(callbackSuccessful, true);
+        }
+
+
+
+
+
+
         TEST_METHOD(GetDisplayStatusTest)
         {
             auto stat = PowerManager::DisplayStatus();
@@ -27,7 +61,6 @@ namespace ProjectReunionPowerTests
             bool callbackSuccessful = false;
             auto token = PowerManager::DisplayStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
-                    //auto value = obj.as<int>();
                     callbackSuccessful = true;
                 });
             PowerManager::DisplayStatusChanged(token);

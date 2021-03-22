@@ -10,20 +10,40 @@ using namespace std;
 using index = ULONGLONG;
 index g_idx;
 
+unordered_map<index, OnCompositeBatteryStatusChanged> onCompositeBatteryStatusChanged_callbacks;
 unordered_map<index, OnDisplayStatusChanged> onDisplayStatusChanged_callbacks;
 
 HRESULT GetCompositeBatteryStatus(CompositeBatteryStatus** compositeBatteryStatusOut)
 {
+    *compositeBatteryStatusOut = NULL;
+    auto status = wil::make_unique_cotaskmem<CompositeBatteryStatus>();
+    status.get()->ActiveBatteryCount = 1;
+    status.get()->Status.PowerState |= BATTERY_DISCHARGING;
+    status.get()->Status.PowerState |= BATTERY_POWER_ON_LINE;
+    status.get()->Information.FullChargedCapacity = 100;
+    status.get()->Status.Capacity = 77;
+    *compositeBatteryStatusOut = status.release();
     return S_OK;
 }
 
 HRESULT RegisterCompositeBatteryStatusChangedListener(OnCompositeBatteryStatusChanged listener, CompositeBatteryStatusRegistration* registration)
 {
+    *registration = reinterpret_cast<CompositeBatteryStatusRegistration>(g_idx++);
+    onCompositeBatteryStatusChanged_callbacks[g_idx] = listener;
+    //This is resulting in abort by te.process.exe during test runs, event without sleep
+//  std::thread thread([]() {
+//        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+//        for (const auto& [key, callbackFn] : onCompositeBatteryStatusChanged_callbacks)
+//        {
+//            callbackFn();
+//        }            
+//  });
     return S_OK;
 }
 
 HRESULT UnregisterCompositeBatteryStatusChangedListener(CompositeBatteryStatusRegistration registration)
 {
+    onCompositeBatteryStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
     return S_OK;
 }
 
