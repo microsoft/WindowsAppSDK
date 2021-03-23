@@ -55,6 +55,7 @@ namespace Test::PushNotifications
     {
         std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
         std::wstring args{ action + L" TrustedPeople " + path };
+        // VERIFY_ARE_NOT_EQUAL(args, args);
         auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
             args.c_str(), g_deploymentDir);
 

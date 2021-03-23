@@ -14,6 +14,7 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Microsoft::ProjectReunion;
 
 bool IsPackagedProcess()
 {

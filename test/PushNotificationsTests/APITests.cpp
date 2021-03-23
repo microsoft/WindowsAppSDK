@@ -11,6 +11,7 @@ using namespace WEX::TestExecution;
 
 using namespace winrt;
 using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
@@ -28,16 +29,16 @@ namespace Test::PushNotifications
     private:
         wil::unique_event m_failed;
 
-        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestPackage.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestPackage.cer";
-        const std::wstring c_testPackageFullName = L"PushNotificationsPFN"; // Need to replace
+        const std::wstring c_testPackageFile = g_deploymentDir + L"MSIXPackager_1.0.0.0_x86_x64_Debug.msixbundle";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"MSIXPackager_1.0.0.0_x86_x64_Debug.cer";
+        const std::wstring c_testPackageFullName = L"PushNotificationsWin32App_9eg3vg7cmy3rj"; // Need to replace
 
     public:
         BEGIN_TEST_CLASS(APITests)
-            TEST_CLASS_PROPERTY(L"Description", L"Project Reunion Push Notification TAEF test")
+            TEST_CLASS_PROPERTY(L"Description", L"Project Reunion Push Notifications test")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"InteractiveUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
@@ -45,8 +46,8 @@ namespace Test::PushNotifications
             ::Test::Bootstrap::SetupPackages();
             try
             {
-                // RunCertUtil(c_testPackageCertFile);
-                // InstallPackage(c_testPackageFile);
+                RunCertUtil(c_testPackageCertFile);
+                InstallPackage(c_testPackageFile);
             }
             catch (...)
             {
@@ -60,7 +61,7 @@ namespace Test::PushNotifications
             ::Test::Bootstrap::CleanupPackages();
             try
             {
-                // UninstallPackage(c_testPackageFile);
+                UninstallPackage(c_testPackageFile);
             }
             catch (...)
             {
@@ -95,7 +96,7 @@ namespace Test::PushNotifications
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
-                END_TEST_METHOD_PROPERTIES();
+            END_TEST_METHOD_PROPERTIES();
 
             VERIFY_IS_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
         }

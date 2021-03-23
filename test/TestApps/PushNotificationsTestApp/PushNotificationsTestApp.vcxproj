@@ -37,12 +37,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{7C502995-59C3-483B-86BA-815985353633}</ProjectGuid>
+    <ProjectGuid>{9F2685B6-684D-4B9F-9610-71C358779149}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>AppLifecycleTestApp</RootNamespace>
+    <RootNamespace>PushNotificationsTestApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>AppLifecycleTestApp</ProjectName>
+    <ProjectName>PushNotificationsTestApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
