@@ -11,12 +11,17 @@ features may be added in later releases):
 -   Selective single/multi-instancing
 -   System state and power notifications.
 
-This spec addresses the rich activation APIs in the component.
+This spec addresses the rich activation APIs in the component. The priority is to make modern
+activation available to unpackaged apps. In the initial release, these will not be usable by
+UWP or Desktop Bridge apps.
+
+Terminology note. A "packaged" app is an app that is built into an MSIX package, including UWP 
+and Desktop Bridge apps, but not including Sparse packages where only the manifest is packaged.
+An "unpackaged" app therefore is one that is not built into an MSIX package.
 
 ## Background
 
-Traditional Win32 apps expect to get their arguments passed into WinMain in the form of a string
-array. They can also call the Win32
+Traditional Win32 apps expect to get their arguments passed into WinMain in the form of a string. They can also call the Win32
 [GetCommandLineW](https://docs.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-getcommandlinew)
 API. Windows Forms apps expect to call
 [Environment.GetCommandLineArgs](https://docs.microsoft.com/en-us/dotnet/api/system.environment.getcommandlineargs)
@@ -70,7 +75,7 @@ registration, others do not. The target list for v1 is as follows:
 | Protocol        | Activated via ShellExecute or LaunchUriAsync, or by specifying a protocol string on a command-line.                                              |
 | StartupTask     | The app starts on user log-in - either registered in the registry, or via shortcuts in a well-known startup folder.                              |
 
-<br/>
+
 
 ### Activation registration
 
@@ -100,7 +105,7 @@ Currently all registered activation points are managed per-user. If your app is 
 multiple users via an MSI or elevated installer your app will need to re-register launch points for
 every user. For v1, the platform will support only per-user registration.
 
- <br>
+
 
 ## Examples
 
@@ -113,14 +118,17 @@ example, multiple filetypes or dataformats, or verbs) - and could therefore call
 function multiple times, if required. For example, an app could register for ".jpg" and ".bmp"
 filetype activations at one point, and then later also register for ".png".
 
-Each registered filetype must be unique for the app. To allow for the case where the app determines
+An app can register a specific filetype only once. To allow for the case where the app determines
 the combination of options at runtime (and potentially changes the combinations at a later time),
 where an app registers the same filetype multiple times, the latest registration is honored and
 overwrites any previous registrations.
 
 In the existing platform, UWP apps can only register one startup activation extension. However, for
 packaged desktop apps, multiple startup extensions are permitted, and each one can specify a
-different executable..
+different executable.
+
+The following example shows how an unpackaged Win32 Desktop app can use the new registration
+APIs to register for one or more activation kinds.
 
 ```c++
 int APIENTRY wWinMain(
@@ -151,43 +159,23 @@ void RegisterForActivation()
     // a display name to use in Shell and Settings,
     // zero or more verbs for the File Explorer context menu,
     // and the path to the EXE to register for activation.
+    // Note that localizable resource strings are not supported in v1.
     std::wstring imageFileTypes[3] = { L".jpg", L".png", L".bmp" };
     std::wstring verbs[2] = { L"view", L"edit" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
         imageFileTypes,
-        L"C:\\Program Files\\Contoso\\MyResources.dll, 123",
+        L"C:\\Program Files\\Contoso\\MyResources.dll, -123",
         L"Contoso File Types",
         verbs,
         L"C:\\Program Files\\Contoso\\MyApp.exe");
-
-    // Register another set of filetypes, specifying a UWP-style
-    // path to an image file for the icon, no explicit verbs,
-    // and defaulting to the current executable for the EXE
-    // to be activated.
-    std::string videoFileTypes[3] = { L".mov", L".wmv", L".mp3" };
-    ActivationRegistrationManager::RegisterForFileTypeActivation(
-        videoFileTypes,
-        L"C:\\Program Files\\Fabrikam\\MyIcon.png",
-        L"Fabrikam Video Types",
-        nullptr,
-        L"");
 
     // Register some URI schemes for protocol activation,
     // specifying the scheme name, icon, display name and EXE path.
     ActivationRegistrationManager::RegisterForProtocolActivation(
         L"foo",
-        L"C:\\Program Files\\Contoso\\MyResources.dll, 45",
+        L"C:\\Program Files\\Contoso\\MyResources.dll, -45",
         L"Contoso Foo Protocol",
         L"C:\\Program Files\\Contoso\\MyApp.exe");
-
-    // Register a protocol, specifying the scheme name,
-    // UWP-style image file path, display name, and defaulting
-    // the EXE to the current executable.
-    ActivationRegistrationManager::RegisterForProtocolActivation(
-        L"com.fabrikam.list",
-        L"C:\\Program Files\\Fabrikam\\MyIcon.png",
-        L"Fabrikam Protocol",
-        "");
 
     // Register for startup activation.
     ActivationRegistrationManager::RegisterForStartupActivation(
@@ -242,10 +230,11 @@ The primary requirement is to be able to register for the supported activation k
 secondary requirement is to be able to unregister for any or all of these.
 
 For filetype associations, the app can register for multiple filetypes. We will provide the ability
-to unregister one or more filetypes. For protocol registrations, the app can register for multiple
-protocols individually, so the API will also enable the app to unregister for each of these
-individually. For unregistering for startup behavior, the app must pass the taskId that it
-originally passed in when registering.
+to unregister one or more filetypes. For the initial release, we do not include an API to
+unregister all filetype registrations at once, although this could be added in a later release. 
+For protocol registrations, the app can register for multiple protocols individually, so the
+API will also enable the app to unregister for each of these individually. For unregistering for 
+startup behavior, the app must pass the taskId that it originally passed in when registering. 
 
 ```c++
 void UnregisterForActivation()
@@ -272,7 +261,7 @@ void UnregisterForActivation()
 
 ### AppInstance
 
-This type represents an activaiton of an application in Project Reunion, providing methods to find
+This type represents an activation of an application in Project Reunion, providing methods to find
 other instances of itself, redirect activations across instances, and handle incoming non-launch
 activations.
 
@@ -298,14 +287,23 @@ IActivatedEventArgs.
 
 ### ExtendedActivationKind
 
-namespace Microsoft.Windows.AppLifecycle { enum ExtendedActivationKind { ExtensionBase = 4096 } }
+namespace Microsoft.Windows.AppLifecycle 
+{ 
+    enum ExtendedActivationKind 
+    { 
+        ExtensionBase = 4096 
+    } 
+}
 
 This enum is based off the platform
 [ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
 All platform ActivationKind values are cloned to this class. Then, we set a high-value
 **ExtensionBase** value which is well above the existing highest ActivationKind value (1026), to
 allow for new values to be added to the platform. Going forward, any new platform values will also
-be added to the new enum, plus any new values that are only defined in the new enum.
+be added to the new enum, plus any new values that are only defined in the new enum. That is,
+any values < ExtensionBase will exist in both the Reunion and platform implementations, but conversely
+any values > ExtensionBase only exist in the Reunion implementation and do not exist in the platform
+implementation.
 
 ### ActivationArguments
 
@@ -457,6 +455,7 @@ namespace Microsoft.Windows.AppLifecycle
 ```
 
 **RegisterForFileTypeActivation** registers the app for activation based on file types (extensions.)
+See the existing documentation for [Win32 filetype association registry entries](https://docs.microsoft.com/en-us/windows/win32/shell/app-registration).
 
 -   `supportedFileTypes` - one or more supported filetypes, specified by the file extension
     including the leading ".", eg ".docx"
