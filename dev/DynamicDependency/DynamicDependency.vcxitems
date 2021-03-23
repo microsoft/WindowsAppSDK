@@ -43,6 +43,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MddCore.Architecture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddDetourPackageGraph.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.Converters.h" />

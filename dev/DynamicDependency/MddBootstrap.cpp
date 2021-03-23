@@ -21,8 +21,8 @@ wil::unique_hmodule g_projectReunionDll{};
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
-std::wstring g_test_ddlmPackageNamePrefix;
-std::wstring g_test_ddlmPackagePublisherId;
+static std::wstring g_test_ddlmPackageNamePrefix;
+static std::wstring g_test_ddlmPackagePublisherId;
 
 inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {

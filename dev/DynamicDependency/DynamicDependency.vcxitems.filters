@@ -47,6 +47,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
