@@ -16,6 +16,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         Microsoft::ProjectReunion::PushNotificationChannel m_channel{ nullptr };
         winrt::hresult m_extendedError;
         Microsoft::ProjectReunion::PushNotificationChannelStatus m_status;
+        wil::critical_section m_lock;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

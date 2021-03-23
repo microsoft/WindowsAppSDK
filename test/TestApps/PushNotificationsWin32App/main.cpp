@@ -19,13 +19,13 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 
 int main()
 {
-    std::cout << "========================================" << std::endl;
+    /*std::cout << "========================================" << std::endl;
     std::cout << "WINDOWS NOTIFICATIONS - REUNION TEST APP" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << "                                        " << std::endl;
 
     std::cout << "Press a key and Enter to start the test app" << std::endl;
-    std::getchar();
+    std::getchar();*/
 
     // Register the COM Activator GUID
     PushNotificationActivationInfo info(

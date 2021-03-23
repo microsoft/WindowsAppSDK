@@ -16,7 +16,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     private:
         static bool isChannelRequestRetryable(const winrt::hresult& hrException);
-
+        wil::critical_section m_lock;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

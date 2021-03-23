@@ -22,8 +22,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             winrt::com_array<uint8_t> m_payload{};
             winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
 
-            static std::mutex s_mutex;
-            static std::unique_lock<std::mutex> s_lock;
+            wil::critical_section m_lock;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

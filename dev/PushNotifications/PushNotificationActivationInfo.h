@@ -17,6 +17,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             Microsoft::ProjectReunion::PushNotificationRegistrationKind m_kind;
             winrt::guid m_taskClsid;
             winrt::com_array<Windows::ApplicationModel::Background::IBackgroundCondition> m_backgroundConditions{};
+            wil::critical_section m_lock;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation

@@ -20,7 +20,7 @@ std::wstring BuildNotificationPayload(std::wstring channel)
     std::wstring channelUri = L"\"ChannelUri\":\"" + channel + L"\"";
     std::wstring x_wns_type = L"\"X_WNS_Type\": \"wns/raw\"";
     std::wstring contentType = L"\"Content_Type\": \"application/octet-stream\"";
-    std::wstring payload = L"\"Payload\": \"Hello World! I'm a raw notification! Received through Reunion test app.\"";
+    std::wstring payload = L"\"Payload\": \"Hello World! Another foreground payload coming :v\"";
     std::wstring delay = L"\"Delay\": \"false\"";
     return { L"{" + channelUri + L"," + x_wns_type + L"," + contentType + L"," + payload + L"," + delay + L"}" };
 }
@@ -36,7 +36,7 @@ int main()
 
         // Construct the JSON to post.
         HttpStringContent jsonContent(
-            BuildNotificationPayload(L"https://db5p.notify.windows.com/?token=AwYAAAAiUE%2bn9HCN%2b3ayrvNWhmUz7Njh3T6ShXYDhBXdocz%2baWelDIEjKilA1nzUjdymwSBQxOREwTrWZB9Zd3csTSYZ3Uxtxj3upLaPa5m5fQJdiB6mYg7Gsfc9UG4m%2brhssyHKT2uTqt3HB9xI4bVhAFen"),
+            BuildNotificationPayload(L"https://dm3p.notify.windows.com/?token=AwYAAACUxomEaiFxmj9Kl0Gbd9Yzs0uADxBcEEIJM3p1gaqGcl3BC2tmjzxqVuei1IyJc5dAMJuUwwj8fORL90CKBb0SaH9prEJlJlA654cbsDo2skUinm3uwWBP9ou8RxXQfakR4g2fxBREnj7oQoXDvhIZ"),
             UnicodeEncoding::Utf8,
             L"application/json");
 

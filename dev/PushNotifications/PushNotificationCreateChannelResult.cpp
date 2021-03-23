@@ -13,14 +13,17 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     }
     Microsoft::ProjectReunion::PushNotificationChannel PushNotificationCreateChannelResult::Channel()
     {
+        auto lock = m_lock.lock();
         return m_channel;
     }
     winrt::hresult PushNotificationCreateChannelResult::ExtendedError()
     {
+        auto lock = m_lock.lock();
         return m_extendedError;
     }
     Microsoft::ProjectReunion::PushNotificationChannelStatus PushNotificationCreateChannelResult::Status()
     {
+        auto lock = m_lock.lock();
         return m_status;
     }
 }

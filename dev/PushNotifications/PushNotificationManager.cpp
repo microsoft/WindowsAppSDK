@@ -62,46 +62,43 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::PushNotificationCreateChannelResult, Microsoft::ProjectReunion::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
     {
         static std::vector<winrt::guid> s_remoteIdList;
-        static std::mutex s_mutex;
-        static std::unique_lock<std::mutex> s_lock(s_mutex, std::defer_lock); // Avoid locking during the constructor call
+        static wil::critical_section s_lock;
 
-        // Add a comment to suggest we are going to support in later versions 
+        // NOTE: API supports channel requests only for packaged applications
         IsPackagedProcess();
 
-        winrt::check_pointer(&remoteId);
+        check_pointer(&remoteId);
 
-        winrt::Microsoft::ProjectReunion::PushNotificationCreateChannelResult channelResult{ nullptr };
-
-        uint8_t retryCount = 0;
-        Microsoft::ProjectReunion::PushNotificationCreateChannelStatus
-            channelStatus = { E_PENDING /* ExtendedError */, PushNotificationChannelStatus::InProgress /* Status */, retryCount /* RetryCount */ };
+        // Allow to register the progress and complete handler
+        co_await resume_background();
 
         auto progress{ co_await winrt::get_progress_token() };
 
-        /*
-        3. scope the find function and also understand what happens if find throws
-        */
         bool remoteIdPresent = false;
         {
-            s_lock.lock();
+            auto lock = s_lock.lock();
             auto it = std::find(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId);
             remoteIdPresent = (it != s_remoteIdList.end()) ? true : false;
-            s_lock.unlock();
         }
+
+        winrt::Microsoft::ProjectReunion::PushNotificationCreateChannelResult channelResult{ nullptr };
 
         if (remoteIdPresent)
         {
-            channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
+            channelResult = make<Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
                 nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
             co_return channelResult;
         }
 
         {
-            s_lock.lock();
+            auto lock = s_lock.lock();
             s_remoteIdList.push_back(remoteId);
-            s_lock.unlock();
         }
-        // give back the flow control so progress can be shown
+
+        uint8_t retryCount = 0;
+        Microsoft::ProjectReunion::PushNotificationCreateChannelStatus
+            channelStatus = { E_PENDING /* ExtendedError */, PushNotificationChannelStatus::InProgress /* Status */, retryCount /* RetryCount */ };
+
         progress(channelStatus);
 
         PushNotificationChannelManager channelManager{};
@@ -113,15 +110,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
 
-                auto pushChannel = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel>(pushChannelReceived);
-                // This has to go
-                winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel* pushChannelImplementation =
-                    winrt::get_self< winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel>(pushChannel);
+                // Returns a com_ptr returning the implementation type
+                auto pushChannel = make_self<Microsoft::ProjectReunion::implementation::PushNotificationChannel>(pushChannelReceived);
 
-                channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
-                    *pushChannelImplementation,
+                channelResult = make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
+                    *(pushChannel.get()),
                     S_OK,
                     PushNotificationChannelStatus::CompletedSuccess);
+
                 break;
             }
             catch (...)
@@ -138,7 +134,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 }
                 else
                 {
-                    channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(nullptr, ex.code(), PushNotificationChannelStatus::CompletedFailure);
+                    channelResult = make<Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(nullptr, ex.code(), PushNotificationChannelStatus::CompletedFailure);
                     break;
                 }
             }
@@ -147,10 +143,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         }
 
         {
-            s_lock.lock();
+            auto lock = s_lock.lock();
             std::remove(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId);
-            s_lock.unlock();
         }
+
         co_return channelResult;
     }
 

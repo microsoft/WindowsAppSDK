@@ -15,8 +15,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             uint64_t m_cookie;
             Windows::ApplicationModel::Background::BackgroundTaskRegistration m_taskRegistration = nullptr;
 
-            static std::mutex s_mutex;
-            static std::unique_lock<std::mutex> s_lock;
+            wil::critical_section m_lock;
     };
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation
