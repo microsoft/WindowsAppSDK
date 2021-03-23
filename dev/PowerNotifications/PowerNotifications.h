@@ -100,7 +100,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         GUID  m_cachedPowerSchemePersonality;
         ULONGLONG m_cachedDischargeTime;
         ::EnergySaverStatus m_cachedEnergySaverStatus;
-        CompositeBatteryStatus* m_cachedCompositeBatteryStatus;
+        CompositeBatteryStatus m_cachedCompositeBatteryStatus;
         winrt::Microsoft::ProjectReunion::BatteryStatus m_batteryStatus;
         winrt::Microsoft::ProjectReunion::BatteryStatus m_oldBatteryStatus { winrt::Microsoft::ProjectReunion::BatteryStatus::NotPresent };
         winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus;
@@ -368,9 +368,9 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             RemoveCallback(compositeBatteryStatusFunc, token);
         }
 
-        void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
+        void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus compositeBatteryStatus)
         {
-            ProcessCompositeBatteryStatus(*compositeBatteryStatus);
+            ProcessCompositeBatteryStatus(compositeBatteryStatus);
             FireCorrespondingCompositeBatteryEvent();
         }
 
@@ -666,7 +666,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->EnergySaverStatusChanged_Callback(energySaverStatus);
         }
 
-        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
+        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus compositeBatteryStatus)
         {
             return make_self<factory_implementation::PowerManager>()->CompositeBatteryStatusChanged_Callback(compositeBatteryStatus);
         }

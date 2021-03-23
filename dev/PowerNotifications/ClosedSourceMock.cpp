@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+// This is a temporary test file, which is only in place until the actual cross - binary ABI is available for mocking
+// This will not and should not be checked into main
+
 #include <pch.h>
 #include <unordered_map>
 #include <PowerManager.g.h>
@@ -20,16 +23,13 @@ unordered_map<index, OnPowerSchemePersonalityChanged> onPowerSchemePersonalityCh
 unordered_map<index, OnUserPresenceStatusChanged> onUserPresenceStatusChanged_callbacks;
 unordered_map<index, OnSystemAwayModeStatusChanged> onSystemAwayModeStatusChanged_callbacks;
 
-HRESULT GetCompositeBatteryStatus(CompositeBatteryStatus** compositeBatteryStatusOut)
+HRESULT GetCompositeBatteryStatus(CompositeBatteryStatus* status)
 {
-    *compositeBatteryStatusOut = NULL;
-    auto status = wil::make_unique_cotaskmem<CompositeBatteryStatus>();
-    status.get()->ActiveBatteryCount = 1;
-    status.get()->Status.PowerState |= BATTERY_DISCHARGING;
-    status.get()->Status.PowerState |= BATTERY_POWER_ON_LINE;
-    status.get()->Information.FullChargedCapacity = 100;
-    status.get()->Status.Capacity = 77;
-    *compositeBatteryStatusOut = status.release();
+    status->ActiveBatteryCount = 1;
+    status->Status.PowerState |= BATTERY_DISCHARGING;
+    status->Status.PowerState |= BATTERY_POWER_ON_LINE;
+    status->Information.FullChargedCapacity = 100;
+    status->Status.Capacity = 77;
     return S_OK;
 }
 
@@ -41,13 +41,13 @@ HRESULT RegisterCompositeBatteryStatusChangedListener(OnCompositeBatteryStatusCh
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         for (const auto& [key, callbackFn] : onCompositeBatteryStatusChanged_callbacks)
         {
-            auto status = wil::make_unique_cotaskmem<CompositeBatteryStatus>();
-            status.get()->ActiveBatteryCount = 1;
-            status.get()->Status.PowerState |= BATTERY_CHARGING;
-            status.get()->Status.PowerState |= BATTERY_POWER_ON_LINE;
-            status.get()->Information.FullChargedCapacity = 100;
-            status.get()->Status.Capacity = 57;
-            callbackFn(status.release());
+            CompositeBatteryStatus status;
+            status.ActiveBatteryCount = 1;
+            status.Status.PowerState |= BATTERY_CHARGING;
+            status.Status.PowerState |= BATTERY_POWER_ON_LINE;
+            status.Information.FullChargedCapacity = 100;
+            status.Status.Capacity = 57;
+            callbackFn(status);
         }
     });
     thread.detach();

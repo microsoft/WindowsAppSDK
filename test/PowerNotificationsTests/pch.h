@@ -16,7 +16,9 @@
 #define INLINE_TEST_METHOD_MARKUP
 #endif
 
-#include "framework.h"
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+#include <windows.h>
+
 #include "WexTestClass.h"
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
