@@ -217,9 +217,6 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 
         void RemoveCallback(PowerFunctionDetails fn, event_token const& token)
         {
-#ifdef _DEBUG
-            //RaiseEvent(fn);
-#endif
             auto& eventObj = fn.event();
             eventObj.remove(token);
             std::scoped_lock<std::mutex> lock(m_mutex);
