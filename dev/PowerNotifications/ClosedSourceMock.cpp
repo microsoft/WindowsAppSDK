@@ -37,14 +37,20 @@ HRESULT RegisterCompositeBatteryStatusChangedListener(OnCompositeBatteryStatusCh
 {
     *registration = reinterpret_cast<CompositeBatteryStatusRegistration>(g_idx++);
     onCompositeBatteryStatusChanged_callbacks[g_idx] = listener;
-    //This is resulting in abort by te.process.exe during test runs, event without sleep
-//  std::thread thread([]() {
-//        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-//        for (const auto& [key, callbackFn] : onCompositeBatteryStatusChanged_callbacks)
-//        {
-//            callbackFn();
-//        }            
-//  });
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onCompositeBatteryStatusChanged_callbacks)
+        {            
+            auto status = wil::make_unique_cotaskmem<CompositeBatteryStatus>();
+            status.get()->ActiveBatteryCount = 1;
+            status.get()->Status.PowerState |= BATTERY_CHARGING;
+            status.get()->Status.PowerState |= BATTERY_POWER_ON_LINE;
+            status.get()->Information.FullChargedCapacity = 100;
+            status.get()->Status.Capacity = 57;            
+            callbackFn(status.release());
+        }
+    });
+    thread.detach();
     return S_OK;
 }
 
@@ -56,7 +62,7 @@ HRESULT UnregisterCompositeBatteryStatusChangedListener(CompositeBatteryStatusRe
 
 HRESULT GetDischargeTime(ULONGLONG* dischargeTimeOut)
 {
-    *dischargeTimeOut = 57;
+    *dischargeTimeOut = 3;
     return S_OK;
 }
 
@@ -64,6 +70,14 @@ HRESULT RegisterDischargeTimeChangedListener(OnDischargeTimeChanged listener, Di
 {
     *registration = reinterpret_cast<DischargeTimeRegistration>(g_idx++);
     onDischargeTimeChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onDischargeTimeChanged_callbacks)
+        {
+            callbackFn(5);
+        }
+    });
+    thread.detach();
     return S_OK;
 }
 
@@ -83,6 +97,14 @@ HRESULT RegisterEnergySaverStatusChangedListener(OnEnergySaverStatusChanged list
 {
     *registration = reinterpret_cast<EnergySaverStatusRegistration>(g_idx++);
     onEnergySaverStatusChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onEnergySaverStatusChanged_callbacks)
+        {
+            callbackFn(EnergySaverStatus::Off);
+        }
+    });
+    thread.detach();
     return S_OK;
 }
 
@@ -102,6 +124,14 @@ HRESULT RegisterPowerConditionChangedListener(OnPowerConditionChanged listener, 
 {
     *registration = reinterpret_cast<PowerConditionRegistration>(g_idx++);
     onPowerConditionChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onPowerConditionChanged_callbacks)
+        {
+            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::PowerSourceStatus::DC));
+        }
+    });
+    thread.detach();
     return S_OK;
 }
 
@@ -121,15 +151,14 @@ HRESULT RegisterDisplayStatusChangedListener(OnDisplayStatusChanged listener, Di
 {
     *registration = reinterpret_cast<DisplayStatusRegistration>(g_idx++);
     onDisplayStatusChanged_callbacks[g_idx] = listener;
-
-    //std::thread thread([]() {
-    //        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    //        for (const auto& [key, callbackFn] : onDisplayStatusChanged_callbacks)
-    //        {
-    //            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::DisplayStatus::On));
-    //        }            
-    // });
-
+    std::thread thread([]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            for (const auto& [key, callbackFn] : onDisplayStatusChanged_callbacks)
+            {
+                callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::DisplayStatus::On));
+            }            
+     });
+    thread.detach();
     return S_OK;
 }
 
@@ -143,6 +172,14 @@ HRESULT RegisterSystemIdleStatusChangedListener(OnSystemIdleStatusChanged listen
 {
     *registration = reinterpret_cast<SystemIdleStatusRegistration>(g_idx++);
     onSystemIdleStatusChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onSystemIdleStatusChanged_callbacks)
+        {
+            callbackFn();
+        }
+    });
+    thread.detach();
     return S_OK;
 }
 
@@ -162,6 +199,14 @@ HRESULT RegisterPowerSchemePersonalityChangedListener(OnPowerSchemePersonalityCh
 {
     *registration = reinterpret_cast<PowerSchemePersonalityRegistration>(g_idx++);
     onPowerSchemePersonalityChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onPowerSchemePersonalityChanged_callbacks)
+        {
+            callbackFn(GUID_MAX_POWER_SAVINGS);
+        }
+    });
+    thread.detach();
     return S_OK;
 }
 
@@ -181,8 +226,17 @@ HRESULT RegisterUserPresenceStatusChangedListener(OnUserPresenceStatusChanged li
 {
     *registration = reinterpret_cast<UserPresenceStatusRegistration>(g_idx++);
     onUserPresenceStatusChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onUserPresenceStatusChanged_callbacks)
+        {
+            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::UserPresenceStatus::Absent));
+        }
+        });
+    thread.detach();
     return S_OK;
 }
+
 HRESULT UnregisterUserPresenceStatusChangedListener(UserPresenceStatusRegistration registration)
 {
     onUserPresenceStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
@@ -199,6 +253,14 @@ HRESULT RegisterSystemAwayModeStatusChangedListener(OnSystemAwayModeStatusChange
 {
     *registration = reinterpret_cast<SystemAwayModeStatusRegistration>(g_idx++);
     onSystemAwayModeStatusChanged_callbacks[g_idx] = listener;
+    std::thread thread([]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        for (const auto& [key, callbackFn] : onSystemAwayModeStatusChanged_callbacks)
+        {
+            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::SystemAwayModeStatus::Exiting));
+        }
+        });
+    thread.detach();
     return S_OK;
 }
 
