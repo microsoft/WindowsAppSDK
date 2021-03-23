@@ -28,47 +28,45 @@ namespace Test::PushNotifications
     private:
         wil::unique_event m_failed;
 
-        const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
-        const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
-        const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"AppLifecycleTestPackage.cer";
-        const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
+        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestPackage.cer";
+        const std::wstring c_testPackageFullName = L"PushNotificationsPFN"; // Need to replace
 
     public:
         BEGIN_TEST_CLASS(APITests)
+            TEST_CLASS_PROPERTY(L"Description", L"Project Reunion Push Notification TAEF test")
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-            END_TEST_CLASS()
+        END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(ClassInit)
+        TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::SetupPackages();
-
-            // Write out some test content.
-            WriteContentFile(c_testDataFileName);
-            WriteContentFile(c_testDataFileName_Packaged);
-
+            try
+            {
+                // RunCertUtil(c_testPackageCertFile);
+                // InstallPackage(c_testPackageFile);
+            }
+            catch (...)
+            {
+                return false;
+            }
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            // Swallow errors in cleanup.
+            ::Test::Bootstrap::CleanupPackages();
             try
             {
-                DeleteContentFile(c_testDataFileName_Packaged);
-                DeleteContentFile(c_testDataFileName);
-                //UninstallPackage(c_testPackageFullName);
+                // UninstallPackage(c_testPackageFile);
             }
-            catch (const std::exception&)
+            catch (...)
             {
+                
+                return false;
             }
-            catch (const winrt::hresult_error&)
-            {
-            }
-
-            ::Test::Bootstrap::CleanupPackages();
             return true;
         }
 
@@ -99,8 +97,7 @@ namespace Test::PushNotifications
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
                 END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_TRUE(true);
-            // (winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
+            VERIFY_IS_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
         }
     };
 }
