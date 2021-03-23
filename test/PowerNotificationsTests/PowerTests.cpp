@@ -17,7 +17,7 @@ namespace ProjectReunionPowerTests
         BEGIN_TEST_CLASS(PowerTests)
             TEST_CLASS_PROPERTY(L"ActivationContext", L"PowerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            END_TEST_CLASS()
+        END_TEST_CLASS()
 
         TEST_METHOD(GetBatteryStatus)
         {

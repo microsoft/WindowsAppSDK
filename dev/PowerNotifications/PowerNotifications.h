@@ -199,11 +199,6 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return eventObj ? true : false;
         }
 
-        void RaiseEvent(PowerFunctionDetails fn)
-        {
-            fn.event()(nullptr, nullptr);
-        }
-
         event_token AddCallback(PowerFunctionDetails fn, PowerEventHandle const& handler)
         {
             auto& eventObj = fn.event();
@@ -224,6 +219,11 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             {
                 fn.unregisterListener();
             }
+        }
+
+        void RaiseEvent(PowerFunctionDetails fn)
+        {
+            fn.event()(nullptr, nullptr);
         }
 
         // Checks if an event is already registered. If none are, then gets the status

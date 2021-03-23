@@ -40,13 +40,13 @@ HRESULT RegisterCompositeBatteryStatusChangedListener(OnCompositeBatteryStatusCh
     std::thread thread([]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         for (const auto& [key, callbackFn] : onCompositeBatteryStatusChanged_callbacks)
-        {            
+        {
             auto status = wil::make_unique_cotaskmem<CompositeBatteryStatus>();
             status.get()->ActiveBatteryCount = 1;
             status.get()->Status.PowerState |= BATTERY_CHARGING;
             status.get()->Status.PowerState |= BATTERY_POWER_ON_LINE;
             status.get()->Information.FullChargedCapacity = 100;
-            status.get()->Status.Capacity = 57;            
+            status.get()->Status.Capacity = 57;
             callbackFn(status.release());
         }
     });
@@ -156,7 +156,7 @@ HRESULT RegisterDisplayStatusChangedListener(OnDisplayStatusChanged listener, Di
             for (const auto& [key, callbackFn] : onDisplayStatusChanged_callbacks)
             {
                 callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::DisplayStatus::On));
-            }            
+            }
      });
     thread.detach();
     return S_OK;
