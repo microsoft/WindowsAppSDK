@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\ProjectReunion.Build.Cpp.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -160,7 +161,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -180,7 +180,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -203,7 +202,6 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -228,7 +226,6 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -250,7 +247,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -270,7 +266,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -293,7 +288,6 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -318,7 +312,6 @@
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
       <OmitDefaultLibName>true</OmitDefaultLibName>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalOptions>/ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
