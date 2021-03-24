@@ -44,7 +44,10 @@ class, but with some key differences:
 
 -   **Platform**: GetInstances returns only the instances that the app explicitly registered for
     potential redirection.
--   **Reunion**: GetInstances returns all running instances of the app.
+-   **Reunion**: GetInstances returns all running instances of the app, including the current instance. 
+    There is no guaranteed ordering of instances in the list. In the scenario where the user has multiple
+    versions of the same app running, separate lists are maintained for each version. In the scenario
+    where there are multiple user sessions active, separate lists are maintained per user also.
 
 ### Registering Keys
 
