@@ -20,9 +20,7 @@
         <RuntimeIdentifiers>win</RuntimeIdentifiers>
         <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
         <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\</BuildOutputRoot>
-        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'==''">$(BuildOutputRoot)$(ProjectRelativePath)\</BaseIntermediateOutputPath>
-        <BaseIntermediateOutputPath Condition="'$(GenerateProjectSpecificOutputFolder)' == 'true'">$(BaseIntermediateOutputPath)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-        <BaseIntermediateOutputPath Condition="'$(TargetFramework)' != '' and '$(IgnoreTargetFramework)' != 'true'">$(BaseIntermediateOutputPath)$(TargetFramework)\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath>$(BuildOutputRoot)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <OutputPath>$(IntermediateOutputPath)</OutputPath>
         <OutDir>$(OutputPath)</OutDir>
