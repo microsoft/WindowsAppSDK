@@ -29,7 +29,6 @@ and matching
 [PowerSettingUnregisterNotification](https://docs.microsoft.com/en-us/windows/win32/api/powersetting/nf-powersetting-powersettingunregisternotification)
 APIs.
 
-<br>
 
 ## Description
 
@@ -71,12 +70,15 @@ int APIENTRY wWinMain(
     _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+    // Initialize COM.
+    winrt::init_apartment();
+
     // Optionally, register callbacks for power/battery state changes.
-    PowerManager::BatteryStatusChanged([](auto&&...)
-        { OnBatteryStateChange(); });
-    PowerManager::PowerSupplyStatusChanged([](auto&&...)
-        { OnPowerStateChange(); });
-    PowerManager::EnergySaverStatusChanged([](auto&&...)
+    PowerManager::BatteryStateChanged([](auto&&...)
+        { OnBatteryStateChanged(); });
+    PowerManager::PowerSupplyStateChanged([](auto&&...)
+        { OnPowerStateChanged(); });
+    PowerManager::EnergySaverStateChanged([](auto&&...)
         { OnEnergySaverStateChange(); });
     PowerManager::RemainingChargePercentChanged([](auto&&...)
         { OnRemainingChargePercentChange(); });
@@ -109,18 +111,20 @@ status, and so on), and use that information to form its decision. For example, 
 low power state and discharging, the app might choose to defer any non-critical background work, in
 the interests of being a good power/battery citizen.
 
+Note that these are regular WinRT event delegate invocations. See also: https://github.com/microsoft/xlang/issues/673
+
 ```c++
-void OnBatteryStateChange()
+void OnBatteryStateChanged()
 {
-    BatteryStatus batteryState = PowerManager::BatteryStatus();
+    BatteryState batteryState = PowerManager::BatteryState();
     int remainingCharge = PowerManager::RemainingChargePercent();
 
-    if (batteryState == BatteryStatus::Discharging && remainingCharge < 25)
+    if (batteryState == BatteryState::Discharging && remainingCharge < 25)
     {
         // We're in a bad battery state, we should pause any non-critical work.
         PauseNonCriticalWork();
     }
-    else if (batteryState == BatteryStatus::Charging && remainingCharge > 75)
+    else if (batteryState == BatteryState::Charging && remainingCharge > 75)
     {
         // Battery is in great shape, let's kick of some high-power work.
         StartPowerIntensiveWork();
@@ -137,21 +141,24 @@ when it receives a power supply state change notification, it might also want to
 status before proceeding.
 
 ```c++
-void OnPowerStateChange()
+void OnPowerSupplyStateChanged()
 {
-    PowerSupplyStatus powerState = PowerManager::PowerSupplyStatus();
-    BatteryStatus batteryState = PowerManager::BatteryStatus();
+    PowerSupplyState powerState = PowerManager::PowerSupplyState();
+    BatteryState batteryState = PowerManager::BatteryState();
     int remainingCharge = PowerManager::RemainingChargePercent();
+    
+    // Note if the BatteryState is BatteryState::NotPresent,
+    // then RemainingChargePercent is 100.
 
-    if (batteryState == BatteryStatus::Discharging
+    if (batteryState == BatteryState::Discharging
         && remainingCharge < 25
-        && powerState != PowerSupplyStatus::Adequate)
+        && powerState != PowerSupplyState::Adequate)
     {
         // We're in a bad power/battery state: let's pause any non-critical work.
         PauseNonCriticalWork();
     }
-    else if (powerState == PowerSupplyStatus::Adequate ||
-        (batteryState == BatteryStatus::Charging && remainingCharge > 75))
+    else if (powerState == PowerSupplyState::Adequate ||
+        (batteryState == BatteryState::Charging && remainingCharge > 75))
     {
         // Power/battery is in great shape, let's kick of some high-power work.
         StartPowerIntensiveWork();
@@ -166,10 +173,10 @@ functionality should be completely seamless and indistinguishable from the exist
 members, such that the app can consume these in exactly the same way.
 
 ```c++
-PowerManager::ConsoleStatusChanged([](auto&&...)
+PowerManager::OnDisplayStatusChanged([](auto&&...)
 {
-    DisplayStatus displayState = PowerManager::DisplayStatus();
-    if (displayState == DisplayStatus::Off)
+    DisplayState displayState = PowerManager::DisplayState();
+    if (displayState == DisplayState::Off)
     {
         // The screen is off, let's stop rendering foreground graphics,
         // and instead kick off some background work now.
@@ -191,16 +198,16 @@ winrt::event_token s_powerToken;
 
 void MyRegisterPowerManagerCallbacks()
 {
-    s_batteryToken = PowerManager::BatteryStatusChanged([](IInspectable sender, auto args)
-        { OnBatteryStateChange(sender, args); });
-    s_powerToken = PowerManager::PowerSupplyStatusChanged([](IInspectable sender, auto args)
-        { OnPowerStateChange(sender, args); });
+    s_batteryToken = PowerManager::BatteryStateChanged([](IInspectable sender, auto args)
+        { OnBatteryStateChanged(sender, args); });
+    s_powerToken = PowerManager::PowerSupplyStateChanged([](IInspectable sender, auto args)
+        { OnPowerSupplyStateChanged(sender, args); });
 }
 
 void MyUnregisterPowerManagerCallbacks()
 {
-    PowerManager::BatteryStatusChanged(s_batteryToken);
-    PowerManager::PowerSupplyStatusChanged(s_powerToken);
+    PowerManager::BatteryStateChanged(s_batteryToken);
+    PowerManager::PowerSupplyStateChanged(s_powerToken);
 }
 ```
 
@@ -253,29 +260,29 @@ well.
 ```idl
 namespace Microsoft.Windows.System.Power
 {
-    // Clone to Windows.System.Power.BatteryStatus
-    enum BatteryStatus {
+    // Based on Windows.System.Power.BatteryStatus
+    enum BatteryState {
         NotPresent,
         Discharging,
         Idle,
         Charging
     }
 
-    // Clone of Windows.System.Power.EnergySaverStatus
-    enum EnergySaverStatus {
+    // Based on Windows.System.Power.EnergySaverStatus
+    enum EnergySaverState {
         Disabled,
         Off,
         On
     }
 
-    // Clone of Windows.System.Power.PowerSupplyStatus
-    enum PowerSupplyStatus {
+    // Based on Windows.System.Power.PowerSupplyStatus
+    enum PowerSupplyState {
         NotPresent,
         Inadequate,
         Adequate
     }
 
-    // Status of the device's power source
+    // Kind of the device's power source
     enum PowerSourceKind {
         AC,
         DC,
@@ -304,39 +311,40 @@ namespace Microsoft.Windows.System.Power
 
     // User presence indicator - whether the user is present or absent
     // (active or idle)
-    enum UserPresenceStatus {
+    enum UserPresenceState {
         Present,
         Absent
     }
 
     // Indicates whether the system is entering or exiting "away" mode
-    enum SystemAwayModeStatus {
-        Entering,
-        Exiting
+    enum SystemAwayModeState {
+        Away,
+        NotAway
     }
 
     // Largely a clone of the Windows.System.Power.PowerManager type
     static runtimeclass PowerManager
     {
         // gets the device's battery status
-        static BatteryStatus BatteryStatus { get; };
+        static BatteryState BatteryState { get; };
 
         // gets the device's energy-saver status
-        static EnergySaverStatus EnergySaverStatus { get; };
+        static EnergySaverState EnergySaverState { get; };
 
         // gets the device's power supply status
-        static PowerSupplyStatus PowerSupplyStatus { get; };
+        static PowerSupplyState PowerSupplyState { get; };
 
         // gets the total percentage of charge remaining from all batteries connected to
-        // the device
+        // the device. If the BatteryStatus is BatteryStatus::NotPresent, then the
+        // remaining charge is 100%.
         static Int32 RemainingChargePercent { get; };
 
         // gets the total runtime remaining from all batteries connected to the device
         static TimeSpan RemainingDischargeTime { get; };
 
         static EventHandler<Object> BatteryStatusChanged;
-        static EventHandler<Object> EnergySaverStatusChanged;
-        static EventHandler<Object> PowerSupplyStatusChanged;
+        static EventHandler<Object> EnergySaverStateChanged;
+        static EventHandler<Object> PowerSupplyStateChanged;
         static EventHandler<Object> RemainingChargePercentChanged;
         static EventHandler<Object> RemainingDischargeTimeChanged;
 
@@ -349,12 +357,16 @@ namespace Microsoft.Windows.System.Power
         static event EventHandler<object> PowerSchemePersonalityChanged;
 
         // gets the user's present/absent status
-        static UserPresenceStatus UserPresenceStatus;
-        static event EventHandler<object> UserPresenceStatusChanged;
+        static UserPresenceState UserPresenceState;
+        static event EventHandler<object> UserPresenceStateChanged;
 
-        // gets the entering/exiting status of the system away mode
-        static SystemAwayModeStatus SystemAwayModeStatus;
-        static event EventHandler<object> SystemAwayModeStatusChanged;
+        // gets the away/not-away status of the system away mode
+        static SystemAwayModeState SystemAwayModeState;
+        static event EventHandler<object> SystemAwayModeStateChanged;
+        
+        // gets the busy/idle state of the system
+        static SystemBusyState SystemBusyState;
+        static event EventHandler<object> SystemBusyStateChanged;
     }
 }
 ```
