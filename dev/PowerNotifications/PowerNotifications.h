@@ -368,7 +368,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             RemoveCallback(compositeBatteryStatusFunc, token);
         }
 
-        void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus &compositeBatteryStatus)
+        void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus const& compositeBatteryStatus)
         {
             ProcessCompositeBatteryStatus(compositeBatteryStatus);
             FireCorrespondingCompositeBatteryEvent();
@@ -666,7 +666,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->EnergySaverStatusChanged_Callback(energySaverStatus);
         }
 
-        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus &compositeBatteryStatus)
+        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus const& compositeBatteryStatus)
         {
             return make_self<factory_implementation::PowerManager>()->CompositeBatteryStatusChanged_Callback(compositeBatteryStatus);
         }

@@ -14,7 +14,7 @@ struct CompositeBatteryStatus
 
 DECLARE_HANDLE(CompositeBatteryStatusRegistration);
 HRESULT GetCompositeBatteryStatus(CompositeBatteryStatus* compositeBatteryStatusOut);
-typedef void (*OnCompositeBatteryStatusChanged)(CompositeBatteryStatus &compositeBatteryStatus);
+typedef void (*OnCompositeBatteryStatusChanged)(CompositeBatteryStatus const& compositeBatteryStatus);
 HRESULT RegisterCompositeBatteryStatusChangedListener(OnCompositeBatteryStatusChanged listener, CompositeBatteryStatusRegistration* registration);
 HRESULT UnregisterCompositeBatteryStatusChangedListener(CompositeBatteryStatusRegistration registration);
 
