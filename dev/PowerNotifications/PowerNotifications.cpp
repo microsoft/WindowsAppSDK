@@ -58,7 +58,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetCompositeBatteryStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus));
         make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(
-            *make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus);
+            make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus);
     }
    
     // PowerSupplyStatus Functions

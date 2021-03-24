@@ -100,7 +100,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         GUID  m_cachedPowerSchemePersonality;
         ULONGLONG m_cachedDischargeTime;
         ::EnergySaverStatus m_cachedEnergySaverStatus;
-        CompositeBatteryStatus* m_cachedCompositeBatteryStatus;
+        CompositeBatteryStatus m_cachedCompositeBatteryStatus;
         winrt::Microsoft::ProjectReunion::BatteryStatus m_batteryStatus;
         winrt::Microsoft::ProjectReunion::BatteryStatus m_oldBatteryStatus { winrt::Microsoft::ProjectReunion::BatteryStatus::NotPresent };
         winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus;
@@ -194,12 +194,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Update };
 
-        bool RegisteredForEvents(EventType const& eventObj)
+        bool RegisteredForEvents(const EventType& eventObj)
         {
             return eventObj ? true : false;
         }
 
-        event_token AddCallback(PowerFunctionDetails fn, PowerEventHandle const& handler)
+        event_token AddCallback(PowerFunctionDetails fn, const PowerEventHandle& handler)
         {
             auto& eventObj = fn.event();
             std::scoped_lock<std::mutex> lock(m_mutex);
@@ -210,7 +210,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return eventObj.add(handler);
         }
 
-        void RemoveCallback(PowerFunctionDetails fn, event_token const& token)
+        void RemoveCallback(PowerFunctionDetails fn, const event_token& token)
         {
             auto& eventObj = fn.event();
             eventObj.remove(token);
@@ -244,12 +244,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return static_cast<winrt::Microsoft::ProjectReunion::EnergySaverStatus>(m_cachedEnergySaverStatus);
         }
 
-        event_token EnergySaverStatusChanged(PowerEventHandle const& handler)
+        event_token EnergySaverStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(energySaverStatusFunc, handler);
         }
 
-        void EnergySaverStatusChanged(event_token const& token)
+        void EnergySaverStatusChanged(const event_token& token)
         {
             RemoveCallback(energySaverStatusFunc, token);
         }
@@ -261,7 +261,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         }
 
         // BatteryStatus Functions        
-        void ProcessCompositeBatteryStatus(CompositeBatteryStatus const& compositeBatteryStatus)
+        void ProcessCompositeBatteryStatus(const CompositeBatteryStatus& compositeBatteryStatus)
         {
             // Calculate the remaining charge capacity based on the maximum charge
             // as an integer percentage value from 0 to 100.
@@ -358,19 +358,19 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return m_batteryStatus;
         }
 
-        event_token BatteryStatusChanged(PowerEventHandle const& handler)
+        event_token BatteryStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(compositeBatteryStatusFunc, handler);
         }
 
-        void BatteryStatusChanged(event_token const& token)
+        void BatteryStatusChanged(const event_token& token)
         {
             RemoveCallback(compositeBatteryStatusFunc, token);
         }
 
-        void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
+        void CompositeBatteryStatusChanged_Callback(const CompositeBatteryStatus& compositeBatteryStatus)
         {
-            ProcessCompositeBatteryStatus(*compositeBatteryStatus);
+            ProcessCompositeBatteryStatus(compositeBatteryStatus);
             FireCorrespondingCompositeBatteryEvent();
         }
 
@@ -382,12 +382,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return m_powerSupplyStatus;
         }
 
-        event_token PowerSupplyStatusChanged(PowerEventHandle const& handler)
+        event_token PowerSupplyStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(powerSupplyStatusFunc, handler);
         }
 
-        void PowerSupplyStatusChanged(event_token const& token)
+        void PowerSupplyStatusChanged(const event_token& token)
         {
             RemoveCallback(powerSupplyStatusFunc, token);
         }
@@ -400,12 +400,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return m_batteryChargePercent;
         }
 
-        event_token RemainingChargePercentChanged(PowerEventHandle const& handler)
+        event_token RemainingChargePercentChanged(const PowerEventHandle& handler)
         {
             return AddCallback(remainingChargePercentFunc, handler);
         }
 
-        void RemainingChargePercentChanged(event_token const& token)
+        void RemainingChargePercentChanged(const event_token& token)
         {
             RemoveCallback(remainingChargePercentFunc, token);
         }
@@ -418,12 +418,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return Windows::Foundation::TimeSpan(std::chrono::seconds(m_cachedDischargeTime));
         }
 
-        event_token RemainingDischargeTimeChanged(PowerEventHandle const& handler)
+        event_token RemainingDischargeTimeChanged(const PowerEventHandle& handler)
         {
             return AddCallback(remainingDischargeTimeFunc, handler);
         }
 
-        void RemainingDischargeTimeChanged(event_token const& token)
+        void RemainingDischargeTimeChanged(const event_token& token)
         {
             RemoveCallback(remainingDischargeTimeFunc, token);
         }
@@ -442,12 +442,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return static_cast<winrt::Microsoft::ProjectReunion::PowerSourceStatus>(m_cachedPowerSourceStatus);
         }
 
-        event_token PowerSourceStatusChanged(PowerEventHandle const& handler)
+        event_token PowerSourceStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(powerSourceStatusFunc, handler);
         }
 
-        void PowerSourceStatusChanged(event_token const& token)
+        void PowerSourceStatusChanged(const event_token& token)
         {
             RemoveCallback(powerSourceStatusFunc, token);
         }
@@ -466,12 +466,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return static_cast<winrt::Microsoft::ProjectReunion::DisplayStatus>(m_cachedDisplayStatus);
         }
 
-        event_token DisplayStatusChanged(PowerEventHandle const& handler)
+        event_token DisplayStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(displayStatusFunc, handler);
         }
 
-        void DisplayStatusChanged(event_token const& token)
+        void DisplayStatusChanged(const event_token& token)
         {
             RemoveCallback(displayStatusFunc, token);
         }
@@ -493,12 +493,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return SystemIdleStatus::Busy;
         }
 
-        event_token SystemIdleStatusChanged(PowerEventHandle const& handler)
+        event_token SystemIdleStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(systemIdleStatusFunc, handler);
         }
 
-        void SystemIdleStatusChanged(event_token const& token)
+        void SystemIdleStatusChanged(const event_token& token)
         {
             RemoveCallback(systemIdleStatusFunc, token);
         }
@@ -528,12 +528,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 
         }
 
-        event_token PowerSchemePersonalityChanged(PowerEventHandle const& handler)
+        event_token PowerSchemePersonalityChanged(const PowerEventHandle& handler)
         {
             return AddCallback(powerSchemePersonalityFunc, handler);
         }
 
-        void PowerSchemePersonalityChanged(event_token const& token)
+        void PowerSchemePersonalityChanged(const event_token& token)
         {
             RemoveCallback(powerSchemePersonalityFunc, token);
         }
@@ -552,12 +552,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return static_cast<winrt::Microsoft::ProjectReunion::UserPresenceStatus>(m_cachedUserPresenceStatus);
         }
 
-        event_token UserPresenceStatusChanged(PowerEventHandle const& handler)
+        event_token UserPresenceStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(userPresenceStatusFunc, handler);
         }
 
-        void UserPresenceStatusChanged(event_token const& token)
+        void UserPresenceStatusChanged(const event_token& token)
         {
             RemoveCallback(userPresenceStatusFunc, token);
         }
@@ -576,12 +576,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             return static_cast<winrt::Microsoft::ProjectReunion::SystemAwayModeStatus>(m_cachedSystemAwayModeStatus);
         }
 
-        event_token SystemAwayModeStatusChanged(PowerEventHandle const& handler)
+        event_token SystemAwayModeStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(systemAwayModeStatusFunc, handler);
         }
 
-        void SystemAwayModeStatusChanged(event_token const& token)
+        void SystemAwayModeStatusChanged(const event_token& token)
         {
             RemoveCallback(systemAwayModeStatusFunc, token);
         }
@@ -666,7 +666,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->EnergySaverStatusChanged_Callback(energySaverStatus);
         }
 
-        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus* compositeBatteryStatus)
+        static void CompositeBatteryStatusChanged_Callback(const CompositeBatteryStatus& compositeBatteryStatus)
         {
             return make_self<factory_implementation::PowerManager>()->CompositeBatteryStatusChanged_Callback(compositeBatteryStatus);
         }

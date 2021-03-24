@@ -17,6 +17,7 @@
     <Midl Include="$(MSBuildThisFileDirectory)PowerNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ClosedSourceMock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PowerNotifications.cpp" />
   </ItemGroup>
   <ItemGroup>
