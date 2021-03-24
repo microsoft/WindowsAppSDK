@@ -9,7 +9,7 @@
 static std::wstring g_test_ddlmPackageNamePrefix;
 static std::wstring g_test_ddlmPackagePublisherId;
 
-STDAPI MddLifetimeManagerTestInitialize(
+STDAPI MddLifetimeManagementTestInitialize(
     _In_ PCWSTR ddlmPackageNamePrefix,
     _In_ PCWSTR ddlPackagePublisherId) noexcept try
 {
@@ -148,15 +148,15 @@ STDAPI MddLifetimeManagementGC() noexcept try
                 ddlmPackages.push_back(MddCore::LifetimeManagement::DDLMPackage(packageFullName, version));
             }
 
-            // Sort the list by version in descending order to simplify using it
-            std::sort(ddlmPackages.begin(), ddlmPackages.end(), std::greater<MddCore::LifetimeManagement::DDLMPackage>());
-
             // Did we find more than one?
             if (ddlmPackages.size() <= 1)
             {
                 // Nothing to remove
                 continue;
             }
+
+            // Sort the list by version in descending order to simplify using it
+            std::sort(ddlmPackages.begin(), ddlmPackages.end(), std::greater<MddCore::LifetimeManagement::DDLMPackage>());
 
             // What's the highest version with a healthy status
             auto keeper{ ddlmPackages.begin() };
@@ -172,8 +172,10 @@ STDAPI MddLifetimeManagementGC() noexcept try
             const auto keeperIndex{ keeper - ddlmPackages.begin() };
 
             // Remove all older packages (best effort)
-            for (; keeper != ddlmPackages.end(); ++keeper)
+            for (++keeper; keeper != ddlmPackages.end(); ++keeper)
             {
+                const auto n{ keeper - ddlmPackages.begin() };
+                wprintf(L"Boo %I64u %I64u\n", keeperIndex, n);
                 keeper->RemovePackage(packageManager);
             }
         }
