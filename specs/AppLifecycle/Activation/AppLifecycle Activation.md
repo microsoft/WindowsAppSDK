@@ -300,13 +300,12 @@ namespace Microsoft.Windows.AppLifecycle
 
 This enum is based off the platform
 [ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
-All platform ActivationKind values are cloned to this class. Then, we set a high-value
-**ExtensionBase** value which is well above the existing highest ActivationKind value (1026), to
-allow for new values to be added to the platform. Going forward, any new platform values will also
-be added to the new enum, plus any new values that are only defined in the new enum. That is,
-any values < ExtensionBase will exist in both the Reunion and platform implementations, but conversely
-any values > ExtensionBase only exist in the Reunion implementation and do not exist in the platform
-implementation.
+All platform ActivationKind values are cloned to this class. We determine an "extension base" value which 
+is well above the existing highest ActivationKind value (1026), to allow for new values to be added to the
+platform. Going forward, any new platform values will also be added to the new enum, plus any new values 
+that are only defined in the new enum. That is, any values < the extension base value will exist in both the
+Reunion and platform implementations, but conversely any values > the extension base value only exist in the 
+Reunion implementation and do not exist in the platform implementation.
 
 ### ActivationArguments
 
