@@ -3,13 +3,11 @@
 
 #pragma once
 #include "pch.h"
+#include "TestCommon.h"
 
 using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt::Windows::Foundation::Collections;
 typedef IMapView<winrt::hstring, winrt::hstring> EnvironmentVariables;
-
-inline constexpr PCWSTR c_userEvRegLocation = L"Environment";
-inline constexpr PCWSTR c_machineEvRegLocation = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
 inline EnvironmentVariables GetEnvironmentVariablesFromRegistry(HKEY hKey)
 {
@@ -75,6 +73,29 @@ inline EnvironmentVariables GetEnvironmentVariablesFromRegistry(HKEY hKey)
     return environmentVariables.GetView();
 }
 
+inline std::wstring GetEnvironmentVariableFromRegistry(const std::wstring variableKey, HKEY KeyToOpen)
+{
+    DWORD sizeOfEnvironmentValue;
+
+    // See how big we need the buffer to be
+    LSTATUS queryResult = RegQueryValueEx(KeyToOpen, variableKey.c_str(), 0, nullptr, nullptr, &sizeOfEnvironmentValue);
+
+    if (queryResult != ERROR_SUCCESS)
+    {
+        if (queryResult == ERROR_FILE_NOT_FOUND)
+        {
+            return L"";
+        }
+
+        THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+    }
+
+    std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
+    THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(KeyToOpen, variableKey.c_str(), 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+
+    return std::wstring(environmentValue.get());
+}
+
 inline EnvironmentVariables GetEnvironmentVariablesForUser()
 {
     wil::unique_hkey environmentVariablesHKey;
@@ -82,11 +103,25 @@ inline EnvironmentVariables GetEnvironmentVariablesForUser()
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 
+inline std::wstring GetEnvironmentVariableForUser(const std::wstring variableName)
+{
+    wil::unique_hkey environmentVariableHKey;
+    THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof())));
+    return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
+}
+
 inline EnvironmentVariables GetEnvironmentVariablesForMachine()
 {
-    wil::unique_hkey environmentVariablesHKey;
+    wil::unique_hkey environmentVariablesHKey{};
     THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof())));
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
+}
+
+inline std::wstring GetEnvironmentVariableForMachine(const std::wstring variableName)
+{
+    wil::unique_hkey environmentVariableHKey{};
+    THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof())));
+    return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
 }
 
 inline EnvironmentVariables GetEnvironmentVariablesForProcess()
@@ -108,6 +143,39 @@ inline EnvironmentVariables GetEnvironmentVariablesForProcess()
     THROW_IF_WIN32_BOOL_FALSE(FreeEnvironmentStrings(environmentVariablesString));
 
     return environmentVariables.GetView();
+}
+
+inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variableName)
+{
+    // Get the size of the buffer.
+    DWORD sizeNeededInCharacters = ::GetEnvironmentVariable(variableName.c_str(), nullptr, 0);
+
+    // If we got an error
+    if (sizeNeededInCharacters == 0)
+    {
+        DWORD lastError = GetLastError();
+
+        if (lastError == ERROR_ENVVAR_NOT_FOUND)
+        {
+            return L"";
+        }
+        else
+        {
+            THROW_HR(HRESULT_FROM_WIN32(lastError));
+        }
+    }
+
+    std::wstring environmentVariableValue{};
+
+    environmentVariableValue.resize(sizeNeededInCharacters - 1);
+    DWORD getResult = ::GetEnvironmentVariable(variableName.c_str(), &environmentVariableValue[0], sizeNeededInCharacters);
+
+    if (getResult == 0)
+    {
+        THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+    }
+
+    return environmentVariableValue;
 }
 
 /// Compares two IMapView<winrt::hstring, winrt::hstring> collections for

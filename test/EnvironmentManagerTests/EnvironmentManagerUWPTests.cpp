@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "EnvironmentManagerUWPTests.h"
 #include "EnvironmentVariableHelper.h"
+#include "TestSetupAndTeardownHelper.h"
 
 using namespace winrt::Microsoft::ProjectReunion;
 
@@ -56,5 +57,62 @@ namespace ProjectReunionEnvironmentManagerTests
         EnvironmentVariables environmentVariablesFromWinRTAPI = environmentmanager.GetEnvironmentVariables();
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariableForProcess()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariableForUser()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariableForMachine()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForProcess()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+
+        std::wstring writtenEV = GetEnvironmentVariableForProcess(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
+
+        // Update the environment variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        writtenEV = GetEnvironmentVariableForProcess(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
+
+
+        // Remove the value
+        // setting the value to empty is the same as deleting the variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_evKeyName2, nullptr, 0));
+        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForUser()
+    {
+        EnvironmentManager environmentMananger = EnvironmentManager::GetForUser();
+        VERIFY_THROWS(environmentMananger.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForMachine()
+    {
+        EnvironmentManager environmentMananger = EnvironmentManager::GetForMachine();
+        VERIFY_THROWS(environmentMananger.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
     }
 }

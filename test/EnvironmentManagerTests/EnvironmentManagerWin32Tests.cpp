@@ -57,4 +57,91 @@ namespace ProjectReunionEnvironmentManagerTests
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
+
+    void EnvironmentManagerWin32Tests::TestGetEnvironmentVariableForProcess()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+    }
+
+    void EnvironmentManagerWin32Tests::TestGetEnvironmentVariableForUser()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+    }
+
+    void EnvironmentManagerWin32Tests::TestGetEnvironmentVariableForMachine()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+    }
+
+    void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForProcess()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+
+        std::wstring writtenEV = GetEnvironmentVariableForProcess(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
+
+        // Update the environment variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        writtenEV = GetEnvironmentVariableForProcess(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
+
+
+        // Remove the value
+        // setting the value to empty is the same as deleting the variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_evKeyName2, nullptr, 0));
+        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
+    }
+
+    void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForUser()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+
+        std::wstring writtenEV = GetEnvironmentVariableForUser(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
+
+        // Update the environment variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        writtenEV = GetEnvironmentVariableForUser(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
+
+
+        // Remove the value
+        // setting the value to empty is the same as deleting the variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_evKeyName2));
+        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
+    }
+
+    void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForMachine()
+    {
+        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+
+        std::wstring writtenEV = GetEnvironmentVariableForMachine(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
+
+        // Update the environment variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        writtenEV = GetEnvironmentVariableForMachine(c_evKeyName2);
+        VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
+
+
+        // Remove the value
+        // setting the value to empty is the same as deleting the variable
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForMachine(c_evKeyName2));
+        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
+    }
 }

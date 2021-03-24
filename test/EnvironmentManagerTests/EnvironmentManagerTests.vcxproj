@@ -288,12 +288,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ChangeTrackerHelper.h" />
     <ClInclude Include="EnvironmentManagerCentennialTests.h" />
     <ClInclude Include="EnvironmentManagerUWPTests.h" />
     <ClInclude Include="EnvironmentManagerWin32Tests.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="EnvironmentVariableHelper.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TestCommon.h" />
+    <ClInclude Include="TestSetupAndTeardownHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EnvironmentManagerCentennialTests.cpp" />

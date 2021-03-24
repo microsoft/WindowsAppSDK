@@ -33,6 +33,15 @@
     <ClInclude Include="EnvironmentVariableHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TestSetupAndTeardownHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeTrackerHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

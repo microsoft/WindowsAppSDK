@@ -4,6 +4,7 @@
 #include "pch.h"
 #include <EnvironmentManager.h>
 #include <EnvironmentManager.g.cpp>
+#include <EnvironmentVariableChangeTracker.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -48,14 +49,94 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return environmentVariables.GetView();
     }
 
-    hstring EnvironmentManager::GetEnvironmentVariable(hstring const& name)
+    hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
-        throw hresult_not_implemented();
+        if (variableName.empty())
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
+        if (m_Scope == Scope::Process)
+        {
+            return hstring(GetProcessEnvironmentVariable(std::wstring(variableName)));
+        }
+        else
+        {
+            return hstring(GetUserOrMachineEnvironmentVariable(std::wstring(variableName)));
+        }
     }
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
-        throw hresult_not_implemented();
+        // If we are running in process scope it is okay to
+       // set EV's because they will not be tracked.
+
+       // Disallow sets if current OS is 20H0 or lower because
+       // tracking EV changes relies on a feature in builds above 20H0
+        if (m_Scope != Scope::Process && IsCurrentOS20H2OrLower())
+        {
+            THROW_HR(E_NOTIMPL);
+        }
+
+        auto setEV = [&, name, value, this]()
+        {
+            if (m_Scope == Scope::Process)
+            {
+                BOOL result = FALSE;
+                if (!value.empty())
+                {
+                    result = ::SetEnvironmentVariable(name.c_str(), value.c_str());
+                }
+                else
+                {
+                    result = ::SetEnvironmentVariable(name.c_str(), nullptr);
+                }
+
+                if (result == TRUE)
+                {
+                    return S_OK;
+                }
+                else
+                {
+                    DWORD lastError = GetLastError();
+                    RETURN_HR(HRESULT_FROM_WIN32(lastError));
+                }
+            }
+
+            // m_Scope should be user or machine here.
+            wil::unique_hkey environmentVariableKey = GetRegHKeyForEVUserAndMachineScope(true);
+
+            if (!value.empty())
+            {
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                    environmentVariableKey.get()
+                    , name.c_str()
+                    , 0
+                    , REG_SZ
+                    , reinterpret_cast<const BYTE*>(value.c_str())
+                    , static_cast<DWORD>((value.size() + 1) * sizeof(wchar_t)))));
+            }
+            else
+            {
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegDeleteValue(environmentVariableKey.get()
+                    , name.c_str())));
+            }
+
+            LRESULT broadcastResult = SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
+                reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
+                SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr);
+
+            if (broadcastResult == 0)
+            {
+                THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+            }
+
+            return S_OK;
+        };
+
+        EnvironmentVariableChangeTracker changeTracker(std::wstring(name), std::wstring(value), m_Scope);
+
+        THROW_IF_FAILED(changeTracker.TrackChange(setEV));
     }
 
     void EnvironmentManager::AppendToPath(hstring const& path)
@@ -97,6 +178,39 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         THROW_IF_WIN32_BOOL_FALSE(FreeEnvironmentStrings(environmentVariablesString));
 
         return environmentVariables;
+    }
+
+    std::wstring EnvironmentManager::GetProcessEnvironmentVariable(const std::wstring variableName) const
+    {
+        // Get the size of the buffer.
+        DWORD sizeNeededInCharacters = ::GetEnvironmentVariable(variableName.c_str(), nullptr, 0);
+
+        // If we got an error
+        if (sizeNeededInCharacters == 0)
+        {
+            DWORD lastError = GetLastError();
+
+            if (lastError == ERROR_ENVVAR_NOT_FOUND)
+            {
+                return L"";
+            }
+            else
+            {
+                THROW_HR(HRESULT_FROM_WIN32(lastError));
+            }
+        }
+
+        std::wstring environmentVariableValue{};
+
+        environmentVariableValue.resize(sizeNeededInCharacters - 1);
+        DWORD getResult = ::GetEnvironmentVariable(variableName.c_str(), &environmentVariableValue[0], sizeNeededInCharacters);
+
+        if (getResult == 0)
+        {
+            THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+        }
+
+        return environmentVariableValue;
     }
 
     StringMap EnvironmentManager::GetUserOrMachineEnvironmentVariables() const
@@ -160,6 +274,31 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         }
 
         return environmentVariables;
+    }
+
+    std::wstring EnvironmentManager::GetUserOrMachineEnvironmentVariable(const std::wstring variableName) const
+    {
+        wil::unique_hkey environmentVariableHKey = GetRegHKeyForEVUserAndMachineScope();
+
+        DWORD sizeOfEnvironmentValue;
+
+        // See how big we need the buffer to be
+        LSTATUS queryResult = RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, nullptr, &sizeOfEnvironmentValue);
+
+        if (queryResult != ERROR_SUCCESS)
+        {
+            if (queryResult == ERROR_FILE_NOT_FOUND)
+            {
+                return L"";
+            }
+
+            THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+        }
+
+        std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
+        THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+
+        return std::wstring(environmentValue.get());
     }
 
     wil::unique_hkey EnvironmentManager::GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess) const
