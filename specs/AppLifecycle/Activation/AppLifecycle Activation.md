@@ -137,6 +137,9 @@ int APIENTRY wWinMain(
     _In_ LPWSTR,
     _In_ int nCmdShow)
 {
+    // Initialize COM.
+    winrt::init_apartment();
+
     // Registering for rich activation kinds can be done in the
     // app's installer or in the app itself.
     RegisterForActivation();
