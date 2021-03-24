@@ -34,6 +34,12 @@ The Reunion behavior is based on the existing
 [Windows.ApplicationModel.AppInstance](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance)
 class, but with some key differences:
 
+### AppInstance class
+
+-   **Platform**: The AppInstance class is focused purely on instance redirection scenarios.
+-   **Reunion**: The AppInstance class includes instance redirection scenarios, and is additionally
+    intended to form the basis of other instance-related functionality in later releases.
+
 ### List of Instances
 
 -   **Platform**: GetInstances returns only the instances that the app explicitly registered for
@@ -50,7 +56,8 @@ return the registered instance, and the app can check whether it is the current 
 
 -   **Platform**: An instance must register a key in order to be included in the list returned from
     GetInstances.
--   **Reunion**: Registering a key is decoupled from the list of instances.
+-   **Reunion**: Registering a key is decoupled from the list of instances. An instance does not
+    need to register a key in order to be included in the list.
 
 ### Instance Redirection Targets
 
@@ -258,7 +265,8 @@ int APIENTRY wWinMain(
 
     // First, hook up the Activated event, to allow for this instance of the app
     // getting reactivated as a result of multi-instance redirection.
-    AppInstance::Activated([](AppActivationArguments const& args)
+    Microsoft::ProjectReunion::AppInstance::GetCurrent().Activated([](
+        AppActivationArguments const& args)
         { OnActivated(args); });
 
     //...etc - the rest of WinMain as normal.
