@@ -65,12 +65,28 @@ expect. An app can have multiple instances available as redirection targets.
 
 ### Post-Redirection Behavior
 
-Redirection is a terminal operation. After calling the method to redirect, there is nothing the app
-can do - regardless of whether the redirect succeeded or failed. In calling redirect, the app is
-saying that it cannot/will not handle this activation request - so even if the redirection fails,
-there's nothing this instance can or will do anyway. The platform will explicitly terminate an
-instance that has chosen to redirect. If redirection fails, the activation request fails. The UX is
-the same as an activation failure today.
+-   **Platform**: In the UWP implementation, redirection is a terminal operation: after calling the 
+    method to redirect, there is nothing the app can do - regardless of whether the redirect 
+    succeeded or failed. The platform therefore explicitly terminates an instance that has chosen
+    to redirect. If redirection fails, the activation request fails. The UX is the same as an 
+    activation failure today.
+
+-   **Reunion**: The Reunion implementation is more flexible: redirection is not a terminal operation. 
+    Partly this is because it is a lot more problematic to terminate a traditional unpackaged app than
+    a UWP app. Partly it is because the app may wish to redirect a given activation request but then 
+    to continue activating the current instance anyway. This supports the case where an activation 
+    request is redirected to an instance that was already running: that instance could already be 
+    doing work, and may choose to  redirect the new request elsewhere. Even in the case where an 
+    instance was not already running prior to receiving the activation request, it might still want 
+    the option to choose for itself what happens next.
+
+    An activation request can be redirected multiple times - this leaves it open for the app to decide
+    what makes sense for that app. That is, instance A could redirect to instance B, which in turn 
+    could redirect to instance C, and so on. This also allows for a circular redirection - and again, 
+    it is left open for the app to resolve circular redirections in whatever way it chooses. For 
+    example, to  resolve a circular redirection, an app instance could take note of the activation 
+    payload and match it against future activation requests. Or it could modify the payload when it 
+    redirects a request,  such that it can easily determine that this is a request it has already seen.
 
 ### Unregistering
 
@@ -90,7 +106,7 @@ In order to handle reactivation, the app can register for an Activated event.
 
 -   **Platform**: The event passes a `Windows.ApplicationModel.Activation.IActivatedEventArgs` to
     the app.
--   **Reunion**: The event passes a `Microsoft.Windows.AppLifecycle.ActivationArguments` instance to
+-   **Reunion**: The event passes a `Microsoft.Windows.AppLifecycle.AppActivationArguments` instance to
     the app, which contains one of the `-ActivatedEventArgs` instances.
 
 ## Examples
@@ -115,8 +131,11 @@ int APIENTRY wWinMain(
     _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+    // Initialize COM.
+    winrt::init_apartment();
+
     // First, we'll get our rich activation event args.
-    ActivationArguments activationArgs =
+    AppActivationArguments activationArgs =
         AppInstance::GetCurrent().GetActivatedEventArgs();
 
     // An app might want to set itself up for possible redirection in
@@ -141,7 +160,7 @@ int APIENTRY wWinMain(
         {
             // Some other instance has already registered for this file,
             // so we'll redirect this activation to that instance instead.
-            instance.RedirectTo(activationArgs);
+            instance.RedirectActivationTo(activationArgs);
         }
     }
     return 1;
@@ -172,7 +191,10 @@ int APIENTRY B_wWinMain(
     _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-    ActivationArguments activationArgs =
+    // Initialize COM.
+    winrt::init_apartment();
+
+    AppActivationArguments activationArgs =
         AppInstance::GetCurrent().GetActivatedEventArgs();
 
     // As above, check for any specific activation kind we care about.
@@ -192,13 +214,15 @@ int APIENTRY B_wWinMain(
         AppInstance instance = instances.GetAt(0);
 
         // If the app re-registers re-usable instances, we can filter for these instead.
+        // In this example, the app uses the string "REUSABLE" to indicate to itself
+        // that it can redirect to a particular instance.
         bool isFound = false;
         for (AppInstance instance : instances)
         {
-            if (instance.Key.c_str() == "REUSABLE")
+            if (instance.Key == L"REUSABLE")
             {
                 isFound = true;
-                instance.RedirectTo(activationArgs);
+                instance.RedirectActivationTo(activationArgs);
                 break;
             }
         }
@@ -229,17 +253,20 @@ int APIENTRY wWinMain(
     _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+    // Initialize COM.
+    winrt::init_apartment();
+
     // First, hook up the Activated event, to allow for this instance of the app
     // getting reactivated as a result of multi-instance redirection.
-    AppInstance::Activated([](ActivationArguments args)
+    AppInstance::Activated([](AppActivationArguments const& args)
         { OnActivated(args); });
 
     //...etc - the rest of WinMain as normal.
 }
 
-void OnActivated(ActivationArguments const& args)
+void OnActivated(AppActivationArguments const& args)
 {
-    ExtendedActivationKind kind = args.Kind();
+    ExtendedActivationKind kind = args.Kind;
     if (kind == ExtendedActivationKind::Launch)
     {
         auto launchArgs = args.Data().as<LaunchActivatedEventArgs>();
@@ -271,9 +298,9 @@ handle this new activation in the current instance or redirect again, effectivel
 redirections.
 
 ```c++
-void OnActivated(ActivationArguments const& args)
+void OnActivated(AppActivationArguments const& args)
 {
-    const ExtendedActivationKind kind = args.Kind();
+    const ExtendedActivationKind kind = args.Kind;
 
     // For example, we might want to redirect protocol activations.
     if (kind == ExtendedActivationKind::Protocol)
@@ -283,10 +310,10 @@ void OnActivated(ActivationArguments const& args)
 
         // We'll try to find the instance that handles protocol activations.
         // If there isn't one, then this instance will take over that duty.
-        auto instance = AppInstance::FindOrRegisterForKey(uri.AbsoluteUri().c_str());
-        if (!instance.IsCurrent())
+        auto instance = AppInstance::FindOrRegisterForKey(uri.AbsoluteUri());
+        if (!instance.IsCurrent)
         {
-            instance.RedirectTo(args);
+            instance.RedirectActivationTo(args);
         }
         else
         {
@@ -327,6 +354,12 @@ void CALLBACK OnFileClosed(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 }
 ```
 
+The app is free to choose when to unregister itself. When an instance terminates, it is removed
+from the list that the API maintains of running instances. However, it is possible that a
+redirection could be in-flight just at the point where an app instances terminates. To
+mitigate this, an app could choose to unregister itself just prior to termination (for example,
+in its WM_CLOSE handler).
+
 ### Instance information
 
 The AppInstance class is intended to represent an instance of the app. In the initial release, the
@@ -362,17 +395,16 @@ namespace Microsoft.Windows.AppLifecycle
     {
         // Existing activation functionality like GetCurrent and GetActivatedEventArgs
 
-        static event EventHandler<ActivationArguments> Activated;
+        static event EventHandler<AppActivationArguments> Activated;
 
         static Windows.Foundation.IVector<AppInstance> GetInstances();
 
         static AppInstance FindOrRegisterForKey(String key);
         void UnregisterKey(String key);
 
-        void RedirectTo(ActivationArguments args);
+        void RedirectActivationTo(AppActivationArguments args);
 
-        String Key;
-
+        String Key { get; };
         bool IsCurrent { get; };
         UInt32 ProcessId { get; };
     }
@@ -406,7 +438,7 @@ design, unregistering a key simply removes the key for this instance; it does no
 instance redirection, nor does it remove this instance from the collection that Reunion is
 maintaining of all running instances.
 
-**RedirectTo** enables an instance of the app to redirect the current activation request to another
+**RedirectActivationTo** enables an instance of the app to redirect the current activation request to another
 instance. This is very similar to the existing platform
 [AppInstance.RedirectActivationTo](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.redirectactivationto)
 method, except that the Reunion implementation allows the app to pass an ActivationArguments
