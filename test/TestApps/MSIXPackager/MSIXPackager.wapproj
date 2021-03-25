@@ -55,15 +55,15 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <EntryPointProjectUniqueName>..\PushNotificationsTestApp\PushNotificationsTestApp.vcxproj</EntryPointProjectUniqueName>
     <PackageCertificateThumbprint>473FBF0C631D74F1BD7BC610726B2379617FF71E</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
-    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <AppxPackageDir>C:\Users\purifoypaul\Desktop\ff\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\purifoypaul\Desktop\ff\ProjectReunion\BuildOutput\Debug\x64\PushNotificationsTestPackages\</AppxPackageDir>
+    <EntryPointProjectUniqueName>..\PushNotificationsTestApp\PushNotificationsTestApp.vcxproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AppxBundle>Always</AppxBundle>

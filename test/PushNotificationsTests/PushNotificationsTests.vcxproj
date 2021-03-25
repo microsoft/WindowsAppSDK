@@ -328,10 +328,8 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)PushNotifications-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
-    <!--
-    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msixbundle" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).cer" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.cer" TreatOutputAsContent="true" />
-    -->
+    <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestPackages\MSIXPackager_1.0.0.0_Debug_Test\MSIXPackager_1.0.0.0_$(Platform)_$(Configuration).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestPackage.msixbundle" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestPackages\MSIXPackager_1.0.0.0_Debug_Test\MSIXPackager_1.0.0.0_$(Platform)_$(Configuration).cer" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestPackage.cer" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">

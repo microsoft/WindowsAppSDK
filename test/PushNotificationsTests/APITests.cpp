@@ -29,9 +29,9 @@ namespace Test::PushNotifications
     private:
         wil::unique_event m_failed;
 
-        const std::wstring c_testPackageFile = g_deploymentDir + L"MSIXPackager_1.0.0.0_x86_x64_Debug.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"MSIXPackager_1.0.0.0_x86_x64_Debug.cer";
-        const std::wstring c_testPackageFullName = L"PushNotificationsWin32App_9eg3vg7cmy3rj"; // Need to replace
+        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestPackage.cer";
+        const std::wstring c_testPackageFullName = L"PushNotificationsWin32App_1.0.0.0_x64__9eg3vg7cmy3rj";
 
     public:
         BEGIN_TEST_CLASS(APITests)
@@ -46,7 +46,7 @@ namespace Test::PushNotifications
             ::Test::Bootstrap::SetupPackages();
             try
             {
-                RunCertUtil(c_testPackageCertFile);
+                RunCertUtil(c_testPackageCertFile, false);
                 InstallPackage(c_testPackageFile);
             }
             catch (...)
@@ -61,11 +61,11 @@ namespace Test::PushNotifications
             ::Test::Bootstrap::CleanupPackages();
             try
             {
-                UninstallPackage(c_testPackageFile);
+                UninstallPackage(c_testPackageFullName);
+                RunCertUtil(c_testPackageCertFile, true);
             }
             catch (...)
             {
-                
                 return false;
             }
             return true;
@@ -91,14 +91,17 @@ namespace Test::PushNotifications
             return true;
         }
 
-        TEST_METHOD(GetActivatedEventArgsIsNull_UAP)
+        TEST_METHOD(LaunchPackagedApp)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"PushNotifications-AppxManifest.xml")
-            END_TEST_METHOD_PROPERTIES();
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
 
-            VERIFY_IS_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            WaitForEvent(event, m_failed);
         }
     };
 }

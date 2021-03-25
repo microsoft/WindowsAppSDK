@@ -3,10 +3,8 @@
 #include "pch.h"
 #include <testdef.h>
 
-#include <MddBootstrap.h>
-#include <MddBootstrapTest.h>
-
 #include <wil/win32_helpers.h>
+#include <iostream>
 
 using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt::Microsoft::ProjectReunion;
@@ -15,46 +13,7 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
-
-bool IsPackagedProcess()
-{
-    UINT32 n{};
-    return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
-}
-
-bool NeedDynamicDependencies()
-{
-    return !IsPackagedProcess();
-}
-
-HRESULT BootstrapInitialize()
-{
-    if (!NeedDynamicDependencies())
-    {
-        return S_OK;
-    }
-
-    constexpr PCWSTR c_PackageNamePrefix{ L"ProjectReunion.Test.DDLM" };
-    constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-    RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
-
-    // Version <major>.0.0.0 to find any framework package for this major version
-    const UINT64 c_Version_Major{ 4 };
-    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
-    RETURN_IF_FAILED(MddBootstrapInitialize(minVersion));
-
-    return S_OK;
-}
-
-void BootstrapShutdown()
-{
-    if (!NeedDynamicDependencies())
-    {
-        return;
-    }
-
-    MddBootstrapShutdown();
-}
+using namespace Windows::Web::Http;
 
 void SignalPhase(const std::wstring& phaseEventName)
 {
@@ -65,15 +24,49 @@ void SignalPhase(const std::wstring& phaseEventName)
     }
 }
 
+std::wstring BuildNotificationPayload(std::wstring channel)
+{
+    std::wstring channelUri = L"\"ChannelUri\":\"" + channel + L"\"";
+    std::wstring x_wns_type = L"\"X_WNS_Type\": \"wns/raw\"";
+    std::wstring contentType = L"\"Content_Type\": \"application/octet-stream\"";
+    std::wstring payload = L"\"Payload\": \"<toast></toast>\"";
+    std::wstring delay = L"\"Delay\": \"false\"";
+    return { L"{" + channelUri + L"," + x_wns_type + L"," + contentType + L"," + payload + L"," + delay + L"}" };
+}
+
+void sendRequestToServer(winrt::hstring channel)
+{
+    HttpResponseMessage httpResponseMessage;
+    std::wstring httpResponseBody;
+    try {
+        // Construct the HttpClient and Uri. This endpoint is for test purposes only.
+        HttpClient httpClient;
+        Uri requestUri{ L"http://localhost:7071/api/PostPushNotification" };
+
+        // Construct the JSON to post.
+        HttpStringContent jsonContent(
+            BuildNotificationPayload(channel.c_str()),
+            UnicodeEncoding::Utf8,
+            L"application/json");
+
+        // Post the JSON, and wait for a response.
+        httpResponseMessage = httpClient.PostAsync(
+            requestUri,
+            jsonContent).get();
+
+        // Make sure the post succeeded, and write out the response.
+        httpResponseMessage.EnsureSuccessStatusCode();
+        httpResponseBody = httpResponseMessage.Content().ReadAsStringAsync().get();
+        std::wcout << httpResponseBody.c_str() << std::endl;
+    }
+    catch (winrt::hresult_error const& ex)
+    {
+        std::wcout << ex.message().c_str() << std::endl;
+    }
+}
+
 int main()
 {
-    RETURN_IF_FAILED(BootstrapInitialize());
-    bool succeeded = true;
-    if (!succeeded)
-    {
-        SignalPhase(c_testFailureEventName);
-    }
-
-    BootstrapShutdown();
+    SignalPhase(c_testProtocolScheme_Packaged);
     return 0;
-}
+};

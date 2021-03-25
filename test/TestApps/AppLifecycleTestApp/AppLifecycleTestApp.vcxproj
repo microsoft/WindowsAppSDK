@@ -329,10 +329,6 @@
       <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-    <Reference Include="Microsoft.ProjectReunion">
-      <HintPath>..\..\..\BuildOutput\Debug\x64\ProjectReunion_DLL\Microsoft.ProjectReunion.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
