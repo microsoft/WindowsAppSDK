@@ -45,7 +45,7 @@ Project Reunion aims to work on supported versions of Windows.
 Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10.
 Wherever possible, we'll use techniques like '_polyfills_' 
 and custom implementations to do the
-heavy lifting for youand make sure your app works across Windows versions and devices.
+heavy lifting for you and make sure your app works across Windows versions and devices.
 In the future, there may be a couple APIs that are dependent on new OS features
 (like new Action Center functionality),
 however we will do our best to ensure
@@ -70,7 +70,7 @@ More on what the project is and how we're approaching the work.
 _We want to hear from you!_
 
 File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
-trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
+trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app. Bonus
 points if there's a gist or existing repo we can look at with you.
 
 
