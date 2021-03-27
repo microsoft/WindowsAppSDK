@@ -111,61 +111,91 @@ int main()
 
     std::cout << "Channel Request started" << std::endl;
 
-    auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId);
+    try {
+        auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId);
+        auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId);
 
-    channelOperation.Progress(
-        [](
-            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& /* sender */,
-            PushNotificationCreateChannelStatus const& args)
+        channelOperation2.Completed(
+            [&channelEvent](
+                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+                AsyncStatus const /* asyncStatus */)
+            {
+                auto result = sender.GetResults();
+                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+                {
+                    auto channelUri = result.Channel().Uri();
+                    auto channelExpiry = result.Channel().ExpirationTime();
+
+                    //sendRequestToServer(channelUri);
+                    std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
+                    // Persist the channelUri and Expiry in the App Service
+                }
+                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+                {
+                    std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation: error: " << result.ExtendedError() <<  std::endl;
+                }
+
+                // Send the channel request to server
+               // SetEvent(channelEvent.get());
+            });
+
+        channelOperation.Progress(
+            [](
+                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& /* sender */,
+                PushNotificationCreateChannelStatus const& args)
+            {
+                if (args.status == PushNotificationChannelStatus::InProgress)
+                {
+                    // This is basically a noop since it isn't really an error state
+                    std::cout << "The channel request is in progress " << args.extendedError << std::endl;
+                }
+                else if (args.status == PushNotificationChannelStatus::InProgressRetry)
+                {
+                    std::cout << "The channel request is in back-off retry mode because of a retryable error code: " << args.extendedError << " Expect delays in acquiring it" << std::endl;
+                }
+            });
+
+        // Setup the completed event handler
+        channelOperation.Completed(
+            [&channelEvent](
+                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+                AsyncStatus const /* asyncStatus */)
+            {
+                auto result = sender.GetResults();
+                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+                {
+                    auto channelUri = result.Channel().Uri();
+                    auto channelExpiry = result.Channel().ExpirationTime();
+
+                    //sendRequestToServer(channelUri);
+                    std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
+                    // Persist the channelUri and Expiry in the App Service
+                }
+                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+                {
+                    std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
+                }
+
+                // Send the channel request to server
+                SetEvent(channelEvent.get());
+            });
+
+        // The maximum amount of time it takes for channel request to be obtained - 16mins
+        if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
         {
-            if (args.status == PushNotificationChannelStatus::InProgress)
-            {
-                // This is basically a noop since it isn't really an error state
-                std::cout << "The channel request is in progress " << args.extendedError << std::endl;
-            }
-            else if (args.status == PushNotificationChannelStatus::InProgressRetry)
-            {
-                std::cout << "The channel request is in back-off retry mode because of a retryable error code: " << args.extendedError << " Expect delays in acquiring it" << std::endl;
-            }
-        });
-
-    // Setup the completed event handler
-    channelOperation.Completed(
-        [&channelEvent](
-            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-            AsyncStatus const /* asyncStatus */)
+            std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
+            channelOperation.Cancel();
+        }
+        else
         {
-            auto result = sender.GetResults();
-            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-            {
-                auto channelUri = result.Channel().Uri();
-                auto channelExpiry = result.Channel().ExpirationTime();
-
-                //sendRequestToServer(channelUri);
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
-                // Persist the channelUri and Expiry in the App Service
-            }
-            else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
-            {
-                std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
-            }
-
-            // Send the channel request to server
-            SetEvent(channelEvent.get());
-        });
-
-    // The maximum amount of time it takes for channel request to be obtained - 16mins
-    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
-    {
-        std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
-        channelOperation.Cancel();
+            std::cout << "Channel complete handler has been completed, safely closing the async operation" << std::endl;
+            channelOperation.Close(); // Do not call getresults after this
+        }
     }
-    else
-    {
-        std::cout << "Channel complete handler has been completed, safely closing the async operation" << std::endl;
-        channelOperation.Close(); // Do not call getresults after this
+    catch (...) {
+        auto ex = hresult_error(to_hresult());
+        std::cout << "Code: " << ex.code() << "Message: " << winrt::to_string(ex.message()) << std::endl;
     }
-
     std::cout << "Press a key to close the window" << std::endl;
 
     std::getchar();
