@@ -9,7 +9,7 @@
   <Identity
     Name="a286097b-843c-45fc-aa71-941c749e5f2b"
     Publisher="CN=vemancha"
-    Version="1.2.13.0" />
+    Version="1.2.16.0" />
 
   <Properties>
     <DisplayName>MSIXPushWin32App</DisplayName>
