@@ -27,7 +27,7 @@ jobs:
     vmImage: 'windows-2019'
 
   steps:
-    - task: NuGetAuthenticate@0
+  - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
