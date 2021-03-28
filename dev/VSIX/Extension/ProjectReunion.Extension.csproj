@@ -203,6 +203,10 @@
     a concern because it seems unlikely that we'll go 68 years without resetting the clock
     by increasing the Project Reunion version number.
   -->
+  <PropertyGroup Condition="'$(VSIXVersion)' == '' AND '$(OptionalVSIXVersion)'!='default' AND '$(OptionalVSIXVersion)'!=''">
+    <!-- Optional VSIX version is provided by the pipeline definition to override package version -->
+    <VSIXVersion>$(OptionalVSIXVersion)</VSIXVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
     <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
     <VSIXVersion>$(ReunionVersion)</VSIXVersion>
