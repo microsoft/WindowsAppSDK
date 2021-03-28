@@ -31,13 +31,18 @@ jobs:
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
+  - script: echo '##vso[task.setvariable variable=VersionList]/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}"'
+
+  - ${{ if not(eq(parameters.OptionalVSIXVersion, 'default')) }}:
+    - script: echo '##vso[task.setvariable variable=VersionList]/p:VSIXVersion="${{ parameters.OptionalVSIXVersion }}" ${{ variables.VersionList }}'
+
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
     inputs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/t:restore /p:VSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" '
+      msBuildArgs: '/t:restore ${{ variables.VersionList }}'
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
@@ -45,7 +50,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:VSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" '
+      msBuildArgs: '${{ variables.VersionList }}'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'

@@ -201,11 +201,11 @@
     † Note: Yes, this introduces a Year 2088 problem for the locally-built VSIX because the
     final component of the version number can wrap around after 68 years. No, this is not
     a concern because it seems unlikely that we'll go 68 years without resetting the clock
-    by increasing the WinUI version number.
+    by increasing the Project Reunion version number.
   -->
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
     <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
-    <VSIXVersion>$(ReunionVersion)</VSIXVersion>
+    <VSIXVersion>$(ReunionVSIXVersion)</VSIXVersion>
     <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-")))).$(TimeSpan)</VSIXVersion>
   </PropertyGroup>
   <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />
