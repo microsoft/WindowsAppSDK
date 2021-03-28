@@ -36,6 +36,8 @@ jobs:
   - ${{ if not(eq(parameters.OptionalVSIXVersion, 'default')) }}:
     - script: echo '##vso[task.setvariable variable=VersionList]/p:VSIXVersion="${{ parameters.OptionalVSIXVersion }}" ${{ variables.VersionList }}'
 
+  - script: echo '${{ variables.VersionList }}'
+
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
     inputs:
