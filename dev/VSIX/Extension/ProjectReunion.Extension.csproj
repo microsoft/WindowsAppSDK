@@ -205,7 +205,7 @@
   -->
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
     <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
-    <VSIXVersion>$(ReunionVSIXVersion)</VSIXVersion>
+    <VSIXVersion>$(ReunionVersion)</VSIXVersion>
     <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-")))).$(TimeSpan)</VSIXVersion>
   </PropertyGroup>
   <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />

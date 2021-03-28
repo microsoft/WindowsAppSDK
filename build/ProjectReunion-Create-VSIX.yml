@@ -31,15 +31,10 @@ jobs:
     inputs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
-  - script: |
-      echo 'Configuring package versions. "${{ parameters.ReunionVersion }}"'
-      echo '##vso[task.setvariable variable=VersionList]/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}"'
+  - script: echo '##vso[task.setvariable variable=VersionList]/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}"'
 
   - ${{ if not(eq(parameters.OptionalVSIXVersion, 'default')) }}:
-    - script: |
-        echo 'Adding override version: "${{ parameters.OptionalVSIXVersion }}"'
-        echo ' To existing versions: "${{ variables.VersionList }}"'
-        echo '##vso[task.setvariable variable=VersionList]/p:VSIXVersion="${{ parameters.OptionalVSIXVersion }}" ${{ variables.VersionList }}'
+    - script: echo '##vso[task.setvariable variable=VersionList]/p:VSIXVersion="${{ parameters.OptionalVSIXVersion }}" ${{ variables.VersionList }}'
 
   - task: VSBuild@1
     displayName: 'Restore ProjectReunion.Extension.sln'
