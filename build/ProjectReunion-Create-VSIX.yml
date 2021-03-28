@@ -18,7 +18,7 @@ parameters:
     # if blank, the project template will select the version matching the Project Reunion
     # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
     type: string
-    default: ''
+    default: 'default'
 
 jobs:
 
