@@ -10,19 +10,37 @@ using namespace Windows::System;
 
 namespace ProjectReunionInstaller {
 
-    winrt::hresult AddPackage(const Uri& packageUri)
+    HRESULT RegisterPackage(const std::wstring& packageFullName)
+    {
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.RegisterPackageByFullNameAsync(packageFullName, nullptr, DeploymentOptions::None) };
+        deploymentOperation.get();
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
+        }
+
+        return S_OK;
+    }
+
+    HRESULT AddPackage(const Uri& packageUri, const std::unique_ptr<PackageProperties>& packageProperties)
     {
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            return deploymentOperation.ErrorCode();
+            auto hrAddPackage = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
+            {
+                // Package already exists (such as via provisioning), re-register it instead.
+                return RegisterPackage(packageProperties->fullName.get());
+            }
         }
         return S_OK;
     }
 
-    winrt::hresult ProvisionPackage(const std::wstring& packageFamilyName)
+    HRESULT ProvisionPackage(const std::wstring& packageFamilyName)
     {
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
@@ -30,31 +48,40 @@ namespace ProjectReunionInstaller {
 
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            return deploymentOperation.ErrorCode();
+            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
         }
         return S_OK;
     }
 
-    bool IsArchitectureApplicable(const ProcessorArchitecture& arch)
+    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties)
     {
+        // Neutral package architecture is applicable on all systems.
+        if (packageProperties->architecture == ProcessorArchitecture::Neutral)
+        {
+            return true;
+        }
+
         SYSTEM_INFO systemInfo{};
         GetNativeSystemInfo(&systemInfo);
         const auto systemArchitecture{ static_cast<ProcessorArchitecture>(systemInfo.wProcessorArchitecture) };
 
-        // Neutral package architecture is applicable on all systems.
-        if (arch == ProcessorArchitecture::Neutral)
+        // Same-arch is always applicable for any package type.
+        if (packageProperties->architecture == systemArchitecture)
         {
             return true;
         }
 
-        // Same-arch is always applicable.
-        if (arch == systemArchitecture)
+        // It is assumed that all available architectures for non-framework packages are present,
+        // so only the same-architecture or neutral will be matched for non-frameworks.
+        if (!packageProperties->isFramework)
         {
-            return true;
+            return false;
         }
+
+        // Framework packages have additional logic.
 
         // On x64 systems, x86 architecture is also applicable.
-        if (systemArchitecture == ProcessorArchitecture::X64 && arch == ProcessorArchitecture::X86)
+        if (systemArchitecture == ProcessorArchitecture::X64 && packageProperties->architecture == ProcessorArchitecture::X86)
         {
             return true;
         }
@@ -108,6 +135,13 @@ namespace ProjectReunionInstaller {
         properties->architecture = static_cast<ProcessorArchitecture>(arch);
         THROW_IF_FAILED(id->GetVersion(&properties->version));
 
+        // Populate framework from the manifest properties.
+        wil::com_ptr<IAppxManifestProperties> manifestProperties;
+        THROW_IF_FAILED(manifest->GetProperties(wil::out_param(manifestProperties)));
+        BOOL isFramework = FALSE;
+        THROW_IF_FAILED(manifestProperties->GetBoolValue(L"Framework", &isFramework));
+        properties->isFramework = isFramework == TRUE;
+
         return properties;
     }
 
@@ -125,7 +159,7 @@ namespace ProjectReunionInstaller {
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
         // Skip non-applicable architectures.
-        if (!IsArchitectureApplicable(packageProperties->architecture))
+        if (!IsPackageApplicable(packageProperties))
         {
             return;
         }
@@ -156,20 +190,24 @@ namespace ProjectReunionInstaller {
 
         // Add the package
         Uri packageUri{ packageFilename };
-        hresult hrAddResult = AddPackage(packageUri);
+        auto hrAddResult = AddPackage(packageUri, packageProperties);
         if (!quiet)
         {
-            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult.value << std::endl;
+            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << std::endl;
         }
-        THROW_IF_FAILED(static_cast<HRESULT>(hrAddResult));
+        THROW_IF_FAILED(hrAddResult);
 
-        // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
-        hresult hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
-        if (!quiet)
+        // Framework provisioning is not supported by the API.
+        if (!packageProperties->isFramework)
         {
-            std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult.value << std::endl;
+            // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
+            auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
+            if (!quiet)
+            {
+                std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << std::endl;
+            }
+            LOG_IF_FAILED(hrProvisionResult);
         }
-        LOG_IF_FAILED(static_cast<HRESULT>(hrProvisionResult));
 
         return;
     }

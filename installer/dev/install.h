@@ -10,6 +10,7 @@ namespace ProjectReunionInstaller {
         wil::unique_cotaskmem_string familyName;
         winrt::Windows::System::ProcessorArchitecture architecture{ winrt::Windows::System::ProcessorArchitecture::Unknown };
         std::uint64_t version{};
+        bool isFramework = false;
     };
 
     HRESULT DeployPackages(const bool quiet) noexcept;

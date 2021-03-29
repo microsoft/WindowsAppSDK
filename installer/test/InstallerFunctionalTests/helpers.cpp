@@ -64,11 +64,32 @@ namespace ProjectReunionInstallerTests
         }
     }
 
+    void TryRemoveProvisionedPackage(const std::wstring& packageFamilyName)
+    {
+        std::wostringstream sstr;
+        sstr << L"Trying to removing provisioned package: " << packageFamilyName << std::endl;
+        Logger::WriteMessage(sstr.str().c_str());
+
+        PackageManager manager;
+        auto result = manager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get();
+        auto errorCode = result.ExtendedErrorCode();
+
+        sstr.clear();
+        sstr << L"Provision removal result: " << errorCode.value << std::endl;
+        Logger::WriteMessage(sstr.str().c_str());
+    }
+
+
     void RemoveAllPackages(bool ignoreFailures)
     {
         for (const auto& packageName : c_packages)
         {
             RemovePackage(packageName, ignoreFailures);
+        }
+
+        for (const auto& packageFamilyName : c_packageFamilies)
+        {
+            TryRemoveProvisionedPackage(packageFamilyName);
         }
     }
 
