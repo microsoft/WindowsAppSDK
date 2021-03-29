@@ -28,8 +28,6 @@ namespace ProjectReunionInstallerTests
     static const std::wstring c_x86FrameworkName = L"Microsoft.ProjectReunion.Test.InstallerFramework_1.0.0.0_x86__8wekyb3d8bbwe";
     static const std::wstring c_x64FrameworkName = L"Microsoft.ProjectReunion.Test.InstallerFramework_1.0.0.0_x64__8wekyb3d8bbwe";
     static const std::wstring c_arm64FrameworkName = L"Microsoft.ProjectReunion.Test.InstallerFramework_1.0.0.0_arm64__8wekyb3d8bbwe";
-    static const std::wstring c_frameworkFamilyName = L"Microsoft.ProjectReunion.Test.InstallerFramework_8wekyb3d8bbwe";
-
 
     static const std::wstring c_x86MainName = L"ProjectReunion.Test.Main_1.0.0.0_x86__8wekyb3d8bbwe";
     static const std::wstring c_x64MainName = L"ProjectReunion.Test.Main_1.0.0.0_x64__8wekyb3d8bbwe";
@@ -57,11 +55,10 @@ namespace ProjectReunionInstallerTests
         c_arm64FrameworkName,
     };
 
-    static const std::wstring c_packageFamilies[] = {
+    static const std::wstring c_mainPackageFamilies[] = {
         c_x86DDLMFamilyName,
         c_x64DDLMFamilyName,
         c_arm64DDLMFamilyName,
         c_mainFamilyName,
-        c_frameworkFamilyName,
     };
 }

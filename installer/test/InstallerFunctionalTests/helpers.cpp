@@ -71,13 +71,9 @@ namespace ProjectReunionInstallerTests
     {
         std::wostringstream sstr;
         sstr << L"Trying to removing provisioned package: " << packageFamilyName << std::endl;
-        Logger::WriteMessage(sstr.str().c_str());
-
         PackageManager manager;
         auto result = manager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get();
         auto errorCode = result.ExtendedErrorCode();
-
-        sstr.clear();
         sstr << L"Provision removal result: " << errorCode.value << std::endl;
         Logger::WriteMessage(sstr.str().c_str());
     }
@@ -89,7 +85,7 @@ namespace ProjectReunionInstallerTests
             RemovePackage(packageName, ignoreFailures);
         }
 
-        for (const auto& packageFamilyName : c_packageFamilies)
+        for (const auto& packageFamilyName : c_mainPackageFamilies)
         {
             TryRemoveProvisionedPackage(packageFamilyName);
         }
