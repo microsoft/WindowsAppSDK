@@ -15,4 +15,3 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.ApplicationModel.Activation.h>
-#include <winrt/Microsoft.ProjectReunion.h>
