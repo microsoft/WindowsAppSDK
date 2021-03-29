@@ -37,12 +37,12 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{7C502995-59C3-483B-86BA-815985353633}</ProjectGuid>
+    <ProjectGuid>{9F2685B6-684D-4B9F-9610-71C358779149}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>AppLifecycleTestApp</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <RootNamespace>PushNotificationsTestApp</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>AppLifecycleTestApp</ProjectName>
+    <ProjectName>PushNotificationsTestApp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -329,11 +329,10 @@
       <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
-      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
-    </ProjectReference>
+    <Reference Include="Microsoft.ProjectReunion">
+      <HintPath>..\..\..\BuildOutput\Debug\x64\ProjectReunion_DLL\Microsoft.ProjectReunion.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
