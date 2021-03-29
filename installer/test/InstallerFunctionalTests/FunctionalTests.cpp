@@ -71,7 +71,6 @@ namespace ProjectReunionInstallerTests
                 Assert::AreEqual(true, IsPackageRegistered(c_x64DDLMName));
             }
 
-            // arm64 should be registered on arm64.
             if (systemArch == ProcessorArchitecture::Arm64)
             {
                 // All frameworks are applicable on Arm64.

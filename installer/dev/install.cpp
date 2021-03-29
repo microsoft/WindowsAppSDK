@@ -36,6 +36,10 @@ namespace ProjectReunionInstaller {
                 // Package already exists (such as via provisioning), re-register it instead.
                 return RegisterPackage(packageProperties->fullName.get());
             }
+            else
+            {
+                RETURN_HR(hrAddPackage);
+            }
         }
         return S_OK;
     }
@@ -158,7 +162,7 @@ namespace ProjectReunionInstaller {
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
-        // Skip non-applicable architectures.
+        // Skip non-applicable packages.
         if (!IsPackageApplicable(packageProperties))
         {
             return;
