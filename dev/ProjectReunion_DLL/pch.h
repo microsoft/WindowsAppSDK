@@ -24,13 +24,13 @@
 #include <wil/result_macros.h>
 #include <wil/filesystem.h>
 #include <wil/com.h>
+#include <wil/win32_helpers.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <NotificationActivationCallback.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
-#include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Data.Xml.Dom.h>

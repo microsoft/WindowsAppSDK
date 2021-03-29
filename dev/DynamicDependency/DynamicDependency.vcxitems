@@ -63,6 +63,7 @@
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
   </ItemGroup>
   <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
   </ItemGroup>

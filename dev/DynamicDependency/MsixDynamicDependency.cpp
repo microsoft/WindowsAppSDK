@@ -14,10 +14,23 @@ namespace MddCore
 bool IsStaticPackageGraphEmpty()
 {
     // Check the static package graph
-    UINT32 n = 0;
-    const auto rc{ GetCurrentStaticPackageInfo(PACKAGE_FILTER_HEAD, &n, nullptr, nullptr) };
+    UINT32 n{};
+    const auto rc{ GetCurrentStaticPackageInfo(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_STATIC, &n, nullptr, nullptr) };
+    if (rc == ERROR_SUCCESS)
+    {
+        // The package graph isn't empty but there's no static HEAD. Thus we have no static package graph
+        return true;
+    }
     (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentStaticPackageInfo rc=%d", rc);
-    return rc == APPMODEL_ERROR_NO_PACKAGE;
+    return (rc == APPMODEL_ERROR_NO_PACKAGE);
+}
+
+bool IsPackagedProcess()
+{
+    UINT32 n{};
+    const auto rc{ GetCurrentPackageFullName(&n, nullptr) };
+    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageFullName rc=%d", rc);
+    return (rc == ERROR_INSUFFICIENT_BUFFER);
 }
 
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
@@ -50,7 +63,7 @@ STDAPI MddTryCreatePackageDependency(
     *packageDependencyId = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
 
     MddCore::PackageDependencyManager::CreatePackageDependency(user, packageFamilyName, minVersion, packageDependencyProcessorArchitectures, lifetimeKind, lifetimeArtifact, options, packageDependencyId);
     return S_OK;
@@ -64,7 +77,7 @@ STDAPI_(void) MddDeletePackageDependency(
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies requires a non-packaged process
-    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+    THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
 
     MddCore::PackageDependencyManager::DeletePackageDependency(packageDependencyId);
 }
@@ -87,7 +100,7 @@ STDAPI MddAddPackageDependency(
     }
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
 
     RETURN_IF_FAILED(MddCore::PackageGraphManager::AddToPackageGraph(packageDependencyId, rank, options, packageDependencyContext, packageFullName));
     return S_OK;
@@ -101,7 +114,7 @@ STDAPI_(void) MddRemovePackageDependency(
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies requires a non-packaged process
-    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
 
     MddCore::PackageGraphManager::RemoveFromPackageGraph(packageDependencyContext);
 }
@@ -117,7 +130,7 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     *packageFullName = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
 
     RETURN_HR_IF(E_INVALIDARG, !packageDependencyId || (packageDependencyId[0] == L'\0'));
 
@@ -139,7 +152,7 @@ STDAPI MddGetIdForPackageDependencyContext(
     *packageDependencyId = nullptr;
 
     // Dynamic Dependencies requires a non-packaged process
-    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
+    RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
 
     RETURN_HR_IF(E_INVALIDARG, !packageDependencyContext);
 
