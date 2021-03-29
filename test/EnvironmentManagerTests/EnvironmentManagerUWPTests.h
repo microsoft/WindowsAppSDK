@@ -43,5 +43,8 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(UWPTestSetEnvironmentVariableForProcess);
         TEST_METHOD(UWPTestSetEnvironmentVariableForUser);
         TEST_METHOD(UWPTestSetEnvironmentVariableForMachine);
+        TEST_METHOD(UWPTestAppendToPathForProcess);
+        TEST_METHOD(UWPTestAppendToPathForUser);
+        TEST_METHOD(UWPTestAppendToPathForMachine);
     };
 }

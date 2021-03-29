@@ -115,4 +115,41 @@ namespace ProjectReunionEnvironmentManagerTests
         EnvironmentManager environmentMananger = EnvironmentManager::GetForMachine();
         VERIFY_THROWS(environmentMananger.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
     }
+
+    void EnvironmentManagerUWPTests::UWPTestAppendToPathForProcess()
+    {
+        std::wstring originalPath = GetEnvironmentVariableForProcess(c_pathName);
+        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+
+        std::wstring alteredPath = GetEnvironmentVariableForProcess(c_pathName);
+
+        VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestAppendToPathForUser()
+    {
+        std::wstring originalPath = GetEnvironmentVariableForUser(c_pathName);
+        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+
+        std::wstring alteredPath = GetEnvironmentVariableForUser(c_pathName);
+
+        RestoreUserPath(originalPath);
+
+        VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestAppendToPathForMachine()
+    {
+        std::wstring originalPath = GetEnvironmentVariableForMachine(c_pathName);
+        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+
+        std::wstring alteredPath = GetEnvironmentVariableForMachine(c_pathName);
+
+        RestoreMachinePath(originalPath);
+
+        VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+    }
 }

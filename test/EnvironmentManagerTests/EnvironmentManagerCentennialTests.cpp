@@ -166,4 +166,41 @@ namespace ProjectReunionEnvironmentManagerTests
         VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
 
     }
+
+    void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForProcess()
+    {
+        std::wstring originalPath = GetEnvironmentVariableForProcess(c_pathName);
+        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+
+        std::wstring alteredPath = GetEnvironmentVariableForProcess(c_pathName);
+
+        VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+    }
+
+    void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForUser()
+    {
+        std::wstring originalPath = GetEnvironmentVariableForUser(c_pathName);
+        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+
+        std::wstring alteredPath = GetEnvironmentVariableForUser(c_pathName);
+
+        RestoreUserPath(originalPath);
+
+        VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+    }
+
+    void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForMachine()
+    {
+        std::wstring originalPath = GetEnvironmentVariableForMachine(c_pathName);
+        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+
+        std::wstring alteredPath = GetEnvironmentVariableForMachine(c_pathName);
+
+        RestoreMachinePath(originalPath);
+
+        VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+    }
 }

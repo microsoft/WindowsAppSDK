@@ -44,5 +44,8 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(TestSetEnvironmentVariableForProcess);
         TEST_METHOD(TestSetEnvironmentVariableForUser);
         TEST_METHOD(TestSetEnvironmentVariableForMachine);
+        TEST_METHOD(TestAppendToPathForProcess);
+        TEST_METHOD(TestAppendToPathForUser);
+        TEST_METHOD(TestAppendToPathForMachine);
     };
 }

@@ -5,6 +5,7 @@
 #include <EnvironmentManager.h>
 #include <EnvironmentManager.g.cpp>
 #include <EnvironmentVariableChangeTracker.h>
+#include <PathChangeTracker.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -141,7 +142,77 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
-        throw hresult_not_implemented();
+        // Get the existing path because we will append to it.
+        std::wstring existingPath;
+        if (m_Scope == Scope::Process)
+        {
+            existingPath = GetEnvironmentVariable(L"Path");
+        }
+        else
+        {
+            wil::unique_hkey environmentVariableKey = GetRegHKeyForEVUserAndMachineScope();
+
+            DWORD sizeOfEnvironmentValue;
+
+            // See how big we need the buffer to be
+            LSTATUS queryResult = RegQueryValueEx(environmentVariableKey.get(), L"Path", 0, nullptr, nullptr, &sizeOfEnvironmentValue);
+
+            if (queryResult == ERROR_FILE_NOT_FOUND)
+            {
+                existingPath = L"";
+            }
+
+            if (queryResult != ERROR_SUCCESS)
+            {
+                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+            }
+
+
+            wchar_t* environmentValue = new wchar_t[sizeOfEnvironmentValue];
+            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), L"Path", 0, nullptr, (LPBYTE)environmentValue, &sizeOfEnvironmentValue))));
+
+            existingPath = environmentValue;
+        }
+
+        // Don't append to the path if the addition already exists.
+        if (existingPath.find(path) != std::wstring::npos)
+        {
+            return;
+        }
+
+        auto setPath = [&, path, this]()
+        {
+            MessageBoxEx(NULL, L"In lambda", L"In lambda", 0, 0);
+            std::wstring newPath = existingPath.append(path).append(L";");
+            if (m_Scope == Scope::Process)
+            {
+                BOOL result = FALSE;
+                result = ::SetEnvironmentVariable(L"Path", newPath.c_str());
+
+                if (result == 0)
+                {
+                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                }
+            }
+            else //Scope is either user or machine
+            {
+                wil::unique_hkey environmentVariableKey = GetRegHKeyForEVUserAndMachineScope(true);
+
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                    environmentVariableKey.get()
+                    , L"Path"
+                    , 0
+                    , REG_EXPAND_SZ
+                    , reinterpret_cast<const BYTE*>(newPath.c_str())
+                    , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t)))));
+            }
+
+            return S_OK;
+        };
+
+        PathChangeTracker changeTracker(std::wstring(path), m_Scope);
+
+        THROW_IF_FAILED(changeTracker.TrackChange(setPath));
     }
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
