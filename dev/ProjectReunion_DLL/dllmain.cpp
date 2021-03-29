@@ -8,8 +8,22 @@
 
 #include <../Detours/detours.h>
 
+static bool IsPackagedProcess()
+{
+    UINT32 n{};
+    const auto rc = ::GetCurrentPackageFullName(&n, nullptr);
+    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageFullName rc=%d", rc);
+    return rc == ERROR_INSUFFICIENT_BUFFER;
+}
+
 static HRESULT DetoursInitialize()
 {
+    // Only detour APIs for not-packaged processes
+    if (IsPackagedProcess())
+    {
+        return S_OK;
+    }
+
     // Do we need to detour APIs?
     if (DetourIsHelperProcess())
     {
@@ -29,6 +43,12 @@ static HRESULT DetoursInitialize()
 
 static HRESULT DetoursShutdown()
 {
+    // Only detour APIs for not-packaged processes
+    if (IsPackagedProcess())
+    {
+        return S_OK;
+    }
+
     // Did we detour APIs?
     if (DetourIsHelperProcess())
     {

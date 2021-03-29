@@ -65,6 +65,12 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
     UINT32* count,
     GetCurrentPackageInfo2Function getCurrentPackageInfo2) noexcept try
 {
+    // Check parameter(s) per GetCurrentPackageInfo2 compatibility
+    //   * bufferLength is required
+    //   * buffer is required if bufferLength >0
+    //   * count is required if buffer is not nullptr
+    RETURN_HR_IF(E_INVALIDARG, (bufferLength == nullptr) || (*bufferLength > 0 && buffer == nullptr) || ((count == nullptr) && (buffer != nullptr)));
+
     if (count)
     {
         *count = 0;
@@ -75,14 +81,15 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
     // Is the package graph empty?
     if (s_packageGraph.PackageGraphNodes().empty())
     {
-        // No dynamic package data. Is there a static package graph?
+        // No dynamic package data. Is there a static package graph? Regardless of the outcome our work here is done
         UINT32 length{};
         const LONG rc{ getCurrentPackageInfo2(flags, packagePathType, &length, nullptr, nullptr) };
-        if (rc == APPMODEL_ERROR_NO_PACKAGE)
+        if ((rc == ERROR_SUCCESS) || (rc == APPMODEL_ERROR_NO_PACKAGE) || (rc == ERROR_INSUFFICIENT_BUFFER))
         {
-            // No static package data either
-            RETURN_WIN32(APPMODEL_ERROR_NO_PACKAGE);
+            // Don't log expected outcomes (Success, AppmodelErrorNoPackage, ErrorInsufficientBuffer)
+            return HRESULT_FROM_WIN32(rc);
         }
+        RETURN_WIN32_MSG(rc, "GetCurrentPackageInfo2(): %d (0x%X)", rc, rc);
     }
 
     // We manage the package graph as a list of nodes, where each contain contains information about 1+ package.
