@@ -26,23 +26,6 @@ std::wstring g_test_ddlmPackagePublisherId;
 
 namespace MddCore
 {
-inline bool IsStaticPackageGraphEmpty()
-{
-    // Check the static package graph
-    UINT32 n = 0;
-    const auto rc{ GetCurrentPackageInfo(PACKAGE_FILTER_HEAD, &n, nullptr, nullptr) };
-    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageInfo rc=%d", rc);
-    return rc == APPMODEL_ERROR_NO_PACKAGE;
-}
-
-bool IsPackagedProcess()
-{
-    UINT32 n{};
-    const auto rc{ GetCurrentPackageFullName(&n, nullptr) };
-    (void)LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageFullName rc=%d", rc);
-    return (rc == ERROR_INSUFFICIENT_BUFFER);
-}
-
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
 bool IsElevated(HANDLE token = nullptr)
 {
@@ -119,7 +102,7 @@ STDAPI MddBootstrapInitialize(
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
-    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddCore::IsPackagedProcess());
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
 
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);

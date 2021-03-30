@@ -11,20 +11,6 @@
 
 namespace MddCore
 {
-bool IsStaticPackageGraphEmpty()
-{
-    // Check the static package graph
-    UINT32 n{};
-    const auto rc{ GetCurrentStaticPackageInfo(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_STATIC, &n, nullptr, nullptr) };
-    if (rc == ERROR_SUCCESS)
-    {
-        // The package graph isn't empty but there's no static HEAD. Thus we have no static package graph
-        return true;
-    }
-    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentStaticPackageInfo rc=%d", rc);
-    return (rc == APPMODEL_ERROR_NO_PACKAGE);
-}
-
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
 bool IsElevated(HANDLE token = nullptr)
 {
