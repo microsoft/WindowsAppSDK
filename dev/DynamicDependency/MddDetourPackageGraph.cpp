@@ -83,13 +83,17 @@ typedef HRESULT (WINAPI* GetCurrentPackageInfo3Function)(
     void* buffer,
     UINT32* count);
 
-VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor, WORD wBuildNumber)
+VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(
+    const WORD majorVersion,
+    const WORD minorVersion,
+    const WORD servicePackMajor,
+    const WORD buildNumber)
 {
     OSVERSIONINFOEXW osvi{ sizeof(osvi) };
-    osvi.dwMajorVersion = wMajorVersion;
-    osvi.dwMinorVersion = wMinorVersion;
-    osvi.wServicePackMajor = wServicePackMajor;
-    osvi.dwBuildNumber = wBuildNumber;
+    osvi.dwMajorVersion = majorVersion;
+    osvi.dwMinorVersion = minorVersion;
+    osvi.wServicePackMajor = servicePackMajor;
+    osvi.dwBuildNumber = buildNumber;
 
     const DWORDLONG c_conditionMask{
         VerSetConditionMask(
