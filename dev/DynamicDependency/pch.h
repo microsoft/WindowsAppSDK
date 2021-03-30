@@ -37,3 +37,4 @@
 #include <winrt/Windows.System.h>
 
 #include <appmodel.identity.h>
+#include <security.integritylevel.h>

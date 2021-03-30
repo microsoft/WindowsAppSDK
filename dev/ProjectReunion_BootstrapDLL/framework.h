@@ -28,5 +28,6 @@
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
 
 #include <appmodel.identity.h>
+#include <security.integritylevel.h>
 
 #include "wil_msixdynamicdependency.h"

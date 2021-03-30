@@ -42,3 +42,4 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <security.integritylevel.h>

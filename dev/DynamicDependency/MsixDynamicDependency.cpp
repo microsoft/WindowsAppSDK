@@ -12,16 +12,10 @@
 namespace MddCore
 {
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
-bool IsElevated(HANDLE token = nullptr)
-{
-    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel{ wil::get_token_information_failfast<TOKEN_MANDATORY_LABEL>(!token ? GetCurrentThreadEffectiveToken() : token) };
-    const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
-    return integrityLevel >= SECURITY_MANDATORY_HIGH_RID;
-}
-
 void FailFastIfElevated()
 {
-    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), IsElevated() || IsElevated(GetCurrentProcessToken()), "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+                        "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
 }
 }
 

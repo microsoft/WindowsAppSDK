@@ -15,5 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AppModel.Identity.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Security.IntegrityLevel.h" />
   </ItemGroup>
 </Project>
