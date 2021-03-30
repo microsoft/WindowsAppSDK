@@ -126,5 +126,5 @@ jobs:
       command: custom
       projects: build/Helix/RunTestsInHelix.proj
       custom: msbuild
-      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration)  /p:TestSuite=${{parameters.TestSuite}}
+      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestSuite=${{parameters.TestSuite}} /p:IsExternal=true /p:Creator=ProjectReunion
  
