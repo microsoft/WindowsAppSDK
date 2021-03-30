@@ -9,7 +9,6 @@ namespace Microsoft.ProjectReunion
         InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
         CompletedSuccess, // The request completed successfully
         CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
-        CompletedThrottled, // The request is throttled as there is already a channel request in process.
     };
 
     // The PushNotificationChannel Progress result
