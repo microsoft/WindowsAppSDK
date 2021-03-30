@@ -110,7 +110,7 @@
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <!--Temporarily disable cppwinrt heap enforcement to work around xaml compiler generated std::shared_ptr use -->
-      <AdditionalOptions Condition="'$(CppWinRTHeapEnforcement)'==''">/DWINRT_NO_MAKE_DETECTION /ZH:SHA_256 /Zi /Gf /Gy %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(CppWinRTHeapEnforcement)'==''">/DWINRT_NO_MAKE_DETECTION /ZH:SHA_256 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <PreprocessorDefinitions>_WINRT_DLL;WIN32_LEAN_AND_MEAN;WINRT_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -130,9 +130,6 @@
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ControlFlowGuard>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ControlFlowGuard>
     </ClCompile>
-    <Link>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/debug /debugtype:cv,fixup /opt:ref /opt:icf /incremental:no %(AdditionalOptions)</AdditionalOptions>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -140,10 +137,15 @@
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Guard</ControlFlowGuard>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Guard</ControlFlowGuard>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Guard</ControlFlowGuard>
+      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+      <AdditionalOptions>%(AdditionalOptions) /Zi /Gf /Gy</AdditionalOptions>
     </ClCompile>
     <Link>
+      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <!-- /opt:icf and /opt:ref achieve the same result as setting EnableCOMDATFolding and OptimizeReferences to true, so we exclude them here. -->
+      <AdditionalOptions>%(AdditionalOptions) /debug /debugtype:cv,fixup /incremental:no</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

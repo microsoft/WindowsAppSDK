@@ -105,7 +105,7 @@
            supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
            than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrtd.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrtd.lib /debug /debugtype:cv,fixup /opt:ref /opt:icf /incremental:no</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrtd.lib</AdditionalOptions>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -116,6 +116,8 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningVersion>18</WarningVersion>
+      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+      <AdditionalOptions>%(AdditionalOptions) /Zi /Gf /Gy</AdditionalOptions>
     </ClCompile>
     <Link>
       <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
@@ -124,6 +126,10 @@
            than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
+      <!-- Configure the release build binary to be as required by internal API scanning tools.
+           Note: /opt:icf and /opt:ref achieve the same result as setting EnableCOMDATFolding and OptimizeReferences to
+           true, which is done below for all build configurations, so we exclude them here. -->
+      <AdditionalOptions>%(AdditionalOptions) /debug /debugtype:cv,fixup /incremental:no</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
@@ -139,7 +145,6 @@
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Guard</ControlFlowGuard>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Guard</ControlFlowGuard>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Guard</ControlFlowGuard>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zi /Gf /Gy %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
