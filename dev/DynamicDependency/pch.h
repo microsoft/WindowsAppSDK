@@ -35,3 +35,5 @@
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
+
+#include <appmodel.identity.h>

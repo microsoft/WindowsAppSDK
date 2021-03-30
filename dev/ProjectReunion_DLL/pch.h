@@ -40,3 +40,5 @@
 #include <winrt/Windows.System.h>
 
 #include <MsixDynamicDependency.h>
+
+#include <appmodel.identity.h>
