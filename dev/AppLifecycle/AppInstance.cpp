@@ -57,7 +57,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             -1, TRUE) == CSTR_EQUAL;
     }
 
-    IActivatedEventArgs GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
+    std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
     {
         for (auto const& pair : args.Uri().QueryParsed())
         {
@@ -70,14 +70,14 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
                     if (CompareStringOrdinal(contractId.c_str(), -1,
                         c_extensionMap[index].contractId.c_str(), -1, TRUE) == CSTR_EQUAL)
                     {
-                        return c_extensionMap[index].factory(args);
+                        return { c_extensionMap[index].kind, c_extensionMap[index].factory(args).as<winrt::Windows::Foundation::IInspectable>() };
                     }
                 }
             }
         }
 
         // Let the caller args pass through if nothing was determined here.
-        return args;
+        return { ExtendedActivationKind::Protocol, args };
     }
 
     AppInstance::AppInstance(uint32_t processId)
@@ -237,7 +237,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
                 auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
                 if (IsEncodedLaunch(protocolArgs))
                 {
-                    data = GetEncodedLaunchActivatedEventArgs(protocolArgs).as<IInspectable>();
+                    std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(protocolArgs);
                 }
             }
 

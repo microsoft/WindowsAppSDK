@@ -73,7 +73,7 @@ int main()
     auto kind = args.Kind();
     if (kind == ExtendedActivationKind::Launch)
     {
-        auto launchArgs = args.as<ILaunchActivatedEventArgs>();
+        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
         auto commandLine = std::wstring(launchArgs.Arguments().c_str());
         auto argStart = commandLine.rfind(L"/") + 1;
         if (argStart != std::wstring::npos)
@@ -149,7 +149,7 @@ int main()
     }
     else if (kind == ExtendedActivationKind::Protocol)
     {
-        auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
+        auto protocolArgs = args.Data().as<IProtocolActivatedEventArgs>();
 
         std::wstring expectedUri;
         if (IsPackagedProcess())
@@ -172,7 +172,7 @@ int main()
     else if (kind == ExtendedActivationKind::File)
     {
         // Validate access to the files on the arguments.
-        auto fileArgs = args.as<IFileActivatedEventArgs>();
+        auto fileArgs = args.Data().as<IFileActivatedEventArgs>();
         for (auto const& item : fileArgs.Files())
         {
             auto file = item.as<StorageFile>();
@@ -190,7 +190,7 @@ int main()
     }
     else if (kind == ExtendedActivationKind::StartupTask)
     {
-        auto startupArgs = args.as<IStartupTaskActivatedEventArgs>();
+        auto startupArgs = args.Data().as<IStartupTaskActivatedEventArgs>();
         if (startupArgs.TaskId() == L"this_is_a_test")
         {
             // Signal event that startuptask was activated.

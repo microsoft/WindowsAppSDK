@@ -90,7 +90,7 @@ namespace Test::AppLifecycle
             VERIFY_IS_NOT_NULL(args);
             VERIFY_ARE_EQUAL(args.Kind(), ExtendedActivationKind::Launch);
 
-            auto launchArgs = args.as<LaunchActivatedEventArgs>();
+            auto launchArgs = args.Data().as<LaunchActivatedEventArgs>();
             VERIFY_IS_NOT_NULL(launchArgs);
         }
 
