@@ -344,8 +344,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.ApplicationModel.Activation">
-      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.AppLifecycle.Activation">
+      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

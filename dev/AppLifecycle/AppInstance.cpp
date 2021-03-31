@@ -3,7 +3,7 @@
 
 #include <pch.h>
 #include <AppInstance.h>
-#include <Microsoft.ApplicationModel.Activation.AppInstance.g.cpp>
+#include <Microsoft.Windows.AppLifecycle.AppInstance.g.cpp>
 
 #include "ActivationRegistrationManager.h"
 #include "ActivationArguments.h"
@@ -14,11 +14,11 @@
 #include "ExtensionContract.h"
 
 using namespace winrt;
-using namespace Windows::Foundation;
-using namespace Windows::Foundation::Collections;
-using namespace Windows::ApplicationModel::Activation;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::ApplicationModel::Activation;
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     INIT_ONCE AppInstance::s_initInstance{};
     winrt::com_ptr<AppInstance> AppInstance::s_instance;
@@ -137,7 +137,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         m_activatedEvent(*this, args);
     }
 
-    Microsoft::ApplicationModel::Activation::AppInstance AppInstance::GetCurrent()
+    Microsoft::Windows::AppLifecycle::AppInstance AppInstance::GetCurrent()
     {
         auto initInstance = []
         {
@@ -146,12 +146,12 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
         wil::init_once(s_initInstance, initInstance);
 
-        return s_instance.as<Microsoft::ApplicationModel::Activation::AppInstance>();
+        return s_instance.as<Microsoft::Windows::AppLifecycle::AppInstance>();
     }
 
-    IVector<Microsoft::ApplicationModel::Activation::AppInstance> AppInstance::GetInstances()
+    IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
     {
-        IVector<Microsoft::ApplicationModel::Activation::AppInstance> instances{ winrt::single_threaded_vector<Microsoft::ApplicationModel::Activation::AppInstance>() };
+        IVector<Microsoft::Windows::AppLifecycle::AppInstance> instances{ winrt::single_threaded_vector<Microsoft::Windows::AppLifecycle::AppInstance>() };
 
         for (uint32_t index = 0; index < s_instance->m_processIds.size(); index++)
         {
@@ -174,14 +174,14 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return instances;
     }
 
-    Microsoft::ApplicationModel::Activation::AppInstance AppInstance::FindOrRegisterForKey(hstring const& key)
+    AppLifecycle::AppInstance AppInstance::FindOrRegisterForKey(hstring const& key)
     {
         // Try to register and return the current instance.  If we fail to do that, then
         // search and find the correct instance.
         if (s_instance->TrySetKey(key.c_str()))
         {
             // Register the class as owning the key, and return it.
-            return s_instance.as<Microsoft::ApplicationModel::Activation::AppInstance>();
+            return s_instance.as<AppLifecycle::AppInstance>();
         }
 
         return s_instance->FindForKey(key.c_str());
@@ -192,7 +192,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         throw hresult_not_implemented();
     }
 
-    void AppInstance::RedirectTo(Microsoft::ApplicationModel::Activation::ActivationArguments const& args)
+    void AppInstance::RedirectTo(AppLifecycle::ActivationArguments const& args)
     {
         if (!m_isCurrent)
         {
@@ -201,14 +201,14 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         }
     }
 
-    ApplicationModel::Activation::ActivationArguments AppInstance::GetActivatedEventArgs()
+    AppLifecycle::ActivationArguments AppInstance::GetActivatedEventArgs()
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
 
         if (HasIdentity())
         {
-            auto args = Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
+            auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
             if (args)
             {
                 data = args.as<IInspectable>();
@@ -254,7 +254,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return make<ActivationArguments>(kind, data);
     }
 
-    event_token AppInstance::Activated(EventHandler<Microsoft::ApplicationModel::Activation::ActivationArguments> const& handler)
+    event_token AppInstance::Activated(EventHandler<Microsoft::Windows::AppLifecycle::ActivationArguments> const& handler)
     {
         return m_activatedEvent.add(handler);
     }
@@ -284,7 +284,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return currentIsKeyOwner;
     }
 
-    Microsoft::ApplicationModel::Activation::AppInstance AppInstance::FindForKey(std::wstring const& key)
+    Microsoft::Windows::AppLifecycle::AppInstance AppInstance::FindForKey(std::wstring const& key)
     {
         auto instances = GetInstances();
         for (const auto& instance : instances)
@@ -298,7 +298,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         return nullptr;
     }
 
-    void AppInstance::MarshalArguments(Microsoft::ApplicationModel::Activation::ActivationArguments const& args)
+    void AppInstance::MarshalArguments(Microsoft::Windows::AppLifecycle::ActivationArguments const& args)
     {
         com_ptr<IStream> stream;
         THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr, TRUE, stream.put()));
@@ -327,7 +327,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         resetStreamOnExit.release();
     }
 
-    Microsoft::ApplicationModel::Activation::ActivationArguments AppInstance::UnmarshalArguments()
+    Microsoft::Windows::AppLifecycle::ActivationArguments AppInstance::UnmarshalArguments()
     {
         com_ptr<IStream> stream;
         THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr, TRUE, stream.put()));
@@ -344,6 +344,6 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         com_ptr<::IUnknown> unk;
         THROW_IF_FAILED(CoUnmarshalInterface(stream.get(), guid_of<ActivationArguments>(), unk.put_void()));
 
-        return unk.as<Microsoft::ApplicationModel::Activation::ActivationArguments>();
+        return unk.as<Microsoft::Windows::AppLifecycle::ActivationArguments>();
     }
 }

@@ -4,7 +4,7 @@
 #include "shared_memory.h"
 #include "Association.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
 
 #define MAX_INSTANCE_COUNT 512

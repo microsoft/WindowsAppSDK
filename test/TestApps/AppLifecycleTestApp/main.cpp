@@ -8,7 +8,7 @@
 
 #include <wil/win32_helpers.h>
 
-using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.ApplicationModel.Activation
+namespace Microsoft.Windows.AppLifecycle
 {
     enum ExtendedActivationKind
     {
@@ -67,9 +67,9 @@ namespace Microsoft.ApplicationModel.Activation
         static AppInstance FindOrRegisterForKey(String key);
 
         void UnregisterKey(String key);
-        void RedirectTo(Microsoft.ApplicationModel.Activation.ActivationArguments args);
-        Microsoft.ApplicationModel.Activation.ActivationArguments GetActivatedEventArgs();
-        event Windows.Foundation.EventHandler<Microsoft.ApplicationModel.Activation.ActivationArguments> Activated;
+        void RedirectTo(Microsoft.Windows.AppLifecycle.ActivationArguments args);
+        Microsoft.Windows.AppLifecycle.ActivationArguments GetActivatedEventArgs();
+        event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.ActivationArguments> Activated;
 
         String Key{ get; };
         Boolean IsCurrent{ get; };

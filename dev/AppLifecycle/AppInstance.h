@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-#include <Microsoft.ApplicationModel.Activation.AppInstance.g.h>
+#include <Microsoft.Windows.AppLifecycle.AppInstance.g.h>
 #include "shared_memory.h"
 #include "InstanceList.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     struct AppInstance : AppInstanceT<AppInstance>
     {
@@ -15,15 +15,15 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         void Activate();
 
         // IAppInstanceStatics.
-        static Microsoft::ApplicationModel::Activation::AppInstance GetCurrent();
-        static Windows::Foundation::Collections::IVector<Microsoft::ApplicationModel::Activation::AppInstance> GetInstances();
-        static Microsoft::ApplicationModel::Activation::AppInstance FindOrRegisterForKey(hstring const& key);
+        static Microsoft::Windows::AppLifecycle::AppInstance GetCurrent();
+        static winrt::Windows::Foundation::Collections::IVector<Microsoft::Windows::AppLifecycle::AppInstance> GetInstances();
+        static Microsoft::Windows::AppLifecycle::AppInstance FindOrRegisterForKey(hstring const& key);
 
         // IAppInstance.
         void UnregisterKey(hstring const& key);
-        void RedirectTo(Microsoft::ApplicationModel::Activation::ActivationArguments const& args);
+        void RedirectTo(Microsoft::Windows::AppLifecycle::ActivationArguments const& args);
         ActivationArguments GetActivatedEventArgs();
-        winrt::event_token Activated(Windows::Foundation::EventHandler<Microsoft::ApplicationModel::Activation::ActivationArguments> const& handler);
+        winrt::event_token Activated(winrt::Windows::Foundation::EventHandler<Microsoft::Windows::AppLifecycle::ActivationArguments> const& handler);
         void Activated(winrt::event_token const& token) noexcept;
         
         hstring Key() { return winrt::hstring(m_key); }
@@ -31,14 +31,14 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
     private:
         bool TrySetKey(std::wstring const& key);
-        Microsoft::ApplicationModel::Activation::AppInstance FindForKey(std::wstring const& key);
-        void MarshalArguments(Microsoft::ApplicationModel::Activation::ActivationArguments const& args);
-        Microsoft::ApplicationModel::Activation::ActivationArguments UnmarshalArguments();
+        Microsoft::Windows::AppLifecycle::AppInstance FindForKey(std::wstring const& key);
+        void MarshalArguments(Microsoft::Windows::AppLifecycle::ActivationArguments const& args);
+        Microsoft::Windows::AppLifecycle::ActivationArguments UnmarshalArguments();
 
         static INIT_ONCE s_initInstance;
         static winrt::com_ptr<AppInstance> s_instance;
 
-        winrt::event<Windows::Foundation::EventHandler<ActivationArguments>> m_activatedEvent;
+        winrt::event<winrt::Windows::Foundation::EventHandler<ActivationArguments>> m_activatedEvent;
 
         bool m_isCurrent;
         std::wstring_view m_key;
@@ -59,7 +59,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     };
 }
 
-namespace winrt::Microsoft::ApplicationModel::Activation::factory_implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::factory_implementation
 {
     struct AppInstance : AppInstanceT<AppInstance, implementation::AppInstance>
     {

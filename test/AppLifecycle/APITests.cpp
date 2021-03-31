@@ -10,7 +10,7 @@ using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
 using namespace winrt;
-using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Management::Deployment;
