@@ -6,7 +6,7 @@
 #include <Microsoft.Windows.AppLifecycle.AppInstance.g.cpp>
 
 #include "ActivationRegistrationManager.h"
-#include "ActivationArguments.h"
+#include "AppActivationArguments.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
@@ -192,7 +192,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         throw hresult_not_implemented();
     }
 
-    void AppInstance::RedirectTo(AppLifecycle::ActivationArguments const& args)
+    void AppInstance::RedirectActivationTo(AppLifecycle::AppActivationArguments const& args)
     {
         if (!m_isCurrent)
         {
@@ -201,7 +201,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
     }
 
-    AppLifecycle::ActivationArguments AppInstance::GetActivatedEventArgs()
+    AppLifecycle::AppActivationArguments AppInstance::GetActivatedEventArgs()
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
@@ -251,10 +251,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
-        return make<ActivationArguments>(kind, data);
+        return make<AppActivationArguments>(kind, data);
     }
 
-    event_token AppInstance::Activated(EventHandler<Microsoft::Windows::AppLifecycle::ActivationArguments> const& handler)
+    event_token AppInstance::Activated(EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler)
     {
         return m_activatedEvent.add(handler);
     }
@@ -298,13 +298,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return nullptr;
     }
 
-    void AppInstance::MarshalArguments(Microsoft::Windows::AppLifecycle::ActivationArguments const& args)
+    void AppInstance::MarshalArguments(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args)
     {
         com_ptr<IStream> stream;
         THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr, TRUE, stream.put()));
 
         com_ptr<::IUnknown> unk{ args.as<::IUnknown>() };
-        THROW_IF_FAILED(CoMarshalInterface(stream.get(), guid_of<ActivationArguments>(), unk.get(), MSHCTX_LOCAL, nullptr, MSHLFLAGS_NORMAL));
+        THROW_IF_FAILED(CoMarshalInterface(stream.get(), guid_of<AppActivationArguments>(), unk.get(), MSHCTX_LOCAL, nullptr, MSHLFLAGS_NORMAL));
 
         const LARGE_INTEGER headOffset{};
         auto resetStreamOnExit = wil::scope_exit([&stream, &headOffset]
@@ -327,7 +327,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         resetStreamOnExit.release();
     }
 
-    Microsoft::Windows::AppLifecycle::ActivationArguments AppInstance::UnmarshalArguments()
+    Microsoft::Windows::AppLifecycle::AppActivationArguments AppInstance::UnmarshalArguments()
     {
         com_ptr<IStream> stream;
         THROW_IF_FAILED(CreateStreamOnHGlobal(nullptr, TRUE, stream.put()));
@@ -342,8 +342,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         THROW_IF_FAILED(stream->Seek(headOffset, STREAM_SEEK_SET, nullptr));
 
         com_ptr<::IUnknown> unk;
-        THROW_IF_FAILED(CoUnmarshalInterface(stream.get(), guid_of<ActivationArguments>(), unk.put_void()));
+        THROW_IF_FAILED(CoUnmarshalInterface(stream.get(), guid_of<AppActivationArguments>(), unk.put_void()));
 
-        return unk.as<Microsoft::Windows::AppLifecycle::ActivationArguments>();
+        return unk.as<Microsoft::Windows::AppLifecycle::AppActivationArguments>();
     }
 }

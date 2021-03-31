@@ -21,24 +21,25 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // IAppInstance.
         void UnregisterKey(hstring const& key);
-        void RedirectTo(Microsoft::Windows::AppLifecycle::ActivationArguments const& args);
-        ActivationArguments GetActivatedEventArgs();
-        winrt::event_token Activated(winrt::Windows::Foundation::EventHandler<Microsoft::Windows::AppLifecycle::ActivationArguments> const& handler);
+        void RedirectActivationTo(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
+        AppActivationArguments GetActivatedEventArgs();
+        winrt::event_token Activated(winrt::Windows::Foundation::EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler);
         void Activated(winrt::event_token const& token) noexcept;
         
         hstring Key() { return winrt::hstring(m_key); }
         bool IsCurrent() { return m_isCurrent; }
+        uint32_t ProcessId() { return m_data->processId; }
 
     private:
         bool TrySetKey(std::wstring const& key);
         Microsoft::Windows::AppLifecycle::AppInstance FindForKey(std::wstring const& key);
-        void MarshalArguments(Microsoft::Windows::AppLifecycle::ActivationArguments const& args);
-        Microsoft::Windows::AppLifecycle::ActivationArguments UnmarshalArguments();
+        void MarshalArguments(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
+        Microsoft::Windows::AppLifecycle::AppActivationArguments UnmarshalArguments();
 
         static INIT_ONCE s_initInstance;
         static winrt::com_ptr<AppInstance> s_instance;
 
-        winrt::event<winrt::Windows::Foundation::EventHandler<ActivationArguments>> m_activatedEvent;
+        winrt::event<winrt::Windows::Foundation::EventHandler<AppActivationArguments>> m_activatedEvent;
 
         bool m_isCurrent;
         std::wstring_view m_key;

@@ -54,7 +54,7 @@ namespace Microsoft.Windows.AppLifecycle
         // Windows.ApplicationModel.Activation.ActivationKind.
     };
 
-    runtimeclass ActivationArguments
+    runtimeclass AppActivationArguments
     {
         ExtendedActivationKind Kind { get; };
         IInspectable Data{ get; };
@@ -67,12 +67,13 @@ namespace Microsoft.Windows.AppLifecycle
         static AppInstance FindOrRegisterForKey(String key);
 
         void UnregisterKey(String key);
-        void RedirectTo(Microsoft.Windows.AppLifecycle.ActivationArguments args);
-        Microsoft.Windows.AppLifecycle.ActivationArguments GetActivatedEventArgs();
-        event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.ActivationArguments> Activated;
+        void RedirectActivationTo(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
+        Microsoft.Windows.AppLifecycle.AppActivationArguments GetActivatedEventArgs();
+        event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.AppActivationArguments> Activated;
 
         String Key{ get; };
         Boolean IsCurrent{ get; };
+        UInt32 ProcessId{ get; };
     }
 
     static runtimeclass ActivationRegistrationManager

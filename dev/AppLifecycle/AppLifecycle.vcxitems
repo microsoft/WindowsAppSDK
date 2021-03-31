@@ -20,7 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Association.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)EncodedLaunchExecuteCommand.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ActivationArguments.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppActivationArguments.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Association.h" />
