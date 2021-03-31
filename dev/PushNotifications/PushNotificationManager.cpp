@@ -1,11 +1,10 @@
 ﻿#include "pch.h"
 #include "PushNotificationManager.h"
-#include "PushNotificationManager.g.cpp"
+#include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
 #include "PushNotificationCreateChannelResult.h"
 #include <winrt\windows.networking.pushnotifications.h>
 #include <winerror.h>
 #include <algorithm>
-#include <vector>
 #include <iostream>
 #include "PushNotificationChannel.h"
 #include <wil/resource.h>
@@ -13,7 +12,7 @@
 using namespace winrt::Windows::Networking::PushNotifications;
 using namespace winrt;
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     inline constexpr std::uint32_t c_maxBackoffSeconds{ 960 };
     inline constexpr std::uint32_t c_minBackoffSeconds{ 30 };
@@ -58,7 +57,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return true;
     }
 
-    Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::PushNotificationCreateChannelResult, Microsoft::ProjectReunion::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
     {
         static bool s_remoteIdInProgress;
         static wil::critical_section s_lock;
@@ -76,8 +75,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw_hresult(E_NOTIMPL);
         }
 
-        winrt::Microsoft::ProjectReunion::PushNotificationCreateChannelResult channelResult{ nullptr };
-
         bool remoteIdInProgress = false;
         {
             auto lock = s_lock.lock();
@@ -91,9 +88,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
         }
 
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult channelResult{ nullptr };
+
         if (remoteIdInProgress)
         {
-            channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
+            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
                 nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
             co_return channelResult;;
         }
@@ -115,9 +114,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         uint8_t retryCount = 0;
         winrt::hresult channelRequestResult = E_PENDING;
-        winrt::Microsoft::ProjectReunion::PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
 
-        Microsoft::ProjectReunion::PushNotificationCreateChannelStatus
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus
             channelStatus = { channelRequestResult, status, retryCount };
 
         progress(channelStatus);
@@ -129,7 +128,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             try
             {
-                // Legacy API is not handling cancellation
                 pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
                 channelRequestResult = S_OK;
                 status = PushNotificationChannelStatus::CompletedSuccess;
@@ -162,18 +160,18 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         
         if (status == PushNotificationChannelStatus::CompletedSuccess)
         {
-            // Returns a com_ptr returning the implementation type
+            // Returns a com_ptr to the implementation type
             auto pushChannel =
-                winrt::make_self<winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel>(pushChannelReceived);
+                winrt::make_self<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel>(pushChannelReceived);
 
-            channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
+            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
                 *(pushChannel.get()),
                 channelRequestResult,
                 status);
         }
         else if(status == PushNotificationChannelStatus::CompletedFailure)
         {
-            channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
+            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
                 nullptr,
                 channelRequestResult,
                 status);
