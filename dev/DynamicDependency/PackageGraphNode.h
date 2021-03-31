@@ -9,6 +9,7 @@
 
 #include <wil/resource.h>
 #include "wil_msixdynamicdependency.h"
+#include "appmodel_msixdynamicdependency.h"
 
 #include "PackageInfo.h"
 #include "WinRTPackage.h"
@@ -84,7 +85,16 @@ public:
 
     UINT32 CountMatchingPackages(
         const UINT32 flags,
+        const PackageInfoType packageInfoType) const;
+
+    UINT32 CountMatchingPackages(
+        const UINT32 flags,
         const PackagePathType packagePathType) const;
+
+    UINT32 GetMatchingPackages(
+        const UINT32 flags,
+        const PackageInfoType packageInfoType,
+        wil::unique_cotaskmem_ptr<BYTE[]>& buffer) const;
 
     UINT32 GetMatchingPackages(
         const UINT32 flags,
