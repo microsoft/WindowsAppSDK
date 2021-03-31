@@ -138,14 +138,19 @@
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Guard</ControlFlowGuard>
       <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Guard</ControlFlowGuard>
       <!-- Configure the release build binary to be as required by internal API scanning tools. -->
-      <AdditionalOptions>%(AdditionalOptions) /Zi /Gf /Gy</AdditionalOptions>
+      <!-- Corresponds to /GF -->
+      <StringPooling>true</StringPooling>
+      <!-- Corresponds to /Zi -->
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <!-- Corresponds to /Gy -->
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <!-- Configure the release build binary to be as required by internal API scanning tools. -->
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <!-- /opt:icf and /opt:ref achieve the same result as setting EnableCOMDATFolding and OptimizeReferences to true, so we exclude them here. -->
-      <AdditionalOptions>%(AdditionalOptions) /debug /debugtype:cv,fixup /incremental:no</AdditionalOptions>
+      <LinkIncremental>false</LinkIncremental>      
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
