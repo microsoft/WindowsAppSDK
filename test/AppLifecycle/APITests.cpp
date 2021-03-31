@@ -97,7 +97,7 @@ namespace Test::AppLifecycle
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_NULL(AppInstance::GetCurrent().GetActivatedEventArgs());
+            VERIFY_IS_NULL(AppInstance::GetCurrent().GetActivatedEventArgs().Data());
         }
     };
 }

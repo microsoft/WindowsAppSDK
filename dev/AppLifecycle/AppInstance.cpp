@@ -209,8 +209,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         if (HasIdentity())
         {
             auto args = Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
-            data = args.as<IInspectable>();
-            kind = static_cast<ExtendedActivationKind>(args.Kind());
+            if (args)
+            {
+                data = args.as<IInspectable>();
+                kind = static_cast<ExtendedActivationKind>(args.Kind());
+            }
         }
         else
         {
