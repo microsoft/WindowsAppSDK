@@ -40,24 +40,22 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     inline bool IsPackagedProcess()
     {
-        uint32_t packageFullNameLength = 0;
-        // Have a package full name pointer
-        // use it on the stack
-        // Check with reunion discussion - reunion API for packaged process which checks for error codes
-        auto packagedProcessHResult = GetCurrentPackageFullName(&packageFullNameLength, nullptr);
+        wchar_t packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1] = {};
 
-        if (packagedProcessHResult == ERROR_INSUFFICIENT_BUFFER)
-        {
-            return true;
-        }
-        else if (packagedProcessHResult == APPMODEL_ERROR_NO_PACKAGE)
+        UINT32 packageFullNameLength = static_cast<UINT32>(ARRAYSIZE(packageFullName));
+
+        const auto packagedProcessHResult = ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName);
+
+        if (packagedProcessHResult == APPMODEL_ERROR_NO_PACKAGE)
         {
             return false;
         }
-        else
+        else if(packagedProcessHResult != S_OK)
         {
             winrt::throw_hresult(packagedProcessHResult);
         }
+
+        return true;
     }
 
     Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::PushNotificationCreateChannelResult, Microsoft::ProjectReunion::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
@@ -70,37 +68,34 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             throw_hresult(E_INVALIDARG);
         }
 
-        // API supports channel requests only for packaged applications
+        // API supports channel requests only for packaged applications for v0.8 version
         bool isPackagedProcess = IsPackagedProcess();
 
-        // More efficient way - isAPISupported pattern - refer reunion discussion today
         if (!isPackagedProcess)
         {
-            // Need to find the right value to throw
             throw_hresult(E_NOTIMPL);
         }
 
-        // Allow to register the progress and complete handler
-        co_await resume_background();
-
-        auto progress{ co_await winrt::get_progress_token() };
-
         winrt::Microsoft::ProjectReunion::PushNotificationCreateChannelResult channelResult{ nullptr };
 
+        bool remoteIdInProgress = false;
         {
             auto lock = s_lock.lock();
-
             if (s_remoteIdInProgress == false)
             {
-                s_remoteIdInProgress = true;
+                s_remoteIdInProgress = (!remoteIdInProgress);
             }
             else
             {
-                channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
-                    nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
-
-                co_return channelResult;;
+                remoteIdInProgress = true;
             }
+        }
+
+        if (remoteIdInProgress)
+        {
+            channelResult = winrt::make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
+                nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
+            co_return channelResult;;
         }
 
         auto scopeExit = wil::scope_exit([&]()
@@ -108,6 +103,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 auto lock = s_lock.lock();
                 s_remoteIdInProgress = false;
             });
+
+        auto cancellation{ co_await winrt::get_cancellation_token() };
+
+        cancellation.enable_propagation(true);
+
+        // Allow to register the progress and complete handler
+        co_await resume_background();
+
+        auto progress{ co_await winrt::get_progress_token() };
 
         uint8_t retryCount = 0;
         winrt::hresult channelRequestResult = E_PENDING;
@@ -125,6 +129,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             try
             {
+                // Legacy API is not handling cancellation
                 pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
                 channelRequestResult = S_OK;
                 status = PushNotificationChannelStatus::CompletedSuccess;
@@ -154,6 +159,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             co_await winrt::resume_after(std::chrono::seconds(backOffTimeInSeconds));
         }
 
+        
         if (status == PushNotificationChannelStatus::CompletedSuccess)
         {
             // Returns a com_ptr returning the implementation type
