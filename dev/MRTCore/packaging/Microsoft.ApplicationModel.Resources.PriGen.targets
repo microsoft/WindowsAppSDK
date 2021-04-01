@@ -25,6 +25,15 @@
     <Content Include="@(Image)" Condition="'$(OutputType)' == 'Exe'" />
   </ItemGroup>
 
+  <!--
+    Setting default project properties for .NET SDK-style projects
+  -->
+  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
+    <SDKIdentifier Condition="'$(SDKIdentifier)' == ''">Windows</SDKIdentifier>
+    <SDKVersion Condition="'$(SDKVersion)' == ''">10.0</SDKVersion>
+    <DefaultLanguage Condition="'$(DefaultLanguage)' == ''">en-US</DefaultLanguage>
+  </PropertyGroup>
+
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
@@ -67,16 +76,8 @@
 
   <!-- Flags controlling certain features -->
   <PropertyGroup>
-    <AppxUseHardlinksIfPossible Condition="'$(AppxUseHardlinksIfPossible)' == ''">true</AppxUseHardlinksIfPossible>
-    <AppxUseHardlinksForNugetIfPossible Condition="'$(AppxUseHardlinksForNugetIfPossible)' == ''">false</AppxUseHardlinksForNugetIfPossible>
-    <AppxSkipUnchangedFiles Condition="'$(AppxSkipUnchangedFiles)' == ''">true</AppxSkipUnchangedFiles>
     <AppxGeneratePriEnabled Condition="'$(AppxGeneratePriEnabled)' == ''">true</AppxGeneratePriEnabled>
     <AppxGetPackagePropertiesEnabled Condition="'$(AppxGetPackagePropertiesEnabled)' == ''">true</AppxGetPackagePropertiesEnabled>
-    <AppxPackageIncludePrivateSymbols Condition="'$(AppxPackageIncludePrivateSymbols)' == ''">false</AppxPackageIncludePrivateSymbols>
-    <AppxSymbolPackageEnabled Condition="'$(AppxSymbolPackageEnabled)' == ''">true</AppxSymbolPackageEnabled>
-    <AppxTestLayoutEnabled Condition="'$(AppxTestLayoutEnabled)' == ''">true</AppxTestLayoutEnabled>
-    <AppxPackageValidationEnabled Condition="'$(AppxPackageValidationEnabled)' == ''">true</AppxPackageValidationEnabled>
-    <AppxHarvestWinmdRegistration Condition="'$(AppxHarvestWinmdRegistration)' == ''">true</AppxHarvestWinmdRegistration>
 
     <!--
       For Centennial apps, we want the resources of the unpackaged app to appear in the root namespace of the app. So, set the value
@@ -102,14 +103,9 @@
     <ProjectPriIndexName Condition="'$(ProjectPriIndexName)' == ''">$(TargetName)</ProjectPriIndexName>
 
     <EnableSigningChecks Condition=" '$(EnableSigningChecks)' == '' ">true</EnableSigningChecks>
-    <AppxStrictManifestValidationEnabled Condition="'$(AppxStrictManifestValidationEnabled)' == ''">true</AppxStrictManifestValidationEnabled>
-    <AppxFilterOutUnusedLanguagesResourceFileMaps Condition="'$(AppxFilterOutUnusedLanguagesResourceFileMaps)' == ''">true</AppxFilterOutUnusedLanguagesResourceFileMaps>
     <AppxGeneratePrisForPortableLibrariesEnabled Condition="'$(AppxGeneratePrisForPortableLibrariesEnabled)' == ''">true</AppxGeneratePrisForPortableLibrariesEnabled>
-    <AppxGeneratePackageRecipeEnabled Condition="'$(AppxGeneratePackageRecipeEnabled)' == ''">true</AppxGeneratePackageRecipeEnabled>
     <BuildOptionalProjects Condition="'$(BuildOptionalProjects)' == ''" >true</BuildOptionalProjects>
     <PackageOptionalProjectsInIdeBuilds Condition="'$(PackageOptionalProjectsInIdeBuilds)' == ''" >false</PackageOptionalProjectsInIdeBuilds>
-    <AppxStreamableMainPackage Condition="'$(AppxStreamableMainPackage)' == ''">true</AppxStreamableMainPackage>
-    <AppxStreamableResourcePackages Condition="'$(AppxStreamableResourcePackages)' == ''">false</AppxStreamableResourcePackages>
     <AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent Condition="'$(AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent)' != 'false'">true</AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent>
     <AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent Condition="'$(AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent)' != 'false'">true</AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent>
     <AppxRemoveRedundantCopyLocalItems Condition="'$(AppxRemoveRedundantCopyLocalItems)' != 'false'">true</AppxRemoveRedundantCopyLocalItems>
@@ -126,28 +122,6 @@
     <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows Phone'">true</_TargetPlatformIsWindowsPhone>
     <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifierAdjusted)' == 'WindowsPhoneApp'">true</_TargetPlatformIsWindowsPhone>
     <_TargetPlatformIsWindowsPhone Condition="'$(_TargetPlatformIsWindowsPhone)' == ''">false</_TargetPlatformIsWindowsPhone>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AppxPackageSigningEnabled Condition="'$(AppxPackageSigningEnabled)' != 'true' and
-                                          '$(PackageCertificateThumbprint)' == '' and
-                                          '$(PackageCertificateKeyFile)' == ''">false</AppxPackageSigningEnabled>
-    <AppxPackageSigningEnabled Condition="'$(AppxPackageSigningEnabled)' != 'false'">true</AppxPackageSigningEnabled>
-  </PropertyGroup>
-
-  <!-- Various properties not intended for overriding. -->
-  <PropertyGroup>
-    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and  '$(SDKIdentifier)' != ''">6.3.1</AppxOSMinVersion>
-    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.2'">6.3.0</AppxOSMinVersion>
-    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.1' and '$(_TargetPlatformIsWindowsPhone)' == 'true'">6.3.1</AppxOSMinVersion>
-    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == '' and '$(TargetPlatformVersion)' == '8.1' and '$(TargetPlatformIdentifierAdjusted)' == 'Windows'">6.3.0</AppxOSMinVersion>
-    <AppxOSMinVersion Condition="'$(AppxOSMinVersion)' == ''">6.2.1</AppxOSMinVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AppxOSMaxVersionTested Condition="'$(AppxOSMaxVersionTested)' == '' and '$(SDKIdentifier)' != ''">6.4.0</AppxOSMaxVersionTested>
-    <AppxOSMaxVersionTested Condition="'$(AppxOSMaxVersionTested)' == '' and '$(TargetPlatformVersion)' == '8.2'">6.4.0</AppxOSMaxVersionTested>
-    <AppxOSMaxVersionTested Condition="'$(AppxOSMaxVersionTested)' == ''">$(AppxOSMinVersion)</AppxOSMaxVersionTested>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -181,16 +155,8 @@
     <AppxPackageDir Condition="'$(AppxPackageDir)' == '' and '$(OutDirWasSpecified)' == 'true'">$(OutDir)$(AppxPackageDirName)\</AppxPackageDir>
     <AppxPackageDir Condition="'$(AppxPackageDir)' == ''">$(AppxPackageDirInProjectDir)</AppxPackageDir>
     <AppxManifestFileName Condition="'$(AppxManifestFileName)' == ''">AppxManifest.xml</AppxManifestFileName>
-    <AppxBundleManifestFileName Condition="'$(AppxBundleManifestFileName)' == ''">AppxBundleManifest.xml</AppxBundleManifestFileName>
-    <AppxPackageArtifactsDir Condition="'$(AppxPackageArtifactsDir)' == ''"></AppxPackageArtifactsDir>
     <AppxUploadPackageArtifactsDir Condition="'$(AppxUploadPackageArtifactsDir)' == ''">Upload\</AppxUploadPackageArtifactsDir>
     <ExternalPackagesDir Condition="'$(ExternalPackagesDir)' == ''">ExternalPackages\</ExternalPackagesDir>
-    <FinalAppxManifestName Condition="'$(FinalAppxManifestName)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)$(AppxManifestFileName)</FinalAppxManifestName>
-    <FinalAppxUploadManifestName Condition="'$(FinalAppxUploadManifestName)' == ''">$(TargetDir)$(AppxUploadPackageArtifactsDir)$(AppxManifestFileName)</FinalAppxUploadManifestName>
-    <FinalAppxBundleManifestName Condition="'$(FinalAppxBundleManifestName)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)AppxMetadata\$(AppxBundleManifestFileName)</FinalAppxBundleManifestName>
-    <AppxValidateAppxManifest Condition="'$(AppxValidateAppxManifest)' == ''">true</AppxValidateAppxManifest>
-    <AppxValidateAppxManifest Condition="'$(AppxValidateAppxManifest)' != 'true'">false</AppxValidateAppxManifest>
-    <StoreManifestName Condition="'$(StoreManifestName)' == ''">StoreManifest.xml</StoreManifestName>
     <!-- AppxValidateStoreManifest isn't defined here, because the default depends on the TargetPlatform/Version -->
     <MakePriExeFullPath Condition="'$(MakePriExeFullPath)' == ''"></MakePriExeFullPath>
     <MakeAppxExeFullPath Condition="'$(MakeAppxExeFullPath)' == ''"></MakeAppxExeFullPath>
@@ -207,22 +173,10 @@
     <ProjectPriFileName Condition="'$(AppxPackage)' == 'true' and '$(ProjectPriFileName)' == ''">resources.pri</ProjectPriFileName>
     <ProjectPriFileName Condition="'$(AppxPackage)' != 'true' and '$(ProjectPriFileName)' == '' and '$(PriInitialPath)' == ''">$(TargetName).pri</ProjectPriFileName>
     <ProjectPriFileName Condition="'$(AppxPackage)' != 'true' and '$(ProjectPriFileName)' == '' and '$(PriInitialPath)' != ''">$(PriInitialPath).pri</ProjectPriFileName>
-    <ProjectPriFullPath Condition="'$(ProjectPriFullPath)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)$(ProjectPriFileName)</ProjectPriFullPath>
+    <ProjectPriFullPath Condition="'$(ProjectPriFullPath)' == ''">$(TargetDir)$(ProjectPriFileName)</ProjectPriFullPath>
     <ProjectPriUploadFullPath Condition="'$(ProjectPriUploadFullPath)' == ''">$(TargetDir)$(AppxUploadPackageArtifactsDir)$(ProjectPriFileName)</ProjectPriUploadFullPath>
-    <AppxPackageRecipe Condition="'$(AppxPackageRecipe)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)$(ProjectName).build.appxrecipe</AppxPackageRecipe>
-    <AppxUploadPackageRecipe Condition="'$(AppxUploadPackageRecipe)' == ''">$(TargetDir)$(AppxUploadPackageArtifactsDir)$(ProjectName).build.appxrecipe</AppxUploadPackageRecipe>
-    <FinalAppxPackageRecipe Condition="'$(FinalAppxPackageRecipe)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)$(ProjectName).appxrecipe</FinalAppxPackageRecipe>
-    <FinalAppxUploadPackageRecipe Condition="'$(FinalAppxUploadPackageRecipe)' == ''">$(TargetDir)$(AppxUploadPackageArtifactsDir)$(ProjectName).appxrecipe</FinalAppxUploadPackageRecipe>
-    <AllowLocalNetworkLoopback Condition="'$(AllowLocalNetworkLoopback)' == ''">true</AllowLocalNetworkLoopback>
-    <AppxDefaultHashAlgorithmId Condition="'$(AppxDefaultHashAlgorithmId)' == ''">sha256</AppxDefaultHashAlgorithmId>
-    <AppxPackageFileMap Condition="'$(AppxPackageFileMap)' == ''">$(IntermediateOutputPath)package.map.txt</AppxPackageFileMap>
-    <AppxUploadPackageFileMap Condition="'$(AppxUploadPackageFileMap)' == ''">$(IntermediateOutputPath)upload.package.map.txt</AppxUploadPackageFileMap>
     <LayoutDir Condition="'$(LayoutDir)'==''">$(TargetDir)AppX</LayoutDir>
     <ManagedWinmdInprocImplementation Condition="'$(ManagedWinmdInprocImplementation)' == ''">CLRHost.dll</ManagedWinmdInprocImplementation>
-    <UseIncrementalAppxRegistration Condition="'$(UseIncrementalAppxRegistration)' == ''">true</UseIncrementalAppxRegistration>
-    <AppxPackagingInfoFile Condition="'$(AppxPackagingInfoFile)' == ''">$(IntermediateOutputPath)_pkginfo.txt</AppxPackagingInfoFile>
-    <AppxOSMinVersionReplaceManifestVersion Condition="'$(AppxOSMinVersionReplaceManifestVersion)' == ''">true</AppxOSMinVersionReplaceManifestVersion>
-    <AppxOSMaxVersionTestedReplaceManifestVersion Condition="'$(AppxOSMaxVersionTestedReplaceManifestVersion)' == ''">true</AppxOSMaxVersionTestedReplaceManifestVersion>
     <InstallerFileWritesLogPath Condition="'$(InstallerFileWritesLogPath)' == ''">$(IntermediateOutputPath)_installerinfo.log</InstallerFileWritesLogPath>
     <PackagingFileWritesLogPath Condition="'$(PackagingFileWritesLogPath)' == ''">$(IntermediateOutputPath)PackagingFileWrites.log</PackagingFileWritesLogPath>
     <PackagingDirectoryWritesLogPath Condition="'$(PackagingDirectoryWritesLogPath)' == ''">$(IntermediateOutputPath)PackagingDirectoryWrites.log</PackagingDirectoryWritesLogPath>
@@ -231,8 +185,6 @@
     <AppxPriConfigXmlDefaultSnippetPath Condition="'$(AppxPriConfigXmlDefaultSnippetPath)' == ''"></AppxPriConfigXmlDefaultSnippetPath>
     <TargetPlatformSdkRootOverride Condition="'$(TargetPlatformSdkRootOverride)' == ''"></TargetPlatformSdkRootOverride>
     <TargetPlatformResourceVersion Condition="'$(TargetPlatformResourceVersion)' == ''">$(TargetPlatformVersion)</TargetPlatformResourceVersion>
-    <AppxMappingFileDir Condition="'$(AppxMappingFileDir)' == ''">$(TargetDir)$(AppxPackageArtifactsDir)</AppxMappingFileDir>
-    <AppxUploadMappingFileDir Condition="'$(AppxUploadMappingFileDir)' == ''">$(TargetDir)$(AppxUploadPackageArtifactsDir)</AppxUploadMappingFileDir>
 
     <WinMetadataDir Condition="'$(WinMetadataDir)' == ''">WinMetadata</WinMetadataDir>
     <EntryPointDir Condition="'$(EntryPointDir)' == ''">entrypoint</EntryPointDir>
@@ -241,15 +193,9 @@
     <DeploymentRecipeTargetPath Condition="'$(DeploymentRecipeTargetPath)' == ''">vs.appxrecipe</DeploymentRecipeTargetPath>
 
     <AppxBundle Condition="'$(TargetPlatformVersion)' == '8.0'">Never</AppxBundle>
-    <AppxBundleDefaultValueUsed Condition="'$(AppxBundle)' == ''">true</AppxBundleDefaultValueUsed>
-    <AppxBundleDefaultValueUsed Condition="'$(AppxBundleDefaultValueUsed)' == ''">false</AppxBundleDefaultValueUsed>
     <AppxBundle Condition="'$(AppxBundle)' == ''">Auto</AppxBundle>
-    <AppxBundlePlatforms Condition="'$(AppxBundlePlatforms)' == ''"></AppxBundlePlatforms>
-    <AppxBundleProducingPlatform Condition="'$(AppxBundleProducingPlatform)' == ''"></AppxBundleProducingPlatform>
-    <AppxBundleResourcePacksProducingPlatform Condition="'$(AppxBundleResourcePacksProducingPlatform)' == ''"></AppxBundleResourcePacksProducingPlatform>
     <AppxLayoutFolderName Condition="'$(AppxLayoutFolderName)' == ''">PackageLayout</AppxLayoutFolderName>
     <IntermediateUploadOutputPath Condition="'$(IntermediateUploadOutputPath)' == ''">$(IntermediateOutputPath)Upload\</IntermediateUploadOutputPath>
-    <AppxUploadPackagingInfoFile Condition="'$(AppxUploadPackagingInfoFile)' == ''">$(IntermediateUploadOutputPath)_upkginfo.txt</AppxUploadPackagingInfoFile>
     <AppxLayoutDir Condition="'$(AppxLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxLayoutFolderName)\</AppxLayoutDir>
     <AppxUploadLayoutFolderName Condition="'$(AppxUploadLayoutFolderName)' == ''">PackageUploadLayout</AppxUploadLayoutFolderName>
     <AppxUploadLayoutDir Condition="'$(AppxUploadLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxUploadLayoutFolderName)</AppxUploadLayoutDir>
@@ -267,22 +213,12 @@
     <AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName Condition="'$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)' == ''">$(IntermediateUploadOutputPath)filemap.priconfig.xml</AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName>
     <AppxBundleMainPackageFileMapIntermediatePrefix Condition="'$(AppxBundleMainPackageFileMapIntermediatePrefix)' == ''">filemap</AppxBundleMainPackageFileMapIntermediatePrefix>
     <AppxBundleMainPackageFileMapSuffix Condition="'$(AppxBundleMainPackageFileMapSuffix)' == ''">.map</AppxBundleMainPackageFileMapSuffix>
-    <AppxBundleMainPackageFileMapIntermediatePath Condition="'$(AppxBundleMainPackageFileMapIntermediatePath)' == ''">$(IntermediateOutputPath)$(AppxBundleMainPackageFileMapIntermediatePrefix)$(AppxBundleMainPackageFileMapSuffix).txt</AppxBundleMainPackageFileMapIntermediatePath>
-    <AppxBundleMainPackageFileMapIntermediatePriPath Condition="'$(AppxBundleMainPackageFileMapIntermediatePriPath)' == ''">$(IntermediateOutputPath)$(AppxBundleMainPackageFileMapIntermediatePrefix).pri</AppxBundleMainPackageFileMapIntermediatePriPath>
-    <AppxBundleMainPackageFileMapGeneratedFilesListPath Condition="'$(AppxBundleMainPackageFileMapGeneratedFilesListPath)' == ''">$(IntermediateOutputPath)$(AppxBundleMainPackageFileMapIntermediatePrefix).generatedFiles.txt</AppxBundleMainPackageFileMapGeneratedFilesListPath>
     <AppxBundleMainPackageFileMapPrefix Condition="'$(AppxBundleMainPackageFileMapPrefix)' == ''">main</AppxBundleMainPackageFileMapPrefix>
     <AppxBundleMainPackageFileMapPath Condition="'$(AppxBundleMainPackageFileMapPath)' == ''">$(IntermediateOutputPath)$(AppxBundleMainPackageFileMapPrefix)$(AppxBundleMainPackageFileMapSuffix).txt</AppxBundleMainPackageFileMapPath>
-    <AppxUploadBundleMainPackageFileMapIntermediatePath Condition="'$(AppxUploadBundleMainPackageFileMapIntermediatePath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleMainPackageFileMapIntermediatePrefix)$(AppxBundleMainPackageFileMapSuffix).txt</AppxUploadBundleMainPackageFileMapIntermediatePath>
-    <AppxUploadBundleMainPackageFileMapIntermediatePriPath Condition="'$(AppxUploadBundleMainPackageFileMapIntermediatePriPath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleMainPackageFileMapIntermediatePrefix).pri</AppxUploadBundleMainPackageFileMapIntermediatePriPath>
-    <AppxUploadBundleMainPackageFileMapGeneratedFilesListPath Condition="'$(AppxUploadBundleMainPackageFileMapGeneratedFilesListPath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleMainPackageFileMapIntermediatePrefix).generatedFiles.txt</AppxUploadBundleMainPackageFileMapGeneratedFilesListPath>
-    <AppxUploadBundleMainPackageFileMapPath Condition="'$(AppxUploadBundleMainPackageFileMapPath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleMainPackageFileMapPrefix)$(AppxBundleMainPackageFileMapSuffix).txt</AppxUploadBundleMainPackageFileMapPath>
-    <AppxBundleFolderSuffix Condition="'$(AppxBundleFolderSuffix)' == ''">_Bundle</AppxBundleFolderSuffix>
     
     <AppxLayoutFileName Condition="'$(AppxLayoutFileName)' == ''">App.packagelayout</AppxLayoutFileName>
     <UseAppxLayout Condition="'$(UseAppxLayout)' == ''">false</UseAppxLayout>
     <AppxLayoutIsTemplate Condition="'$(AppxLayoutIsTemplate)' == ''">false</AppxLayoutIsTemplate>
-
-    <AppInstallerTemplateFileName Condition="'$(AppInstallerTemplateFileName)' == ''">Package.appinstaller</AppInstallerTemplateFileName>
 
     <PlatformAppxLayoutFileName>PackageLayout_{0}.xml</PlatformAppxLayoutFileName>
     <PlatformAppxLayoutFile Condition="'$(PlatformAppxLayoutFile)' == ''">$(PlatformSpecificBundleArtifactsListDirInProjectDir)$(PlatformAppxLayoutFileName)</PlatformAppxLayoutFile>
@@ -1485,20 +1421,6 @@
     </ItemGroup>
 
   </Target>
-
-  <!-- ========================================================================================= -->
-  <!-- Generating Appx package recipe.                                                           -->
-  <!-- Happens after generating Appx manifest, for every project which can be packaged/deployed. -->
-  <!-- ========================================================================================= -->
-
-  <!-- Ensure Fast UpToDate check also consider the .appxrecipe file as an output -->
-  <ItemGroup Condition="'$(AppxPackage)' == 'true'">
-    <UpToDateCheckOutput Include="$(AppxPackageRecipe)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(AppxPackage)' == 'true' and '$(BuildAppxUploadPackageForUap)' == 'true'">
-    <UpToDateCheckOutput Include="$(AppxUploadPackageRecipe)" />
-  </ItemGroup>
 
   <!-- =============================== -->
   <!-- Generating Appx package.        -->

@@ -24,63 +24,25 @@ MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 static std::wstring g_test_ddlmPackageNamePrefix;
 static std::wstring g_test_ddlmPackagePublisherId;
 
-inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
+namespace MddCore
 {
-#if defined(_M_X64)
-    return winrt::Windows::System::ProcessorArchitecture::X64;
-#elif defined(_M_IX86)
-    return winrt::Windows::System::ProcessorArchitecture::X86;
-#elif defined(_M_ARM64)
-    return winrt::Windows::System::ProcessorArchitecture::Arm64;
-#elif defined(_M_ARM)
-    return winrt::Windows::System::ProcessorArchitecture::Arm;
-#else
-#   error "Unknown processor architecture"
-#endif
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+void FailFastIfElevated()
+{
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
 }
-
-inline PCWSTR GetCurrentArchitectureAsString()
-{
-#if defined(_M_X64)
-    return L"x64";
-#elif defined(_M_IX86)
-    return L"x86";
-#elif defined(_M_ARM64)
-    return L"arm64";
-#elif defined(_M_ARM)
-    return L"arm";
-#else
-#   error "Unknown processor architecture"
-#endif
-}
-
-inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(PCWSTR architecture)
-{
-    if (CompareStringOrdinal(architecture, -1, L"x64", -1, TRUE) == CSTR_EQUAL)
-    {
-        return winrt::Windows::System::ProcessorArchitecture::X64;
-    }
-    else if (CompareStringOrdinal(architecture, -1, L"x86", -1, TRUE) == CSTR_EQUAL)
-    {
-        return winrt::Windows::System::ProcessorArchitecture::X86;
-    }
-    else if (CompareStringOrdinal(architecture, -1, L"arm64", -1, TRUE) == CSTR_EQUAL)
-    {
-    return winrt::Windows::System::ProcessorArchitecture::Arm64;
-    }
-    else if (CompareStringOrdinal(architecture, -1, L"arm", -1, TRUE) == CSTR_EQUAL)
-    {
-    return winrt::Windows::System::ProcessorArchitecture::Arm;
-    }
-    else
-    {
-        return winrt::Windows::System::ProcessorArchitecture::Unknown;
-    }
 }
 
 STDAPI MddBootstrapInitialize(
     const PACKAGE_VERSION minVersion) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    MddCore::FailFastIfElevated();
+
+    // Dynamic Dependencies Bootstrap API requires a non-packaged process
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
+
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
@@ -133,8 +95,11 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    MddRemovePackageDependency(g_packageDependencyContext);
-    g_packageDependencyContext = nullptr;
+    if (g_packageDependencyContext && g_projectReunionDll)
+    {
+        MddRemovePackageDependency(g_packageDependencyContext);
+        g_packageDependencyContext = nullptr;
+    }
 
     g_packageDependencyId.reset();
 
@@ -282,7 +247,7 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
 
     // Look for windows.appExtension with name="com.microsoft.projectreunion.ddlm.<majorversion>.<architecture>"
     WCHAR appExtensionName[100]{};
-    wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", minVersion.Major, GetCurrentArchitectureAsString());
+    wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", minVersion.Major, AppModel::Identity::GetCurrentArchitectureAsString());
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
@@ -320,8 +285,8 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
         }
 
         // Does the architecture match?
-        const auto architecture{ ParseArchitecture(architectureAsString) };
-        if (architecture != GetCurrentArchitecture())
+        const auto architecture{ AppModel::Identity::ParseArchitecture(architectureAsString) };
+        if (architecture != AppModel::Identity::GetCurrentArchitecture())
         {
             continue;
         }

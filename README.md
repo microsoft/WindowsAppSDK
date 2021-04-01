@@ -13,8 +13,8 @@
 Plus, **it's backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
 
 
-### Try it now!
-[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [try the preview of the 0.5 release](https://docs.microsoft.com/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
+### Use it now!
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.5 release](https://docs.microsoft.com/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
 
 Some notes about 0.5...
 
@@ -27,7 +27,7 @@ Some notes about 0.5...
 
 Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*: 
 
-App type |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
+App type |      Reunion 0.5      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
 [Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
 Unpackaged desktop apps<br>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
@@ -45,7 +45,7 @@ Project Reunion aims to work on supported versions of Windows.
 Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10.
 Wherever possible, we'll use techniques like '_polyfills_' 
 and custom implementations to do the
-heavy lifting for youand make sure your app works across Windows versions and devices.
+heavy lifting for you and make sure your app works across Windows versions and devices.
 In the future, there may be a couple APIs that are dependent on new OS features
 (like new Action Center functionality),
 however we will do our best to ensure
@@ -70,7 +70,7 @@ More on what the project is and how we're approaching the work.
 _We want to hear from you!_
 
 File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
-trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
+trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app. Bonus
 points if there's a gist or existing repo we can look at with you.
 
 

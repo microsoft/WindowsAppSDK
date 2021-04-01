@@ -27,6 +27,7 @@
 #include <wil/result_macros.h>
 #include <wil/filesystem.h>
 #include <wil/com.h>
+#include <wil/win32_helpers.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -43,3 +44,6 @@
 #include <winrt/Windows.System.h>
 
 #include <MsixDynamicDependency.h>
+
+#include <appmodel.identity.h>
+#include <security.integritylevel.h>
