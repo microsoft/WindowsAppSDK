@@ -14,15 +14,15 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
 CLSID FindDDLM(const PACKAGE_VERSION minVersion);
-CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension);
+CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
-wil::unique_hmodule g_projectReunionDll{};
+wil::unique_hmodule g_projectReunionDll;
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
-std::wstring g_test_ddlmPackageNamePrefix;
-std::wstring g_test_ddlmPackagePublisherId;
+static std::wstring g_test_ddlmPackageNamePrefix;
+static std::wstring g_test_ddlmPackagePublisherId;
 
 namespace MddCore
 {
@@ -313,7 +313,7 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
     return bestFitClsid;
 }
 
-CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension)
+CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension)
 {
     const auto properties{ appExtension.GetExtensionPropertiesAsync().get() };
     auto propertiesClsid{ properties.Lookup(L"CLSID").as<winrt::Windows::Foundation::Collections::IPropertySet>() };
