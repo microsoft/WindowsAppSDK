@@ -13,6 +13,6 @@
 /// @note Not for product use. This is for for test purposes only to verify the implementation.
 STDAPI MddLifetimeManagementTestInitialize(
     _In_ PCWSTR ddlmPackageNamePrefix,
-    _In_ PCWSTR ddlPackagePublisherId) noexcept;
+    _In_ PCWSTR ddlmPackagePublisherId) noexcept;
 
 #endif // MDDLIFETIMEMANAGEMENTTEST_H

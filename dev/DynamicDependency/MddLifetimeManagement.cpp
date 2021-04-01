@@ -11,15 +11,15 @@ static std::wstring g_test_ddlmPackagePublisherId;
 
 STDAPI MddLifetimeManagementTestInitialize(
     _In_ PCWSTR ddlmPackageNamePrefix,
-    _In_ PCWSTR ddlPackagePublisherId) noexcept try
+    _In_ PCWSTR ddlmPackagePublisherId) noexcept try
 {
     RETURN_HR_IF(E_INVALIDARG, !ddlmPackageNamePrefix);
     RETURN_HR_IF(E_INVALIDARG, *ddlmPackageNamePrefix == L'0');
-    RETURN_HR_IF(E_INVALIDARG, !ddlPackagePublisherId);
-    RETURN_HR_IF(E_INVALIDARG, *ddlPackagePublisherId == L'0');
+    RETURN_HR_IF(E_INVALIDARG, !ddlmPackagePublisherId);
+    RETURN_HR_IF(E_INVALIDARG, *ddlmPackagePublisherId == L'0');
 
     g_test_ddlmPackageNamePrefix = ddlmPackageNamePrefix;
-    g_test_ddlmPackagePublisherId = ddlPackagePublisherId;
+    g_test_ddlmPackagePublisherId = ddlmPackagePublisherId;
     return S_OK;
 } CATCH_RETURN();
 
@@ -47,7 +47,7 @@ public:
     }
 
     void RemovePackage(
-        winrt::Windows::Management::Deployment::PackageManager& packageManager) const
+        const winrt::Windows::Management::Deployment::PackageManager& packageManager) const
     {
         try
         {
@@ -70,7 +70,7 @@ public:
             const auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
             const auto hr{ e.code() };
             const auto message { e.message() };
-            (void) LOG_HR_MSG(hr, "%ls", message.c_str());
+            (void) LOG_HR_MSG(hr, "%ls PackageFullName:%ls", message.c_str(), m_packageFullName.c_str());
         }
     }
 
@@ -175,7 +175,6 @@ STDAPI MddLifetimeManagementGC() noexcept try
             for (++keeper; keeper != ddlmPackages.end(); ++keeper)
             {
                 const auto n{ keeper - ddlmPackages.begin() };
-                wprintf(L"Boo %I64u %I64u\n", keeperIndex, n);
                 keeper->RemovePackage(packageManager);
             }
         }

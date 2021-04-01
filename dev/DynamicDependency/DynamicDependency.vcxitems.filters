@@ -18,6 +18,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)WinRTModuleManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)WinRTPackage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MddBootstrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
@@ -48,6 +49,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
