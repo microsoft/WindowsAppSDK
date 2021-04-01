@@ -187,9 +187,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_instance->FindForKey(key.c_str());
     }
 
-    void AppInstance::UnregisterKey(hstring const& key)
+    void AppInstance::UnregisterKey(hstring const&)
     {
-        throw hresult_not_implemented();
+        auto releaseOnExit = m_dataMutex.acquire();
+        memset(m_data->key, 0, sizeof(m_data->key));
+        m_keyMutex.reset();
     }
 
     void AppInstance::RedirectActivationTo(AppLifecycle::AppActivationArguments const& args)
@@ -269,7 +271,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         std::wstring mutexName = wil::str_printf<std::wstring>(L"%s_%s_Mutex",
             ComputeAppId().c_str(), key.c_str());
 
+        // We keep the mutex as a live member to ensure all other instances continue
+        // to get an 'open' instead of a 'create' due to it already existing.
         m_keyMutex.create(mutexName.c_str(), 0, MUTEX_ALL_ACCESS);
+        
         bool currentIsKeyOwner = (GetLastError() != ERROR_ALREADY_EXISTS);
         if (currentIsKeyOwner)
         {
