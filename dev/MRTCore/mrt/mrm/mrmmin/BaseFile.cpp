@@ -50,7 +50,10 @@ HRESULT BaseFileSectionResult::SetSectionIndex(__in const BaseFile* pParentFile,
 
     m_pParentFile = pParentFile;
     m_sectionIndex = sectionIndex;
-    RETURN_IF_FAILED(m_pParentFile->GetSectionHeader(sectionIndex, &m_pSectionHeader));
+
+    const DEFFILE_SECTION_HEADER* sectionHeader = nullptr;
+    RETURN_IF_FAILED(m_pParentFile->GetSectionHeader(sectionIndex, &sectionHeader));
+    m_pSectionHeader = sectionHeader;
 
     return S_OK;
 }
@@ -339,7 +342,7 @@ HRESULT BaseFile::GetSectionHeader(__in int index, _Out_ const DEFFILE_SECTION_H
     const DEFFILE_SECTION_HEADER* pSectionHeader = GetSectionHeader(m_pHeader, &m_pToc[index]);
     if (!pSectionHeader)
     {
-        return S_OK;
+        RETURN_HR(E_UNEXPECTED);
     }
 
     DEF_ASSERT(m_pHeader->sizeToc != 0);
