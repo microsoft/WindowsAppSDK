@@ -42,6 +42,12 @@ PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ApplicationM
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\MsixDynamicDependency.h $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
 #
+PublishFile -IfExists $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
+PublishFile -IfExists $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.dll $FullPublishDir\DynamicDependency.DataStore\
+#
+PublishFile -IfExists $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe $FullPublishDir\DynamicDependencyLifetimeManager\
+PublishFile -IfExists $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.dll $FullPublishDir\DynamicDependencyLifetimeManager\
+#
 PublishFile -IfExists $FullBuildOutput\projectreunion_bootstrapdll\Microsoft.ProjectReunion.Bootstrap.dll $FullPublishDir\Microsoft.ProjectReunion.Bootstrap\
 PublishFile -IfExists $FullBuildOutput\projectreunion_bootstrapdll\Microsoft.ProjectReunion.Bootstrap.lib $FullPublishDir\Microsoft.ProjectReunion.Bootstrap\
 PublishFile -IfExists $FullBuildOutput\projectreunion_bootstrapdll\MddBootstrap.h $FullPublishDir\Microsoft.ProjectReunion.Bootstrap\
@@ -84,6 +90,16 @@ PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ApplicationM
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\Microsoft.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\MsixDynamicDependency.h $NugetDir\inc\uap10.0
 PublishFile -IfExists $FullBuildOutput\projectreunion_dll\wil_msixdynamicdependency.h $NugetDir\inc\uap10.0
+#
+PublishFile -IfExists $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile -IfExists $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.pdb $NugetDir\runtimes\win10-$Platform\native\
+PublishFile -IfExists $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.ProxyStub.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile -IfExists $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native\
+#
+PublishFile -IfExists $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe $NugetDir\runtimes\win10-$Platform\native
+PublishFile -IfExists $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.pdb $NugetDir\runtimes\win10-$Platform\native\
+PublishFile -IfExists $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.ProxyStub.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile -IfExists $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native\
 #
 PublishFile -IfExists $FullBuildOutput\projectreunion_bootstrapdll\Microsoft.ProjectReunion.Bootstrap.dll $NugetDir\runtimes\win10-$Platform\native
 PublishFile -IfExists $FullBuildOutput\projectreunion_bootstrapdll\Microsoft.ProjectReunion.Bootstrap.pdb $NugetDir\runtimes\win10-$Platform\native\
