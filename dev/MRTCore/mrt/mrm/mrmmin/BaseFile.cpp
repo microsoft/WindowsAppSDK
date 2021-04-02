@@ -340,10 +340,7 @@ HRESULT BaseFile::GetSectionHeader(__in int index, _Out_ const DEFFILE_SECTION_H
     RETURN_HR_IF(E_INVALIDARG, (index < 0) || (index > m_pHeader->sizeToc - 1));
 
     const DEFFILE_SECTION_HEADER* pSectionHeader = GetSectionHeader(m_pHeader, &m_pToc[index]);
-    if (!pSectionHeader)
-    {
-        RETURN_HR(E_UNEXPECTED);
-    }
+    RETURN_HR_IF(E_UNEXPECTED, !pSectionHeader);
 
     DEF_ASSERT(m_pHeader->sizeToc != 0);
     UINT32 cbOtherSectionSize = m_pHeader->tocOffset + sizeof(DEFFILE_TRAILER);
