@@ -51,6 +51,53 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
 }
 
+#define TEST_PACKAGE_DDLMGC_NAMEPREFIX  TEST_PACKAGE_DDLM_NAMEPREFIX L".GC"
+namespace Test::Packages::DynamicDependencyLifetimeManagerGC
+{
+    constexpr PCWSTR c_PackageNamePrefix = TEST_PACKAGE_DDLMGC_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = TEST_PACKAGE_DDLM_PUBLISHERID;
+}
+
+#define TEST_PACKAGE_DDLMGC1000_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.0.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
+namespace Test::Packages::DynamicDependencyLifetimeManagerGC1000
+{
+    constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManagerGC1000";
+    constexpr PCWSTR c_PackageNamePrefix = TEST_PACKAGE_DDLMGC_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = TEST_PACKAGE_DDLMGC1000_NAME L"_" TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = TEST_PACKAGE_DDLMGC1000_NAME L"_" L"1.0.0.0" L"_" TEST_PACKAGE_DDLM_ARCHITECTURE L"__" TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr const PACKAGE_VERSION GetPackageVersion()
+    {
+        PACKAGE_VERSION version{};
+        version.Major = 1;
+        version.Minor = 0;
+        version.Build = 0;
+        version.Revision = 0;
+        return version;
+    }
+    constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+}
+
+#define TEST_PACKAGE_DDLMGC1010_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.1.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
+namespace Test::Packages::DynamicDependencyLifetimeManagerGC1010
+{
+    constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManagerGC1010";
+    constexpr PCWSTR c_PackageNamePrefix = TEST_PACKAGE_DDLMGC_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = TEST_PACKAGE_DDLMGC1010_NAME L"_" TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = TEST_PACKAGE_DDLMGC1010_NAME L"_" L"1.0.1.0" L"_" TEST_PACKAGE_DDLM_ARCHITECTURE L"__" TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr const PACKAGE_VERSION GetPackageVersion()
+    {
+        PACKAGE_VERSION version{};
+        version.Major = 1;
+        version.Minor = 0;
+        version.Build = 1;
+        version.Revision = 0;
+        return version;
+    }
+    constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+}
+
 namespace Test::Packages::ProjectReunionFramework
 {
     constexpr PCWSTR c_PackageDirName = L"Microsoft.ProjectReunion.Framework";
@@ -84,6 +131,18 @@ namespace Test::Packages
     void AddPackage_DynamicDependencyLifetimeManager();
 
     void RemovePackage_DynamicDependencyLifetimeManager();
+
+    void AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1000();
+
+    void AddPackage_DynamicDependencyLifetimeManagerGC1000();
+
+    void RemovePackage_DynamicDependencyLifetimeManagerGC1000();
+
+    void AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1010();
+
+    void AddPackage_DynamicDependencyLifetimeManagerGC1010();
+
+    void RemovePackage_DynamicDependencyLifetimeManagerGC1010();
 
     void AddPackage_ProjectReunionFramework();
 
