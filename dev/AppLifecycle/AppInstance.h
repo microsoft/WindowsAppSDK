@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static Microsoft::Windows::AppLifecycle::AppInstance FindOrRegisterForKey(hstring const& key);
 
         // IAppInstance.
-        void UnregisterKey(hstring const& key);
+        void UnregisterKey();
         void RedirectActivationTo(Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
         AppActivationArguments GetActivatedEventArgs();
         winrt::event_token Activated(winrt::Windows::Foundation::EventHandler<Microsoft::Windows::AppLifecycle::AppActivationArguments> const& handler);

@@ -66,7 +66,7 @@ namespace Microsoft.Windows.AppLifecycle
         static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
         static AppInstance FindOrRegisterForKey(String key);
 
-        void UnregisterKey(String key);
+        void UnregisterKey();
         void RedirectActivationTo(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
         Microsoft.Windows.AppLifecycle.AppActivationArguments GetActivatedEventArgs();
         event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.AppActivationArguments> Activated;

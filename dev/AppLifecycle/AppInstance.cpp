@@ -187,7 +187,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_instance->FindForKey(key.c_str());
     }
 
-    void AppInstance::UnregisterKey(hstring const&)
+    void AppInstance::UnregisterKey()
     {
         auto releaseOnExit = m_dataMutex.acquire();
         memset(m_data->key, 0, sizeof(m_data->key));
