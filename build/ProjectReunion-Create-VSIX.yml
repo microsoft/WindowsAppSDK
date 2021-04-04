@@ -79,5 +79,5 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ProjectReunion.Extension.VSIX'
     inputs:
-      PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension.vsix'
+      PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.vsix'
       artifactName: 'VSIX'

@@ -25,6 +25,15 @@
     <Content Include="@(Image)" Condition="'$(OutputType)' == 'Exe'" />
   </ItemGroup>
 
+  <!--
+    Setting default project properties for .NET SDK-style projects
+  -->
+  <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
+    <SDKIdentifier Condition="'$(SDKIdentifier)' == ''">Windows</SDKIdentifier>
+    <SDKVersion Condition="'$(SDKVersion)' == ''">10.0</SDKVersion>
+    <DefaultLanguage Condition="'$(DefaultLanguage)' == ''">en-US</DefaultLanguage>
+  </PropertyGroup>
+
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
