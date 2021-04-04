@@ -24,6 +24,14 @@ MddCore::PackageGraphNode::PackageGraphNode(
 
 UINT32 MddCore::PackageGraphNode::CountMatchingPackages(
     const UINT32 flags,
+    const PackageInfoType packageInfoType) const
+{
+    const auto packageInfoFlags{ flags & ~(PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC) };
+    return CountMatchingPackages(packageInfoFlags, ToPackagePathType(packageInfoType));
+}
+
+UINT32 MddCore::PackageGraphNode::CountMatchingPackages(
+    const UINT32 flags,
     const PackagePathType packagePathType) const
 {
     UINT32 bufferLength{};
@@ -34,6 +42,15 @@ UINT32 MddCore::PackageGraphNode::CountMatchingPackages(
         THROW_WIN32(rc);
     }
     return count;
+}
+
+UINT32 MddCore::PackageGraphNode::GetMatchingPackages(
+    const UINT32 flags,
+    const PackageInfoType packageInfoType,
+    wil::unique_cotaskmem_ptr<BYTE[]>& buffer) const
+{
+    const auto packageInfoFlags{ flags & ~(PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC) };
+    return GetMatchingPackages(packageInfoFlags, ToPackagePathType(packageInfoType), buffer);
 }
 
 UINT32 MddCore::PackageGraphNode::GetMatchingPackages(

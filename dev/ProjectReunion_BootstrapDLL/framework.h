@@ -3,11 +3,6 @@
 
 #pragma once
 
-//#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files
-//#include <windows.h>
-//#include <appmodel.h>
-
 #include <unknwn.h>
 #include <appmodel.h>
 
@@ -26,5 +21,8 @@
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
+
+#include <appmodel.identity.h>
+#include <security.integritylevel.h>
 
 #include "wil_msixdynamicdependency.h"

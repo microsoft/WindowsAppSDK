@@ -34,8 +34,10 @@
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
-        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.AppLifecycle" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.ActivationArguments" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.ActivationRegistrationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.AppInstance" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.AppLifecycle" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>
