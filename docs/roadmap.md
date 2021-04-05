@@ -13,15 +13,15 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 
 🌟 |      Reunion 0.5      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported  | ✅ Supported | ✅ Supported | 
-[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported | 
-[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported | 
-[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
-[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
-Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ [Stable channel](release-channels.md#stable-channel)  | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+Windowing | ❌ Not Supported | ❌ Not Supported | ✅ [Stable channel](release-channels.md#stable-channel) |
 Deploy Options: |  
-• In-app | ✅ Supported | ✅ Supported | ✅ Supported | 
-• Fx Package | ✅ Supported | ✅ Supported | ✅ Supported | 
+• In-app | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+• Fx Package | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
 
 ### Unpackaged Desktop Apps
 
@@ -29,15 +29,15 @@ As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX]
 
  🌟 |       Reunion 0.5      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
-[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
-[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
-[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ❌ Not Supported| 🔄 Preview | ✅ Supported | 
-[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
-[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
-Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview) | ❌ Not Supported| 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+[Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+Windowing | ❌ Not Supported | ❌ Not Supported | ✅ [Stable channel](release-channels.md#stable-channel) | 
 Deploy Options:  |  
-• In-app | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
-• Fx Package | ❌ Not Supported | 🔄 Preview | ✅ Supported |
+• In-app | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) | 
+• Fx Package | ❌ Not Supported | 🔄 [Experimental channel](release-channels#experimental-channel) | ✅ [Stable channel](release-channels.md#stable-channel) |
 
 ## 2021 Focus Areas
 
