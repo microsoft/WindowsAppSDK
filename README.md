@@ -23,7 +23,7 @@ Some notes about 0.5...
 * To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(in the future, XAML Islands will enable incrementally adopting WinUI 3)*
 
 ### Please let us know how we can make this repo better. Your voice matters!
-The Windows Developer Platform team strives to continually improve the developer experience on our open-source GitHub repositories. Survey responses will not be associated with any personal information. Data collected will only be used to improve this repository. This survey will take approximately 4-7 minutes to complete. **You can find the Project Reunion Survey [here](https://nam06.safelinks.protection.outlook.com/?url=https%3A%2F%2Fncv.microsoft.com%2FK4ISKdnhER&data=04%7C01%7CDina.Ayman%40microsoft.com%7C492c550a4bcc4bf5f6eb08d8f52587d4%7C72f988bf86f141af91ab2d7cd011db47%7C1%7C0%7C637528888862425770%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&sdata=0xgK44rNFKH4mH5ihphVWbwe%2Fghs5QUAdY5y2aCTTYs%3D&reserved=0)**.
+The Windows Developer Platform team strives to continually improve the developer experience on our open-source GitHub repositories. Survey responses will not be associated with any personal information. Data collected will only be used to improve this repository. This survey will take approximately 4-7 minutes to complete. **You can find the Project Reunion Survey [here](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR8hRacjHEXxFkhwDmnqBYbJUN1k1WTRXNFhCUUs2SkdOS1QzSTNCM0o2Wi4u)**.
 
 Thank you for your time and consideration to do this! Our team truly appreciates you! 👌🤩
 
