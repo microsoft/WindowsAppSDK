@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
-  <!-- ========================================================================== -->
-  <!-- Note: To test whether schema changes are OK, copy changed XSD file to      -->
-  <!-- %ProgramFiles(x86)%\Microsoft Visual Studio 15.0\Xml\Schemas\1033\MSBuild, -->
-  <!-- then open this file in Visual Studio.                                      -->
-  <!-- It should not display any schema warnings in error list window.            -->
-  <!-- ========================================================================== -->
-
   <!-- With .NET 5, the propery TargetPlatformIdentifier is not UAP but rather windows.
        Likewise, for other console apps, TargetPlatformIdentifier is windows.
        This file expects UAP for all .NET versions, so adjust. -->
@@ -102,20 +95,10 @@
     -->
     <ProjectPriIndexName Condition="'$(ProjectPriIndexName)' == ''">$(TargetName)</ProjectPriIndexName>
 
-    <EnableSigningChecks Condition=" '$(EnableSigningChecks)' == '' ">true</EnableSigningChecks>
     <AppxGeneratePrisForPortableLibrariesEnabled Condition="'$(AppxGeneratePrisForPortableLibrariesEnabled)' == ''">true</AppxGeneratePrisForPortableLibrariesEnabled>
-    <BuildOptionalProjects Condition="'$(BuildOptionalProjects)' == ''" >true</BuildOptionalProjects>
-    <PackageOptionalProjectsInIdeBuilds Condition="'$(PackageOptionalProjectsInIdeBuilds)' == ''" >false</PackageOptionalProjectsInIdeBuilds>
     <AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent Condition="'$(AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent)' != 'false'">true</AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent>
     <AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent Condition="'$(AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent)' != 'false'">true</AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent>
-    <AppxRemoveRedundantCopyLocalItems Condition="'$(AppxRemoveRedundantCopyLocalItems)' != 'false'">true</AppxRemoveRedundantCopyLocalItems>
-    <GenerateLibraryLayout Condition="'$(GenerateLibraryLayout)' == '' AND ('$(OutputType)' != 'AppContainerExe' AND '$(OutputType)' != 'Exe' AND '$(OutputType)' != 'WinExe')">true</GenerateLibraryLayout>
     <UseSdkBuildToolsPackage Condition="'$(UseSdkBuildToolsPackage)' == '' AND '$(WindowsSDKBuildToolsVersion)' != ''">true</UseSdkBuildToolsPackage>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AppxWinMdCacheEnabled Condition="'$(AppxWinMdCacheEnabled)' == ''">true</AppxWinMdCacheEnabled>
-    <AppxWinMdCacheDir Condition="'$(AppxWinMdCacheDir)' == ''">$(IntermediateOutputPath).winmd_cache</AppxWinMdCacheDir>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -212,22 +195,7 @@
     <AppxBundlePriConfigXmlForMainPackageFileMapFileName Condition="'$(AppxBundlePriConfigXmlForMainPackageFileMapFileName)' == ''">$(IntermediateOutputPath)filemap.priconfig.xml</AppxBundlePriConfigXmlForMainPackageFileMapFileName>
     <AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName Condition="'$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)' == ''">$(IntermediateUploadOutputPath)filemap.priconfig.xml</AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName>
     <AppxBundleMainPackageFileMapIntermediatePrefix Condition="'$(AppxBundleMainPackageFileMapIntermediatePrefix)' == ''">filemap</AppxBundleMainPackageFileMapIntermediatePrefix>
-    <AppxBundleMainPackageFileMapSuffix Condition="'$(AppxBundleMainPackageFileMapSuffix)' == ''">.map</AppxBundleMainPackageFileMapSuffix>
-    <AppxBundleMainPackageFileMapPrefix Condition="'$(AppxBundleMainPackageFileMapPrefix)' == ''">main</AppxBundleMainPackageFileMapPrefix>
-    <AppxBundleMainPackageFileMapPath Condition="'$(AppxBundleMainPackageFileMapPath)' == ''">$(IntermediateOutputPath)$(AppxBundleMainPackageFileMapPrefix)$(AppxBundleMainPackageFileMapSuffix).txt</AppxBundleMainPackageFileMapPath>
     
-    <AppxLayoutFileName Condition="'$(AppxLayoutFileName)' == ''">App.packagelayout</AppxLayoutFileName>
-    <UseAppxLayout Condition="'$(UseAppxLayout)' == ''">false</UseAppxLayout>
-    <AppxLayoutIsTemplate Condition="'$(AppxLayoutIsTemplate)' == ''">false</AppxLayoutIsTemplate>
-
-    <PlatformAppxLayoutFileName>PackageLayout_{0}.xml</PlatformAppxLayoutFileName>
-    <PlatformAppxLayoutFile Condition="'$(PlatformAppxLayoutFile)' == ''">$(PlatformSpecificBundleArtifactsListDirInProjectDir)$(PlatformAppxLayoutFileName)</PlatformAppxLayoutFile>
-    <PlatformAppxLayoutUploadFile Condition="'$(PlatformAppxLayoutUploadFile)' == ''">$(PlatformSpecificUploadBundleArtifactsListDirInProjectDir)$(PlatformAppxLayoutFileName)</PlatformAppxLayoutUploadFile>
-
-    <FinalAppxLayoutFileName>PackageLayout.xml</FinalAppxLayoutFileName>
-    <FinalAppxLayoutFile Condition="'$(FinalAppxLayoutFile)' == ''">$(PlatformSpecificBundleArtifactsListDirInProjectDir)$(FinalAppxLayoutFileName)</FinalAppxLayoutFile>
-    <FinalAppxLayoutUploadFile Condition="'$(FinalAppxLayoutUploadFile)' == ''">$(PlatformSpecificUploadBundleArtifactsListDirInProjectDir)$(FinalAppxLayoutFileName)</FinalAppxLayoutUploadFile>
-
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == '' and '$(OutDirWasSpecified)' == 'true'">$(OutDir)$(PlatformSpecificBundleArtifactsListDirName)\</PlatformSpecificBundleArtifactsListDir>
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == ''">$(PlatformSpecificBundleArtifactsListDirInProjectDir)</PlatformSpecificBundleArtifactsListDir>
 
@@ -243,12 +211,9 @@
     <AppxDefaultResourceQualifierUAP_DxFeatureLevel Condition="'$(AppxDefaultResourceQualifierUAP_DxFeatureLevel)' == ''">DX9</AppxDefaultResourceQualifierUAP_DxFeatureLevel>
     <AppxDefaultResourceQualifierUAP_Platform Condition="'$(AppxDefaultResourceQualifierUAP_Platform)' == ''">UAP</AppxDefaultResourceQualifierUAP_Platform>
 
-    <DisableAppxManifestItemPackageContentValidation Condition="'$(DisableAppxManifestItemPackageContentValidation)' == ''">false</DisableAppxManifestItemPackageContentValidation>
     <RemoveNonLayoutFiles Condition="'$(RemoveNonLayoutFiles)' == ''">true</RemoveNonLayoutFiles>
     <IncludeLayoutFilesInPackage Condition="'$(IncludeLayoutFilesInPackage)' == ''">false</IncludeLayoutFilesInPackage>
     <AppxSubfolderWithFilesToBeEmbedded Condition="'$(AppxSubfolderWithFilesToBeEmbedded)' == ''">embed</AppxSubfolderWithFilesToBeEmbedded>
-
-    <AppxLogTelemetryFromSideloadingScript Condition="'$(AppxLogTelemetryFromSideloadingScript)' == ''">true</AppxLogTelemetryFromSideloadingScript>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -266,11 +231,6 @@
     <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Portable'">$(AppxDefaultResourceQualifiers_Windows_81)</AppxDefaultResourceQualifiers>
     <AppxDefaultResourceQualifiers Condition="'$(SDKIdentifier)' != ''">$(AppxDefaultResourceQualifiers_UAP)</AppxDefaultResourceQualifiers>
     <AppxDefaultResourceQualifiers Condition="'$(_TargetPlatformIsWindowsPhone)' == 'true'">$(AppxDefaultResourceQualifiers_Windows_Phone)</AppxDefaultResourceQualifiers>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(AppxOmitSchemaFromResourcePacks)' == ''">
-    <AppxOmitSchemaFromResourcePacks Condition="'$(TargetPlatformIdentifierAdjusted)' == 'UAP'">true</AppxOmitSchemaFromResourcePacks>
-    <AppxOmitSchemaFromResourcePacks Condition="'$(TargetPlatformIdentifierAdjusted)' != 'UAP'">false</AppxOmitSchemaFromResourcePacks>
   </PropertyGroup>
 
   <!-- If value is still not set, it is a platform yet unknown to us. -->
@@ -310,10 +270,6 @@
                                   '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)' and
                                   '$(SdkIsRS4OrLater)' == 'true'">true</AppxLayoutEnabled>
     <AppxLayoutEnabled Condition="'$(AppxLayoutEnabled)' != 'true'">false</AppxLayoutEnabled>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AppxPackageEncryptionEnabled Condition="'$(AppxPackageEncryptionEnabled)' == '' or '$(SdkIsRS1OrLater)' != 'true'">false</AppxPackageEncryptionEnabled>
   </PropertyGroup>
 
   <!-- Backwards compatablity with PreDev16 work. Use properties below for a more clear workflow and better named variables. -->
@@ -397,22 +353,6 @@
     <BuildAppxSideloadPackageForUap Condition="'$(BuildAppxSideloadPackageForUap)' == ''">false</BuildAppxSideloadPackageForUap>
   </PropertyGroup>
 
-  <!-- If packaging for the store, force package encryption to be skipped -->
-  <PropertyGroup>
-    <AppxPackageEncryptionEnabled Condition="'$(AppxPackageIsForStore)' == 'true'">false</AppxPackageEncryptionEnabled>
-  </PropertyGroup>
-
-  <!-- Calculate whether to allow debug framework references in app manifest.    -->
-  <!-- Allow overriding this from command line or user config file if necessary. -->
-
-  <PropertyGroup Condition="'$(AppxPackageAllowDebugFrameworkReferencesInManifest)' == ''">
-
-    <!-- Allow debug framework references when not packaging for the store. -->
-    <AppxPackageAllowDebugFrameworkReferencesInManifest Condition="'$(AppxPackageIsForStore)' != 'true'">true</AppxPackageAllowDebugFrameworkReferencesInManifest>
-    <AppxPackageAllowDebugFrameworkReferencesInManifest Condition="'$(AppxPackageAllowDebugFrameworkReferencesInManifest)' == ''">false</AppxPackageAllowDebugFrameworkReferencesInManifest>
-
-  </PropertyGroup>
-
   <!--
         When building on the command line or in TFS (determined by looking at the $(BuildingInsideVisualStudio) property), if build is invoked on an
         app package-producing project, the package for the project will be produced as part of building the project without specifying any additional
@@ -440,76 +380,6 @@
     <UseSubFolderForOutputDirDuringMultiPlatformBuild Condition="'$(UseSubFolderForOutputDirDuringMultiPlatformBuild)' == '' and '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">true</UseSubFolderForOutputDirDuringMultiPlatformBuild>
     <UseSubFolderForOutputDirDuringMultiPlatformBuild Condition="'$(UseSubFolderForOutputDirDuringMultiPlatformBuild)' == ''">false</UseSubFolderForOutputDirDuringMultiPlatformBuild>
   </PropertyGroup>
-
-  <!-- Names of the files which are allways present on the machine and should not be part of the payload. -->
-  <ItemGroup>
-    <AppxSystemBinary Include="CLRHost.dll" />
-    <AppxSystemBinary Include="CLRHost.exe" />
-    <AppxSystemBinary Include="WWAHost.exe" />
-  </ItemGroup>
-
-  <!-- Reserved file names which cannot appear in the package. -->
-  <ItemGroup>
-    <AppxReservedFileName Include="$(AppxManifestFileName)" />
-    <AppxReservedFileName Include="AppxBlockMap.xml" />
-    <AppxReservedFileName Include="[Content_Types].xml" />
-    <AppxReservedFileName Include="AppxSignature.p7x" />
-    <AppxReservedFileName Include="Microsoft.System.Package.Metadata" />
-  </ItemGroup>
-
-  <!-- XPath queries used to extract file names from the manifest. -->
-  <ItemGroup>
-    <AppxManifestFileNameQuery Include="./m:Package/m:Extensions/m:Extension/m:InProcessServer/m:Path" />
-    <AppxManifestFileNameQuery Include="./m:Package/m:Extensions/m:Extension/m:OutOfProcessServer/m:Path" />
-    <AppxManifestFileNameQuery Include="./m:Package/m:Extensions/m:Extension/m:ProxyStub/m:Path" />
-    <AppxManifestFileNameQuery Include="./m:Package/m:Extensions/m:Extension/m:GameExplorer/@GameDefinitionContainer" />
-    <AppxManifestFileNameQuery Include="./m:Package/m:Extensions/m:Extension/m:Certificates/m:Certificate/@Content" />
-    <AppxManifestFileNameQuery Include="./m:Package/m:Applications/m:Application/@Executable" />
-    <AppxManifestFileNameQuery Include="./m:Package/m:Applications/m:Application/m:Extensions/m:Extension/@Executable" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/uap:DefaultTile/@Square71x71Logo">
-      <DescriptionID>Square71x71Logo</DescriptionID>
-      <ExpectedScaleDimensions>400:284x284;200:142x142;100:71x71;150:107x107;125:89x89</ExpectedScaleDimensions>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/@Square150x150Logo">
-      <DescriptionID>Square150x150Logo</DescriptionID>
-      <ExpectedScaleDimensions>400:600x600;200:300x300;100:150x150;150:225x225;125:188x188</ExpectedScaleDimensions>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/uap:DefaultTile/@Wide310x150Logo">
-      <DescriptionID>Wide310x150Logo</DescriptionID>
-      <ExpectedScaleDimensions>400:1240x600;200:620x300;100:310x150;150:465x225;125:388x188</ExpectedScaleDimensions>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/uap:DefaultTile/@Square310x310Logo">
-      <DescriptionID>Square310x310Logo</DescriptionID>
-      <ExpectedScaleDimensions>400:1240x1240;200:620x620;100:310x310;150:465x465;125:388x388</ExpectedScaleDimensions>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/@Square44x44Logo">
-      <DescriptionID>SmallLogo</DescriptionID>
-      <ExpectedScaleDimensions>400:176x176;200:88x88;100:44x44;150:66x66;125:55x55</ExpectedScaleDimensions>
-      <ExpectedTargetSizes>16;24;48;256</ExpectedTargetSizes>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Properties/m:Logo">
-      <DescriptionID>StoreLogo</DescriptionID>
-      <ExpectedScaleDimensions>400:200x200;200:100x100;150:75x75;125:63x63;100:50x50</ExpectedScaleDimensions>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/uap:LockScreen/@BadgeLogo">
-      <DescriptionID>BadgeLogo</DescriptionID>
-      <ExpectedScaleDimensions>400:96x96;200:48x48;150:36x36;125:30x30;100:24x24</ExpectedScaleDimensions>
-      <MaximumFileSize>204800</MaximumFileSize>
-    </AppxManifestImageFileNameQuery>
-    <AppxManifestImageFileNameQuery Include="./m:Package/m:Applications/m:Application/uap:VisualElements/uap:SplashScreen/@Image">
-      <DescriptionID>SplashScreen</DescriptionID>
-      <ExpectedScaleDimensions>400:2480x1200;200:1240x600;150:930x450;125:775x375;100:620x300</ExpectedScaleDimensions>
-    </AppxManifestImageFileNameQuery>
-  </ItemGroup>
 
   <ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='true'">
     <AvailableItemName Include="AppxSourceContentGroupMap" />
@@ -551,55 +421,6 @@
     <WinMdExpToolPath Condition="'$(WinMdExpToolPath)' == '' and EXISTS( '$(AppxMSBuildToolsPath)WinMDExp.exe' ) ">$(AppxMSBuildToolsPath)</WinMdExpToolPath>
     <AlToolPath Condition="'$(AlToolPath)' == '' and EXISTS( '$(AppxMSBuildToolsPath)Al.exe' ) ">$(AppxMSBuildToolsPath)</AlToolPath>
   </PropertyGroup>
-
-  <!-- Manifest metadata items. -->
-
-  <!-- Those will be transformed into Name/Value or Name/Version pairs as follows:                         -->
-  <!--                                                                                                     -->
-  <!-- If identity of the item (attribute 'Include') points to existing file and there is                  -->
-  <!-- no supplied value or version, file version of given file will be extracted and stored               -->
-  <!-- as Version attribute of metadata with name equal to file name and extension.                        -->
-  <!--                                                                                                     -->
-  <!-- If item has metadata 'Value', then it is directly stored in the manifest as name/value pair.        -->
-  <!-- If item has metadata 'Version', then it is directly stored in the manifest as name/version pair.    -->
-  <!--                                                                                                     -->
-  <!-- If metadata 'Name' is supplied, it will be used instead of identity of the item. This is useful     -->
-  <!-- if we use binary to extract file version, but want to give it different name in generated manifest. -->
-
-  <ItemGroup Label="AppxManifestMetadata">
-
-    <AppxManifestMetaData Include="SharedGUID" Condition="'$(SharedGUID)' != ''">
-      <Value>$(SharedGUID)</Value>
-    </AppxManifestMetaData>
-
-    <AppxManifestMetaData Include="CodeSharingProject" Condition=" '$(HasSharedItems)' == 'true' or '$(CodeSharingProject)' != '' ">
-      <Value Condition=" '$(CodeSharingProject)' != '' ">$(CodeSharingProject)</Value>
-      <Value Condition=" '$(CodeSharingProject)' == '' ">248F659F-DAC5-46E8-AC09-60EC9FC95053</Value>
-    </AppxManifestMetaData>
-
-    <AppxManifestMetadata Include="TargetFrameworkMoniker" Condition="'$(TargetFrameworkMoniker)' != ''">
-      <Value>$(TargetFrameworkMoniker)</Value>
-    </AppxManifestMetadata>
-
-    <AppxManifestMetadata Include="VisualStudio">
-      <Version>$(VisualStudioVersion)</Version>
-    </AppxManifestMetadata>
-
-    <AppxManifestMetadata Include="VisualStudioEdition" Condition="'$(VisualStudioEdition)' != ''">
-      <Value>$(VisualStudioEdition)</Value>
-    </AppxManifestMetadata>
-
-    <AppxManifestMetadata Include="$(ComSpec)">
-      <Name>OperatingSystem</Name>
-    </AppxManifestMetadata>
-
-    <AppxManifestMetadata Include="$(AppxMSBuildToolsPath)Microsoft.Build.AppxPackage.dll" />
-
-    <AppxManifestMetaData Include="ProjectGUID" Condition="'$(ProjectGUID)' != ''">
-      <Value>$(ProjectGUID)</Value>
-    </AppxManifestMetaData>
-
-  </ItemGroup>
 
   <Import Project="$(MSBuildProjectDirectory)\Microsoft.AppxPackage.Metadata.Overrides.props" Condition="EXISTS( '$(MSBuildProjectDirectory)\Microsoft.AppxPackage.Metadata.Overrides.props' )"/>
 
@@ -701,15 +522,9 @@
   <PropertyGroup>
     <PrepareForRunDependsOn>
       $(PrepareForRunDependsOn);
-      <!--_ValidateConfiguration;
-      _ValidatePaths;-->
       _GetSdkToolPaths;
-      <!--_GetPriConfigXmlSnippets;
-      -->
       GetMrtPackagingOutputs;
       _GetDefaultResourceLanguage;
-      <!--_GetPackageProperties;
-      -->
       _GenerateProjectPriFile;
     </PrepareForRunDependsOn>
   </PropertyGroup>
@@ -1422,11 +1237,6 @@
 
   </Target>
 
-  <!-- =============================== -->
-  <!-- Generating Appx package.        -->
-  <!-- Happens when invoked explictly. -->
-  <!-- =============================== -->
-
   <Target Name="_CalculateXbfSupport">
     <PropertyGroup>
       <_SupportXbfAsEmbedFileResources Condition="'$(_SupportEmbedFileResources)' == 'true' and '$(DisableEmbeddedXbf)' == 'false'">true</_SupportXbfAsEmbedFileResources>
@@ -1434,44 +1244,6 @@
       <_SupportXbfAsEmbedFileResources Condition="'$(_SupportXbfAsEmbedFileResources)' == '' AND '$(_SupportEmbedFileResources)' == 'true'">true</_SupportXbfAsEmbedFileResources>
     </PropertyGroup>
   </Target>
-
-  <!-- ================================================== -->
-  <!-- Create platform-specific artifacts for app bundle. -->
-  <!-- ================================================== -->
-
-  <PropertyGroup>
-    <_CreateAppxBundlePlatformSpecificArtifactsDependsOn>
-      $(Before_CreateAppxBundlePlatformSpecificArtifacts)
-
-      _GetPackageProperties;
-
-      _GetDefaultResourceLanguage;
-
-      _CreatePriConfigXmlForSplitting;
-      _CreatePriConfigXmlForSplitting_AddFileWrites;
-
-      _CreateUploadPriConfigXmlForSplitting;
-      _CreateUploadPriConfigXmlForSplitting_AddFileWrites;
-
-      _SplitResourcesPri_CalculateInputsAndOutputs;
-      _SplitResourcesPri;
-      _SplitResourcesPri_AddFileWrites;
-
-      _SplitUploadResourcesPri_CalculateInputsAndOutputs;
-      _SplitUploadResourcesPri;
-      _SplitUploadResourcesPri_AddFileWrites;
-
-      _ExpandMainPriFile;
-
-      _CreatePriConfigXmlForMainPackageFileMap;
-      _CreatePriConfigXmlForMainPackageFileMap_AddFileWrites;
-
-      _CreateUploadPriConfigXmlForMainPackageFileMap;
-      _CreateUploadPriConfigXmlForMainPackageFileMap_AddFileWrites;
-
-      $(After_CreateAppxBundlePlatformSpecificArtifacts)
-    </_CreateAppxBundlePlatformSpecificArtifactsDependsOn>
-  </PropertyGroup>
 
   <!-- Create upload pri config -->
   <Target Name="_CreateUploadPriConfigXmlForSplitting"
