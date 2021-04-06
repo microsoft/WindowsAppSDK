@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-#include <Microsoft.ApplicationModel.Activation.ActivationRegistrationManager.g.h>
+#include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.h>
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     // Registration constant values.
     static LPCWSTR c_argumentPrefix{ L"----" };
@@ -40,7 +40,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     };
 }
 
-namespace winrt::Microsoft::ApplicationModel::Activation::factory_implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::factory_implementation
 {
     struct ActivationRegistrationManager : ActivationRegistrationManagerT<ActivationRegistrationManager,
         implementation::ActivationRegistrationManager>

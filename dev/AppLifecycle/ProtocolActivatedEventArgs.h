@@ -5,7 +5,7 @@
 #include <winrt/Windows.Foundation.h>
 #include "ActivatedEventArgsBase.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;

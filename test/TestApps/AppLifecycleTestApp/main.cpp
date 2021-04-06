@@ -8,7 +8,7 @@
 
 #include <wil/win32_helpers.h>
 
-using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
@@ -69,11 +69,11 @@ int main()
     RETURN_IF_FAILED(BootstrapInitialize());
 
     auto succeeded = false;
-    auto args = AppLifecycle::GetActivatedEventArgs();
+    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
-    if (kind == ActivationKind::Launch)
+    if (kind == ExtendedActivationKind::Launch)
     {
-        auto launchArgs = args.as<ILaunchActivatedEventArgs>();
+        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
         auto commandLine = std::wstring(launchArgs.Arguments().c_str());
         auto argStart = commandLine.rfind(L"/") + 1;
         if (argStart != std::wstring::npos)
@@ -147,9 +147,9 @@ int main()
             }
         }
     }
-    else if (kind == ActivationKind::Protocol)
+    else if (kind == ExtendedActivationKind::Protocol)
     {
-        auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
+        auto protocolArgs = args.Data().as<IProtocolActivatedEventArgs>();
 
         std::wstring expectedUri;
         if (IsPackagedProcess())
@@ -169,10 +169,10 @@ int main()
             succeeded = true;
         }
     }
-    else if (kind == ActivationKind::File)
+    else if (kind == ExtendedActivationKind::File)
     {
         // Validate access to the files on the arguments.
-        auto fileArgs = args.as<IFileActivatedEventArgs>();
+        auto fileArgs = args.Data().as<IFileActivatedEventArgs>();
         for (auto const& item : fileArgs.Files())
         {
             auto file = item.as<StorageFile>();
@@ -188,9 +188,9 @@ int main()
         SignalPhase(c_testFilePhaseEventName);
         succeeded = true;
     }
-    else if (kind == ActivationKind::StartupTask)
+    else if (kind == ExtendedActivationKind::StartupTask)
     {
-        auto startupArgs = args.as<IStartupTaskActivatedEventArgs>();
+        auto startupArgs = args.Data().as<IStartupTaskActivatedEventArgs>();
         if (startupArgs.TaskId() == L"this_is_a_test")
         {
             // Signal event that startuptask was activated.

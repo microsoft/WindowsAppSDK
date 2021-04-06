@@ -7,7 +7,7 @@
 #include "FileActivatedEventArgs.h"
 #include "StartupActivatedEventArgs.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     // Extension contract ids.
     static LPCWSTR c_launchContractId = L"Windows.Launch";
@@ -18,15 +18,16 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
     // This array holds the mapping between a class factory and it's extension contract Id.
     static const struct ExtensionMap
     {
+        ExtendedActivationKind kind;
         std::wstring contractId;
-        Windows::ApplicationModel::Activation::IActivatedEventArgs(*factory)(
-            Windows::ApplicationModel::Activation::IProtocolActivatedEventArgs const& args);
+        winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs(*factory)(
+            winrt::Windows::ApplicationModel::Activation::IProtocolActivatedEventArgs const& args);
     }
     c_extensionMap[] =
     {
-        { c_launchContractId, &LaunchActivatedEventArgs::CreateFromProtocol },
-        { c_fileContractId, &FileActivatedEventArgs::CreateFromProtocol },
-        { c_protocolContractId, &ProtocolActivatedEventArgs::CreateFromProtocol },
-        { c_startupTaskContractId, &StartupActivatedEventArgs::CreateFromProtocol },
+        { ExtendedActivationKind::Launch, c_launchContractId, &LaunchActivatedEventArgs::CreateFromProtocol },
+        { ExtendedActivationKind::File, c_fileContractId, &FileActivatedEventArgs::CreateFromProtocol },
+        { ExtendedActivationKind::Protocol, c_protocolContractId, &ProtocolActivatedEventArgs::CreateFromProtocol },
+        { ExtendedActivationKind::StartupTask, c_startupTaskContractId, &StartupActivatedEventArgs::CreateFromProtocol },
     };
 }
