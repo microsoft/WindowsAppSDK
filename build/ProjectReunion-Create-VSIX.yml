@@ -21,12 +21,6 @@ jobs:
   pool:
     vmImage: 'windows-2019'
 
-  variables:
-    ${{if eq(parameters.releaseBuild, True) }}:
-      VSIXBuildArgs: '/p:"RestoreSources=https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.Internal.ReleaseSigned/nuget/v3/index.json"'
-    ${{if eq(parameters.releaseBuild, False) }}:
-      VSIXBuildArgs: ''
-      
   steps:
   - task: NuGetAuthenticate@0
     inputs:
@@ -38,7 +32,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+      msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" '
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
@@ -46,7 +40,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" ${{ variables.VSIXBuildArgs }}'
+      msBuildArgs: '/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" '
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'
@@ -85,5 +79,5 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish ProjectReunion.Extension.VSIX'
     inputs:
-      PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension.vsix'
+      PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.vsix'
       artifactName: 'VSIX'

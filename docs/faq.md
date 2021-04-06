@@ -157,8 +157,7 @@ Package content in their own directory. They share common binaries managed by t
 To help alleviate any DLL hell concerns, Framework Packages will not do breaking changes like the 
 old “DLL hell” problem – we’ll be using versioning mechanisms to prevent that. 
 
-## How will Project Reunion impact an application's performance given that the pieces are 
-## further and further away from the OS?
+## How will Project Reunion impact an application's performance given that the pieces are further and further away from the OS?
 
 There's likely going to be a performance impact but it depends on the component.
 In some situations, like with MRT Core, there will be improved performance because we will  
