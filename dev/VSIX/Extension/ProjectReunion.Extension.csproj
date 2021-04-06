@@ -219,9 +219,17 @@
     <VSIXVersion>$(OptionalVSIXVersion)</VSIXVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
-    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
+    <!-- Use 3-part reunion version, less any tagging suffix -->
     <VSIXVersion>$(ReunionVersion)</VSIXVersion>
-    <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-")))).$(TimeSpan)</VSIXVersion>
+    <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-"))))</VSIXVersion>
+    <!-- 
+      Add a timestamp as part 4 of the version for uniqueness, and to ensure newer builds are newer 
+      versions. Note that the timestamp is also included in release builds. This avoids version 
+      sequencing issues between public previews and release versions that might otherwise have the same
+      version number, since VSIX does not support preview tags or other mechanisms to distinguish.
+    -->
+    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
+    <VSIXVersion>$(VSIXVersion).$(TimeSpan)</VSIXVersion>
   </PropertyGroup>
   <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />
   <Target Name="BeforeBuild">
