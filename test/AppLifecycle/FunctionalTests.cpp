@@ -30,9 +30,9 @@ namespace ProjectReunionCppTest
 
         const std::wstring c_testDataFileName = L"testfile" + c_testFileExtension;
         const std::wstring c_testDataFileName_Packaged = L"testfile" + c_testFileExtension_Packaged;
-        const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"AppLifecycleTestPackage.cer";
-        const std::wstring c_testPackageFullName = L"AppLifecycleTestPackage_1.0.0.0_x64__ph1m9x8skttmg";
+        const std::wstring c_testPackageFile = g_deploymentDir + L"MSIXPackager_1.1.30.0_x64_Debug.msix";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"MSIXPackager_1.1.30.0_x64_Debug.cer";
+        const std::wstring c_testPackageFullName = L"PushNotificationsWin32App_1.1.30.0_x64__9eg3vg7cmy3rj";
 
     public:
         BEGIN_TEST_CLASS(AppLifecycleFunctionalTests)
@@ -43,12 +43,8 @@ namespace ProjectReunionCppTest
         TEST_CLASS_SETUP(ClassInit)
         {
             // Deploy packaged app to register handler through the manifest.
-            //RunCertUtil(c_testPackageCertFile);
-            //InstallPackage(c_testPackageFile);
-
-            // Write out some test content.
-            WriteContentFile(c_testDataFileName);
-            WriteContentFile(c_testDataFileName_Packaged);
+            RunCertUtil(c_testPackageCertFile);
+            InstallPackage(c_testPackageFile);
 
             return true;
         }
@@ -58,10 +54,8 @@ namespace ProjectReunionCppTest
             // Swallow errors in cleanup.
             try
             {
-                DeleteContentFile(c_testDataFileName_Packaged);
-                DeleteContentFile(c_testDataFileName);
-                //UninstallPackage(c_testPackageFullName);
-                //RunCertUtil(c_testPackageCertFile, true);
+                UninstallPackage(c_testPackageFullName);
+                RunCertUtil(c_testPackageCertFile, true);
             }
             catch (const std::exception&)
             {
@@ -79,128 +73,43 @@ namespace ProjectReunionCppTest
             return true;
         }
 
-        // Validate that UWP is not a supported scenario.
-        TEST_METHOD(GetActivatedEventArgsIsNull)
+        TEST_METHOD(ChannelRequestTest)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-            END_TEST_METHOD_PROPERTIES();
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
 
-            VERIFY_IS_NULL(AppLifecycle::GetActivatedEventArgs());
-        }
-
-        TEST_METHOD(GetActivatedEventArgsIsNotNull)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-                //// Run this test for both PackagedWin32 and Win32.
-                //TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
-
-                //// UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                //TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
-            END_TEST_METHOD_PROPERTIES();
-
-            VERIFY_IS_NOT_NULL(AppLifecycle::GetActivatedEventArgs());
-        }
-
-        TEST_METHOD(GetActivatedEventArgsForLaunch)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"InteractiveUser")
-                //// Run this test for both PackagedWin32 and Win32.
-                //TEST_METHOD_PROPERTY(L"RunAs", L"{UAP,InteractiveUser}")
-
-                //// UAP:Host/UAP:AppXManifest are ignored when RunAs != UAP.
-                //TEST_METHOD_PROPERTY(L"UAP:Host", L"PackagedCwa")
-                //TEST_METHOD_PROPERTY(L"UAP:AppXManifest", L"PackagedCwaFullTrust")
-            END_TEST_METHOD_PROPERTIES();
-
-            auto args = AppLifecycle::GetActivatedEventArgs();
-            VERIFY_IS_NOT_NULL(args);
-            VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
-
-            auto launchArgs = args.as<LaunchActivatedEventArgs>();
-            VERIFY_IS_NOT_NULL(launchArgs);
-        }
-
-        TEST_METHOD(GetActivatedEventArgsForProtocol_Win32)
-        {
-            // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testProtocolPhaseEventName);
-
-            // Launch the test app to register for protocol launches.
-            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
-
-            // Wait for the register event.
-            WaitForEvent(event, m_failed);
-
-            // Launch a protocol and wait for the event to fire.
-            Uri launchUri{ c_testProtocolScheme + L"://this_is_a_test" };
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://channelRequest" };
             auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
-            // Wait for the protocol activation.
-            WaitForEvent(event, m_failed);
-
-            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
-
-            // Wait for the unregister event.
             WaitForEvent(event, m_failed);
         }
 
-        //TEST_METHOD(GetActivatedEventArgsForProtocol_PackagedWin32)
-        //{
-        //    // Create a named event for communicating with test app.
-        //    auto event = CreateTestEvent(c_testProtocolPhaseEventName);
-
-        //    RunCertUtil(L"AppLifecycleTestPackage.cer");
-
-        //    // Deploy packaged app to register handler through the manifest.
-        //    std::wstring packagePath{ g_deploymentDir + L"\\AppLifecycleTestPackage.msixbundle" };
-        //    InstallPackage(packagePath);
-
-        //    // Launch a protocol and wait for the event to fire.
-        //    Uri launchUri{ c_testProtocolScheme_Packaged + L"://this_is_a_test" };
-        //    auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-        //    VERIFY_IS_TRUE(launchResult);
-
-        //    // Wait for the protocol activation.
-        //    WaitForEvent(event, m_failed);
-        //}
-
-        TEST_METHOD(GetActivatedEventArgsForFile_Win32)
+        TEST_METHOD(ForegroundActivationTest)
         {
-            // Create a named event for communicating with test app.
-            auto event = CreateTestEvent(c_testFilePhaseEventName);
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
 
-            // Launch the test app to register for protocol launches.
-            Execute(L"AppLifecycleTestApp.exe", L"/RegisterFile", g_deploymentDir);
-
-            // Wait for the register event.
-            WaitForEvent(event, m_failed);
-
-            // Launch the file and wait for the event to fire.
-            auto file = OpenDocFile(c_testDataFileName);
-            auto launchResult = Launcher::LaunchFileAsync(file).get();
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://foregroundTest" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
-            // Wait for the protocol activation.
             WaitForEvent(event, m_failed);
         }
 
-        //TEST_METHOD(GetActivatedEventArgsForFile_PackagedWin32)
-        //{
-        //    // Create a named event for communicating with test app.
-        //    auto event = CreateTestEvent(c_testFilePhaseEventName);
+        TEST_METHOD(BackgroundActivationTest)
+        {
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
 
-        //    // Launch the file and wait for the event to fire.
-        //    auto file = OpenDocFile(c_testDataFileName_Packaged);
-        //    auto launchResult = Launcher::LaunchFileAsync(file).get();
-        //    VERIFY_IS_TRUE(launchResult);
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://backgroundTest" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
 
-        //    // Wait for the protocol activation.
-        //    WaitForEvent(event, m_failed);
-        //}
+            WaitForEvent(event, m_failed);
+        }
     };
 }

@@ -36,7 +36,7 @@ int main()
 
         // Construct the JSON to post.
         HttpStringContent jsonContent(
-            BuildNotificationPayload(L"https://dm3p.notify.windows.com/?token=AwYAAACUxomEaiFxmj9Kl0Gbd9Yzs0uADxBcEEIJM3p1gaqGcl3BC2tmjzxqVuei1IyJc5dAMJuUwwj8fORL90CKBb0SaH9prEJlJlA654cbsDo2skUinm3uwWBP9ou8RxXQfakR4g2fxBREnj7oQoXDvhIZ"),
+            BuildNotificationPayload(L"https://dm3p.notify.windows.com/?token=AwYAAAC2%2bcbmsAWE5U3NNU%2b0USmGxdffpX8UYw9pBzAp3XEY%2bhLsijzZK8VcYPAr%2f78m8OB%2btDQEqZ50h%2bfuyYCHRnaX%2fs%2bvmrlfQyHAKMeHL66MRTvL8x0oo4WFlkVz%2bzMJKW9EA7UNfeccHuSP2GDQXcOT"),
             UnicodeEncoding::Utf8,
             L"application/json");
 

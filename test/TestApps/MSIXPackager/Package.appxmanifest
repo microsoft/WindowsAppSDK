@@ -10,7 +10,7 @@
   <Identity
     Name="PushNotificationsWin32App"
     Publisher="CN=WNP_Reunion"
-    Version="1.1.28.0" />
+    Version="1.1.30.0" />
 
   <Properties>
     <DisplayName>PushNotificationsWin32App</DisplayName>
@@ -49,6 +49,11 @@
 					</com:ExeServer>
 				</com:ComServer>
 			</com:Extension>
+			<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
+				<uap:Protocol Name="reuniontestprotocol-packaged">
+					<uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
+				</uap:Protocol>
+			</uap:Extension>
 		</Extensions>
 		
     </Application>

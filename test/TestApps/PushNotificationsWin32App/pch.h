@@ -15,3 +15,6 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.ProjectReunion.h>
+
+static enum UnitTest { ChannelRequest, ForegroundTest, BackgroundTest };
+static std::map<std::string, UnitTest> switchMapping;

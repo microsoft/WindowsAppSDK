@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
+#include <testdef.h>
 #include <iostream>
 #include <sstream>
+#include <regex>
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Storage.Streams.h>
@@ -13,21 +15,36 @@ using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace Windows::Web::Http;
 
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
 
-int main()
+void signalPhase(const std::wstring& phaseEventName)
 {
-    /*std::cout << "========================================" << std::endl;
-    std::cout << "WINDOWS NOTIFICATIONS - REUNION TEST APP" << std::endl;
-    std::cout << "========================================" << std::endl;
-    std::cout << "                                        " << std::endl;
+    wil::unique_event phaseEvent;
+    if (phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
+    {
+        phaseEvent.SetEvent();
+    }
+}
 
-    std::cout << "Press a key and Enter to start the test app" << std::endl;
-    std::getchar();*/
+void initUnitTestMapping()
+{
+    switchMapping["channelRequest"] = ChannelRequest;
+    switchMapping["foregroundTest"] = ForegroundTest;
+    switchMapping["backgroundTest"] = BackgroundTest;
+}
 
-    // Register the COM Activator GUID
+void startChannelRequestTest()
+{
+    std::cout << "Channel Request Test Start!" << std::endl;
+}
+
+void startForegroundActivationTest()
+{
+    std::cout << "Foreground Activation Test Start!" << std::endl;
+
     PushNotificationActivationInfo info(
         PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
         winrt::guid("c54044c4-eac7-4c4b-9996-c570a94b9306")); // same clsid as app manifest
@@ -35,9 +52,6 @@ int main()
     // Registers a Push Trigger and sets up an inproc COM Server for Activations
     auto token = PushNotificationManager::RegisterActivator(info);
 
-    // Note: This API is currently not present in Reunion but will be included as part of the AppLifecycle Public API spec.
-
-    //auto activation = AppLifecycle::Activation();
     auto activation = AppLifecycle::GetActivatedEventArgs2(); // mock name for now
     auto kind = activation.Kind();
 
@@ -58,88 +72,58 @@ int main()
         // Call Complete on the deferral as good practise: Needed mainly for low power usage
         deferral.Complete();
     }
-    else if (kind == ExtendedActivationKind::Launch) // This indicates that the app is launching in the foreground
+}
+
+void startBackgroundActivationTest()
+{
+    std::cout << "Background Activation Test Start!" << std::endl;
+}
+
+void runUnitTest(std::string unitTest)
+{
+
+    switch (switchMapping[unitTest])
     {
-        // Register the AAD RemoteIdentifier for the App to receive Push
-        auto channelOperation = PushNotificationManager::CreateChannelAsync(
-            winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
+        case ChannelRequest:
+            startChannelRequestTest();
+            break;
+        case ForegroundTest:
+            startForegroundActivationTest();
+            break;
+        case BackgroundTest:
+            startBackgroundActivationTest();
+            break;
+    }
+}
 
-        // Setup the inprogress event handler
-        channelOperation.Progress(
-            [](
-                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-                PushNotificationCreateChannelStatus const& args)
-            {
-                if (args.status == PushNotificationChannelStatus::InProgress)
-                {
-                    // This is basically a noop since it isn't really an error state
-                    printf("The first channel request is still in progress! \n");
-                }
-                else if (args.status == PushNotificationChannelStatus::InProgressRetry)
-                {
-                    LOG_HR_MSG(
-                        args.extendedError,
-                        "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it. RetryCount = %d",
-                        args.retryCount);
-                }
-            });
+int main()
+{
+    initUnitTestMapping();
+    bool succeeded = true;
+    auto args = AppLifecycle::GetActivatedEventArgs(); // mock name for now
+    auto kind = args.Kind();
 
-        winrt::event_token pushToken;
+    auto activation = AppLifecycle::GetActivatedEventArgs2(); // mock name for now
+    auto kind2 = activation.Kind();
+    if (kind == ActivationKind::Protocol)
+    {
+        auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
+        Uri actualUri = protocolArgs.Uri();
+        std::string unitTest = winrt::to_string(actualUri.Host());
 
-        // Setup the completed event handler
-        channelOperation.Completed(
-            [&](
-                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-                AsyncStatus const asyncStatus)
-            {
-                auto result = sender.GetResults();
-                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-                {
-                    auto channelUri = result.Channel().Uri();
+        // Switch on this variable to run specific components (uri://ComponentToTest)
+        runUnitTest(unitTest);
 
-                    std::cout << "channelUri: " << winrt::to_string(channelUri) << std::endl;
-
-                    auto channelExpiry = result.Channel().ExpirationTime();
-
-                    // Register Push Event for Foreground
-                    pushToken = result.Channel().PushReceived([&](const auto&, PushNotificationReceivedEventArgs args)
-                    {
-                        auto payload = args.Payload();
-
-                        // Do stuff to process the raw payload
-                        std::string payloadString(payload.begin(), payload.end());
-
-                        std::cout << "Payload (foreground case): " + payloadString << std::endl;
-
-                        args.Handled(true);
-                    });
-                }
-                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
-                {
-                    LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
-                }
-            });
-
-        while (true)
-        {
-            Sleep(500);
-        }
-
-        // Unregister the Push event for Foreground before exiting
-        // Weird RPC error here
-        //auto result = channelOperation.GetResults();
-        //if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        //{
-        //    result.Channel().PushReceived(pushToken);
-        //}
+        // Signal TAEF that protocol was activated and valid.
+        signalPhase(c_testProtocolScheme_Packaged);
+        succeeded = true;
     }
 
-    // Unregisters the inproc COM Activator before exiting
-    // PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
-
-    std::cout << "Press a key and Enter to close the test app" << std::endl;
-    char fakeInput;
-    std::cin >> fakeInput;
- 
+    if (!succeeded)
+    {
+        // Signal TAEF that the test failed
+        signalPhase(c_testFailureEventName);
+    }
+    std::getchar();
     return 0;
 };
