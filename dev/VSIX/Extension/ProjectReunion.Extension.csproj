@@ -76,13 +76,13 @@
     <PackageReference Include="Microsoft.ProjectReunion" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="[$(ReunionFoundationVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.DWrite" Version="[$(ReunionDWriteVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.ProjectReunion.DWrite" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionWinUIVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
