@@ -182,19 +182,7 @@
     <AppxLayoutDir Condition="'$(AppxLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxLayoutFolderName)\</AppxLayoutDir>
     <AppxUploadLayoutFolderName Condition="'$(AppxUploadLayoutFolderName)' == ''">PackageUploadLayout</AppxUploadLayoutFolderName>
     <AppxUploadLayoutDir Condition="'$(AppxUploadLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxUploadLayoutFolderName)</AppxUploadLayoutDir>
-    <AppxBundleSplitResourcesPriPrefix Condition="'$(AppxBundleSplitResourcesPriPrefix)' == ''">split</AppxBundleSplitResourcesPriPrefix>
-    <AppxBundlePriConfigXmlForSplittingFileName Condition="'$(AppxBundlePriConfigXmlForSplittingFileName)' == ''">$(IntermediateOutputPath)$(AppxBundleSplitResourcesPriPrefix).priconfig.xml</AppxBundlePriConfigXmlForSplittingFileName>
-    <AppxUploadBundlePriConfigXmlForSplittingFileName Condition="'$(AppxUploadBundlePriConfigXmlForSplittingFileName)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleSplitResourcesPriPrefix).priconfig.xml</AppxUploadBundlePriConfigXmlForSplittingFileName>
     <AppxBundleAutoResourcePackageQualifiers Condition="'$(AppxBundleAutoResourcePackageQualifiers)' == ''">Language|Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
-    <AppxBundleSplitResourcesPriPath Condition="'$(AppxBundleSplitResourcesPriPath)' == ''">$(IntermediateOutputPath)$(AppxBundleSplitResourcesPriPrefix).pri</AppxBundleSplitResourcesPriPath>
-    <AppxBundleSplitResourcesGeneratedFilesListPath Condition="'$(AppxBundleSplitResourcesGeneratedFilesListPath)' == ''">$(IntermediateOutputPath)$(AppxBundleSplitResourcesPriPrefix).generatedFiles.txt</AppxBundleSplitResourcesGeneratedFilesListPath>
-    <AppxBundleSplitResourcesQualifiersPath Condition="'$(AppxBundleSplitResourcesQualifiersPath)' == ''">$(IntermediateOutputPath)$(AppxBundleSplitResourcesPriPrefix).qualifiers.txt</AppxBundleSplitResourcesQualifiersPath>
-    <AppxUploadBundleSplitResourcesPriPath Condition="'$(AppxUploadBundleSplitResourcesPriPath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleSplitResourcesPriPrefix).pri</AppxUploadBundleSplitResourcesPriPath>
-    <AppxUploadBundleSplitResourcesGeneratedFilesListPath Condition="'$(AppxUploadBundleSplitResourcesGeneratedFilesListPath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleSplitResourcesPriPrefix).generatedFiles.txt</AppxUploadBundleSplitResourcesGeneratedFilesListPath>
-    <AppxUploadBundleSplitResourcesQualifiersPath Condition="'$(AppxUploadBundleSplitResourcesQualifiersPath)' == ''">$(IntermediateUploadOutputPath)$(AppxBundleSplitResourcesPriPrefix).qualifiers.txt</AppxUploadBundleSplitResourcesQualifiersPath>
-    <AppxBundlePriConfigXmlForMainPackageFileMapFileName Condition="'$(AppxBundlePriConfigXmlForMainPackageFileMapFileName)' == ''">$(IntermediateOutputPath)filemap.priconfig.xml</AppxBundlePriConfigXmlForMainPackageFileMapFileName>
-    <AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName Condition="'$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)' == ''">$(IntermediateUploadOutputPath)filemap.priconfig.xml</AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName>
-    <AppxBundleMainPackageFileMapIntermediatePrefix Condition="'$(AppxBundleMainPackageFileMapIntermediatePrefix)' == ''">filemap</AppxBundleMainPackageFileMapIntermediatePrefix>
     
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == '' and '$(OutDirWasSpecified)' == 'true'">$(OutDir)$(PlatformSpecificBundleArtifactsListDirName)\</PlatformSpecificBundleArtifactsListDir>
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == ''">$(PlatformSpecificBundleArtifactsListDirInProjectDir)</PlatformSpecificBundleArtifactsListDir>
@@ -238,18 +226,6 @@
   <PropertyGroup Condition="'$(AppxDefaultResourceQualifiers)' == ''">
     <AppxDefaultResourceQualifiers>$(AppxDefaultResourceQualifiers_UAP)</AppxDefaultResourceQualifiers>
   </PropertyGroup>
-
-  <ItemGroup>
-    <AppxHashUri Include="http://www.w3.org/2001/04/xmlenc#sha256">
-      <Id>SHA256</Id>
-    </AppxHashUri>
-    <AppxHashUri Include="http://www.w3.org/2001/04/xmlenc#sha384">
-      <Id>SHA384</Id>
-    </AppxHashUri>
-    <AppxHashUri Include="http://www.w3.org/2001/04/xmlenc#sha512">
-      <Id>SHA512</Id>
-    </AppxHashUri>
-  </ItemGroup>
 
   <PropertyGroup>
     <SdkIsRS1OrLater>false</SdkIsRS1OrLater>
@@ -423,53 +399,6 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildProjectDirectory)\Microsoft.AppxPackage.Metadata.Overrides.props" Condition="EXISTS( '$(MSBuildProjectDirectory)\Microsoft.AppxPackage.Metadata.Overrides.props' )"/>
-
-  <!-- Mapping between OS version (6.*) and marketing version string. -->
-  <!-- There is no guarantee that NTVersion always consists of first two parts of OSVersion, hence a separate field. -->
-  <ItemGroup>
-    <PlatformVersionDescription Include="Windows 8.0">
-      <TargetPlatformIdentifierAdjusted>Windows</TargetPlatformIdentifierAdjusted>
-      <TargetPlatformVersion>8.0</TargetPlatformVersion>
-      <OSDescription>Windows 8.0</OSDescription>
-      <OSVersion>6.2.1</OSVersion>
-      <NTVersion>6.2</NTVersion>
-    </PlatformVersionDescription>
-    <PlatformVersionDescription Include="Windows 8.1">
-      <TargetPlatformIdentifierAdjusted>Windows</TargetPlatformIdentifierAdjusted>
-      <TargetPlatformVersion>8.1</TargetPlatformVersion>
-      <OSDescription>Windows 8.1</OSDescription>
-      <OSVersion>6.3.0</OSVersion>
-      <NTVersion>6.3</NTVersion>
-    </PlatformVersionDescription>
-    <PlatformVersionDescription Include="Windows Phone 8.1">
-      <TargetPlatformIdentifierAdjusted>WindowsPhoneApp</TargetPlatformIdentifierAdjusted>
-      <TargetPlatformVersion>8.1</TargetPlatformVersion>
-      <OSDescription>Windows Phone 8.1</OSDescription>
-      <OSVersion>6.3.1</OSVersion>
-      <NTVersion>6.3</NTVersion>
-    </PlatformVersionDescription>
-    <PlatformVersionDescription Include="Windows Phone Silverlight 8.1">
-      <TargetPlatformIdentifierAdjusted>Windows Phone</TargetPlatformIdentifierAdjusted>
-      <TargetPlatformVersion>8.1</TargetPlatformVersion>
-      <OSDescription>Windows Phone 8.1</OSDescription>
-      <OSVersion>6.3.1</OSVersion>
-      <NTVersion>6.3</NTVersion>
-    </PlatformVersionDescription>
-    <PlatformVersionDescription Include="Windows 8.2">
-      <TargetPlatformIdentifierAdjusted>Windows</TargetPlatformIdentifierAdjusted>
-      <TargetPlatformVersion>8.2</TargetPlatformVersion>
-      <OSDescription>Windows 8.2</OSDescription>
-      <OSVersion>6.3.0</OSVersion>
-      <NTVersion>6.3</NTVersion>
-    </PlatformVersionDescription>
-    <PlatformVersionDescription Include="UAP 1.0">
-      <TargetPlatformIdentifierAdjusted>UAP</TargetPlatformIdentifierAdjusted>
-      <TargetPlatformVersion>0.8.0.0</TargetPlatformVersion>
-      <OSDescription>Windows 10.0</OSDescription>
-      <OSVersion>10.0.0</OSVersion>
-      <NTVersion>10.0</NTVersion>
-    </PlatformVersionDescription>
-  </ItemGroup>
 
   <!-- Packaging output group default values -->
   <PropertyGroup>
@@ -1152,22 +1081,6 @@
     </ItemGroup>
   </Target>
 
-  <!-- Expand content of project PRI file. -->
-  <Target Name="_ExpandMainPriFile">
-
-    <ExpandPriContent Inputs="$(AppxBundleSplitResourcesPriPath)"
-                      MakePriExeFullPath="$(MakePriExeFullPath)"
-                      MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
-                      IntermediateDirectory="$(IntermediateOutputPath)"
-                      AdditionalMakepriExeParameters="$(AppxExpandPriContentAdditionalMakepriExeParameters)"
-                      VsTelemetrySession="$(VsTelemetrySession)"
-                          >
-      <Output TaskParameter="Expanded" ItemName="IndexedMainPayloadFiles" />
-      <Output TaskParameter="IntermediateFileWrites" ItemName="FileWrites" />
-    </ExpandPriContent>
-
-  </Target>
-
   <!-- Expand content of PRI files. -->
   <Target Name="_ExpandPriFiles">
 
@@ -1243,243 +1156,6 @@
       <_SupportXbfAsEmbedFileResources Condition="'$(DisableEmbeddedXbf)' == 'true'">false</_SupportXbfAsEmbedFileResources>
       <_SupportXbfAsEmbedFileResources Condition="'$(_SupportXbfAsEmbedFileResources)' == '' AND '$(_SupportEmbedFileResources)' == 'true'">true</_SupportXbfAsEmbedFileResources>
     </PropertyGroup>
-  </Target>
-
-  <!-- Create upload pri config -->
-  <Target Name="_CreateUploadPriConfigXmlForSplitting"
-          Inputs="$(MSBuildAllProjects);$(AppxPriConfigXmlPackagingSnippetPath);$(AppxPriConfigXmlDefaultSnippetPath)"
-          Outputs="$(AppxUploadBundlePriConfigXmlForSplittingFileName)"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-
-    <CreatePriConfigXmlForSplitting
-        PriConfigXmlPath="$(AppxUploadBundlePriConfigXmlForSplittingFileName)"
-        ResourcesPriFilePath="$(ProjectPriFullPath)"
-        PriInitialPath="$(PriInitialPath)"
-        DefaultResourceLanguage="$(DefaultResourceLanguage)"
-        DefaultResourceQualifiers="$(AppxDefaultResourceQualifiers)"
-        AppxBundleAutoResourcePackageQualifiers="$(AppxBundleAutoResourcePackageQualifiers)"
-        IntermediateExtension="$(AppxIntermediateExtension)"
-        PriConfigXmlPackagingSnippetPath="$(AppxPriConfigXmlPackagingSnippetPath)"
-        PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
-        TargetPlatformVersion="$(TargetPlatformResourceVersion)"
-        VsTelemetrySession="$(VsTelemetrySession)"
-            />
-
-  </Target>
-
-  <!-- File writes for the sideload pri config -->
-  <Target Name="_CreatePriConfigXmlForSplitting_AddFileWrites">
-    <ItemGroup>
-      <FileWrites Include="$(AppxBundlePriConfigXmlForSplittingFileName)" />
-      <FileWrites Include="$(AppxBundlePriConfigXmlForSplittingFileName)$(AppxIntermediateExtension)" />
-    </ItemGroup>
-  </Target>
-
-  <!-- file writes for the upload pri config -->
-  <Target Name="_CreateUploadPriConfigXmlForSplitting_AddFileWrites"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-    <ItemGroup>
-      <FileWrites Include="$(AppxUploadBundlePriConfigXmlForSplittingFileName)" />
-      <FileWrites Include="$(AppxUploadBundlePriConfigXmlForSplittingFileName)$(AppxIntermediateExtension)" />
-    </ItemGroup>
-  </Target>
-
-  <!-- Prepare to split the sideload resources pri -->
-  <Target Name="_SplitResourcesPri_CalculateInputsAndOutputs">
-
-    <ItemGroup>
-      <_AppxBundleSplitResourcesGeneratedFiles Remove="@(_AppxBundleSplitResourcesGeneratedFiles)" />
-    </ItemGroup>
-
-    <ReadLinesFromFile Condition="Exists($(AppxBundleSplitResourcesGeneratedFilesListPath))"
-                       File="$(AppxBundleSplitResourcesGeneratedFilesListPath)">
-      <Output TaskParameter="Lines" ItemName="_AppxBundleSplitResourcesGeneratedFiles" />
-    </ReadLinesFromFile>
-
-  </Target>
-
-  <!-- Prepare to split the upload resources pri -->
-  <Target Name="_SplitUploadResourcesPri_CalculateInputsAndOutputs"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-
-    <ItemGroup>
-      <_AppxUploadBundleSplitResourcesGeneratedFiles Remove="@(_AppxUploadBundleSplitResourcesGeneratedFiles)" />
-    </ItemGroup>
-
-    <ReadLinesFromFile Condition="Exists($(AppxUploadBundleSplitResourcesGeneratedFilesListPath))"
-                       File="$(AppxUploadBundleSplitResourcesGeneratedFilesListPath)">
-      <Output TaskParameter="Lines" ItemName="_AppxUploadBundleSplitResourcesGeneratedFiles" />
-    </ReadLinesFromFile>
-
-  </Target>
-
-  <!-- Split the sideload pri -->
-  <Target Name="_SplitResourcesPri"
-          Inputs="$(MSBuildAllProjects);$(ProjectPriFullPath)"
-          Outputs="$(AppxBundleSplitResourcesGeneratedFilesListPath);@(_AppxBundleSplitResourcesGeneratedFiles)">
-
-    <GenerateProjectPriFile MakePriExeFullPath="$(MakePriExeFullPath)"
-                            MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
-                            PriConfigXmlPath="$(AppxBundlePriConfigXmlForSplittingFileName)"
-                            ProjectPriIndexName="$(ProjectPriIndexName)"
-                            MappingFileFormat="AppX"
-                            ProjectDirectory="$(AppxLayoutDir)"
-                            OutputFileName="$(AppxBundleSplitResourcesPriPath)"
-                            GeneratedFilesListPath="$(AppxBundleSplitResourcesGeneratedFilesListPath)"
-                            QualifiersPath="$(AppxBundleSplitResourcesQualifiersPath)"
-                            IntermediateExtension="$(AppxIntermediateExtension)"
-                            AdditionalMakepriExeParameters="$(AppxGenerateProjectPriFileAdditionalMakepriExeParameters)"
-                            AppxBundleAutoResourcePackageQualifiers="$(AppxBundleAutoResourcePackageQualifiers)"
-                            VsTelemetrySession="$(VsTelemetrySession)"
-                            />
-
-    <ItemGroup>
-      <_AppxBundleSplitResourcesGeneratedFiles Remove="@(_AppxBundleSplitResourcesGeneratedFiles)" />
-    </ItemGroup>
-
-    <ReadLinesFromFile Condition="Exists($(AppxBundleSplitResourcesGeneratedFilesListPath))"
-                       File="$(AppxBundleSplitResourcesGeneratedFilesListPath)">
-      <Output TaskParameter="Lines" ItemName="_AppxBundleSplitResourcesGeneratedFiles" />
-    </ReadLinesFromFile>
-
-  </Target>
-
-  <!-- Split the upload pri -->
-  <Target Name="_SplitUploadResourcesPri"
-          Inputs="$(MSBuildAllProjects);$(ProjectPriFullPath)"
-          Outputs="$(AppxUploadBundleSplitResourcesGeneratedFilesListPath);@(_AppxUploadBundleSplitResourcesGeneratedFiles)"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-
-    <GenerateProjectPriFile MakePriExeFullPath="$(MakePriExeFullPath)"
-                            MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
-                            PriConfigXmlPath="$(AppxUploadBundlePriConfigXmlForSplittingFileName)"
-                            ProjectPriIndexName="$(ProjectPriIndexName)"
-                            MappingFileFormat="AppX"
-                            ProjectDirectory="$(AppxUploadLayoutDir)"
-                            OutputFileName="$(AppxUploadBundleSplitResourcesPriPath)"
-                            GeneratedFilesListPath="$(AppxUploadBundleSplitResourcesGeneratedFilesListPath)"
-                            QualifiersPath="$(AppxUploadBundleSplitResourcesQualifiersPath)"
-                            IntermediateExtension="$(AppxIntermediateExtension)"
-                            AdditionalMakepriExeParameters="$(AppxGenerateProjectPriFileAdditionalMakepriExeParameters)"
-                            AppxBundleAutoResourcePackageQualifiers="$(AppxBundleAutoResourcePackageQualifiers)"
-                            VsTelemetrySession="$(VsTelemetrySession)"
-                            />
-
-    <ItemGroup>
-      <_AppxUploadBundleSplitResourcesGeneratedFiles Remove="@(_AppxUploadBundleSplitResourcesGeneratedFiles)" />
-    </ItemGroup>
-
-    <ReadLinesFromFile Condition="Exists($(AppxUploadBundleSplitResourcesGeneratedFilesListPath))"
-                       File="$(AppxUploadBundleSplitResourcesGeneratedFilesListPath)">
-      <Output TaskParameter="Lines" ItemName="_AppxUploadBundleSplitResourcesGeneratedFiles" />
-    </ReadLinesFromFile>
-
-  </Target>
-
-  <!-- Wrap up splitting the sideload pri -->
-  <Target Name="_SplitResourcesPri_AddFileWrites">
-    <ItemGroup>
-      <FileWrites Include="@(_AppxBundleSplitResourcesGeneratedFiles)" />
-      <FileWrites Include="$(AppxBundleSplitResourcesGeneratedFilesListPath)" />
-      <FileWrites Include="$(AppxBundleSplitResourcesQualifiersPath)" />
-      <FileWrites Include="$(AppxBundleSplitResourcesQualifiersPath).intermediate" />
-    </ItemGroup>
-  </Target>
-
-  <!-- Wrap up splitting the upload pri -->
-  <Target Name="_SplitUploadResourcesPri_AddFileWrites"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-    <ItemGroup>
-      <FileWrites Include="@(_AppxUploadBundleSplitResourcesGeneratedFiles)" />
-      <FileWrites Include="$(AppxUploadBundleSplitResourcesGeneratedFilesListPath)" />
-      <FileWrites Include="$(AppxUploadBundleSplitResourcesQualifiersPath)" />
-      <FileWrites Include="$(AppxUploadBundleSplitResourcesQualifiersPath).intermediate" />
-    </ItemGroup>
-  </Target>
-
-  <!-- Create the sideload pri config xml -->
-  <Target Name="_CreatePriConfigXmlForMainPackageFileMap"
-          Inputs="$(MSBuildAllProjects);$(AppxPriConfigXmlPackagingSnippetPath);$(AppxPriConfigXmlDefaultSnippetPath)"
-          Outputs="$(AppxBundlePriConfigXmlForMainPackageFileMapFileName)">
-
-    <!-- Filter satellite assemblies out -->
-    <GenerateMainPriConfigurationFile
-        Condition="'$(_FilteredPackageLayoutFilePath)' != ''"
-        FilteredPackageLayoutFilePath="$(_FilteredPackageLayoutFilePath)"
-        PackageLayoutFiles="@(_PackageLayoutFileTarget)"
-        ExcludedPackageLayoutFilePath="$(_ExcludedPackageLayoutFilePath)" />
-
-    <PropertyGroup Condition="'$(_FilteredPackageLayoutFilePath)' != ''">
-      <_FilteredPackageLayoutFileFullPath>$([System.IO.Path]::GetFullPath($(_FilteredPackageLayoutFilePath)))</_FilteredPackageLayoutFileFullPath>
-      <_FilteredPackageLayoutUploadFileFullPath>$([System.IO.Path]::GetFullPath($(_FilteredUploadPackageLayoutFilePath)))</_FilteredPackageLayoutUploadFileFullPath>
-    </PropertyGroup>
-
-    <!-- PackageLayoutFilePath needs to be a fullpath as the ProjectRoot we use later for generating the pri file will fail to resolve the file -->
-    <CreatePriConfigXmlForMainPackageFileMap
-        PriConfigXmlPath="$(AppxBundlePriConfigXmlForMainPackageFileMapFileName)"
-        PackageLayoutFilePath="$(_FilteredPackageLayoutFileFullPath)"
-        PriInitialPath="$(PriInitialPath)"
-        DefaultResourceLanguage="$(DefaultResourceLanguage)"
-        DefaultResourceQualifiers="$(AppxDefaultResourceQualifiers)"
-        AppxBundleAutoResourcePackageQualifiers="$(AppxBundleAutoResourcePackageQualifiers)"
-        IntermediateExtension="$(AppxIntermediateExtension)"
-        PriConfigXmlPackagingSnippetPath="$(AppxPriConfigXmlPackagingSnippetPath)"
-        PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
-        TargetPlatformVersion="$(TargetPlatformResourceVersion)"
-        VsTelemetrySession="$(VsTelemetrySession)" />
-
-  </Target>
-
-  <!-- Create the upload pri config xml -->
-  <Target Name="_CreateUploadPriConfigXmlForMainPackageFileMap"
-          Inputs="$(MSBuildAllProjects);$(AppxPriConfigXmlPackagingSnippetPath);$(AppxPriConfigXmlDefaultSnippetPath)"
-          Outputs="$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-
-    <!-- Filter satellite assemblies out -->
-    <GenerateMainPriConfigurationFile
-        Condition="'$(_FilteredUploadPackageLayoutFilePath)' != ''"
-        FilteredPackageLayoutFilePath="$(_FilteredUploadPackageLayoutFilePath)"
-        PackageLayoutFiles="@(_UploadPackageLayoutFileTarget)"
-        ExcludedPackageLayoutFilePath="$(_ExcludedUploadPackageLayoutFilePath)" />
-    
-    <CreatePriConfigXmlForMainPackageFileMap
-        PriConfigXmlPath="$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)"
-        PackageLayoutFilePath="$(_FilteredPackageLayoutUploadFileFullPath)"
-        PriInitialPath="$(PriInitialPath)"
-        DefaultResourceLanguage="$(DefaultResourceLanguage)"
-        DefaultResourceQualifiers="$(AppxDefaultResourceQualifiers)"
-        AppxBundleAutoResourcePackageQualifiers="$(AppxBundleAutoResourcePackageQualifiers)"
-        IntermediateExtension="$(AppxIntermediateExtension)"
-        PriConfigXmlPackagingSnippetPath="$(AppxPriConfigXmlPackagingSnippetPath)"
-        PriConfigXmlDefaultSnippetPath="$(AppxPriConfigXmlDefaultSnippetPath)"
-        TargetPlatformIdentifier="$(TargetPlatformIdentifierAdjusted)"
-        TargetPlatformVersion="$(TargetPlatformResourceVersion)"
-        VsTelemetrySession="$(VsTelemetrySession)" />
-
-  </Target>
-
-  <!-- Filewrites for sideload pri config xml -->
-  <Target Name="_CreatePriConfigXmlForMainPackageFileMap_AddFileWrites">
-    <ItemGroup>
-      <FileWrites Include="$(AppxBundlePriConfigXmlForMainPackageFileMapFileName)" />
-      <FileWrites Include="$(AppxBundlePriConfigXmlForMainPackageFileMapFileName)$(AppxIntermediateExtension)" />
-      <FileWrites Include="$(_FilteredPackageLayoutFilePath)" />
-      <FileWrites Include="$(_ExcludedPackageLayoutFilePath)" />
-    </ItemGroup>
-  </Target>
-
-  <!-- Filewrites for upload pri config xml -->
-  <Target Name="_CreateUploadPriConfigXmlForMainPackageFileMap_AddFileWrites" 
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-    <ItemGroup>
-      <FileWrites Include="$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)" />
-      <FileWrites Include="$(AppxUploadBundlePriConfigXmlForMainPackageFileMapFileName)$(AppxIntermediateExtension)" />
-      <FileWrites Include="$(_FilteredUploadPackageLayoutFilePath)" />
-      <FileWrites Include="$(_ExcludedUploadPackageLayoutFilePath)" />
-    </ItemGroup>
   </Target>
 
   <!-- ========================================== -->
@@ -1884,12 +1560,6 @@
       _GetDefaultResourceLanguage;
     </_GetPackagePropertiesDependsOn>
   </PropertyGroup>
-
-  <!-- Gets some package properties. -->
-  <Target Name="_GetPackageProperties"
-          Condition="'$(AppxGetPackagePropertiesEnabled)' == 'true'"
-          DependsOnTargets="$(_GetPackagePropertiesDependsOn)"
-            />
 
   <!-- Extract Project Architecture from the payload -->
   <Target Name="_GetRecursiveProjectArchitecture">
