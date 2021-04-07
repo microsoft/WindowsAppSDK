@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
-  <!-- With .NET 5, the propery TargetPlatformIdentifier is not UAP but rather windows.
-       Likewise, for other console apps, TargetPlatformIdentifier is windows.
-       This file expects UAP for all .NET versions, so adjust. -->
+  <!-- With .NET 5 and above, the propery TargetPlatformIdentifier is not UAP but rather Windows.
+       Likewise, for other console apps, TargetPlatformIdentifier is Windows.
+       PRI generation in VS apps was developed for UWPs originally. Some of the binaries involved assume
+       that the app is a UWP. Change the value provided to said binaries to UAP. -->
   <PropertyGroup>
     <TargetPlatformIdentifierAdjusted>$(TargetPlatformIdentifier)</TargetPlatformIdentifierAdjusted>
-    <!-- Any .NET 5 version is valid here, hence the regex match! For example, this will match net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
-    <TargetPlatformIdentifierAdjusted Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(TargetFramework)', 'net5')) == 'true'">UAP</TargetPlatformIdentifierAdjusted>
+
+    <!-- Any .NET 5 or greater version is valid here! For example, we wll use UAP if TargetFramework contains net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
+    <TargetFrameworkDotNetString>$([System.Text.RegularExpressions.Regex]::Match("$(TargetFramework)", "net\d"))</TargetFrameworkDotNetString>
+    <TargetPlatformIdentifierAdjusted Condition="'$(TargetFrameworkDotNetString)' != '' AND '$(TargetFrameworkDotNetString.Substring(3))' >= '5'">UAP</TargetPlatformIdentifierAdjusted>
+
     <!-- Add support for console apps. -->
     <TargetPlatformIdentifierAdjusted Condition="'$(OutputType)' == 'Exe'">UAP</TargetPlatformIdentifierAdjusted>
   </PropertyGroup>
