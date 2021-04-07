@@ -4,8 +4,7 @@
   <!-- With .NET 5 and above, the propery TargetPlatformIdentifier is not UAP but rather Windows.
        Likewise, for other console apps, TargetPlatformIdentifier is Windows.
        PRI generation in VS apps was developed for UWPs originally. Some of the binaries involved assume
-       that the app is a UWP. The implementation needs to be changed but that'll likely happen as part of
-       moving said binaries to be out-of-box. For now, change the value provided to said binaries to UAP. -->
+       that the app is a UWP. Change the value provided to said binaries to UAP. -->
   <PropertyGroup>
     <TargetPlatformIdentifierAdjusted>$(TargetPlatformIdentifier)</TargetPlatformIdentifierAdjusted>
 
