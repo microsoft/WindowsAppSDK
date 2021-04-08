@@ -14,14 +14,13 @@
 #include <vector>
 #include <iostream>
 #include "PushNotificationChannel.h"
+#include "externs.h"
 
 constexpr PCWSTR backgroundTaskName = L"PushNotificationBackgroundTask";
 
 using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Networking::PushNotifications;
 using namespace winrt;
-
-extern wil::unique_handle g_waitHandleForArgs;
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {

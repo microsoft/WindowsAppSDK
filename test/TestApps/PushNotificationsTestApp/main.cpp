@@ -5,8 +5,13 @@
 
 #include <wil/win32_helpers.h>
 #include <iostream>
+#include <sstream>
+#include <winrt\Windows.Networking.PushNotifications.h>
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/Windows.Web.Http.Headers.h>
+#include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
 
-using namespace winrt::Microsoft::ApplicationModel::Activation;
 using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
@@ -14,6 +19,7 @@ using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace Windows::Web::Http;
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 
 void SignalPhase(const std::wstring& phaseEventName)
 {
@@ -67,6 +73,21 @@ void sendRequestToServer(winrt::hstring channel)
 
 int main()
 {
-    SignalPhase(c_testProtocolScheme_Packaged);
+    // Register the COM Activator GUID
+    PushNotificationActivationInfo info(
+        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+        winrt::guid({ 0x00000001, 0x0002, 0x0003,{ 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } })); // same clsid as app manifest
+
+    //// Registers a Push Trigger and sets up an inproc COM Server for Activations
+    auto token = PushNotificationManager::RegisterActivator(info);
+
+    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    if (args.Kind() == ExtendedActivationKind::Push) {
+        SignalPhase(c_testProtocolScheme_Packaged);
+    }
+    else if (args.Kind() == ExtendedActivationKind::Launch)
+    {
+        SignalPhase(c_testProtocolScheme_Packaged);
+    }
     return 0;
 };

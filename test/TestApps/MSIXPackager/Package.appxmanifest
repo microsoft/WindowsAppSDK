@@ -4,11 +4,12 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   IgnorableNamespaces="uap rescap">
 
   <Identity
     Name="PushNotificationsWin32App"
-    Publisher="CN=WNP_Reunion"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.0.0" />
 
   <Properties>
@@ -46,6 +47,13 @@
             <uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+		<com:Extension Category="windows.comServer">
+			<com:ComServer>
+				<com:ExeServer Executable="PushNotificationsWin32App\PushNotificationsWin32App.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
+					<com:Class Id="c54044c4-eac7-4c4b-9996-c570a94b9306" DisplayName="Reunion Push" />
+				</com:ExeServer>
+			</com:ComServer>
+		</com:Extension>
       </Extensions>
     </Application>
   </Applications>

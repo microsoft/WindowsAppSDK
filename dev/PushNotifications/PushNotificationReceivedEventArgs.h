@@ -5,14 +5,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct PushNotificationReceivedEventArgs : PushNotificationReceivedEventArgsT<PushNotificationReceivedEventArgs>
     {
-        PushNotificationReceivedEventArgs(Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
-        PushNotificationReceivedEventArgs(Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
+        PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
+        PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
 
-        static Microsoft::ProjectReunion::PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
-        static Microsoft::ProjectReunion::PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
+        static Microsoft::ProjectReunion::PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
+        static Microsoft::ProjectReunion::PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
         com_array<uint8_t> Payload();
-        Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
-        winrt::event_token Canceled(Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);
+        winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
+        winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);
         void Canceled(winrt::event_token const& token) noexcept;
         bool Handled();
         void Handled(bool value);

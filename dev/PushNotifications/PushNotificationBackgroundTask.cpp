@@ -8,12 +8,13 @@
 #include <winrt/windows.networking.pushnotifications.h>
 
 #include "PushNotificationReceivedEventArgs.h"
+#include "externs.h"
 
 using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Networking::PushNotifications;
 
-extern wil::unique_handle g_waitHandleForArgs;
-extern winrt::Microsoft::ProjectReunion::PushNotificationReceivedEventArgs g_activatedEventArgs;
+wil::unique_handle g_waitHandleForArgs;
+winrt::Microsoft::ProjectReunion::PushNotificationReceivedEventArgs g_activatedEventArgs{ nullptr };
 
 void PushNotificationBackgroundTask::Run(IBackgroundTaskInstance taskInstance)
 {

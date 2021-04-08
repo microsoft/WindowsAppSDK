@@ -325,6 +325,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ProjectReunion">
+      <HintPath>..\..\..\BuildOutput\Debug\x64\ProjectReunion_DLL\Microsoft.ProjectReunion.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
     <Reference Include="Microsoft.Windows.AppLifecycle">
       <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>

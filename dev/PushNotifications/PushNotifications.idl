@@ -3,24 +3,6 @@
 
 namespace Microsoft.ProjectReunion
 {
-    // Temporary APIs while AppLifeycle layer is ready
-    enum NotificationActivationKind
-    {
-        Launch = 0,
-        Push
-    };
-
-    runtimeclass NotificationActivationArguments
-    {
-        NotificationActivationKind Kind { get; };
-        IInspectable Data{ get; };
-    };
-
-    runtimeclass NotificationAppLifecycle
-    {
-        static Microsoft.ProjectReunion.NotificationActivationArguments GetRawNotificationEventArgs();
-    }
-
     // Event args for the Push payload.
     runtimeclass PushNotificationReceivedEventArgs
     {

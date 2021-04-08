@@ -7,6 +7,7 @@
 
 #include "ActivationRegistrationManager.h"
 #include "AppActivationArguments.h"
+#include "GetRawNotificationEventArgs.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
@@ -210,11 +211,20 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         if (HasIdentity())
         {
-            auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
-            if (args)
+            auto pushArgs = GetRawNotificationEventArgs::GetRawNotificationEventArgs();
+            if (pushArgs)
             {
-                data = args.as<IInspectable>();
-                kind = static_cast<ExtendedActivationKind>(args.Kind());
+                data = pushArgs.as<IInspectable>();
+                kind = ExtendedActivationKind::Push;
+            }
+            else
+            {
+                auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
+                if (args)
+                {
+                    data = args.as<IInspectable>();
+                    kind = static_cast<ExtendedActivationKind>(args.Kind());
+                }
             }
         }
         else

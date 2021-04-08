@@ -18,8 +18,8 @@
     <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationActivationArguments.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationAppLifecycle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\ProjectReunion_DLL\GetRawNotificationEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannel.h" />
@@ -29,7 +29,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationAppLifecycle.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationChannel.cpp" />

@@ -30,6 +30,11 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
+#include <winrt/Microsoft.ProjectReunion.h>
+
+#include <winrt\Windows.Networking.PushNotifications.h>
+#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
 
 #include <ProjectReunion.Test.Bootstrap.h>
 namespace TP = ::Test::Packages;

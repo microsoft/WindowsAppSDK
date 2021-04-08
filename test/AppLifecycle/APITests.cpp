@@ -11,6 +11,7 @@ using namespace WEX::TestExecution;
 
 using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
+using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Management::Deployment;
@@ -97,7 +98,16 @@ namespace Test::AppLifecycle
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
+            
             VERIFY_IS_NULL(AppInstance::GetCurrent().GetActivatedEventArgs().Data());
+            VERIFY_ARE_EQUAL(AppInstance::GetCurrent().GetActivatedEventArgs().Kind(), ExtendedActivationKind::Launch);
+
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+                winrt::guid("c54044c4-eac7-4c4b-9996-c570a94b9306")); // same clsid as app manifest
+
+            // Registers a Push Trigger and sets up an inproc COM Server for Activations
+            auto token = PushNotificationManager::RegisterActivator(info);
         }
     };
 }
