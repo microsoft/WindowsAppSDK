@@ -8,9 +8,8 @@
   <PropertyGroup>
     <TargetPlatformIdentifierAdjusted>$(TargetPlatformIdentifier)</TargetPlatformIdentifierAdjusted>
 
-    <!-- Any .NET 5 or greater version is valid here! For example, we wll use UAP if TargetFramework contains net5.0 and net5.1 (or, net50 and net51 if that format is used). -->
-    <TargetFrameworkDotNetString>$([System.Text.RegularExpressions.Regex]::Match("$(TargetFramework)", "net\d"))</TargetFrameworkDotNetString>
-    <TargetPlatformIdentifierAdjusted Condition="'$(TargetFrameworkDotNetString)' != '' AND '$(TargetFrameworkDotNetString.Substring(3))' >= '5'">UAP</TargetPlatformIdentifierAdjusted>
+    <!-- Any .NET 5 or greater version is valid here! -->
+    <TargetPlatformIdentifierAdjusted Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' and $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '5.0'))">UAP</TargetPlatformIdentifierAdjusted>
 
     <!-- Add support for console apps. -->
     <TargetPlatformIdentifierAdjusted Condition="'$(OutputType)' == 'Exe'">UAP</TargetPlatformIdentifierAdjusted>
