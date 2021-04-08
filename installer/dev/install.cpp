@@ -34,7 +34,8 @@ namespace ProjectReunionInstaller {
             if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
             {
                 // Package already exists (such as via provisioning), re-register it instead.
-                return RegisterPackage(packageProperties->fullName.get());
+                RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
+                return S_OK;
             }
             else
             {
