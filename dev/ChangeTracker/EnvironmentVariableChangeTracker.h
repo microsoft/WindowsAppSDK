@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include <EnvironmentWriter.h>
 #include "IChangeTracker.h"
-#include <EnvironmentHelper.h>
+#include <EnvironmentManager.h>
 #include <wil/registry.h>
 
 using namespace winrt::Windows::Foundation::Collections;
@@ -9,7 +8,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct EnvironmentVariableChangeTracker : public IChangeTracker
     {
-        EnvironmentVariableChangeTracker(std::wstring const& key, std::wstring const& valueToSet, Scope scope);
+        EnvironmentVariableChangeTracker(std::wstring const& key, std::wstring const& valueToSet, EnvironmentManager::Scope scope);
         HRESULT TrackChange(std::function<HRESULT(void)> callBack);
 
     private:
@@ -17,7 +16,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         const std::wstring c_machineEvRegLocation = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
 
-        Scope m_Scope;
+        EnvironmentManager::Scope m_Scope;
         std::wstring m_Key;
         std::wstring m_Value;
 
@@ -25,10 +24,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         wil::unique_hkey GetKeyForEnvironmentVariable()
         {
-            FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == Scope::Process);
+            FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == EnvironmentManager::Scope::Process);
 
             wil::unique_hkey environmentVariablesHKey;
-            if (m_Scope == Scope::User)
+            if (m_Scope == EnvironmentManager::Scope::User)
             {
                 THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation.c_str(), 0, KEY_READ, environmentVariablesHKey.addressof())));
             }
@@ -44,7 +43,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             HKEY topLevelKey;
 
-            if (m_Scope == Scope::User)
+            if (m_Scope == EnvironmentManager::Scope::User)
             {
                 topLevelKey = HKEY_CURRENT_USER;
             }

@@ -4,46 +4,51 @@
 #pragma once
 #include "TestSetupAndTeardownHelper.h"
 
-namespace ProjectReunionEnvironmentReaderTests
+namespace ProjectReunionEnvironmentManagerTests
 {
-    class EnvironmentReaderUWPTests {
-        BEGIN_TEST_CLASS(EnvironmentReaderUWPTests)
-            TEST_CLASS_PROPERTY(L"RunAs", L"{UAP,Restricted}")
+    class EnvironmentManagerUWPTests {
+        BEGIN_TEST_CLASS(EnvironmentManagerUWPTests)
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"AppxManifest.pkg.xml")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
             END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(UWPWriteEVs)
+        TEST_CLASS_SETUP(UWPWriteEVs)
         {
-            WriteProcessEV();
             WriteUserEV();
             WriteMachineEV();
-
             return true;
         }
 
-        TEST_CLASS_CLEANUP(UWPRemoveEvs)
+        TEST_CLASS_CLEANUP(IWPRemoveEVs)
         {
             RemoveUserEV();
             RemoveMachineEV();
-
             return true;
         }
 
         TEST_METHOD(UWPTestGetForProcess);
         TEST_METHOD(UWPTestGetForUser);
         TEST_METHOD(UWPTestGetForMachine);
+
         TEST_METHOD(UWPTestGetEnvironmentVariablesForProcess);
         TEST_METHOD(UWPTestGetEnvironmentVariablesForUser);
         TEST_METHOD(UWPTestGetEnvironmentVariablesForMachine);
+
         TEST_METHOD(UWPTestGetEnvironmentVariableForProcess);
         TEST_METHOD(UWPTestGetEnvironmentVariableForUser);
         TEST_METHOD(UWPTestGetEnvironmentVariableForMachine);
+
         TEST_METHOD(UWPTestSetEnvironmentVariableForProcess);
         TEST_METHOD(UWPTestSetEnvironmentVariableForUser);
         TEST_METHOD(UWPTestSetEnvironmentVariableForMachine);
+
         TEST_METHOD(UWPTestAppendToPathForProcess);
         TEST_METHOD(UWPTestAppendToPathForUser);
         TEST_METHOD(UWPTestAppendToPathForMachine);
+
+        TEST_METHOD(UWPTestRemoveFromPathForProcess);
+        TEST_METHOD(UWPTestRemoveFromPathForUser);
+        TEST_METHOD(UWPTestRemoveFromPathForMachine);
     };
 }

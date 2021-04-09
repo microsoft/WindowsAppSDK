@@ -3,11 +3,14 @@
 
 namespace Microsoft.ProjectReunion
 {
-    runtimeclass EnvironmentWriter
+    runtimeclass EnvironmentManager
     {
-        static EnvironmentWriter GetForProcess();
-        static EnvironmentWriter GetForUser();
-        static EnvironmentWriter GetForMachine();
+        static EnvironmentManager GetForProcess();
+        static EnvironmentManager GetForUser();
+        static EnvironmentManager GetForMachine();
+
+        IMapView<String, String> GetEnvironmentVariables();
+        String GetEnvironmentVariable(String name);
 
         Boolean IsSupported{ get; };
 

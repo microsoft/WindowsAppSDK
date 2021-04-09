@@ -4,7 +4,7 @@
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
 
-    EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(std::wstring const& key, std::wstring const& valueToSet, Scope scope)
+    EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(std::wstring const& key, std::wstring const& valueToSet, EnvironmentManager::Scope scope)
     {
         if (key.empty())
         {
@@ -16,7 +16,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         UINT32 sizeOfBuffer{};
         long fullNameResult = ::GetCurrentPackageFullName(&sizeOfBuffer, nullptr);
 
-        if (scope == Scope::Process || fullNameResult == APPMODEL_ERROR_NO_PACKAGE)
+        if (scope == EnvironmentManager::Scope::Process || fullNameResult == APPMODEL_ERROR_NO_PACKAGE)
         {
             m_ShouldTrackChange = false;
         }
