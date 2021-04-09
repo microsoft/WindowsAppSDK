@@ -21,16 +21,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChangeTrackerHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManagerCentennialTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManagerUWPTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManagerWin32Tests.h">
+    <ClInclude Include="EnvironmentReaderWin32Tests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnvironmentVariableHelper.h">
@@ -42,21 +33,29 @@
     <ClInclude Include="TestSetupAndTeardownHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EnvironmentReaderCentennialTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvironmentReaderUWPTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentReaderWin32Tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentReaderCentennialTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentReaderUWPTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="PropertySheet.props" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="EnvironmentManagerCentennialTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnvironmentManagerUWPTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnvironmentManagerWin32Tests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="CentennialAppxManifest.pkg.xml" />

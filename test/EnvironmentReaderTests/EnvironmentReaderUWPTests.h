@@ -39,11 +39,5 @@ namespace ProjectReunionEnvironmentReaderTests
         TEST_METHOD(UWPTestGetEnvironmentVariableForProcess);
         TEST_METHOD(UWPTestGetEnvironmentVariableForUser);
         TEST_METHOD(UWPTestGetEnvironmentVariableForMachine);
-        TEST_METHOD(UWPTestSetEnvironmentVariableForProcess);
-        TEST_METHOD(UWPTestSetEnvironmentVariableForUser);
-        TEST_METHOD(UWPTestSetEnvironmentVariableForMachine);
-        TEST_METHOD(UWPTestAppendToPathForProcess);
-        TEST_METHOD(UWPTestAppendToPathForUser);
-        TEST_METHOD(UWPTestAppendToPathForMachine);
     };
 }

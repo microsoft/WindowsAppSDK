@@ -21,16 +21,16 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EnvironmentWriterWin32Tests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvironmentWriterCentennialTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvironmentWriterUWPTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ChangeTrackerHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManagerCentennialTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManagerUWPTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnvironmentManagerWin32Tests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnvironmentVariableHelper.h">
@@ -44,25 +44,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="PropertySheet.props" />
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentWriterWin32Tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentWriterCentennialTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvironmentWriterUWPTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EnvironmentManagerCentennialTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnvironmentManagerUWPTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnvironmentManagerWin32Tests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="CentennialAppxManifest.pkg.xml" />
     <Xml Include="AppxManifest.pkg.xml" />
+    <Xml Include="CentennialAppxManifest.pkg.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="EnvironmentReaderTests.dll.manifest" />
+    <Manifest Include="EnvironmentWriterTests.dll.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -2,205 +2,204 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "EnvironmentManagerCentennialTests.h"
+#include "EnvironmentReaderCentennialTests.h"
 #include "EnvironmentVariableHelper.h"
 #include "ChangeTrackerHelper.h"
 #include "TestSetupAndTeardownHelper.h"
 
 using namespace winrt::Microsoft::ProjectReunion;
 
-namespace ProjectReunionEnvironmentManagerTests
+namespace ProjectReunionEnvironmentReaderTests
 {
-    void EnvironmentManagerCentennialTests::CentennialTestGetForProcess()
+    void EnvironmentReaderCentennialTests::CentennialTestGetForProcess()
     {
-        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
-        VERIFY_IS_NOT_NULL(environmentManager);
+        EnvironmentReader environmentReader{ EnvironmentReader::GetForProcess() };
+        VERIFY_IS_NOT_NULL(environmentReader);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetForUser()
+    void EnvironmentReaderCentennialTests::CentennialTestGetForUser()
     {
-        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
-        VERIFY_IS_NOT_NULL(environmentManager);
+        EnvironmentReader environmentReader{ EnvironmentReader::GetForUser() };
+        VERIFY_IS_NOT_NULL(environmentReader);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetForMachine()
+    void EnvironmentReaderCentennialTests::CentennialTestGetForMachine()
     {
-        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
-        VERIFY_IS_NOT_NULL(environmentManager);
+        EnvironmentReader environmentReader{ EnvironmentReader::GetForMachine() };
+        VERIFY_IS_NOT_NULL(environmentReader);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariablesForProcess()
+    void EnvironmentReaderCentennialTests::CentennialTestGetEnvironmentVariablesForProcess()
     {
-        EnvironmentManager environmentmanager = EnvironmentManager::GetForProcess();
-        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentmanager.GetEnvironmentVariables();
+        EnvironmentReader environmentReader = EnvironmentReader::GetForProcess();
+        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentReader.GetEnvironmentVariables();
 
         EnvironmentVariables environmentVariablesFromWindowsAPI = GetEnvironmentVariablesForProcess();
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariablesForUser()
+    void EnvironmentReaderCentennialTests::CentennialTestGetEnvironmentVariablesForUser()
     {
 
-        EnvironmentManager environmentmanager = EnvironmentManager::GetForUser();
-        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentmanager.GetEnvironmentVariables();
+        EnvironmentReader environmentReader = EnvironmentReader::GetForUser();
+        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentReader.GetEnvironmentVariables();
 
         EnvironmentVariables environmentVariablesFromWindowsAPI = GetEnvironmentVariablesForUser();
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariablesForMachine()
+    void EnvironmentReaderCentennialTests::CentennialTestGetEnvironmentVariablesForMachine()
     {
         EnvironmentVariables environmentVariablesFromWindowsAPI = GetEnvironmentVariablesForMachine();
 
-        EnvironmentManager environmentmanager = EnvironmentManager::GetForMachine();
-        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentmanager.GetEnvironmentVariables();
+        EnvironmentReader environmentReader = EnvironmentReader::GetForMachine();
+        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentReader.GetEnvironmentVariables();
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariableForProcess()
+    void EnvironmentReaderCentennialTests::CentennialTestGetEnvironmentVariableForProcess()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
-        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+        WriteProcessEV();
+        EnvironmentReader environmentReader = EnvironmentReader::GetForProcess();
+        winrt::hstring environmentValue = environmentReader.GetEnvironmentVariable(c_evKeyName);
 
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariableForUser()
+    void EnvironmentReaderCentennialTests::CentennialTestGetEnvironmentVariableForUser()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
-        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+        EnvironmentReader environmentReader = EnvironmentReader::GetForUser();
+        winrt::hstring environmentValue = environmentReader.GetEnvironmentVariable(c_evKeyName);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariableForMachine()
+    void EnvironmentReaderCentennialTests::CentennialTestGetEnvironmentVariableForMachine()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
-        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+        EnvironmentReader environmentReader = EnvironmentReader::GetForMachine();
+        winrt::hstring environmentValue = environmentReader.GetEnvironmentVariable(c_evKeyName);
 
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForProcess()
+    void EnvironmentReaderCentennialTests::CentennialTestSetEnvironmentVariableForProcess()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+        EnvironmentReader environmentReader = EnvironmentReader::GetForProcess();
+        //VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, NULL));
 
         std::wstring writtenEV = GetEnvironmentVariableForProcess(c_evKeyName2);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
         writtenEV = GetEnvironmentVariableForProcess(c_evKeyName2);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
 
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, L""));
         VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_evKeyName2, nullptr, 0));
-        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
-
-        // Test the change tracker
-        wil::unique_hkey trackingChangeHKey = GetKeyForTrackingChange(true);
-
-        wil::unique_hkey trackingValueHKey;
-        VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(trackingChangeHKey.get(), c_trackerKeyLocationForUser().c_str(), 0, KEY_ALL_ACCESS, trackingValueHKey.put()));
-
-        // PreviousValue will be 0 because the EV did not exist.
-        DWORD sizeOfEnvironmentValue = 2;
-        std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
-        VERIFY_WIN32_SUCCEEDED(RegQueryValueEx(trackingValueHKey.get(), L"PreviousValue", 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue));
-
-        VERIFY_ARE_EQUAL(L"", std::wstring(environmentValue.get()));
-
-        sizeOfEnvironmentValue = 2;
-        environmentValue.reset(new wchar_t[sizeOfEnvironmentValue]);
-        VERIFY_WIN32_SUCCEEDED(RegQueryValueEx(trackingValueHKey.get(), L"CurrentValue", 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue));
-
-        VERIFY_ARE_EQUAL(L"", std::wstring(environmentValue.get()));
-
-        RemoveUserChangeTracking();
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForUser()
+    void EnvironmentReaderCentennialTests::CentennialTestSetEnvironmentVariableForUser()
     {
         // Set 1 value.
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+        EnvironmentReader environmentReader = EnvironmentReader::GetForUser();
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
         std::wstring writtenEV = GetEnvironmentVariableForUser(c_evKeyName2);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
         writtenEV = GetEnvironmentVariableForUser(c_evKeyName2);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, L""));
         VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_evKeyName2));
-        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
 
+        RemoveUserChangeTracking();
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForMachine()
+    void EnvironmentReaderCentennialTests::CentennialTestSetEnvironmentVariableForMachine()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
+        EnvironmentReader environmentReader = EnvironmentReader::GetForMachine();
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, c_evValueName));
 
         std::wstring writtenEV = GetEnvironmentVariableForMachine(c_evKeyName2);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, c_evValueName2));
         writtenEV = GetEnvironmentVariableForMachine(c_evKeyName2);
         VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName2, L""));
+        VERIFY_NO_THROW(environmentReader.SetEnvironmentVariable(c_evKeyName2, L""));
         VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForMachine(c_evKeyName2));
-        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
 
+        RemoveMachineChangeTracking();
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForProcess()
+    void EnvironmentReaderCentennialTests::CentennialTestAppendToPathForProcess()
     {
         std::wstring originalPath = GetEnvironmentVariableForProcess(c_pathName);
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        EnvironmentReader environmentReader = EnvironmentReader::GetForProcess();
+        VERIFY_NO_THROW(environmentReader.AppendToPath(c_evValueName));
 
         std::wstring alteredPath = GetEnvironmentVariableForProcess(c_pathName);
+
+        if (originalPath.back() != L';')
+        {
+            originalPath += L';';
+        }
 
         VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForUser()
+    void EnvironmentReaderCentennialTests::CentennialTestAppendToPathForUser()
     {
         std::wstring originalPath = GetEnvironmentVariableForUser(c_pathName);
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        EnvironmentReader environmentReader = EnvironmentReader::GetForUser();
+        VERIFY_NO_THROW(environmentReader.AppendToPath(c_evValueName));
 
         std::wstring alteredPath = GetEnvironmentVariableForUser(c_pathName);
 
         RestoreUserPath(originalPath);
 
+        if (originalPath.back() != L';')
+        {
+            originalPath += L';';
+        }
+
         VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+
+        RemoveUserChangeTracking();
     }
 
-    void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForMachine()
+    void EnvironmentReaderCentennialTests::CentennialTestAppendToPathForMachine()
     {
         std::wstring originalPath = GetEnvironmentVariableForMachine(c_pathName);
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        EnvironmentReader environmentReader = EnvironmentReader::GetForMachine();
+        VERIFY_NO_THROW(environmentReader.AppendToPath(c_evValueName));
 
         std::wstring alteredPath = GetEnvironmentVariableForMachine(c_pathName);
 
         RestoreMachinePath(originalPath);
 
+        if (originalPath.back() != L';')
+        {
+            originalPath += L';';
+        }
+
         VERIFY_ARE_EQUAL(originalPath.append(c_evValueName).append(L";"), alteredPath);
+
+        RemoveMachineChangeTracking();
     }
 }

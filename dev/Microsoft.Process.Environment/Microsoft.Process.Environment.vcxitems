@@ -14,12 +14,16 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)EnvironmentManager.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)..\ChangeTracker\EnvironmentReader.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)EnvironmentWriter.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentHelper.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentWriter.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentReader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentWriter.cpp" />
   </ItemGroup>
 </Project>

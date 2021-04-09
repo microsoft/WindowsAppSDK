@@ -2,26 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
-#include <EnvironmentManager.g.h>
+#include <EnvironmentReader.g.h>
 
 using namespace winrt::Windows::Foundation::Collections;
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    struct EnvironmentManager : EnvironmentManagerT<EnvironmentManager>
+    struct EnvironmentReader : EnvironmentReaderT<EnvironmentReader>
     {
-        enum Scope
-        {
-            Process = 0,
-            User = 1,
-            Machine = 2
-        };
+        EnvironmentReader(Scope const& scope);
 
-        EnvironmentManager(Scope const& scope);
-
-        static Microsoft::ProjectReunion::EnvironmentManager GetForProcess();
-        static Microsoft::ProjectReunion::EnvironmentManager GetForUser();
-        static Microsoft::ProjectReunion::EnvironmentManager GetForMachine();
+        static Microsoft::ProjectReunion::EnvironmentReader GetForProcess();
+        static Microsoft::ProjectReunion::EnvironmentReader GetForUser();
+        static Microsoft::ProjectReunion::EnvironmentReader GetForMachine();
         Windows::Foundation::Collections::IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
         void SetEnvironmentVariable(hstring const& name, hstring const& value);
@@ -42,6 +35,26 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         StringMap GetUserOrMachineEnvironmentVariables() const;
         std::wstring GetUserOrMachineEnvironmentVariable(const std::wstring variableName) const;
         wil::unique_hkey GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess = false) const;
+
+        bool DoesTheUnVirtualizedKeyExist() const
+        {
+            wil::unique_hkey localMachineKey;
+            LSTATUS changeTrackerOpenResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\AppModel\\RegistryWriteVirtualization\\ExcludedKeys\\HKEY_CURRENT_USER/Software/ChangeTracker", 0, KEY_READ, localMachineKey.addressof());
+
+            if (changeTrackerOpenResult != ERROR_SUCCESS)
+            {
+                return false;
+            }
+
+            changeTrackerOpenResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\AppModel\\RegistryWriteVirtualization\\ExcludedKeys\\HKEY_CURRENT_USER/Environment", 0, KEY_READ, localMachineKey.addressof());
+
+            if (changeTrackerOpenResult != ERROR_SUCCESS)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         bool IsCurrentOS20H2OrLower()
         {
@@ -75,7 +88,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 }
 namespace winrt::Microsoft::ProjectReunion::factory_implementation
 {
-    struct EnvironmentManager : EnvironmentManagerT<EnvironmentManager, implementation::EnvironmentManager>
+    struct EnvironmentReader : EnvironmentReaderT<EnvironmentReader, implementation::EnvironmentReader>
     {
     };
 }

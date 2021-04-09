@@ -12,7 +12,7 @@ namespace ProjectReunionEnvironmentReaderTests
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs", L"{RestrictedUser,ElevatedUser,InteractiveUser}")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
-            END_TEST_CLASS()
+        END_TEST_CLASS()
 
             TEST_CLASS_SETUP(WriteEVs)
         {
@@ -40,11 +40,5 @@ namespace ProjectReunionEnvironmentReaderTests
         TEST_METHOD(TestGetEnvironmentVariableForProcess);
         TEST_METHOD(TestGetEnvironmentVariableForUser);
         TEST_METHOD(TestGetEnvironmentVariableForMachine);
-        TEST_METHOD(TestSetEnvironmentVariableForProcess);
-        TEST_METHOD(TestSetEnvironmentVariableForUser);
-        TEST_METHOD(TestSetEnvironmentVariableForMachine);
-        TEST_METHOD(TestAppendToPathForProcess);
-        TEST_METHOD(TestAppendToPathForUser);
-        TEST_METHOD(TestAppendToPathForMachine);
     };
 }

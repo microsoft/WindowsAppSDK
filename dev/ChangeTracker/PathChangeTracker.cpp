@@ -3,19 +3,18 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    PathChangeTracker::PathChangeTracker(std::wstring const& pathPart, EnvironmentManager::Scope scope)
+    PathChangeTracker::PathChangeTracker(std::wstring const& pathPart, Scope scope)
     {
-        MessageBoxEx(NULL, L"In constructor", L"In constructor", 0, 0);
         if (pathPart.empty())
         {
             THROW_HR(E_INVALIDARG);
         }
 
         // Check if we need to track the changes.
-       // If we do need to track the changes get the Package Full Name
         UINT32 sizeOfBuffer{};
         long fullNameResult = ::GetCurrentPackageFullName(&sizeOfBuffer, nullptr);
-        if (fullNameResult == APPMODEL_ERROR_NO_PACKAGE)
+        if (scope == Scope::Process ||
+            fullNameResult == APPMODEL_ERROR_NO_PACKAGE)
         {
             m_ShouldTrackChange = false;
         }
@@ -46,18 +45,23 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         if (m_ShouldTrackChange)
         {
-            std::wstring pathOrPathExtChanges = GetChangesFromRegistry();
+            std::wstring pathChanges = GetPathChanges();
 
-            std::wstring newPathChanges = pathOrPathExtChanges.append(m_PathPart.c_str()).append(L";");
+            pathChanges += m_PathPart;
+
+            if (m_PathPart.back() != L';')
+            {
+                pathChanges += L';';
+            }
 
             wil::unique_hkey regLocationToWriteChange = GetKeyForTrackingChange();
             RETURN_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(regLocationToWriteChange.get()
                 , L"AppendedValues"
                 , 0
                 , REG_SZ
-                , reinterpret_cast<const BYTE*>(newPathChanges.c_str()), (newPathChanges.size() + 1) * sizeof(wchar_t))));
+                , reinterpret_cast<const BYTE*>(pathChanges.c_str()), (pathChanges.size() + 1) * sizeof(wchar_t))));
         }
 
-        return S_OK;
+        return callback();
     }
 }
