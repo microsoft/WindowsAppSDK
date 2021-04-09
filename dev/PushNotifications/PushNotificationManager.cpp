@@ -8,6 +8,7 @@
 #include <iostream>
 #include "PushNotificationChannel.h"
 #include <wil/resource.h>
+#include <strsafe.h>
 
 using namespace winrt::Windows::Networking::PushNotifications;
 using namespace winrt;
@@ -49,10 +50,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             return false;
         }
-        else if(packagedProcessHResult != S_OK)
-        {
-            winrt::throw_hresult(packagedProcessHResult);
-        }
+
+        THROW_IF_FAILED(packagedProcessHResult);
 
         return true;
     }
@@ -62,39 +61,25 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static bool s_remoteIdInProgress;
         static wil::critical_section s_lock;
 
-        if (remoteId == winrt::guid())
-        {
-            throw_hresult(E_INVALIDARG);
-        }
+        THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
-        bool isPackagedProcess = IsPackagedProcess();
+        THROW_HR_IF(E_NOTIMPL, (IsPackagedProcess() == false));
 
-        if (!isPackagedProcess)
-        {
-            throw_hresult(E_NOTIMPL);
-        }
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult channelResult{ nullptr };
 
-        bool remoteIdInProgress = false;
         {
             auto lock = s_lock.lock();
             if (s_remoteIdInProgress == false)
             {
-                s_remoteIdInProgress = (!remoteIdInProgress);
+                s_remoteIdInProgress = true;
             }
             else
             {
-                remoteIdInProgress = true;
+                channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                    nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
+                co_return channelResult;
             }
-        }
-
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult channelResult{ nullptr };
-
-        if (remoteIdInProgress)
-        {
-            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
-                nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
-            co_return channelResult;;
         }
 
         auto scopeExit = wil::scope_exit([&]()
