@@ -17,7 +17,6 @@
     <Midl Include="$(MSBuildThisFileDirectory)EnvironmentManager.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentManager.h" />
   </ItemGroup>
   <ItemGroup>
