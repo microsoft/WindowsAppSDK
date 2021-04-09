@@ -29,6 +29,9 @@
         <Path>Microsoft.ProjectReunion.dll</Path>
           <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.ActivationRegistrationManager" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.AppLifecycle" ThreadingModel="both" />
+		  <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationChannel" ThreadingModel="both" />
+		  <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationCreateChannelResult" ThreadingModel="both" />
+		  <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>
