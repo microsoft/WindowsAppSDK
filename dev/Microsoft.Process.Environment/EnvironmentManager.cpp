@@ -136,6 +136,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
+        if (path.empty())
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
         // Get the existing path because we will append to it.
         std::wstring existingPath = GetPath();
 
@@ -196,6 +201,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
+        if (path.empty())
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
         // A user is only allowed to remove something from the PATH if
         // 1. path exists in PATH
         // 2. path matches a path part exactly (ignoring case)
