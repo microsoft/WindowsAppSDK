@@ -45,6 +45,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         std::wstring m_moduleName;
         std::wstring m_processName;
 
+        std::wstring m_moduleName;
+        std::wstring m_processName;
+
         static INIT_ONCE s_initOnce;
         static winrt::com_ptr<AppInstance> s_current;
 
