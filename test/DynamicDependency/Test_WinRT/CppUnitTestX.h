@@ -32,42 +32,42 @@ namespace Microsoft::VisualStudio::CppUnitTestFramework
     public:
 		static void AreEqual(const winrt::hstring& expected, const winrt::hstring& actual, const char* message, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::AreEqual(expected.c_str(), actual.c_str(), message, pLineInfo);
+			VERIFY_ARE_EQUAL(expected.c_str(), actual.c_str(), message, pLineInfo);
 		}
 
 		static void AreEqual(const winrt::hstring& expected, const winrt::hstring& actual, const wchar_t* message, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::AreEqual(expected.c_str(), actual.c_str(), message, pLineInfo);
+			VERIFY_ARE_EQUAL(expected.c_str(), actual.c_str(), message, pLineInfo);
 		}
 
 		static void AreEqual(const winrt::hstring& expected, const winrt::hstring& actual, bool ignoreCase = false, const wchar_t* message = NULL, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::AreEqual(expected.c_str(), actual.c_str(), ignoreCase, message, pLineInfo);
+			VERIFY_ARE_EQUAL(expected.c_str(), actual.c_str(), ignoreCase, message, pLineInfo);
 		}
 
 		static void AreNotEqual(const winrt::hstring& expected, const winrt::hstring& actual, const char* message, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::AreNotEqual(expected.c_str(), actual.c_str(), message, pLineInfo);
+			VERIFY_ARE_NOT_EQUAL(expected.c_str(), actual.c_str(), message, pLineInfo);
 		}
 
 		static void AreNotEqual(const winrt::hstring& expected, const winrt::hstring& actual, const wchar_t* message, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::AreNotEqual(expected.c_str(), actual.c_str(), message, pLineInfo);
+			VERIFY_ARE_NOT_EQUAL(expected.c_str(), actual.c_str(), message, pLineInfo);
 		}
 
 		static void AreNotEqual(const winrt::hstring& expected, const winrt::hstring& actual, bool ignoreCase = false, const wchar_t* message = NULL, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::AreNotEqual(expected.c_str(), actual.c_str(), ignoreCase, message, pLineInfo);
+			VERIFY_ARE_NOT_EQUAL(expected.c_str(), actual.c_str(), ignoreCase, message, pLineInfo);
 		}
 
 		static void Succeeded(HRESULT hr, const wchar_t* message = NULL, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::IsTrue(SUCCEEDED(hr), message, pLineInfo);
+			VERIFY_IS_TRUE(SUCCEEDED(hr), message, pLineInfo);
 		}
 
 		static void Failed(HRESULT hr, const wchar_t* message = NULL, const __LineInfo* pLineInfo = NULL)
 		{
-			Assert::IsTrue(FAILED(hr), message, pLineInfo);
+			VERIFY_IS_TRUE(FAILED(hr), message, pLineInfo);
 		}
     };
 }

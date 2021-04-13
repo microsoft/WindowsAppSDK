@@ -322,7 +322,6 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TestCom.cpp" />
     <ClCompile Include="TestFilesystem.cpp" />
     <ClCompile Include="TestPackages.cpp" />
     <ClCompile Include="Test_WinRT_Add_Rank_A0_B10.cpp" />
@@ -337,7 +336,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="TestCom.h" />
     <ClInclude Include="TestFilesystem.h" />
     <ClInclude Include="TestPackages.h" />
     <ClInclude Include="Test_WinRT.h" />
