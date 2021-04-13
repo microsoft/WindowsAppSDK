@@ -2,18 +2,14 @@ parameters:
   - name: "ReunionVersion"
     type: string
     default: ''
-  - name: "ReunionFoundationVersion"
-    type: string
-    default: ''
-  - name: "ReunionDWriteVersion"
-    type: string
-    default: ''
-  - name: "ReunionWinUIVersion"
-    type: string
-    default: ''
   - name: "releaseBuild"
     type: boolean
     default: True
+  - name: "OptionalVSIXVersion"
+    # if blank, the project template will select the version matching the Project Reunion
+    # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
+    type: string
+    default: 'default'
 
 jobs:
 
@@ -32,7 +28,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/t:restore /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" '
+      msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}"'
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
@@ -40,7 +36,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:ReunionFoundationVersion="${{ parameters.ReunionFoundationVersion }}" /p:ReunionDWriteVersion="${{ parameters.ReunionDWriteVersion }}" /p:ReunionWinUIVersion="${{ parameters.ReunionWinUIVersion }}" '
+      msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}"'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'
