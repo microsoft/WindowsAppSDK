@@ -9,12 +9,17 @@
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
 
+#include <wil/token_helpers.h>
+
+#include <WexTestClass.h>
+
+#include <string>
+
+#include <wil/result_macros.h>
+
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
-#include <winrt\Microsoft.Windows.AppLifecycle.h>
-#include <winrt\Microsoft.ProjectReunion.h>
-#include <winrt/Windows.Web.Http.Headers.h>
-#include <winrt\Windows.Networking.PushNotifications.h>
+#include <winrt/Microsoft.Windows.AppLifecycle.h>

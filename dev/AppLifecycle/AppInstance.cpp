@@ -13,11 +13,14 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
+#include "externs.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::Activation;
+
+wil::critical_section g_lock;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
@@ -208,13 +211,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
-
+        std::cout << "AppInstance::GetActivatedEventArgs -> Start" << std::endl;
         if (HasIdentity())
         {
             auto pushArgs = GetRawNotificationEventArgs::GetRawNotificationEventArgs();
             if (pushArgs)
             {
-                data = pushArgs.as<IInspectable>();
+                data = pushArgs;
                 kind = ExtendedActivationKind::Push;
             }
             else
@@ -225,6 +228,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     data = args.as<IInspectable>();
                     kind = static_cast<ExtendedActivationKind>(args.Kind());
                 }
+
             }
         }
         else
@@ -262,7 +266,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 data = make<LaunchActivatedEventArgs>(commandLine).as<IInspectable>();
             }
         }
-
+        std::cout << "AppInstance::GetActivatedEventArgs -> End" << std::endl;
         return make<AppActivationArguments>(kind, data);
     }
 

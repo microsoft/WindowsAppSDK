@@ -1,5 +1,5 @@
 ﻿#include <winrt/Windows.ApplicationModel.background.h>
-
+#include <iostream>
 struct PushNotificationBackgroundTask : winrt::implements<PushNotificationBackgroundTask, winrt::Windows::ApplicationModel::Background::IBackgroundTask>
 {
     PushNotificationBackgroundTask() {}
@@ -20,7 +20,6 @@ struct PushNotificationBackgroundTaskFactory : winrt::implements<PushNotificatio
         if (aggregateInterface != nullptr) {
             return CLASS_E_NOAGGREGATION;
         }
-
         return winrt::make<PushNotificationBackgroundTask>().as(interfaceId, object);
     }
 

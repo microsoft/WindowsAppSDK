@@ -55,7 +55,6 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
-    <PackageCertificateThumbprint>353556C5BF55045AA2375207D291E6BCD30B524B</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
@@ -63,8 +62,8 @@
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxPackageDir>C:\Users\purifoypaul\Desktop\ff\ProjectReunion\BuildOutput\Debug\x64\PushNotificationsTestPackages\</AppxPackageDir>
-    <EntryPointProjectUniqueName>..\PushNotificationsTestApp\PushNotificationsTestApp.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateKeyFile>MSTest.pfx</PackageCertificateKeyFile>
+    <EntryPointProjectUniqueName>..\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj</EntryPointProjectUniqueName>
+    <PackageCertificateThumbprint>D9CF3F5427C55BF9B85E600A81CB78B3CD2047C7</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AppxBundle>Always</AppxBundle>
@@ -117,6 +116,6 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.19041.8" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PushNotificationsTestApp\PushNotificationsTestApp.vcxproj" />
+    <ProjectReference Include="..\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj" />
   </ItemGroup>
 </Project>

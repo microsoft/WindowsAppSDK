@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include <testdef.h>
-
-#include <MddBootstrap.h>
-#include <MddBootstrapTest.h>
-
 #include <wil/win32_helpers.h>
+#include <iostream>
+#include <sddl.h>
+
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::ProjectReunion;
@@ -16,44 +15,55 @@ using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 
+wil::unique_event CreateTestEvent(const std::wstring& eventName)
+{
+    bool alreadyExists = false;
+    SECURITY_ATTRIBUTES attributes = {};
+    wil::unique_hlocal_security_descriptor descriptor;
+
+    // Grant access to world and appcontainer.
+    THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
+        L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
+    attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+    attributes.lpSecurityDescriptor = descriptor.get();
+
+    wil::unique_event event;
+    event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
+    return event;
+}
+
+bool WaitForEvent(const wil::unique_event& successEvent, const wil::unique_event& failedEvent)
+{
+    bool result = true;
+    HANDLE waitEvents[2] = { successEvent.get(), failedEvent.get() };
+    auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
+        10000);
+
+    // If waitResult == failureEventIndex, it means the remote test process signaled a
+    // failure event while we were waiting for a different event.
+    auto failureEventIndex = WAIT_OBJECT_0 + 1;
+    if (waitResult == failureEventIndex)
+    {
+        result = false;
+    }
+    else if (waitResult == WAIT_TIMEOUT)
+    {
+        result = false;
+    }
+    else if (waitResult == WAIT_FAILED)
+    {
+        result = false;
+    }
+
+    successEvent.ResetEvent();
+    failedEvent.ResetEvent();
+    return result;
+}
+
 bool IsPackagedProcess()
 {
     UINT32 n{};
     return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
-}
-
-bool NeedDynamicDependencies()
-{
-    return !IsPackagedProcess();
-}
-
-HRESULT BootstrapInitialize()
-{
-    if (!NeedDynamicDependencies())
-    {
-        return S_OK;
-    }
-
-    constexpr PCWSTR c_PackageNamePrefix{ L"ProjectReunion.Test.DDLM" };
-    constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
-    RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
-
-    // Version <major>.0.0.0 to find any framework package for this major version
-    const UINT64 c_Version_Major{ 4 };
-    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
-    RETURN_IF_FAILED(MddBootstrapInitialize(minVersion));
-
-    return S_OK;
-}
-
-void BootstrapShutdown()
-{
-    if (!NeedDynamicDependencies())
-    {
-        return;
-    }
-
-    MddBootstrapShutdown();
 }
 
 void SignalPhase(const std::wstring& phaseEventName)
@@ -67,144 +77,106 @@ void SignalPhase(const std::wstring& phaseEventName)
 
 int main()
 {
-    RETURN_IF_FAILED(BootstrapInitialize());
+    std::wstring successEventName = L"ChannelRequest";
+    std::wstring failedEventName = L"ChannelRequestFailed";
+    wil::unique_event successEvent = CreateTestEvent(successEventName);
+    wil::unique_event failedEvent = CreateTestEvent(failedEventName);
 
-    auto succeeded = false;
+    PushNotificationActivationInfo info(
+        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+        winrt::guid("c54044c4-eac7-4c4b-9996-c570a94b9306")); // same clsid as app manifest
+
+    auto token = PushNotificationManager::RegisterActivator(info);
+
+    
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
-    if (kind == ExtendedActivationKind::Launch)
+    if (kind == ExtendedActivationKind::Push)
     {
-        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
-        auto commandLine = std::wstring(launchArgs.Arguments().c_str());
-        auto argStart = commandLine.rfind(L"/") + 1;
-        if (argStart != std::wstring::npos)
-        {
-            auto argument = commandLine.substr(argStart);
+        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
 
-            if (argument.compare(L"RegisterProtocol") == 0)
-            {
-                ActivationRegistrationManager::RegisterForProtocolActivation(c_testProtocolScheme, L"logo",
-                    L"Project Reunion Test Protocol", L"");
+        // Call GetDeferral to ensure that code runs in low power
+        //auto deferral = pushArgs.GetDeferral();
 
-                // Signal event that protocol was registered.
-                SignalPhase(c_testProtocolPhaseEventName);
-                succeeded = true;
-            }
-            else if (argument.compare(L"UnregisterProtocol") == 0)
+        auto payload = pushArgs.Payload();
+
+        // Do stuff to process the raw payload
+        std::string payloadString(payload.begin(), payload.end());
+
+        std::cout << "Payload (background case): " + payloadString << std::endl;
+
+        // Call Complete on the deferral as good practise: Needed mainly for low power usage
+        //deferral.Complete();
+        SignalPhase(L"BackgroundActivation");
+    }
+    else if (kind == ExtendedActivationKind::Launch)
+    {
+
+        // SignalPhase(L"BackgroundActivationFailed");
+        // Register the AAD RemoteIdentifier for the App to receive Push
+        auto channelOperation = PushNotificationManager::CreateChannelAsync(
+            winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
+
+        // Setup the inprogress event handler
+        channelOperation.Progress(
+            [](
+                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+                PushNotificationCreateChannelStatus const& args)
             {
-                try
+                if (args.status == PushNotificationChannelStatus::InProgress)
                 {
-                    ActivationRegistrationManager::UnregisterForProtocolActivation(c_testProtocolScheme, L"");
-
-                    // Signal event that protocol was unregistered.
-                    SignalPhase(c_testProtocolPhaseEventName);
-                    succeeded = true;
+                    // This is basically a noop since it isn't really an error state
+                    printf("The first channel request is still in progress! \n");
                 }
-                catch (...)
+                else if (args.status == PushNotificationChannelStatus::InProgressRetry)
                 {
-                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+                    LOG_HR_MSG(
+                        args.extendedError,
+                        "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it. RetryCount = %d",
+                        args.retryCount);
                 }
-            }
-            else if (argument.compare(L"RegisterFile") == 0)
-            {
-                ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension.c_str() },
-                    L"logo", L"Project Reunion Test File Type", { L"open" }, L"");
+            });
 
-                // Signal event that file was registered.
-                SignalPhase(c_testFilePhaseEventName);
-                succeeded = true;
-            }
-            else if (argument.compare(L"UnregisterFile") == 0)
+        winrt::event_token pushToken;
+
+        // Setup the completed event handler
+        channelOperation.Completed(
+            [&](
+                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+                AsyncStatus const asyncStatus)
             {
-                try
+                auto result = sender.GetResults();
+                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
                 {
-                    ActivationRegistrationManager::UnregisterForFileTypeActivation({ c_testFileExtension.c_str() },
-                        L"");
+                    auto channelUri = result.Channel().Uri();
 
-                    // Signal event that file was unregistered.
-                    SignalPhase(c_testFilePhaseEventName);
-                    succeeded = true;
+                    std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
+                    std::getchar();
+                    auto channelExpiry = result.Channel().ExpirationTime();
+
+                    // Register Push Event for Foreground
+                    pushToken = result.Channel().PushReceived([&](const auto&, PushNotificationReceivedEventArgs args)
+                        {
+                            auto payload = args.Payload();
+
+                            // Do stuff to process the raw payload
+                            std::string payloadString(payload.begin(), payload.end());
+
+                            std::cout << "Payload (foreground case): " + payloadString << std::endl;
+
+                            args.Handled(true);
+                        });
                 }
-                catch (...)
+                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
                 {
-                    //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
-                }
-            }
-            else if (argument.compare(L"RegisterStartup") == 0)
-            {
-                ActivationRegistrationManager::RegisterForStartupActivation(L"this_is_a_test", L"");
-
-                // Signal event that file was registered.
-                SignalPhase(c_testStartupPhaseEventName);
-                succeeded = true;
-            }
-            else if (argument.compare(L"UnregisterStartup") == 0)
-            {
-                ActivationRegistrationManager::UnregisterForStartupActivation(L"this_is_a_test");
-
-                // Signal event that file was unregistered.
-                SignalPhase(c_testStartupPhaseEventName);
-                succeeded = true;
-            }
-        }
-    }
-    else if (kind == ExtendedActivationKind::Protocol)
-    {
-        auto protocolArgs = args.Data().as<IProtocolActivatedEventArgs>();
-
-        std::wstring expectedUri;
-        if (IsPackagedProcess())
-        {
-            expectedUri = c_testProtocolScheme_Packaged + L"://this_is_a_test";
-        }
-        else
-        {
-            expectedUri = c_testProtocolScheme + L"://this_is_a_test";
-        }
-
-        auto actualUri = protocolArgs.Uri();
-        if (actualUri.Equals(Uri(expectedUri)))
-        {
-            // Signal event that protocol was activated and valid.
-            SignalPhase(c_testProtocolPhaseEventName);
-            succeeded = true;
-        }
-    }
-    else if (kind == ExtendedActivationKind::File)
-    {
-        // Validate access to the files on the arguments.
-        auto fileArgs = args.Data().as<IFileActivatedEventArgs>();
-        for (auto const& item : fileArgs.Files())
-        {
-            auto file = item.as<StorageFile>();
-            auto stream = file.OpenAsync(FileAccessMode::Read).get();
-
-            const uint32_t streamSize = static_cast<unsigned int>(stream.Size());
-            Buffer buffer(streamSize);
-
-            stream.ReadAsync(buffer, streamSize, InputStreamOptions::None).get();
-        }
-
-        // Signal event that file was activated.
-        SignalPhase(c_testFilePhaseEventName);
-        succeeded = true;
-    }
-    else if (kind == ExtendedActivationKind::StartupTask)
-    {
-        auto startupArgs = args.Data().as<IStartupTaskActivatedEventArgs>();
-        if (startupArgs.TaskId() == L"this_is_a_test")
-        {
-            // Signal event that startuptask was activated.
-            SignalPhase(c_testStartupPhaseEventName);
-            succeeded = true;
-        }
+                    LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
+                }                
+            });
     }
 
-    if (!succeeded)
-    {
-        SignalPhase(c_testFailureEventName);
-    }
 
-    BootstrapShutdown();
+    // Unregisters the inproc COM Activator before exiting
+    /*PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
+    std::getchar();*/
     return 0;
 }

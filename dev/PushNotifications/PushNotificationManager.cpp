@@ -151,6 +151,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     Microsoft::ProjectReunion::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(Microsoft::ProjectReunion::PushNotificationActivationInfo const& details)
     {
+        std::cout << "PushNotificationManager::RegisterActivator -> Start" << std::endl;
         int passedFlags = static_cast<int>(details.Kind());
         winrt::guid taskClsid = details.TaskClsid();
 
@@ -194,7 +195,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 // Define handle that will be set during background task execution
                 g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-
+                g_sample = 4;
+                std::cout << g_sample << std::endl;
                 ::CoRegisterClassObject(
                     taskClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
@@ -203,7 +205,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                     &s_cookie);
             }
         }
-
+        std::cout << "PushNotificationManager::RegisterActivator -> End" << std::endl;
         return PushNotificationRegistrationToken{ s_cookie, registeredTask };
     }
 
