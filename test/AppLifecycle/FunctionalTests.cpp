@@ -43,15 +43,9 @@ namespace ProjectReunionCppTest
         TEST_CLASS_SETUP(ClassInit)
         {
             // Deploy packaged app to register handler through the manifest.
-            try
-            {
-                RunCertUtil(c_testPackageCertFile);
-                InstallPackage(c_testPackageFile);
-            }
-            catch (...)
-            {
-                return false;
-            }
+            RunCertUtil(c_testPackageCertFile);
+            InstallPackage(c_testPackageFile);
+
             return true;
         }
 
