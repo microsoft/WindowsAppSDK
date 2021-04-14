@@ -116,6 +116,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningVersion>18</WarningVersion>
+      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+      <!-- Corresponds to /GF -->
+      <StringPooling>true</StringPooling>
+      <!-- Corresponds to /Zi -->
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <!-- Corresponds to /Gy -->
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
@@ -124,6 +131,10 @@
            than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
+      <!-- Configure the release build binary to be as required by internal API scanning tools. -->      
+      <LinkIncremental>false</LinkIncremental>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <!-- EnableCOMDATFolding and OptimizeReferences are set to true below for all build configurations. -->
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>

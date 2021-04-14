@@ -4,11 +4,11 @@
     <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <Platforms>x64;x86</Platforms>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>$(Platform)</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.2.0" />
   </ItemGroup>
   
   <ItemGroup>
@@ -18,6 +18,12 @@
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.18362.0</CSWinRTWindowsMetadata>
+  </PropertyGroup>
+
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>	
 
   <ItemGroup>
