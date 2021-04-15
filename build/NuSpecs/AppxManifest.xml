@@ -27,8 +27,21 @@
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.ProjectReunion.dll</Path>
-          <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.ActivationRegistrationManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.AppLifecycle" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationArguments" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppLifecycle" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationChannel" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationCreateChannelResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationActivationInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationReceivedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationRegistrationToken" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>

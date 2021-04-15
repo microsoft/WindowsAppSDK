@@ -39,9 +39,9 @@ namespace Test::AppLifecycle
         BEGIN_TEST_CLASS(FunctionalTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
+            END_TEST_CLASS()
 
-        TEST_CLASS_SETUP(ClassInit)
+            TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::Setup();
 
