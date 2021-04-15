@@ -49,7 +49,7 @@
         </uap:Extension>
 		<com:Extension Category="windows.comServer">
 			<com:ComServer>
-				<com:ExeServer Executable="AppLifecycleTestApp\AppLifecycleTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
+				<com:ExeServer Executable="ActivationTestApp\ActivationTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
 					<com:Class Id="c54044c4-eac7-4c4b-9996-c570a94b9306" DisplayName="Reunion Push" />
 				</com:ExeServer>
 			</com:ComServer>

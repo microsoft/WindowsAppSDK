@@ -13,7 +13,6 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
-#include "externs.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -211,7 +210,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
-        std::cout << "AppInstance::GetActivatedEventArgs -> Start" << std::endl;
         if (HasIdentity())
         {
             auto pushArgs = GetRawNotificationEventArgs::GetRawNotificationEventArgs();
@@ -266,7 +264,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 data = make<LaunchActivatedEventArgs>(commandLine).as<IInspectable>();
             }
         }
-        std::cout << "AppInstance::GetActivatedEventArgs -> End" << std::endl;
         return make<AppActivationArguments>(kind, data);
     }
 

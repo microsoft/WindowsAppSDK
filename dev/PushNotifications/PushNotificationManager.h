@@ -3,8 +3,6 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    static DWORD s_cookie = 0;
-
     struct PushNotificationManager
     {
         PushNotificationManager() = default;

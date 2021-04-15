@@ -38,6 +38,13 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppLifecycle" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationChannel" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationCreateChannelResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationManager" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationActivationInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationReceivedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.ProjectReunion.PushNotificationRegistrationToken" ThreadingModel="both" />
+          
       </InProcessServer>
     </Extension>
   </Extensions>

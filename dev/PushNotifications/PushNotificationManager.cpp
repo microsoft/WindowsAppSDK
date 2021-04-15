@@ -151,16 +151,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     Microsoft::ProjectReunion::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(Microsoft::ProjectReunion::PushNotificationActivationInfo const& details)
     {
-        std::cout << "PushNotificationManager::RegisterActivator -> Start" << std::endl;
         int passedFlags = static_cast<int>(details.Kind());
         winrt::guid taskClsid = details.TaskClsid();
-
+        DWORD cookie = 0;
         BackgroundTaskRegistration registeredTask = nullptr;
 
         if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::PushTrigger))
         {
             bool taskRegistered = false;
-
             for (auto task : BackgroundTaskRegistration::AllTasks())
             {
                 if (task.Value().Name() == backgroundTaskName)
@@ -184,34 +182,31 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                     // Only applicable for a Win32 app
                     builder.SetTaskEntryPointClsid(taskClsid);
                 }
-
                 registeredTask = builder.Register();
             }
         }
 
         if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::ComActivator))
         {
-            if (taskClsid != winrt::guid()) // Register with COM for Win32
+            if (taskClsid != winrt::guid())
             {
+                auto lock = g_lock.lock();
                 // Define handle that will be set during background task execution
                 g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-                g_sample = 4;
-                std::cout << g_sample << std::endl;
+
                 ::CoRegisterClassObject(
                     taskClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
                     REGCLS_MULTIPLEUSE,
-                    &s_cookie);
+                    &cookie);
             }
         }
-        std::cout << "PushNotificationManager::RegisterActivator -> End" << std::endl;
-        return PushNotificationRegistrationToken{ s_cookie, registeredTask };
+        return PushNotificationRegistrationToken{ cookie, registeredTask };
     }
 
     void PushNotificationManager::UnregisterActivator(Microsoft::ProjectReunion::PushNotificationRegistrationToken const& token, Microsoft::ProjectReunion::PushNotificationRegistrationKind const& kind)
     {
-        bool taskRegistered = false;
         int passedFlags = static_cast<int>(kind);
 
         if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::PushTrigger))
@@ -225,10 +220,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
         }
 
-        if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::ComActivator) && s_cookie != 0)
+        if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::ComActivator) && token.Cookie() != 0)
         {
-            ::CoRevokeClassObject(s_cookie);
-            s_cookie = 0;
+            ::CoRevokeClassObject(token.Cookie());
         }
     }
 }

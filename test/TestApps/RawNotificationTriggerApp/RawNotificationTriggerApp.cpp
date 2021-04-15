@@ -22,19 +22,49 @@ using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
 using namespace Windows::Web::Http;
 
-std::wstring BuildNotificationPayload(std::wstring channel)
+bool g_quit = false;
+std::wstring g_channelUri = L"";
+std::wstring g_payload = L"";
+
+void cleanInputBuffer()
 {
-    std::wstring channelUri = L"\"ChannelUri\":\"" + channel + L"\"";
-    std::wstring x_wns_type = L"\"X_WNS_Type\": \"wns/raw\"";
-    std::wstring contentType = L"\"Content_Type\": \"application/octet-stream\"";
-    std::wstring payload = L"\"Payload\": \"<toast></toast>\"";
-    std::wstring delay = L"\"Delay\": \"false\"";
-    return { L"{" + channelUri + L"," + x_wns_type + L"," + contentType + L"," + payload + L"," + delay + L"}" };
+    std::string trash;
+    std::getline(std::cin, trash, '\n');
 }
 
-void SendRequestToServer(std::wstring channelUri) {
+std::wstring BuildNotificationPayload(bool isToast)
+{
+    std::wstring x_wns_type = isToast ? L"\"wns/toast\"" : L"\"wns/raw\"";
+    std::wstring contentType = isToast ? L"\"text/xml\"" : L"\"application/octet-stream\"";
+    if (g_channelUri.empty())
+    {
+        std::cout << "Please set the channel uri before sending notification." << std::endl << std::endl;
+        return L"";
+    }
+    else if (g_channelUri.empty())
+    {
+        std::cout << "Please set the payload before sending notification." << std::endl << std::endl;
+        return L"";
+    }
+    
+    std::wstring channelUri = L"\"ChannelUri\":\"" + g_channelUri + L"\"";
+    std::wstring x_wns_typeJson = L"\"X_WNS_Type\": " + x_wns_type;
+    std::wstring contentTypeJson = L"\"Content_Type\": " + contentType;
+    std::wstring payload = L"\"Payload\": \"" + g_payload + L"\"";
+    std::wstring delay = L"\"Delay\": \"false\"";
+    return { L"{" + channelUri + L"," + x_wns_typeJson + L"," + contentTypeJson + L"," + payload + L"," + delay + L"}" };
+}
+
+void SendPushNotification(bool isToast) {
+    cleanInputBuffer();
     HttpResponseMessage httpResponseMessage;
     std::wstring httpResponseBody;
+    std::wstring notificationPayload = BuildNotificationPayload(isToast);
+    if (notificationPayload.empty())
+    {
+        return;
+    }
+
     try {
         // Construct the HttpClient and Uri. This endpoint is for test purposes only.
         HttpClient httpClient;
@@ -42,7 +72,7 @@ void SendRequestToServer(std::wstring channelUri) {
 
         // Construct the JSON to post.
         HttpStringContent jsonContent(
-            BuildNotificationPayload(channelUri),
+            notificationPayload,
             UnicodeEncoding::Utf8,
             L"application/json");
 
@@ -54,102 +84,77 @@ void SendRequestToServer(std::wstring channelUri) {
         // Make sure the post succeeded, and write out the response.
         httpResponseMessage.EnsureSuccessStatusCode();
         httpResponseBody = httpResponseMessage.Content().ReadAsStringAsync().get();
-        std::wcout << httpResponseBody.c_str() << L": ";
+        std::wcout << httpResponseBody.c_str() << std::endl << std::endl;
     }
     catch (winrt::hresult_error const& ex)
     {
-        std::wcout << ex.message().c_str() << std::endl;
+        std::wcout << ex.message().c_str() << std::endl << std::endl;
     }
 }
 
-wil::unique_event CreateTestEvent(const std::wstring& eventName)
+int menuSelect()
 {
-    bool alreadyExists = false;
-    SECURITY_ATTRIBUTES attributes = {};
-    wil::unique_hlocal_security_descriptor descriptor;
-
-    // Grant access to world and appcontainer.
-    THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
-        L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
-    attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
-    attributes.lpSecurityDescriptor = descriptor.get();
-
-    wil::unique_event event;
-    event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
-    return event;
+    std::cout << "Select action to perform: " << std::endl;
+    std::cout << "(1) Set Channel URI" << std::endl;
+    std::cout << "(2) Set Payload" << std::endl;
+    std::cout << "(3) Send raw notification" << std::endl;
+    std::cout << "(4) Send Toast" << std::endl;
+    std::cout << "(5) Quit" << std::endl << std::endl;
+    std::cout << "Choice: ";
+    char choice = std::getchar();
+    return choice;
 }
 
-bool WaitForEvent(const wil::unique_event& successEvent, const wil::unique_event& failedEvent)
+void SetChannelUri()
 {
-    bool result = true;
-    HANDLE waitEvents[2] = { successEvent.get(), failedEvent.get() };
-    auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
-        10000);
-
-    // If waitResult == failureEventIndex, it means the remote test process signaled a
-    // failure event while we were waiting for a different event.
-    auto failureEventIndex = WAIT_OBJECT_0 + 1;
-    if (waitResult == failureEventIndex)
-    {
-        result = false;
-    }
-    else if (waitResult == WAIT_TIMEOUT)
-    {
-        result = false;
-    }
-    else if (waitResult == WAIT_FAILED)
-    {
-        result = false;
-    }
-
-    successEvent.ResetEvent();
-    failedEvent.ResetEvent();
-    return result;
+    cleanInputBuffer();
+    std::string channelUri;
+    std::cout << "Insert Channel URI: ";
+    std::getline(std::cin, channelUri, '\n');
+    std::wstring str(channelUri.begin(), channelUri.end());
+    g_channelUri = str;
+    std::cout << std::endl;
 }
 
+void SetPayload()
+{
+    cleanInputBuffer();
+    std::string payload;
+    std::cout << "Insert Payload: ";
+    std::getline(std::cin, payload, '\n');
+    std::wstring str(payload.begin(), payload.end());
+    g_payload = str;
+    std::cout << std::endl;
+}
 
 int main()
 {
-    /*while (true)
+    std::cout << "Project Reunion Push Notification App" << std::endl << std::endl;
+    while (!g_quit)
     {
-        std::string channelUri;
-        std::cout << "Insert Channel URI: ";
-        std::getline(std::cin, channelUri);
-        std::wstring str(channelUri.begin(), channelUri.end());
-        SendRequestToServer(str);
-    }*/
-    std::string channelUri;
-    std::cout << "Insert Channel URI: ";
-    std::getline(std::cin, channelUri);
-    std::wstring str(channelUri.begin(), channelUri.end());
-    for (int i = 0; i < 100; i++) {
-        Sleep(2000);
-        std::wstring successEventName = L"BackgroundActivation";
-        std::wstring failedEventName = L"BackgroundActivationFailed";
-        wil::unique_event successEvent = CreateTestEvent(successEventName);
-        wil::unique_event failedEvent = CreateTestEvent(failedEventName);
-        SendRequestToServer(str);
+        char choice = menuSelect();
+        std::cout << std::endl;
 
-        if (WaitForEvent(successEvent, failedEvent))
-        {
-            std::wcout << L"Success!" << std::endl;
-        }
-        else
-        {
-            std::wcout << L"Failed." << std::endl;
-            break;
+        switch (choice) {
+            case '1':
+                SetChannelUri();
+                break;
+            case '2':
+                SetPayload();
+                break;
+            case '3':
+                SendPushNotification(false);
+                break;
+            case '4':
+                SendPushNotification(true);
+                break;
+            case '5':
+                g_quit = true;
+                break;
+            default:
+                std::cout << "Invalid input." << std::endl << std::endl;
+                cleanInputBuffer();
         }
     }
     return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
