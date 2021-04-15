@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.ProjectReunion
+namespace Microsoft.Windows.PushNotifications
 {
     // Event args for the Push payload.
     runtimeclass PushNotificationReceivedEventArgs
@@ -83,26 +83,25 @@ namespace Microsoft.ProjectReunion
 
         // Unsubscribes the channel
         void Close();
+   };
 
-        // In-memory Event handler for Push Notifications
-        event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
-    }
+   runtimeclass PushNotificationCreateChannelResult
+   {
+       PushNotificationCreateChannelResult(
+           PushNotificationChannel channel,
+           HRESULT extendedError,
+           PushNotificationChannelStatus status);
 
-    runtimeclass PushNotificationCreateChannelResult
-    {
-        PushNotificationCreateChannelResult(
-            PushNotificationChannel channel,
-            HRESULT extendedError,
-            PushNotificationChannelStatus status);
+       // The Push channel associated with the Result. Null if InProgress or completion failed
+       PushNotificationChannel Channel { get; };
 
-        // The Push channel associated with the Result. Null if InProgress or completion failed
-        PushNotificationChannel Channel { get; };
-
-        // More detailed error code in addition to the ChannelStatus state.
-        HRESULT ExtendedError{ get; };
+       // More detailed error code in addition to the ChannelStatus state.
+       HRESULT ExtendedError{ get; };
 
         // The Status of the ChannelComplete operation
-        PushNotificationChannelStatus Status { get; };
+        ChannelStatus Status { get; };
+       // The Status of the ChannelComplete operation
+       PushNotificationChannelStatus Status { get; };
     };
 
     runtimeclass PushNotificationRegistrationToken
@@ -116,6 +115,12 @@ namespace Microsoft.ProjectReunion
 
         // The Registration token for the Push Trigger
         Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
+
+        // Either InProgress or InProgressRetry status
+        PushNotificationChannelStatus status;
+
+        // Total Retries so far
+        UInt32 retryCount;
     };
 
     static runtimeclass PushNotificationManager
