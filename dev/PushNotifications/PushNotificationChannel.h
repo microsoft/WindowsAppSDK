@@ -1,22 +1,31 @@
 ﻿#pragma once
-#include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
+#include "PushNotificationChannel.g.h"
 
-namespace winrt::Microsoft::Windows::PushNotifications::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
     {
         PushNotificationChannel() = default;
 
-        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
-        winrt::Windows::Foundation::Uri Uri();
-        winrt::Windows::Foundation::DateTime ExpirationTime();
+        PushNotificationChannel(Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
+        Windows::Foundation::Uri Uri();
+        Windows::Foundation::DateTime ExpirationTime();
         void Close();
 
+        winrt::event_token PushReceived(Windows::Foundation::TypedEventHandler<Microsoft::ProjectReunion::PushNotificationChannel, Microsoft::ProjectReunion::PushNotificationReceivedEventArgs> const& handler);
+        void PushReceived(winrt::event_token const& token) noexcept;
+
     private:
+        void LambdaWrapper(
+            winrt::Windows::Networking::PushNotifications::PushNotificationChannel /*channel*/,
+            winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args);
+
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+
+        wil::critical_section m_lock;
     };
 }
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
+namespace winrt::Microsoft::ProjectReunion::factory_implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, implementation::PushNotificationChannel>
     {

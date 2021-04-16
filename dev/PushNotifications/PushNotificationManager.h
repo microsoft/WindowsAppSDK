@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.h"
+#include "PushNotificationManager.g.h"
 
-namespace winrt::Microsoft::Windows::PushNotifications::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct PushNotificationManager
     {

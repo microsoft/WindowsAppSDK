@@ -1,24 +1,24 @@
 ﻿#pragma once
-#include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.h"
+#include "PushNotificationCreateChannelResult.g.h"
 
-namespace winrt::Microsoft::Windows::PushNotifications::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct PushNotificationCreateChannelResult : PushNotificationCreateChannelResultT<PushNotificationCreateChannelResult>
     {
         PushNotificationCreateChannelResult() = default;
 
-        PushNotificationCreateChannelResult(winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel const& channel, hresult const& extendedError, winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus const& status);
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel Channel();
+        PushNotificationCreateChannelResult(Microsoft::ProjectReunion::PushNotificationChannel const& channel, hresult const& extendedError, Microsoft::ProjectReunion::PushNotificationChannelStatus const& status);
+        Microsoft::ProjectReunion::PushNotificationChannel Channel();
         winrt::hresult ExtendedError();
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus Status();
+        Microsoft::ProjectReunion::PushNotificationChannelStatus Status();
 
     private:
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        Microsoft::ProjectReunion::PushNotificationChannel m_channel{ nullptr };
         winrt::hresult m_extendedError;
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus m_status;
+        Microsoft::ProjectReunion::PushNotificationChannelStatus m_status;
     };
 }
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
+namespace winrt::Microsoft::ProjectReunion::factory_implementation
 {
     struct PushNotificationCreateChannelResult : PushNotificationCreateChannelResultT<PushNotificationCreateChannelResult, implementation::PushNotificationCreateChannelResult>
     {

@@ -1,16 +1,16 @@
 ﻿#include "pch.h"
 #include "PushNotificationCreateChannelResult.h"
-#include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.cpp"
+#include "PushNotificationCreateChannelResult.g.cpp"
 
-namespace winrt::Microsoft::Windows::PushNotifications::implementation
+namespace winrt::Microsoft::ProjectReunion::implementation
 {
-    PushNotificationCreateChannelResult::PushNotificationCreateChannelResult(winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel const& channel, winrt::hresult const& extendedError, winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus const& status)
+    PushNotificationCreateChannelResult::PushNotificationCreateChannelResult(Microsoft::ProjectReunion::PushNotificationChannel const& channel, winrt::hresult const& extendedError, Microsoft::ProjectReunion::PushNotificationChannelStatus const& status)
     {
         m_channel = channel;
         m_extendedError = extendedError;
         m_status = status;
     }
-    winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel PushNotificationCreateChannelResult::Channel()
+    Microsoft::ProjectReunion::PushNotificationChannel PushNotificationCreateChannelResult::Channel()
     {
         return m_channel;
     }
@@ -18,7 +18,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         return m_extendedError;
     }
-    winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus PushNotificationCreateChannelResult::Status()
+    Microsoft::ProjectReunion::PushNotificationChannelStatus PushNotificationCreateChannelResult::Status()
     {
         return m_status;
     }
