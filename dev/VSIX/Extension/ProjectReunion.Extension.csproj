@@ -30,32 +30,21 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE">
+    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg"/>
+    <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
     <Content Include="Reunion.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg">
+    <Content Include="LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
   </ItemGroup>
   <ItemGroup>
