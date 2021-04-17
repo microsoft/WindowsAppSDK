@@ -3,8 +3,6 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 namespace TF = ::Test::FileSystem;
 
 namespace Test::Packages
@@ -36,7 +34,7 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-            Assert::IsTrue(std::filesystem::is_regular_file(msix));
+            VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
         auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
 
@@ -47,7 +45,7 @@ namespace Test::Packages
         if (FAILED(deploymentResult.ExtendedErrorCode()))
         {
             auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
-            Assert::Fail(message.get());
+            VERIFY_FAIL(message.get());
         }
     }
 
@@ -66,7 +64,7 @@ namespace Test::Packages
         if (!deploymentResult)
         {
             auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
-            Assert::Fail(message.get());
+            VERIFY_FAIL(message.get());
         }
     }
 
@@ -88,9 +86,9 @@ namespace Test::Packages
             return std::wstring();
         }
 
-        Assert::AreEqual(ERROR_INSUFFICIENT_BUFFER, rc);
+        VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
         auto path = wil::make_process_heap_string(nullptr, pathLength);
-        Assert::AreEqual(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
+        VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
         return std::wstring(path.get());
     }
 
