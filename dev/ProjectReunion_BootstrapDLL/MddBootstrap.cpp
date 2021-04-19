@@ -26,12 +26,82 @@ std::wstring g_test_ddlmPackagePublisherId;
 
 namespace MddCore
 {
+inline bool IsStaticPackageGraphEmpty()
+{
+    // Check the static package graph
+    UINT32 n = 0;
+    const auto rc{ GetCurrentPackageInfo(PACKAGE_FILTER_HEAD, &n, nullptr, nullptr) };
+    (void) LOG_HR_IF_MSG(HRESULT_FROM_WIN32(rc), (rc != APPMODEL_ERROR_NO_PACKAGE) && (rc != ERROR_INSUFFICIENT_BUFFER), "GetCurrentPackageInfo rc=%d", rc);
+    return rc == APPMODEL_ERROR_NO_PACKAGE;
+}
+
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+bool IsElevated(HANDLE token = nullptr)
+{
+    wistd::unique_ptr<TOKEN_MANDATORY_LABEL> tokenMandatoryLabel{ wil::get_token_information_failfast<TOKEN_MANDATORY_LABEL>(!token ? GetCurrentThreadEffectiveToken() : token) };
+    const DWORD integrityLevel{ *GetSidSubAuthority((*tokenMandatoryLabel).Label.Sid, static_cast<DWORD>(static_cast<UCHAR>(*GetSidSubAuthorityCount((*tokenMandatoryLabel).Label.Sid) - 1))) };
+    return integrityLevel >= SECURITY_MANDATORY_HIGH_RID;
+}
+
 void FailFastIfElevated()
 {
-    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), IsElevated() || IsElevated(GetCurrentProcessToken()),
                         "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
 }
+}
+
+inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
+{
+#if defined(_M_X64)
+    return winrt::Windows::System::ProcessorArchitecture::X64;
+#elif defined(_M_IX86)
+    return winrt::Windows::System::ProcessorArchitecture::X86;
+#elif defined(_M_ARM64)
+    return winrt::Windows::System::ProcessorArchitecture::Arm64;
+#elif defined(_M_ARM)
+    return winrt::Windows::System::ProcessorArchitecture::Arm;
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
+inline PCWSTR GetCurrentArchitectureAsString()
+{
+#if defined(_M_X64)
+    return L"x64";
+#elif defined(_M_IX86)
+    return L"x86";
+#elif defined(_M_ARM64)
+    return L"arm64";
+#elif defined(_M_ARM)
+    return L"arm";
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
+inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(PCWSTR architecture)
+{
+    if (CompareStringOrdinal(architecture, -1, L"x64", -1, TRUE) == CSTR_EQUAL)
+    {
+        return winrt::Windows::System::ProcessorArchitecture::X64;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"x86", -1, TRUE) == CSTR_EQUAL)
+    {
+        return winrt::Windows::System::ProcessorArchitecture::X86;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"arm64", -1, TRUE) == CSTR_EQUAL)
+    {
+    return winrt::Windows::System::ProcessorArchitecture::Arm64;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"arm", -1, TRUE) == CSTR_EQUAL)
+    {
+    return winrt::Windows::System::ProcessorArchitecture::Arm;
+    }
+    else
+    {
+        return winrt::Windows::System::ProcessorArchitecture::Unknown;
+    }
 }
 
 STDAPI MddBootstrapInitialize(
@@ -41,7 +111,7 @@ STDAPI MddBootstrapInitialize(
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
-    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !MddCore::IsStaticPackageGraphEmpty());
 
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);
@@ -95,11 +165,8 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    if (g_packageDependencyContext && g_projectReunionDll)
-    {
-        MddRemovePackageDependency(g_packageDependencyContext);
-        g_packageDependencyContext = nullptr;
-    }
+    MddRemovePackageDependency(g_packageDependencyContext);
+    g_packageDependencyContext = nullptr;
 
     g_packageDependencyId.reset();
 
@@ -247,7 +314,7 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
 
     // Look for windows.appExtension with name="com.microsoft.projectreunion.ddlm.<majorversion>.<architecture>"
     WCHAR appExtensionName[100]{};
-    wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", minVersion.Major, AppModel::Identity::GetCurrentArchitectureAsString());
+    wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", minVersion.Major, GetCurrentArchitectureAsString());
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
@@ -285,8 +352,8 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
         }
 
         // Does the architecture match?
-        const auto architecture{ AppModel::Identity::ParseArchitecture(architectureAsString) };
-        if (architecture != AppModel::Identity::GetCurrentArchitecture())
+        const auto architecture{ ParseArchitecture(architectureAsString) };
+        if (architecture != GetCurrentArchitecture())
         {
             continue;
         }

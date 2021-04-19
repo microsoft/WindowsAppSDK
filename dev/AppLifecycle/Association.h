@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     // Association registry key values.
     static LPCWSTR c_openWithProgIdsKeyName{ L"OpenWithProgids" };
@@ -36,7 +36,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     std::wstring GetFullIdentityString();
     bool HasIdentity();
     std::wstring GetModulePath();
-    std::wstring ComputeAppId(const std::wstring& customSeed = L"");
+    std::wstring ComputeAppId(const std::wstring& customSeed);
     std::wstring ComputeProgId(AssociationType type);
     std::wstring ComputeProgId(const std::wstring& appId, AssociationType type);
     std::wstring CreateAssocKeyPath(const std::wstring& assoc);

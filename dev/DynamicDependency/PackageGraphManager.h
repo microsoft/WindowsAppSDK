@@ -4,21 +4,12 @@
 #if !defined(PACKAGEGRAPHMANAGER_H)
 #define PACKAGEGRAPHMANAGER_H
 
-#include <appmodel_msixdynamicdependency.h>
-
 #include <PackageGraph.h>
 
 namespace MddCore
 {
 class PackageGraphManager
 {
-public:
-    static UINT32 GetGenerationId();
-
-    static UINT32 IncrementGenerationId();
-
-    static UINT32 SetGenerationId(const UINT32 value);
-
 public:
     static HRESULT ResolvePackageDependency(
         PCWSTR packageDependencyId,
@@ -40,27 +31,27 @@ public:
         wil::unique_process_heap_string& packageDependencyId);
 
 public:
-    typedef LONG (WINAPI* GetCurrentPackageInfo3Function)(
+    typedef LONG (WINAPI* GetCurrentPackageInfo2Function)(
         const UINT32 flags,
-        PackageInfoType packageInfoType,
+        PackagePathType packagePathType,
         UINT32* bufferLength,
-        void* buffer,
+        BYTE* buffer,
         UINT32* count);
 
-    static HRESULT GetCurrentPackageInfo3(
+    static HRESULT GetCurrentPackageInfo2(
         const UINT32 flags,
-        PackageInfoType packageInfoType,
+        PackagePathType packagePathType,
         UINT32* bufferLength,
-        void* buffer,
+        BYTE* buffer,
         UINT32* count,
-        GetCurrentPackageInfo3Function getCurrentPackageInfo3) noexcept;
+        GetCurrentPackageInfo2Function getCurrentPackageInfo2) noexcept;
 
 private:
     static UINT32 SerializePackageInfoToBuffer(
         const UINT32 flags,
-        const PackageInfoType packageInfoType,
+        const PackagePathType packagePathType,
         const UINT32 bufferLength,
-        void* buffer,
+        BYTE* buffer,
         const std::vector<const MddCore::PackageGraphNode*>& matchingPackageInfo,
         const UINT32 dynamicPackagesCount,
         const PACKAGE_INFO* staticPackageInfo,
@@ -68,7 +59,7 @@ private:
 
     static void SerializeStringToBuffer(
         const UINT32 bufferLength,
-        void*& buffer,
+        BYTE*& buffer,
         UINT32& bufferNeeded,
         PWSTR& to,
         PCWSTR from);
@@ -81,7 +72,6 @@ private:
 private:
     static std::mutex s_lock;
     static MddCore::PackageGraph s_packageGraph;
-    static volatile ULONG s_generationId;
 };
 }
 

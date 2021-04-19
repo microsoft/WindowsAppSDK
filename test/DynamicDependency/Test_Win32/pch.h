@@ -30,8 +30,6 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
-#include <appmodel_msixdynamicdependency.h>
-
 #include "CppUnitTest.h"
 
 #include "TestCom.h"

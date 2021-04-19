@@ -10,7 +10,8 @@ using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
 using namespace winrt;
-using namespace winrt::Microsoft::Windows::AppLifecycle;
+using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
@@ -81,16 +82,16 @@ namespace Test::AppLifecycle
 
         TEST_METHOD(GetActivatedEventArgsIsNotNull)
         {
-            VERIFY_IS_NOT_NULL(AppInstance::GetCurrent().GetActivatedEventArgs());
+            VERIFY_IS_NOT_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
         }
 
         TEST_METHOD(GetActivatedEventArgsForLaunch)
         {
-            auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+            auto args = winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs();
             VERIFY_IS_NOT_NULL(args);
-            VERIFY_ARE_EQUAL(args.Kind(), ExtendedActivationKind::Launch);
+            VERIFY_ARE_EQUAL(args.Kind(), ActivationKind::Launch);
 
-            auto launchArgs = args.Data().as<LaunchActivatedEventArgs>();
+            auto launchArgs = args.as<LaunchActivatedEventArgs>();
             VERIFY_IS_NOT_NULL(launchArgs);
         }
 

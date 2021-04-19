@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include <ActivationRegistrationManager.h>
-#include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.cpp>
+#include <Microsoft.ApplicationModel.Activation.ActivationRegistrationManager.g.cpp>
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
@@ -11,13 +11,11 @@
 #include "ExtensionContract.h"
 #include "EncodedLaunchExecuteCommand.h"
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
-    using namespace winrt::Windows::Foundation;
-
     std::wstring GenerateEncodedLaunchUri(std::wstring const& appUserModelId, std::wstring const& contractId)
     {
-        Uri uri{ wil::str_printf<std::wstring>(L"%s://%s?%s=%s",
+        Windows::Foundation::Uri uri{ wil::str_printf<std::wstring>(L"%s://%s?%s=%s",
             c_encodedLaunchSchemeName, appUserModelId.c_str(), c_contractIdKeyName, contractId.c_str()).c_str() };
         return uri.AbsoluteUri().c_str();
     }

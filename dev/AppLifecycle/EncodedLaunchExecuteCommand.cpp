@@ -8,7 +8,7 @@
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     IFACEMETHODIMP EncodedLaunchExecuteCommand::Execute() noexcept try
     {

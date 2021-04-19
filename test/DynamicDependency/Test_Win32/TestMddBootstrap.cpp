@@ -50,10 +50,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_ProjectReunionFramework();
 
-            // Undo COM::CoSuperInitialize() and restore the thread to its initial state
-            // as when CppUnitTest  called us. Or as close as we can get to it
             winrt::uninit_apartment();
-            winrt::init_apartment(winrt::apartment_type::single_threaded);
         }
 
         TEST_METHOD(Initialize_DDLMNotFound)
@@ -93,7 +90,7 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(GetCurrentPackageInfo_NotPackaged_InvalidParameter)
         {
-            const UINT32 c_filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+            const UINT32 c_filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_INFORMATION_BASIC };
 
             {
                 Assert::AreEqual(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, nullptr, nullptr, nullptr)));
@@ -168,11 +165,11 @@ namespace Test::DynamicDependency
         {
             UINT32 bufferLength{};
             UINT32 count{};
-            Assert::AreEqual(expectedHR, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC, &bufferLength, nullptr, &count)));
+            Assert::AreEqual(expectedHR, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_INFORMATION_BASIC, &bufferLength, nullptr, &count)));
             Assert::AreEqual(expectedCount, count);
             if (minExpectedBufferLength > 0)
             {
-                auto message{ wil::str_printf<wil::unique_process_heap_string>(L"GetCurrentPackageInfo() expectedBufferLength>=%u bufferLength=%u", minExpectedBufferLength, bufferLength) };
+                auto message{ wil::str_printf<wil::unique_process_heap_string>(L"GetCurrentPackageInfo2() expectedBufferLength>=%u bufferLength=%u", minExpectedBufferLength, bufferLength) };
                 Assert::IsTrue(bufferLength >= minExpectedBufferLength, message.get());
             }
             else

@@ -7,22 +7,6 @@
 
 std::mutex MddCore::PackageGraphManager::s_lock;
 MddCore::PackageGraph MddCore::PackageGraphManager::s_packageGraph;
-volatile ULONG MddCore::PackageGraphManager::s_generationId{};
-
-UINT32 MddCore::PackageGraphManager::GetGenerationId()
-{
-    return static_cast<UINT32>(ReadULongAcquire(&s_generationId));
-}
-
-UINT32 MddCore::PackageGraphManager::IncrementGenerationId()
-{
-    return static_cast<UINT32>(InterlockedIncrement(&s_generationId));
-}
-
-UINT32 MddCore::PackageGraphManager::SetGenerationId(const UINT32 value)
-{
-    return static_cast<UINT32>(InterlockedExchange(&s_generationId, value));
-}
 
 HRESULT MddCore::PackageGraphManager::ResolvePackageDependency(
     PCWSTR packageDependencyId,
@@ -43,10 +27,7 @@ HRESULT MddCore::PackageGraphManager::AddToPackageGraph(
 {
     std::unique_lock<std::mutex> lock(s_lock);
 
-    RETURN_IF_FAILED(s_packageGraph.Add(packageDependencyId, rank, options, *context, packageFullName));
-
-    IncrementGenerationId();
-    return S_OK;
+    return s_packageGraph.Add(packageDependencyId, rank, options, *context, packageFullName);
 }
 
 void MddCore::PackageGraphManager::RemoveFromPackageGraph(
@@ -60,8 +41,6 @@ void MddCore::PackageGraphManager::RemoveFromPackageGraph(
     std::unique_lock<std::mutex> lock(s_lock);
 
     (void) LOG_IF_FAILED(s_packageGraph.Remove(context));
-
-    IncrementGenerationId();
 }
 
 HRESULT MddCore::PackageGraphManager::GetPackageDependencyForContext(
@@ -73,28 +52,24 @@ HRESULT MddCore::PackageGraphManager::GetPackageDependencyForContext(
     return s_packageGraph.GetPackageDependencyForContext(context, packageDependencyId);
 }
 
-// On success, bufferLength depends on packageInfoType:
-//   * PackageInfoType_PackageInfo*Path
-//     buffer is a byte[] containing PACKAGE_INFO[count] followed by all variable length data.
+// On success, buffer is a byte[] containing PACKAGE_INFO[count] followed by all variable length data.
 // Pointers in PACKAGE_INFO (all PWSTR) are null or point to their value in the variable length data.
-//   * PackageInfoType_PackageInfoGeneration
-//     buffer is a UINT32 containing the GenerationId. count is unused (always set to zero if not null).
 //
 // On success but \c bufferLength is too small to hold all the data, we still set bufferLength to the
 // size needed for all this data but return ERROR_INSUFFICIENT_BUFFER (as an HRESULT).
-HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
+HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo2(
     const UINT32 flags,
-    PackageInfoType packageInfoType,
+    PackagePathType packagePathType,
     UINT32* bufferLength,
-    void* buffer,
+    BYTE* buffer,
     UINT32* count,
-    GetCurrentPackageInfo3Function getCurrentPackageInfo3) noexcept try
+    GetCurrentPackageInfo2Function getCurrentPackageInfo2) noexcept try
 {
-    // Check parameter(s) per GetCurrentPackageInfo3 compatibility
+    // Check parameter(s) per GetCurrentPackageInfo2 compatibility
     //   * bufferLength is required
     //   * buffer is required if bufferLength >0
-    //   * count is required if buffer is not nullptr, unless caller is getting the generation
-    RETURN_HR_IF(E_INVALIDARG, (bufferLength == nullptr) || (*bufferLength > 0 && buffer == nullptr) || ((count == nullptr) && (buffer != nullptr) && (packageInfoType != PackageInfoType_PackageInfoGeneration)));
+    //   * count is required if buffer is not nullptr
+    RETURN_HR_IF(E_INVALIDARG, (bufferLength == nullptr) || (*bufferLength > 0 && buffer == nullptr) || ((count == nullptr) && (buffer != nullptr)));
 
     if (count)
     {
@@ -103,43 +78,19 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
 
     std::unique_lock<std::mutex> lock(s_lock);
 
-    // Do we need Static and/or Dynamic items? NOTE: If neither are specified we need both
-    const bool filterStatic{ WI_IsFlagSet(flags, PACKAGE_FILTER_STATIC) };
-    const bool filterDynamic{ WI_IsFlagSet(flags, PACKAGE_FILTER_DYNAMIC) };
-    const bool staticAndDynamicFlagsNotSpecified{ !filterStatic && !filterDynamic };
-    const bool needStatic{ staticAndDynamicFlagsNotSpecified || filterStatic };
-    const bool needDynamic{ staticAndDynamicFlagsNotSpecified || filterDynamic };
-
-    // If an unpackaged process has no dynamic packages in its package graph
-    // Then GetCurrentPackageInfo3() always returns APPMODEL_ERROR_NO_PACKAGE.
-    //
-    // If an unpackaged process has dynamic packages in its package graph
-    // But flags specifies Static filter AND not Dynamic filter
-    // Then GetCurrentPackageInfo3() always returns APPMODEL_ERROR_NO_PACKAGE
-    //
-    // Preserve these behaviors for compatibility reasons.
-    if (s_packageGraph.PackageGraphNodes().empty() || (filterStatic && !filterDynamic))
+    // Is the package graph empty?
+    if (s_packageGraph.PackageGraphNodes().empty())
     {
-        return HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
+        // No dynamic package data. Is there a static package graph? Regardless of the outcome our work here is done
+        UINT32 length{};
+        const LONG rc{ getCurrentPackageInfo2(flags, packagePathType, &length, nullptr, nullptr) };
+        if ((rc == ERROR_SUCCESS) || (rc == APPMODEL_ERROR_NO_PACKAGE) || (rc == ERROR_INSUFFICIENT_BUFFER))
+        {
+            // Don't log expected outcomes (Success, AppmodelErrorNoPackage, ErrorInsufficientBuffer)
+            return HRESULT_FROM_WIN32(rc);
+        }
+        RETURN_WIN32_MSG(rc, "GetCurrentPackageInfo2(): %d (0x%X)", rc, rc);
     }
-
-    // Are we asked for the GenerationId?
-    if (packageInfoType == PackageInfoType_PackageInfoGeneration)
-    {
-        const bool insufficientSpace{ *bufferLength < sizeof(UINT32) };
-        *bufferLength = sizeof(UINT32);
-        RETURN_HR_IF_EXPECTED(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), insufficientSpace);
-
-        UINT32* generationId{ reinterpret_cast<UINT32*>(buffer) };
-        *generationId = GetGenerationId();
-        return S_OK;
-    }
-    RETURN_HR_IF(E_INVALIDARG, (packageInfoType != PackageInfoType_PackageInfoInstallPath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoMutablePath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoEffectivePath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoMachineExternalPath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoUserExternalPath) &&
-                               (packageInfoType != PackageInfoType_PackageInfoEffectiveExternalPath));
 
     // We manage the package graph as a list of nodes, where each contain contains information about 1+ package.
     //
@@ -152,22 +103,46 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
     //
     // Either way, set bufferLength with the buffer size needed for all the data.
 
+    std::vector<const MddCore::PackageGraphNode*> matchingPackageInfo;
+
     UINT32 staticPackageGraphBufferLength{};
     wil::unique_cotaskmem_ptr<BYTE[]> staticPackageGraphBuffer;
     const PACKAGE_INFO* staticPackageInfo{};
     UINT32 staticPackagesCount{};
+
     UINT32 dynamicPackagesCount{};
-
-    std::vector<const MddCore::PackageGraphNode*> matchingPackageInfo;
-
     for (auto& packageGraphNode : s_packageGraph.PackageGraphNodes())
     {
-        // Does the node have any matching packages?
-        const auto countMatchingPackages{ packageGraphNode.CountMatchingPackages(flags, packageInfoType) };
-        if (countMatchingPackages > 0)
+        if (packageGraphNode.IsDynamic())
         {
-            matchingPackageInfo.push_back(&packageGraphNode);
-            dynamicPackagesCount += countMatchingPackages;
+            // It's dynamic data we manage. Does the node have any matching packages?
+            const auto countMatchingPackages{ packageGraphNode.CountMatchingPackages(flags, packagePathType) };
+            if (countMatchingPackages > 0)
+            {
+                matchingPackageInfo.push_back(&packageGraphNode);
+                dynamicPackagesCount += countMatchingPackages;
+            }
+        }
+        else
+        {
+            // It's static data the OS manages. Does the node have any matching packages?
+            LONG rc{ getCurrentPackageInfo2(flags, packagePathType, &staticPackageGraphBufferLength, nullptr, nullptr) };
+            if (rc == APPMODEL_ERROR_NO_PACKAGE)
+            {
+                // The process has no static package info
+                // Nothing to do
+            }
+            else if (rc == ERROR_INSUFFICIENT_BUFFER)
+            {
+                // We've got 1+ match! Get the data
+                staticPackageGraphBuffer = wil::make_unique_cotaskmem<BYTE[]>(staticPackageGraphBufferLength);
+                RETURN_IF_WIN32_ERROR(getCurrentPackageInfo2(flags, packagePathType, &staticPackageGraphBufferLength, staticPackageGraphBuffer.get(), &staticPackagesCount));
+                staticPackageInfo = reinterpret_cast<PACKAGE_INFO*>(staticPackageGraphBuffer.get());
+            }
+            else
+            {
+                RETURN_WIN32(rc);
+            }
         }
     }
 
@@ -178,36 +153,16 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
         *count = totalPackagesCount;
     }
 
-    // Return code needs special handling if we match zero packages (i.e. #Static=0, #Dynamic=0, *bufferLength=0):
-    //
-    // If there is no static or dynamic packages (i.e. unpackaged process with no DynamicDependencies)
-    // Then GetCurrentPackageInfo* returns APPMODEL_ERROR_NO_PACKAGE. Preserve this behavior.
-    //
-    // If there's dynamic packages but we match none AND there's no static packages AND PACKAGE_FILTER_STATIC was specified but not PACKAGE_FILTER_DYNAMIC
-    // Then GetCurrentPackageInfo* returns APPMODEL_ERROR_NO_PACKAGE.
-    //
-    // If there's dynamic packages but we match none AND PACKAGE_FILTER_STATIC was not specified
-    // or both PACKGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC were specified
-    // Then GetCurrentPackageInfo* returns ERROR_SUCCESS.
-    //
-    // In all cases we're returning zero packages. Our return code depends on why we're returning none.
-    //
-    // Preserve these behaviors.
+    // Do we have anything to report?
     if (totalPackagesCount == 0)
     {
         // No matches!
         *bufferLength = 0;
-
-        // Do we need to tell our caller AppmodelErrorNoPackage?
-        if (filterStatic && !filterDynamic)
-        {
-            return HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
-        }
         return S_OK;
     }
 
     // Compute the buffer length used/needed and fill buffer (if we can)
-    auto bufferNeeded{ SerializePackageInfoToBuffer(flags, packageInfoType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount) };
+    auto bufferNeeded{ SerializePackageInfoToBuffer(flags, packagePathType, *bufferLength, buffer, matchingPackageInfo, dynamicPackagesCount, staticPackageInfo, staticPackagesCount) };
     const auto isInsufficientBuffer{ *bufferLength < bufferNeeded };
     *bufferLength = bufferNeeded;
     RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), isInsufficientBuffer);
@@ -218,9 +173,9 @@ CATCH_RETURN();
 
 UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
     const UINT32 flags,
-    const PackageInfoType packageInfoType,
+    const PackagePathType packagePathType,
     const UINT32 bufferLength,
-    void* buffer,
+    BYTE* buffer,
     const std::vector<const MddCore::PackageGraphNode*>& matchingPackageInfo,
     const UINT32 dynamicPackagesCount,
     const PACKAGE_INFO* staticPackageInfo,
@@ -241,7 +196,7 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
         if (matchingPackageGraphNode)
         {
             // It's dynamic package data
-            fromPackagesCount = std::move(matchingPackageGraphNode->GetMatchingPackages(flags, packageInfoType, dynamicPackagesBuffer));
+            fromPackagesCount = std::move(matchingPackageGraphNode->GetMatchingPackages(flags, packagePathType, dynamicPackagesBuffer));
             fromPackagesBuffer = dynamicPackagesBuffer.get();
         }
         else
@@ -278,7 +233,7 @@ UINT32 MddCore::PackageGraphManager::SerializePackageInfoToBuffer(
 
 void MddCore::PackageGraphManager::SerializeStringToBuffer(
     const UINT32 bufferLength,
-    void*& buffer,
+    BYTE*& buffer,
     UINT32& bufferNeeded,
     PWSTR& to,
     PCWSTR from)
@@ -290,9 +245,8 @@ void MddCore::PackageGraphManager::SerializeStringToBuffer(
         bufferNeeded += size;
         if (bufferNeeded <= bufferLength)
         {
-			BYTE* bufferAsBytes{ static_cast<BYTE*>(buffer) };
-            memcpy(bufferAsBytes + bufferUsed, from, size);
-            to = reinterpret_cast<PWSTR>(bufferAsBytes + bufferUsed);
+            memcpy(buffer + bufferUsed, from, size);
+            to = reinterpret_cast<PWSTR>(buffer + bufferUsed);
         }
     }
 }

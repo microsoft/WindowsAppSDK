@@ -2,7 +2,7 @@
   <PropertyGroup>
     <HelixSource>pr</HelixSource>
     <HelixType>DevTestSuite</HelixType>
-    <HelixTargetQueues>Windows.10.Amd64.ClientRS5.Open.Xaml;</HelixTargetQueues>
+    <HelixTargetQueues>Windows.10.Amd64.ClientRS5.Xaml;</HelixTargetQueues>
     <EnableXUnitReporter>true</EnableXUnitReporter>
     <EnableAzurePipelinesReporter>true</EnableAzurePipelinesReporter>
     <HelixPreCommands>$(HelixPreCommands);set testnameprefix=$(Configuration).$(Platform)</HelixPreCommands>

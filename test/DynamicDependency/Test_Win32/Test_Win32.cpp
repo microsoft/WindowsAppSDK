@@ -200,7 +200,7 @@ void Test::DynamicDependency::Test_Win32::GetResolvedPackageFullName_NotFound()
 
 void Test::DynamicDependency::Test_Win32::GetIdForPackageDependencyContext_Null()
 {
-    wil::unique_process_heap_string id;
+    wil::unique_process_heap_string id;                                   
     Assert::AreEqual(E_INVALIDARG, MddGetIdForPackageDependencyContext(nullptr, wil::out_param(id)));
 }
 
@@ -318,7 +318,7 @@ HRESULT Test::DynamicDependency::Test_Win32::GetCurrentPackageInfo(
     const PACKAGE_INFO*& packageInfo,
     wil::unique_cotaskmem_ptr<BYTE[]>& buffer)
 {
-    const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_BUNDLE | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+    const UINT32 flags{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_OPTIONAL | PACKAGE_FILTER_RESOURCE | PACKAGE_FILTER_BUNDLE };
     const PackagePathType packagePathType{ PackagePathType_Effective };
     return GetCurrentPackageInfo(flags, packagePathType, packageInfoCount, packageInfo, buffer);
 }

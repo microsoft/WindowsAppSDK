@@ -11,7 +11,7 @@ Here's how we intend to roll out Project Reunion. To subscribe to updates, subsc
 ### Packaged Desktop Apps
 As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from Project Reunion!
 
-🌟 |      Reunion 0.5      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
+🌟 |      Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
 [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported  | ✅ Supported | ✅ Supported | 
 [Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported | 
@@ -27,7 +27,7 @@ Deploy Options: |
 
 As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what and when you (tentatively) can expect from Project Reunion!
 
- 🌟 |       Reunion 0.5      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
+ 🌟 |       Reunion 0.5 (Q1 2021)      |         Reunion 0.8 (Q2 2021)   |       Reunion 1.0 (Q4 2021)    | 
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
 [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
 [Text rendering](https://docs.microsoft.com/en-us/windows/apps/project-reunion/dwritecore) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
