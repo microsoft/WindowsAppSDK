@@ -1,24 +1,24 @@
 ﻿#pragma once
-#include "PushNotificationCreateChannelResult.g.h"
+#include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationCreateChannelResult : PushNotificationCreateChannelResultT<PushNotificationCreateChannelResult>
     {
         PushNotificationCreateChannelResult() = default;
 
-        PushNotificationCreateChannelResult(Microsoft::ProjectReunion::PushNotificationChannel const& channel, hresult const& extendedError, Microsoft::ProjectReunion::PushNotificationChannelStatus const& status);
-        Microsoft::ProjectReunion::PushNotificationChannel Channel();
+        PushNotificationCreateChannelResult(Microsoft::Windows::PushNotifications::PushNotificationChannel const& channel, hresult const& extendedError, Microsoft::Windows::PushNotifications::PushNotificationChannelStatus const& status);
+        Microsoft::Windows::PushNotifications::PushNotificationChannel Channel();
         winrt::hresult ExtendedError();
-        Microsoft::ProjectReunion::PushNotificationChannelStatus Status();
+        Microsoft::Windows::PushNotifications::PushNotificationChannelStatus Status();
 
     private:
-        Microsoft::ProjectReunion::PushNotificationChannel m_channel{ nullptr };
+        Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
         winrt::hresult m_extendedError;
-        Microsoft::ProjectReunion::PushNotificationChannelStatus m_status;
+        Microsoft::Windows::PushNotifications::PushNotificationChannelStatus m_status;
     };
 }
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
 {
     struct PushNotificationCreateChannelResult : PushNotificationCreateChannelResultT<PushNotificationCreateChannelResult, implementation::PushNotificationCreateChannelResult>
     {

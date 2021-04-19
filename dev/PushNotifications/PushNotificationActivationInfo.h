@@ -1,26 +1,26 @@
 ﻿#pragma once
-#include "PushNotificationActivationInfo.g.h"
+#include "Microsoft.Windows.PushNotifications.PushNotificationActivationInfo.g.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationActivationInfo : PushNotificationActivationInfoT<PushNotificationActivationInfo>
     {
         PushNotificationActivationInfo() = default;
 
-        PushNotificationActivationInfo(Microsoft::ProjectReunion::PushNotificationRegistrationKind const& kind, winrt::guid const& taskClsid);
+        PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind const& kind, winrt::guid const& taskClsid);
         winrt::guid TaskClsid();
-        Microsoft::ProjectReunion::PushNotificationRegistrationKind Kind();
-        com_array<Windows::ApplicationModel::Background::IBackgroundCondition> GetConditions();
-        void SetConditions(array_view<Windows::ApplicationModel::Background::IBackgroundCondition const> conditions);
+        Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind Kind();
+        winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> GetConditions();
+        void SetConditions(array_view<winrt::Windows::ApplicationModel::Background::IBackgroundCondition const> conditions);
 
     private:
-        Microsoft::ProjectReunion::PushNotificationRegistrationKind m_kind;
+        Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind m_kind;
         winrt::guid m_taskClsid;
-        winrt::com_array<Windows::ApplicationModel::Background::IBackgroundCondition> m_backgroundConditions{};
+        winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> m_backgroundConditions{};
         wil::critical_section m_lock;
     };
 }
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
 {
     struct PushNotificationActivationInfo : PushNotificationActivationInfoT<PushNotificationActivationInfo, implementation::PushNotificationActivationInfo>
     {

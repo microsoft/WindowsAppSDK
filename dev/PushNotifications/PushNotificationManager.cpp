@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 
 #include "PushNotificationManager.h"
-#include "PushNotificationManager.g.cpp"
+#include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
 
 #include "PushNotificationCreateChannelResult.h"
 
@@ -21,9 +21,10 @@ using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Networking::PushNotifications;
 using namespace winrt;
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     inline constexpr std::uint32_t c_maxBackoffSeconds{ 960 };
+    inline constexpr std::uint32_t c_minBackoffSeconds{ 30 };
 
     const HRESULT WNP_E_NOT_CONNECTED = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E8L);
     const HRESULT WNP_E_RECONNECTING = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E9L);
@@ -47,84 +48,92 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     inline bool IsPackagedProcess()
     {
-        uint32_t packageFullNameLength = 0;
-        const auto rc{ GetCurrentPackageFullName(&packageFullNameLength, nullptr) };
+        wchar_t packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1] = {};
 
-        if (rc != ERROR_INSUFFICIENT_BUFFER)
+        UINT32 packageFullNameLength = static_cast<UINT32>(ARRAYSIZE(packageFullName));
+
+        const auto packagedProcessHResult = ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName);
+
+        if (packagedProcessHResult == APPMODEL_ERROR_NO_PACKAGE)
         {
-            winrt::throw_hresult(rc);
+            return false;
         }
-        return rc == ERROR_INSUFFICIENT_BUFFER;
+
+        THROW_IF_FAILED(packagedProcessHResult);
+
+        return true;
     }
 
-    Windows::Foundation::IAsyncOperationWithProgress<Microsoft::ProjectReunion::PushNotificationCreateChannelResult, Microsoft::ProjectReunion::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
     {
-        static std::vector<winrt::guid> s_remoteIdList;
+        static bool s_remoteIdInProgress;
         static wil::critical_section s_lock;
 
-        // NOTE: API supports channel requests only for packaged applications
-        IsPackagedProcess();
+        THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
-        check_pointer(&remoteId);
+        // API supports channel requests only for packaged applications for v0.8 version
+        THROW_HR_IF(E_NOTIMPL, (IsPackagedProcess() == false));
+
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult channelResult{ nullptr };
+
+        {
+            auto lock = s_lock.lock();
+            if (s_remoteIdInProgress == false)
+            {
+                s_remoteIdInProgress = true;
+            }
+            else
+            {
+                channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                    nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
+                co_return channelResult;
+            }
+        }
+
+        auto scopeExit = wil::scope_exit([&]()
+            {
+                auto lock = s_lock.lock();
+                s_remoteIdInProgress = false;
+            });
+
+        auto cancellation{ co_await winrt::get_cancellation_token() };
+
+        cancellation.enable_propagation(true);
 
         // Allow to register the progress and complete handler
         co_await resume_background();
 
         auto progress{ co_await winrt::get_progress_token() };
 
-        bool remoteIdPresent = false;
-        {
-            auto lock = s_lock.lock();
-            auto it = std::find(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId);
-            remoteIdPresent = (it != s_remoteIdList.end()) ? true : false;
-        }
-
-        winrt::Microsoft::ProjectReunion::PushNotificationCreateChannelResult channelResult{ nullptr };
-
-        if (remoteIdPresent)
-        {
-            channelResult = make<Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
-                nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
-            co_return channelResult;
-        }
-
-        {
-            auto lock = s_lock.lock();
-            s_remoteIdList.push_back(remoteId);
-        }
-
         uint8_t retryCount = 0;
-        Microsoft::ProjectReunion::PushNotificationCreateChannelStatus
-            channelStatus = { E_PENDING /* ExtendedError */, PushNotificationChannelStatus::InProgress /* Status */, retryCount /* RetryCount */ };
+        winrt::hresult channelRequestResult = E_PENDING;
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
+
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus
+            channelStatus = { channelRequestResult, status, retryCount };
 
         progress(channelStatus);
 
         PushNotificationChannelManager channelManager{};
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel pushChannelReceived{ nullptr };
 
-        for (auto backOffTimeInSeconds = 30; backOffTimeInSeconds <= c_maxBackoffSeconds * 2; backOffTimeInSeconds *= 2)
+        for (auto backOffTimeInSeconds = c_minBackoffSeconds; backOffTimeInSeconds <= c_maxBackoffSeconds * 2; backOffTimeInSeconds *= 2)
         {
             try
             {
                 pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
-
-                // Returns a com_ptr returning the implementation type
-                auto pushChannel = make_self<Microsoft::ProjectReunion::implementation::PushNotificationChannel>(pushChannelReceived);
-
-                channelResult = make<winrt::Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(
-                    *(pushChannel.get()),
-                    S_OK,
-                    PushNotificationChannelStatus::CompletedSuccess);
-
+                channelRequestResult = S_OK;
+                status = PushNotificationChannelStatus::CompletedSuccess;
                 break;
             }
             catch (...)
             {
-                auto ex = hresult_error(to_hresult(), take_ownership_from_abi);
 
-                if ((backOffTimeInSeconds <= c_maxBackoffSeconds) && isChannelRequestRetryable(ex.code()))
+                auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
+
+                if ((backOffTimeInSeconds <= c_maxBackoffSeconds) && isChannelRequestRetryable(channelRequestException.code()))
                 {
-                    channelStatus.extendedError = ex.code();
+                    channelStatus.extendedError = channelRequestException.code();
                     channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
                     channelStatus.retryCount = ++retryCount;
 
@@ -132,7 +141,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 }
                 else
                 {
-                    channelResult = make<Microsoft::ProjectReunion::implementation::PushNotificationCreateChannelResult>(nullptr, ex.code(), PushNotificationChannelStatus::CompletedFailure);
+                    channelRequestResult = channelRequestException.code();
+                    status = PushNotificationChannelStatus::CompletedFailure;
                     break;
                 }
             }
@@ -140,15 +150,30 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             co_await winrt::resume_after(std::chrono::seconds(backOffTimeInSeconds));
         }
 
+
+        if (status == PushNotificationChannelStatus::CompletedSuccess)
         {
-            auto lock = s_lock.lock();
-            std::remove(s_remoteIdList.begin(), s_remoteIdList.end(), remoteId);
+            // Returns a com_ptr to the implementation type
+            auto pushChannel =
+                winrt::make_self<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel>(pushChannelReceived);
+
+            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                *(pushChannel.get()),
+                channelRequestResult,
+                status);
+        }
+        else if (status == PushNotificationChannelStatus::CompletedFailure)
+        {
+            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                nullptr,
+                channelRequestResult,
+                status);
         }
 
         co_return channelResult;
     }
 
-    Microsoft::ProjectReunion::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(Microsoft::ProjectReunion::PushNotificationActivationInfo const& details)
+    Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details)
     {
         winrt::guid taskClsid = details.TaskClsid();
         DWORD cookie = 0;
@@ -205,7 +230,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return PushNotificationRegistrationToken{ cookie, registeredTask };
     }
 
-    void PushNotificationManager::UnregisterActivator(Microsoft::ProjectReunion::PushNotificationRegistrationToken const& token, Microsoft::ProjectReunion::PushNotificationRegistrationKind const& kind)
+    void PushNotificationManager::UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken const& token, Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind const& kind)
     {
         
         if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::PushTrigger))

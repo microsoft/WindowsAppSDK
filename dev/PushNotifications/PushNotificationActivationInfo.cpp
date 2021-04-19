@@ -1,12 +1,12 @@
 ﻿#include "pch.h"
 #include "PushNotificationActivationInfo.h"
-#include "PushNotificationActivationInfo.g.cpp"
+#include "Microsoft.Windows.PushNotifications.PushNotificationActivationInfo.g.cpp"
 
 #include <Windows.ApplicationModel.background.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationActivationInfo::PushNotificationActivationInfo(Microsoft::ProjectReunion::PushNotificationRegistrationKind const& kind, winrt::guid const& taskClsid)
+    PushNotificationActivationInfo::PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind const& kind, winrt::guid const& taskClsid)
     {
         m_kind = kind;
         m_taskClsid = taskClsid;
@@ -16,19 +16,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         auto lock = m_lock.lock();
         return m_taskClsid;
     }
-    Microsoft::ProjectReunion::PushNotificationRegistrationKind PushNotificationActivationInfo::Kind()
+    Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind PushNotificationActivationInfo::Kind()
     {
         auto lock = m_lock.lock();
         return m_kind;
     }
-    com_array<Windows::ApplicationModel::Background::IBackgroundCondition> PushNotificationActivationInfo::GetConditions()
+    winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> PushNotificationActivationInfo::GetConditions()
     {
         auto lock = m_lock.lock();
-        return winrt::com_array<Windows::ApplicationModel::Background::IBackgroundCondition>(m_backgroundConditions.begin(), m_backgroundConditions.end());
+        return winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition>(m_backgroundConditions.begin(), m_backgroundConditions.end());
     }
-    void PushNotificationActivationInfo::SetConditions(array_view<Windows::ApplicationModel::Background::IBackgroundCondition const> conditions)
+    void PushNotificationActivationInfo::SetConditions(array_view<winrt::Windows::ApplicationModel::Background::IBackgroundCondition const> conditions)
     {
         auto lock = m_lock.lock();
-        m_backgroundConditions = winrt::com_array<Windows::ApplicationModel::Background::IBackgroundCondition>(conditions.begin(), conditions.end());
+        m_backgroundConditions = winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition>(conditions.begin(), conditions.end());
     }
 }

@@ -1,16 +1,16 @@
 ﻿#pragma once
-#include "PushNotificationReceivedEventArgs.g.h"
+#include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationReceivedEventArgs : PushNotificationReceivedEventArgsT<PushNotificationReceivedEventArgs>
     {
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
         PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
 
-        static Microsoft::ProjectReunion::PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
-        static Microsoft::ProjectReunion::PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
-        com_array<uint8_t> Payload();
+        static Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
+        static Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
+        winrt::com_array<uint8_t> Payload();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
         winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);
         void Canceled(winrt::event_token const& token) noexcept;
@@ -25,7 +25,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         wil::critical_section m_lock;
     };
 }
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
 {
     struct PushNotificationReceivedEventArgs : PushNotificationReceivedEventArgsT<PushNotificationReceivedEventArgs, implementation::PushNotificationReceivedEventArgs>
     {

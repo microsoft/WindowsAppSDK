@@ -1,26 +1,26 @@
 ﻿#include "pch.h"
 #include "PushNotificationChannel.h"
-#include "PushNotificationChannel.g.cpp"
+#include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.cpp"
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    Windows::Foundation::TypedEventHandler<
-        Microsoft::ProjectReunion::PushNotificationChannel,
-        Microsoft::ProjectReunion::PushNotificationReceivedEventArgs> s_typedEventHandler;
+    winrt::Windows::Foundation::TypedEventHandler<
+        Microsoft::Windows::PushNotifications::PushNotificationChannel,
+        Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> s_typedEventHandler;
 
-    PushNotificationChannel::PushNotificationChannel(Windows::Networking::PushNotifications::PushNotificationChannel const& channel)
+    PushNotificationChannel::PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel)
     {
         m_channel = channel;
     }
-    Windows::Foundation::Uri PushNotificationChannel::Uri()
+    winrt::Windows::Foundation::Uri PushNotificationChannel::Uri()
     {
         auto lock = m_lock.lock();
-        Windows::Foundation::Uri pushChannelUri{ m_channel.Uri() };
+        winrt::Windows::Foundation::Uri pushChannelUri{ m_channel.Uri() };
         return pushChannelUri;
     }
-    Windows::Foundation::DateTime PushNotificationChannel::ExpirationTime()
+    winrt::Windows::Foundation::DateTime PushNotificationChannel::ExpirationTime()
     {
         auto lock = m_lock.lock();
         return m_channel.ExpirationTime();
@@ -31,12 +31,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         m_channel.Close();
     }
 
-    winrt::event_token PushNotificationChannel::PushReceived(Windows::Foundation::TypedEventHandler<Microsoft::ProjectReunion::PushNotificationChannel, Microsoft::ProjectReunion::PushNotificationReceivedEventArgs> const& handler)
+    winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationChannel, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler)
     {
-        Windows::Foundation::TypedEventHandler<
+        winrt::Windows::Foundation::TypedEventHandler<
             winrt::Windows::Networking::PushNotifications::PushNotificationChannel,
             winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs> typedEventHandler
-            (this, &winrt::Microsoft::ProjectReunion::implementation::PushNotificationChannel::LambdaWrapper);
+            (this, &winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel::LambdaWrapper);
 
         auto lock = m_lock.lock();
         s_typedEventHandler = handler;
@@ -55,8 +55,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel channel,
         winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args)
     {
-        Microsoft::ProjectReunion::PushNotificationReceivedEventArgs reunionPushArgs =
-            Microsoft::ProjectReunion::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
+        Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs reunionPushArgs =
+            Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
 
         s_typedEventHandler(*this, reunionPushArgs);
     }
