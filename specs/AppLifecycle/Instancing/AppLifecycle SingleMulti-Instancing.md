@@ -197,7 +197,7 @@ wanted to allow for multiple reusable instances, it could specify "reusable" plu
 identifier for each instance, and so on.
 
 ```c++
-int APIENTRY B_wWinMain(
+int APIENTRY wWinMain(
     _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
