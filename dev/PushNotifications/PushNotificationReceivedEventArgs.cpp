@@ -6,7 +6,6 @@
 
 #include "PushNotificationReceivedEventArgs.h"
 #include "PushNotificationReceivedEventArgs.g.cpp"
-#include <iostream>
 
 using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Storage::Streams;
@@ -17,30 +16,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask)
     {
         m_backgroundTaskInstance = backgroundTask;
-
-        // Extract payload
-        auto triggerDetails = m_backgroundTaskInstance.TriggerDetails();
-        RawNotification rawNotification = triggerDetails.as<RawNotification>();
-
-        IBuffer rawContentAsBuffer = rawNotification.ContentBytes();
-        DataReader dataReader = DataReader::FromBuffer(rawContentAsBuffer);
-        
-        m_payload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
-        dataReader.ReadBytes(m_payload);
     }
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args)
     {
         m_handled = args.Cancel();
-
-        // Extract payload
-        RawNotification rawNotification = args.RawNotification();
-
-        IBuffer rawContentAsBuffer = rawNotification.ContentBytes();
-        DataReader dataReader = DataReader::FromBuffer(rawContentAsBuffer);
-
-        m_payload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
-        dataReader.ReadBytes(m_payload);
+        m_args = args;
     }
 
     Microsoft::ProjectReunion::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask)
@@ -94,5 +75,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         auto lock = m_lock.lock();
         m_handled = value;
+        m_args.Cancel(m_handled);
     }
 }

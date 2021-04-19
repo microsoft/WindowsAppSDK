@@ -1,5 +1,5 @@
 ﻿#include <winrt/Windows.ApplicationModel.background.h>
-#include <iostream>
+
 struct PushNotificationBackgroundTask : winrt::implements<PushNotificationBackgroundTask, winrt::Windows::ApplicationModel::Background::IBackgroundTask>
 {
     PushNotificationBackgroundTask() {}

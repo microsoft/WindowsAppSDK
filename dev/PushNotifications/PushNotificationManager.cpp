@@ -12,7 +12,6 @@
 #include <winerror.h>
 #include <algorithm>
 #include <vector>
-#include <iostream>
 #include "PushNotificationChannel.h"
 #include "externs.h"
 
@@ -151,12 +150,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     Microsoft::ProjectReunion::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(Microsoft::ProjectReunion::PushNotificationActivationInfo const& details)
     {
-        int passedFlags = static_cast<int>(details.Kind());
         winrt::guid taskClsid = details.TaskClsid();
         DWORD cookie = 0;
         BackgroundTaskRegistration registeredTask = nullptr;
 
-        if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::PushTrigger))
+        if (WI_IsFlagSet(details.Kind(), PushNotificationRegistrationKind::PushTrigger))
         {
             bool taskRegistered = false;
             for (auto task : BackgroundTaskRegistration::AllTasks())
@@ -186,13 +184,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
         }
 
-        if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::ComActivator))
+        if (WI_IsFlagSet(details.Kind(), PushNotificationRegistrationKind::ComActivator))
         {
             if (taskClsid != winrt::guid())
             {
-                auto lock = g_lock.lock();
-                // Define handle that will be set during background task execution
-                g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+                {
+                    auto lock = g_lock.lock();
+                    // Define handle that will be set during background task execution
+                    g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+                }
 
                 ::CoRegisterClassObject(
                     taskClsid,
@@ -207,9 +207,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void PushNotificationManager::UnregisterActivator(Microsoft::ProjectReunion::PushNotificationRegistrationToken const& token, Microsoft::ProjectReunion::PushNotificationRegistrationKind const& kind)
     {
-        int passedFlags = static_cast<int>(kind);
-
-        if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::PushTrigger))
+        
+        if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::PushTrigger))
         {
             for (auto task : BackgroundTaskRegistration::AllTasks())
             {
@@ -220,7 +219,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
         }
 
-        if (passedFlags & static_cast<int>(PushNotificationRegistrationKind::ComActivator) && token.Cookie() != 0)
+        if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::ComActivator) && (token.Cookie() != 0))
         {
             ::CoRevokeClassObject(token.Cookie());
         }

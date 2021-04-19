@@ -6,10 +6,9 @@
 
 #include <winrt/base.h>
 #include <winrt/windows.networking.pushnotifications.h>
-
 #include "PushNotificationReceivedEventArgs.h"
 #include "externs.h"
-#include <iostream>
+
 using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Networking::PushNotifications;
 

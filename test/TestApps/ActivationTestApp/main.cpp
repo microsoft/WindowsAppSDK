@@ -18,51 +18,14 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
 
+time_t ltime;
+char buf[SIZE];
 
-int main()
+void RequestChannel()
 {
-    time_t ltime;
-    char buf[SIZE];
-    time(&ltime);
-    ctime_s(buf, sizeof buf, &ltime);
-
-    std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
-
-    PushNotificationActivationInfo info(
-        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
-        winrt::guid("c54044c4-eac7-4c4b-9996-c570a94b9306")); // same clsid as app manifest
-
-    auto token = PushNotificationManager::RegisterActivator(info);
-
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto kind = args.Kind();
-    if (kind == ExtendedActivationKind::Push)
-    {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
-
-        // Call GetDeferral to ensure that code runs in low power
-        auto deferral = pushArgs.GetDeferral();
-
-        auto payload = pushArgs.Payload();
-
-        // Do stuff to process the raw payload
-        std::string payloadString(payload.begin(), payload.end());
-
-        time(&ltime);
-        ctime_s(buf, sizeof buf, &ltime);
-        std::cout << "Push notification content received from BACKGROUND: " << buf << payloadString << std::endl << std::endl;
-
-        // Call Complete on the deferral as good practise: Needed mainly for low power usage
-        deferral.Complete();
-    }
-    else if (kind == ExtendedActivationKind::ToastNotification)
-    {
-        std::cout << "ToastNotification received!" << std::endl;
-    }
-
     // Register the AAD RemoteIdentifier for the App to receive Push
     auto channelOperation = PushNotificationManager::CreateChannelAsync(
-        winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
+        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(
@@ -121,7 +84,48 @@ int main()
                 LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
             }
         });
+}
+
+int main()
+{
+    time(&ltime);
+    ctime_s(buf, sizeof buf, &ltime);
+
+    std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
+
+    PushNotificationActivationInfo info(
+        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+
+    auto token = PushNotificationManager::RegisterActivator(info);
+
+    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    auto kind = args.Kind();
+    if (kind == ExtendedActivationKind::Push)
+    {
+        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
+
+        // Call GetDeferral to ensure that code runs in low power
+        auto deferral = pushArgs.GetDeferral();
+
+        auto payload = pushArgs.Payload();
+
+        // Do stuff to process the raw payload
+        std::string payloadString(payload.begin(), payload.end());
+
+        time(&ltime);
+        ctime_s(buf, sizeof buf, &ltime);
+        std::cout << "Push notification content received from BACKGROUND: " << buf << payloadString << std::endl << std::endl;
+
+        // Call Complete on the deferral as good practise: Needed mainly for low power usage
+        deferral.Complete();
+    }
+    else if (kind == ExtendedActivationKind::ToastNotification)
+    {
+        std::cout << "ToastNotification received!" << std::endl;
+    }
     
+    RequestChannel();
     std::getchar();
     PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
     return 0;

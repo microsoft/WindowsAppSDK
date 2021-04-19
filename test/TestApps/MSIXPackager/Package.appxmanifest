@@ -50,7 +50,7 @@
 		<com:Extension Category="windows.comServer">
 			<com:ComServer>
 				<com:ExeServer Executable="ActivationTestApp\ActivationTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
-					<com:Class Id="c54044c4-eac7-4c4b-9996-c570a94b9306" DisplayName="Reunion Push" />
+					<com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Reunion Push" />
 				</com:ExeServer>
 			</com:ComServer>
 		</com:Extension>

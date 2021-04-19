@@ -21,7 +21,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         bool m_handled = false;
         winrt::com_array<uint8_t> m_payload{};
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
-
+        winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
         wil::critical_section m_lock;
     };
 }
