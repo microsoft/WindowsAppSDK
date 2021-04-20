@@ -9,21 +9,20 @@ namespace ProjectReunionEnvironmentManagerTests
     class EnvironmentManagerUWPTests {
         BEGIN_TEST_CLASS(EnvironmentManagerUWPTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"AppxManifest.pkg.xml")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
             END_TEST_CLASS()
 
         TEST_CLASS_SETUP(UWPWriteEVs)
         {
-            WriteUserEV();
-            WriteMachineEV();
+            UserSetup();
+            MachineSetup();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(IWPRemoveEVs)
+        TEST_CLASS_CLEANUP(UWPRemoveEVs)
         {
-            RemoveUserEV();
-            RemoveMachineEV();
+            UserCleanup();
+            MachineCleanup();
             return true;
         }
 

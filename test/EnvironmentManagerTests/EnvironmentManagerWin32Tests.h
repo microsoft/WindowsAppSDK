@@ -8,20 +8,23 @@ namespace ProjectReunionEnvironmentManagerTests
 {
     class EnvironmentManagerWin32Tests {
         BEGIN_TEST_CLASS(EnvironmentManagerWin32Tests)
-            TEST_CLASS_PROPERTY(L"ActivationContext", L"EnvironmentReaderTests.dll.manifest")
+            TEST_CLASS_PROPERTY(L"ActivationContext", L"EnvironmentManagerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"{ElevatedUser,RestrictedUser,LowIL}")
         END_TEST_CLASS()
 
             TEST_CLASS_SETUP(WriteEVs)
         {
-            WriteMachineEV();
+            UserSetup();
+            MachineSetup();
             return true;
         }
 
         TEST_CLASS_CLEANUP(RemoveEVs)
         {
-            RemoveMachineEV();
+            UserCleanup();
+            MachineCleanup();
             return true;
         }
 

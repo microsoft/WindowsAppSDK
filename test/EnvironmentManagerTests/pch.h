@@ -7,10 +7,12 @@
 #include "framework.h"
 #include "wil/cppwinrt.h"
 #include "wil/result.h"
+#include <wil/token_helpers.h>
 #include "winrt/Microsoft.ProjectReunion.h"
 #include <windows.h>
 #include "WexTestClass.h"
 #include <winrt/Windows.Foundation.Collections.h>
 #include "Wex.Common.h"
+#include <appmodel.h>
 
 #endif

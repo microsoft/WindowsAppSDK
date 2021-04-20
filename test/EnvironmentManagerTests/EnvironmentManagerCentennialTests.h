@@ -11,18 +11,20 @@ namespace ProjectReunionEnvironmentManagerTests
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"UAP:Host", L"PackagedCwa")
-            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"CentennialAppxManifest.pkg.xml")
+            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"{PackagedCwaFullTrust,PackagedCwaPartialTrust}")
             END_TEST_CLASS()
 
         TEST_CLASS_SETUP(CentennialWriteEVs)
         {
-            WriteMachineEV();
+            UserSetup();
+            MachineSetup();
             return true;
         }
 
         TEST_CLASS_CLEANUP(CentennialRemoveEVs)
         {
-            RemoveMachineEV();
+            UserCleanup();
+            MachineCleanup();
             return true;
         }
 

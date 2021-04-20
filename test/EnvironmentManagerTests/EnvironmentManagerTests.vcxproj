@@ -177,20 +177,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EnvironmentManagerCentennialTests.cpp" />
-    <ClCompile Include="EnvironmentManagerUWPTests.cpp" />
-    <ClCompile Include="EnvironmentManagerWin32Tests.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="CentennialAppxManifest.pkg.xml">
-      <DeploymentContent>true</DeploymentContent>
-    </Xml>
-    <Xml Include="AppxManifest.pkg.xml">
-      <DeploymentContent>true</DeploymentContent>
-    </Xml>
-  </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="EnvironmentReaderTests.dll.manifest">
+    <Manifest Include="EnvironmentManagerTests.dll.manifest">
       <DeploymentContent>true</DeploymentContent>
     </Manifest>
   </ItemGroup>
@@ -198,6 +185,11 @@
     <ProjectReference Include="..\..\dev\ProjectReunion_DLL\ProjectReunion_DLL.vcxproj">
       <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EnvironmentManagerCentennialTests.cpp" />
+    <ClCompile Include="EnvironmentManagerUWPTests.cpp" />
+    <ClCompile Include="EnvironmentManagerWin32Tests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

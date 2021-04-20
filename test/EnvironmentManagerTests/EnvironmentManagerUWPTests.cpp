@@ -31,73 +31,72 @@ namespace ProjectReunionEnvironmentManagerTests
 
     void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariablesForProcess()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
-        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentManager.GetEnvironmentVariables();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+        EnvironmentVariables environmentVariablesFromWinRTAPI{ environmentManager.GetEnvironmentVariables() };
 
-        EnvironmentVariables environmentVariablesFromWindowsAPI = GetEnvironmentVariablesForProcess();
+        EnvironmentVariables environmentVariablesFromWindowsAPI{ GetEnvironmentVariablesForProcess() };
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
 
     void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariablesForUser()
     {
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+        EnvironmentVariables environmentVariablesFromWinRTAPI{ environmentManager.GetEnvironmentVariables() };
 
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
-        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentManager.GetEnvironmentVariables();
-
-        EnvironmentVariables environmentVariablesFromWindowsAPI = GetEnvironmentVariablesForUser();
+        EnvironmentVariables environmentVariablesFromWindowsAPI{ GetEnvironmentVariablesForUser() };
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
 
     void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariablesForMachine()
     {
-        EnvironmentVariables environmentVariablesFromWindowsAPI = GetEnvironmentVariablesForMachine();
+        EnvironmentVariables environmentVariablesFromWindowsAPI{ GetEnvironmentVariablesForMachine() };
 
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
-        EnvironmentVariables environmentVariablesFromWinRTAPI = environmentManager.GetEnvironmentVariables();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+        EnvironmentVariables environmentVariablesFromWinRTAPI{ environmentManager.GetEnvironmentVariables() };
 
         CompareIMapViews(environmentVariablesFromWinRTAPI, environmentVariablesFromWindowsAPI);
     }
 
     void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariableForProcess()
     {
-        WriteProcessEV();
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
-        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+        ProcessSetup();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyName) };
 
-        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
     }
 
     void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariableForUser()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
-        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyNameForGet) };
 
-        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
     }
 
     void EnvironmentManagerUWPTests::UWPTestGetEnvironmentVariableForMachine()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
-        winrt::hstring environmentValue = environmentManager.GetEnvironmentVariable(c_evKeyName);
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyNameForGet) };
 
-        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
     }
 
 
     void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForProcess()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
 
         std::wstring writtenEV = GetEnvironmentVariableForProcess(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring(c_evValueName), writtenEV);
+        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
 
         // Update the environment variable
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
         writtenEV = GetEnvironmentVariableForProcess(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring(c_evValueName2), writtenEV);
+        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
 
 
         // Remove the value
@@ -109,26 +108,30 @@ namespace ProjectReunionEnvironmentManagerTests
 
     void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForUser()
     {
-        EnvironmentManager environmentMananger = EnvironmentManager::GetForUser();
+        EnvironmentManager environmentMananger{ EnvironmentManager::GetForUser() };
         VERIFY_THROWS(environmentMananger.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
     }
 
     void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForMachine()
     {
-        EnvironmentManager environmentMananger = EnvironmentManager::GetForMachine();
+        EnvironmentManager environmentMananger{ EnvironmentManager::GetForMachine() };
         VERIFY_THROWS(environmentMananger.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
     }
 
     void EnvironmentManagerUWPTests::UWPTestAppendToPathForProcess()
     {
-        std::wstring pathToRestore = GetEnvironmentVariableForProcess(c_pathName);
-        std::wstring pathToManipulate(pathToRestore);
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        // Store PATH so it can be restored
+        std::wstring pathToRestore{ GetEnvironmentVariableForProcess(c_pathName) };
+
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ pathToRestore };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
         VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath = GetEnvironmentVariableForProcess(c_pathName);
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
@@ -139,28 +142,32 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
+        VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
+
         RestoreProcessPath(pathToRestore);
     }
 
     void EnvironmentManagerUWPTests::UWPTestAppendToPathForUser()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
         VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
     }
 
     void EnvironmentManagerUWPTests::UWPTestAppendToPathForMachine()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
     }
 
     void EnvironmentManagerUWPTests::UWPTestRemoveFromPathForProcess()
     {
-        // Get the PATH for Process.  Don't append any semi-colon
-        std::wstring originalPath = GetEnvironmentVariableForProcess(c_pathName);
-        std::wstring pathToRestore(originalPath);
-        std::wstring pathToManipulate(originalPath);
-        EnvironmentManager environmentManager = EnvironmentManager::GetForProcess();
+        // Store PATH so it can be restored
+        std::wstring pathToRestore{ GetEnvironmentVariableForProcess(c_pathName) };
+
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ pathToRestore };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
         // This will append c_evValueName to the path with a semi-colon.
         VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
@@ -172,34 +179,36 @@ namespace ProjectReunionEnvironmentManagerTests
         pathToManipulate += c_evValueName;
         pathToManipulate += L";";
 
-        originalPath = GetEnvironmentVariableForProcess(c_pathName);
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
 
-        VERIFY_ARE_EQUAL(originalPath, pathToManipulate);
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
-        std::wstring pathPart(originalPath, 0, originalPath.find(L';') + 1);
+        std::wstring pathPart{ currentPath, 0, currentPath.find(L';') + 1 };
         environmentManager.RemoveFromPath(pathPart);
-        originalPath = GetEnvironmentVariableForProcess(c_pathName);
+        currentPath = GetEnvironmentVariableForProcess(c_pathName);
 
         pathToManipulate.erase(pathToManipulate.rfind(pathPart), pathPart.length());
 
-        VERIFY_ARE_EQUAL(originalPath, pathToManipulate);
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_NO_THROW(environmentManager.RemoveFromPath(L"I do not exist"));
 
-        VERIFY_ARE_EQUAL(originalPath, pathToManipulate);
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
 
         RestoreProcessPath(pathToRestore);
     }
 
     void EnvironmentManagerUWPTests::UWPTestRemoveFromPathForUser()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForUser();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
         VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
     }
 
     void EnvironmentManagerUWPTests::UWPTestRemoveFromPathForMachine()
     {
-        EnvironmentManager environmentManager = EnvironmentManager::GetForMachine();
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
     }
 }
