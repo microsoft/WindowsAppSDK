@@ -97,7 +97,7 @@ namespace Test::DynamicDependency
         TEST_METHOD(Unpackaged_PackageGraph1)
         {
             // -- TryCreate
-            PACKAGE_VERSION minVersion{};
+            const PACKAGE_VERSION minVersion{};
             const MddPackageDependencyProcessorArchitectures architectures{};
             const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
             PCWSTR lifetimeArtifact{};

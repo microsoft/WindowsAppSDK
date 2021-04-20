@@ -101,18 +101,32 @@ STDAPI MddLifetimeManagementGC() noexcept try
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::hstring currentUser;
 
-    const UINT32 c_maxMajorVersion{ 9 };
+    const UINT16 c_majorMinorVersions[][2]{
+        { 0, 8 }, { 0, 9 },
+        { 1, 0 }, { 1, 1 }, { 1, 2 }, { 1, 3 }, { 1, 4 }, { 1, 5 }, { 1, 6 }, { 1, 7 }, { 1, 8 }, { 1, 9 },
+        { 2, 0 },
+        { 3, 0 },
+        { 4, 0 },
+        { 5, 0 },
+        { 6, 0 },
+        { 7, 0 },
+        { 8, 0 },
+        { 9, 0 }
+    };
     PCWSTR c_architectures[]{ L"x86", L"x64", L"arm64" };
-    for (UINT32 majorVersion=0; majorVersion <= c_maxMajorVersion; ++majorVersion)
+    for (auto majorMinorVersion : c_majorMinorVersions)
     {
+        const UINT16 majorVersion{ static_cast<UINT16>(majorMinorVersion[0]) };
+        const UINT16 minorVersion{ static_cast<UINT16>(majorMinorVersion[1]) };
+
         for (auto architecture : c_architectures)
         {
             // Build the list of DDLMs
             std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
 
-            // Look for windows.appExtension with name="com.microsoft.projectreunion.ddlm.<majorversion>.<architecture>"
+            // Look for windows.appExtension with name="com.microsoft.reunion.ddlm.<majorversion>.<minorversion>.<architecture>"
             WCHAR appExtensionName[100]{};
-            wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", majorVersion, architecture);
+            wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm.%hu.%hu.%s", majorVersion, minorVersion, architecture);
 
             auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
             auto appExtensions{ catalog.FindAllAsync().get() };

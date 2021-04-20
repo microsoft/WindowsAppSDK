@@ -46,9 +46,10 @@ bool Test::DynamicDependency::Test_Win32::Setup()
 
     VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-    // Version <major>.0.0.0 to find any framework package for this major version
-    PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
-    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(minVersion));
+    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+    const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+    const PACKAGE_VERSION minVersion{};
+    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
 
     m_bootstrapDll = std::move(bootstrapDll);
 
@@ -73,7 +74,7 @@ bool Test::DynamicDependency::Test_Win32::Cleanup()
 void Test::DynamicDependency::Test_Win32::Create_Delete()
 {
     PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
-    PACKAGE_VERSION minVersion{};
+    const PACKAGE_VERSION minVersion{};
     const MddPackageDependencyProcessorArchitectures architectureFilter{};
     const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
     PCWSTR lifetimeArtifact{};
@@ -373,7 +374,7 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
     PCWSTR lifetimeArtifact,
     MddCreatePackageDependencyOptions options)
 {
-    PACKAGE_VERSION minVersion{};
+    const PACKAGE_VERSION minVersion{};
     wil::unique_process_heap_string packageDependencyId;
     VERIFY_ARE_EQUAL(expectedHR, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
     return packageDependencyId;
