@@ -62,6 +62,8 @@ bool Test::DynamicDependency::Test_WinRT::Cleanup()
 
     m_bootstrapDll.reset();
 
+    TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+    TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_ProjectReunionFramework();

@@ -34,8 +34,13 @@ namespace Test::DynamicDependency
             const auto lastError{ GetLastError() };
             VERIFY_IS_NOT_NULL(bootstrapDll.get());
 
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_ProjectReunionFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
@@ -105,7 +110,7 @@ namespace Test::DynamicDependency
 
             VERIFY_ARE_EQUAL(S_OK, MddLifetimeManagementGC());
 
-            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
             VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
         }
 

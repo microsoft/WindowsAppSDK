@@ -31,8 +31,13 @@ namespace Test::DynamicDependency
             const auto lastError{ GetLastError() };
             VERIFY_IS_NOT_NULL(bootstrapDll.get());
 
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_ProjectReunionFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 

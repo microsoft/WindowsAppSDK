@@ -24,8 +24,12 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_SETUP(Setup)
         {
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();
             TP::AddPackage_ProjectReunionFramework();
