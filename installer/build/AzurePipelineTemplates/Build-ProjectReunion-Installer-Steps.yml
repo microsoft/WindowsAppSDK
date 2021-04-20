@@ -1,0 +1,9 @@
+parameters:
+  installerSourcesDirectory: $(Build.SourcesDirectory)\installer
+
+- task: MSBuild@1
+  displayName: 'build Installer'
+  inputs:
+    platform: '$(buildPlatform)'
+    solution: '${{ parameters.installerSourcesDirectory }}\ProjectReunionInstall.sln'
+    configuration: '$(buildConfiguration)'
