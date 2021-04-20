@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <!-- Compilation differs for the build pipeline vs local development -->
-  <PropertyGroup Condition="$(ProjectReunionPipelineBuild) != 'true'">
-    <!-- If not set, default it to false. -->
-    <ProjectReunionPipelineBuild>false</ProjectReunionPipelineBuild>
-  </PropertyGroup>
-
-  <!-- Conditional behavior for build pipeline vs local development -->
-  <ItemDefinitionGroup Condition="$(ProjectReunionPipelineBuild) == 'true'">
-    <ClCompile>
-      <PreprocessorDefinitions>PROJECTREUNION_PIPELINE_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-  </ItemDefinitionGroup>
-
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalOptions>%(AdditionalOptions) /ZH:SHA_256</AdditionalOptions>
