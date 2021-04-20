@@ -254,7 +254,7 @@ CLSID FindDDLM(
     WCHAR appExtensionName[100]{};
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
-    wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm.%hu.%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+    wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm.%hu.%hu.%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
