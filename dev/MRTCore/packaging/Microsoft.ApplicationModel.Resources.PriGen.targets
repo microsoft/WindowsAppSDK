@@ -231,117 +231,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <SdkIsRS1OrLater>false</SdkIsRS1OrLater>
-    <SdkIsRS1OrLater Condition="'$(TargetPlatformVersion)' &gt;= '10.0.11000.0'">true</SdkIsRS1OrLater>
-    <SdkIsRS4OrLater>false</SdkIsRS4OrLater>
-    <SdkIsRS4OrLater Condition="'$(TargetPlatformVersion)' &gt;= '10.0.17000.0'">true</SdkIsRS4OrLater>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <StandardBuildPipeline>1.0</StandardBuildPipeline>
     <UapBuildPipeline>2.0</UapBuildPipeline>
     <AppxPackagePipelineVersion>$(StandardBuildPipeline)</AppxPackagePipelineVersion>
     <AppxPackagePipelineVersion Condition="'$(SDKIdentifier)' != ''">$(UapBuildPipeline)</AppxPackagePipelineVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AppxLayoutEnabled Condition="'$(AppxLayoutEnabled)' != 'false' and
-                                  '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)' and
-                                  '$(SdkIsRS4OrLater)' == 'true'">true</AppxLayoutEnabled>
-    <AppxLayoutEnabled Condition="'$(AppxLayoutEnabled)' != 'true'">false</AppxLayoutEnabled>
-  </PropertyGroup>
-
-  <!-- Backwards compatablity with PreDev16 work. Use properties below for a more clear workflow and better named variables. -->
-  <PropertyGroup>
-    <UapAppxPackageBuildModeStoreUploadLegacy>StoreUpload</UapAppxPackageBuildModeStoreUploadLegacy>
-    <UapAppxPackageBuildModeCI>CI</UapAppxPackageBuildModeCI>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <UapAppxPackageBuildModeSideloadOnly>SideloadOnly</UapAppxPackageBuildModeSideloadOnly>
-    <UapAppxPackageBuildModeStoreAndSideload>StoreAndSideload</UapAppxPackageBuildModeStoreAndSideload>
-    <UapAppxPackageBuildModeStoreOnly>StoreOnly</UapAppxPackageBuildModeStoreOnly>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <UapAppxPackageBuildModeIsValid>false</UapAppxPackageBuildModeIsValid>
-  </PropertyGroup>
-
-  <!-- DELETE ONCE HAS WIZARD CHECKBOX -->
-  <PropertyGroup Condition="'$(UapAppxPackageBuildMode)' == '$(UapAppxPackageBuildModeStoreOnly)'">
-    <UapAppxPackageBuildMode>StoreAndSideload</UapAppxPackageBuildMode>
-  </PropertyGroup>
-
-  <!--If UapAppxPackageBuildMode is set to UapAppxPackageBuildModeStoreUploadLegacy or the new flag UapAppxPackageBuildModeStoreAndSideload, prep all the appropriate flags to produce an appxupload & sideload package-->
-  <PropertyGroup Condition="('$(UapAppxPackageBuildMode)' == '$(UapAppxPackageBuildModeStoreAndSideload)' or '$(UapAppxPackageBuildMode)' == '$(UapAppxPackageBuildModeStoreUploadLegacy)') and
-                            '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)' and
-                            '$(UseDotNetNativeToolchain)' != 'false' and
-                            '$(Configuration)' != 'Debug'">
-    <UapAppxPackageBuildModeIsValid>true</UapAppxPackageBuildModeIsValid>
-    <BuildAppxUploadPackageForUap>true</BuildAppxUploadPackageForUap>
-    <BuildAppxSideloadPackageForUap>true</BuildAppxSideloadPackageForUap>
-    <AppxPackageIsForStore>true</AppxPackageIsForStore>
-  </PropertyGroup>
-
-  <!--If UapAppxPackageBuildMode is set to UapAppxPackageBuildModeSideloadOnly, prep all the appropriate flags to produce an appx sideload package-->
-  <PropertyGroup Condition="'$(UapAppxPackageBuildMode)' == '$(UapAppxPackageBuildModeSideloadOnly)' and
-                            '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">
-    <UapAppxPackageBuildModeIsValid>true</UapAppxPackageBuildModeIsValid>
-    <BuildAppxUploadPackageForUap>false</BuildAppxUploadPackageForUap>
-    <BuildAppxSideloadPackageForUap>true</BuildAppxSideloadPackageForUap>
-    <AppxPackageIsForStore>false</AppxPackageIsForStore>
-  </PropertyGroup>
-
-  <!--If UapAppxPackageBuildMode is set to UapAppxPackageBuildModeStore, prep all the appropriate flags to produce an APPX for store upload only-->
-  <PropertyGroup Condition="'$(UapAppxPackageBuildMode)' == '$(UapAppxPackageBuildModeStoreOnly)' and
-                            '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">
-    <UapAppxPackageBuildModeIsValid>true</UapAppxPackageBuildModeIsValid>
-    <BuildAppxUploadPackageForUap>true</BuildAppxUploadPackageForUap>
-    <BuildAppxSideloadPackageForUap>false</BuildAppxSideloadPackageForUap>
-    <AppxPackageIsForStore>true</AppxPackageIsForStore>
-  </PropertyGroup>
-
-  <!--If UapAppxPackageBuildMode is set to UapAppxPackageBuildModeCI, prep all the appropriate flags to produce an appxupload package for continuous integration-->
-  <PropertyGroup Condition="'$(UapAppxPackageBuildMode)' == '$(UapAppxPackageBuildModeCI)' and
-                            '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">
-    <UapAppxPackageBuildModeIsValid>true</UapAppxPackageBuildModeIsValid>
-
-    <BuildAppxUploadPackageForUap>false</BuildAppxUploadPackageForUap>
-    <BuildAppxUploadPackageForUap Condition="'$(UseDotNetNativeToolchain)' != 'false' and '$(Configuration)' != 'Debug'">true</BuildAppxUploadPackageForUap>
-
-    <AppxPackageIsForStore>false</AppxPackageIsForStore>
-    <AppxPackageIsForStore Condition="'$(UseDotNetNativeToolchain)' != 'false' and '$(Configuration)' != 'Debug'">true</AppxPackageIsForStore>
-
-    <BuildAppxSideloadPackageForUap>false</BuildAppxSideloadPackageForUap>
-  </PropertyGroup>
-
-  <!-- Combined checks to see if we should run the store-publishing steps added for the UAP flow. -->
-  <PropertyGroup>
-    <BuildAppxUploadPackageForUap Condition="'$(BuildAppxUploadPackageForUap)' == '' and
-                                             '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)' and
-                                             '$(UseDotNetNativeToolchain)' != 'false' and
-                                             '$(Configuration)' != 'Debug' and
-                                             '$(AppxPackageIsForStore)' == 'true'">true</BuildAppxUploadPackageForUap>
-    <BuildAppxUploadPackageForUap Condition="'$(BuildAppxUploadPackageForUap)' == ''">false</BuildAppxUploadPackageForUap>
-  </PropertyGroup>
-
-  <!-- Combined checks to see if we should run the sideload steps added -->
-  <PropertyGroup>
-    <BuildAppxSideloadPackageForUap Condition="'$(BuildAppxSideloadPackageForUap)' == '' and
-                                             '$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">true</BuildAppxSideloadPackageForUap>
-    <BuildAppxSideloadPackageForUap Condition="'$(BuildAppxSideloadPackageForUap)' == ''">false</BuildAppxSideloadPackageForUap>
-  </PropertyGroup>
-
-  <!--
-        When building on the command line or in TFS (determined by looking at the $(BuildingInsideVisualStudio) property), if build is invoked on an
-        app package-producing project, the package for the project will be produced as part of building the project without specifying any additional
-        flags or targets. This is control by an MSBuild property named GenerateAppxPackageOnBuild which is set to true by default.
-
-        If $(BuildingInsideVisualStudio) = false and $(GenerateAppxPackageOnBuild) = true, then build will also produce a package.
-    -->
-
-  <PropertyGroup>
-    <GenerateAppxPackageOnBuild Condition="'$(AppxPackage)' == 'true' and '$(GenerateAppxPackageOnBuild)' == '' and '$(BuildingInsideVisualStudio)' != 'true'">true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -350,8 +243,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(_OverriddenDisableXbf)' == 'false'">
-    <DisableEmbeddedXbf Condition="'$(GenerateAppxPackageOnBuild)' == 'true'">false</DisableEmbeddedXbf>
-    <DisableEmbeddedXbf Condition="'$(GenerateAppxPackageOnBuild)' != 'true'">true</DisableEmbeddedXbf>
+    <DisableEmbeddedXbf>true</DisableEmbeddedXbf>
     <DisableEmbeddedXbf Condition="'$(Configuration)'!='Debug'">false</DisableEmbeddedXbf>
   </PropertyGroup>
 
@@ -367,7 +259,7 @@
   <!-- The reverse map needs to be added only in appx bundles and only on F5. -->
   <PropertyGroup Condition="'$(InsertReverseMap)' == ''">
     <InsertReverseMap Condition="'$(AppxBundle)' == 'Always' or '$(AppxBundle)' == 'Auto'">true</InsertReverseMap>
-    <InsertReverseMap Condition="'$(InsertReverseMap)' == '' or '$(GenerateAppxPackageOnBuild)' == 'true' or '$(OutputType)' != 'WindowsWebApplication'">false</InsertReverseMap>
+    <InsertReverseMap Condition="'$(InsertReverseMap)' == '' or '$(OutputType)' != 'WindowsWebApplication'">false</InsertReverseMap>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -392,13 +284,6 @@
   <PropertyGroup Condition="'$(SkipIntermediatePriGenerationForResourceFiles)' == ''">
     <SkipIntermediatePriGenerationForResourceFiles Condition="'$(AppxPackagePipelineVersion)' == '$(UapBuildPipeline)'">true</SkipIntermediatePriGenerationForResourceFiles>
     <SkipIntermediatePriGenerationForResourceFiles Condition="'$(SkipIntermediatePriGenerationForResourceFiles)' == ''">false</SkipIntermediatePriGenerationForResourceFiles>
-  </PropertyGroup>
-
-  <!-- WinMDExp.exe and AL.exe are tools that we need for building WinMD files and resource files respectively.  They usually  -->
-  <!-- ship as part of the .Net SDK, but we point the common targets to our own copies so we don't require that dependency.    -->
-  <PropertyGroup>
-    <WinMdExpToolPath Condition="'$(WinMdExpToolPath)' == '' and EXISTS( '$(AppxMSBuildToolsPath)WinMDExp.exe' ) ">$(AppxMSBuildToolsPath)</WinMdExpToolPath>
-    <AlToolPath Condition="'$(AlToolPath)' == '' and EXISTS( '$(AppxMSBuildToolsPath)Al.exe' ) ">$(AppxMSBuildToolsPath)</AlToolPath>
   </PropertyGroup>
 
   <Import Project="$(MSBuildProjectDirectory)\Microsoft.AppxPackage.Metadata.Overrides.props" Condition="EXISTS( '$(MSBuildProjectDirectory)\Microsoft.AppxPackage.Metadata.Overrides.props' )"/>
@@ -527,7 +412,7 @@
       <Output TaskParameter="ActualFileArchitecture" PropertyName="MakePriArchitecture" />
     </GetSdkFileFullPath>
 
-    <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '$(GenerateAppxPackageOnBuild)' == 'true' or '@(BundleMappingFile)' != ''"
+    <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '@(BundleMappingFile)' != ''"
                         FileName="MakeAppx.exe"
                         FullFilePath="$(MakeAppxExeFullPath)"
                         FileArchitecture="$(MakeAppxArchitecture)"
@@ -543,7 +428,7 @@
       <Output TaskParameter="ActualFullFilePath" PropertyName="MakeAppxExeFullPath" />
     </GetSdkFileFullPath>
 
-    <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true' or '$(GenerateAppxPackageOnBuild)' == 'true'"
+    <GetSdkFileFullPath Condition="'$(AppxPackage)' == 'true'"
                         FileName="signtool.exe"
                         FullFilePath="$(SignAppxPackageExeFullPath)"
                         FileArchitecture="$(SignToolArchitecture)"
@@ -682,7 +567,6 @@
       _CreateProjectPriFileItem;
       _ExpandProjectPriFile;
       _ExpandPriFiles;
-      _ExpandPriUploadFiles;
       AfterGenerateProjectPriFile
     </_GenerateProjectPriFileDependsOn>
   </PropertyGroup>
@@ -1108,31 +992,6 @@
 
   </Target>
 
-  <!-- Expand content of PRI files. -->
-  <Target Name="_ExpandPriUploadFiles"
-          Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-
-    <ItemGroup>
-      <_PriUploadFilesToExpand Include="@(_PriFilesFromPayload)"
-                               Condition="'%(OutputGroup)' != 'ProjectPriUploadFile'
-                                      and '%(OutputGroup)' != 'ProjectPriFile'
-                                      and '%(OutputGroup)' != 'SDKRedistOutputGroup'"
-                               />
-    </ItemGroup>
-
-    <ExpandPriContent Inputs="@(_PriUploadFilesToExpand)"
-                      MakePriExeFullPath="$(MakePriExeFullPath)"
-                      MakePriExtensionPath="$(OutOfProcessMakePriExtensionPath)"
-                      IntermediateDirectory="$(IntermediateOutputPath)"
-                      AdditionalMakepriExeParameters="$(AppxExpandPriContentAdditionalMakepriExeParameters)"
-                      VsTelemetrySession="$(VsTelemetrySession)"
-                          >
-      <Output TaskParameter="Expanded" ItemName="_ExpandedPriUploadPayload" />
-      <Output TaskParameter="IntermediateFileWrites" ItemName="FileWrites" />
-    </ExpandPriContent>
-
-  </Target>
-
   <!-- Override to specify actions to happen after generating project PRI file. -->
   <Target Name="AfterGenerateProjectPriFile" />
 
@@ -1405,14 +1264,6 @@
         <ProjectName>$(ProjectName)</ProjectName>
         <TargetPath>$(ProjectPriFileName)</TargetPath>
       </ProjectPriFile>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(BuildAppxUploadPackageForUap)' == 'true'">
-      <ProjectPriUploadFile Include="$(ProjectPriUploadFullPath)" Condition="'$(IncludeProjectPriFile)' == 'true'">
-        <OutputGroup>ProjectPriUploadFile</OutputGroup>
-        <ProjectName>$(ProjectName)</ProjectName>
-        <TargetPath>$(ProjectPriFileName)</TargetPath>
-      </ProjectPriUploadFile>
     </ItemGroup>
 
     <PropertyGroup>
