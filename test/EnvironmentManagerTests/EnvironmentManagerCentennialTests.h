@@ -8,42 +8,49 @@ namespace ProjectReunionEnvironmentManagerTests
 {
     class EnvironmentManagerCentennialTests {
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
-            TEST_CLASS_PROPERTY(L"RunAs", L"{UAP,Restricted,Elevated,InteractiveUser}")
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
             TEST_CLASS_PROPERTY(L"UAP:Host", L"PackagedCwa")
-            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"CentennialAppxManifest.pkg.xml")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"Elevated")
+            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"{PackagedCwaFullTrust,PackagedCwaPartialTrust}")
             END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(CentennialWriteEVs)
+        TEST_CLASS_SETUP(CentennialWriteEVs)
         {
-            WriteProcessEV();
-            WriteUserEV();
-            WriteMachineEV();
-
+            UserSetup();
+            MachineSetup();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(CentennialRemoveEvs)
+        TEST_CLASS_CLEANUP(CentennialRemoveEVs)
         {
-            RemoveProcessEV();
-            RemoveUserEV();
-            RemoveMachineEV();
-
+            UserCleanup();
+            MachineCleanup();
             return true;
         }
 
         TEST_METHOD(CentennialTestGetForProcess);
         TEST_METHOD(CentennialTestGetForUser);
         TEST_METHOD(CentennialTestGetForMachine);
+
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForProcess);
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForUser);
         TEST_METHOD(CentennialTestGetEnvironmentVariablesForMachine);
+
         TEST_METHOD(CentennialTestGetEnvironmentVariableForProcess);
         TEST_METHOD(CentennialTestGetEnvironmentVariableForUser);
         TEST_METHOD(CentennialTestGetEnvironmentVariableForMachine);
+
         TEST_METHOD(CentennialTestSetEnvironmentVariableForProcess);
         TEST_METHOD(CentennialTestSetEnvironmentVariableForUser);
         TEST_METHOD(CentennialTestSetEnvironmentVariableForMachine);
+
+        TEST_METHOD(CentennialTestAppendToPathForProcess);
+        TEST_METHOD(CentennialTestAppendToPathForUser);
+        TEST_METHOD(CentennialTestAppendToPathForMachine);
+
+        TEST_METHOD(CentennialTestRemoveFromPathForProcess);
+        TEST_METHOD(CentennialTestRemoveFromPathForUser);
+        TEST_METHOD(CentennialTestRemoveFromPathForMachine);
     };
 
 }

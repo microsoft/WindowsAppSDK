@@ -11,13 +11,13 @@ typedef IMapView<winrt::hstring, winrt::hstring> EnvironmentVariables;
 
 inline EnvironmentVariables GetEnvironmentVariablesFromRegistry(HKEY hKey)
 {
-    StringMap environmentVariables;
+    StringMap environmentVariables{};
 
-    DWORD sizeOfLongestNameInCharacters;
-    DWORD sizeOfLongestValueInCharacters;
-    DWORD numberOfValues;
+    DWORD sizeOfLongestNameInCharacters{};
+    DWORD sizeOfLongestValueInCharacters{};
+    DWORD numberOfValues{};
 
-    THROW_IF_FAILED(RegQueryInfoKeyW(
+    THROW_IF_WIN32_ERROR(RegQueryInfoKeyW(
         hKey
         , nullptr // lpClass
         , nullptr // lpcchClass
@@ -32,24 +32,24 @@ inline EnvironmentVariables GetEnvironmentVariablesFromRegistry(HKEY hKey)
         , nullptr)); // lpftLastWriteTime
 
     // +1 for null character
-    const DWORD c_nameLength = sizeOfLongestNameInCharacters + 1;
-    const DWORD c_valueSizeInBytes = sizeOfLongestValueInCharacters * sizeof(WCHAR);
+    const DWORD c_nameLength{ sizeOfLongestNameInCharacters + 1 };
+    const DWORD c_valueSizeInBytes{ sizeOfLongestValueInCharacters * sizeof(WCHAR) };
 
-    std::unique_ptr<wchar_t[]> environmentVariableName(new wchar_t[c_nameLength]);
-    std::unique_ptr<BYTE[]> environmentVariableValue(new BYTE[c_valueSizeInBytes]);
+    std::unique_ptr<wchar_t[]> environmentVariableName{ new wchar_t[c_nameLength] };
+    std::unique_ptr<BYTE[]> environmentVariableValue{ new BYTE[c_valueSizeInBytes] };
 
     for (DWORD valueIndex = 0; valueIndex < numberOfValues; valueIndex++)
     {
         DWORD nameLength = c_nameLength;
         DWORD valueSize = c_valueSizeInBytes;
-        LSTATUS enumerationStatus = RegEnumValueW(hKey
+        LSTATUS enumerationStatus{ RegEnumValueW(hKey
             , valueIndex
             , environmentVariableName.get()
             , &nameLength
             , nullptr
             , nullptr
             , environmentVariableValue.get()
-            , &valueSize);
+            , &valueSize) };
 
         // An empty name indicates the default value.
         if (nameLength == 0)
@@ -75,10 +75,10 @@ inline EnvironmentVariables GetEnvironmentVariablesFromRegistry(HKEY hKey)
 
 inline std::wstring GetEnvironmentVariableFromRegistry(const std::wstring variableKey, HKEY KeyToOpen)
 {
-    DWORD sizeOfEnvironmentValue;
+    DWORD sizeOfEnvironmentValue{};
 
     // See how big we need the buffer to be
-    LSTATUS queryResult = RegQueryValueEx(KeyToOpen, variableKey.c_str(), 0, nullptr, nullptr, &sizeOfEnvironmentValue);
+    LSTATUS queryResult{ RegQueryValueEx(KeyToOpen, variableKey.c_str(), 0, nullptr, nullptr, &sizeOfEnvironmentValue) };
 
     if (queryResult != ERROR_SUCCESS)
     {
@@ -90,37 +90,37 @@ inline std::wstring GetEnvironmentVariableFromRegistry(const std::wstring variab
         THROW_HR(HRESULT_FROM_WIN32((queryResult)));
     }
 
-    std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
+    std::unique_ptr<wchar_t[]> environmentValue{ new wchar_t[sizeOfEnvironmentValue] };
     THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(KeyToOpen, variableKey.c_str(), 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
 
-    return std::wstring(environmentValue.get());
+    return std::wstring{ environmentValue.get() };
 }
 
 inline EnvironmentVariables GetEnvironmentVariablesForUser()
 {
-    wil::unique_hkey environmentVariablesHKey;
-    THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof())));
+    wil::unique_hkey environmentVariablesHKey{};
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 
 inline std::wstring GetEnvironmentVariableForUser(const std::wstring variableName)
 {
-    wil::unique_hkey environmentVariableHKey;
-    THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof())));
+    wil::unique_hkey environmentVariableHKey{};
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
     return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
 }
 
 inline EnvironmentVariables GetEnvironmentVariablesForMachine()
 {
     wil::unique_hkey environmentVariablesHKey{};
-    THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof())));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 
 inline std::wstring GetEnvironmentVariableForMachine(const std::wstring variableName)
 {
     wil::unique_hkey environmentVariableHKey{};
-    THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof())));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
     return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
 }
 
@@ -130,12 +130,12 @@ inline EnvironmentVariables GetEnvironmentVariablesForProcess()
     PWSTR environmentVariablesString{ GetEnvironmentStrings() };
     THROW_HR_IF_NULL(E_POINTER, environmentVariablesString);
 
-    StringMap environmentVariables;
+    StringMap environmentVariables{};
     for (auto environmentVariableOffset = environmentVariablesString; *environmentVariableOffset; environmentVariableOffset += wcslen(environmentVariableOffset) + 1)
     {
         auto delimiter{ wcschr(environmentVariableOffset, L'=') };
         FAIL_FAST_HR_IF_NULL(E_UNEXPECTED, delimiter);
-        std::wstring variableName(environmentVariableOffset, 0, delimiter - environmentVariableOffset);
+        std::wstring variableName{ environmentVariableOffset, 0, static_cast<std::size_t> (delimiter - environmentVariableOffset) };
         auto variableValue{ delimiter + 1 };
         environmentVariables.Insert(variableName, variableValue);
     }
@@ -148,7 +148,7 @@ inline EnvironmentVariables GetEnvironmentVariablesForProcess()
 inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variableName)
 {
     // Get the size of the buffer.
-    DWORD sizeNeededInCharacters = ::GetEnvironmentVariable(variableName.c_str(), nullptr, 0);
+    DWORD sizeNeededInCharacters{ ::GetEnvironmentVariable(variableName.c_str(), nullptr, 0) };
 
     // If we got an error
     if (sizeNeededInCharacters == 0)
@@ -168,7 +168,7 @@ inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variable
     std::wstring environmentVariableValue{};
 
     environmentVariableValue.resize(sizeNeededInCharacters - 1);
-    DWORD getResult = ::GetEnvironmentVariable(variableName.c_str(), &environmentVariableValue[0], sizeNeededInCharacters);
+    DWORD getResult{ ::GetEnvironmentVariable(variableName.c_str(), &environmentVariableValue[0], sizeNeededInCharacters) };
 
     if (getResult == 0)
     {
@@ -177,6 +177,7 @@ inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variable
 
     return environmentVariableValue;
 }
+
 
 /// Compares two IMapView<winrt::hstring, winrt::hstring> collections for
 /// 1. Have the same size
@@ -188,8 +189,8 @@ inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variable
 /// are compared from underTest to real this will fail in the case that any keys are different, or any values are different
 inline void CompareIMapViews(EnvironmentVariables fromEnvironmentManager, EnvironmentVariables fromWin32)
 {
-    auto sizeMessage = wil::str_printf<wil::unique_cotaskmem_string>(
-        L"Size of fromEnvironmentManager Collection: %i\r\n Size of Win32 Collection: %i", fromEnvironmentManager.Size(), fromWin32.Size());
+    auto sizeMessage{ wil::str_printf<wil::unique_cotaskmem_string>(
+        L"Size of fromEnvironmentManager Collection: %i\r\n Size of Win32 Collection: %i", fromEnvironmentManager.Size(), fromWin32.Size()) };
 
     WEX::Logging::Log::Comment(sizeMessage.get());
     // Make sure the sizes are the same.

@@ -58,31 +58,26 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (m_Scope == Scope::Process)
         {
-            return hstring(GetProcessEnvironmentVariable(std::wstring(variableName)));
+            return hstring{ GetProcessEnvironmentVariable(std::wstring{variableName }) };
         }
         else
         {
-            return hstring(GetUserOrMachineEnvironmentVariable(std::wstring(variableName)));
+            return hstring{ GetUserOrMachineEnvironmentVariable(std::wstring{variableName}) };
         }
+    }
+
+    bool EnvironmentManager::IsSupported()
+    {
+        throw hresult_not_implemented();
     }
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
-        // If we are running in process scope it is okay to
-       // set EV's because they will not be tracked.
-
-       // Disallow sets if current OS is 20H0 or lower because
-       // tracking EV changes relies on a feature in builds above 20H0
-        if (m_Scope != Scope::Process && IsCurrentOS20H2OrLower())
-        {
-            THROW_HR(E_NOTIMPL);
-        }
-
         auto setEV = [&, name, value, this]()
         {
             if (m_Scope == Scope::Process)
             {
-                BOOL result = FALSE;
+                BOOL result{ FALSE };
                 if (!value.empty())
                 {
                     result = ::SetEnvironmentVariable(name.c_str(), value.c_str());
@@ -98,13 +93,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 }
                 else
                 {
-                    DWORD lastError = GetLastError();
+                    DWORD lastError{ GetLastError() };
                     RETURN_HR(HRESULT_FROM_WIN32(lastError));
                 }
             }
 
             // m_Scope should be user or machine here.
-            wil::unique_hkey environmentVariableKey = GetRegHKeyForEVUserAndMachineScope(true);
+            wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
 
             if (!value.empty())
             {
@@ -118,13 +113,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
             else
             {
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegDeleteValue(environmentVariableKey.get()
-                    , name.c_str())));
+                DeleteEnvironmentVariableIfExists(environmentVariableKey.get(), name.c_str());
             }
 
-            LRESULT broadcastResult = SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
-                reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
-                SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr);
+            const WPARAM c_noWParam{};
+            LRESULT broadcastResult { SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
+                c_noWParam, reinterpret_cast<LPARAM>(L"Environment"),
+                SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr) };
 
             if (broadcastResult == 0)
             {
@@ -141,12 +136,141 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF(E_INVALIDARG, path.empty());
+
+        // Get the existing path because we will append to it.
+        std::wstring existingPath{ GetPath() };
+
+        // Don't append to the path if the addition already exists.
+        if (existingPath.find(path) != std::wstring::npos)
+        {
+            return;
+        }
+
+        std::wstring newPath{ existingPath.append(path) };
+
+        if (newPath.back() != L';')
+        {
+            newPath += L';';
+        }
+
+        auto setPath = [&, newPath, this]()
+        {
+            if (m_Scope == Scope::Process)
+            {
+                THROW_IF_WIN32_BOOL_FALSE(::SetEnvironmentVariable(c_PathName, newPath.c_str()));
+            }
+            else //Scope is either user or machine
+            {
+                wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
+
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                    environmentVariableKey.get()
+                    , c_PathName
+                    , 0
+                    , REG_EXPAND_SZ
+                    , reinterpret_cast<const BYTE*>(newPath.c_str())
+                    , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t)))));
+
+                LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
+                    reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
+                    SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr) };
+
+                if (broadcastResult == 0)
+                {
+                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                }
+            }
+
+            return S_OK;
+        };
+
+        EnvironmentVariableChangeTracker changeTracker(c_PathName, std::wstring(newPath), m_Scope);
+
+        THROW_IF_FAILED(changeTracker.TrackChange(setPath));
     }
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF(E_INVALIDARG, path.empty());
+
+        // A user is only allowed to remove something from the PATH if
+        // 1. path exists in PATH
+        // 2. path matches a path part exactly (ignoring case)
+        std::wstring currentPath{ GetPath() };
+        std::wstring pathPartToFind(path);
+
+        if (pathPartToFind.back() != L';')
+        {
+            pathPartToFind += L';';
+        }
+
+        int left{ static_cast<int>(currentPath.size()) };
+        int right{ static_cast<int>(currentPath.size() - 1) };
+        bool foundPathPart{ false };
+
+        while (!foundPathPart && left >= 0)
+        {
+            if (left == 0 || currentPath[left - 1] == L';')
+            {
+                std::wstring pathPart(currentPath, left, right - left);
+
+                if (CompareStringOrdinal(pathPart.c_str(), -1,
+                    pathPartToFind.c_str(), -1,
+                    TRUE) == CSTR_EQUAL)
+                {
+                    foundPathPart = true;
+                }
+                else
+                {
+                    right = left;
+                }
+            }
+
+            left--;
+        }
+
+        // foundPathPart is used to check if we need to track and
+        // apply the change.
+        currentPath.erase(left + 1, right - left - 1);
+
+        auto removeFromPath = [&, currentPath, this]()
+        {
+            if (m_Scope == Scope::Process)
+            {
+                THROW_IF_WIN32_BOOL_FALSE(::SetEnvironmentVariable(c_PathName, currentPath.c_str()));
+            }
+            else //Scope is either user or machine
+            {
+                wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
+
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                    environmentVariableKey.get()
+                    , c_PathName
+                    , 0
+                    , REG_EXPAND_SZ
+                    , reinterpret_cast<const BYTE*>(currentPath.c_str())
+                    , static_cast<DWORD>((currentPath.size() + 1) * sizeof(wchar_t)))));
+
+                LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
+                    reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
+                    SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr) };
+
+                if (broadcastResult == 0)
+                {
+                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                }
+            }
+
+            return S_OK;
+        };
+
+        if (foundPathPart)
+        {
+            EnvironmentVariableChangeTracker changeTracker(c_PathName, std::wstring(currentPath), m_Scope);
+
+            THROW_IF_FAILED(changeTracker.TrackChange(removeFromPath));
+        }
     }
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
@@ -157,6 +281,45 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
         throw hresult_not_implemented();
+    }
+
+    std::wstring EnvironmentManager::GetPath() const
+    {
+        std::wstring path;
+        if (m_Scope == Scope::Process)
+        {
+            path = GetProcessEnvironmentVariable(c_PathName);
+        }
+        else
+        {
+            wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope() };
+
+            DWORD sizeOfEnvironmentValue{};
+
+            // See how big we need the buffer to be
+            LSTATUS queryResult{ RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, nullptr, &sizeOfEnvironmentValue) };
+
+            if (queryResult == ERROR_FILE_NOT_FOUND)
+            {
+                path = L"";
+            }
+            else if (queryResult != ERROR_SUCCESS)
+            {
+                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+            }
+
+            std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
+            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+
+            path = std::wstring(environmentValue.get());
+        }
+
+        if (path.back() != L';')
+        {
+            path += L';';
+        }
+
+        return path;
     }
 
     StringMap EnvironmentManager::GetProcessEnvironmentVariables() const
@@ -180,43 +343,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return environmentVariables;
     }
 
-    std::wstring EnvironmentManager::GetProcessEnvironmentVariable(const std::wstring variableName) const
-    {
-        // Get the size of the buffer.
-        DWORD sizeNeededInCharacters = ::GetEnvironmentVariable(variableName.c_str(), nullptr, 0);
-
-        // If we got an error
-        if (sizeNeededInCharacters == 0)
-        {
-            DWORD lastError = GetLastError();
-
-            if (lastError == ERROR_ENVVAR_NOT_FOUND)
-            {
-                return L"";
-            }
-            else
-            {
-                THROW_HR(HRESULT_FROM_WIN32(lastError));
-            }
-        }
-
-        std::wstring environmentVariableValue{};
-
-        environmentVariableValue.resize(sizeNeededInCharacters - 1);
-        DWORD getResult = ::GetEnvironmentVariable(variableName.c_str(), &environmentVariableValue[0], sizeNeededInCharacters);
-
-        if (getResult == 0)
-        {
-            THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
-        }
-
-        return environmentVariableValue;
-    }
-
     StringMap EnvironmentManager::GetUserOrMachineEnvironmentVariables() const
     {
         StringMap environmentVariables;
-        wil::unique_hkey environmentVariablesHKey = GetRegHKeyForEVUserAndMachineScope();
+        wil::unique_hkey environmentVariablesHKey{ GetRegHKeyForEVUserAndMachineScope() };
 
         // While this way of calculating the max size of the names,
         // values, and total number of entries includes two calls
@@ -236,7 +366,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             &sizeOfLongestValueInCharacters, nullptr, nullptr));
 
         // +1 for null character
-        const DWORD c_nameLength = sizeOfLongestNameInCharacters + 1;
+        const DWORD c_nameLength{ sizeOfLongestNameInCharacters + 1 };
         const DWORD c_valueSizeInBytes{ static_cast<DWORD>(sizeOfLongestValueInCharacters * sizeof(WCHAR)) };
 
         std::unique_ptr<wchar_t[]> environmentVariableName(new wchar_t[c_nameLength]);
@@ -244,16 +374,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         for (DWORD valueIndex = 0; valueIndex < numberOfValues; valueIndex++)
         {
-            DWORD nameLength = c_nameLength;
-            DWORD valueSize = c_valueSizeInBytes;
-            LSTATUS enumerationStatus = RegEnumValueW(environmentVariablesHKey.get()
-                , valueIndex
-                , environmentVariableName.get()
-                , &nameLength
-                , nullptr
-                , nullptr
-                , environmentVariableValue.get()
-                , &valueSize);
+            DWORD nameLength{ c_nameLength };
+            DWORD valueSize{ c_valueSizeInBytes };
+            LSTATUS enumerationStatus{ RegEnumValueW(environmentVariablesHKey.get(),
+                valueIndex, environmentVariableName.get(), &nameLength,
+                nullptr, nullptr, environmentVariableValue.get(),
+                &valueSize) };
 
             // An empty name indicates the default value.
             if (nameLength == 0)
@@ -276,14 +402,71 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return environmentVariables;
     }
 
+    std::wstring EnvironmentManager::GetProcessEnvironmentVariable(const std::wstring variableName) const
+    {
+        // Get the size of the buffer.
+        DWORD sizeNeededInCharacters{ ::GetEnvironmentVariable(variableName.c_str(), nullptr, 0) };
+
+        // If we got an error
+        if (sizeNeededInCharacters == 0)
+        {
+            DWORD lastError{ GetLastError() };
+
+            if (lastError == ERROR_ENVVAR_NOT_FOUND)
+            {
+                return L"";
+            }
+            else
+            {
+                THROW_HR(HRESULT_FROM_WIN32(lastError));
+            }
+        }
+
+        std::wstring environmentVariableValue{};
+
+        environmentVariableValue.resize(sizeNeededInCharacters - 1);
+        DWORD getResult{ ::GetEnvironmentVariable(variableName.c_str(), &environmentVariableValue[0], sizeNeededInCharacters) };
+
+        if (getResult == 0)
+        {
+            THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+        }
+
+        return environmentVariableValue;
+    }
+
+    wil::unique_hkey EnvironmentManager::GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess) const
+    {
+        FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == Scope::Process);
+
+        REGSAM registrySecurity{ KEY_READ };
+
+        if (needsWriteAccess)
+        {
+            registrySecurity |= KEY_WRITE;
+        }
+
+        wil::unique_hkey environmentVariablesHKey{};
+        if (m_Scope == Scope::User)
+        {
+            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof())));
+        }
+        else //Scope is Machine
+        {
+            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof())));
+        }
+
+        return environmentVariablesHKey;
+    }
+
     std::wstring EnvironmentManager::GetUserOrMachineEnvironmentVariable(const std::wstring variableName) const
     {
-        wil::unique_hkey environmentVariableHKey = GetRegHKeyForEVUserAndMachineScope();
+        wil::unique_hkey environmentVariableHKey{ GetRegHKeyForEVUserAndMachineScope() };
 
         DWORD sizeOfEnvironmentValue;
 
         // See how big we need the buffer to be
-        LSTATUS queryResult = RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, nullptr, &sizeOfEnvironmentValue);
+        LSTATUS queryResult{ RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, nullptr, &sizeOfEnvironmentValue) };
 
         if (queryResult != ERROR_SUCCESS)
         {
@@ -295,33 +478,16 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             THROW_HR(HRESULT_FROM_WIN32((queryResult)));
         }
 
-        std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
+        std::unique_ptr<wchar_t[]> environmentValue{ new wchar_t[sizeOfEnvironmentValue] };
         THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
 
         return std::wstring(environmentValue.get());
     }
 
-    wil::unique_hkey EnvironmentManager::GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess) const
+    void EnvironmentManager::DeleteEnvironmentVariableIfExists(const HKEY hkey, const std::wstring name) const
     {
-        FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == Scope::Process);
+        const auto deleteResult{ RegDeleteValue(hkey, name.c_str()) };
 
-        REGSAM registrySecurity = KEY_READ;
-
-        if (needsWriteAccess)
-        {
-            registrySecurity |= KEY_WRITE;
-        }
-
-        wil::unique_hkey environmentVariablesHKey;
-        if (m_Scope == Scope::User)
-        {
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, USER_EV_REG_LOCATION, 0, registrySecurity, environmentVariablesHKey.addressof())));
-        }
-        else //Scope is Machine
-        {
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, MACHINE_EV_REG_LOCATION, 0, registrySecurity, environmentVariablesHKey.addressof())));
-        }
-
-        return environmentVariablesHKey;
+        THROW_HR_IF(HRESULT_FROM_WIN32(deleteResult), (deleteResult != ERROR_SUCCESS) && (deleteResult != ERROR_FILE_NOT_FOUND));
     }
 }

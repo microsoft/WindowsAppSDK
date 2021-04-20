@@ -9,7 +9,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     public:
         virtual HRESULT TrackChange(std::function<HRESULT(void)> callBack) = 0;
 
-        bool m_ShouldTrackChange = false;
+        bool m_ShouldTrackChange{ false };
         std::wstring m_PackageFullName;
 
     private:

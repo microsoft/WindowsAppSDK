@@ -10,8 +10,10 @@ namespace Microsoft.ProjectReunion
         static EnvironmentManager GetForMachine();
 
         IMapView<String, String> GetEnvironmentVariables();
-
         String GetEnvironmentVariable(String name);
+
+        Boolean IsSupported{ get; };
+
         void SetEnvironmentVariable(String name, String value);
 
         // Path manipulation
