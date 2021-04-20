@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#if defined(PROJECTREUNION_PIPELINE_BUILD) && (PROJECTREUNION_PIPELINE_BUILD == 1)
+#if defined(PROJECTREUNION_BUILD_PIPELINE) && (PROJECTREUNION_BUILD_PIPELINE == 1)
 #include "DynamicDependencyLifetimeManager-Constants-Override.h"
 #else
 #define PR_DYNDEP_LIBID_UUID                        1BF712E5-41ED-46a5-8402-2D40725F691E

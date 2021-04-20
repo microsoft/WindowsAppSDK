@@ -7,15 +7,16 @@
   </Target>
 
   <!-- Compilation differs for the build pipeline vs local development -->
-  <PropertyGroup Condition="$(ProjectReunionPipelineBuild) != 'true'">
+  <PropertyGroup Condition="$(ProjectReunionBuildPipeline) != 'true'">
     <!-- If not set, default it to false. -->
-    <ProjectReunionPipelineBuild>false</ProjectReunionPipelineBuild>
+    <ProjectReunionBuildPipeline>false</ProjectReunionBuildPipeline>
   </PropertyGroup>
 
   <!-- Conditional behavior for build pipeline vs local development -->
-  <ItemDefinitionGroup Condition="$(ProjectReunionPipelineBuild) == 'true'">
+  <ItemDefinitionGroup Condition="$(ProjectReunionBuildPipeline) == 'true'">
     <ClCompile>
-      <PreprocessorDefinitions>PROJECTREUNION_PIPELINE_BUILD=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 
