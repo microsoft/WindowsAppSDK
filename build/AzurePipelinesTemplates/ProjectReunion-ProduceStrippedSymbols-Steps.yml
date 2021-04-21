@@ -8,7 +8,7 @@ steps:
       filePath: 'build\StripSymbols.ps1'
       arguments: '-InputDirectory ${{Build.ArtifactStagingDirectory}}\symbols\ -OutputDirectory ${{Build.ArtifactStagingDirectory}}\strippedsymbols\'
   
-  -task: PublishBuildArtifacts@1
+  - task: PublishBuildArtifacts@1
     displayName: 'Upload stripped symbols to artifacts store'
     condition: always()
     inputs:
