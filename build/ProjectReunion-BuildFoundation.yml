@@ -245,7 +245,9 @@ jobs:
       LIB: $(Build.SourcesDirectory)
 
   - template: AzurePipelinesTemplates\ProjectReunion-ProduceStrippedSymbols-Steps.yml
-  
+    parameters:
+      buildArtifactStagingDirectory: '$(Build.ArtifactStagingDirectory)'
+
   - task: PublishSymbols@2
     displayName: 'Publish stripped symbols (without source indexing)'
     inputs:
