@@ -232,9 +232,24 @@ jobs:
 #      dir /s $(Build.ArtifactStagingDirectory)\symbols
 
   - task: PublishSymbols@2
-    displayName: 'Publish symbols (without source indexing)'
+    displayName: 'Publish private symbols to internal server (without source indexing)'
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+# this ADO task does not support indexing of github sources currently :-(      
+      indexSources: false 
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+
+  - template: AzurePipelinesTemplates\ProjectReunion-ProduceStrippedSymbols-Steps.yml
+  
+  - task: PublishSymbols@2
+    displayName: 'Publish stripped symbols (without source indexing)'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\strippedsymbols\**\*.pdb'
       symbolServerType: 'TeamServices'
 # this ADO task does not support indexing of github sources currently :-(      
       indexSources: false 

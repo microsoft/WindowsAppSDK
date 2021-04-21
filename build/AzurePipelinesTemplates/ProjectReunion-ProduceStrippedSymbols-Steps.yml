@@ -1,0 +1,17 @@
+steps:
+  - template: ProjectReunion-InstallWindowsSDK-Steps.yml
+
+  - task: PowerShell@2
+    displayName: 'Produce stripped symbols'
+    condition: always()
+    inputs:
+      filePath: 'build\StripSymbols.ps1'
+      arguments: '-InputDirectory ${{Build.ArtifactStagingDirectory}}\symbols\ -OutputDirectory ${{Build.ArtifactStagingDirectory}}\strippedsymbols\'
+  
+  -task: PublishBuildArtifacts@1
+    displayName: 'Upload stripped symbols to artifacts store'
+    condition: always()
+    inputs:
+      PathToPublish: '$(Build.ArtifactStagingDirectory)\strippedsymbols'
+      artifactName: 'StrippedSymbols'
+      parallel: true
