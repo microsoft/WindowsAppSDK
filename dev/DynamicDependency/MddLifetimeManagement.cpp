@@ -120,7 +120,7 @@ STDAPI MddLifetimeManagementGC() noexcept try
 
                 // Look for windows.appExtension with name="com.microsoft.reunion.ddlm.<majorversion>.<minorversion>.<architecture>"
                 WCHAR appExtensionName[100]{};
-                wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm.%hu.%hu.%s", majorVersion, minorVersion, architecture);
+                wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, architecture);
 
                 auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
                 auto appExtensions{ catalog.FindAllAsync().get() };
