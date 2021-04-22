@@ -45,9 +45,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        s_typedEventHandler = nullptr;
-
         auto lock = m_lock.lock();
+        s_typedEventHandler = nullptr;
         m_channel.PushNotificationReceived(token);
     }
 
@@ -55,6 +54,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel channel,
         winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args)
     {
+        auto lock = m_lock.lock();
         Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs reunionPushArgs =
             Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
 

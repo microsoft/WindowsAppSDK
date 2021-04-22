@@ -6,12 +6,14 @@
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 
+constexpr PCWSTR reunionPushServerArg = L"-ReunionPushServer";
+
 namespace GetRawNotificationEventArgs {
     static Windows::Foundation::IInspectable GetRawNotificationEventArgs() {
         Windows::Foundation::IInspectable args = nullptr;
 
         std::wstring commandLineArgs = GetCommandLine();
-        auto found = commandLineArgs.find(L"-ReunionPushServer", 0);
+        auto found = commandLineArgs.find(reunionPushServerArg, 0);
         if (found != std::wstring::npos)
         {
             {
@@ -24,6 +26,7 @@ namespace GetRawNotificationEventArgs {
             {
                 auto lock = g_lock.lock();
                 args = g_activatedEventArgs.as<Windows::Foundation::IInspectable>();
+                g_activatedEventArgs = nullptr;
             }
         }
         return args;

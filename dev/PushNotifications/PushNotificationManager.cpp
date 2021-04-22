@@ -204,6 +204,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     // Only applicable for a Win32 app
                     builder.SetTaskEntryPointClsid(taskClsid);
+                    winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> conditions = details.GetConditions();
+                    for (auto condition : conditions)
+                    {
+                        builder.AddCondition(condition);
+                    }
                 }
                 registeredTask = builder.Register();
             }

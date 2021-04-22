@@ -17,7 +17,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs 
 
 void PushNotificationBackgroundTask::Run(IBackgroundTaskInstance taskInstance)
 {
+    SetEvent(g_waitHandleForArgs.get());
     auto lock = g_lock.lock();
     g_activatedEventArgs = winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(taskInstance);
-    SetEvent(g_waitHandleForArgs.get());
 }

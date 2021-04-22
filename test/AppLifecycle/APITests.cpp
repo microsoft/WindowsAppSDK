@@ -97,7 +97,7 @@ namespace Test::AppLifecycle
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
-                END_TEST_METHOD_PROPERTIES();
+            END_TEST_METHOD_PROPERTIES();
 
             VERIFY_IS_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
         }
