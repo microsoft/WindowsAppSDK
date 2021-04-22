@@ -14,7 +14,4 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
-#include <winrt/Microsoft.ApplicationModel.Activation.h>
 #include <winrt/Microsoft.ProjectReunion.h>
-#include <winrt/Windows.Web.Http.Headers.h>
-#include <winrt\Windows.Networking.PushNotifications.h>
