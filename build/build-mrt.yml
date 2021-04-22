@@ -123,6 +123,22 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
+# Diagnostics
+- task: CmdLine@1
+  displayName: 'DIAG: dump BuildOutput'
+  inputs:
+    filename: 'tree /f /a ${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+
+- task: CmdLine@1
+  displayName: 'DIAG: dump packages'
+  inputs:
+    filename: 'tree /f /a $(Build.SourcesDirectory)\packages'
+
+- task: CmdLine@1
+  displayName: 'DIAG: dump environment variables'
+  inputs:
+    filename: 'set'
+
 - task: VSTest@2
   displayName: 'test MRT (Managed)'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
@@ -149,6 +165,75 @@ steps:
     testRunTitle: 'test MRT $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+# This will pull from Nuget.org due to the nuget.config. However, later on we'll want to pull from an internal feed to validate a new package.
+# NuGetCommand@2
+- ${{ if eq(parameters.pipelineKind, 'ValidateReunion') }}:
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet install Microsoft.ProjectReunion'
+    inputs:
+      command: 'custom'
+      arguments: 'install Microsoft.ProjectReunion -Version 0.5.5 -ConfigFile $(Build.SourcesDirectory)\nuget.config -OutputDirectory $(Build.SourcesDirectory)\packagesTemp'
+  - task: powershell@2
+    displayName: 'Get versions of ProjectReunion dependencies'
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)\build\GetVersionsOfProjectReunionDependencies.ps1
+      arguments: -PackagesRoot $(Build.SourcesDirectory)\packagesTemp -ProjectReunionPackageVersion $(_projectReunionPackageVersion)
+
+- task: CmdLine@1
+  displayName: 'Display build machine environment variables'
+  inputs:
+    filename: 'set'
+
+# The Nuget contains the FWP packages under: tools/AppX/*.appx
+# Rename them to zip so we can extract them.
+- task: CmdLine@1
+  displayName: 'Rename appx to zip'
+  inputs:
+    script: |
+      cd $(Build.SourcesDirectory)\packagesTemp
+      for /f %x in ('dir /b /s *.appx') do ren "%x" *.zip
+
+# Extract files
+- task: ExtractFiles@1
+  displayName: 'Extract appx'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    archiveFilePatterns: '$(Build.SourcesDirectory)\packagesTemp\**\tools\Appx\win10-$(buildPlatform)\*.zip' 
+    destinationFolder: $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)
+    cleanDestinationFolder: true
+
+- task: CmdLine@1
+  displayName: 'DIAG: dump packages'
+  inputs:
+    filename: 'tree /f /a $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)'
+
+# Replace the existing MRM.dll and pdb from the UnitTest
+# Or perhap just set the PATH?
+- task: CmdLine@1
+  displayName: 'Replace MRM.dll and pdb for UnitTest'
+  inputs:
+    script: |
+      copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.dll ${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\UnitTest
+      copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.pdb ${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\UnitTest
+
+# Run the test again, this time using the DLL from the package.
+- task: VSTest@2
+  displayName: 'test MRT'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*unittest*.dll
+      !**\*TestAdapter.dll
+      !**\TE.*.dll
+      !**\obj\**
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+    testRunTitle: 'test MRT $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
