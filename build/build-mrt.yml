@@ -211,11 +211,9 @@ steps:
     tree /f /a $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)
   displayName: 'DIAG: dump packages'
 
-# Replace the existing MRM.dll and pdb from the UnitTest
-# Or perhap just set the PATH?
+# Replace the existing MRM.dll from the UnitTest
 - script: |
     copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.dll $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)\UnitTest
-    copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.pdb $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)\UnitTest
   displayName: 'Replace MRM.dll and pdb for UnitTest'
 
 # Run the test again, this time using the DLL from the package.
