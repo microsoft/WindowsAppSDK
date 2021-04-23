@@ -177,7 +177,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: $(Build.SourcesDirectory)\build\GetVersionsOfProjectReunionDependencies.ps1
-    arguments: -PackagesRoot $(Build.SourcesDirectory)\packagesTemp -ProjectReunionPackageVersion $(_projectReunionPackageVersion)
+    arguments: -PackagesRoot $(Build.SourcesDirectory)\packagesTemp -ProjectReunionPackageVersion 0.5.5
 
 - task: CmdLine@1
   displayName: 'Display build machine environment variables'
