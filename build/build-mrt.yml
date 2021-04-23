@@ -214,8 +214,8 @@ steps:
 # Replace the existing MRM.dll and pdb from the UnitTest
 # Or perhap just set the PATH?
 - script: |
-    copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.dll ${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\UnitTest
-    copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.pdb ${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\UnitTest
+    copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.dll $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)\UnitTest
+    copy /y $(Build.SourcesDirectory)\temp\ProjectReunionPackage-win10-$(buildPlatform)\MRM.pdb $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)\UnitTest
   displayName: 'Replace MRM.dll and pdb for UnitTest'
 
 # Run the test again, this time using the DLL from the package.
