@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.2.1" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.2.2" />
   </ItemGroup>
 
   <!-- For consistency across Reunion, explicitly reference .NET 5.0.5 SDK (5.0.202 train for VS 16.9.3) -->
