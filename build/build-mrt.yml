@@ -166,18 +166,18 @@ steps:
 
 # This will pull from Nuget.org due to the nuget.config. However, later on we'll want to pull from an internal feed to validate a new package.
 # NuGetCommand@2
-- ${{ if eq(parameters.pipelineKind, 'ValidateReunion') }}:
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet install Microsoft.ProjectReunion'
-    inputs:
-      command: 'custom'
-      arguments: 'install Microsoft.ProjectReunion -Version 0.5.5 -ConfigFile $(Build.SourcesDirectory)\nuget.config -OutputDirectory $(Build.SourcesDirectory)\packagesTemp'
-  - task: powershell@2
-    displayName: 'Get versions of ProjectReunion dependencies'
-    inputs:
-      targetType: filePath
-      filePath: $(Build.SourcesDirectory)\build\GetVersionsOfProjectReunionDependencies.ps1
-      arguments: -PackagesRoot $(Build.SourcesDirectory)\packagesTemp -ProjectReunionPackageVersion $(_projectReunionPackageVersion)
+#- ${{ if eq(parameters.pipelineKind, 'ValidateReunion') }}:
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: 'NuGet install Microsoft.ProjectReunion'
+  inputs:
+    command: 'custom'
+    arguments: 'install Microsoft.ProjectReunion -Version 0.5.5 -ConfigFile $(Build.SourcesDirectory)\nuget.config -OutputDirectory $(Build.SourcesDirectory)\packagesTemp'
+- task: powershell@2
+  displayName: 'Get versions of ProjectReunion dependencies'
+  inputs:
+    targetType: filePath
+    filePath: $(Build.SourcesDirectory)\build\GetVersionsOfProjectReunionDependencies.ps1
+    arguments: -PackagesRoot $(Build.SourcesDirectory)\packagesTemp -ProjectReunionPackageVersion $(_projectReunionPackageVersion)
 
 - task: CmdLine@1
   displayName: 'Display build machine environment variables'
