@@ -32,7 +32,7 @@ function PublishFile {
     }
 }
 
-PublishFile $FullBuildOutput\override\DynamicDependency-Override.json $FullPublishDir\
+PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $FullPublishDir\
 
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
