@@ -191,10 +191,12 @@ steps:
 
 # The Nuget contains the FWP packages under: tools/AppX/*.appx
 # Rename them to zip so we can extract them.
-- script: |
-    cd $(Build.SourcesDirectory)\packagesTemp
-    for /f %x in ('dir /b /s *.appx') do ren "%x" *.zip
+- task: CmdLine@2
   displayName: 'Rename appx to zip'
+  inputs:
+    script: |
+      cd $(Build.SourcesDirectory)\packagesTemp
+      for /f %%x in ('dir /b /s *.appx') do ren "%%x" *.zip
 
 # Extract files
 - task: ExtractFiles@1
