@@ -68,7 +68,7 @@ steps:
     displayName: 'Create DynamicDependencies overrides'
     inputs:
       targetType: filePath
-      filePath: tools\GenerateDynamicDependenciesOverrides.ps1
+      filePath: tools\GenerateDynamicDependencyOverrides.ps1
       arguments: -Path $(Build.SourcesDirectory)\build\override
       workingDirectory: '$(Build.SourcesDirectory)'
 
