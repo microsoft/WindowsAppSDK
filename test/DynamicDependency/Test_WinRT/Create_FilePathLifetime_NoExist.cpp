@@ -13,8 +13,6 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 void Test::DynamicDependency::Test_WinRT::Create_FilePathLifetime_NoExist()
 {
     // Setup our dynamic dependencies
@@ -39,12 +37,12 @@ void Test::DynamicDependency::Test_WinRT::Create_FilePathLifetime_NoExist()
         const auto lifetimeKind{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::FilePath };
         auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), lifetimeKind, lifetimeArtifactFilename.c_str()) };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Expected exception (value=0x%X ERROR_CONTEXT_EXPIRED) didn't occur", HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED)) };
-        Assert::Fail(message.get());
+        VERIFY_FAIL(message.get());
     }
     catch (const winrt::hresult_error& e)
     {
         const int32_t expectedHR{ HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED) };
-        Assert::AreEqual(expectedHR, e.code().value, e.message().c_str());
+        VERIFY_ARE_EQUAL(expectedHR, e.code().value, e.message().c_str());
     }
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);

@@ -11,23 +11,19 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 namespace Test::DynamicDependency
 {
-    TEST_CLASS(LifetimeManagementTests)
+    class LifetimeManagementTests
     {
     public:
+        BEGIN_TEST_CLASS(LifetimeManagementTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
 
-        TEST_CLASS_INITIALIZE(Setup)
+        TEST_CLASS_SETUP(Setup)
         {
-            // CppUnitTest initializes COM as STA before we get called
-            // But we don't need (or want) STA, and we do want MTA. We can't
-            // stop CppUnitTest from initializing COM but we can uninitialize
-            // it and (re)initialize it as MTA. Don't think of it as crude
-            // and brutish but rather 'thinking outside the box'...
-            COM::CoSuperInitialize();
-
             // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
             // but that's not true of our test project (a dll) in our build environment
@@ -36,22 +32,30 @@ namespace Test::DynamicDependency
             auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
             wil::unique_hmodule bootstrapDll(LoadLibrary(bootstrapDllAbsoluteFilename.c_str()));
             const auto lastError{ GetLastError() };
-            Assert::IsNotNull(bootstrapDll.get());
+            VERIFY_IS_NOT_NULL(bootstrapDll.get());
 
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_ProjectReunionFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             m_bootstrapDll = std::move(bootstrapDll);
 
-            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-            // Version <major>.0.0.0 to find any framework package for this major version
-            PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
-            Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION minVersion{};
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
 
-            Assert::AreEqual(S_OK, MddLifetimeManagementTestInitialize(Test::Packages::DynamicDependencyLifetimeManagerGC::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManagerGC::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddLifetimeManagementTestInitialize(Test::Packages::DynamicDependencyLifetimeManagerGC::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManagerGC::c_PackagePublisherId));
+
+            return true;
         }
 
         TEST_CLASS_CLEANUP(Cleanup)
@@ -65,7 +69,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_ProjectReunionFramework();
 
-            winrt::uninit_apartment();
+            return true;
         }
 
         TEST_METHOD(GC_Found0)
@@ -73,13 +77,13 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
 
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
+            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
 
-            Assert::AreEqual(S_OK, MddLifetimeManagementGC());
+            VERIFY_ARE_EQUAL(S_OK, MddLifetimeManagementGC());
 
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
+            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
         }
 
         TEST_METHOD(GC_Found1)
@@ -87,13 +91,13 @@ namespace Test::DynamicDependency
             TP::AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
 
-            Assert::IsTrue(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
 
-            Assert::AreEqual(S_OK, MddLifetimeManagementGC());
+            VERIFY_ARE_EQUAL(S_OK, MddLifetimeManagementGC());
 
-            Assert::IsTrue(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
         }
 
         TEST_METHOD(GC_Found2)
@@ -101,13 +105,13 @@ namespace Test::DynamicDependency
             TP::AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1000();
             TP::AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1010();
 
-            Assert::IsTrue(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
-            Assert::IsTrue(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
 
-            Assert::AreEqual(S_OK, MddLifetimeManagementGC());
+            VERIFY_ARE_EQUAL(S_OK, MddLifetimeManagementGC());
 
-            Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
-            Assert::IsTrue(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName));
+            VERIFY_IS_TRUE(TP::IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName));
         }
 
     private:
