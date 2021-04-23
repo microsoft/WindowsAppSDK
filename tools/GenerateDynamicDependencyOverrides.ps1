@@ -30,8 +30,8 @@ function Convert-Guid
 
 if (-not(Test-Path -Path $Path -PathType Container))
 {
-    Write-Host 'Creating $Path...'
-    New-Item -Path $Path -ItemType Directory -Force
+    Write-Host "Creating $Path..."
+    $override = New-Item -Path $Path -ItemType Directory -Force
 }
 else
 {
