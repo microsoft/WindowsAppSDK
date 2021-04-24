@@ -256,7 +256,7 @@
   <Target Name="BeforeBuild">
     <Copy SourceFiles="..\..\..\LICENSE" DestinationFolder="$(MSBuildProjectDirectory)" />
 
-    <!-- Update the .vsixmanifest to reflect preview status if necessary -->
+    <!-- Save original values so they can be restored later -->
     <XmlPeek
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
@@ -269,6 +269,20 @@
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
       <Output TaskParameter="Result" PropertyName="_OriginalVsixName" />
     </XmlPeek>
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Tags/text()"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixTags" />
+    </XmlPeek>
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview/text()"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixPreviewStatus" />
+    </XmlPeek>
+
+    <!-- Update the .vsixmanifest to reflect preview status if necessary -->
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
@@ -280,6 +294,18 @@
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:DisplayName"
       Value="$(_OriginalVsixName) (Preview)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
+      Value="$(_OriginalVsixTags), UWP"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
+      Value="true"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
   </Target>
   <Target Name="AfterBuild">
@@ -299,6 +325,16 @@
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:DisplayName"
       Value="$(_OriginalVsixName)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
+      Value="$(_OriginalVsixTags)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
+      Value="$(_OriginalVsixPreviewStatus)"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
   </Target>
 </Project>
