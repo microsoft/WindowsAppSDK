@@ -10,6 +10,9 @@ parameters:
     # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
     type: string
     default: 'default'
+  - name: "EnableExperimentalVSIXFeatures"
+    type: boolean
+    default: False
 
 jobs:
 
@@ -52,7 +55,7 @@ jobs:
         FolderPath: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
         Pattern: ProjectReunion.Extension.vsix
         signConfigType: inlineSignParams
-        inlineOperation: | 
+        inlineOperation: |
           [
               {
                   "KeyCode" : "CP-233016",
