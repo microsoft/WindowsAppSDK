@@ -11,7 +11,6 @@
     <Icon>Reunion.png</Icon>
     <PreviewImage>Reunion.png</PreviewImage>
     <Tags>ProjectReunion, WinUI, XAML, C#, C++, C++/WinRT, Managed</Tags>
-    <Preview>true</Preview>
   </Metadata>
   <Installation AllUsers="true">
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.9, 17.0)" />

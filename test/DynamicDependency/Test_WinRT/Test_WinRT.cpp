@@ -46,9 +46,10 @@ bool Test::DynamicDependency::Test_WinRT::Setup()
 
     VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-    // Version <major>.0.0.0 to find any framework package for this major version
-    PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
-    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(minVersion));
+    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+    const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+    const PACKAGE_VERSION minVersion{};
+    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
 
     m_bootstrapDll = std::move(bootstrapDll);
 
@@ -61,6 +62,8 @@ bool Test::DynamicDependency::Test_WinRT::Cleanup()
 
     m_bootstrapDll.reset();
 
+    TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+    TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_ProjectReunionFramework();
@@ -72,8 +75,8 @@ bool Test::DynamicDependency::Test_WinRT::Cleanup()
 
 void Test::DynamicDependency::Test_WinRT::Create_Delete()
 {
-    winrt::hstring packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
-    winrt::Windows::ApplicationModel::PackageVersion minVersion{};
+    const winrt::hstring packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
+    const winrt::Windows::ApplicationModel::PackageVersion minVersion{};
     auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion) };
 
     packageDependency.Delete();
