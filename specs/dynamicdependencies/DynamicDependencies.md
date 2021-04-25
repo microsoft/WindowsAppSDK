@@ -47,7 +47,10 @@ to use packaged content.
     - [5.6.1. uap6:LoaderSearchPathOverride not supported](#561-uap6loadersearchpathoverride-not-supported)
     - [5.6.2. uap6:AllowExecution not supported](#562-uap6allowexecution-not-supported)
 - [6. API Details](#6-api-details)
-  - [6.1. Win32 API - MsixDynamicDependency.h](#61-win32-api---msixdynamicdependencyh)
+  - [6.1. Win32 API](#61-win32-api)
+    - [6.1.1. MsixDynamicDependency.h](#611-msixdynamicdependencyh)
+    - [6.1.2. MddBootstrap.h](#612-mddbootstraph)
+    - [6.1.3. MddLifetimeManagement.h](#613-mddlifetimemanagementh)
   - [6.2. WinRT API](#62-winrt-api)
 - [7. Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
   - [7.1. Frequently Asked Questions (FAQ)](#71-frequently-asked-questions-faq)
@@ -958,10 +961,10 @@ bootstrapper API to efficiently enumerate and the CLSID of its Packaged COM OutO
 
 ```xml
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.projectreunion.ddlm.4.x64"
+          <uap3:AppExtension Name="com.microsoft.reunion.ddlm.4.1.x64"
                              Id="ddlm-4.1.1967.333-x64"
                              PublicFolder="public\ddlm"
-                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (4.* x64)">
+                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (4.1.* x64)">
             <uap3:Properties>
               <CLSID>32E7CF70-038C-429a-BD49-88850F1B4A11</CLSID>
             </uap3:Properties>
@@ -971,7 +974,12 @@ bootstrapper API to efficiently enumerate and the CLSID of its Packaged COM OutO
 
 The declared AppExtension has a name of
 
-`com.microsoft.projectreunion.ddlm.<version.major>.<architcture>`
+`com.microsoft.reunion.ddlm.<version.major>.<version.minor>.<architcture>`
+
+**NOTE:** AppExtension name is limited to <=39 characters on Windows builds <10.0.18307.0
+(RS5=10.0.17763.0, 19H1=10.0.18362). The preferred name `com.microsoft.projectreunion.ddlm....`
+has a length of 40+ characters so we use this shortened form for as long as we need to support
+older releases.
 
 The bootstrapper API uses [Windows.ApplicationModel.AppExtension](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.AppExtensions.AppExtension?view=winrt-19041) to enumerate all Project Reunion Framework packages with the specified Major version number and selects the one best matching the criteria passed to the
 bootstrapper API.
@@ -1053,9 +1061,13 @@ See [3.2.2. Known Issue: DLL Search Order ignores uap6:AllowExecution](#322-know
 
 # 6. API Details
 
-## 6.1. Win32 API - MsixDynamicDependency.h
+## 6.1. Win32 API
 
 All Win32 APIs are prefixed with Mdd/MDD for MSIX Dynamic Dependencies.
+
+### 6.1.1. MsixDynamicDependency.h
+
+This header contains the Dynamic Dependency API
 
 ```c++
 enum class MddCreatePackageDependencyOptions : uint32_t
@@ -1238,6 +1250,39 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
 STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
+```
+
+### 6.1.2. MddBootstrap.h
+
+This header contains the Bootstrap API
+
+```c++
+/// Iniitalize the calling process to use Project Reunion's framework package.
+///
+/// Find a Project Reunion framework package meeting the criteria and make it available
+/// for use by the current process. If multiple packages meet the criteria the best
+/// candidate is selected.
+///
+/// @param minVersion the minimum version to use
+STDAPI MddBootstrapInitialize(
+    const PACKAGE_VERSION minVersion) noexcept;
+
+/// Undo the changes made by MddBoostrapInitialize().
+///
+/// @warning Packages made available via MddBootstrapInitialize() and
+///          the Dynamic Dependencies API should not be used after this call.
+STDAPI_(void) MddBootstrapShutdown() noexcept;
+```
+
+### 6.1.3. MddLifetimeManagement.h
+
+This header contains the Lifetime Management API
+
+```c++
+/// Remove unnecessary Dynamic Dependency Lifetime Management (DDLM) packages.
+///
+/// A DDLM package can be removed if it's not in-use and a newer version is available.
+STDAPI MddLifetimeManagementGC() noexcept;
 ```
 
 ## 6.2. WinRT API

@@ -4,13 +4,19 @@
     <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <Platforms>x64;x86</Platforms>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>$(Platform)</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.2.2" />
   </ItemGroup>
-  
+
+  <!-- For consistency across Reunion, explicitly reference .NET 5.0.5 SDK (5.0.202 train for VS 16.9.3) -->
+  <ItemGroup>
+    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" RuntimeFrameworkVersion="10.0.18362.16" />
+    <FrameworkReference Update="Microsoft.Windows.SDK.NET.Ref" TargetingPackVersion="10.0.18362.16" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.ApplicationModel.Resources.vcxproj" />
   </ItemGroup>
@@ -18,6 +24,12 @@
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.18362.0</CSWinRTWindowsMetadata>
+  </PropertyGroup>
+
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>	
 
   <ItemGroup>

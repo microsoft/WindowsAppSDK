@@ -5,7 +5,21 @@
   <Target Name="ProjectReunionPropsInfoTask">
     <Message Text="Including $(MSBuildThisFileDirectory)projectreunion.props"/>
   </Target>
-  
+
+  <!-- Compilation differs for the build pipeline vs local development -->
+  <PropertyGroup Condition="$(ProjectReunionBuildPipeline) != '1'">
+    <!-- If not set, default it to no . -->
+    <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
+  </PropertyGroup>
+
+  <!-- Conditional behavior for build pipeline vs local development -->
+  <ItemDefinitionGroup Condition="$(ProjectReunionBuildPipeline) == '1'">
+    <ClCompile>
+      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\BuildOutput\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
   <!-- BaseOutputPath is defined in Directory.Build.props, but that file isn't loaded on lab machines
        since they have their own directory structure they want to adhere to.  The lab environment variable
        XES_OUTDIR maps onto the OutDir variable, which is one level above what we want BaseOutputPath to be,
@@ -18,10 +32,10 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)local.props" Condition="Exists('$(MSBuildThisFileDirectory)local.props')"/>
-  
+
   <PropertyGroup>
     <CSLangVersion>7</CSLangVersion>
-    
+
     <!-- Surface as errors the warnings that a ProjectReunion file is using a type defined in a later version of ProjectReunion than the min version for which we're compiling. -->
     <MSBuildWarningsAsErrors>WMC0151;XLS1105</MSBuildWarningsAsErrors>
   </PropertyGroup>

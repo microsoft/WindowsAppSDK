@@ -30,9 +30,10 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
-#include "CppUnitTest.h"
+#include <appmodel_msixdynamicdependency.h>
 
-#include "TestCom.h"
+#include <WexTestClass.h>
+
 #include "TestFilesystem.h"
 #include "TestPackages.h"
 

@@ -64,6 +64,14 @@ steps:
       arguments: -CheckTestPfx -Clean -Offline -Verbose
       workingDirectory: '$(Build.SourcesDirectory)'
 
+  - task: powershell@2
+    displayName: 'Create DynamicDependencies overrides'
+    inputs:
+      targetType: filePath
+      filePath: tools\GenerateDynamicDependencyOverrides.ps1
+      arguments: -Path $(Build.SourcesDirectory)\BuildOutput\override
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
     inputs:
@@ -71,7 +79,7 @@ steps:
       vsVersion: 16.0
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Never /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode)'
+      msbuildArgs: '/p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Never /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:ProjectReunionBuildPipeline=1'
 
   - task: CmdLine@2
     displayName: 'Install Test Certificate'

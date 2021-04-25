@@ -88,6 +88,7 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *_wpftmp.csproj
+*.binlog
 *.log
 *.vspscc
 *.vssscc
@@ -335,6 +336,9 @@ installer/test/testpackages/
 
 # Local temp storage
 temp/
+
+# Build Pipeline override
+build/override/
 
 # Project Reunion specific files
 Microsoft.WinUI.AppX.targets
