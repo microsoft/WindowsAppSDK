@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
     <!--
-        This target is used to update the package version we use in the VSIX manifests for this specific build.
-        It updates all *.vstemplate files in projects that include this file - ex: <VSTemplate>File.vstemplate</VSTemplate>.
-        When the build is complete, the RestorePackageVersion target reverts all version numbers to 1.0.0.
-        This prevents transient and irrelevant changes to source from being checked in.
+        These targets are used to make build-time updates to our .vstemplate files, e.g. update the
+        package version we stamp into the VS templates. It updates all *.vstemplate files in projects that include this file - ex: <VSTemplate>File.vstemplate</VSTemplate>.
 
+        When the build is complete, a second target reverts the previously made changes, e.g.
+        restores all version numbers back to 1.0.0. This prevents transient and irrelevant changes
+        to source from being checked in.
+
+        Concrete example:
         Originally, it looks like this (notice the 1.0.0):
 
           <WizardData>
@@ -29,11 +31,45 @@
             </packages>
         </WizardData>
     -->
-    <Target Name="UpdatePackageVersion" BeforeTargets="PrepareForBuild" Condition="'@(VSTemplate)' != '' or '@(LinkedVSTemplate)' != ''">
+
+    <ItemGroup>
+        <AllVSTemplates Include="@(VSTemplate)" Condition="'@(VSTemplate)' != ''" />
+        <AllVSTemplates Include="@(LinkedVSTemplate)" Condition="'@(LinkedVSTemplate)' != ''" />
+    </ItemGroup>
+
+    <!-- Specify Inputs/Outputs to force target to be batched. However, because we want this target to always
+         run, even if MSBuild thinks that inputs and outputs match, we append a Guid to each "output" since
+         we know it won't exist -->
+    <Target Name="PrepareForVsTemplateUpdates"
+        BeforeTargets="PrepareForBuild"
+        Inputs="@(AllVSTemplates)"
+        Outputs="%(AllVSTemplates.Identity).$([System.Guid]::NewGuid())"
+        Condition="'@(AllVSTemplates)' != ''">
+        <XmlPeek
+            XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateData/ns:Name/text()"
+            Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;">
+            <Output TaskParameter="Result" PropertyName="_tempVsTemplateDisplayName" />
+        </XmlPeek>
+
         <ItemGroup>
-            <AllVSTemplates Include="@(VSTemplate)" Condition="'@(VSTemplate)' != ''" />
-            <AllVSTemplates Include="@(LinkedVSTemplate)" Condition="'@(LinkedVSTemplate)' != ''" />
+            <AllVSTemplates Condition="'%(AllVSTemplates.Identity)' == '%(Identity)'" >
+                <OriginalDisplayName>$(_tempVsTemplateDisplayName)</OriginalDisplayName>
+                <ExperimentalDisplayName>[Experimental] $(_tempVsTemplateDisplayName)</ExperimentalDisplayName>
+            </AllVSTemplates>
         </ItemGroup>
+
+        <!-- Clear the temporary property -->
+        <PropertyGroup>
+            <_tempVsTemplateDisplayName></_tempVsTemplateDisplayName>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="UpdateVsTemplates"
+        BeforeTargets="PrepareForBuild"
+        DependsOnTargets="PrepareForVsTemplateUpdates"
+        Condition="'@(AllVSTemplates)' != ''">
+
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.CppWinRT']/@version"
             Value="$(CppWinRTVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
@@ -81,19 +117,27 @@
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionWinUINupkgVersion$']/@Value"
             Value="$(ReunionVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+
+        <!-- Update .vstemplate with Experimental display name if necessary -->
+        <XmlPoke
+            Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+            XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateData/ns:Name"
+            Value="%(AllVSTemplates.ExperimentalDisplayName)"
+            Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;"/>
     </Target>
 
     <!--
         This target is used to revert those versions back to 1.0.0 so that we don't leave files modified on disk.
     -->
-    <Target Name="RestorePackageVersion" AfterTargets="BuiltProjectOutputGroupDependencies;Build" Condition="'@(VSTemplate)' != '' or '@(LinkedVSTemplate)' != ''">
+    <Target Name="RestoreVsTemplates"
+        AfterTargets="BuiltProjectOutputGroupDependencies;Build"
+        DependsOnTargets="PrepareForVsTemplateUpdates"
+        Condition="'@(AllVSTemplates)' != ''">
         <PropertyGroup>
             <DefaultVersion>1.0.0</DefaultVersion>
         </PropertyGroup>
-        <ItemGroup>
-            <AllVSTemplates Include="@(VSTemplate)" Condition="'@(VSTemplate)' != ''" />
-            <AllVSTemplates Include="@(LinkedVSTemplate)" Condition="'@(LinkedVSTemplate)' != ''" />
-        </ItemGroup>
+
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.CppWinRT']/@version"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
@@ -141,6 +185,14 @@
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$ReunionWinUINupkgVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+
+        <!-- Restore original display name for .vstemplate if necessary -->
+        <XmlPoke
+            Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+            XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateData/ns:Name"
+            Value="%(AllVSTemplates.OriginalDisplayName)"
+            Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;"/>
     </Target>
-    
+
 </Project>
