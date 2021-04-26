@@ -90,7 +90,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto lock = m_lock.lock();
         if (m_backgroundTaskInstance != nullptr)
         {
-            return m_backgroundTaskInstance.Canceled(token);
+            m_backgroundTaskInstance.Canceled(token);
         }
     }
     bool PushNotificationReceivedEventArgs::Handled()

@@ -17,9 +17,7 @@ struct PushNotificationBackgroundTaskFactory : winrt::implements<PushNotificatio
 {
     HRESULT __stdcall CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final
     {
-        if (aggregateInterface != nullptr) {
-            return CLASS_E_NOAGGREGATION;
-        }
+        RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
         return winrt::make<PushNotificationBackgroundTask>().as(interfaceId, object);
     }
 

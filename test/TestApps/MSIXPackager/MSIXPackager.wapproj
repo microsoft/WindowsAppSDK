@@ -63,7 +63,7 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxPackageDir>C:\Users\purifoypaul\Desktop\Work\ProjectReunion\BuildOutput\Debug\x64\PushNotificationsTestPackages\</AppxPackageDir>
     <PackageCertificateThumbprint>D9CF3F5427C55BF9B85E600A81CB78B3CD2047C7</PackageCertificateThumbprint>
-    <EntryPointProjectUniqueName>..\ActivationTestApp\ActivationTestApp.vcxproj</EntryPointProjectUniqueName>
+    <EntryPointProjectUniqueName>..\PushActivationTestApp\PushActivationTestApp.vcxproj</EntryPointProjectUniqueName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AppxBundle>Always</AppxBundle>
@@ -116,6 +116,6 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.19041.8" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActivationTestApp\ActivationTestApp.vcxproj" />
+    <ProjectReference Include="..\PushActivationTestApp\PushActivationTestApp.vcxproj" />
   </ItemGroup>
 </Project>

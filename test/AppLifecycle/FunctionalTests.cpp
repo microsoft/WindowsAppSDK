@@ -41,7 +41,7 @@ namespace Test::AppLifecycle
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
             END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(ClassInit)
+        TEST_CLASS_SETUP(ClassInit)
         {
             ::Test::Bootstrap::Setup();
 

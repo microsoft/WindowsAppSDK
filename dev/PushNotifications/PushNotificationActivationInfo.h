@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind m_kind;
         winrt::guid m_taskClsid;
         winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> m_backgroundConditions{};
-        wil::critical_section m_lock;
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

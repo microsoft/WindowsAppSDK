@@ -36,7 +36,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Foundation::TypedEventHandler<
             winrt::Windows::Networking::PushNotifications::PushNotificationChannel,
             winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs> typedEventHandler
-            (this, &winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel::LambdaWrapper);
+            ([&](
+                winrt::Windows::Networking::PushNotifications::PushNotificationChannel channel,
+                winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args)
+                {
+                    Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs reunionPushArgs =
+                        Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
+
+                    s_typedEventHandler(*this, reunionPushArgs);
+            });
 
         auto lock = m_lock.lock();
         s_typedEventHandler = handler;
@@ -45,9 +53,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        s_typedEventHandler = nullptr;
-
         auto lock = m_lock.lock();
+        s_typedEventHandler = nullptr;
         m_channel.PushNotificationReceived(token);
     }
 
@@ -55,9 +62,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel channel,
         winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args)
     {
-        Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs reunionPushArgs =
-            Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
 
-        s_typedEventHandler(*this, reunionPushArgs);
     }
 }

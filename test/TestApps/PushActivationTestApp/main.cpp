@@ -36,7 +36,7 @@ void RequestChannel()
             if (args.status == PushNotificationChannelStatus::InProgress)
             {
                 // This is basically a noop since it isn't really an error state
-                std::cout << "The first channel request is still in progress!" << std::endl << std::endl;
+                std::cout << "Channel request is in progress." << std::endl << std::endl;
             }
             else if (args.status == PushNotificationChannelStatus::InProgressRetry)
             {
@@ -70,12 +70,15 @@ void RequestChannel()
                         auto payload = args.Payload();
 
                         // Do stuff to process the raw payload
-                        std::string payloadString(payload.begin(), payload.end());
-
-                        time(&ltime);
-                        ctime_s(buf, sizeof buf, &ltime);
-                        std::cout << "Push notification content received from FOREGROUND: " << buf << payloadString << std::endl << std::endl;
-
+                        std::wstring payloadString(payload.begin(), payload.end());
+                        std::wstring messageContent(L"Push notification content: ");
+                        messageContent.append(payloadString);
+                        int msgboxId = MessageBoxW(
+                            nullptr,
+                            messageContent.c_str(),
+                            L"Foreground Launch",
+                            MB_OK
+                        );
                         args.Handled(true);
                     });
             }
@@ -90,7 +93,6 @@ int main()
 {
     time(&ltime);
     ctime_s(buf, sizeof buf, &ltime);
-    Sleep(7000);
     std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
 
     PushNotificationActivationInfo info(
@@ -111,22 +113,31 @@ int main()
         auto payload = pushArgs.Payload();
 
         // Do stuff to process the raw payload
-        std::string payloadString(payload.begin(), payload.end());
-
-        time(&ltime);
-        ctime_s(buf, sizeof buf, &ltime);
-        std::cout << "Push notification content received from BACKGROUND: " << buf << payloadString << std::endl << std::endl;
-
+        std::wstring payloadString(payload.begin(), payload.end());
+        std::wstring messageContent(L"Push notification content: ");
+        messageContent.append(payloadString);
+        int msgboxId = MessageBoxW(
+            nullptr,
+            messageContent.c_str(),
+            L"Background Launch",
+            MB_OK
+        );
         // Call Complete on the deferral as good practise: Needed mainly for low power usage
         deferral.Complete();
     }
+    else if (kind == ExtendedActivationKind::Launch)
+    {
+        RequestChannel();
+        std::cout << "Press 'Enter' at any time to exit App." << std::endl << std::endl;
+        std::cin.ignore();
+    }
     else if (kind == ExtendedActivationKind::ToastNotification)
     {
-        std::cout << "ToastNotification received!" << std::endl;
+        std::cout << "ToastNotification received!" << std::endl << std::endl;
+        std::cout << "Press 'Enter' at any time to exit App." << std::endl << std::endl;
+        std::cin.ignore();
     }
-    
-    RequestChannel();
-    std::getchar();
+
     PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
     return 0;
 }

@@ -108,7 +108,7 @@ Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "MSIXPackager", "test\TestAp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RawNotificationTriggerApp", "test\TestApps\RawNotificationTriggerApp\RawNotificationTriggerApp.vcxproj", "{A83D5009-873B-46A5-95BB-212D2975DE52}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActivationTestApp", "test\TestApps\ActivationTestApp\ActivationTestApp.vcxproj", "{767A737E-B77D-493B-8B1B-BCEC800049AB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushActivationTestApp", "test\TestApps\PushActivationTestApp\PushActivationTestApp.vcxproj", "{767A737E-B77D-493B-8B1B-BCEC800049AB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

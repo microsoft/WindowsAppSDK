@@ -1,7 +1,4 @@
-﻿// MessageTrigger.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
-#include "pch.h"
+﻿#include "pch.h"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -23,8 +20,8 @@ using namespace winrt::Windows::Foundation;
 using namespace Windows::Web::Http;
 
 bool g_quit = false;
-std::wstring g_channelUri = L"";
-std::wstring g_payload = L"";
+std::wstring g_channelUri;
+std::wstring g_payload;
 
 void cleanInputBuffer()
 {

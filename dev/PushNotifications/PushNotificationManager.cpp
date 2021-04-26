@@ -15,7 +15,7 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 
-constexpr PCWSTR backgroundTaskName = L"PushNotificationBackgroundTask";
+constexpr PCWSTR backgroundTaskName = L"PushBackgroundTaskName";
 
 using namespace winrt::Windows::ApplicationModel::Background;
 using namespace winrt::Windows::Networking::PushNotifications;
@@ -204,6 +204,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     // Only applicable for a Win32 app
                     builder.SetTaskEntryPointClsid(taskClsid);
+                    winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> conditions = details.GetConditions();
+                    for (auto condition : conditions)
+                    {
+                        builder.AddCondition(condition);
+                    }
                 }
                 registeredTask = builder.Register();
             }
@@ -219,12 +224,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
                 }
 
-                ::CoRegisterClassObject(
+                THROW_IF_FAILED(::CoRegisterClassObject(
                     taskClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
                     REGCLS_MULTIPLEUSE,
-                    &cookie);
+                    &cookie));
             }
         }
         return PushNotificationRegistrationToken{ cookie, registeredTask };
@@ -246,7 +251,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::ComActivator) && (token.Cookie() != 0))
         {
-            ::CoRevokeClassObject(token.Cookie());
+            THROW_IF_FAILED(::CoRevokeClassObject(token.Cookie()));
         }
     }
 }
