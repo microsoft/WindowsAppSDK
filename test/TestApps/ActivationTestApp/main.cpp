@@ -90,7 +90,7 @@ int main()
 {
     time(&ltime);
     ctime_s(buf, sizeof buf, &ltime);
-
+    Sleep(7000);
     std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
 
     PushNotificationActivationInfo info(
