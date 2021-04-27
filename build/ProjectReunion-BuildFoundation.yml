@@ -244,14 +244,10 @@ jobs:
     env:
       LIB: $(Build.SourcesDirectory)
 
-  - template: AzurePipelinesTemplates\ProjectReunion-ProduceStrippedSymbols-Steps.yml
-    parameters:
-      buildArtifactStagingDirectory: '$(Build.ArtifactStagingDirectory)'
-
   - task: PublishSymbols@2
-    displayName: 'Publish stripped symbols (without source indexing)'
+    displayName: 'Publish symbols to public server(without source indexing)'
     inputs:
-      searchPattern: '$(Build.ArtifactStagingDirectory)\strippedsymbols\**\*.pdb'
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
 # this ADO task does not support indexing of github sources currently :-(      
       indexSources: false 
