@@ -50,7 +50,6 @@ public:
 
     void resize(size_t size)
     {
-        // TODO: See if we can fail if resizing isn't going to work (someone still has the old file open still)
         auto name = m_name;
         reset();
         open(name, size);
