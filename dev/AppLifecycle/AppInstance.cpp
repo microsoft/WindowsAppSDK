@@ -190,6 +190,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         auto strongThis{ get_strong() };
 
+        // Push this work onto a background thread.
+        co_await resume_background();
+
         GUID id;
         THROW_IF_FAILED(CoCreateGuid(&id));
 
@@ -208,9 +211,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Enqueue the request and signal the other instance.
         EnqueueRedirectionRequestId(id);
         m_innerActivated.SetEvent();
-
-        // Push this work onto a background thread.
-        co_await resume_background();
 
         // Wait for the other instance to open the memory mapped file before exiting and cleaning our interest in it.
         cleanupEvent.wait();

@@ -50,6 +50,7 @@ public:
 
     void resize(size_t size)
     {
+        // TODO: See if we can fail if resizing isn't going to work (someone still has the old file open still)
         auto name = m_name;
         reset();
         open(name, size);
@@ -80,8 +81,6 @@ public:
 protected:
     bool open_internal(size_t size)
     {
-	    // TODO: Possibly remove the 'resize' feature depending on the outcome of the reserve/commit problem.
-        // TODO: Verify and implement if needed commiting pages.
         m_file = wil::unique_handle(CreateFileMapping(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(size), m_name.c_str()));
         THROW_LAST_ERROR_IF_NULL(m_file);
 
