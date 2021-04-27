@@ -15,6 +15,6 @@ steps:
     displayName: 'Upload stripped symbols to artifacts store'
     condition: always()
     inputs:
-      PathToPublish: '$(parameters.buildArtifactStagingDirectory)\strippedsymbols'
+      PathToPublish: '${{parameters.buildArtifactStagingDirectory}}\strippedsymbols'
       artifactName: 'StrippedSymbols'
       parallel: true
