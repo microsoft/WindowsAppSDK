@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include <ActivationRegistrationManager.h>
-#include <Microsoft.ApplicationModel.Activation.ActivationRegistrationManager.g.cpp>
+#include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.cpp>
 
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
@@ -11,14 +11,9 @@
 #include "ExtensionContract.h"
 #include "EncodedLaunchExecuteCommand.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-    std::wstring GenerateEncodedLaunchUri(std::wstring const& appUserModelId, std::wstring const& contractId)
-    {
-        Windows::Foundation::Uri uri{ wil::str_printf<std::wstring>(L"%s://%s?%s=%s",
-            c_encodedLaunchSchemeName, appUserModelId.c_str(), c_contractIdKeyName, contractId.c_str()).c_str() };
-        return uri.AbsoluteUri().c_str();
-    }
+    using namespace winrt::Windows::Foundation;
 
     std::wstring GenerateCommandLine(std::wstring const& modulePath)
     {
@@ -48,9 +43,8 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             
             for (auto verb : supportedVerbs)
             {
-                auto command = GenerateCommandLine(exePath.c_str()) + GenerateEncodedLaunchUri(L"App",
-                    c_fileContractId) + L"&Verb=" + verb.c_str() + L"&File=%1";
-
+                auto args = winrt::make<FileActivatedEventArgs>(verb.c_str(), L"%1", true).as<IInternalValueMarshalable>();
+                auto command = GenerateCommandLine(exePath.c_str()) + args->Serialize().AbsoluteUri().c_str();
                 RegisterVerb(progId, verb.c_str(), command);
             }
 
@@ -79,9 +73,9 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         THROW_IF_WIN32_ERROR(::RegOpenKeyEx(HKEY_CURRENT_USER, c_runKeyPath, 0, KEY_WRITE,
             key.put()));
 
-        // Pass a command line that will make sense while constructing the args object.
-        auto command = GenerateCommandLine(exePath.c_str()) + GenerateEncodedLaunchUri(L"App",
-            c_startupTaskContractId) + L"&TaskId=" + taskId;
+        // Pass a value serialized version of the arguments on the command-line.
+        auto args = winrt::make<StartupActivatedEventArgs>(taskId.c_str()).as<IInternalValueMarshalable>();
+        auto command = GenerateCommandLine(exePath.c_str()) + args->Serialize().AbsoluteUri().c_str();
 
         // Name: taskId
         // Value: commandLine
@@ -127,8 +121,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
         // Example: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
         wil::unique_hkey key;
-        if (::RegOpenKeyEx(HKEY_CURRENT_USER, c_runKeyPath, 0, KEY_WRITE, key.put())
-            == ERROR_SUCCESS)
+        if (::RegOpenKeyEx(HKEY_CURRENT_USER, c_runKeyPath, 0, KEY_WRITE, key.put()) == ERROR_SUCCESS)
         {
             ::RegDeleteValue(key.get(), taskId.c_str());
         }
