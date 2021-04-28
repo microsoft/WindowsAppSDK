@@ -4,22 +4,37 @@
 #include "shared_memory.h"
 #include "Association.h"
 
+<<<<<<< HEAD
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+=======
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+>>>>>>> 7084208 (Initial instancing implementation (pre-cleanup).)
 {
 
 #define MAX_INSTANCE_COUNT 512
     typedef DWORD InstanceListData[MAX_INSTANCE_COUNT];
 
+<<<<<<< HEAD
     class SharedProcessList
     {
     public:
         void Init(const std::wstring& filename)
+=======
+    class InstanceList
+    {
+    public:
+        void init(const std::wstring& filename)
+>>>>>>> 7084208 (Initial instancing implementation (pre-cleanup).)
         {
             m_data.open(filename);
             m_view = std::move(winrt::array_view<DWORD>(reinterpret_cast<InstanceListData>(*m_data.get())));
         }
 
+<<<<<<< HEAD
         void Insert(DWORD processId)
+=======
+        void insert(DWORD processId)
+>>>>>>> 7084208 (Initial instancing implementation (pre-cleanup).)
         {
             for (DWORD index = 0 ; index < m_view.size() ; index++)
             {
@@ -34,7 +49,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             THROW_HR(E_OUTOFMEMORY);
         }
 
+<<<<<<< HEAD
         void Remove(DWORD processId)
+=======
+        void remove(DWORD processId)
+>>>>>>> 7084208 (Initial instancing implementation (pre-cleanup).)
         {
             for (DWORD index = 0; index < m_view.size(); index++)
             {
@@ -48,7 +67,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             return;
         }
 
+<<<<<<< HEAD
         DWORD Size()
+=======
+        DWORD size()
+>>>>>>> 7084208 (Initial instancing implementation (pre-cleanup).)
         {
             return m_view.size();
         }

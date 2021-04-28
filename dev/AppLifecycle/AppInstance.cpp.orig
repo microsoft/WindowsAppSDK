@@ -112,7 +112,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             releaseOnExit = m_dataMutex.acquire();
         }
 
-        m_key.Open(m_processName + L"_Key");
+        m_key.open(m_processName + L"_Key");
 
         if (m_isCurrent)
         {
@@ -183,15 +183,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 // If the event is missing, it means the waiter gave up.  Ignore the error.
                 cleanupEvent.SetEvent();
             }
+<<<<<<< HEAD
+=======
+
+            m_activatedEvent(*this, args);
+>>>>>>> 8ec67c7 (New marshaling support and our first instancing test!)
         }
     }
 
     IAsyncAction AppInstance::QueueRequest(AppLifecycle::AppActivationArguments args)
     {
         auto strongThis{ get_strong() };
-
-        // Push this work onto a background thread.
-        co_await resume_background();
 
         GUID id;
         THROW_IF_FAILED(CoCreateGuid(&id));
@@ -211,6 +213,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Enqueue the request and signal the other instance.
         EnqueueRedirectionRequestId(id);
         m_innerActivated.SetEvent();
+
+        // Push this work onto a background thread.
+        co_await resume_background();
 
         // Wait for the other instance to open the memory mapped file before exiting and cleaning our interest in it.
         cleanupEvent.wait();
@@ -306,7 +311,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void AppInstance::UnregisterKey()
     {
         auto releaseOnExit = m_dataMutex.acquire();
-        m_key.Reset();
+        m_key.reset();
         m_keyCreationMutex.reset();
     }
 
@@ -364,7 +369,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     hstring AppInstance::Key()
     {
-        return winrt::hstring(m_key.Get());
+        return winrt::hstring(m_key.get());
     }
 
 
@@ -393,8 +398,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // is still protected by m_dataMutex.
             auto releaseOnExit = m_dataMutex.acquire();
 
-            m_key.Resize((key.length() + 1) * sizeof(key.data()[0]));
-            THROW_IF_FAILED(StringCchCopy(m_key.Get(), (m_key.Size() / sizeof(wchar_t)), key.c_str()));
+            m_key.resize((key.length() + 1) * sizeof(key.data()[0]));
+            THROW_IF_FAILED(StringCchCopy(m_key.get(), (m_key.size() / sizeof(wchar_t)), key.c_str()));
         }
         return currentIsKeyOwner;
     }

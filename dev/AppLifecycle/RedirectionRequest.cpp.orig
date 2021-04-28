@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     void RedirectionRequest::Open(std::wstring name)
     {
-        m_data.Open(name);
+        m_data.open(name);
         m_name = name;
     }
 
@@ -23,6 +23,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         std::wstring uri;
         com_ptr<::IUnknown> unk{ args.as<::IUnknown>() };
         const auto uuidofArgs = guid_of<AppActivationArguments>();
+<<<<<<< HEAD
 
         if (supportInternalValueMarshaling)
         {
@@ -38,15 +39,41 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // Add space for the marshaling type data and resize the backing storage.
         streamSize += sizeof(bool);
-        m_data.Resize(streamSize);
+        m_data.resize(streamSize);
 
         // Mark payload with marshaling type information.
-        bool* marshalingMarker = reinterpret_cast<bool*>(m_data.Get());
+        bool* marshalingMarker = reinterpret_cast<bool*>(m_data.get());
         *marshalingMarker = supportInternalValueMarshaling;
 
-        uint8_t* streamStart = (m_data.Get() + sizeof(bool));
+        uint8_t* streamStart = (m_data.get() + sizeof(bool));
 
         if (supportInternalValueMarshaling)
+=======
+
+        if (supportInternalValueMarshaling)
+        {
+            uri = internalArgs->Serialize().AbsoluteUri().c_str();
+
+            // Ensure supportInternalValueMarshaling's data is accounted for in the size.
+            streamSize = static_cast<ULONG>((uri.length() + 1) * sizeof(wchar_t));
+        }
+        else
+        {
+            THROW_IF_FAILED(CoGetMarshalSizeMax(&streamSize, uuidofArgs, unk.get(), MSHCTX_LOCAL, nullptr, MSHLFLAGS_NORMAL));   
+        }
+
+        // Add space for the marshaling type data and resize the backing storage.
+        streamSize += sizeof(bool);
+        m_data.resize(streamSize);
+
+        // Mark payload as having a Uri instead of a COM marshal stream.
+        bool* marshalingMarker = reinterpret_cast<bool*>(m_data.get());
+        *marshalingMarker = supportInternalValueMarshaling;
+
+        uint8_t* streamStart = (m_data.get() + sizeof(bool));
+
+        if (supportInternalValueMarshaling)
+>>>>>>> 8ec67c7 (New marshaling support and our first instancing test!)
         {
             THROW_IF_FAILED(StringCchCopy(reinterpret_cast<LPWSTR>(streamStart), (uri.length() + 1), uri.c_str()));
         }
@@ -79,10 +106,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     Microsoft::Windows::AppLifecycle::AppActivationArguments RedirectionRequest::UnmarshalArguments()
     {
         // The first byte holds data about the marshaling type to use.
-        uint8_t* streamStart = (m_data.Get() + sizeof(bool));
-        ULONG streamSize = (static_cast<ULONG>(m_data.Size()) - sizeof(bool));
+        uint8_t* streamStart = (m_data.get() + sizeof(bool));
+        ULONG streamSize = (static_cast<ULONG>(m_data.size()) - sizeof(bool));
 
-        bool supportInternalValueMarshaling = *(reinterpret_cast<bool*>(m_data.Get()));
+<<<<<<< HEAD
+        bool supportInternalValueMarshaling = *(reinterpret_cast<bool*>(m_data.get()));
+=======
+        bool supportInternalValueMarshaling = (!!m_data.get()[0]); // TODO: Switch this to reading the casted variable instead
+>>>>>>> 8ec67c7 (New marshaling support and our first instancing test!)
         if (supportInternalValueMarshaling)
         {
             std::wstring_view uri_data{ reinterpret_cast<wchar_t*>(streamStart) };

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
-#include "SharedMemory.h"
+#include "shared_memory.h"
 #include "RedirectionRequest.h"
 #include <guiddef.h>
 
@@ -22,8 +22,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_name = name;
 
             // We store the head pointer at the beginning of the memory, and then items in the queue after.
-            m_data.Open(name, (sizeof(QueueItem) * 4096) + sizeof(QueueItem*));
-            m_dataStart = reinterpret_cast<QueueItem*>(m_data.Get() + sizeof(size_t));
+            m_data.open(name, (sizeof(QueueItem) * 4096) + sizeof(QueueItem*));
+            m_dataStart = reinterpret_cast<QueueItem*>(m_data.get() + sizeof(size_t));
         }
 
         void Enqueue(const GUID& itemId)
@@ -33,8 +33,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             if (cur != nullptr)
             {
+<<<<<<< HEAD
                 // Zero is never a valid offset, as the offset 0 is our head pointer offset.
                 while (cur->next != 0)
+=======
+                while (FromOffset(cur->next) != nullptr)
+>>>>>>> 88bff35 (linked list 'next' must be an offset to work also)
                 {
                     cur = FromOffset(cur->next);
                 }
@@ -59,6 +63,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         GUID Dequeue()
         {
+<<<<<<< HEAD
             auto head = GetHead();
             if (head != nullptr)
             {
@@ -69,6 +74,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
                 return head->id;
             }
+=======
+            auto result = GetHead();
+            SetHead(FromOffset(result->next));
+
+            result->inUse = false;
+            result->next = 0;
+>>>>>>> 88bff35 (linked list 'next' must be an offset to work also)
 
             return GUID_NULL;
         }
@@ -76,16 +88,19 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     private:
         size_t GetBaseAddress()
         {
-            return reinterpret_cast<size_t>(m_data.Get());
+            return reinterpret_cast<size_t>(m_data.get());
         }
 
         QueueItem* FromOffset(size_t offset)
         {
+<<<<<<< HEAD
             if (offset == 0)
             {
                 return nullptr;
             }
 
+=======
+>>>>>>> 88bff35 (linked list 'next' must be an offset to work also)
             return reinterpret_cast<QueueItem*>(GetBaseAddress() + offset);
         }
 
@@ -101,7 +116,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         QueueItem* GetHead()
         {
-            void** head = reinterpret_cast<void**>(m_data.Get());
+            void** head = reinterpret_cast<void**>(m_data.get());
             if (*head == nullptr)
             {
                 return nullptr;
@@ -113,13 +128,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         void SetHead(QueueItem* value)
         {
             // Store as offset, since it's a pointer into shared memory.
-            void** head = reinterpret_cast<void**>(m_data.Get());
+            void** head = reinterpret_cast<void**>(m_data.get());
             (*head) = reinterpret_cast<void*>(ToOffset(value));
         }
 
         QueueItem* AllocateItem()
         {
-            QueueItem* upperBounds = reinterpret_cast<QueueItem*>(m_data.Get()) + m_data.Size();
+            QueueItem* upperBounds = reinterpret_cast<QueueItem*>(m_data.get()) + m_data.size();
             auto cur = m_dataStart;
 
             while (cur < (upperBounds - sizeof(QueueItem)) && cur->inUse)
@@ -133,6 +148,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         std::wstring m_name;
         QueueItem* m_dataStart{ nullptr };
-        SharedMemory<size_t> m_data;
+        shared_memory<size_t> m_data;
     };
 }

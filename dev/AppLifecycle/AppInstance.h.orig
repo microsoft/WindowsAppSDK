@@ -4,9 +4,9 @@
 
 #include <Microsoft.Windows.AppLifecycle.AppInstance.g.h>
 
-#include "SharedMemory.h"
+#include "shared_memory.h"
 #include "RedirectionRequest.h"
-#include "SharedProcessList.h"
+#include "InstanceList.h"
 #include "RedirectionRequestQueue.h"
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
@@ -33,7 +33,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         uint32_t ProcessId() { return m_processId; }
 
     private:
+<<<<<<< HEAD
         winrt::Windows::Foundation::IAsyncAction QueueRequest(Microsoft::Windows::AppLifecycle::AppActivationArguments args);
+=======
+        winrt::fire_and_forget QueueRequest(Microsoft::Windows::AppLifecycle::AppActivationArguments args);
+>>>>>>> 6a59df8 (Handle cleaning up orphaned process information.)
         void OnInstanceTerminated();
         void ProcessRedirectionRequests();
         bool TrySetKey(std::wstring const& key);
@@ -42,6 +46,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         GUID DequeueRedirectionRequestId();
 
         // Named object prefixes used to scope.
+        std::wstring m_moduleName;
+        std::wstring m_processName;
+
         std::wstring m_moduleName;
         std::wstring m_processName;
 
@@ -55,7 +62,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_mutex m_dataMutex;
         wil::unique_mutex m_keyCreationMutex;
-        SharedMemory<wchar_t> m_key;
+        shared_memory<wchar_t> m_key;
 
         wil::unique_event m_innerActivated;
         wil::unique_event_watcher m_activationWatcher;

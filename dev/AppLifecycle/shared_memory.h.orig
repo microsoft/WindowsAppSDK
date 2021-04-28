@@ -32,6 +32,10 @@ public:
             m_view.reset();
             m_file.reset();
             open_internal(newSize);
+<<<<<<< HEAD
+=======
+
+>>>>>>> fa9ce2f (Refactor and clean up for resize support)
         }
 
         return createdFile;
