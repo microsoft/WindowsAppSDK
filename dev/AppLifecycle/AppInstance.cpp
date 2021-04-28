@@ -30,6 +30,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             return { L"", L"" };
         }
 
+        // Push past the '----' commandline argument prefix.
         argsStart += 4;
 
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
@@ -98,6 +99,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             auto onInnerActivated = [weak_this]
             {
+                // If this weak ref doesn't resolve it means the process is heading toward a terminal state.
+                // If that happens just ignore any redirections as they can't be serviced.
                 auto strong_this{ weak_this.get() };
                 if (strong_this)
                 {
@@ -173,6 +176,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             request.Open(name);
             auto args = request.UnmarshalArguments();
 
+            // Notify the app that the redirection request is here.
             m_activatedEvent(*this, args);
 
             std::wstring eventName = name + c_activatedEventNameSuffix;
@@ -192,6 +196,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // Push this work onto a background thread.
         co_await resume_background();
+
+        init_apartment();
 
         GUID id;
         THROW_IF_FAILED(CoCreateGuid(&id));
