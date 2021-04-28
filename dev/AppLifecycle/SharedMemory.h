@@ -3,7 +3,7 @@
 #pragma once
 
 template <typename T>
-struct dynamic_SharedMemory
+struct DynamicSharedMemory
 {
     size_t size{ 0 };
     T data{ 0 };
@@ -84,7 +84,7 @@ protected:
         THROW_LAST_ERROR_IF_NULL(m_file);
 
         bool createdFile = (GetLastError() != ERROR_ALREADY_EXISTS);
-        m_view.reset(reinterpret_cast<dynamic_SharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, size)));
+        m_view.reset(reinterpret_cast<DynamicSharedMemory<T>*>(MapViewOfFile(m_file.get(), FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, size)));
         THROW_LAST_ERROR_IF_NULL(m_view);
 
         return createdFile;
@@ -92,5 +92,5 @@ protected:
 
 	std::wstring m_name;
 	wil::unique_handle m_file;
-	wil::unique_mapview_ptr<dynamic_SharedMemory<T>> m_view;
+	wil::unique_mapview_ptr<DynamicSharedMemory<T>> m_view;
 };

@@ -8,10 +8,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     static LPCWSTR c_encodedLaunchSchemeName{ L"ms-encodedlaunch" };
     static LPCWSTR c_contractIdKeyName{ L"ContractId" };
 
-    // Marker interface to denote the event arg object can be marshaled using values
-    // by the internal marshaling mechanism.  Using this interface requires explicit
-    // support be added to the marshaling code to have intimate knowledge of the given
-    // object.
+    // This interface used for the internal value marshaling mechanism.  Implementing this interface means
+    // that both Serialize and Deserialize be implemented.  Deserialize is a static and can't be expressed
+    // here.  Deserialize is required also by the encoded launch mechanism, and is how ActivatedEventArgs
+    // are created regardless of marshaling.  The below method is only used for marshaling.
     MIDL_INTERFACE("1E875DD8-3E09-465D-8684-E76EF58145C5") IInternalValueMarshalable : IInspectable
     {
         virtual winrt::Windows::Foundation::Uri Serialize() PURE;
