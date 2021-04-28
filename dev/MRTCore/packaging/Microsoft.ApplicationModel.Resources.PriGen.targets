@@ -105,24 +105,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows Phone'">true</_TargetPlatformIsWindowsPhone>
-    <_TargetPlatformIsWindowsPhone Condition="'$(TargetPlatformIdentifierAdjusted)' == 'WindowsPhoneApp'">true</_TargetPlatformIsWindowsPhone>
-    <_TargetPlatformIsWindowsPhone Condition="'$(_TargetPlatformIsWindowsPhone)' == ''">false</_TargetPlatformIsWindowsPhone>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <NuGetTargetFramework Condition="'$(NuGetTargetFramework)'==''">$(TargetPlatformIdentifierAdjusted),Version=v$(TargetPlatformMinVersion)</NuGetTargetFramework>
     <RuntimeIdentifiers Condition="'$(RuntimeIdentifiers)'==''">win10-arm;win10-arm-aot;win10-arm64-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
     <ResolveAssemblyConflicts>true</ResolveAssemblyConflicts>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetPlatformMinVersion)'!=''">
-    <AssetTargetFallback Condition="'$(TargetPlatformMinVersion)' > '10.0.15063.0'">$(AssetTargetFallback);net461</AssetTargetFallback>
-  </PropertyGroup>
-
-  <!-- If producing a reference winmd we want to use .net native -->
-  <PropertyGroup>
-    <ProjectNProfileEnabled Condition="'$(ProjectNProfileEnabled)' == ''">$(ProduceReferenceWinmd)</ProjectNProfileEnabled>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -183,8 +168,6 @@
     <AppxLayoutFolderName Condition="'$(AppxLayoutFolderName)' == ''">PackageLayout</AppxLayoutFolderName>
     <IntermediateUploadOutputPath Condition="'$(IntermediateUploadOutputPath)' == ''">$(IntermediateOutputPath)Upload\</IntermediateUploadOutputPath>
     <AppxLayoutDir Condition="'$(AppxLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxLayoutFolderName)\</AppxLayoutDir>
-    <AppxUploadLayoutFolderName Condition="'$(AppxUploadLayoutFolderName)' == ''">PackageUploadLayout</AppxUploadLayoutFolderName>
-    <AppxUploadLayoutDir Condition="'$(AppxUploadLayoutDir)' == ''">$(IntermediateOutputPath)$(AppxUploadLayoutFolderName)</AppxUploadLayoutDir>
     <AppxBundleAutoResourcePackageQualifiers Condition="'$(AppxBundleAutoResourcePackageQualifiers)' == ''">Language|Scale|DXFeatureLevel</AppxBundleAutoResourcePackageQualifiers>
     
     <PlatformSpecificBundleArtifactsListDir Condition="'$(PlatformSpecificBundleArtifactsListDir)' == '' and '$(OutDirWasSpecified)' == 'true'">$(OutDir)$(PlatformSpecificBundleArtifactsListDirName)\</PlatformSpecificBundleArtifactsListDir>
@@ -221,7 +204,6 @@
     <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Windows' and '$(TargetPlatformVersion)' == '8.2'">$(AppxDefaultResourceQualifiers_Windows_82)</AppxDefaultResourceQualifiers>
     <AppxDefaultResourceQualifiers Condition="'$(TargetPlatformIdentifierAdjusted)' == 'Portable'">$(AppxDefaultResourceQualifiers_Windows_81)</AppxDefaultResourceQualifiers>
     <AppxDefaultResourceQualifiers Condition="'$(SDKIdentifier)' != ''">$(AppxDefaultResourceQualifiers_UAP)</AppxDefaultResourceQualifiers>
-    <AppxDefaultResourceQualifiers Condition="'$(_TargetPlatformIsWindowsPhone)' == 'true'">$(AppxDefaultResourceQualifiers_Windows_Phone)</AppxDefaultResourceQualifiers>
   </PropertyGroup>
 
   <!-- If value is still not set, it is a platform yet unknown to us. -->
@@ -345,19 +327,6 @@
       _GenerateProjectPriFile;
     </PrepareForRunDependsOn>
   </PropertyGroup>
-
-  <!-- Validates directory paths and ensures trailing slashes -->
-  <Target Name="_ValidatePaths">
-
-    <PropertyGroup>
-      <AppxPackageDir Condition="!HasTrailingSlash('$(AppxPackageDir)')">$(AppxPackageDir)\</AppxPackageDir>
-      <AppxLayoutDir Condition="!HasTrailingSlash('$(AppxLayoutDir)')">'$(AppxLayoutDir)'\</AppxLayoutDir>
-      <AppxUploadLayoutDir Condition="!HasTrailingSlash('$(AppxUploadLayoutDir)')">$(AppxUploadLayoutDir)\</AppxUploadLayoutDir>
-      <PlatformSpecificBundleArtifactsListDir Condition="!HasTrailingSlash('$(PlatformSpecificBundleArtifactsListDir)')">$(PlatformSpecificBundleArtifactsListDir)\</PlatformSpecificBundleArtifactsListDir>
-      <PlatformSpecificUploadBundleArtifactsListDir Condition="'$(PlatformSpecificUploadBundleArtifactsListDir)' == ''">$(PlatformSpecificBundleArtifactsListDir)Upload\</PlatformSpecificUploadBundleArtifactsListDir>
-    </PropertyGroup>
-
-  </Target>
 
   <Target Name="_GetPackageFileExtensions">
 
@@ -522,29 +491,6 @@
     <PropertyGroup>
       <InProcessMakePriExtensionPath Condition="!$([System.Environment]::Is64BitProcess)">$(MakePriExtensionPath)</InProcessMakePriExtensionPath>
       <InProcessMakePriExtensionPath Condition="$([System.Environment]::Is64BitProcess)">$(MakePriExtensionPath_x64)</InProcessMakePriExtensionPath>
-    </PropertyGroup>
-
-  </Target>
-
-  <!-- Calculates paths to priconfig.xml snippets -->
-  <Target Name="_GetPriConfigXmlSnippets">
-
-    <ItemGroup Condition="'$(AppxPriConfigXmlPackagingSnippetPath)' == ''">
-      <_AppxPriConfigXmlPackagingSnippetItem Include="@(None)" Condition="'%(Identity)' == 'priconfig.packaging.xml'" />
-      <_AppxPriConfigXmlPackagingSnippetItem Include="@(Xml)" Condition="'%(Identity)' == 'priconfig.packaging.xml' and '%(Xml.DeploymentContent)' == 'false'" />
-    </ItemGroup>
-
-    <PropertyGroup Condition="'@(_AppxPriConfigXmlPackagingSnippetItem)' != ''">
-      <AppxPriConfigXmlPackagingSnippetPath>%(_AppxPriConfigXmlPackagingSnippetItem.FullPath)</AppxPriConfigXmlPackagingSnippetPath>
-    </PropertyGroup>
-
-    <ItemGroup Condition="'$(AppxPriConfigXmlDefaultSnippetPath)' == ''">
-      <_AppxPriConfigXmlDefaultSnippetItem Include="@(None)" Condition="'%(Identity)' == 'priconfig.default.xml'" />
-      <_AppxPriConfigXmlDefaultSnippetItem Include="@(Xml)" Condition="'%(Identity)' == 'priconfig.default.xml' and '%(Xml.DeploymentContent)' == 'false'" />
-    </ItemGroup>
-
-    <PropertyGroup Condition="'@(_AppxPriConfigXmlDefaultSnippetItem)' != ''">
-      <AppxPriConfigXmlDefaultSnippetPath>%(_AppxPriConfigXmlDefaultSnippetItem.FullPath)</AppxPriConfigXmlDefaultSnippetPath>
     </PropertyGroup>
 
   </Target>
@@ -995,22 +941,7 @@
   <!-- Override to specify actions to happen after generating project PRI file. -->
   <Target Name="AfterGenerateProjectPriFile" />
 
-  <PropertyGroup>
-    <_ProjectArchitecturesFilePath>$(IntermediateOutputPath)ProjectArchitectures.txt</_ProjectArchitecturesFilePath>
-  </PropertyGroup>
-
   <!-- END APPXLAYOUT -->
-
-  <!-- Finds store association file. -->
-  <Target Name="_FindStoreAssociationFile">
-
-    <ItemGroup Condition="'@(StoreAssociationFile)' == ''">
-      <StoreAssociationFile Include="@(Content)" Condition="'%(Identity)' == 'Package.StoreAssociation.xml'" />
-      <StoreAssociationFile Include="@(None)" Condition="'%(Identity)' == 'Package.StoreAssociation.xml' and '$(StoreAssociationFile)' == ''" />
-      <None Remove="@(None)" Condition="'%(Identity)' == 'Package.StoreAssociation.xml'" />
-    </ItemGroup>
-
-  </Target>
 
   <Target Name="_CalculateXbfSupport">
     <PropertyGroup>
