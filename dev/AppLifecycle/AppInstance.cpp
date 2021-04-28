@@ -197,7 +197,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Push this work onto a background thread.
         co_await resume_background();
 
-        init_apartment();
+        auto uninitOnExit = wil::CoInitializeEx();
 
         GUID id;
         THROW_IF_FAILED(CoCreateGuid(&id));
