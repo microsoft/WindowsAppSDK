@@ -25,7 +25,7 @@
        project system (this is expected since .resw files were historically UWP specific). That is needed for the
        .resw files to be indexed during PRI generation. Likewise, image files need to be added to Content for them
        to be indexed. These files exist in the None list by default (meaning without app developer intervention).
-       We address this requirement here so that the app develpoer doesn't need to manually intervene. -->
+       We address this requirement here so that the app developer doesn't need to manually intervene. -->
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
     <!-- Add .resw files to PRIResource so they are indexed. -->
     <PRIResource Include="@(None->WithMetadataValue('Extension', '.resw'))" />
