@@ -19,6 +19,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         std::wstring exePath{ modulePath.empty() ? GetModulePath() : modulePath };
 
+        // Example: C:\some\path\App.exe ----ms-protocol:
         return wil::str_printf<std::wstring>(L"%s %s%s%s", exePath.c_str(), c_argumentPrefix,
             c_protocolArgumentString, c_argumentSuffix);
     }
