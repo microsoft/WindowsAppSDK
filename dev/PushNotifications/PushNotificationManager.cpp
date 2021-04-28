@@ -204,12 +204,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 // QUERY IF API EXISTS (Vb and beyond)
                 if (taskClsid != winrt::guid())
                 {
-                    // Only applicable for a Win32 app
-                    builder.SetTaskEntryPointClsid(taskClsid);
-                    winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> conditions = details.GetConditions();
-                    for (auto condition : conditions)
+                    if (isPackagedProcess())
                     {
-                        builder.AddCondition(condition);
+                        builder.SetTaskEntryPointClsid(taskClsid);
+                        winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> conditions = details.GetConditions();
+                        for (auto condition : conditions)
+                        {
+                            builder.AddCondition(condition);
+                        }
                     }
                 }
                 registeredTask = builder.Register();
