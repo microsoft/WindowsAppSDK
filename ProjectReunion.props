@@ -16,7 +16,7 @@
   <ItemDefinitionGroup Condition="$(ProjectReunionBuildPipeline) == '1'">
     <ClCompile>
       <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\BuildOutput\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
 

@@ -69,7 +69,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\GenerateDynamicDependencyOverrides.ps1
-      arguments: -Path $(Build.SourcesDirectory)\build\override
+      arguments: -Path $(Build.SourcesDirectory)\BuildOutput\override
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: VSBuild@1
