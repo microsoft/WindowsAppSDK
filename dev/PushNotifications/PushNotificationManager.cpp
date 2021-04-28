@@ -201,12 +201,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 PushNotificationTrigger trigger{};
                 builder.SetTrigger(trigger);
 
-                // QUERY IF API EXISTS (Vb and beyond)
                 if (taskClsid != winrt::guid())
                 {
-                    if (isPackagedProcess())
+                    auto builder5 = builder.try_as<winrt::Windows::ApplicationModel::Background::IBackgroundTaskBuilder5>();
+                    if (IsPackagedProcess() && builder5)
                     {
-                        builder.SetTaskEntryPointClsid(taskClsid);
+                        builder5.SetTaskEntryPointClsid(taskClsid);
                         winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> conditions = details.GetConditions();
                         for (auto condition : conditions)
                         {
@@ -214,6 +214,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
                     }
                 }
+
                 registeredTask = builder.Register();
             }
         }
