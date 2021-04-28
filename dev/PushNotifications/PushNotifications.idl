@@ -9,126 +9,126 @@ namespace Microsoft.Windows.PushNotifications
         // Initialize using the IBackgroundInstance: used specifically for the Background Activation scenario
         static PushNotificationReceivedEventArgs CreateFromBackgroundTaskInstance(Windows.ApplicationModel.Background.IBackgroundTaskInstance backgroundTask);
 
-// Initialize using the PushNotificationEventArgs from Windows: used specifically for in-memory event handling when app is already in foreground
-static PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(Windows.Networking.PushNotifications.PushNotificationReceivedEventArgs args);
+        // Initialize using the PushNotificationEventArgs from Windows: used specifically for in-memory event handling when app is already in foreground
+        static PushNotificationReceivedEventArgs CreateFromPushNotificationReceivedEventArgs(Windows.Networking.PushNotifications.PushNotificationReceivedEventArgs args);
 
-// The Push payload
-byte[] Payload { get; };
+        // The Push payload
+        byte[] Payload { get; };
 
-// Gets a deferral to run under specific modes like low power mode
-Windows.ApplicationModel.Background.BackgroundTaskDeferral GetDeferral();
+        // Gets a deferral to run under specific modes like low power mode
+        Windows.ApplicationModel.Background.BackgroundTaskDeferral GetDeferral();
 
-// Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
-event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
+        // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
+        event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
 
-// Set to true to prevent proceeding launch due to Background Activation: false by default
-Boolean Handled;
-};
+        // Set to true to prevent proceeding launch due to Background Activation: false by default
+        Boolean Handled;
+    };
 
-[flags]
-enum PushNotificationRegistrationKind
-{
-    PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
-    ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
-};
+    [flags]
+    enum PushNotificationRegistrationKind
+    {
+        PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
+        ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
+    };
 
-// An abstraction over the activation Registration flow
-runtimeclass PushNotificationActivationInfo
-{
-    // Initialize using a RegistrationKind and optionally defined parameters like manifest defined activatorId
-    // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
-    // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
-    PushNotificationActivationInfo(PushNotificationRegistrationKind kind, Guid taskClsid);
+    // An abstraction over the activation Registration flow
+    runtimeclass PushNotificationActivationInfo
+    {
+        // Initialize using a RegistrationKind and optionally defined parameters like manifest defined activatorId
+        // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
+        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
+        PushNotificationActivationInfo(PushNotificationRegistrationKind kind, Guid taskClsid);
 
-// The CLSID associated with the Client COM server that Project Reunion will activate
-Guid TaskClsid{ get; };
+        // The CLSID associated with the Client COM server that Project Reunion will activate
+        Guid TaskClsid{ get; };
 
-PushNotificationRegistrationKind Kind{ get; };
+        PushNotificationRegistrationKind Kind{ get; };
 
-// The conditions under which Push Triggers would execute
-Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
-void SetConditions(Windows.ApplicationModel.Background.IBackgroundCondition[] conditions);
-};
+        // The conditions under which Push Triggers would execute
+        Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
+        void SetConditions(Windows.ApplicationModel.Background.IBackgroundCondition[] conditions);
+    };
 
-enum PushNotificationChannelStatus
-{
-    InProgress, // The request is in progress and there is no retry operation
-    InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
-    CompletedSuccess, // The request completed successfully
-    CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
-};
+    enum PushNotificationChannelStatus
+    {
+        InProgress, // The request is in progress and there is no retry operation
+        InProgressRetry, // The request is in progress and is in a backoff retry state. Check ExtendedError for HRESULT for retryable error.
+        CompletedSuccess, // The request completed successfully
+        CompletedFailure, // The request failed with some critical internal error. Check ExtendedError for HRESULT
+    };
 
-// The PushNotificationChannel Progress result
-struct PushNotificationCreateChannelStatus
-{
-    // The last extended error we failed Channel requests on that caused the inprogress retry status. S_OK if this is just progress status.
-    HRESULT extendedError;
+    // The PushNotificationChannel Progress result
+    struct PushNotificationCreateChannelStatus
+    {
+        // The last extended error we failed Channel requests on that caused the inprogress retry status. S_OK if this is just progress status.
+        HRESULT extendedError;
 
-    // Either InProgress or InProgressRetry status
-    PushNotificationChannelStatus status;
+        // Either InProgress or InProgressRetry status
+        PushNotificationChannelStatus status;
 
-    // Total Retries so far
-    UInt32 retryCount;
-};
+        // Total Retries so far
+        UInt32 retryCount;
+    };
 
-runtimeclass PushNotificationChannel
-{
-    PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
+    runtimeclass PushNotificationChannel
+    {
+        PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
 
-// The Channel Uri for app to Post a notification to.
-Windows.Foundation.Uri Uri { get; };
+        // The Channel Uri for app to Post a notification to.
+        Windows.Foundation.Uri Uri { get; };
 
-// Expiration of the Channel
-Windows.Foundation.DateTime ExpirationTime { get; };
+        // Expiration of the Channel
+        Windows.Foundation.DateTime ExpirationTime { get; };
 
-// Unsubscribes the channel
-void Close();
+        // Unsubscribes the channel
+        void Close();
 
-// In-memory Event handler for Push Notifications
-event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
-}
+        // In-memory Event handler for Push Notifications
+        event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
+    }
 
-runtimeclass PushNotificationCreateChannelResult
-{
-    PushNotificationCreateChannelResult(
-        PushNotificationChannel channel,
-        HRESULT extendedError,
-        PushNotificationChannelStatus status);
+    runtimeclass PushNotificationCreateChannelResult
+    {
+        PushNotificationCreateChannelResult(
+            PushNotificationChannel channel,
+            HRESULT extendedError,
+            PushNotificationChannelStatus status);
 
-// The Push channel associated with the Result. Null if InProgress or completion failed
-PushNotificationChannel Channel { get; };
+        // The Push channel associated with the Result. Null if InProgress or completion failed
+        PushNotificationChannel Channel { get; };
 
-// More detailed error code in addition to the ChannelStatus state.
-HRESULT ExtendedError{ get; };
+        // More detailed error code in addition to the ChannelStatus state.
+        HRESULT ExtendedError{ get; };
 
-// The Status of the ChannelComplete operation
-PushNotificationChannelStatus Status { get; };
-};
+        // The Status of the ChannelComplete operation
+        PushNotificationChannelStatus Status { get; };
+        };
 
-runtimeclass PushNotificationRegistrationToken
-{
-    PushNotificationRegistrationToken(
-        UInt64 cookie,
-        Windows.ApplicationModel.Background.BackgroundTaskRegistration taskRegistration);
+        runtimeclass PushNotificationRegistrationToken
+        {
+            PushNotificationRegistrationToken(
+                UInt64 cookie,
+                Windows.ApplicationModel.Background.BackgroundTaskRegistration taskRegistration);
 
-// The cookie from CoRegisterClassObject
-UInt64 Cookie{ get; };
+        // The cookie from CoRegisterClassObject
+        UInt64 Cookie{ get; };
 
-// The Registration token for the Push Trigger
-Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
-};
+        // The Registration token for the Push Trigger
+        Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
+    };
 
-static runtimeclass PushNotificationManager
-{
-    // Register an activator using an ActivationInfo context and return a RegistrationToken
-    static PushNotificationRegistrationToken RegisterActivator(PushNotificationActivationInfo details);
+    static runtimeclass PushNotificationManager
+    {
+        // Register an activator using an ActivationInfo context and return a RegistrationToken
+        static PushNotificationRegistrationToken RegisterActivator(PushNotificationActivationInfo details);
 
-// Unregister any activator if present using a token and registrationKind
-// 1) If kind = PushTrigger is specified, the trigger itself will be removed
-// 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
-static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationKind kind);
+        // Unregister any activator if present using a token and registrationKind
+        // 1) If kind = PushTrigger is specified, the trigger itself will be removed
+        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
+        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationKind kind);
 
-// Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
-static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
-};
+        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
+    };
 }

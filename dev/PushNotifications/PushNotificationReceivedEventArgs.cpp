@@ -17,6 +17,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         m_backgroundTaskInstance = backgroundTask;
 
+        // Need to process the RawNotification payload here because TriggerDetails is set to nullptr leaving IBackgroundTaskInstance::Run 
         auto triggerDetails = m_backgroundTaskInstance.TriggerDetails();
         RawNotification rawNotification = triggerDetails.as<RawNotification>();
 
