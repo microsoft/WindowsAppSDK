@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         m_instances.Init(m_moduleName + L"_Module");
 
         // Wire up the Activated event.
-        std::wstring eventName = m_processName + L"_ActivatedEvent";
+        std::wstring eventName = m_processName + c_activatedEventNameSuffix;
         m_innerActivated.create(wil::EventOptions::ManualReset, eventName.c_str());
 
         // This mutex should always be created first by the process it's associated with.
@@ -167,7 +167,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             wil::unique_cotaskmem_string idString;
             THROW_IF_FAILED(StringFromCLSID(id, &idString));
 
-            auto name = wil::str_printf<std::wstring>(L"%s_RedirectionRequest_%s", m_processName.c_str(), idString.get());
+            auto name = wil::str_printf<std::wstring>(c_requestPacketNameFormat, m_processName.c_str(), idString.get());
 
             RedirectionRequest request;
             request.Open(name);
@@ -175,7 +175,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             m_activatedEvent(*this, args);
 
-            std::wstring eventName = name + L"_ActivatedEvent";
+            std::wstring eventName = name + c_activatedEventNameSuffix;
             wil::unique_event cleanupEvent;
             cleanupEvent.open(eventName.c_str());
             if (cleanupEvent)
@@ -198,13 +198,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_cotaskmem_string idString;
         THROW_IF_FAILED(StringFromCLSID(id, &idString));
-        auto name = wil::str_printf<std::wstring>(L"%s_RedirectionRequest_%s", m_processName.c_str(), idString.get());
+        auto name = wil::str_printf<std::wstring>(c_requestPacketNameFormat, m_processName.c_str(), idString.get());
 
         RedirectionRequest request;
         request.Open(name);
         request.MarshalArguments(args);
 
-        std::wstring eventName = name + L"_ActivatedEvent";
+        std::wstring eventName = name + c_activatedEventNameSuffix;
         wil::unique_event cleanupEvent;
         cleanupEvent.create(wil::EventOptions::ManualReset, eventName.c_str());
 

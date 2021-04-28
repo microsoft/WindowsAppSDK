@@ -11,6 +11,9 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    static const PCWSTR c_requestPacketNameFormat = L"%s_RedirectionRequest_%s";
+    static const PCWSTR c_activatedEventNameSuffix = L"_ActivatedEvent";
+
     struct AppInstance : AppInstanceT<AppInstance>
     {
         // No interface public methods.
