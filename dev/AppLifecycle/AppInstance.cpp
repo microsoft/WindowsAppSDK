@@ -282,13 +282,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 {
                     // Remove orphan.
                     auto releaseOnExit = s_current->m_dataMutex.acquire();
-                    for (uint32_t index = 0; index < s_current->m_instances.Size(); index++)
-                    {
-                        if (s_current->m_instances[index] == pid)
-                        {
-                            s_current->m_instances.Remove(pid);
-                        }
-                    }
+                    s_current->m_instances.Remove(pid);
                 }
             }
         }
