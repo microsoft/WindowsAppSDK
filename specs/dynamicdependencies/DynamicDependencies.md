@@ -961,10 +961,10 @@ bootstrapper API to efficiently enumerate and the CLSID of its Packaged COM OutO
 
 ```xml
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.projectreunion.ddlm.4.x64"
+          <uap3:AppExtension Name="com.microsoft.reunion.ddlm.4.1.x64"
                              Id="ddlm-4.1.1967.333-x64"
                              PublicFolder="public\ddlm"
-                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (4.* x64)">
+                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (4.1.* x64)">
             <uap3:Properties>
               <CLSID>32E7CF70-038C-429a-BD49-88850F1B4A11</CLSID>
             </uap3:Properties>
@@ -974,7 +974,12 @@ bootstrapper API to efficiently enumerate and the CLSID of its Packaged COM OutO
 
 The declared AppExtension has a name of
 
-`com.microsoft.projectreunion.ddlm.<version.major>.<architcture>`
+`com.microsoft.reunion.ddlm.<version.major>.<version.minor>.<architcture>`
+
+**NOTE:** AppExtension name is limited to <=39 characters on Windows builds <10.0.18307.0
+(RS5=10.0.17763.0, 19H1=10.0.18362). The preferred name `com.microsoft.projectreunion.ddlm....`
+has a length of 40+ characters so we use this shortened form for as long as we need to support
+older releases.
 
 The bootstrapper API uses [Windows.ApplicationModel.AppExtension](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.AppExtensions.AppExtension?view=winrt-19041) to enumerate all Project Reunion Framework packages with the specified Major version number and selects the one best matching the criteria passed to the
 bootstrapper API.

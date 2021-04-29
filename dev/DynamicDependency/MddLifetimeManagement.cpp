@@ -83,7 +83,7 @@ private:
 STDAPI MddLifetimeManagementGC() noexcept try
 {
     // Enumerate for all DynamicDependency Lifetime Management (DDLM) packages and remove redundantly unnecessary packages
-    // 1. Same MAJOR version (breaking change boundary)
+    // 1. Same MAJOR.MINOR version (breaking change boundary)
     // 2. Same architecture
     //
     // For each permutation of 1+2 if 2+ package are found determine the 'best match' to keep. Other packages found
@@ -101,81 +101,90 @@ STDAPI MddLifetimeManagementGC() noexcept try
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::hstring currentUser;
 
-    const UINT32 c_maxMajorVersion{ 9 };
+    const UINT16 c_majorMinorVersions[][3]{ // [n] = { Major, minMinor, maxMinor }
+        { 0, 8, 9 },
+        { 1, 0, 2 }
+    };
     PCWSTR c_architectures[]{ L"x86", L"x64", L"arm64" };
-    for (UINT32 majorVersion=0; majorVersion <= c_maxMajorVersion; ++majorVersion)
+    for (auto majorMinorVersion : c_majorMinorVersions)
     {
-        for (auto architecture : c_architectures)
+        const UINT16 majorVersion{ static_cast<UINT16>(majorMinorVersion[0]) };
+        const UINT16 minMinorVersion{ static_cast<UINT16>(majorMinorVersion[1]) };
+        const UINT16 maxMinorVersion{ static_cast<UINT16>(majorMinorVersion[2]) };
+        for (UINT32 minorVersion=minMinorVersion; minorVersion <= maxMinorVersion; ++minorVersion)
         {
-            // Build the list of DDLMs
-            std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
-
-            // Look for windows.appExtension with name="com.microsoft.projectreunion.ddlm.<majorversion>.<architecture>"
-            WCHAR appExtensionName[100]{};
-            wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", majorVersion, architecture);
-
-            auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
-            auto appExtensions{ catalog.FindAllAsync().get() };
-            for (auto appExtension : appExtensions)
+            for (auto architecture : c_architectures)
             {
-                // Check the package identity against the package identity test qualifiers (if any)
-                if (!g_test_ddlmPackageNamePrefix.empty())
+                // Build the list of DDLMs
+                std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
+
+                // Look for windows.appExtension with name="com.microsoft.reunion.ddlm.<majorversion>.<minorversion>.<architecture>"
+                WCHAR appExtensionName[100]{};
+                wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, architecture);
+
+                auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
+                auto appExtensions{ catalog.FindAllAsync().get() };
+                for (auto appExtension : appExtensions)
                 {
-                    const auto packageId{ appExtension.Package().Id() };
-                    std::wstring name{ packageId.Name().c_str() };
-                    if ((name.rfind(g_test_ddlmPackageNamePrefix.c_str(), 0) != 0) ||
-                        (CompareStringOrdinal(packageId.PublisherId().c_str(), -1, g_test_ddlmPackagePublisherId.c_str(), -1, TRUE) != CSTR_EQUAL))
+                    // Check the package identity against the package identity test qualifiers (if any)
+                    if (!g_test_ddlmPackageNamePrefix.empty())
                     {
-                        // The package's Name prefix or PublisherId don't match the expected value. Skip it
+                        const auto packageId{ appExtension.Package().Id() };
+                        std::wstring name{ packageId.Name().c_str() };
+                        if ((name.rfind(g_test_ddlmPackageNamePrefix.c_str(), 0) != 0) ||
+                            (CompareStringOrdinal(packageId.PublisherId().c_str(), -1, g_test_ddlmPackagePublisherId.c_str(), -1, TRUE) != CSTR_EQUAL))
+                        {
+                            // The package's Name prefix or PublisherId don't match the expected value. Skip it
+                            continue;
+                        }
+                    }
+
+                    // appExtension.Id == "ddlm-<major.minor.build.revision>-<architecture>"
+                    const auto id{ appExtension.Id() };
+                    PACKAGE_VERSION version{};
+                    WCHAR architectureAsString[9 + 1]{};
+                    const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345.abcdefghi") - 1 }; // -1 for length not counting null-terminator
+                    if ((id.size() >= maxIdLength) ||
+                        (swscanf_s(id.c_str(), L"ddlm-%hu.%hu.%hu.%hu-%9s", &version.Major, &version.Minor, &version.Build, &version.Revision, architectureAsString, static_cast<unsigned>(ARRAYSIZE(architectureAsString))) != 5))
+                    {
+                        (void)LOG_HR_MSG(ERROR_INVALID_DATA, "%ls", id.c_str());
                         continue;
                     }
+
+                    // Found one
+                    auto packageFullName{ appExtension.Package().Id().FullName().c_str() };
+                    ddlmPackages.push_back(MddCore::LifetimeManagement::DDLMPackage(packageFullName, version));
                 }
 
-                // appExtension.Id == "ddlm-<major.minor.build.revision>-<architecture>"
-                const auto id{ appExtension.Id() };
-                PACKAGE_VERSION version{};
-                WCHAR architectureAsString[9 + 1]{};
-                const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345.abcdefghi") - 1 }; // -1 for length not counting null-terminator
-                if ((id.size() >= maxIdLength) ||
-                    (swscanf_s(id.c_str(), L"ddlm-%hu.%hu.%hu.%hu-%9s", &version.Major, &version.Minor, &version.Build, &version.Revision, architectureAsString, static_cast<unsigned>(ARRAYSIZE(architectureAsString))) != 5))
+                // Did we find more than one?
+                if (ddlmPackages.size() <= 1)
                 {
-                    (void)LOG_HR_MSG(ERROR_INVALID_DATA, "%ls", id.c_str());
+                    // Nothing to remove
                     continue;
                 }
 
-                // Found one
-                auto packageFullName{ appExtension.Package().Id().FullName().c_str() };
-                ddlmPackages.push_back(MddCore::LifetimeManagement::DDLMPackage(packageFullName, version));
-            }
+                // Sort the list by version in descending order to simplify using it
+                std::sort(ddlmPackages.begin(), ddlmPackages.end(), std::greater<MddCore::LifetimeManagement::DDLMPackage>());
 
-            // Did we find more than one?
-            if (ddlmPackages.size() <= 1)
-            {
-                // Nothing to remove
-                continue;
-            }
-
-            // Sort the list by version in descending order to simplify using it
-            std::sort(ddlmPackages.begin(), ddlmPackages.end(), std::greater<MddCore::LifetimeManagement::DDLMPackage>());
-
-            // What's the highest version with a healthy status
-            auto keeper{ ddlmPackages.begin() };
-            for (; keeper != ddlmPackages.end(); ++keeper)
-            {
-                auto package{ packageManager.FindPackageForUser(currentUser, keeper->PackageFullName()) };
-                auto status{ package.Status() };
-                if (status.VerifyIsOK())
+                // What's the highest version with a healthy status
+                auto keeper{ ddlmPackages.begin() };
+                for (; keeper != ddlmPackages.end(); ++keeper)
                 {
-                    break;
+                    auto package{ packageManager.FindPackageForUser(currentUser, keeper->PackageFullName()) };
+                    auto status{ package.Status() };
+                    if (status.VerifyIsOK())
+                    {
+                        break;
+                    }
                 }
-            }
-            const auto keeperIndex{ keeper - ddlmPackages.begin() };
+                const auto keeperIndex{ keeper - ddlmPackages.begin() };
 
-            // Remove all older packages (best effort)
-            for (++keeper; keeper != ddlmPackages.end(); ++keeper)
-            {
-                const auto n{ keeper - ddlmPackages.begin() };
-                keeper->RemovePackage(packageManager);
+                // Remove all older packages (best effort)
+                for (++keeper; keeper != ddlmPackages.end(); ++keeper)
+                {
+                    const auto n{ keeper - ddlmPackages.begin() };
+                    keeper->RemovePackage(packageManager);
+                }
             }
         }
     }

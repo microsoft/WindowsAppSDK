@@ -8,13 +8,13 @@
   <Identity
     Name="Microsoft.ProjectReunion.Test.InstallerFramework"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    ProcessorArchitecture="x86"
+    ProcessorArchitecture="arm64"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>Microsoft.ProjectReunion.Test.InstallerFramework for tests</DisplayName>
-    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Logo>logo.png</Logo>
+    <PublisherDisplayName>Project Reunion</PublisherDisplayName>
+    <Logo>Assets\logo.png</Logo>
     <Framework>true</Framework>
   </Properties>
 

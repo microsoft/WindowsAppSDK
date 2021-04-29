@@ -49,6 +49,12 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+
+    constexpr const UINT32 GetPackageVersionMajorMinor()
+    {
+        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
+    }
+    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
 #define TEST_PACKAGE_DDLMGC_NAMEPREFIX  TEST_PACKAGE_DDLM_NAMEPREFIX L".GC"
@@ -76,6 +82,12 @@ namespace Test::Packages::DynamicDependencyLifetimeManagerGC1000
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+
+    constexpr const UINT32 GetPackageVersionMajorMinor()
+    {
+        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
+    }
+    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
 #define TEST_PACKAGE_DDLMGC1010_NAME    TEST_PACKAGE_DDLMGC_NAMEPREFIX L"-1.0.1.0-" TEST_PACKAGE_DDLM_ARCHITECTURE
@@ -96,6 +108,12 @@ namespace Test::Packages::DynamicDependencyLifetimeManagerGC1010
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+
+    constexpr const UINT32 GetPackageVersionMajorMinor()
+    {
+        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
+    }
+    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
 namespace Test::Packages::ProjectReunionFramework

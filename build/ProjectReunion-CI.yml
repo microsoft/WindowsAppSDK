@@ -9,7 +9,7 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  # Scans the root source folder for security vulnerability 
+  # Scans the root source folder for security vulnerability
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
@@ -69,7 +69,7 @@ jobs:
       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
       AnalyzeVerbose: true
     condition: ne(variables['buildConfiguration'], 'Debug')
-    
+
   - task: PostAnalysis@1
     inputs:
       AllTools: false
@@ -104,7 +104,7 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: ..\dev\MRTCore\build-mrt.yml
+  - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
 
@@ -139,12 +139,12 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   steps:
-  - template: ..\dev\MRTCore\publish-mrt.yml
+  - template: publish-mrt.yml
 
 - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
-    dependsOn: 
+    dependsOn:
       - Build
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     testSuite: 'DevTestSuite'
