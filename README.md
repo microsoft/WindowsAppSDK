@@ -3,7 +3,7 @@
 | Delight users with modern UI | Access new platform features | Backwards compatible | 
 |:--:|:--:|:--:|
 | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br>Localization + power status + more<br> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br>Down to Windows 10 1809 |
-
+asdfasdf
 ...and more, **without having to rewrite your app!**
 
 * Use your current installer *(no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
@@ -11,9 +11,9 @@
 * Works with Win32, WPF, WinForms, and UWP apps
 
 Plus, **it's backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
+asdf
 
-
-### Use it now!
+### Use it now!asdf
 [Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.5 release](https://docs.microsoft.com/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
 
 Some notes about 0.5...
