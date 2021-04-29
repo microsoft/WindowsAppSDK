@@ -128,6 +128,10 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
 
+- script: |
+    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+  displayname: HK 1
+
 - task: CopyFiles@2
   displayName: 'copy header'
   inputs:
@@ -136,10 +140,18 @@ steps:
       mrm.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
 
+- script: |
+    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+  displayname: HK 2
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
     ArtifactName: 'FullNuget'
+
+- script: |
+    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+  displayname: HK 3
 
 # NuGetCommand@2
 #  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
