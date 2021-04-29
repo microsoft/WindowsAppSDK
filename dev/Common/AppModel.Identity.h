@@ -69,6 +69,45 @@ inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(_In_ PCWS
         return winrt::Windows::System::ProcessorArchitecture::Unknown;
     }
 }
+
+inline PCWSTR GetCurrentArchitectureAsShortString()
+{
+#if defined(_M_X64)
+    return L"x6";
+#elif defined(_M_IX86)
+    return L"x8";
+#elif defined(_M_ARM64)
+    return L"a6";
+#elif defined(_M_ARM)
+    return L"ar";
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
+inline winrt::Windows::System::ProcessorArchitecture ParseShortArchitecture(_In_ PCWSTR architecture)
+{
+    if (CompareStringOrdinal(architecture, -1, L"x6", -1, TRUE) == CSTR_EQUAL)
+    {
+        return winrt::Windows::System::ProcessorArchitecture::X64;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"x8", -1, TRUE) == CSTR_EQUAL)
+    {
+        return winrt::Windows::System::ProcessorArchitecture::X86;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"a6", -1, TRUE) == CSTR_EQUAL)
+    {
+    return winrt::Windows::System::ProcessorArchitecture::Arm64;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"ar", -1, TRUE) == CSTR_EQUAL)
+    {
+    return winrt::Windows::System::ProcessorArchitecture::Arm;
+    }
+    else
+    {
+        return winrt::Windows::System::ProcessorArchitecture::Unknown;
+    }
+}
 }
 
 #endif // __APPMODEL_IDENTITY_H
