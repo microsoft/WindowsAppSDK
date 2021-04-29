@@ -4,9 +4,15 @@
 
 #include <Windows.ApplicationModel.background.h>
 
+namespace winrt
+{
+    using namespace Microsoft::Windows::PushNotifications;
+    using namespace Windows::ApplicationModel::Background;
+}
+
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationActivationInfo::PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind const& kind, winrt::guid const& taskClsid)
+    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationKind const& kind, winrt::guid const& taskClsid)
     {
         m_kind = kind;
         m_taskClsid = taskClsid;
@@ -16,19 +22,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto lock = m_lock.lock_shared();
         return m_taskClsid;
     }
-    Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind PushNotificationActivationInfo::Kind()
+
+    winrt::PushNotificationRegistrationKind PushNotificationActivationInfo::Kind()
     {
         auto lock = m_lock.lock_shared();
         return m_kind;
     }
-    winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> PushNotificationActivationInfo::GetConditions()
+    winrt::com_array<winrt::IBackgroundCondition> PushNotificationActivationInfo::GetConditions()
     {
         auto lock = m_lock.lock_shared();
-        return winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition>(m_backgroundConditions.begin(), m_backgroundConditions.end());
+        return winrt::com_array<winrt::IBackgroundCondition>(m_backgroundConditions.begin(), m_backgroundConditions.end());
     }
-    void PushNotificationActivationInfo::SetConditions(array_view<winrt::Windows::ApplicationModel::Background::IBackgroundCondition const> conditions)
+    void PushNotificationActivationInfo::SetConditions(array_view<winrt::IBackgroundCondition const> conditions)
     {
         auto lock = m_lock.lock_exclusive();
-        m_backgroundConditions = winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition>(conditions.begin(), conditions.end());
+        m_backgroundConditions = winrt::com_array<winrt::IBackgroundCondition>(conditions.begin(), conditions.end());
     }
 }

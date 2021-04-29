@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
         winrt::com_array<uint8_t> m_backgroundPayload{};
         winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
-        wil::critical_section m_lock;
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

@@ -13,12 +13,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     uint64_t PushNotificationRegistrationToken::Cookie()
     {
-        auto lock = m_lock.lock();
+        auto lock = m_lock.lock_shared();
         return m_cookie;
     }
     winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration PushNotificationRegistrationToken::TaskRegistration()
     {
-        auto lock = m_lock.lock();
+        auto lock = m_lock.lock_shared();
         return m_taskRegistration;
     }
 }

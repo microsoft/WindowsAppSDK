@@ -11,15 +11,19 @@
 
 #include <winerror.h>
 #include <algorithm>
-#include <vector>
 #include "PushNotificationChannel.h"
 #include "externs.h"
 
 constexpr PCWSTR backgroundTaskName = L"PushBackgroundTaskName";
 
-using namespace winrt::Windows::ApplicationModel::Background;
-using namespace winrt::Windows::Networking::PushNotifications;
-using namespace winrt;
+namespace ReunionPushNotifications = winrt::Microsoft::Windows::PushNotifications;
+
+namespace winrt
+{
+    using namespace Windows::ApplicationModel::Background;
+    using namespace Windows::Networking::PushNotifications;
+    using namespace Windows::Foundation;
+}
 
 wil::critical_section g_lock;
 
@@ -66,7 +70,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return true;
     }
 
-    winrt::Windows::Foundation::IAsyncOperationWithProgress<Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
+    winrt::IAsyncOperationWithProgress<ReunionPushNotifications::PushNotificationCreateChannelResult, ReunionPushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid remoteId)
     {
         static bool s_remoteIdInProgress;
         static wil::critical_section s_lock;
@@ -76,7 +80,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // API supports channel requests only for packaged applications for v0.8 version
         THROW_HR_IF(E_NOTIMPL, (IsPackagedProcess() == false));
 
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult channelResult{ nullptr };
+        ReunionPushNotifications::PushNotificationCreateChannelResult channelResult{ nullptr };
 
         {
             auto lock = s_lock.lock();
@@ -86,7 +90,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
-                channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                channelResult = winrt::make<ReunionPushNotifications::implementation::PushNotificationCreateChannelResult>(
                     nullptr, WPN_E_OUTSTANDING_CHANNEL_REQUEST, PushNotificationChannelStatus::CompletedFailure);
                 co_return channelResult;
             }
@@ -109,15 +113,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         uint8_t retryCount = 0;
         winrt::hresult channelRequestResult = E_PENDING;
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
+        ReunionPushNotifications::PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
 
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus
+        ReunionPushNotifications::PushNotificationCreateChannelStatus
             channelStatus = { channelRequestResult, status, retryCount };
 
         progress(channelStatus);
 
         PushNotificationChannelManager channelManager{};
-        winrt::Windows::Networking::PushNotifications::PushNotificationChannel pushChannelReceived{ nullptr };
+        winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
         for (auto backOffTimeInSeconds = c_minBackoffSeconds; backOffTimeInSeconds <= c_maxBackoffSeconds * 2; backOffTimeInSeconds *= 2)
         {
@@ -157,16 +161,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             // Returns a com_ptr to the implementation type
             auto pushChannel =
-                winrt::make_self<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel>(pushChannelReceived);
+                winrt::make_self<ReunionPushNotifications::implementation::PushNotificationChannel>(pushChannelReceived);
 
-            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+            channelResult = winrt::make<ReunionPushNotifications::implementation::PushNotificationCreateChannelResult>(
                 *(pushChannel.get()),
                 channelRequestResult,
                 status);
         }
         else if (status == PushNotificationChannelStatus::CompletedFailure)
         {
-            channelResult = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+            channelResult = winrt::make<ReunionPushNotifications::implementation::PushNotificationCreateChannelResult>(
                 nullptr,
                 channelRequestResult,
                 status);
@@ -175,7 +179,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         co_return channelResult;
     }
 
-    Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details)
+    ReunionPushNotifications::PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(ReunionPushNotifications::PushNotificationActivationInfo const& details)
     {
         winrt::guid taskClsid = details.TaskClsid();
         DWORD cookie = 0;
@@ -203,11 +207,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (taskClsid != winrt::guid())
                 {
-                    auto builder5 = builder.try_as<winrt::Windows::ApplicationModel::Background::IBackgroundTaskBuilder5>();
+                    auto builder5 = builder.try_as<winrt::IBackgroundTaskBuilder5>();
                     if (IsPackagedProcess() && builder5)
                     {
                         builder5.SetTaskEntryPointClsid(taskClsid);
-                        winrt::com_array<winrt::Windows::ApplicationModel::Background::IBackgroundCondition> conditions = details.GetConditions();
+                        winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
                         for (auto condition : conditions)
                         {
                             builder.AddCondition(condition);
@@ -240,7 +244,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return PushNotificationRegistrationToken{ cookie, registeredTask };
     }
 
-    void PushNotificationManager::UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken const& token, Microsoft::Windows::PushNotifications::PushNotificationRegistrationKind const& kind)
+    void PushNotificationManager::UnregisterActivator(ReunionPushNotifications::PushNotificationRegistrationToken const& token, ReunionPushNotifications::PushNotificationRegistrationKind const& kind)
     {
 
         if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::PushTrigger))

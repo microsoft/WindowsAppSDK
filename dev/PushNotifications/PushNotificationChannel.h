@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Foundation::TypedEventHandler<
             Microsoft::Windows::PushNotifications::PushNotificationChannel,
             Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> m_typedEventHandler;
-        wil::critical_section m_lock;
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

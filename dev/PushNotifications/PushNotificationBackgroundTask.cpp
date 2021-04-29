@@ -5,19 +5,21 @@
 #include "PushNotificationBackgroundTask.h"
 
 #include <winrt/base.h>
-#include <winrt/windows.networking.pushnotifications.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include "externs.h"
 
-using namespace winrt::Windows::ApplicationModel::Background;
-using namespace winrt::Windows::Networking::PushNotifications;
+namespace winrt
+{
+    using namespace Windows::ApplicationModel::Background;
+    using namespace Microsoft::Windows::PushNotifications;
+}
 
 wil::unique_handle g_waitHandleForArgs;
-winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs g_activatedEventArgs{ nullptr };
+winrt::PushNotificationReceivedEventArgs g_activatedEventArgs{ nullptr };
 
-void PushNotificationBackgroundTask::Run(IBackgroundTaskInstance taskInstance)
+void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance taskInstance)
 {
     SetEvent(g_waitHandleForArgs.get());
     auto lock = g_lock.lock();
-    g_activatedEventArgs = winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(taskInstance);
+    g_activatedEventArgs = winrt::PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(taskInstance);
 }
