@@ -12,7 +12,7 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  # Scans the root source folder for security vulnerability
+  # Scans the root source folder for security vulnerability 
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
@@ -90,7 +90,7 @@ jobs:
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-
+  
   - task: BinSkim@3
     inputs:
       InputType: 'Basic'
@@ -114,7 +114,7 @@ jobs:
       Semmle: false
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
-
+  
 
 - job: BuildMRT
   pool:
@@ -132,7 +132,7 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: build-mrt.yml
+  - template: ..\dev\MRTCore\build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
 
@@ -167,7 +167,7 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   steps:
-  - template: publish-mrt.yml
+  - template: ..\dev\MRTCore\publish-mrt.yml
 
 - job: SignBinariesAndPublishSymbols
   variables:
@@ -225,7 +225,7 @@ jobs:
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
-
+      
 # dump symbols artifact directory - this is normally turned off
 #  - script: |
 #      echo $(Build.ArtifactStagingDirectory)\symbols
@@ -236,8 +236,8 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-# this ADO task does not support indexing of github sources currently :-(
-      indexSources: false
+# this ADO task does not support indexing of github sources currently :-(      
+      indexSources: false 
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
@@ -287,7 +287,7 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
-    condition:
+    condition: 
       eq(${{ parameters.ReleaseSigning }}, true)
 
   - task: EsrpCodeSigning@1
@@ -331,7 +331,7 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
-    condition:
+    condition: 
       eq(${{ parameters.ReleaseSigning }}, false)
 
   # Re-publish signed artifacts to the fullnuget artifact.
