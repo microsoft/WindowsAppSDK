@@ -236,7 +236,7 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-# this ADO task does not support indexing of github sources currently :-(      
+    # This ADO task does not support indexing of github sources currently :-(      
       indexSources: false 
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
@@ -249,7 +249,7 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-# this ADO task does not support indexing of github sources currently :-(      
+    # This ADO task does not support indexing of github sources currently :-(      
       indexSources: false 
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).

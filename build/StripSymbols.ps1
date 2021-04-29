@@ -25,7 +25,7 @@ function Get-DebuggingToolsRoot
     }
 }
 
-function Strip-PrivateInformation(
+function Remove-PrivateSymbolInformation(
     [parameter(mandatory)][ValidateNotNullOrEmpty()] [string] $inputPdbPath,
     [parameter(mandatory)][ValidateNotNullOrEmpty()] [string] $outputPdbPath)
 {
@@ -76,5 +76,5 @@ foreach ($inputPdb in (Get-ChildItem -Recurse -Filter "*.pdb" $InputDirectory))
 
     $inputPdbPath = $inputPdb.FullName
     $outputPdbPath = Join-Path $outputPdbDir $inputPdb.Name
-    Strip-PrivateInformation $inputPdbPath $outputPdbPath
+    Remove-PrivateSymbolInformation $inputPdbPath $outputPdbPath
 }
