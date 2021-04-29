@@ -33,6 +33,10 @@
     <Content Include="@(None->WithMetadataValue('Extension', '.png'))" />
     <Content Include="@(None->WithMetadataValue('Extension', '.bmp'))" />
     <Content Include="@(None->WithMetadataValue('Extension', '.jpg'))" />
+    <Content Include="@(None->WithMetadataValue('Extension', '.dds'))" />
+    <Content Include="@(None->WithMetadataValue('Extension', '.tif'))" />
+    <Content Include="@(None->WithMetadataValue('Extension', '.tga'))" />
+    <Content Include="@(None->WithMetadataValue('Extension', '.gif'))" />
   </ItemGroup>
 
   <!--
