@@ -34,8 +34,8 @@ jobs:
       echo useReleaseTag=${{ parameters.useReleaseTag }}
     displayName: 'CreateNugetPackage: Display parameters'
 
-  - task: DownloadBuildArtifacts@0 
-    inputs: 
+  - task: DownloadBuildArtifacts@0
+    inputs:
       artifactName: FullNuget
       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
@@ -59,10 +59,12 @@ jobs:
         Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.props" -Destination "$fullpackagePath\build\native\Microsoft.ProjectReunion.Foundation.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.props"
+        Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.C.props" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.C.props"
+        Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.WinRt.props" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.WinRt.props"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
-  # debugging - remove or comment out before completing PR      
+  # debugging - remove or comment out before completing PR
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
 
@@ -130,7 +132,7 @@ jobs:
     inputs:
       PathtoPublish: '${{ parameters.fullnupkgdir }}'
       artifactName: 'FullNuget'
-      
+
   - ${{if parameters.signConfigPattern }}:
     # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
     - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -138,9 +140,9 @@ jobs:
       inputs:
         command: 'push'
         packagesToPush: '$(Build.ArtifactStagingDirectory)/fullnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fullnuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed' 
+        verbosityPush: 'Detailed'
         nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds. 
+        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
 #UNDONE - EHO we need to seed these guid's properly!
