@@ -7,16 +7,21 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
-using namespace winrt::Windows::ApplicationModel::Background;
-using namespace winrt::Windows::Storage::Streams;
-using namespace winrt::Windows::Networking::PushNotifications;
+
+namespace winrt
+{
+    using namespace Windows::ApplicationModel::Background;
+    using namespace Windows::Storage::Streams;
+    using namespace Windows::Networking::PushNotifications;
+}
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask)
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask)
     {
         m_backgroundTaskInstance = backgroundTask;
 
+        // Need to process the RawNotification payload here because TriggerDetails is set to nullptr leaving IBackgroundTaskInstance::Run 
         auto triggerDetails = m_backgroundTaskInstance.TriggerDetails();
         RawNotification rawNotification = triggerDetails.as<RawNotification>();
 
@@ -27,24 +32,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         dataReader.ReadBytes(m_backgroundPayload);
     }
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args)
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args)
     {
         m_args = args;
     }
 
-    Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask)
+    winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(winrt::IBackgroundTaskInstance const& backgroundTask)
     {
         return winrt::make<PushNotificationReceivedEventArgs>(backgroundTask);
     }
 
-    Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args)
+    winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args)
     {
         return winrt::make<PushNotificationReceivedEventArgs>(args);
     }
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        auto lock = m_lock.lock();
+        auto lock = m_lock.lock_shared();
         winrt::com_array<uint8_t> payload{};
         if (m_args)
         {
@@ -63,21 +68,21 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return payload;
     }
 
-    winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
+    winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        auto lock = m_lock.lock();
-        if (m_backgroundTaskInstance != nullptr)
+        auto lock = m_lock.lock_shared();
+        if (m_backgroundTaskInstance)
         {
             return m_backgroundTaskInstance.GetDeferral();
         }
         return nullptr;
     }
 
-    winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler)
+    winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
         {
-            auto lock = m_lock.lock();
-            if (m_backgroundTaskInstance != nullptr)
+            auto lock = m_lock.lock_shared();
+            if (m_backgroundTaskInstance)
             {
                 return m_backgroundTaskInstance.Canceled(handler);
             }
@@ -87,15 +92,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        auto lock = m_lock.lock();
-        if (m_backgroundTaskInstance != nullptr)
+        auto lock = m_lock.lock_shared();
+        if (m_backgroundTaskInstance)
         {
             m_backgroundTaskInstance.Canceled(token);
         }
     }
     bool PushNotificationReceivedEventArgs::Handled()
     {
-        auto lock = m_lock.lock();
+        auto lock = m_lock.lock_shared();
         if (m_args)
         {
             return m_args.Cancel();
@@ -104,7 +109,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        auto lock = m_lock.lock();
+        auto lock = m_lock.lock_shared();
         if (m_args)
         {
             m_args.Cancel(value);

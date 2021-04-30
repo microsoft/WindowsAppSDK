@@ -70,15 +70,8 @@ void RequestChannel()
                         auto payload = args.Payload();
 
                         // Do stuff to process the raw payload
-                        std::wstring payloadString(payload.begin(), payload.end());
-                        std::wstring messageContent(L"Push notification content: ");
-                        messageContent.append(payloadString);
-                        int msgboxId = MessageBoxW(
-                            nullptr,
-                            messageContent.c_str(),
-                            L"Foreground Launch",
-                            MB_OK
-                        );
+                        std::string payloadString(payload.begin(), payload.end());
+                        std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
                         args.Handled(true);
                     });
             }
@@ -113,15 +106,10 @@ int main()
         auto payload = pushArgs.Payload();
 
         // Do stuff to process the raw payload
-        std::wstring payloadString(payload.begin(), payload.end());
-        std::wstring messageContent(L"Push notification content: ");
-        messageContent.append(payloadString);
-        int msgboxId = MessageBoxW(
-            nullptr,
-            messageContent.c_str(),
-            L"Background Launch",
-            MB_OK
-        );
+        std::string payloadString(payload.begin(), payload.end());
+        std::cout << "Push notification content received from BACKGROUND: " << payloadString << std::endl << std::endl;
+        std::cout << "Press 'Enter' to exit the App." << std::endl;
+        std::cin.ignore();
         // Call Complete on the deferral as good practise: Needed mainly for low power usage
         deferral.Complete();
     }

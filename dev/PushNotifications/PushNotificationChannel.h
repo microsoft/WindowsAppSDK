@@ -16,13 +16,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void PushReceived(winrt::event_token const& token) noexcept;
 
     private:
-        void LambdaWrapper(
-            winrt::Windows::Networking::PushNotifications::PushNotificationChannel /*channel*/,
-            winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args);
-
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
 
-        wil::critical_section m_lock;
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

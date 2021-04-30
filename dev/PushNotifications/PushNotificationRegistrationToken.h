@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿
+#pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken.g.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -14,8 +15,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     private:
         uint64_t m_cookie;
         winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration m_taskRegistration = nullptr;
-
-        wil::critical_section m_lock;
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
