@@ -8,8 +8,6 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
 
-namespace ReunionPushNotifications = winrt::Microsoft::Windows::PushNotifications;
-
 namespace winrt
 {
     using namespace Windows::ApplicationModel::Background;
@@ -39,12 +37,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_args = args;
     }
 
-    ReunionPushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(winrt::IBackgroundTaskInstance const& backgroundTask)
+    winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(winrt::IBackgroundTaskInstance const& backgroundTask)
     {
         return winrt::make<PushNotificationReceivedEventArgs>(backgroundTask);
     }
 
-    ReunionPushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args)
+    winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args)
     {
         return winrt::make<PushNotificationReceivedEventArgs>(args);
     }
@@ -73,7 +71,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
         auto lock = m_lock.lock_shared();
-        if (m_backgroundTaskInstance != nullptr)
+        if (m_backgroundTaskInstance)
         {
             return m_backgroundTaskInstance.GetDeferral();
         }
@@ -83,8 +81,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
         {
-            auto lock = m_lock.lock_exclusive();
-            if (m_backgroundTaskInstance != nullptr)
+            auto lock = m_lock.lock_shared();
+            if (m_backgroundTaskInstance)
             {
                 return m_backgroundTaskInstance.Canceled(handler);
             }
@@ -94,8 +92,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        auto lock = m_lock.lock_exclusive();
-        if (m_backgroundTaskInstance != nullptr)
+        auto lock = m_lock.lock_shared();
+        if (m_backgroundTaskInstance)
         {
             m_backgroundTaskInstance.Canceled(token);
         }
@@ -111,7 +109,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        auto lock = m_lock.lock_exclusive();
+        auto lock = m_lock.lock_shared();
         if (m_args)
         {
             m_args.Cancel(value);

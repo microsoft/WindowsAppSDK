@@ -2,17 +2,15 @@
 #include "PushNotificationCreateChannelResult.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.cpp"
 
-namespace ReunionPushNotifications = winrt::Microsoft::Windows::PushNotifications;
-
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationCreateChannelResult::PushNotificationCreateChannelResult(ReunionPushNotifications::PushNotificationChannel const& channel, winrt::hresult const& extendedError, ReunionPushNotifications::PushNotificationChannelStatus const& status)
+    PushNotificationCreateChannelResult::PushNotificationCreateChannelResult(PushNotificationChannel const& channel, winrt::hresult const& extendedError, PushNotificationChannelStatus const& status)
     {
         m_channel = channel;
         m_extendedError = extendedError;
         m_status = status;
     }
-    ReunionPushNotifications::PushNotificationChannel PushNotificationCreateChannelResult::Channel()
+    PushNotificationChannel PushNotificationCreateChannelResult::Channel()
     {
         return m_channel;
     }
@@ -20,7 +18,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         return m_extendedError;
     }
-    ReunionPushNotifications::PushNotificationChannelStatus PushNotificationCreateChannelResult::Status()
+    PushNotificationChannelStatus PushNotificationCreateChannelResult::Status()
     {
         return m_status;
     }

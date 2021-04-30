@@ -4,8 +4,6 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 
-namespace ReunionPushNotifications = winrt::Microsoft::Windows::PushNotifications;
-
 namespace winrt
 {
     using namespace Windows::Networking::PushNotifications;
@@ -21,8 +19,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     winrt::Uri PushNotificationChannel::Uri()
     {
         auto lock = m_lock.lock_shared();
-        winrt::Uri pushChannelUri{ m_channel.Uri() };
-        return pushChannelUri;
+        return winrt::Uri{ m_channel.Uri() };
     }
     winrt::DateTime PushNotificationChannel::ExpirationTime()
     {
@@ -35,8 +32,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_channel.Close();
     }
 
-    winrt::event_token PushNotificationChannel::PushReceived(winrt::TypedEventHandler<ReunionPushNotifications::PushNotificationChannel, ReunionPushNotifications::PushNotificationReceivedEventArgs> const& handler)
+    winrt::event_token PushNotificationChannel::PushReceived(winrt::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler)
     {
+        auto lock = m_lock.lock_exclusive();
         winrt::TypedEventHandler<
             winrt::PushNotificationChannel,
             winrt::PushNotificationReceivedEventArgs> typedEventHandler
@@ -44,13 +42,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 winrt::PushNotificationChannel channel,
                 winrt::PushNotificationReceivedEventArgs args)
                 {
-                    ReunionPushNotifications::PushNotificationReceivedEventArgs reunionPushArgs =
-                        ReunionPushNotifications::PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
+                    PushNotificationReceivedEventArgs reunionPushArgs =
+                        PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args);
 
                     m_typedEventHandler(*this, reunionPushArgs);
                 });
 
-        auto lock = m_lock.lock_exclusive();
         m_typedEventHandler = handler;
         return m_channel.PushNotificationReceived(typedEventHandler);
     }
