@@ -121,3 +121,6 @@ PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Activ
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
 #
 # C#/WinRT Projections
+#
+# Dyhnamic Dependency build overrides
+PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $Nugetdir
