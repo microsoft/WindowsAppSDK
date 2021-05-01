@@ -15,6 +15,7 @@ DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
 CLSID FindDDLM(
     const UINT32 majorMinorVersion,
+    PCWSTR versionTag,
     const PACKAGE_VERSION minVersion);
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 

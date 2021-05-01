@@ -12,7 +12,7 @@
 
 #include <MsixDynamicDependency.h>
 #include <wil/resource.h>
-#include <wil/msixdynamicdependency.h>
+#include <wil_msixdynamicdependency.h>
 
 #include <M.AM.Converters.h>
 

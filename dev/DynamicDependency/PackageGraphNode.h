@@ -8,7 +8,7 @@
 #include "MsixDynamicDependency.h"
 
 #include <wil/resource.h>
-#include "wil/msixdynamicdependency.h"
+#include "wil_msixdynamicdependency.h"
 #include "appmodel_msixdynamicdependency.h"
 
 #include "PackageInfo.h"
