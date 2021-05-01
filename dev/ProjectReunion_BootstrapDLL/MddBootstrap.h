@@ -13,9 +13,11 @@
 /// candidate is selected.
 ///
 /// @param majorMinorVersion the major and minor version to use, e..g 0x00010002 for Major.Minor=1.2
+/// @param versionTag the version pre-release identifier, or NULL if none.
 /// @param minVersion the minimum version to use
 STDAPI MddBootstrapInitialize(
     const UINT32 majorMinorVersion,
+    PCWSTR versionTag,
     const PACKAGE_VERSION minVersion) noexcept;
 
 /// Undo the changes made by MddBoostrapInitialize().

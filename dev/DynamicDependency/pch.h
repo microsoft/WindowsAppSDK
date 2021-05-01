@@ -25,7 +25,7 @@
 #include <wil/com.h>
 
 #include <appmodel_msixdynamicdependency.h>
-#include <wil_msixdynamicdependency.h>
+#include <wil/msixdynamicdependency.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>

@@ -16,7 +16,7 @@ inline bool IsPackagedProcess()
     return rc == ERROR_INSUFFICIENT_BUFFER;
 }
 
-inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
+constexpr winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {
 #if defined(_M_X64)
     return winrt::Windows::System::ProcessorArchitecture::X64;
@@ -31,7 +31,7 @@ inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 #endif
 }
 
-inline PCWSTR GetCurrentArchitectureAsString()
+constexpr PCWSTR GetCurrentArchitectureAsString()
 {
 #if defined(_M_X64)
     return L"x64";
@@ -70,7 +70,7 @@ inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(_In_ PCWS
     }
 }
 
-inline PCWSTR GetCurrentArchitectureAsShortString()
+constexpr PCWSTR GetCurrentArchitectureAsShortString()
 {
 #if defined(_M_X64)
     return L"x6";
@@ -107,6 +107,22 @@ inline winrt::Windows::System::ProcessorArchitecture ParseShortArchitecture(_In_
     {
         return winrt::Windows::System::ProcessorArchitecture::Unknown;
     }
+}
+
+inline bool IsValidVersionShortTag(
+    WCHAR versionShortTag)
+{
+    return (versionShortTag == L'\0') ||
+           (('a' <= versionShortTag) && (versionShortTag <= 'z')) ||
+           (('A' <= versionShortTag) && (versionShortTag <= 'Z'));
+}
+
+inline WCHAR GetVersionShortTagFromVersionTag(
+    PCWSTR versionTag)
+{
+    const auto versionShortTag{ versionTag ? versionTag[0] : L'\0' };
+    THROW_HR_IF_MSG(E_INVALIDARG, !IsValidVersionShortTag(versionShortTag), "VersionTag=%ls", versionTag);
+    return versionShortTag;
 }
 }
 

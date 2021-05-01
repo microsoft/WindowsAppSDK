@@ -55,7 +55,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageId.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)wil\msixdynamicdependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
@@ -70,6 +70,6 @@
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)wil\msixdynamicdependency.h" />
   </ItemGroup>
 </Project>

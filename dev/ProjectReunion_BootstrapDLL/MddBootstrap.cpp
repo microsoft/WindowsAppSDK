@@ -38,6 +38,7 @@ void FailFastIfElevated()
 
 STDAPI MddBootstrapInitialize(
     const UINT32 majorMinorVersion,
+    PCWSTR versionTag,
     const PACKAGE_VERSION minVersion) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
@@ -51,7 +52,7 @@ STDAPI MddBootstrapInitialize(
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
-    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(majorMinorVersion, minVersion) };
+    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(majorMinorVersion, versionTag, minVersion) };
 
     wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager(wil::CoCreateInstance<IDynamicDependencyLifetimeManager>(appDynamicDependencyLifetimeManagerClsid, CLSCTX_LOCAL_SERVER));
 
@@ -240,9 +241,9 @@ void RemoveFrameworkFromPath(PCWSTR frameworkPath)
     }
 }
 
-
 CLSID FindDDLM(
     const UINT32 majorMinorVersion,
+    PCWSTR versionTag,
     const PACKAGE_VERSION minVersion)
 {
     // Find the best fit
@@ -250,11 +251,19 @@ CLSID FindDDLM(
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
-    // Look for windows.appExtension with name="com.microsoft.reunion.ddlm.<majorversion>.<minorversion>.<architecture>"
+    // Look for windows.appExtension with name="com.microsoft.reunion.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
     WCHAR appExtensionName[100]{};
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
-    wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+    const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
+    if (versionShortTag != L'\0')
+    {
+        wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s-%c", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString(), versionShortTag);
+    }
+    else
+    {
+        wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+    }
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
@@ -277,7 +286,7 @@ CLSID FindDDLM(
         const auto id{ appExtension.Id() };
         PACKAGE_VERSION version{};
         WCHAR architectureAsString[9 + 1]{};
-        const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345.abcdefghi") - 1 }; // -1 for length not counting null-terminator
+        const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345-abcdefghi") - 1 }; // -1 for length not counting null-terminator
         if ((id.size() >= maxIdLength) ||
             (swscanf_s(id.c_str(), L"ddlm-%hu.%hu.%hu.%hu-%9s", &version.Major, &version.Minor, &version.Build, &version.Revision, architectureAsString, static_cast<unsigned>(ARRAYSIZE(architectureAsString))) != 5))
         {
@@ -315,8 +324,8 @@ CLSID FindDDLM(
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, MinVersion=%hu.%hu.%hu.%hu",
-                    appExtensionName, majorVersion, minorVersion, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    appExtensionName, majorVersion, minorVersion, (!versionTag ? L"" : versionTag), minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
 }
 

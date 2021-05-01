@@ -39,7 +39,7 @@ PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $Fu
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile $FullBuildOutput\ProjectReunion_DLL\wil\msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
 PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.dll $FullPublishDir\DynamicDependency.DataStore\
@@ -89,7 +89,7 @@ PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunio
 # Includes (*.h)
 PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\MddBootstrap.h $NugetDir\include
 PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $NugetDir\include
-PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $NugetDir\include
+PublishFile $FullBuildOutput\ProjectReunion_DLL\wil\msixdynamicdependency.h $NugetDir\include
 #
 # Libraries (*.lib)
 PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.lib $NugetDir\lib\win10-$Platform
