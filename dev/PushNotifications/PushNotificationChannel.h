@@ -18,7 +18,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     private:
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
 
-        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
