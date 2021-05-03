@@ -64,7 +64,9 @@ jobs:
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
-  # debugging - remove or comment out before completing PR
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.ApplicationModel.Activation.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.ApplicationModel.Activation.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.ApplicationModel.DynamicDependency.xml"
+
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
 
