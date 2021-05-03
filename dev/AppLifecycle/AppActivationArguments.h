@@ -7,7 +7,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     struct AppActivationArguments : AppActivationArgumentsT<AppActivationArguments>
     {
-        AppActivationArguments(winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs platformArgs)
+        AppActivationArguments() = delete;
+        AppActivationArguments(const winrt::Windows::ApplicationModel::Activation::IActivatedEventArgs& platformArgs)
         {
             m_kind = static_cast<ExtendedActivationKind>(platformArgs.Kind());
             m_data = platformArgs.as<IInspectable>();
@@ -23,8 +24,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         winrt::Windows::Foundation::IInspectable Data() { return m_data; }
 
     private:
-        AppActivationArguments() = default;
-
         ExtendedActivationKind m_kind{};
         IInspectable m_data;
     };

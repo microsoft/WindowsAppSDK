@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         RedirectionRequest() = default;
 
         void Create(std::wstring name, winrt::Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
-        void Open(std::wstring name);
+        void Open(const std::wstring& name);
 
         void MarshalArguments(winrt::Microsoft::Windows::AppLifecycle::AppActivationArguments const& args);
         winrt::Microsoft::Windows::AppLifecycle::AppActivationArguments UnmarshalArguments();

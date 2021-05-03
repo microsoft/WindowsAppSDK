@@ -8,7 +8,7 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-    void RedirectionRequest::Open(std::wstring name)
+    void RedirectionRequest::Open(const std::wstring& name)
     {
         m_data.Open(name);
         m_name = name;
@@ -37,8 +37,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         // Add space for the marshaling type data and resize the backing storage.
-        streamSize += sizeof(bool);
-        m_data.Resize(streamSize);
+        m_data.Resize(sizeof(bool) + streamSize);
 
         // Mark payload with marshaling type information.
         bool* marshalingMarker = reinterpret_cast<bool*>(m_data.Get());
