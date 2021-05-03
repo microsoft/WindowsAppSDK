@@ -22,7 +22,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
-    std::tuple<std::wstring, std::wstring> ParseCommandLine(std::wstring commandLine)
+    std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
     {
         auto argsStart = commandLine.rfind(c_argumentPrefix);
         if (argsStart == std::wstring::npos)

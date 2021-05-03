@@ -15,7 +15,7 @@ class SharedMemory
 public:
     SharedMemory() {}
 
-    bool Open(std::wstring name, size_t size)
+    bool Open(const std::wstring& name, size_t size)
     {
         m_name = name;
 
@@ -37,7 +37,7 @@ public:
         return createdFile;
     }
 
-    bool Open(std::wstring name)
+    bool Open(const std::wstring& name)
     {
         return Open(name, sizeof(T));
     }
