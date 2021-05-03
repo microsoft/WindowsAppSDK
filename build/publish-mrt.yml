@@ -30,7 +30,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy Intellisense into uap10.0 folder'
   inputs:
-    SourceFolder: '$(MRTSourcesDirectory)\packaging\Intellisense'
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
     Contents: |
       Microsoft.ApplicationModel.Resources.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
@@ -51,7 +51,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy Intellisense into native folder'
   inputs:
-    SourceFolder: '$(MRTSourcesDirectory)\packaging\Intellisense'
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
     Contents: |
       Microsoft.ApplicationModel.Resources.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native\'
