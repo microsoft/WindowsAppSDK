@@ -68,6 +68,15 @@ steps:
     flattenFolders: true
 
 - task: CopyFiles@2
+  displayName: 'copy Intellisense into .net 5 folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.ApplicationModel.Resources.Projection.xml
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
+    flattenFolders: true
+
+- task: CopyFiles@2
   displayName: 'copy x86'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
