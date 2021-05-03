@@ -257,7 +257,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::ComActivator) && (token.Cookie() != 0))
         {
-            THROW_IF_FAILED(::CoRevokeClassObject(token.Cookie()));
+            THROW_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
         }
     }
 }
