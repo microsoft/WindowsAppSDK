@@ -21,7 +21,7 @@ steps:
     inputs:
       restoreSolution: dev\TelemetryTest\packages.config
       feedsToUse: config
-      nugetConfigPath: nuget.config
+      nugetConfigPath: dev\TelemetryTest\nuget.config
       restoreDirectory: packages
 
   - template: ProjectReunion-BuildProject-Steps.yml
