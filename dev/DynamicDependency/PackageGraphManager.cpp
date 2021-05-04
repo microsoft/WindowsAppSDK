@@ -87,7 +87,8 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
     PackageInfoType packageInfoType,
     UINT32* bufferLength,
     void* buffer,
-    UINT32* count) noexcept try
+    UINT32* count,
+    GetCurrentPackageInfo3Function getCurrentPackageInfo3) noexcept try
 {
     // Check parameter(s) per GetCurrentPackageInfo3 compatibility
     //   * bufferLength is required
@@ -151,6 +152,7 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
     //
     // Either way, set bufferLength with the buffer size needed for all the data.
 
+    UINT32 staticPackageGraphBufferLength{};
     wil::unique_cotaskmem_ptr<BYTE[]> staticPackageGraphBuffer;
     const PACKAGE_INFO* staticPackageInfo{};
     UINT32 staticPackagesCount{};

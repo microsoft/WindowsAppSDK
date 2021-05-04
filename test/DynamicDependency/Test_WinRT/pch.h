@@ -32,8 +32,10 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
-#include <WexTestClass.h>
+#include "CppUnitTest.h"
+#include "CppUnitTestX.h"
 
+#include "TestCom.h"
 #include "TestFilesystem.h"
 #include "TestPackages.h"
 

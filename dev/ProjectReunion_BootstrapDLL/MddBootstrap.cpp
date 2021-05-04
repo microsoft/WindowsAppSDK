@@ -13,18 +13,16 @@
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
-CLSID FindDDLM(
-    const UINT32 majorMinorVersion,
-    const PACKAGE_VERSION minVersion);
-CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
+CLSID FindDDLM(const PACKAGE_VERSION minVersion);
+CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
-wil::unique_hmodule g_projectReunionDll;
+wil::unique_hmodule g_projectReunionDll{};
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
-static std::wstring g_test_ddlmPackageNamePrefix;
-static std::wstring g_test_ddlmPackagePublisherId;
+std::wstring g_test_ddlmPackageNamePrefix;
+std::wstring g_test_ddlmPackagePublisherId;
 
 namespace MddCore
 {
@@ -37,7 +35,6 @@ void FailFastIfElevated()
 }
 
 STDAPI MddBootstrapInitialize(
-    const UINT32 majorMinorVersion,
     const PACKAGE_VERSION minVersion) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
@@ -51,7 +48,7 @@ STDAPI MddBootstrapInitialize(
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
-    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(majorMinorVersion, minVersion) };
+    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(minVersion) };
 
     wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager(wil::CoCreateInstance<IDynamicDependencyLifetimeManager>(appDynamicDependencyLifetimeManagerClsid, CLSCTX_LOCAL_SERVER));
 
@@ -241,20 +238,16 @@ void RemoveFrameworkFromPath(PCWSTR frameworkPath)
 }
 
 
-CLSID FindDDLM(
-    const UINT32 majorMinorVersion,
-    const PACKAGE_VERSION minVersion)
+CLSID FindDDLM(const PACKAGE_VERSION minVersion)
 {
     // Find the best fit
     bool foundAny{};
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
-    // Look for windows.appExtension with name="com.microsoft.reunion.ddlm.<majorversion>.<minorversion>.<architecture>"
+    // Look for windows.appExtension with name="com.microsoft.projectreunion.ddlm.<majorversion>.<architecture>"
     WCHAR appExtensionName[100]{};
-    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
-    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
-    wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+    wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", minVersion.Major, AppModel::Identity::GetCurrentArchitectureAsString());
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
@@ -315,12 +308,12 @@ CLSID FindDDLM(
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, MinVersion=%hu.%hu.%hu.%hu",
-                    appExtensionName, majorVersion, minorVersion, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    appExtensionName, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
 }
 
-CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension)
+CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension)
 {
     const auto properties{ appExtension.GetExtensionPropertiesAsync().get() };
     auto propertiesClsid{ properties.Lookup(L"CLSID").as<winrt::Windows::Foundation::Collections::IPropertySet>() };

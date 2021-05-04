@@ -58,12 +58,6 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
-
-    constexpr const UINT32 GetPackageVersionMajorMinor()
-    {
-        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
-    }
-    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
 namespace Test::Packages::ProjectReunionFramework

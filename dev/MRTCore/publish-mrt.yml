@@ -18,13 +18,19 @@ steps:
 
 # START of copying files into their final package location.
 
+# Place Microsoft.ApplicationModel.Resources.winmd in the Microsoft.ApplicationModel.Resources\
+# subfolder so that it doesn't conflict the same file in the WinUI3 feeder NuGet package during
+# the aggregation phase of the Project Reunion NuGet packages generation.
+# That conflict is the result of the WinUI3 NuGet package including MRTCore contents in it. When
+# those MRTCore files are removed from the WinUI3 NuGet package, this folder can be removed, though
+# that's not necessary.
 - task: CopyFiles@2
   displayName: 'copy winmd into uap10.0 folder'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
     Contents: |
       Microsoft.ApplicationModel.Resources.winmd
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\Microsoft.ApplicationModel.Resources\'
     flattenFolders: true
 
 # Needed so that the NuGet package can be installed in a win32 app. It avoids this error: "You are trying to

@@ -52,7 +52,8 @@ public:
         PackageInfoType packageInfoType,
         UINT32* bufferLength,
         void* buffer,
-        UINT32* count) noexcept;
+        UINT32* count,
+        GetCurrentPackageInfo3Function getCurrentPackageInfo3) noexcept;
 
 private:
     static UINT32 SerializePackageInfoToBuffer(

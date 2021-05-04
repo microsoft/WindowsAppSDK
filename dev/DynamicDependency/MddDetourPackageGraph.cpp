@@ -187,7 +187,7 @@ LONG WINAPI DynamicGetCurrentPackageInfo3(
     void* buffer,
     UINT32* count)
 {
-    return MddCore::PackageGraphManager::GetCurrentPackageInfo3(flags, packageInfoType, bufferLength, buffer, count);
+    return MddCore::PackageGraphManager::GetCurrentPackageInfo3(flags, packageInfoType, bufferLength, buffer, count, TrueGetCurrentPackageInfo3);
 }
 
 LONG WINAPI GetCurrentStaticPackageInfo(

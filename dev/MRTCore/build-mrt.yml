@@ -94,13 +94,6 @@ steps:
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
-- task: powershell@2
-  displayName: 'Download .net Windows runtime installer'
-  inputs:
-    targetType: filePath
-    workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
-    filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetRuntimeInstaller.ps1
-
 #  - task: BatchScript@1
 #    displayName: 'Debug'
 #    inputs:

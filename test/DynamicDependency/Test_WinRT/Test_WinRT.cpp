@@ -13,10 +13,19 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 wil::unique_hmodule Test::DynamicDependency::Test_WinRT::m_bootstrapDll;
 
-bool Test::DynamicDependency::Test_WinRT::Setup()
+void Test::DynamicDependency::Test_WinRT::Setup()
 {
+    // CppUnitTest initializes COM as STA before we get called
+    // But we don't need (or want) STA, and we do want MTA. We can't
+    // stop CppUnitTest from initializing COM but we can uninitialize
+    // it and (re)initialize it as MTA. Don't think of it as crude
+    // and brutish but rather 'thinking outside the box'...
+    COM::CoSuperInitialize();
+
     // Remove our packages in case they were previously installed and incompletely removed
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
@@ -41,42 +50,40 @@ bool Test::DynamicDependency::Test_WinRT::Setup()
     {
         const auto lastError{ GetLastError() };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, bootstrapDllAbsoluteFilename.c_str()) };
-        VERIFY_IS_NOT_NULL(bootstrapDll.get(), message.get());
+        Assert::IsNotNull(bootstrapDll.get(), message.get());
     }
 
-    VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+    Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
-    const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
-    const PACKAGE_VERSION minVersion{};
-    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
+    // Version <major>.0.0.0 to find any framework package for this major version
+    PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
+    Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
 
     m_bootstrapDll = std::move(bootstrapDll);
-
-    return true;
 }
 
-bool Test::DynamicDependency::Test_WinRT::Cleanup()
+void Test::DynamicDependency::Test_WinRT::Cleanup()
 {
     MddBootstrapShutdown();
 
     m_bootstrapDll.reset();
 
-    TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
-    TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_ProjectReunionFramework();
     TP::RemovePackage_FrameworkMathMultiply();
     TP::RemovePackage_FrameworkMathAdd();
 
-    return true;
+    // Undo COM::CoSuperInitialize() and restore the thread to its initial state
+    // as when CppUnitTest  called us. Or as close as we can get to it
+    winrt::uninit_apartment();
+    winrt::init_apartment(winrt::apartment_type::single_threaded);
 }
 
 void Test::DynamicDependency::Test_WinRT::Create_Delete()
 {
-    const winrt::hstring packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
-    const winrt::Windows::ApplicationModel::PackageVersion minVersion{};
+    winrt::hstring packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
+    winrt::Windows::ApplicationModel::PackageVersion minVersion{};
     auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion) };
 
     packageDependency.Delete();
@@ -86,14 +93,14 @@ void Test::DynamicDependency::Test_WinRT::GetFromId_Empty()
 {
     winrt::hstring packageDependencyId;
     auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::GetFromId(packageDependencyId) };
-    VERIFY_IS_TRUE(!packageDependency);
+    Assert::IsTrue(!packageDependency);
 }
 
 void Test::DynamicDependency::Test_WinRT::GetFromId_NotFound()
 {
     winrt::hstring packageDependencyId{ L"This.Does.Not.Exist" };
     auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::GetFromId(packageDependencyId) };
-    VERIFY_IS_TRUE(!packageDependency);
+    Assert::IsTrue(!packageDependency);
 }
 
 void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framework_ProjectReunion()
@@ -112,9 +119,9 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     // -- Create
 
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd() };
-    VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);
+    Assert::IsFalse(!packageDependency_FrameworkMathAdd);
     auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };
-    VERIFY_IS_FALSE(packageDependencyId_FrameworkMathAdd.empty());
+    Assert::IsFalse(packageDependencyId_FrameworkMathAdd.empty());
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -124,8 +131,8 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     // -- Add
 
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add() };
-    VERIFY_IS_FALSE(!packageDependencyContext_FrameworkMathAdd);
-    VERIFY_ARE_EQUAL(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
+    Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
+    Assert::AreEqual(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -141,18 +148,18 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     {
         const auto lastError{ GetLastError() };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
-        VERIFY_IS_NOT_NULL(mathAddDll.get(), message.get());
+        Assert::IsNotNull(mathAddDll.get(), message.get());
     }
 
     auto mddGetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), MddGetResolvedPackageFullNameForPackageDependency) };
-    VERIFY_IS_NOT_NULL(mddGetResolvedPackageFullNameForPackageDependency);
+    Assert::IsNotNull(mddGetResolvedPackageFullNameForPackageDependency);
 
     wil::unique_process_heap_string resolvedPackageFullName;
-    VERIFY_ARE_EQUAL(S_OK, mddGetResolvedPackageFullNameForPackageDependency(packageDependency_FrameworkMathAdd.Id().c_str(), &resolvedPackageFullName));
-    VERIFY_IS_NOT_NULL(resolvedPackageFullName.get());
+    Assert::AreEqual(S_OK, mddGetResolvedPackageFullNameForPackageDependency(packageDependency_FrameworkMathAdd.Id().c_str(), &resolvedPackageFullName));
+    Assert::IsNotNull(resolvedPackageFullName.get());
     winrt::hstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
     const auto& expectedResolvedPackageFullName{ expectedPackageFullName_FrameworkMathAdd };
-    VERIFY_ARE_EQUAL(expectedResolvedPackageFullName, actualResolvedPackageFullName);
+    Assert::AreEqual(expectedResolvedPackageFullName, actualResolvedPackageFullName);
 
     // Tear down our dynamic dependencies
 
@@ -181,14 +188,14 @@ void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency(
     PCWSTR expectedPackageFullName)
 {
     wil::unique_process_heap_string packageFullName;
-    VERIFY_ARE_EQUAL(expectedHR, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
+    Assert::AreEqual(expectedHR, MddGetResolvedPackageFullNameForPackageDependency(packageDependencyId, &packageFullName));
     if (!expectedPackageFullName)
     {
-        VERIFY_IS_TRUE(!packageFullName);
+        Assert::IsTrue(!packageFullName);
     }
     else
     {
-        VERIFY_ARE_EQUAL(std::wstring(packageFullName.get()), std::wstring(expectedPackageFullName));
+        Assert::AreEqual(std::wstring(packageFullName.get()), std::wstring(expectedPackageFullName));
     }
 }
 
@@ -234,28 +241,28 @@ void Test::DynamicDependency::Test_WinRT::VerifyPathEnvironmentVariable(PCWSTR p
 {
     std::wstring expectedPath{ path };
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
-    VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
+    Assert::AreEqual(expectedPath, pathEnvironmentVariable);
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path)
 {
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path };
-    VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
+    Assert::AreEqual(expectedPath, pathEnvironmentVariable);
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path)
 {
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path };
-    VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
+    Assert::AreEqual(expectedPath, pathEnvironmentVariable);
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPathEnvironmentVariable(PCWSTR path1, PCWSTR path2, PCWSTR path3, PCWSTR path)
 {
     std::wstring pathEnvironmentVariable{ wil::TryGetEnvironmentVariableW(L"PATH").get() };
     std::wstring expectedPath{ std::wstring(path1) + L";" + path2 + L";" + path3 + L";" + path };
-    VERIFY_ARE_EQUAL(expectedPath, pathEnvironmentVariable);
+    Assert::AreEqual(expectedPath, pathEnvironmentVariable);
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPathEnvironmentVariable(const std::wstring& path1, PCWSTR path)
@@ -295,10 +302,10 @@ void Test::DynamicDependency::Test_WinRT::VerifyPackageInPackageGraph(
     UINT32 packageInfoCount{};
     const PACKAGE_INFO* packageInfo{};
     wil::unique_cotaskmem_ptr<BYTE[]> packageInfosBuffer;
-    VERIFY_ARE_EQUAL(expectedHR, GetCurrentPackageInfo(packageInfoCount, packageInfo, packageInfosBuffer));
+    Assert::AreEqual(expectedHR, GetCurrentPackageInfo(packageInfoCount, packageInfo, packageInfosBuffer));
     if (expectedHR == S_OK)
     {
-        VERIFY_ARE_NOT_EQUAL(-1, FindPackageFullNameInPackageInfoArray(packageFullName, packageInfoCount, packageInfo));
+        Assert::AreNotEqual(-1, FindPackageFullNameInPackageInfoArray(packageFullName, packageInfoCount, packageInfo));
     }
 }
 
@@ -309,10 +316,10 @@ void Test::DynamicDependency::Test_WinRT::VerifyPackageNotInPackageGraph(
     UINT32 packageInfoCount{};
     const PACKAGE_INFO* packageInfo{};
     wil::unique_cotaskmem_ptr<BYTE[]> packageInfosBuffer;
-    VERIFY_ARE_EQUAL(expectedHR, GetCurrentPackageInfo(packageInfoCount, packageInfo, packageInfosBuffer));
+    Assert::AreEqual(expectedHR, GetCurrentPackageInfo(packageInfoCount, packageInfo, packageInfosBuffer));
     if (expectedHR == S_OK)
     {
-        VERIFY_ARE_EQUAL(-1, FindPackageFullNameInPackageInfoArray(packageFullName, packageInfoCount, packageInfo));
+        Assert::AreEqual(-1, FindPackageFullNameInPackageInfoArray(packageFullName, packageInfoCount, packageInfo));
     }
 }
 
@@ -402,12 +409,12 @@ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::D
     {
         winrt::Windows::ApplicationModel::PackageVersion minVersion{};
         auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion, options) };
-        VERIFY_ARE_EQUAL(expectedHR, S_OK);
+        Assert::AreEqual(expectedHR, S_OK);
         return packageDependency;
     }
     catch (const winrt::hresult_error& e)
     {
-        VERIFY_ARE_EQUAL(static_cast<int32_t>(expectedHR), e.code().value, e.message().c_str());
+        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.code().value, e.message().c_str());
         throw;
     }
 }
@@ -486,12 +493,12 @@ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext 
         winrt::Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions options;
         options.Rank(rank);
         auto packageDependencyContext{ packageDependency.Add(options) };
-        VERIFY_ARE_EQUAL(expectedHR, S_OK);
+        Assert::AreEqual(expectedHR, S_OK);
         return packageDependencyContext;
     }
     catch (const winrt::hresult_error& e)
     {
-        VERIFY_ARE_EQUAL(static_cast<int32_t>(expectedHR), e.code().value, e.message().c_str());
+        Assert::AreEqual(static_cast<int32_t>(expectedHR), e.code().value, e.message().c_str());
         throw;
     }
 }
@@ -501,8 +508,8 @@ HANDLE Test::DynamicDependency::Test_WinRT::File_CreateTemporary(
 {
     wil::unique_hfile file{ ::CreateFileW(filename.c_str(), GENERIC_READ | GENERIC_WRITE, 0,
                                           nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE, nullptr)};
-    VERIFY_IS_TRUE(file.is_valid());
-    VERIFY_IS_TRUE(std::filesystem::exists(filename));
+    Assert::IsTrue(file.is_valid());
+    Assert::IsTrue(std::filesystem::exists(filename));
     return file.release();
 }
 
@@ -514,7 +521,7 @@ HKEY Test::DynamicDependency::Test_WinRT::Registry_CreateKey(
 
     wil::unique_hkey hkey;
     DWORD disposition{};
-    VERIFY_ARE_EQUAL(ERROR_SUCCESS, ::RegCreateKeyExW(root, subkey, 0, nullptr, REG_OPTION_VOLATILE,
+    Assert::AreEqual(ERROR_SUCCESS, ::RegCreateKeyExW(root, subkey, 0, nullptr, REG_OPTION_VOLATILE,
                                                       KEY_READ | KEY_WRITE, nullptr, wil::out_param(hkey), &disposition));
     return hkey.release();
 }
@@ -526,7 +533,7 @@ void Test::DynamicDependency::Test_WinRT::Registry_DeleteKey(
     auto root{ Registry_Key_Parse(key, subkey) };
 
     auto rc{ ::RegDeleteKeyExW(root, subkey, 0, 0) };
-    VERIFY_IS_TRUE((rc == ERROR_SUCCESS) || (rc == ERROR_FILE_NOT_FOUND));
+    Assert::IsTrue((rc == ERROR_SUCCESS) || (rc == ERROR_FILE_NOT_FOUND));
 }
 
 HKEY Test::DynamicDependency::Test_WinRT::Registry_Key_Parse(
@@ -545,8 +552,8 @@ HKEY Test::DynamicDependency::Test_WinRT::Registry_Key_Parse(
 {
     HKEY root{};
     auto offset = key.find(L'\\');
-    VERIFY_ARE_NOT_EQUAL(std::wstring::npos, offset);
-    VERIFY_ARE_NOT_EQUAL(size_t{0}, offset);
+    Assert::AreNotEqual(std::wstring::npos, offset);
+    Assert::AreNotEqual(size_t{0}, offset);
     auto prefix{ key.substr(0, offset) };
     if (prefix == L"HKCR")
     {
@@ -564,8 +571,8 @@ HKEY Test::DynamicDependency::Test_WinRT::Registry_Key_Parse(
     {
         root = HKEY_USERS;
     }
-    VERIFY_IS_TRUE(root != HKEY{});
-    VERIFY_IS_TRUE(key.length() > prefix.length() + 1);
+    Assert::IsTrue(root != HKEY{});
+    Assert::IsTrue(key.length() > prefix.length() + 1);
 
     offsetToSubkey = ++offset;
     return root;
@@ -582,7 +589,7 @@ std::wstring Test::DynamicDependency::Test_WinRT::GetPathEnvironmentVariableMinu
     const auto pathPrefixLength{ wcslen(pathPrefix) };
 
     auto pathEnvironmentVariable{ GetPathEnvironmentVariable() };
-    VERIFY_IS_TRUE(pathEnvironmentVariable.length() >= pathPrefixLength);
+    Assert::IsTrue(pathEnvironmentVariable.length() >= pathPrefixLength);
 
     auto pathMinusPrefix{ pathEnvironmentVariable.c_str() + pathPrefixLength };
     if (*pathMinusPrefix == L';')

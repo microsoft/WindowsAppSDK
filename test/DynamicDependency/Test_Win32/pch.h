@@ -32,8 +32,9 @@
 
 #include <appmodel_msixdynamicdependency.h>
 
-#include <WexTestClass.h>
+#include "CppUnitTest.h"
 
+#include "TestCom.h"
 #include "TestFilesystem.h"
 #include "TestPackages.h"
 

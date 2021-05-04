@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace Test::FileSystem
 {
     std::filesystem::path GetModulePath(HMODULE hmodule)
@@ -22,7 +24,7 @@ namespace Test::FileSystem
     {
         wil::unique_hmodule dll(LoadLibrary(L"DynamicDependency_Test_WinRT.dll"));
         const auto lastError{ GetLastError() };
-        VERIFY_IS_NOT_NULL(dll.get());
+        Assert::IsNotNull(dll.get());
         return GetModulePath(dll.get());
     }
 

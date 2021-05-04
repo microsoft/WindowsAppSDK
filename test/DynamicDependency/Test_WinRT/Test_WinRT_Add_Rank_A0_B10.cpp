@@ -13,6 +13,8 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 void Test::DynamicDependency::Test_WinRT::Add_Rank_A0_B10()
 {
     // Setup our dynamic dependencies
@@ -29,9 +31,9 @@ void Test::DynamicDependency::Test_WinRT::Add_Rank_A0_B10()
     // -- Create
 
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd() };
-    VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);
+    Assert::IsFalse(!packageDependency_FrameworkMathAdd);
     auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };
-    VERIFY_IS_FALSE(packageDependencyId_FrameworkMathAdd.empty());
+    Assert::IsFalse(packageDependencyId_FrameworkMathAdd.empty());
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -43,8 +45,8 @@ void Test::DynamicDependency::Test_WinRT::Add_Rank_A0_B10()
     winrt::Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions{};
     addOptions.Rank(10);
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add(addOptions) };
-    VERIFY_IS_FALSE(!packageDependencyContext_FrameworkMathAdd);
-    VERIFY_ARE_EQUAL(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
+    Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
+    Assert::AreEqual(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -60,15 +62,15 @@ void Test::DynamicDependency::Test_WinRT::Add_Rank_A0_B10()
     {
         const auto lastError{ GetLastError() };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
-        VERIFY_IS_NOT_NULL(mathAddDll.get(), message.get());
+        Assert::IsNotNull(mathAddDll.get(), message.get());
     }
 
     auto mathAdd{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add) };
-    VERIFY_IS_NOT_NULL(mathAdd);
+    Assert::IsNotNull(mathAdd);
 
     const int expectedValue{ 2 + 3 };
     const auto actualValue{ mathAdd(2, 3) };
-    VERIFY_ARE_EQUAL(expectedValue, actualValue);
+    Assert::AreEqual(expectedValue, actualValue);
 
     // Tear down our dynamic dependencies
 

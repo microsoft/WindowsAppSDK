@@ -14,11 +14,10 @@ SIGNTOOL_OPTS=/v
 !ENDIF
 
 !IFDEF VERBOSE
-!MESSAGE SolutionDir                 =$(SolutionDir)
-!MESSAGE ProjectDir                  =$(ProjectDir)
-!MESSAGE OutDir                      =$(OutDir)
-!MESSAGE TargetName                  =$(TargetName)
-!MESSAGE ProjectReunionBuildPipeline =$(ProjectReunionBuildPipeline)
+!MESSAGE SolutionDir       =$(SolutionDir)
+!MESSAGE ProjectDir        =$(ProjectDir)
+!MESSAGE OutDir            =$(OutDir)
+!MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
 TARGET_BASENAME=DynamicDependency.DataStore
@@ -60,6 +59,5 @@ build: $(OutMsix)
 clean:
     @if exist $(WorkDir) rd $(WorkDir) /s /q
     @if exist $(OutMsix) del $(OutMsix)
-    @if exist $(TARGET_BASENAME).*.msix del $(TARGET_BASENAME).*.msix
 
 rebuild: clean build

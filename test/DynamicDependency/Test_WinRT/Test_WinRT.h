@@ -5,16 +5,10 @@
 
 namespace Test::DynamicDependency
 {
-	class Test_WinRT
+	TEST_CLASS(Test_WinRT)
 	{
 	public:
-        BEGIN_TEST_CLASS(Test_WinRT)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
-
-        TEST_CLASS_SETUP(Setup);
+        TEST_CLASS_INITIALIZE(Setup);
         TEST_CLASS_CLEANUP(Cleanup);
 
         TEST_METHOD(Create_Delete);

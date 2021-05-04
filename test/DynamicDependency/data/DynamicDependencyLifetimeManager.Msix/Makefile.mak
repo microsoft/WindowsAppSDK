@@ -14,11 +14,10 @@ SIGNTOOL_OPTS=/v
 !ENDIF
 
 !IFDEF VERBOSE
-!MESSAGE SolutionDir                 =$(SolutionDir)
-!MESSAGE ProjectDir                  =$(ProjectDir)
-!MESSAGE OutDir                      =$(OutDir)
-!MESSAGE TargetName                  =$(TargetName)
-!MESSAGE ProjectReunionBuildPipeline =$(ProjectReunionBuildPipeline)
+!MESSAGE SolutionDir       =$(SolutionDir)
+!MESSAGE ProjectDir        =$(ProjectDir)
+!MESSAGE OutDir            =$(OutDir)
+!MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
 !IF "$(Platform)" == "Win32" || "$(Platform)" == "x86" || "$(Platform)" == "X86"

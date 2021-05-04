@@ -64,30 +64,11 @@ namespace ProjectReunionInstallerTests
         }
     }
 
-    // Removing provisioned packages requires the test to run elevated with a user that is an administrator.
-    // This is best-effort at cleanup, though the program is idempotent and should succeed regardless of existing
-    // provisioning state in situations where it is not run elevated.
-    void TryRemoveProvisionedPackage(const std::wstring& packageFamilyName)
-    {
-        std::wostringstream sstr;
-        sstr << L"Trying to removing provisioned package: " << packageFamilyName << std::endl;
-        PackageManager manager;
-        auto result = manager.DeprovisionPackageForAllUsersAsync(packageFamilyName).get();
-        auto errorCode = result.ExtendedErrorCode();
-        sstr << L"Provision removal result: " << errorCode.value << std::endl;
-        Logger::WriteMessage(sstr.str().c_str());
-    }
-
     void RemoveAllPackages(bool ignoreFailures)
     {
         for (const auto& packageName : c_packages)
         {
             RemovePackage(packageName, ignoreFailures);
-        }
-
-        for (const auto& packageFamilyName : c_mainPackageFamilies)
-        {
-            TryRemoveProvisionedPackage(packageFamilyName);
         }
     }
 

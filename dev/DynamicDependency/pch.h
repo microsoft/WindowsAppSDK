@@ -31,7 +31,6 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
-#include <winrt/Windows.ApplicationModel.AppExtensions.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>

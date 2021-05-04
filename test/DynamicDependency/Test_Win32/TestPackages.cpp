@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace TF = ::Test::FileSystem;
 
 namespace Test::Packages
@@ -11,7 +13,7 @@ namespace Test::Packages
     {
         if (!IsPackageRegistered(packageFullName))
         {
-            AddPackage(packageDirName, packageFullName);
+            AddPackageIfNecessary(packageDirName, packageFullName);
         }
     }
 
@@ -34,7 +36,7 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-            VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
+            Assert::IsTrue(std::filesystem::is_regular_file(msix));
         }
         auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
 
@@ -45,7 +47,7 @@ namespace Test::Packages
         if (FAILED(deploymentResult.ExtendedErrorCode()))
         {
             auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
-            VERIFY_FAIL(message.get());
+            Assert::Fail(message.get());
         }
     }
 
@@ -64,7 +66,7 @@ namespace Test::Packages
         if (!deploymentResult)
         {
             auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
-            VERIFY_FAIL(message.get());
+            Assert::Fail(message.get());
         }
     }
 
@@ -86,9 +88,9 @@ namespace Test::Packages
             return std::wstring();
         }
 
-        VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
+        Assert::AreEqual(ERROR_INSUFFICIENT_BUFFER, rc);
         auto path = wil::make_process_heap_string(nullptr, pathLength);
-        VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
+        Assert::AreEqual(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
         return std::wstring(path.get());
     }
 
@@ -111,48 +113,6 @@ namespace Test::Packages
         //
         // Thus, do a *IfNecessary removal
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
-    }
-
-    void AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1000()
-    {
-        AddPackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName);
-    }
-
-    void AddPackage_DynamicDependencyLifetimeManagerGC1000()
-    {
-        AddPackage(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName);
-    }
-
-    void RemovePackage_DynamicDependencyLifetimeManagerGC1000()
-    {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName);
-    }
-
-    void AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1010()
-    {
-        AddPackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
-    }
-
-    void AddPackage_DynamicDependencyLifetimeManagerGC1010()
-    {
-        AddPackage(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
-    }
-
-    void RemovePackage_DynamicDependencyLifetimeManagerGC1010()
-    {
-        // Best-effort removal. PackageManager.RemovePackage errors if the package
-        // is not registered, but if it's not registered we're good. "'Tis the destination
-        // that matters, not the journey" so regardless how much or little work
-        // we need do, we're happy as long as the package isn't registered when we're done
-        //
-        // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
     }
 
     void AddPackage_ProjectReunionFramework()

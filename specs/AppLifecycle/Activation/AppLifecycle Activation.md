@@ -202,7 +202,7 @@ and then access the properties and methods of that type.
 ```c++
 void RespondToActivation()
 {
-    AppActivationArguments args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    ActivationArguments args = AppInstance::GetCurrent().GetActivatedEventArgs();
     ExtendedActivationKind kind = args.Kind();
     if (kind == ExtendedActivationKind::Launch)
     {
@@ -275,7 +275,7 @@ namespace Microsoft.Windows.AppLifecycle
     {
         static AppInstance GetCurrent();
 
-        AppActivationArguments GetActivatedEventArgs();
+        ActivationArguments GetActivatedEventArgs();
     }
 }
 ```
@@ -307,13 +307,13 @@ that are only defined in the new enum. That is, any values < the extension base 
 Reunion and platform implementations, but conversely any values > the extension base value only exist in the 
 Reunion implementation and do not exist in the platform implementation.
 
-### AppActivationArguments
+### ActivationArguments
 
 ```idl
 namespace Microsoft.Windows.AppLifecycle
 {
     [default_interface]
-    runtimeclass AppActivationArguments
+    runtimeclass ActivationArguments
     {
         // The kind of activation these arguments represent
         ExtendedActivationKind Kind { get; };

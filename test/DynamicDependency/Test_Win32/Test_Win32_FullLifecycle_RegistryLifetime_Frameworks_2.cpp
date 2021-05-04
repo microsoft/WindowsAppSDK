@@ -13,6 +13,8 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Frameworks_ProjectReunion_MathAdd()
 {
     // Setup our dynamic dependencies
@@ -31,7 +33,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     std::wstring lifetimeArtifactRegistryKey{ L"HKCU\\SOFTWARE\\TestProjectReunion-DynamicDependency" };
     {
         wil::unique_hkey lifetimeArtifactKey{ Registry_CreateKey(lifetimeArtifactRegistryKey) };
-        VERIFY_IS_TRUE(lifetimeArtifactKey.is_valid());
+        Assert::IsTrue(lifetimeArtifactKey.is_valid());
     }
     wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(MddPackageDependencyLifetimeKind::RegistryKey, lifetimeArtifactRegistryKey.c_str()) };
 
@@ -44,9 +46,9 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
 
     wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName_FrameworkMathAdd) };
-    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get());
+    Assert::IsNotNull(packageFullName_FrameworkMathAdd.get());
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
-    VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -61,9 +63,9 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     // Add it a 2nd time. The package dependency is deleted but still resolved so this should succeed. PackageGraph = [ Fwk, MathAdd, MathAdd ]
     wil::unique_process_heap_string packageFullName;
     auto context{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), packageFullName) };
-    VERIFY_IS_NOT_NULL(packageFullName.get());
+    Assert::IsNotNull(packageFullName.get());
     std::wstring actualPackageFullName{ packageFullName.get() };
-    VERIFY_ARE_EQUAL(actualPackageFullName, expectedPackageFullName_FrameworkMathAdd);
+    Assert::AreEqual(actualPackageFullName, expectedPackageFullName_FrameworkMathAdd);
     VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
@@ -82,15 +84,15 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_RegistryLifetime_Framewo
     {
         const auto lastError{ GetLastError() };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
-        VERIFY_IS_NOT_NULL(mathAddDll.get(), message.get());
+        Assert::IsNotNull(mathAddDll.get(), message.get());
     }
 
     auto mathAdd{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add) };
-    VERIFY_IS_NOT_NULL(mathAdd);
+    Assert::IsNotNull(mathAdd);
 
     const int expectedValue{ 2 + 3 };
     const auto actualValue{ mathAdd(2, 3) };
-    VERIFY_ARE_EQUAL(expectedValue, actualValue);
+    Assert::AreEqual(expectedValue, actualValue);
 
     // Tear down our dynamic dependencies
 

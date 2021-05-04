@@ -15,8 +15,7 @@ Param(
 
     [string]$Version,
 
-    [string]$VersionMajor,
-    [string]$VersionMinor
+    [string]$VersionMajor
 )
 
 Write-Output "TemplateFile $TemplateFile"
@@ -56,10 +55,6 @@ if (-not ([string]::IsNullOrEmpty($Version)))
 if (-not ([string]::IsNullOrEmpty($VersionMajor)))
 {
     $manifest = "$manifest" -replace "###version.major###", "$Version_Major"
-}
-if (-not ([string]::IsNullOrEmpty($VersionMinor)))
-{
-    $manifest = "$manifest" -replace "###version.minor###", "$Version_Minor"
 }
 $manifest = "$manifest" -replace "###architecture###", "$Architecture"
 

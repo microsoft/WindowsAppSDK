@@ -34,7 +34,7 @@ catch (...)
 {
     auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
     auto hr{ e.code() };
-    auto message { e.message() };
+    auto message { winrt::to_message() };
     // hr contains the WinRT exception or best-guess conversion from a C++ exception,
     // message contains the best-guess textual format of that exception
 }

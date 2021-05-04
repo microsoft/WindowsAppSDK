@@ -37,10 +37,10 @@ HRESULT BootstrapInitialize()
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
     RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
 
-    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
-    const UINT32 c_Version_MajorMinor{ 0x00040001 };
-    const PACKAGE_VERSION minVersion{};
-    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
+    // Version <major>.0.0.0 to find any framework package for this major version
+    const UINT64 c_Version_Major{ 4 };
+    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
+    RETURN_IF_FAILED(MddBootstrapInitialize(minVersion));
 
     return S_OK;
 }

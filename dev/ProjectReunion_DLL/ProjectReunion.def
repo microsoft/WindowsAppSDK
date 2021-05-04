@@ -12,5 +12,3 @@ EXPORTS
     MddGetResolvedPackageFullNameForPackageDependency
     MddRemovePackageDependency
     MddTryCreatePackageDependency
-    MddLifetimeManagementGC
-    MddLifetimeManagementTestInitialize

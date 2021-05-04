@@ -13,6 +13,8 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 void Test::DynamicDependency::Test_Win32::Create_RegistryLifetime_NoExist()
 {
     // Setup our dynamic dependencies
@@ -31,7 +33,7 @@ void Test::DynamicDependency::Test_Win32::Create_RegistryLifetime_NoExist()
     std::wstring lifetimeArtifactRegistryKey{ L"HKCU\\SOFTWARE\\TestProjectReunion-DynamicDependency" };
     Registry_DeleteKey(lifetimeArtifactRegistryKey);
     auto packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED), MddPackageDependencyLifetimeKind::RegistryKey, lifetimeArtifactRegistryKey.c_str()) };
-    VERIFY_IS_NULL(packageDependencyId_FrameworkMathAdd.get());
+    Assert::IsNull(packageDependencyId_FrameworkMathAdd.get());
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
