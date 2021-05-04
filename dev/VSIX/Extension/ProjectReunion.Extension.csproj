@@ -30,32 +30,21 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE">
+    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg"/>
+    <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
     <Content Include="Reunion.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg">
+    <Content Include="LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
-    </Content>
-    <Content Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -76,13 +65,13 @@
     <PackageReference Include="Microsoft.ProjectReunion" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="[$(ReunionFoundationVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.DWrite" Version="[$(ReunionDWriteVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.ProjectReunion.DWrite" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionWinUIVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
@@ -212,12 +201,24 @@
     † Note: Yes, this introduces a Year 2088 problem for the locally-built VSIX because the
     final component of the version number can wrap around after 68 years. No, this is not
     a concern because it seems unlikely that we'll go 68 years without resetting the clock
-    by increasing the WinUI version number.
+    by increasing the Project Reunion version number.
   -->
+  <PropertyGroup Condition="'$(VSIXVersion)' == '' AND '$(OptionalVSIXVersion)'!='default' AND '$(OptionalVSIXVersion)'!=''">
+    <!-- Optional VSIX version is provided by the pipeline definition to override package version -->
+    <VSIXVersion>$(OptionalVSIXVersion)</VSIXVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
-    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
+    <!-- Use 3-part reunion version, less any tagging suffix -->
     <VSIXVersion>$(ReunionVersion)</VSIXVersion>
-    <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-")))).$(TimeSpan)</VSIXVersion>
+    <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-"))))</VSIXVersion>
+    <!-- 
+      Add a timestamp as part 4 of the version for uniqueness, and to ensure newer builds are newer 
+      versions. Note that the timestamp is also included in release builds. This avoids version 
+      sequencing issues between public previews and release versions that might otherwise have the same
+      version number, since VSIX does not support preview tags or other mechanisms to distinguish.
+    -->
+    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
+    <VSIXVersion>$(VSIXVersion).$(TimeSpan)</VSIXVersion>
   </PropertyGroup>
   <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />
   <Target Name="BeforeBuild">
