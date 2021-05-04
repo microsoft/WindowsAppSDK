@@ -31,7 +31,7 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.ApplicationModel.Activation.h>
-#include <winrt/Microsoft.ProjectReunion.h>
+#include <winrt/Microsoft.Windows.PushNotifications.h>
 #include <ProjectReunion.Test.Bootstrap.h>
 
 namespace TP = ::Test::Packages;
