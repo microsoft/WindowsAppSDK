@@ -122,5 +122,5 @@ PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Dynam
 #
 # C#/WinRT Projections
 #
-# Dyhnamic Dependency build overrides
-PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $Nugetdir
+# Dynamic Dependency build overrides
+PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
