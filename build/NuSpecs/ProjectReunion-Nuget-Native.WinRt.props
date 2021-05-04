@@ -1,0 +1,25 @@
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_ProjectReunionFoundationPlatform Condition="'$(Platform)' == 'Win32'">x86</_ProjectReunionFoundationPlatform>
+    <_ProjectReunionFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_ProjectReunionFoundationPlatform>
+  </PropertyGroup>
+
+  <!-- Some of the manual reference adding below may not be necessary due to the files in question being in default locations, but there's no harm in it. -->
+
+  <!-- OutputType Exe corresponds to C++ -->
+  <ItemGroup Condition="'$(OutputType)' == 'Exe'">
+    <Reference Include="Microsoft.ApplicationModel.Activation.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.Activation.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ApplicationModel.Activation.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationModel.DynamicDependency.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.DynamicDependency.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ApplicationModel.DynamicDependency.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+</Project>
