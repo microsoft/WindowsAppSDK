@@ -12,6 +12,7 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
+    // Need static handler/lock to keep alive upon channel request completion
     winrt::TypedEventHandler<
         Microsoft::Windows::PushNotifications::PushNotificationChannel,
         Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> s_typedEventHandler;
@@ -33,7 +34,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationChannel::Close()
     {
-        auto lock = s_lock.lock_exclusive();
+        auto lock = s_lock.lock_shared();
         m_channel.Close();
     }
 
