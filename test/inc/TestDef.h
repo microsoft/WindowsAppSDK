@@ -41,7 +41,7 @@ static const std::wstring c_testInstanceRedirectedPhaseEventName = L"ReunionTest
 inline std::wstring StripNS(PCWSTR symbolAsString)
 {
     std::wstring result{ symbolAsString };
-    return result.substr(result.rfind(L":") + 1);
+    return result.substr(result.rfind(L':') + 1);
 }
 
 #define TESTNAME() \
