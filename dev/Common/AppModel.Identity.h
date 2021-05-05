@@ -16,7 +16,7 @@ inline bool IsPackagedProcess()
     return rc == ERROR_INSUFFICIENT_BUFFER;
 }
 
-inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
+constexpr winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 {
 #if defined(_M_X64)
     return winrt::Windows::System::ProcessorArchitecture::X64;
@@ -31,7 +31,7 @@ inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
 #endif
 }
 
-inline PCWSTR GetCurrentArchitectureAsString()
+constexpr PCWSTR GetCurrentArchitectureAsString()
 {
 #if defined(_M_X64)
     return L"x64";
@@ -68,6 +68,61 @@ inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(_In_ PCWS
     {
         return winrt::Windows::System::ProcessorArchitecture::Unknown;
     }
+}
+
+constexpr PCWSTR GetCurrentArchitectureAsShortString()
+{
+#if defined(_M_X64)
+    return L"x6";
+#elif defined(_M_IX86)
+    return L"x8";
+#elif defined(_M_ARM64)
+    return L"a6";
+#elif defined(_M_ARM)
+    return L"ar";
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
+inline winrt::Windows::System::ProcessorArchitecture ParseShortArchitecture(_In_ PCWSTR architecture)
+{
+    if (CompareStringOrdinal(architecture, -1, L"x6", -1, TRUE) == CSTR_EQUAL)
+    {
+        return winrt::Windows::System::ProcessorArchitecture::X64;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"x8", -1, TRUE) == CSTR_EQUAL)
+    {
+        return winrt::Windows::System::ProcessorArchitecture::X86;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"a6", -1, TRUE) == CSTR_EQUAL)
+    {
+    return winrt::Windows::System::ProcessorArchitecture::Arm64;
+    }
+    else if (CompareStringOrdinal(architecture, -1, L"ar", -1, TRUE) == CSTR_EQUAL)
+    {
+    return winrt::Windows::System::ProcessorArchitecture::Arm;
+    }
+    else
+    {
+        return winrt::Windows::System::ProcessorArchitecture::Unknown;
+    }
+}
+
+inline bool IsValidVersionShortTag(
+    WCHAR versionShortTag)
+{
+    return (versionShortTag == L'\0') ||
+           (('a' <= versionShortTag) && (versionShortTag <= 'z')) ||
+           (('A' <= versionShortTag) && (versionShortTag <= 'Z'));
+}
+
+inline WCHAR GetVersionShortTagFromVersionTag(
+    PCWSTR versionTag)
+{
+    const auto versionShortTag{ versionTag ? versionTag[0] : L'\0' };
+    THROW_HR_IF_MSG(E_INVALIDARG, !IsValidVersionShortTag(versionShortTag), "VersionTag=%ls", versionTag);
+    return versionShortTag;
 }
 }
 

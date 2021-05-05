@@ -63,7 +63,7 @@ namespace Test::DynamicDependency
             // Major.Minor = 0.0 == No such framework package
             const UINT32 doesNotExist{};
             const PACKAGE_VERSION minVersionMatchAny{};
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, minVersionMatchAny));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
         }
 
         TEST_METHOD(Initialize_DDLMMinVersionNoMatch)
@@ -73,7 +73,7 @@ namespace Test::DynamicDependency
             // Version <major>.65535.65535.65535 to find framework packages for the major.minor version but none meeting this minVersion criteria
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             PACKAGE_VERSION minVersionNoMatch{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 | 0x0000FFFFFFFFFFFFuI64 };
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, minVersionNoMatch));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
         }
 
         TEST_METHOD(Initialize)
@@ -83,7 +83,7 @@ namespace Test::DynamicDependency
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             const PACKAGE_VERSION minVersion{};
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
             MddBootstrapShutdown();
         }
@@ -135,7 +135,7 @@ namespace Test::DynamicDependency
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             const PACKAGE_VERSION minVersion{};
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
             VerifyGetCurrentPackageInfo(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), 1, 700);
 
@@ -159,7 +159,7 @@ namespace Test::DynamicDependency
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             const PACKAGE_VERSION minVersion{};
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
             VerifyGetCurrentPackageInfo();
         }
