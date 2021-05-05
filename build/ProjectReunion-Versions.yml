@@ -8,5 +8,5 @@ variables:
   versionCounter: $[counter(variables['versionDate'], 0)]
   version: >
    $[format('{0}.{1}.{2}-{3}.{4}.{6}', 
-      variables['major'], variables['minor'], variables['patch'], variables['branch']
+      variables['major'], variables['minor'], variables['patch'], variables['branch'],
       variables['versionDate'], variables['versionCounter'])]
