@@ -9,6 +9,12 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
+  - task: PythonScript@0
+    displayName: 'Post to Maestro'
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: '$(Build.SourcesDirectory)\build\maestro\SubmitBuild.py'
+
   # Scans the root source folder for security vulnerability
   - task: CredScan@2
     inputs:
