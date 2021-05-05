@@ -7,12 +7,21 @@ parameters:
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
-  useReleaseTag: 'false'
   prereleaseVersionTag: 'prerelease'
   condition: ''
-  major: '0'
-  minor: '5'
-  patch: '0'
+
+variables:
+  # Version Control
+  major: "0"
+  minor: "5"
+  patch: "0"
+  branch: 'main'
+  versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
+  versionCounter: $[counter(variables['versionDate'], 0)]
+  version: >
+   $[format('{0}.{1}.{2}-{3}.{4}.{6}', 
+      variables['major'], variables['minor'], variables['patch'], variables['branch']
+      variables['versionDate'], variables['versionCounter'])]
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -31,7 +40,6 @@ jobs:
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
-      echo useReleaseTag=${{ parameters.useReleaseTag }}
     displayName: 'CreateNugetPackage: Display parameters'
 
   - task: DownloadBuildArtifacts@0
@@ -87,15 +95,23 @@ jobs:
 
   #   displayName: 'build-nupkg.ps1'
 
+  - task: PowerShell@2
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
+        Write-Host version: $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
+
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'Pack Full Nuget Package'
     inputs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
-      versioningScheme: 'byPrereleaseNumber'
-      majorVersion: ${{ parameters.major }}
-      minorVersion: ${{ parameters.minor }}
-      patchVersion: ${{ parameters.patch }}
+      versioningScheme: 'off'
       basePath: '${{ parameters.fullnupkgdir }}'
       packDestination: ${{ parameters.fullnupkgdir }}
 
