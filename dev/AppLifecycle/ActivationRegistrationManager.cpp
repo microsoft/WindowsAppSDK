@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             
             for (auto verb : supportedVerbs)
             {
-                auto args = winrt::make<FileActivatedEventArgs>(verb.c_str(), L"%1", true).as<IInternalValueMarshalable>();
+                auto args = winrt::make<FileActivatedEventArgs>(verb.c_str(), c_commandLineArgumentFormat, true).as<IInternalValueMarshalable>();
                 auto command = GenerateCommandLine(exePath.c_str()) + args->Serialize().AbsoluteUri().c_str();
                 RegisterVerb(progId, verb.c_str(), command);
             }
@@ -144,7 +144,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         RegisterProgId(progId.c_str(), L"", appUserModelId.c_str(), displayName.c_str(),
             logo.c_str());
 
-        auto command = GenerateCommandLine(exePath.c_str()) + L"%1";
+        auto command = GenerateCommandLine(exePath.c_str()) + c_commandLineArgumentFormat;
         RegisterVerb(progId.c_str(), c_openVerbName, command);
 
         RegisterApplication(appId.c_str());

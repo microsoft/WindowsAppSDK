@@ -20,6 +20,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     static PCWSTR c_urlProtocolValueName{ L"URL Protocol" };
     static PCWSTR c_urlDefaultValuePrefix{ L"URL:" };
     static PCWSTR c_openVerbName{ L"open" };
+    static PCWSTR c_commandLineArgumentFormat{ L"%1" };
 
     // ProgId generation values.
     static PCWSTR c_progIdPrefix{ L"App." };
