@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Storage;
 
-    static LPCWSTR c_fileContractId = L"Windows.File";
+    static PCWSTR c_fileContractId = L"Windows.File";
 
     class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs, ActivatedEventArgsBase, IFileActivatedEventArgs,
         IInternalValueMarshalable>

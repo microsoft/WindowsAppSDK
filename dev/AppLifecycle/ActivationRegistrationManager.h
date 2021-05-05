@@ -7,10 +7,10 @@
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     // Registration constant values.
-    static LPCWSTR c_argumentPrefix{ L"----" };
-    static LPCWSTR c_argumentSuffix{ L":" };
-    static LPCWSTR c_protocolArgumentString{ L"ms-protocol" };
-    static LPCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
+    static PCWSTR c_argumentPrefix{ L"----" };
+    static PCWSTR c_argumentSuffix{ L":" };
+    static PCWSTR c_protocolArgumentString{ L"ms-protocol" };
+    static PCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
 
     struct ActivationRegistrationManager
     {

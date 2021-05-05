@@ -9,7 +9,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static LPCWSTR c_launchContractId = L"Windows.Launch";
+    static PCWSTR c_launchContractId = L"Windows.Launch";
 
     class LaunchActivatedEventArgs : public winrt::implements<LaunchActivatedEventArgs,
         ActivatedEventArgsBase, ILaunchActivatedEventArgs, IInternalValueMarshalable>

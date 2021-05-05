@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static LPCWSTR c_protocolContractId = L"Windows.Protocol";
+    static PCWSTR c_protocolContractId = L"Windows.Protocol";
 
     class ProtocolActivatedEventArgs : public winrt::implements<ProtocolActivatedEventArgs, ActivatedEventArgsBase, IProtocolActivatedEventArgs,
         IInternalValueMarshalable>

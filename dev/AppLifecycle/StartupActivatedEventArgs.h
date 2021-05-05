@@ -9,7 +9,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static LPCWSTR c_startupTaskContractId = L"Windows.StartupTask";
+    static PCWSTR c_startupTaskContractId = L"Windows.StartupTask";
 
     class StartupActivatedEventArgs : public winrt::implements<StartupActivatedEventArgs,
         ActivatedEventArgsBase, IStartupTaskActivatedEventArgs, IInternalValueMarshalable>

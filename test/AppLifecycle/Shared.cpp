@@ -117,7 +117,7 @@ namespace Test::AppLifecycle
     {
         WEX::Common::String testDeploymentDir;
         WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
-        return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
+        return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
     }
 
     void WriteContentFile(std::wstring filename)
