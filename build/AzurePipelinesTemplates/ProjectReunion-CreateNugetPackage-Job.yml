@@ -10,19 +10,6 @@ parameters:
   prereleaseVersionTag: 'prerelease'
   condition: ''
 
-variables:
-  # Version Control
-  major: "0"
-  minor: "5"
-  patch: "0"
-  branch: 'main'
-  versionDate: $[format('{0:yyyyMMdd}', pipeline.startTime)]
-  versionCounter: $[counter(variables['versionDate'], 0)]
-  version: >
-   $[format('{0}.{1}.{2}-{3}.{4}.{6}', 
-      variables['major'], variables['minor'], variables['patch'], variables['branch']
-      variables['versionDate'], variables['versionCounter'])]
-
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn:
