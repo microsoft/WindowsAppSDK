@@ -38,144 +38,144 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: Build
-  pool:
-    vmImage: 'windows-2019'
-  timeoutInMinutes: 120
-  strategy:
-    maxParallel: 10
-    matrix:
-      Debug_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Debug'
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        PGOBuildMode: 'Optimize'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-        PGOBuildMode: 'Optimize'
-      Release_Arm64:
-        buildPlatform: 'arm64'
-        buildConfiguration: 'Release'
+# - job: Build
+#   pool:
+#     vmImage: 'windows-2019'
+#   timeoutInMinutes: 120
+#   strategy:
+#     maxParallel: 10
+#     matrix:
+#       Debug_x86:
+#         buildPlatform: 'x86'
+#         buildConfiguration: 'Debug'
+#       Release_x86:
+#         buildPlatform: 'x86'
+#         buildConfiguration: 'Release'
+#         PGOBuildMode: 'Optimize'
+#       Release_x64:
+#         buildPlatform: 'x64'
+#         buildConfiguration: 'Release'
+#         PGOBuildMode: 'Optimize'
+#       Release_Arm64:
+#         buildPlatform: 'arm64'
+#         buildConfiguration: 'Release'
 
-  variables:
-    appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
-    buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
-    publishDir : $(Build.ArtifactStagingDirectory)
-  steps:
-  - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
-  - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
+#   variables:
+#     appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
+#     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
+#     publishDir : $(Build.ArtifactStagingDirectory)
+#   steps:
+#   - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
+#   - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-    condition: ne(variables['buildConfiguration'], 'Debug')
+#   - task: BinSkim@3
+#     inputs:
+#       InputType: 'Basic'
+#       Function: 'analyze'
+#       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+#       AnalyzeVerbose: true
+#     condition: ne(variables['buildConfiguration'], 'Debug')
 
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+#   - task: PostAnalysis@1
+#     inputs:
+#       AllTools: false
+#       APIScan: false
+#       BinSkim: true
+#       BinSkimBreakOn: 'Error'
+#       CodesignValidation: false
+#       CredScan: false
+#       FortifySCA: false
+#       FxCop: false
+#       ModernCop: false
+#       PoliCheck: false
+#       RoslynAnalyzers: false
+#       SDLNativeRules: false
+#       Semmle: false
+#       TSLint: false
+#       ToolLogsNotFoundAction: 'Standard'
 
-- job: BuildMRT
-  pool:
-    vmImage: 'windows-latest'
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-      Release_Arm64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
-  steps:
-  - template: build-mrt.yml
-    parameters:
-      buildJobName: 'BuildMRTCore'
+# - job: BuildMRT
+#   pool:
+#     vmImage: 'windows-latest'
+#   strategy:
+#     maxParallel: 10
+#     matrix:
+#       Release_x86:
+#         buildPlatform: 'x86'
+#         buildConfiguration: 'Release'
+#       Release_x64:
+#         buildPlatform: 'x64'
+#         buildConfiguration: 'Release'
+#       Release_Arm64:
+#         buildPlatform: 'ARM64'
+#         buildConfiguration: 'Release'
+#   steps:
+#   - template: build-mrt.yml
+#     parameters:
+#       buildJobName: 'BuildMRTCore'
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+#   - task: BinSkim@3
+#     inputs:
+#       InputType: 'Basic'
+#       Function: 'analyze'
+#       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+#       AnalyzeVerbose: true
+#   - task: PostAnalysis@1
+#     inputs:
+#       AllTools: false
+#       APIScan: false
+#       BinSkim: true
+#       BinSkimBreakOn: 'Error'
+#       CodesignValidation: false
+#       CredScan: false
+#       FortifySCA: false
+#       FxCop: false
+#       ModernCop: false
+#       PoliCheck: false
+#       RoslynAnalyzers: false
+#       SDLNativeRules: false
+#       Semmle: false
+#       TSLint: false
+#       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishMRT
-  dependsOn:
-    - BuildMRT
-  condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - template: publish-mrt.yml
+# - job: PublishMRT
+#   dependsOn:
+#     - BuildMRT
+#   condition: in(dependencies.BuildMRT.result, 'Succeeded')
+#   pool:
+#     vmImage: 'windows-latest'
+#   steps:
+#   - template: publish-mrt.yml
 
-- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
-  parameters:
-    name: 'RunTestsInHelix'
-    dependsOn:
-      - Build
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-    testSuite: 'DevTestSuite'
-    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+# - template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
+#   parameters:
+#     name: 'RunTestsInHelix'
+#     dependsOn:
+#       - Build
+#     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+#     testSuite: 'DevTestSuite'
+#     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
 
-- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-  parameters:
-    dependsOn: RunTestsInHelix
-    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-    minimumExpectedTestsExecutedCount: 2
+# - template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
+#   parameters:
+#     dependsOn: RunTestsInHelix
+#     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+#     minimumExpectedTestsExecutedCount: 2
 
-# Create Nuget Package
-- template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
-  parameters:
-    jobName: CreateNugetPackage
-    dependsOn:
-      - Build
-      - PublishMRT
-    prereleaseVersionTag: ci
-    condition: |
-      and
-      (
-        in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-        in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-      )
+# # Create Nuget Package
+# - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
+#   parameters:
+#     jobName: CreateNugetPackage
+#     dependsOn:
+#       - Build
+#       - PublishMRT
+#     prereleaseVersionTag: ci
+#     condition: |
+#       and
+#       (
+#         in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
+#         in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+#       )
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
