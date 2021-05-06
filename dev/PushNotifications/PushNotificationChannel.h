@@ -12,8 +12,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Windows::Foundation::DateTime ExpirationTime();
         void Close();
 
+        winrt::event_token PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationChannel, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler);
+        void PushReceived(winrt::event_token const& token) noexcept;
+
     private:
         winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
