@@ -6,9 +6,8 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-
-#define MAX_INSTANCE_COUNT 512
-    typedef DWORD SharedProcessListData[MAX_INSTANCE_COUNT];
+    const auto c_maxInstanceCount{ 512 };
+    typedef DWORD SharedProcessListData[c_maxInstanceCount];
 
     class SharedProcessList
     {
@@ -44,16 +43,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     return;
                 }
             }
-
-            return;
         }
 
-        DWORD Size()
+        const DWORD Size()
         {
             return m_view.size();
         }
 
-        DWORD operator[](int index)
+        const DWORD operator[](int index)
         {
             return m_view[index];
         }

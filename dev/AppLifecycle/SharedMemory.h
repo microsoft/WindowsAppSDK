@@ -55,7 +55,7 @@ public:
         Open(name, size);
     }
 
-    size_t Size()
+    const size_t Size()
     {
         return m_view.get()->size;
     }
