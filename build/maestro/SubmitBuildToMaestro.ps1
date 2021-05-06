@@ -1,6 +1,16 @@
-print('Hello World !')
+$Uri = '$(MaestroUri)'
 
-print('$(Build.ArtifactStagingDirectory)')
+
+$Body = @{
+    commit  = 'John'
+    assets   = 'Doe'
+    email      = 'john.doe@contoso.com'
+    avatar     = Get-Item -Path 'c:\Pictures\jdoe.png'
+    birthday   = '1980-10-15'
+    hobbies    = 'Hiking','Fishing','Jogging'
+}
+$Result = Invoke-RestMethod -Uri $Uri -Method 'Post' -Form $Body
+
 # {
 #   "commit": "string",
 #   "assets": [

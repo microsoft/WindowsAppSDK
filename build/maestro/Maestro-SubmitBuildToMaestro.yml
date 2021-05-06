@@ -1,0 +1,6 @@
+steps:
+  - task: powershell@2
+    displayName: 'Post Channel Test'
+    inputs:
+      targetType: filePath
+      filePath: build\maestro\CreateChannel.ps1
