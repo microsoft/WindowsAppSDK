@@ -36,7 +36,7 @@ PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $FullPublis
 
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
@@ -112,12 +112,12 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # WinMD for UWP apps
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
 #
 # Native (not managed, no MSIX)
 PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
 PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd $NugetDir\lib\native
+PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
 #
 # C#/WinRT Projections
