@@ -1267,9 +1267,9 @@ This header contains the Bootstrap API
 /// @param versionTag version tag (if any), e.g. "prerelease".
 /// @param minVersion the minimum version to use
 STDAPI MddBootstrapInitialize(
-    const UINT32 majorMinorVersion,
+    UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    const PACKAGE_VERSION minVersion) noexcept;
+    PACKAGE_VERSION minVersion) noexcept;
 
 /// Undo the changes made by MddBoostrapInitialize().
 ///
