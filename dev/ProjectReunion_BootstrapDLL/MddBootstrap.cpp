@@ -14,9 +14,9 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
 CLSID FindDDLM(
-    const UINT32 majorMinorVersion,
+    UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    const PACKAGE_VERSION minVersion);
+    PACKAGE_VERSION minVersion);
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
@@ -38,9 +38,9 @@ void FailFastIfElevated()
 }
 
 STDAPI MddBootstrapInitialize(
-    const UINT32 majorMinorVersion,
+    UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    const PACKAGE_VERSION minVersion) noexcept try
+    PACKAGE_VERSION minVersion) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
     MddCore::FailFastIfElevated();
@@ -243,9 +243,9 @@ void RemoveFrameworkFromPath(PCWSTR frameworkPath)
 }
 
 CLSID FindDDLM(
-    const UINT32 majorMinorVersion,
+    UINT32 majorMinorVersion,
     PCWSTR versionTag,
-    const PACKAGE_VERSION minVersion)
+    PACKAGE_VERSION minVersion)
 {
     // Find the best fit
     bool foundAny{};
