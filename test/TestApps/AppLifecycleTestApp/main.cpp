@@ -14,7 +14,7 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 
 bool ProtocolLaunchSucceeded(const AppActivationArguments& appArgs)
 {
-    auto expectedScheme = IsPackagedProcess() ? c_testProtocolScheme_Packaged : c_testProtocolScheme;
+    auto expectedScheme = Test::AppModel::IsPackagedProcess() ? c_testProtocolScheme_Packaged : c_testProtocolScheme;
     auto actualUri = appArgs.Data().as<IProtocolActivatedEventArgs>().Uri();
 
     // We only support our test protocol.

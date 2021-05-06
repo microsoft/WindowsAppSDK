@@ -39,7 +39,7 @@ HRESULT BootstrapInitialize()
     // Version <major>.0.0.0 to find any framework package for this major version
     const UINT64 c_Version_Major{ 4 };
     PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
-    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_Major, minVersion));
+    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_Major, nullptr, minVersion));
 
     return S_OK;
 }

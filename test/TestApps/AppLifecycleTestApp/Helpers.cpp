@@ -7,14 +7,8 @@
 const wchar_t* g_bootStrapDllName = L"Microsoft.ProjectReunion.Bootstrap.dll";
 
 typedef HRESULT (*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
-typedef HRESULT (*BootStrapInit)(const UINT32 majorMinorVersion, const PACKAGE_VERSION minVersion);
+typedef HRESULT (*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);
 typedef void (*BootStrapShutdown)();
-
-bool IsPackagedProcess()
-{
-    UINT32 n{};
-    return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
-}
 
 void SignalPhase(const std::wstring& phaseEventName)
 {
@@ -27,7 +21,7 @@ void SignalPhase(const std::wstring& phaseEventName)
 
 bool NeedDynamicDependencies()
 {
-    return !IsPackagedProcess();
+    return !Test::AppModel::IsPackagedProcess();
 }
 
 HRESULT BootstrapInitialize()
@@ -53,7 +47,7 @@ HRESULT BootstrapInitialize()
     // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
     const UINT32 c_Version_MajorMinor{ 0x00040001 };
     const PACKAGE_VERSION minVersion{};
-    RETURN_IF_FAILED(mddInitialize(c_Version_MajorMinor, minVersion));
+    RETURN_IF_FAILED(mddInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
     return S_OK;
 }

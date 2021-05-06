@@ -84,12 +84,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // This mutex should always be created first by the process it's associated with.
         std::wstring mutexName = m_processName + L"_Mutex";
         m_dataMutex.create(mutexName.c_str(), CREATE_MUTEX_INITIAL_OWNER, MUTEX_ALL_ACCESS);
-        auto alreadyExists = (GetLastError() == ERROR_ALREADY_EXISTS);
-
-        // This means the AppInstance object was constructed for a process that
-        // does not exist.  This is typical for when we found an orphan in m_instances.
-        auto orphan = (!alreadyExists && !m_isCurrent);
-        assert(!orphan);
 
         wil::mutex_release_scope_exit releaseOnExit;
         auto weak_this = get_weak();
