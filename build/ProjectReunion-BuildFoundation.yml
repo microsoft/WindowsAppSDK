@@ -13,7 +13,7 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   # Scans the root source folder for security vulnerability
-  - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
+  - template: build\maestro\Maestro-SubmitBuildToMaestro.yml
   
   - task: CredScan@2
     inputs:
