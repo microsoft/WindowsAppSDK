@@ -330,8 +330,8 @@
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)_$(Configuration).msix" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msix" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)_$(Configuration)_Test\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget).Debug.14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)_Test\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget).msix" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msix" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)_Test\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget).Debug.14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
