@@ -12,7 +12,7 @@ $Body = @{
     'name' = 'test3'
     'classification' = 'test3'
     'api-version' = '2020-02-20'
-} | ConvertTo-Json
+}
 
 Write-Host $Uri
 
