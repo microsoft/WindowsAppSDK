@@ -10,7 +10,7 @@ $Body = @{
     classification = 'test3'
 } | ConvertTo-Json
 
-$Response = Invoke-WebRequest -Method Post -Uri $Uri -Headers $headers -Body $Body -Verbose
+$Response = Invoke-WebRequest -Method Post -Uri $Uri -Headers $headers -Body $Body -ContentType 'application/x-www-form-urlencoded'
 WriteHost $Response.statuscode
 
 if ($Response.statuscode -ne '201')
