@@ -1,5 +1,9 @@
-$Uri = '$(MaestroUri)'
-$token = '$(MaestroToken)'
+[CmdLetBinding()]
+Param(
+    [string]$Uri,
+    [string]$token
+)
+
 $headers = @{
     Authorization="Bearer $token"
 }

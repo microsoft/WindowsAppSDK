@@ -4,3 +4,4 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\maestro\CreateChannel.ps1
+      arguments: -Uri '$(MaestroUri)' -Token 'MaestroToken'
