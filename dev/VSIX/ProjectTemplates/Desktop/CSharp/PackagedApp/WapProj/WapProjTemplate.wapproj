@@ -35,7 +35,6 @@
   <PropertyGroup>
     <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
     <PathToXAMLWinRTImplementations>$ext_projectname$\</PathToXAMLWinRTImplementations>
-    <AssetTargetFallback>net5.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>      
   </PropertyGroup>
 
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
@@ -44,6 +43,7 @@
     <ProjectGuid>$guid1$</ProjectGuid>
     <TargetPlatformVersion>$targetplatformversion$</TargetPlatformVersion>
     <TargetPlatformMinVersion>$targetplatformminversion$</TargetPlatformMinVersion>
+    <AssetTargetFallback>net5.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
     <DefaultLanguage>$currentuiculturename$</DefaultLanguage>
     $if$($includeKeyFile$==true)
     <PackageCertificateKeyFile>$projectname$_TemporaryKey.pfx</PackageCertificateKeyFile>
@@ -85,7 +85,7 @@
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 
 </Project>

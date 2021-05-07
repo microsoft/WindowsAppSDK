@@ -275,14 +275,11 @@
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
       <Output TaskParameter="Result" PropertyName="_OriginalVsixTags" />
     </XmlPeek>
-    <XmlPeek
-      XmlInputPath="$(VsixManifestSource)"
-      Query="/ns:PackageManifest/ns:Metadata/ns:Preview/text()"
-      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
-      <Output TaskParameter="Result" PropertyName="_OriginalVsixPreviewStatus" />
-    </XmlPeek>
 
     <!-- Update the .vsixmanifest to reflect preview status if necessary -->
+
+    <!-- The value set here for the Id needs to match that set for 'ExperimentalNugetRepositoryId' in
+    ..\Directory.Build.targets -->
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
@@ -300,12 +297,6 @@
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
       Value="$(_OriginalVsixTags), UWP"
-      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
-    <XmlPoke
-      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
-      XmlInputPath="$(VsixManifestSource)"
-      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
-      Value="true"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
   </Target>
   <Target Name="AfterBuild">
@@ -330,11 +321,6 @@
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
       Value="$(_OriginalVsixTags)"
-      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
-    <XmlPoke
-      XmlInputPath="$(VsixManifestSource)"
-      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
-      Value="$(_OriginalVsixPreviewStatus)"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
   </Target>
 </Project>
