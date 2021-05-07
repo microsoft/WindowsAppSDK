@@ -16,7 +16,7 @@ $Body = @{
 
 Write-Host $Uri
 
-$Response = Invoke-WebRequest -Method Post -Uri $Uri -Headers $headers -Body $Body
+$Response = Invoke-WebRequest -Method 'POST' -Uri $Uri -Headers $headers -Body $Body
 Write-Host $Response.statuscode
 
 if ($Response.statuscode -ne '201')
