@@ -11,7 +11,7 @@ $headers = @{
 
 $body = Get-Content -Raw -Path $JsonPath
 
-$contentType = 'application/x-www-form-urlencoded'
+$contentType = 'application/json'
 $api = '/api/builds?api-version=2020-02-20'
 $fullUri = $Uri + $api
 
