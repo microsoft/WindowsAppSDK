@@ -57,13 +57,13 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxPackageDir>C:\Users\purifoypaul\Desktop\Work\ProjectReunion\BuildOutput\Debug\x64\PushNotificationsTestPackages\</AppxPackageDir>
     <EntryPointProjectUniqueName>..\PushActivationTestApp\PushActivationTestApp.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>E7E3775E71B404635FBCEABA91D279C4A6AEEC45</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>C:\Users\purifoypaul\Desktop\Work\ProjectReunion\temp\MSTest.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AppxBundle>Always</AppxBundle>

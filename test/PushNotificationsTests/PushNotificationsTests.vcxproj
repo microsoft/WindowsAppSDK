@@ -313,6 +313,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MockBackgroundTaskInstance.cpp" />
+    <ClCompile Include="MockRawNotification.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -320,6 +322,8 @@
     <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MockBackgroundTaskInstance.h" />
+    <ClInclude Include="MockRawNotification.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Shared.h" />
   </ItemGroup>
@@ -330,12 +334,12 @@
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)PushNotifications-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.ApplicationModel.Activation">
-      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.AppLifecycle">
+      <HintPath>..\..\BuildOutput\Debug\x64\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.PushNotifications">
-      <HintPath>..\..\BuildOutput\Release\x64\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <HintPath>..\..\BuildOutput\Debug\x64\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

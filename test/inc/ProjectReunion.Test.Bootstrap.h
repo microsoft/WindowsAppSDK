@@ -28,14 +28,14 @@ namespace Test::Bootstrap
     inline void SetupPackages()
     {
         // Remove our packages in case they were previously installed and incompletely removed
-        /*TP::RemovePackage_DynamicDependencyLifetimeManager();
-        TP::RemovePackage_DynamicDependencyDataStore();*/
+        TP::RemovePackage_DynamicDependencyLifetimeManager();
+        TP::RemovePackage_DynamicDependencyDataStore();
         TP::RemovePackage_ProjectReunionFramework();
 
         // Install our needed packages
         TP::AddPackage_ProjectReunionFramework();
-        /*TP::AddPackage_DynamicDependencyDataStore();
-        TP::AddPackage_DynamicDependencyLifetimeManager();*/
+        TP::AddPackage_DynamicDependencyDataStore();
+        TP::AddPackage_DynamicDependencyLifetimeManager();
     }
 
     inline void CleanupPackages()

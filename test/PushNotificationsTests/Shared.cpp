@@ -8,7 +8,7 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt::Microsoft::ApplicationModel::Activation;
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
