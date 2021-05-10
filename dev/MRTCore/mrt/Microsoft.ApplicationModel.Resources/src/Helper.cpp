@@ -20,10 +20,26 @@ bool IsResourceNotFound(HRESULT hr)
     return false;
 }
 
-HRESULT GetDefaultPriFileForCurentModule(winrt::hstring& filePath)
+HRESULT CheckFile(LPCWSTR filename)
+{
+    DWORD attributes = GetFileAttributes(filename);
+    if (attributes == INVALID_FILE_ATTRIBUTES)
+    {
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    if (attributes & FILE_ATTRIBUTE_DIRECTORY)
+    {
+        return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
+    }
+
+    return S_OK;
+}
+
+HRESULT GetDefaultPriFileForCurentModule(bool isPackaged, winrt::hstring& filePath)
 {
     PWSTR path = nullptr;
-    HRESULT hr = MrmGetFilePathFromName(L"resources.pri", &path);
+    HRESULT hr = MrmGetFilePathFromName(isPackaged ? L"resources.pri" : nullptr, &path);
     if (FAILED(hr))
     {
         return hr;
@@ -46,6 +62,12 @@ HRESULT GetDefaultPriFileForCurrentPackage(winrt::hstring& filePath)
 
     std::unique_ptr<wchar_t, decltype(&LocalFree)> resourceFilePtr(resourceFile, LocalFree);
 
+    hr = CheckFile(resourceFile);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
     filePath = resourceFile;
 
     return S_OK;
@@ -53,9 +75,12 @@ HRESULT GetDefaultPriFileForCurrentPackage(winrt::hstring& filePath)
 
 HRESULT GetDefaultPriFile(winrt::hstring& filePath)
 {
-    if (FAILED(GetDefaultPriFileForCurrentPackage(filePath)))
+    HRESULT hr = GetDefaultPriFileForCurrentPackage(filePath);
+    if (SUCCEEDED(hr))
     {
-        return GetDefaultPriFileForCurentModule(filePath);
+        return S_OK;
     }
-    return S_OK;
+
+    bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
+    return GetDefaultPriFileForCurentModule(isPackaged, filePath);
 }
