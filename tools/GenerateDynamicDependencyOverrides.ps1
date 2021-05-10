@@ -44,16 +44,16 @@ $lifetimemanager_clsid_guid = Convert-Guid $lifetimemanager_clsid_uuid
 # Generate the json file
 $content_h=@"
 {
-    `"LIBID`": "1BF712E5-41ED-46a5-8402-2D40725F691E",
-    `"DataStore`": {
-        `"CLSID`": {
-            `"UUID`": `"D1AD16C7-EC59-4765-BF95-9A243EB00507`"
+    "LIBID": "1BF712E5-41ED-46a5-8402-2D40725F691E",
+    "DataStore": {
+        "CLSID": {
+            "UUID": "D1AD16C7-EC59-4765-BF95-9A243EB00507"
         }
     },
-    `"LifetimeManager`": {
-        `"CLSID`": {
-            `"UUID`": `"lifetimemanager_clsid_uuid`",
-            `"GUID`": `"lifetimemanager_clsid_guid`"
+    "LifetimeManager": {
+        "CLSID": {
+            "UUID": "$lifetimemanager_clsid_uuid",
+            "GUID": "$lifetimemanager_clsid_guid"
         }
     }
 }

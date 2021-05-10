@@ -27,6 +27,15 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
     flattenFolders: true
 
+- task: CopyFiles@2
+  displayName: 'copy Intellisense into uap10.0 folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.ApplicationModel.Resources.xml
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
+    flattenFolders: true
+
 # Needed so that the NuGet package can be installed in a win32 app. It avoids this error: "You are trying to
 # install this package into a project that targets 'native,Version=v0.0', but the package does not contain any
 # assembly references or content files that are compatible with that framework."
@@ -36,6 +45,15 @@ steps:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
     Contents: |
       Microsoft.ApplicationModel.Resources.winmd
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy Intellisense into native folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.ApplicationModel.Resources.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native\'
     flattenFolders: true
 
@@ -46,6 +64,15 @@ steps:
     Contents: |
       net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
       net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy Intellisense into .net 5 folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.ApplicationModel.Resources.Projection.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
     flattenFolders: true
 
@@ -128,6 +155,10 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
 
+#- script: |
+#    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+#  displayName: HK 1
+
 - task: CopyFiles@2
   displayName: 'copy header'
   inputs:
@@ -136,10 +167,18 @@ steps:
       mrm.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
 
+#- script: |
+#    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+#  displayName: HK 2
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
     ArtifactName: 'FullNuget'
+
+#- script: |
+#    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+#  displayName: HK 3
 
 # NuGetCommand@2
 #  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
