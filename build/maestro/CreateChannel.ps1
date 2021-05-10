@@ -4,7 +4,7 @@ Param(
     [string]$token
 )
 
-$headers = @{
+$Headers = @{
     Authorization="Bearer $token"
 }
 
@@ -18,7 +18,7 @@ $contentType = 'application/x-www-form-urlencoded'
 
 Write-Host $Uri
 
-$Response = Invoke-WebRequest -Method 'POST' -Uri $Uri -Headers $headers -Body $Body -ContentType $contentType
+$Response = Invoke-WebRequest -Method 'POST' -Uri $Uri -Headers $Headers -Body $Body -ContentType $contentType
 Write-Host $Response.statuscode
 
 if ($Response.statuscode -ne '201')

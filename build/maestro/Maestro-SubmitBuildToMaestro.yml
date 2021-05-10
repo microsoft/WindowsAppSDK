@@ -3,5 +3,5 @@ steps:
     displayName: 'Post Channel Test'
     inputs:
       targetType: filePath
-      filePath: build\maestro\CreateChannel.ps1
-      arguments: -Uri '$(MaestroUri)' -Token 'MaestroToken'
+      filePath: build\maestro\SubmitBuildToMaestro.ps1
+      arguments: -Uri '$(MaestroUri)' -Token 'MaestroToken' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'

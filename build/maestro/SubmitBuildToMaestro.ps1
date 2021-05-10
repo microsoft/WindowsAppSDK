@@ -1,55 +1,27 @@
-$Uri = '$(MaestroUri)'
+[CmdLetBinding()]
+Param(
+    [string]$Uri,
+    [string]$token,
+    [string]$JsonPath
+)
 
-
-$Body = @{
-    commit  = 'John'
-    assets   = 'Doe'
-    email      = 'john.doe@contoso.com'
-    avatar     = Get-Item -Path 'c:\Pictures\jdoe.png'
-    birthday   = '1980-10-15'
-    hobbies    = 'Hiking','Fishing','Jogging'
+$headers = @{
+    Authorization="Bearer $token"
 }
-$Result = Invoke-RestMethod -Uri $Uri -Method 'Post' -Form $Body
 
-# {
-#   "commit": "string",
-#   "assets": [
-#     {
-#       "name": "string",
-#       "version": "string",
-#       "nonShipping": true,
-#       "locations": [
-#         {
-#           "location": "string",
-#           "type": "none"
-#         }
-#       ]
-#     }
-#   ],
-#   "dependencies": [
-#     {
-#       "buildId": 0,
-#       "isProduct": true,
-#       "timeToInclusionInMinutes": 0
-#     }
-#   ],
-#   "azureDevOpsBuildId": 0,
-#   "azureDevOpsBuildDefinitionId": 0,
-#   "azureDevOpsAccount": "string",
-#   "azureDevOpsProject": "string",
-#   "azureDevOpsBuildNumber": "string",
-#   "azureDevOpsRepository": "string",
-#   "azureDevOpsBranch": "string",
-#   "gitHubRepository": "string",
-#   "gitHubBranch": "string",
-#   "released": true,
-#   "stable": true,
-#   "incoherencies": [
-#     {
-#       "name": "string",
-#       "version": "string",
-#       "repository": "string",
-#       "commit": "string"
-#     }
-#   ]
-# }
+$body = Get-Content -Raw -Path $JsonPath
+
+$contentType = 'application/x-www-form-urlencoded'
+$api = '/api/builds?api-version=2020-02-20'
+$fullUri = $Uri + $api
+
+Write-Host $fullUri
+
+$Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -Body $body -ContentType $contentType
+Write-Host $Response.statuscode
+
+if ($Response.statuscode -ne '201')
+{
+  Write-Host $Response.statuscode
+  Write-Host "##vso[task.complete result=Failed;]DONE"
+}
