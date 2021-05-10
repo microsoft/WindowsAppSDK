@@ -4,4 +4,4 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\maestro\SubmitBuildToMaestro.ps1
-      arguments: -Uri '$(MaestroUri)' -Token 'MaestroToken' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+      arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
