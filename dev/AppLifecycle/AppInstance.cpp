@@ -11,6 +11,7 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
+#include "GetRawNotificationEventArgs.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -311,12 +312,22 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         if (HasIdentity())
         {
-            auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
-            if (args)
+            auto pushArgs = GetRawNotificationEventArgs::GetRawNotificationEventArgs();
+            if (pushArgs)
             {
-                data = args.as<IInspectable>();
-                kind = static_cast<ExtendedActivationKind>(args.Kind());
+                data = pushArgs;
+                kind = ExtendedActivationKind::Push;
             }
+            else
+            {
+                auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
+                if (args)
+                {
+                    data = args.as<IInspectable>();
+                    kind = static_cast<ExtendedActivationKind>(args.Kind());
+                }
+            }
+
         }
         else
         {
