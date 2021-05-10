@@ -14,9 +14,11 @@ $Body = @{
     'api-version' = '2020-02-20'
 }
 
+$contentType = 'application/x-www-form-urlencoded'
+
 Write-Host $Uri
 
-$Response = Invoke-WebRequest -Method 'POST' -Uri $Uri -Headers $headers -Body $Body
+$Response = Invoke-WebRequest -Method 'POST' -Uri $Uri -Headers $headers -Body $Body -ContentType $contentType
 Write-Host $Response.statuscode
 
 if ($Response.statuscode -ne '201')
