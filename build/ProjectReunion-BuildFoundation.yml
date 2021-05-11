@@ -14,7 +14,22 @@ jobs:
   steps:
   # Scans the root source folder for security vulnerability
   - template: maestro\Maestro-SubmitBuildToMaestro.yml
-  
+    parameters:
+      Packages:  # Update feeder package versions in build.config
+        MyPackageOne:
+          name: 'Microsoft.ProjectReunion.Foundation.one.TransportPackage'
+          version: '1.0.1'
+          nonShipping: true
+          locations:
+            location: 'Internal'
+            type: 'none'
+        MyPackagetwo:
+          name: 'Microsoft.ProjectReunion.Foundation.two.TransportPackage'
+          version: '1.0.1'
+          nonShipping: true
+          locations:
+            location: 'Internal'
+            type: 'none'
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'

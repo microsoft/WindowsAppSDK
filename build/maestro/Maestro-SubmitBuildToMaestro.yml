@@ -1,4 +1,39 @@
+parameters:
+  - name: "Assets"
+    type: object
+    default: []
+    # Sample Assets Object
+    # {
+    #   "name":"string",
+    #   "version":"string",
+    #   "nonShipping":true,
+    #   "locations":[
+    #     {
+    #       "location":"string",
+    #       "type":"none"
+    #     }
+    #   ]
+    # }
+  - name: "Dependencies"
+    type: object
+    default: []
+    # Sample Dependencies Object
+    # {
+    #   "buildId":0,
+    #   "isProduct":true,
+    #   "timeToInclusionInMinutes":0
+    # }
 steps:
+  - task: PowerShell@2
+    displayName: Build JsonBody 
+    inputs:
+      targetType: 'inline'
+      script: |
+        $jsonBase = @{}
+
+        $test = '$(Assets)'
+        Write-Host version: $test
+
   - task: powershell@2
     displayName: 'Post Channel Test'
     inputs:
