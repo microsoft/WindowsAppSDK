@@ -13,9 +13,10 @@ steps:
         $assetList = New-Object System.Collections.ArrayList
         $assetList.Add(@{"name"="${{ parameters.AssetName }}";"version"="${{ parameters.AssetVersion }}";"nonShipping"="${{ parameters.nonShipping }}"})
         $assets = @{"assets"=$assetList;}
-        $jsonBase.Add("", $assets)
-        $jsonBase | ConvertTo-Json
-        Write-Host version: $jsonBase
+        $jsonBase.Add($assets)
+        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+        Write-host $body
 
   - task: powershell@2
     displayName: 'Post Channel Test'
