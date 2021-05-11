@@ -11,13 +11,9 @@ steps:
         $jsonBase = @{}
 
         $assetList = New-Object System.Collections.ArrayList
-        $asset = @{
-            "name":"${{ parameters.AssetName }}",
-            "version":"${{ parameters.AssetVersion }}",
-            "nonShipping": "${{ parameters.nonShipping }}",
-          }
-        $assetList.Add($asset)
-        $jsonBase.Add("assets", $assetList)
+        $assetList.Add(@{"name":"${{ parameters.AssetName }}";"version":"${{ parameters.AssetVersion }}";"nonShipping": "${{ parameters.nonShipping }}"})
+        $assets = @{"assets"=$assetList;}
+        $jsonBase.Add("", $assets)
         $jsonBase | ConvertTo-Json
         Write-Host version: $jsonBase
 
