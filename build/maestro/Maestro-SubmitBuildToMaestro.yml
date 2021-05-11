@@ -11,7 +11,7 @@ steps:
         $jsonBase = @{}
 
         $assetList = New-Object System.Collections.ArrayList
-        $assetList.Add(@{"name":"test1";"version":"test2";"nonShipping":$true})
+        $assetList.Add(@{"name"="${{ parameters.AssetName }}";"version"="${{ parameters.AssetVersion }}";"nonShipping"="${{ parameters.nonShipping }}"})
         $assets = @{"assets"=$assetList;}
         $jsonBase.Add("", $assets)
         $jsonBase | ConvertTo-Json
