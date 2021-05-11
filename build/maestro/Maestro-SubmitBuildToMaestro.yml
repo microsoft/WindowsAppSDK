@@ -31,7 +31,7 @@ steps:
       script: |
         $jsonBase = @{}
 
-        $test = '${{ parameters.Assets }}'
+        $test = ${{ parameters.Assets }}
         Write-Host version: $test
 
   - task: powershell@2
