@@ -15,7 +15,7 @@ jobs:
   # Scans the root source folder for security vulnerability
   - template: maestro\Maestro-SubmitBuildToMaestro.yml
     parameters:
-      Packages:  # Update feeder package versions in build.config
+      Assets:  # Update feeder package versions in build.config
         MyPackageOne:
           name: 'Microsoft.ProjectReunion.Foundation.one.TransportPackage'
           version: '1.0.1'
