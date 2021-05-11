@@ -1,28 +1,7 @@
 parameters:
-  - name: "Assets"
-    type: object
-    default: []
-    # Sample Assets Object
-    # {
-    #   "name":"string",
-    #   "version":"string",
-    #   "nonShipping":true,
-    #   "locations":[
-    #     {
-    #       "location":"string",
-    #       "type":"none"
-    #     }
-    #   ]
-    # }
-  - name: "Dependencies"
-    type: object
-    default: []
-    # Sample Dependencies Object
-    # {
-    #   "buildId":0,
-    #   "isProduct":true,
-    #   "timeToInclusionInMinutes":0
-    # }
+  AssetName: ''
+  AssetVersion: ''
+  nonShipping: true
 steps:
   - task: PowerShell@2
     displayName: Build JsonBody 
@@ -31,10 +10,16 @@ steps:
       script: |
         $jsonBase = @{}
 
-        ${{ parameters.Assets }} ForEach-Object {
-          Write-Host fullname $_.FullName
-        }
-        Write-Host version: $test
+        $assetList = New-Object System.Collections.ArrayList
+        $asset = @{
+            "name":"${{ parameters.AssetName }}",
+            "version":"${{ parameters.AssetVersion }}",
+            "nonShipping": "${{ parameters.nonShipping }}",
+          }
+        $assetList.Add($asset)
+        $jsonBase.Add("assets", $assetList)
+        $jsonBase | ConvertTo-Json
+        Write-Host version: $jsonBase
 
   - task: powershell@2
     displayName: 'Post Channel Test'
