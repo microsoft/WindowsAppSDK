@@ -27,7 +27,7 @@ steps:
         $dependenciesList.Add(
           @{
             "buildId"=0;
-            "isProduct"=true;
+            "isProduct"=$true;
             "timeToInclusionInMinutes"=0;
           }
         )
