@@ -15,11 +15,12 @@ steps:
         $jsonBase = @{"assets"=$assetList;"commit"="12345"}
         $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
         $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
+        Write-host "Writing Json body"
         Write-host $body
 
-  - task: powershell@2
-    displayName: 'Post Channel Test'
-    inputs:
-      targetType: filePath
-      filePath: build\maestro\SubmitBuildToMaestro.ps1
-      arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+  # - task: powershell@2
+  #   displayName: 'Post Channel Test'
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: build\maestro\SubmitBuildToMaestro.ps1
+  #     arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
