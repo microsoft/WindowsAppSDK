@@ -81,6 +81,8 @@ HRESULT GetDefaultPriFile(winrt::hstring& filePath)
         return S_OK;
     }
 
+    // GetDefaultPriFileForCurrentPackage will not handle the new case where
+    // resources.pri is in the parent folder. 
     bool isPackaged = (hr != HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE));
     return GetDefaultPriFileForCurentModule(isPackaged, filePath);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
@@ -25,7 +25,7 @@ typedef struct
 
 constexpr wchar_t ResourceUriPrefix[] = L"ms-resource://";
 constexpr int ResourceUriPrefixLength = ARRAYSIZE(ResourceUriPrefix) - 1;
-constexpr wchar_t c_defaultResourceFilename[] = L"resources.pri";
+constexpr wchar_t c_defaultPriFilename[] = L"resources.pri";
 
 #define INDEX_RESOURCE_ID -1
 #define INDEX_RESOURCE_URI -2
@@ -906,7 +906,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     pointerToPath = pathAllocated ? pathAllocated.get() : path;
 
     wchar_t moduleFilename[MAX_PATH];
-    RETURN_IF_FAILED(StringCchCopy(moduleFilename, ARRAYSIZE(moduleFilename), lastSlash != nullptr ? lastSlash + 1 : pointerToPath));
+    RETURN_IF_FAILED(StringCchCopyW(moduleFilename, ARRAYSIZE(moduleFilename), lastSlash != nullptr ? lastSlash + 1 : pointerToPath));
 
     if (lastSlash != nullptr)
     {
@@ -918,7 +918,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     PCWSTR filenameToUse = filename;
     if (filename == nullptr || *filename == L'\0')
     {
-        filenameToUse = c_defaultResourceFilename;
+        filenameToUse = c_defaultPriFilename;
     }
 
     // Will build the path at most twice.
@@ -960,7 +960,8 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
 
         if (i == 0)
         {
-            // If none of the file exists, will return the file in current path
+            // The filename in the first iteration (the file under module path) will be returned if no file is found
+            // in all iterations.
             finalPath.swap(outputPath);
 
             // Prep for second iteration
