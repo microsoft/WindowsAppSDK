@@ -1,19 +1,20 @@
 [CmdLetBinding()]
 Param(
-    [string]$Uri,
+    [string]$url,
     [string]$token,
-    [string]$JsonPath
+    [string]$api,
+    [string]$queryParameters,
+    [string]$jsonBodyPath
 )
 
 $headers = @{
     Authorization="Bearer $token"
 }
 
-$body = Get-Content -Raw -Path $JsonPath
-
+$body = Get-Content -Raw -Path $jsonBodyPath
 $contentType = 'application/json'
-$api = '/api/builds?api-version=2020-02-20'
-$fullUri = $Uri + $api
+$api = $api + '?api-version=2020-02-20' + $queryParameters
+$fullUri = $url + $api
 
 Write-Host $fullUri
 

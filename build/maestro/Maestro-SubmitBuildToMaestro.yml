@@ -1,63 +1,72 @@
 parameters:
   AssetName: ''
   AssetVersion: ''
-  nonShipping: true
+  Repository: ''
+  IsGitHub: true
 steps:
   - task: PowerShell@2
     displayName: Build JsonBody 
     inputs:
       targetType: 'inline'
       script: |
+        .\build\maestro\Common.ps1
+        
         $jsonBase = @{}
-
-        $locationList = New-Object System.Collections.ArrayList
-        $locationList.Add(@{"location"="maestroTestValue";"type"="none"})
 
         $assetList = New-Object System.Collections.ArrayList
         $assetList.Add(
           @{
             "name"="${{ parameters.AssetName }}";
             "version"="${{ parameters.AssetVersion }}";
-            "nonShipping"="${{ parameters.nonShipping }}";
-            "locations"=$locationList
+            "nonShipping"=$false;
+            "locations"=$null
           }
         )
 
-        $dependenciesList = New-Object System.Collections.ArrayList
-        $dependenciesList.Add(
-          @{
-            "buildId"=0;
-            "isProduct"=$true;
-            "timeToInclusionInMinutes"=0;
-          }
-        )
+        # These fields below are unused but can be enabled in the future
+        # $locationList = New-Object System.Collections.ArrayList
+        # $locationList.Add(@{"location"="maestroTestValue";"type"="none"})
 
-        $incoherenciesList = New-Object System.Collections.ArrayList
-        $incoherenciesList.Add(
-          @{
-            "name"="maestroTestValue";
-            "version"="maestroTestValue";
-            "repository"="maestroTestValue";
-            "commit"="maestroTestValue";
-          }
-        )
+        # $dependenciesList = New-Object System.Collections.ArrayList
+        # $dependenciesList.Add(
+        #   @{
+        #     "buildId"=0;
+        #     "isProduct"=$true;
+        #     "timeToInclusionInMinutes"=0;
+        #   }
+        # )
 
+        # $incoherenciesList = New-Object System.Collections.ArrayList
+        # $incoherenciesList.Add(
+        #   @{
+        #     "name"="maestroTestValue";
+        #     "version"="maestroTestValue";
+        #     "repository"="maestroTestValue";
+        #     "commit"="maestroTestValue";
+        #   }
+        # )
+        
+        $devOpsAccount = GetOrgNameFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
+        WriteHost "reposiitory: $(Build.Repository.Uri)"
+        WriteHost "account: " $devOpsAccount
+        
         $jsonBase = 
           @{
-            "commit"="12345";
+            "commit"="$(Build.SourceVersion)";
             "assets"=$assetList;
-            "dependencies"=$dependenciesList;
+            "dependencies"=$null;
             "azureDevOpsBuildId"=$(Build.BuildId);
-            "azureDevOpsBuildDefinitionId"=0;
-            "azureDevOpsAccount"="maestroTestValue";
-            "azureDevOpsProject"="maestroTestValue";
+            "azureDevOpsBuildDefinitionId"=$(System.DefinitionId);
+            "azureDevOpsAccount"=$devOpsAccount;
+            "azureDevOpsProject"="$(System.TeamProject)";
             "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
             "azureDevOpsRepository"="maestroTestValue";
             "azureDevOpsBranch"="$(Build.SourceBranch)";
             "gitHubRepository"="maestroTestValue";
-            "gitHubBranch"="maestroTestValue";
+            "gitHubBranch"="$(Build.SourceBranch)";
             "released"=$true;
             "stable"=$true
+            "incoherencies"=$null;
           }
 
         $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
@@ -69,5 +78,5 @@ steps:
     displayName: 'Post Channel Test'
     inputs:
       targetType: filePath
-      filePath: build\maestro\SubmitBuildToMaestro.ps1
-      arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+      filePath: build\maestro\MaestroPostRequest.ps1
+      arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'

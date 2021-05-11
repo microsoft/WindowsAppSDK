@@ -17,6 +17,7 @@ jobs:
     parameters:
       AssetName: 'test1'
       AssetVersion: '1.0.1'
+      Repository: 'asdf'
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
