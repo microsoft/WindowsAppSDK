@@ -14,8 +14,8 @@ steps:
         $assetList.Add(@{"name"="${{ parameters.AssetName }}";"version"="${{ parameters.AssetVersion }}";"nonShipping"="${{ parameters.nonShipping }}"})
         $assets = @{"assets"=$assetList;}
         $jsonBase.Add($assets)
-        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
-        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
+        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
         Write-host $body
 
   - task: powershell@2
