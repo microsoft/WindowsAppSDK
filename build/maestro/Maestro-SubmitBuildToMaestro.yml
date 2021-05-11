@@ -11,7 +11,7 @@ steps:
         $jsonBase = @{}
 
         $locationList = New-Object System.Collections.ArrayList
-        $locationList.Add(@{"location"="test1";"type"="none"})
+        $locationList.Add(@{"location"="maestroTestValue";"type"="none"})
 
         $assetList = New-Object System.Collections.ArrayList
         $assetList.Add(
@@ -23,7 +23,23 @@ steps:
           }
         )
 
-        $jsonBase = @{"assets"=$assetList;"commit"="12345"}
+        $jsonBase = 
+          @{
+            "assets"=$assetList;
+            "commit"="12345"
+            "azureDevOpsBuildId"=$(Build.BuildId),
+            "azureDevOpsBuildDefinitionId"=0,
+            "azureDevOpsAccount"="maestroTestValue",
+            "azureDevOpsProject"="maestroTestValue",
+            "azureDevOpsBuildNumber"="$(Build.BuildNumber)",
+            "azureDevOpsRepository"="maestroTestValue",
+            "azureDevOpsBranch"="$(Build.SourceBranch)",
+            "gitHubRepository"="maestroTestValue",
+            "gitHubBranch"="maestroTestValue",
+            "released"=true,
+            "stable"=true,
+          }
+
         $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
         $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
         Write-host "Writing Json body"
