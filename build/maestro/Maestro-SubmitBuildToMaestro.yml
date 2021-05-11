@@ -23,10 +23,30 @@ steps:
           }
         )
 
+        $dependenciesList = New-Object System.Collections.ArrayList
+        $dependenciesList.Add(
+          @{
+            "buildId"=0;
+            "isProduct"=true;
+            "timeToInclusionInMinutes"=0;
+          }
+        )
+
+        $incoherenciesList = New-Object System.Collections.ArrayList
+        $incoherenciesList.Add(
+          @{
+            "name"="maestroTestValue";
+            "version"="maestroTestValue";
+            "repository"="maestroTestValue";
+            "commit"="maestroTestValue";
+          }
+        )
+
         $jsonBase = 
           @{
-            "assets"=$assetList;
             "commit"="12345";
+            "assets"=$assetList;
+            "dependencies"=$dependenciesList;
             "azureDevOpsBuildId"=$(Build.BuildId);
             "azureDevOpsBuildDefinitionId"=0;
             "azureDevOpsAccount"="maestroTestValue";
