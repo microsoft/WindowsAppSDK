@@ -193,7 +193,7 @@ namespace Test::PushNotifications
                 CLSCTX_ALL,
                 IID_PPV_ARGS(LocalBackgroundTask.put())));
             // create_instance()
-            // LocalBackgroundTask->Run(ClientTaskInstance);
+            LocalBackgroundTask->Run(ClientTaskInstance.as<void *>());
             WaitForEvent(event, m_failed);
         }
     };
