@@ -12,8 +12,7 @@ steps:
 
         $assetList = New-Object System.Collections.ArrayList
         $assetList.Add(@{"name"="${{ parameters.AssetName }}";"version"="${{ parameters.AssetVersion }}";"nonShipping"="${{ parameters.nonShipping }}"})
-        $assets = @{"assets"=$assetList;}
-        $jsonBase.Add($assets)
+        $jsonBase = @{"assets"=$assetList;"commit"="12345"}
         $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
         $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-buildtest.json'
         Write-host $body
