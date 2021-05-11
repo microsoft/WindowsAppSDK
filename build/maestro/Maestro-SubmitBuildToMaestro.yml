@@ -31,7 +31,9 @@ steps:
       script: |
         $jsonBase = @{}
 
-        $test = ${{ parameters.Assets }}
+        ${{ parameters.Assets }} ForEach-Object {
+          Write-Host fullname $_.FullName
+        }
         Write-Host version: $test
 
   - task: powershell@2
