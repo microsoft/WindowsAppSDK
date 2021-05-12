@@ -139,7 +139,6 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   variables:
-    minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
     rerunPassesRequiredToAvoidFailure: 5
   steps:
   - template: publish-mrt.yml
