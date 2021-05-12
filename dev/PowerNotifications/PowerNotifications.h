@@ -5,7 +5,7 @@
 
 #include <mutex>
 #include <PowerManager.g.h>
-#include <PowerNotificationsPal.h>
+#include <frameworkudk\PowerNotificationsPal.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 
