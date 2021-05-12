@@ -15,6 +15,9 @@ enum UnitTest {
 };
 
 static std::map<std::string, UnitTest> switchMapping;
+winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225");
+winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A");
+winrt::guid remoteId3(L"40FCE789-C6BF-4F47-A6CF-6B9C1DCE31BA");
 
 void signalPhase(const std::wstring& phaseEventName)
 {
@@ -48,18 +51,14 @@ bool ChannelRequestUsingNullRemoteId()
         hr = channelRequestException.code();
     }
 
-    if (hr == E_INVALIDARG)
-        return true;
-    else
-        return false;
+    return (hr == E_INVALIDARG);
 }
 
 bool ChannelRequestUsingRemoteId()
 {
-    // winrt::guid remoteId { L"a2e4a323-b518-4799-9e80-0b37aeb0d225" };
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
     auto hr = S_OK;
-    auto channelOperation = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa2e4a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
+    auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
 
     channelOperation.Progress(
         [](
@@ -68,12 +67,9 @@ bool ChannelRequestUsingRemoteId()
         {
             if (args.status == PushNotificationChannelStatus::InProgress)
             {
-                // This is basically a noop since it isn't really an error state
-                std::cout << "The channel request is in progress " << args.extendedError << std::endl;
             }
             else if (args.status == PushNotificationChannelStatus::InProgressRetry)
             {
-                std::cout << "The channel request is in back-off retry mode because of a retryable error code: " << args.extendedError << " Expect delays in acquiring it" << std::endl;
             }
         });
 
@@ -88,16 +84,10 @@ bool ChannelRequestUsingRemoteId()
             {
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
-
-
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
-
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
             }
-
 
             SetEvent(channelEvent.get());
         });
@@ -105,20 +95,15 @@ bool ChannelRequestUsingRemoteId()
     // The maximum amount of time it takes for channel request to be obtained - 16mins
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
     {
-        std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
         channelOperation.Cancel();
         hr = ERROR_TIMEOUT;
     }
     else
     {
-        std::cout << "Channel complete handler has been completed, safely closing the async operation" << std::endl;
         channelOperation.Close(); // Do not call getresults after this
     }
 
-    if (hr == S_OK)
-        return true;
-    else
-        return false;
+    return (hr == S_OK);
 }
 
 bool MultipleChannelRequestUsingSameRemoteId()
@@ -126,8 +111,8 @@ bool MultipleChannelRequestUsingSameRemoteId()
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
     auto hr = S_OK;
 
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa2e4a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa2e4a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
+    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
 
     channelOperation2.Completed(
         [&channelEvent, &hr](
@@ -140,12 +125,9 @@ bool MultipleChannelRequestUsingSameRemoteId()
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
 
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
-
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
                 hr = result.ExtendedError();
             }
 
@@ -156,27 +138,23 @@ bool MultipleChannelRequestUsingSameRemoteId()
     // The maximum amount of time it takes for channel request to be obtained - 16mins
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
     {
-        std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
         channelOperation2.Cancel();
         hr = ERROR_TIMEOUT;
     }
 
-    if (hr == WPN_E_OUTSTANDING_CHANNEL_REQUEST)
-        return true;
-    else
-        return false;
+    return (hr == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
 }
 
 bool MultipleChannelRequestUsingMultipleRemoteId()
 {
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-    auto hr = S_OK;
+    auto channelOperationResult2 = S_OK;
 
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa2e4a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa2345667, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
+    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
 
     channelOperation2.Completed(
-        [&channelEvent, &hr](
+        [&channelEvent, &channelOperationResult2](
             IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
             AsyncStatus const /* asyncStatus */)
         {
@@ -185,13 +163,10 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
             {
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
-
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
-                hr = result.ExtendedError();
+                channelOperationResult2 = result.ExtendedError();
             }
 
             SetEvent(channelEvent.get());
@@ -200,15 +175,11 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
     // The maximum amount of time it takes for channel request to be obtained - 16mins
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
     {
-        std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
         channelOperation2.Cancel();
-        hr = ERROR_TIMEOUT;
+        channelOperationResult2 = ERROR_TIMEOUT;
     }
 
-    if (hr == WPN_E_OUTSTANDING_CHANNEL_REQUEST)
-        return true;
-    else
-        return false;
+    return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
 }
 
 bool ThreeChannelRequestUsingSameRemoteId()
@@ -219,8 +190,8 @@ bool ThreeChannelRequestUsingSameRemoteId()
     wil::unique_handle channelEvent3 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
     auto channelOperationResult3 = S_OK;
 
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa2e4a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa234a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
+    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
 
     channelOperation2.Completed(
         [&channelEvent2, &channelOperationResult2](
@@ -232,22 +203,17 @@ bool ThreeChannelRequestUsingSameRemoteId()
             {
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
-
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
-
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
                 channelOperationResult2 = result.ExtendedError();
             }
-
 
             SetEvent(channelEvent2.get());
         });
 
 
-    auto channelOperation3 = PushNotificationManager::CreateChannelAsync(winrt::guid(0xa234a323, 0xb518, 0x4799, { 0x9e, 0x80, 0x0b, 0x37, 0xae, 0xb0, 0xd2, 0x25 }));
+    auto channelOperation3 = PushNotificationManager::CreateChannelAsync(remoteId3);
 
     channelOperation3.Completed(
         [&channelEvent3, &channelOperationResult3](
@@ -259,13 +225,9 @@ bool ThreeChannelRequestUsingSameRemoteId()
             {
                 auto channelUri = result.Channel().Uri();
                 auto channelExpiry = result.Channel().ExpirationTime();
-
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl;
-
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                std::cout << "Failed to complete the async complete handler, gracefully cancel the channelOperation" << std::endl;
                 channelOperationResult3 = result.ExtendedError();
             }
 
@@ -275,7 +237,6 @@ bool ThreeChannelRequestUsingSameRemoteId()
     // The maximum amount of time it takes for channel request to be obtained - 16mins
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent2.get(), 960000 /* milliseconds */))
     {
-        std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
         channelOperation2.Cancel();
         channelOperationResult2 = ERROR_TIMEOUT;
     }
@@ -283,15 +244,11 @@ bool ThreeChannelRequestUsingSameRemoteId()
     // The maximum amount of time it takes for channel request to be obtained - 16mins
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent3.get(), 960000 /* milliseconds */))
     {
-        std::cout << "Failed to call/handle the async complete handler, gracefully cancel the channelOperation" << std::endl;
-        channelOperation2.Cancel();
-        channelOperationResult2 = ERROR_TIMEOUT;
+        channelOperation3.Cancel();
+        channelOperationResult3 = ERROR_TIMEOUT;
     }
 
-    if ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST))
-        return true;
-    else
-        return false;
+    return ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST));
 }
 
 bool runUnitTest(std::string unitTest)
