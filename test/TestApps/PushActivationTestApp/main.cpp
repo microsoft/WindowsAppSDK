@@ -18,7 +18,7 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 enum UnitTest {
     channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
     multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, foregroundActivation,
-    backgroundActivation
+    backgroundActivation, registerActivator, unregisterActivator
 };
 
 static std::map<std::string, UnitTest> switchMapping;
@@ -41,6 +41,9 @@ void initUnitTestMapping()
     switchMapping["ThreeChannelRequestUsingSameRemoteId"] = UnitTest::threeChannelRequestUsingSameRemoteId;
     switchMapping["ForegroundActivation"] = UnitTest::foregroundActivation;
     switchMapping["BackgroundActivation"] = UnitTest::backgroundActivation;
+    switchMapping["registerActivator"] = UnitTest::registerActivator;
+    switchMapping["unregisterActivator"] = UnitTest::unregisterActivator;
+
 }
 
 bool ChannelRequestUsingNullRemoteId()
@@ -316,6 +319,50 @@ bool BackgroundActivation()
     return true;
 }
 
+bool RegisterActivator()
+{
+    try
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+            winrt::guid("00000000-0000-0000-0000-000000000001")); // same clsid as app manifest
+
+        auto token = PushNotificationManager::RegisterActivator(info);
+        if (token.Cookie() == 0 || token.TaskRegistration() == nullptr)
+        {
+            return false;
+        }
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool UnregisterActivator()
+{
+    try
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+            winrt::guid("00000000-0000-0000-0000-000000000001")); // same clsid as app manifest
+
+        auto token = PushNotificationManager::RegisterActivator(info);
+        if (token.Cookie() == 0 || token.TaskRegistration() == nullptr)
+        {
+            return false;
+        }
+
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
+    }
+    catch (...)
+    {
+        return false;
+    }
+    return true;
+}
 
 bool runUnitTest(std::string unitTest)
 {
@@ -341,6 +388,12 @@ bool runUnitTest(std::string unitTest)
 
     case UnitTest::backgroundActivation:
         return BackgroundActivation();
+
+    case UnitTest::registerActivator:
+        return RegisterActivator();
+
+    case UnitTest::unregisterActivator:
+        return UnregisterActivator();
 
     default:
         return false;
@@ -398,5 +451,6 @@ int main()
             signalPhase(c_testFailureEventName);
         }
     }
+    
     return 0;
 };

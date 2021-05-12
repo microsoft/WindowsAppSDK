@@ -41,11 +41,26 @@
                 <uap:DefaultTile Wide310x150Logo="taef.png"/>
                 <uap:SplashScreen Image="taef.png" uap5:Optional="true"/>
             </uap:VisualElements>
+            <Extensions>
+                <uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
+                    <uap:Protocol Name="reuniontestprotocol-packaged">
+                        <uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <com:Extension Category="windows.comServer">
+                    <com:ComServer>
+                        <com:ExeServer Executable="PushActivationTestApp\PushActivationTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
+                            <com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b3" DisplayName="Reunion Push" />
+                        </com:ExeServer>
+                    </com:ComServer>
+                </com:Extension>
+            </Extensions>
         </Application>
     </Applications>
 
     <Capabilities>
         <rescap:Capability Name="packageManagement" />
         <rescap:Capability Name="packageQuery" />
+        <rescap:Capability Name="runFullTrust" />
     </Capabilities>
 </Package>

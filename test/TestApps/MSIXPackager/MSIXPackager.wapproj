@@ -63,7 +63,7 @@
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <AppxPackageDir>C:\Users\purifoypaul\Desktop\Work\ProjectReunion\BuildOutput\Debug\x64\PushNotificationsTestPackages\</AppxPackageDir>
     <EntryPointProjectUniqueName>..\PushActivationTestApp\PushActivationTestApp.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateKeyFile>C:\Users\purifoypaul\Desktop\Work\ProjectReunion\temp\MSTest.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>CCEA84D44222EFE65E78D039BF93CFE714D5F531</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <AppxBundle>Always</AppxBundle>
@@ -108,6 +108,7 @@
     <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Images\StoreLogo.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
+    <None Include="MSIXPackager_TemporaryKey.pfx" />
     <None Include="MSTest.pfx" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
