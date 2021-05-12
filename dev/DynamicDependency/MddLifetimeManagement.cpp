@@ -29,7 +29,7 @@ class DDLMPackage
 {
 public:
     DDLMPackage(
-        const std::wstring packageFullName,
+        const std::wstring& packageFullName,
         PACKAGE_VERSION version) :
         m_packageFullName(packageFullName),
         m_version(version)
@@ -54,14 +54,14 @@ public:
             auto deploymentResult{ packageManager.RemovePackageAsync(m_packageFullName.c_str()).get() };
             if (!deploymentResult)
             {
-                const auto hr{ deploymentResult.ExtendedErrorCode() };
+                const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
                 if (hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE))
                 {
-                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls. Will try again later", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
+                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls. Will try again later", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
                 }
                 else
                 {
-                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
+                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
                 }
             }
         }
@@ -118,7 +118,8 @@ STDAPI MddLifetimeManagementGC() noexcept try
                 // Build the list of DDLMs
                 std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
 
-                // Look for windows.appExtension with name="com.microsoft.reunion.ddlm.<majorversion>.<minorversion>.<architecture>"
+                // Look for windows.appExtension with name="com.microsoft.reunion.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
+                // NOTE: We don't support VersionTag (i.e. we only support 'release' versions)
                 WCHAR appExtensionName[100]{};
                 wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, architecture);
 
@@ -143,7 +144,7 @@ STDAPI MddLifetimeManagementGC() noexcept try
                     const auto id{ appExtension.Id() };
                     PACKAGE_VERSION version{};
                     WCHAR architectureAsString[9 + 1]{};
-                    const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345.abcdefghi") - 1 }; // -1 for length not counting null-terminator
+                    const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345-abcdefghi") - 1 }; // -1 for length not counting null-terminator
                     if ((id.size() >= maxIdLength) ||
                         (swscanf_s(id.c_str(), L"ddlm-%hu.%hu.%hu.%hu-%9s", &version.Major, &version.Minor, &version.Build, &version.Revision, architectureAsString, static_cast<unsigned>(ARRAYSIZE(architectureAsString))) != 5))
                     {

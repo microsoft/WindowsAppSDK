@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿
+#pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult.g.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -7,15 +8,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         PushNotificationCreateChannelResult() = default;
 
-        PushNotificationCreateChannelResult(winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel const& channel, hresult const& extendedError, winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus const& status);
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel Channel();
+        PushNotificationCreateChannelResult(Microsoft::Windows::PushNotifications::PushNotificationChannel const& channel, hresult const& extendedError, Microsoft::Windows::PushNotifications::PushNotificationChannelStatus const& status);
+        Microsoft::Windows::PushNotifications::PushNotificationChannel Channel();
         winrt::hresult ExtendedError();
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus Status();
+        Microsoft::Windows::PushNotifications::PushNotificationChannelStatus Status();
 
     private:
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        Microsoft::Windows::PushNotifications::PushNotificationChannel m_channel{ nullptr };
         winrt::hresult m_extendedError;
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannelStatus m_status;
+        Microsoft::Windows::PushNotifications::PushNotificationChannelStatus m_status;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
