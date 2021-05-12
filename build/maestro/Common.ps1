@@ -4,7 +4,8 @@ Write-Host "Hello from Common.ps1"
 # https://dev.azure.com/fabrikamfiber/
 function GetOrgNameFromAzureDevOpsCollectionUri([string]$CollectionUri)
 {
-    $Split1 = $CollectionUri.Split("//")
+    $test = "https://microsoft.visualstudio.com/"
+    $Split1 = $test.Split("//")
     Write-Host "S1 " $Split1[1]
     $temp1 = $Split1[1]
     $Split2 = $temp1.Split(".")
