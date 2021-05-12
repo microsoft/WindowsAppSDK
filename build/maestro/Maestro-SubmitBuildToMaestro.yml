@@ -54,11 +54,11 @@ steps:
         $azureDevOpsRepo = ""
         if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
         {
-          $gitHubRepo = "$(Build.Repository.Name)"
+          $gitHubRepo = "$(Build.Repository.Uri)"
         }
         if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
         {
-          $azureDevOpsRepo = "$(Build.Repository.Name)"
+          $azureDevOpsRepo = "$(Build.Repository.Uri)"
         }
 
         $jsonBase = 
