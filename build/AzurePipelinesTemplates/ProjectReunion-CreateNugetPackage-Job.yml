@@ -151,7 +151,7 @@ jobs:
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
 
-  - template: maestro\Maestro-SubmitBuildToMaestro.yml
+  - template: ..\maestro\Maestro-SubmitBuildToMaestro.yml
     parameters:
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
       AssetVersion: '$(version).${{ parameters.prereleaseVersionTag }}'
