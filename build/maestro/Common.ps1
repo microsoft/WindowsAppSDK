@@ -10,5 +10,13 @@ function GetOrgNameFromAzureDevOpsCollectionUri([string]$CollectionUri)
     $temp1 = $Split1[1]
     $Split2 = $temp1.Split(".")
     Write-Host "S2 " $Split2[0]
+
+
+    $Inputstring ="Sonali Bhatt is Database Administrator"
+    $CharArray =$InputString.Split(" ")
+    $String1= $CharArray[0]
+    $String2= $CharArray[4] 
+    write-host $String1
+    write-host $String2
     return $Split2[0]
 }
