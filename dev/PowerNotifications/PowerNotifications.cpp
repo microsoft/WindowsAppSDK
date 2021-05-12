@@ -4,7 +4,7 @@
 #include <pch.h>
 #include <future>
 #include <PowerNotifications.h>
-#include <PowerNotificationsPal.h>
+#include <frameworkudk\PowerNotificationsPal.h>
 #include <PowerManager.g.cpp>
 #include <powrprof.h>
 

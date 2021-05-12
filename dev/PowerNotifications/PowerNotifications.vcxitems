@@ -14,12 +14,10 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)ClosedSourceMock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PowerNotifications.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)PowerNotifications.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PowerNotificationsPal.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PowerNotifications.idl" />
