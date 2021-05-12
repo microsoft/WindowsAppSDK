@@ -14,11 +14,6 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   # Scans the root source folder for security vulnerability
-  - template: maestro\Maestro-SubmitBuildToMaestro.yml
-    parameters:
-      AssetName: 'test1'
-      AssetVersion: '1.0.1'
-      IsGitHubRepo: true
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
