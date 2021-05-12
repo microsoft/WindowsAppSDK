@@ -45,7 +45,8 @@ steps:
         #     "commit"="maestroTestValue";
         #   }
         # )
-        
+
+        Write-Host "collectionuri: $(System.CollectionUri)"
         $devOpsAccount = GetOrgNameFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
         Write-Host "reposiitory: $(Build.Repository.Uri)"
         Write-Host "account: " $devOpsAccount
