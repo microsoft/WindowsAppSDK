@@ -3,7 +3,7 @@
 
 #include <pch.h>
 #include <PowerNotifications.h>
-#include <PowerNotificationsPal.h>
+#include <frameworkudk\PowerNotificationsPal.h>
 #include <PowerManager.g.cpp>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
