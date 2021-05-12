@@ -1,8 +1,8 @@
 # see https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases for info on yaml ADO jobs
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
-  minimumExpectedTestsExecutedCount: 500  # Sanity check for minimum expected tests to be reported
-  rerunPassesRequiredToAvoidFailure: 5
+- template: ProjectReunion-Versions.yml
+- template: ProjectReunion-CommonVariables.yml
 
 jobs:
 - job: CredScan
@@ -138,6 +138,8 @@ jobs:
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
   pool:
     vmImage: 'windows-latest'
+  variables:
+    rerunPassesRequiredToAvoidFailure: 5
   steps:
   - template: publish-mrt.yml
 
