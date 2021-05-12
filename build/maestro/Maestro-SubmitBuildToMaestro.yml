@@ -1,8 +1,7 @@
 parameters:
   AssetName: ''
   AssetVersion: ''
-  Repository: ''
-  IsGitHub: true
+  IsGitHubRepo: true
 steps:
   - task: PowerShell@2
     displayName: Build JsonBody 
@@ -50,6 +49,17 @@ steps:
         $devOpsAccount = GetOrgNameFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
         Write-Host "reposiitory: $(Build.Repository.Uri)"
         Write-Host "account: " $devOpsAccount
+        
+        $gitHubRepo = ""
+        $azureDevOpsRepo = ""
+        if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
+        {
+          $gitHubRepo = "$(Build.Repository.Name)"
+        }
+        if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
+        {
+          $azureDevOpsRepo = "$(Build.Repository.Name)"
+        }
 
         $jsonBase = 
           @{
@@ -61,9 +71,9 @@ steps:
             "azureDevOpsAccount"=$devOpsAccount;
             "azureDevOpsProject"="$(System.TeamProject)";
             "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
-            "azureDevOpsRepository"="maestroTestValue";
+            "azureDevOpsRepository"=$azureDevOpsRepo;
             "azureDevOpsBranch"="$(Build.SourceBranch)";
-            "gitHubRepository"="maestroTestValue";
+            "gitHubRepository"=$gitHubRepo;
             "gitHubBranch"="$(Build.SourceBranch)";
             "released"=$true;
             "stable"=$true
