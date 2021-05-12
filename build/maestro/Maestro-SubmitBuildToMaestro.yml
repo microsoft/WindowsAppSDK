@@ -47,8 +47,8 @@ steps:
         # )
         
         $devOpsAccount = GetOrgNameFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
-        WriteHost "reposiitory: $(Build.Repository.Uri)"
-        WriteHost "account: " $devOpsAccount
+        Write-Host "reposiitory: $(Build.Repository.Uri)"
+        Write-Host "account: " $devOpsAccount
 
         $jsonBase = 
           @{
