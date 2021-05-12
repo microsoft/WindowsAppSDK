@@ -8,7 +8,6 @@ namespace Test::AppLifecycle
     winrt::Windows::Storage::StorageFile OpenDocFile(std::wstring filename);
     wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
         const std::wstring& directory);
-    void RunCertUtil(const std::wstring& path, bool removeCert = false);
     void InstallPackage(const std::wstring& packagePath);
     void UninstallPackage(const std::wstring& packageFullName);
     wil::unique_event CreateTestEvent(const std::wstring& eventName);

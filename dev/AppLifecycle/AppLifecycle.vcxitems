@@ -16,20 +16,27 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AppInstance.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Association.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)EncodedLaunchExecuteCommand.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)RedirectionRequest.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivatedEventArgsBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppActivationArguments.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Association.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExecuteCommandBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionContract.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FileActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedProcessList.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LaunchActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProtocolActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EncodedLaunchExecuteCommand.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RedirectionRequestQueue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RedirectionRequest.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SharedMemory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StartupActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ValueMarshaling.h" />
     <Midl Include="$(MSBuildThisFileDirectory)AppLifecycle.idl" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycle.h" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)AppLifecycle.cpp" />
   </ItemGroup>
 </Project>

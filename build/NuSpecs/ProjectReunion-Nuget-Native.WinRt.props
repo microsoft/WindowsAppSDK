@@ -10,9 +10,9 @@
 
   <!-- OutputType Exe corresponds to C++ -->
   <ItemGroup Condition="'$(OutputType)' == 'Exe'">
-    <Reference Include="Microsoft.ApplicationModel.Activation.winmd">
-      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.Activation.winmd</HintPath>
-      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ApplicationModel.Activation.dll</Implementation>
+    <Reference Include="Microsoft.Windows.AppLifecycle.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.Windows.AppLifecycle.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.ApplicationModel.DynamicDependency.winmd">

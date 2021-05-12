@@ -29,7 +29,7 @@ class DDLMPackage
 {
 public:
     DDLMPackage(
-        const std::wstring packageFullName,
+        const std::wstring& packageFullName,
         PACKAGE_VERSION version) :
         m_packageFullName(packageFullName),
         m_version(version)
@@ -54,14 +54,14 @@ public:
             auto deploymentResult{ packageManager.RemovePackageAsync(m_packageFullName.c_str()).get() };
             if (!deploymentResult)
             {
-                const auto hr{ deploymentResult.ExtendedErrorCode() };
+                const HRESULT hr{ deploymentResult.ExtendedErrorCode() };
                 if (hr == HRESULT_FROM_WIN32(ERROR_PACKAGES_IN_USE))
                 {
-                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls. Will try again later", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
+                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls. Will try again later", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
                 }
                 else
                 {
-                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
+                    (void) LOG_HR_MSG(deploymentResult.ExtendedErrorCode(), "RemovePackage('%ls') = 0x%0X %ls", m_packageFullName.c_str(), deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
                 }
             }
         }
