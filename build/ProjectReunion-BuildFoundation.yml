@@ -15,9 +15,10 @@ jobs:
   steps:
   - template: ..\maestro\Maestro-SubmitBuildToMaestro.yml
     parameters:
-      AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-      AssetVersion: '$(version).${{ parameters.prereleaseVersionTag }}'
       IsGitHubRepo: true
+      # AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
+      # AssetVersion: '$(version).${{ parameters.prereleaseVersionTag }}'
+
 
 #   # Scans the root source folder for security vulnerability
 #   - task: CredScan@2
