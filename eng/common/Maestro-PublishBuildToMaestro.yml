@@ -1,14 +1,35 @@
 parameters:
-  AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-  AssetVersion: '0.8.0-main.20210513.0.nightly'
+  AssetName: ''
+  AssetVersion: ''
   IsGitHubRepo: true
 steps:
+ - task: PowerShell@2
+    displayName: Check prerequisites
+    inputs:
+      targetType: 'inline'
+      script: |
+        $succeeded = $true
+        if ([string]::IsNullOrEmpty('$(MaestroUri)'))
+        {
+          Write-Host "Pipeline Variable 'MaestroUri' must have a value"
+          $succeeded = $false
+        }
+        if ([string]::IsNullOrEmpty('$(MaestroToken)'))
+        {
+          Write-Host "Pipeline Variable 'MaestroToken' must have a value"
+          $succeeded = $false
+        }
+        if (-not $succeeded)
+        {
+          Write-Host "##vso[task.complete result=Failed;]DONE"
+        }
+
   - task: PowerShell@2
     displayName: Build JsonBody 
     inputs:
       targetType: 'inline'
       script: |
-        . .\build\maestro\Common.ps1
+        . .\build\maestro\MaestroHelpers.ps1
         
         $jsonBase = @{}
 
@@ -46,7 +67,7 @@ steps:
         # )
 
         Write-Host "collectionuri: $(System.CollectionUri)"
-        $devOpsAccount = GetOrgNameFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
+        $devOpsAccount = ExtractOrgFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
         Write-Host "reposiitory: $(Build.Repository.Uri)"
         Write-Host "account: " $devOpsAccount
         

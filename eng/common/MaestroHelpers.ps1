@@ -1,8 +1,6 @@
-Write-Host "Hello from Common.ps1"
-
 # Pram: CollectionUri must be in the form below
-# https://dev.azure.com/fabrikamfiber/
-function GetOrgNameFromAzureDevOpsCollectionUri([string]$CollectionUri)
+# https://microsoft.visualstudio.com/
+function ExtractOrgFromAzureDevOpsCollectionUri([string]$CollectionUri)
 {
     $Split1 = $CollectionUri.Split(".")
     $temp1 = $Split1[0]
