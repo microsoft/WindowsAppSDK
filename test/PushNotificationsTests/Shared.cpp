@@ -18,7 +18,7 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
-namespace Test::AppLifecycle
+namespace Test::PushNotifications
 {
     StorageFile CreateDocFile(std::wstring filename)
     {
@@ -55,6 +55,7 @@ namespace Test::AppLifecycle
     {
         std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
         std::wstring args{ action + L" TrustedPeople " + path };
+        // VERIFY_ARE_NOT_EQUAL(args, args);
         auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
             args.c_str(), g_deploymentDir);
 

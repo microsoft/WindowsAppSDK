@@ -103,7 +103,7 @@ namespace ProjectReunionInstaller {
     wil::com_ptr<IStream> CreateMemoryStream(const BYTE* data, size_t size)
     {
         wil::com_ptr<IStream> retval;
-        retval.attach(::SHCreateMemStream(data, static_cast<UINT>(size)));
+        retval.attach(::SHCreateMemStream(data, size));
         return retval;
     }
 

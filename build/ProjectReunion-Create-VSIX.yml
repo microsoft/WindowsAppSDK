@@ -10,9 +10,6 @@ parameters:
     # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
     type: string
     default: 'default'
-  - name: "EnableExperimentalVSIXFeatures"
-    type: boolean
-    default: False
 
 jobs:
 
@@ -31,7 +28,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+      msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}"'
 
   - task: VSBuild@1
     displayName: 'Build ProjectReunion.Extension.sln'
@@ -39,7 +36,7 @@ jobs:
       solution: dev\VSIX\ProjectReunion.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+      msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}"'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'
@@ -55,7 +52,7 @@ jobs:
         FolderPath: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
         Pattern: ProjectReunion.Extension.vsix
         signConfigType: inlineSignParams
-        inlineOperation: |
+        inlineOperation: | 
           [
               {
                   "KeyCode" : "CP-233016",
@@ -75,16 +72,8 @@ jobs:
               }
           ]
 
-  - ${{ if eq( parameters.EnableExperimentalVSIXFeatures, false) }}:
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish ProjectReunion.Extension.VSIX'
-      inputs:
-        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.vsix'
-        artifactName: 'VSIX'
-
-  - ${{ if eq( parameters.EnableExperimentalVSIXFeatures, true) }}:
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish ProjectReunion.Extension.Preview.VSIX'
-      inputs:
-        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.Preview.vsix'
-        artifactName: 'VSIX'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish ProjectReunion.Extension.VSIX'
+    inputs:
+      PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.vsix'
+      artifactName: 'VSIX'

@@ -40,7 +40,7 @@ void Test::DynamicDependency::Test_WinRT::Create_RegistryLifetime_NoExist()
     }
     catch (const winrt::hresult_error& e)
     {
-        constexpr int32_t expectedHR{ HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED) };
+        const int32_t expectedHR{ HRESULT_FROM_WIN32(ERROR_CONTEXT_EXPIRED) };
         VERIFY_ARE_EQUAL(expectedHR, e.code().value, e.message().c_str());
     }
 

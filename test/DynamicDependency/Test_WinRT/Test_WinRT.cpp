@@ -49,7 +49,7 @@ bool Test::DynamicDependency::Test_WinRT::Setup()
     // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
     const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
     const PACKAGE_VERSION minVersion{};
-    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+    VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, minVersion));
 
     m_bootstrapDll = std::move(bootstrapDll);
 

@@ -2,30 +2,29 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     // Association registry key values.
-    static PCWSTR c_openWithProgIdsKeyName{ L"OpenWithProgids" };
-    static PCWSTR c_softwareClassesKeyPath{ LR"(Software\Classes\)" };
-    static PCWSTR c_applicationKeyName{ L"Application" };
-    static PCWSTR c_applicationNameValueName{ L"ApplicationName" };
-    static PCWSTR c_defaultIconKeyName{ L"DefaultIcon" };
-    static PCWSTR c_appUserModelIdValueName{ L"AppUserModelId" };
-    static PCWSTR c_applicationsKeyPath{ LR"(Software\Microsoft\ReunionApplications\)" };
-    static PCWSTR c_capabilitiesKeyPath{ LR"(\Capabilties)" };
-    static PCWSTR c_registeredApplicationsKeyPath{ LR"(Software\RegisteredApplications\)" };
-    static PCWSTR c_shellKeyName{ L"shell" };
-    static PCWSTR c_commandKeyName{ L"command" };
-    static PCWSTR c_delegateExecuteValueName{ L"DelegateExecute" };
-    static PCWSTR c_urlProtocolValueName{ L"URL Protocol" };
-    static PCWSTR c_urlDefaultValuePrefix{ L"URL:" };
-    static PCWSTR c_openVerbName{ L"open" };
-    static PCWSTR c_commandLineArgumentFormat{ L"%1" };
+    static LPCWSTR c_openWithProgIdsKeyName{ L"OpenWithProgids" };
+    static LPCWSTR c_softwareClassesKeyPath{ LR"(Software\Classes\)" };
+    static LPCWSTR c_applicationKeyName{ L"Application" };
+    static LPCWSTR c_applicationNameValueName{ L"ApplicationName" };
+    static LPCWSTR c_defaultIconKeyName{ L"DefaultIcon" };
+    static LPCWSTR c_appUserModelIdValueName{ L"AppUserModelId" };
+    static LPCWSTR c_applicationsKeyPath{ LR"(Software\Microsoft\ReunionApplications\)" };
+    static LPCWSTR c_capabilitiesKeyPath{ LR"(\Capabilties)" };
+    static LPCWSTR c_registeredApplicationsKeyPath{ LR"(Software\RegisteredApplications\)" };
+    static LPCWSTR c_shellKeyName{ L"shell" };
+    static LPCWSTR c_commandKeyName{ L"command" };
+    static LPCWSTR c_delegateExecuteValueName{ L"DelegateExecute" };
+    static LPCWSTR c_urlProtocolValueName{ L"URL Protocol" };
+    static LPCWSTR c_urlDefaultValuePrefix{ L"URL:" };
+    static LPCWSTR c_openVerbName{ L"open" };
 
     // ProgId generation values.
-    static PCWSTR c_progIdPrefix{ L"App." };
-    static PCWSTR c_fileTypeProgIdSuffix{ L".File" };
-    static PCWSTR c_protocolProgIdSuffix{ L".Protocol" };
+    static LPCWSTR c_progIdPrefix{ L"App." };
+    static LPCWSTR c_fileTypeProgIdSuffix{ L".File" };
+    static LPCWSTR c_protocolProgIdSuffix{ L".Protocol" };
 
     enum AssociationType
     {
@@ -37,7 +36,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     std::wstring GetFullIdentityString();
     bool HasIdentity();
     std::wstring GetModulePath();
-    std::wstring ComputeAppId(const std::wstring& customSeed = L"");
+    std::wstring ComputeAppId(const std::wstring& customSeed);
     std::wstring ComputeProgId(AssociationType type);
     std::wstring ComputeProgId(const std::wstring& appId, AssociationType type);
     std::wstring CreateAssocKeyPath(const std::wstring& assoc);

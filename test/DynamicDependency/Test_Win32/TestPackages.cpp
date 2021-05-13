@@ -44,7 +44,7 @@ namespace Test::Packages
         auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
         if (FAILED(deploymentResult.ExtendedErrorCode()))
         {
-            auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
+            auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
             VERIFY_FAIL(message.get());
         }
     }
@@ -63,7 +63,7 @@ namespace Test::Packages
         auto deploymentResult{ packageManager.RemovePackageAsync(packageFullName).get() };
         if (!deploymentResult)
         {
-            auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode().value, deploymentResult.ErrorText().c_str());
+            auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
             VERIFY_FAIL(message.get());
         }
     }

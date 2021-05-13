@@ -5,15 +5,13 @@
 #include <winrt/Windows.Foundation.h>
 #include "ActivatedEventArgsBase.h"
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static PCWSTR c_protocolContractId = L"Windows.Protocol";
-
-    class ProtocolActivatedEventArgs : public winrt::implements<ProtocolActivatedEventArgs, ActivatedEventArgsBase, IProtocolActivatedEventArgs,
-        IInternalValueMarshalable>
+    class ProtocolActivatedEventArgs : public winrt::implements<ProtocolActivatedEventArgs, 
+        ActivatedEventArgsBase, IProtocolActivatedEventArgs>
     {
     public:
         ProtocolActivatedEventArgs(const std::wstring& uri) : m_uri(winrt::Windows::Foundation::Uri(uri))
@@ -21,18 +19,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_kind = ActivationKind::Protocol;
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
         {
-            auto query = uri.QueryParsed();
-            auto args = query.GetFirstValueByName(L"Uri").c_str();
-            return make<ProtocolActivatedEventArgs>(args);
-        }
-
-        // IInternalValueMarshalable
-        winrt::Windows::Foundation::Uri Serialize()
-        {
-            auto uri = GenerateEncodedLaunchUri(L"App", c_protocolContractId) + L"&Uri=" + m_uri.AbsoluteUri();
-            return winrt::Windows::Foundation::Uri(uri);
+            return protocolArgs;
         }
 
         // IProtocolActivatedEventArgs

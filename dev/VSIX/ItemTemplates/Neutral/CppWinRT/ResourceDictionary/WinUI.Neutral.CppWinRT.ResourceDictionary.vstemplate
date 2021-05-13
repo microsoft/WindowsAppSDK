@@ -20,3 +20,4 @@
     <ProjectItem OpenInEditor="true" ReplaceParameters="true" ItemType="Page" TargetFileName="$fileinputname$.xaml">ResourceDictionary.xaml</ProjectItem>
   </TemplateContent>
 </VSTemplate>
+

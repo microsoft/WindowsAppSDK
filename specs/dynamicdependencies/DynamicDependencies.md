@@ -1263,13 +1263,9 @@ This header contains the Bootstrap API
 /// for use by the current process. If multiple packages meet the criteria the best
 /// candidate is selected.
 ///
-/// @param majorMinorVersion major and minor version of Project Reunion's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
-/// @param versionTag version tag (if any), e.g. "prerelease".
 /// @param minVersion the minimum version to use
 STDAPI MddBootstrapInitialize(
-    UINT32 majorMinorVersion,
-    PCWSTR versionTag,
-    PACKAGE_VERSION minVersion) noexcept;
+    const PACKAGE_VERSION minVersion) noexcept;
 
 /// Undo the changes made by MddBoostrapInitialize().
 ///

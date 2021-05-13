@@ -29,7 +29,7 @@ namespace Test::FileSystem
         // Get the handle of the module containing this code, not the module of the process hosting it.
         wil::unique_hmodule dll;
         THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-            reinterpret_cast<PCWSTR>(GetTestAbsoluteFilename), &dll));
+            reinterpret_cast<LPCWSTR>(GetTestAbsoluteFilename), &dll));
 
         VERIFY_IS_NOT_NULL(dll.get());
         return GetModulePath(dll.get());

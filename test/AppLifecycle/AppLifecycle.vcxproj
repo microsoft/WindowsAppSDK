@@ -327,15 +327,13 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <PropertyGroup>
-    <VCLibsDebugConfigName Condition="$(Configuration) == 'Debug'">.Debug</VCLibsDebugConfigName>
-    <TestPkgDebugConfigName Condition="$(Configuration) == 'Debug'">_Debug</TestPkgDebugConfigName>
-  </PropertyGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msix" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
+    <!--
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msixbundle" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).cer" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.cer" TreatOutputAsContent="true" />
+    -->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dev\ProjectReunion_BootstrapDLL\ProjectReunion_BootstrapDLL.vcxproj">
@@ -346,8 +344,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.AppLifecycle.Activation">
-      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+    <Reference Include="Microsoft.ApplicationModel.Activation">
+      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.Activation.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

@@ -5,14 +5,12 @@
 #include <winrt/Windows.Foundation.h>
 #include "ActivatedEventArgsBase.h"
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static PCWSTR c_startupTaskContractId = L"Windows.StartupTask";
-
     class StartupActivatedEventArgs : public winrt::implements<StartupActivatedEventArgs,
-        ActivatedEventArgsBase, IStartupTaskActivatedEventArgs, IInternalValueMarshalable>
+        ActivatedEventArgsBase, IStartupTaskActivatedEventArgs>
     {
     public:
         StartupActivatedEventArgs(const std::wstring& taskId) : m_taskId(taskId)
@@ -20,28 +18,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_kind = ActivationKind::StartupTask;
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
         {
-            auto query = uri.QueryParsed();
+            auto query = protocolArgs.Uri().QueryParsed();
             std::wstring taskId = query.GetFirstValueByName(L"TaskId").c_str();
             return make<StartupActivatedEventArgs>(taskId);
-        }
-
-        // IInternalValueMarshalable
-        winrt::Windows::Foundation::Uri Serialize()
-        {
-            auto uri = GenerateEncodedLaunchUri(L"App", c_startupTaskContractId) + L"&TaskId=" + m_taskId;
-            return winrt::Windows::Foundation::Uri(uri);
         }
 
         // IStartupTaskActivatedEventArgs
         winrt::hstring TaskId()
         {
-            return m_taskId.c_str();
+            return m_taskId;
         }
 
     private:
-        std::wstring m_taskId;
+        winrt::hstring m_taskId;
     };
 }
 

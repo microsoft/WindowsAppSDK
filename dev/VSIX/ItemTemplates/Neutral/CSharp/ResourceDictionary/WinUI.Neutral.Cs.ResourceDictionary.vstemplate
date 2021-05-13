@@ -22,3 +22,4 @@
     <ProjectItem OpenInEditor="true" ReplaceParameters="true" ItemType="Page" CustomTool="MSBuild:Compile" TargetFileName="$fileinputname$.xaml">ResourceDictionary.xaml</ProjectItem>
   </TemplateContent>
 </VSTemplate>
+

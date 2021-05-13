@@ -3,16 +3,13 @@
 #pragma once
 
 #include "ActivatedEventArgsBase.h"
-#include "ValueMarshaling.h"
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static PCWSTR c_launchContractId = L"Windows.Launch";
-
     class LaunchActivatedEventArgs : public winrt::implements<LaunchActivatedEventArgs,
-        ActivatedEventArgsBase, ILaunchActivatedEventArgs, IInternalValueMarshalable>
+        ActivatedEventArgsBase, ILaunchActivatedEventArgs>
     {
     public:
         LaunchActivatedEventArgs(const std::wstring& args) : m_args(args)
@@ -20,18 +17,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_kind = ActivationKind::Launch;
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
         {
-            auto query = uri.QueryParsed();
+            auto query = protocolArgs.Uri().QueryParsed();
             auto args = query.GetFirstValueByName(L"Arguments").c_str();
             return make<LaunchActivatedEventArgs>(args);
-        }
-
-        // IInternalValueMarshalable
-        winrt::Windows::Foundation::Uri Serialize()
-        {
-            auto uri = GenerateEncodedLaunchUri(L"App", c_launchContractId) + L"&Arguments=" + m_args;
-            return winrt::Windows::Foundation::Uri(uri);
         }
 
         // ILaunchActivatedEventArgs

@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "ExtensionContract.h"
 #include "EncodedLaunchExecuteCommand.h"
 #include "ActivationRegistrationManager.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     IFACEMETHODIMP EncodedLaunchExecuteCommand::Execute() noexcept try
     {

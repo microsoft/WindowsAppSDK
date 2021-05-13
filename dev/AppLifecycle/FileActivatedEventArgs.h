@@ -4,60 +4,42 @@
 
 #include "ActivatedEventArgsBase.h"
 
-namespace winrt::Microsoft::Windows::AppLifecycle::implementation
+namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 {
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Storage;
 
-    static PCWSTR c_fileContractId = L"Windows.File";
-
-    class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs, ActivatedEventArgsBase, IFileActivatedEventArgs,
-        IInternalValueMarshalable>
+    class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs,
+        ActivatedEventArgsBase, IFileActivatedEventArgs>
     {
     public:
-        FileActivatedEventArgs(const std::wstring verb, const std::wstring file, const bool delayVerification = false)
+        FileActivatedEventArgs(const std::wstring contractData)
         {
-            if (verb.empty())
+            if (contractData.empty())
             {
-                throw std::invalid_argument("verb");
-            }
-
-            if (file.empty())
-            {
-                throw std::invalid_argument("file");
+                throw std::invalid_argument("contractData");
             }
 
             m_kind = ActivationKind::File;
-            m_verb = verb;
-            m_path = file;
+
+            auto delimPos = contractData.find_first_of(L",");
+            m_verb = contractData.substr(0, delimPos);
+            m_paths = contractData.substr(delimPos + 1);
             m_files = winrt::single_threaded_vector<IStorageItem>();
 
-            // There is a scenario where we just want to create an object to serialize it.  In that situation
-            // skipping verification allows for template variables to be used.  Example: %1 may be used when
-            // using serialization to generate the encoded arguments for a file type association.
-            if (!delayVerification)
-            {
-                // Currently we only support one file in the array, because the
-                // activation method forces a new process for each item in the array.
-                m_files.Append(StorageFile::GetFileFromPathAsync(m_path.c_str()).get());
-            }
+            // Currently we only support one file in the array, because the
+            // activation method forces a new process for each item in the array.
+            m_files.Append(StorageFile::GetFileFromPathAsync(m_paths.c_str()).get());
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static IActivatedEventArgs CreateFromProtocol(IProtocolActivatedEventArgs const& protocolArgs)
         {
-            auto query = uri.QueryParsed();
+            auto query = protocolArgs.Uri().QueryParsed();
             std::wstring verb = query.GetFirstValueByName(L"Verb").c_str();
             std::wstring file = query.GetFirstValueByName(L"File").c_str();
-            return make<FileActivatedEventArgs>(verb, file);
-        }
-
-        // IInternalValueMarshalable
-        winrt::Windows::Foundation::Uri Serialize()
-        {
-            auto uri = GenerateEncodedLaunchUri(L"App", c_fileContractId);
-            uri += L"&Verb=" + m_verb + std::wstring(L"&File=") + m_path;
-            return winrt::Windows::Foundation::Uri(uri);
+            auto args = verb + L"," + file;
+            return make<FileActivatedEventArgs>(args);
         }
 
         // IFileActivatedEventArgs
@@ -73,7 +55,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     private:
         std::wstring m_verb;
-        std::wstring m_path;
+        std::wstring m_paths;
         IVector<IStorageItem> m_files;
     };
 }

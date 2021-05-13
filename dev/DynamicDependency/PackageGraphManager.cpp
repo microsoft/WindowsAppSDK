@@ -35,7 +35,7 @@ HRESULT MddCore::PackageGraphManager::ResolvePackageDependency(
 }
 
 HRESULT MddCore::PackageGraphManager::AddToPackageGraph(
-    _In_ PCWSTR packageDependencyId,
+    PCWSTR packageDependencyId,
     INT32 rank,
     MddAddPackageDependencyOptions options,
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* context,
