@@ -145,6 +145,7 @@ steps:
       !**\*TestAdapter.dll
       !**\TE.*.dll
       !**\obj\**
+      !**\MrtCoreUnpackagedTests.dll
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
     testRunTitle: 'test MRT $(buildPlatform)'
     platform: '$(buildPlatform)'

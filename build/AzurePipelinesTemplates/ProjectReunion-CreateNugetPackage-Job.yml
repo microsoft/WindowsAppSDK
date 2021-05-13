@@ -7,12 +7,8 @@ parameters:
 # The "primary" build arch is the one that the nuspec gets its winmd, pri, and other neutral files from
   primaryBuildArch: x86
   buildFlavor: Release
-  useReleaseTag: 'false'
   prereleaseVersionTag: 'prerelease'
   condition: ''
-  major: '0'
-  minor: '5'
-  patch: '0'
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -31,7 +27,6 @@ jobs:
       echo parameters.publishPath '${{ parameters.publishPath }}'
       echo buildrevision=$(buildrevision)
       echo builddate=$(builddate)
-      echo useReleaseTag=${{ parameters.useReleaseTag }}
     displayName: 'CreateNugetPackage: Display parameters'
 
   - task: DownloadBuildArtifacts@0
@@ -64,7 +59,7 @@ jobs:
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.ApplicationModel.Activation.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.ApplicationModel.Activation.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.ApplicationModel.DynamicDependency.xml"
 
   # - script: |
@@ -87,15 +82,23 @@ jobs:
 
   #   displayName: 'build-nupkg.ps1'
 
+  - task: PowerShell@2
+    displayName: Update metapackage version
+    inputs:
+      targetType: 'inline'
+      script: |
+        $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
+        Write-Host version: $packageVersion
+        [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
+        $publicNuspec.package.metadata.version = $packageVersion
+        Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
+
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'Pack Full Nuget Package'
     inputs:
       command: 'pack'
       packagesToPack: '$(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec'
-      versioningScheme: 'byPrereleaseNumber'
-      majorVersion: ${{ parameters.major }}
-      minorVersion: ${{ parameters.minor }}
-      patchVersion: ${{ parameters.patch }}
+      versioningScheme: 'off'
       basePath: '${{ parameters.fullnupkgdir }}'
       packDestination: ${{ parameters.fullnupkgdir }}
 
