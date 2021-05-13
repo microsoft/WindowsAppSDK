@@ -49,7 +49,7 @@ namespace Microsoft.Windows.AppLifecycle
         PrintSupportSettingsUI,
         PhoneCallActivation,
         VpnForeground,
-
+        Push
         // NOTE: Values below 5000 are designated for the platform.  The above list is kept in sync with
         // Windows.ApplicationModel.Activation.ActivationKind.
     };
