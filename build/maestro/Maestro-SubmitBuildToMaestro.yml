@@ -90,4 +90,4 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\maestro\MaestroPostRequest.ps1
-      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -jsonBodyPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
