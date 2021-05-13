@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
@@ -558,6 +558,23 @@ public:
             MrmFreeResource(resourceString);
             MrmDestroyResourceManager(resourceManager);
         }
+    }
+
+    TEST_METHOD(GetFilePath)
+    {
+        wchar_t* path;
+        Assert::AreEqual(MrmGetFilePathFromName(L"resources.pri", &path), S_OK);
+        Assert::IsNotNull(wcsstr(path, L"resources.pri"));
+        MrmFreeResource(path);
+
+        Assert::AreEqual(MrmGetFilePathFromName(L"something.pri", &path), S_OK);
+        // Even if the file doesn't exist, we will still return a path. This is for those don't use PRI for resource.
+        Assert::IsNotNull(wcsstr(path, L"something.pri"));
+        MrmFreeResource(path);
+
+        Assert::AreEqual(MrmGetFilePathFromName(nullptr, &path), S_OK);
+        Assert::IsNotNull(wcsstr(path, L"resources.pri"));
+        MrmFreeResource(path);
     }
 
 private:

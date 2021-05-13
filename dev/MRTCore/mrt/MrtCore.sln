@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseUnitTests", "mrm\UnitTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.ApplicationModel.Resources.Projection", "Microsoft.ApplicationModel.Resources\projection\Microsoft.ApplicationModel.Resources.Projection.csproj", "{42876BA9-25BB-46E7-9EE1-CA5FDF703C72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnpackagedTests", "Microsoft.ApplicationModel.Resources\UnpackagedTests\UnpackagedTests.csproj", "{3C618444-4B80-492E-8972-BFAEF8700A52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -154,6 +156,18 @@ Global
 		{42876BA9-25BB-46E7-9EE1-CA5FDF703C72}.Release|x64.Build.0 = Release|x64
 		{42876BA9-25BB-46E7-9EE1-CA5FDF703C72}.Release|x86.ActiveCfg = Release|x86
 		{42876BA9-25BB-46E7-9EE1-CA5FDF703C72}.Release|x86.Build.0 = Release|x86
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Debug|x64.ActiveCfg = Debug|x64
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Debug|x64.Build.0 = Debug|x64
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Debug|x86.ActiveCfg = Debug|Win32
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Debug|x86.Build.0 = Debug|Win32
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Release|ARM.ActiveCfg = Release|ARM
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Release|ARM64.ActiveCfg = Release|ARM64
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Release|x64.ActiveCfg = Release|x64
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Release|x64.Build.0 = Release|x64
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Release|x86.ActiveCfg = Release|Win32
+		{3C618444-4B80-492E-8972-BFAEF8700A52}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
