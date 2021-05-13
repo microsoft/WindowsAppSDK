@@ -55,6 +55,7 @@ steps:
         if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
         {
           $gitHubRepo = "$(Build.Repository.Uri)"
+          $azureDevOpsRepo = "$(Build.Repository.Uri)"
         }
         if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
         {
