@@ -85,9 +85,9 @@ steps:
         Write-host "Writing Json body"
         Write-host $body
 
-  # - task: powershell@2
-  #   displayName: 'Post Channel Test'
-  #   inputs:
-  #     targetType: filePath
-  #     filePath: build\maestro\MaestroPostRequest.ps1
-  #     arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+  - task: powershell@2
+    displayName: 'Post Channel Test'
+    inputs:
+      targetType: filePath
+      filePath: build\maestro\MaestroPostRequest.ps1
+      arguments: -Uri '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -JsonPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
