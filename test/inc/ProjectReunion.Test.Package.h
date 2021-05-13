@@ -58,6 +58,12 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
+
+    constexpr const UINT32 GetPackageVersionMajorMinor()
+    {
+        return static_cast<UINT32>((GetPackageVersion().Major << 16) | GetPackageVersion().Minor);
+    }
+    constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
 namespace Test::Packages::ProjectReunionFramework
@@ -125,14 +131,14 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-WIN32_FILE_ATTRIBUTE_DATA data{};
-const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
-const auto lastError{ ::GetLastError() };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+            WIN32_FILE_ATTRIBUTE_DATA data{};
+            const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
+            const auto lastError{ ::GetLastError() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
 
-std::error_code errorcode{};
-auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
+            std::error_code errorcode{};
+            auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
 
             //VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
