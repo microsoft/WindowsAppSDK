@@ -14,5 +14,3 @@ static const std::wstring c_testFileExtension_Packaged = L".reuniontestfile-pack
 static const std::wstring c_testFilePhaseEventName = L"ReunionTestFilePhaseEventName";
 
 static const std::wstring c_testStartupPhaseEventName = L"ReunionTestStartupPhaseEventName";
-static const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
-static const IID c_comServerId = winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2");

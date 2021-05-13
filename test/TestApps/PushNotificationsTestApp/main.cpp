@@ -4,18 +4,14 @@
 #include <sstream>
 #include <regex>
 
-using namespace winrt::Microsoft::Windows::AppLifecycle;
-using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
 
 enum UnitTest {
     channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
-    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, registerActivator, unregisterActivator
+    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId
 };
 
 static std::map<std::string, UnitTest> switchMapping;
@@ -39,8 +35,6 @@ void initUnitTestMapping()
     switchMapping["MultipleChannelRequestUsingSameRemoteId"] = UnitTest::multipleChannelRequestUsingSameRemoteId;
     switchMapping["MultipleChannelRequestUsingMultipleRemoteId"] = UnitTest::multipleChannelRequestUsingMultipleRemoteId;
     switchMapping["ThreeChannelRequestUsingSameRemoteId"] = UnitTest::threeChannelRequestUsingSameRemoteId;
-    switchMapping["RegisterActivator"] = UnitTest::unregisterActivator;
-    switchMapping["UnregisterActivator"] = UnitTest::registerActivator;
 }
 
 bool ChannelRequestUsingNullRemoteId()
@@ -257,51 +251,6 @@ bool ThreeChannelRequestUsingSameRemoteId()
     return ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST));
 }
 
-bool RegisterActivator()
-{
-    try
-    {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
-            winrt::guid("00000000-0000-0000-0000-000000000001")); // same clsid as app manifest
-
-        auto token = PushNotificationManager::RegisterActivator(info);
-        if (token.Cookie() == 0 || token.TaskRegistration() == nullptr)
-        {
-            return false;
-        }
-    }
-    catch (...)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool UnregisterActivator()
-{
-    try
-    {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
-            winrt::guid("00000000-0000-0000-0000-000000000001")); // same clsid as app manifest
-
-        auto token = PushNotificationManager::RegisterActivator(info);
-        if (token.Cookie() == 0 || token.TaskRegistration() == nullptr)
-        {
-            return false;
-        }
-
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
-    }
-    catch (...)
-    {
-        return false;
-    }
-    return true;
-}
-
 bool runUnitTest(std::string unitTest)
 {
     switch (switchMapping[unitTest])
@@ -321,12 +270,6 @@ bool runUnitTest(std::string unitTest)
     case UnitTest::threeChannelRequestUsingSameRemoteId:
         return ThreeChannelRequestUsingSameRemoteId();
 
-    case UnitTest::registerActivator:
-        return RegisterActivator();
-
-    case UnitTest::unregisterActivator:
-        return UnregisterActivator();
-
     default:
         return false;
     }
@@ -335,13 +278,8 @@ bool runUnitTest(std::string unitTest)
 int main()
 {
     initUnitTestMapping();
-
-    PushNotificationActivationInfo info(
-        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
-
-    auto token = PushNotificationManager::RegisterActivator(info);
-
+    bool succeeded = true;
+    auto args = winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs(); // mock name for now
     auto kind = args.Kind();
 
     if (kind == ActivationKind::Protocol)
@@ -350,26 +288,14 @@ int main()
         Uri actualUri = protocolArgs.Uri();
         std::string unitTest = winrt::to_string(actualUri.Host());
 
+        std::cout << unitTest << std::endl;
+
         // Switch on this variable to run specific components (uri://ComponentToTest)
         auto output = runUnitTest(unitTest);
 
         if (output)
         {
             // Signal TAEF that protocol was activated and valid.
-            signalPhase(c_testProtocolScheme_Packaged);
-        }
-        else
-        {
-            // Signal TAEF that the test failed
-            signalPhase(c_testFailureEventName);
-        }
-    else if (kind == ExtendedActivationKind::Push)
-    {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
-        auto payload = pushArgs.Payload();
-        std::wstring payloadString(payload.begin(), payload.end());
-        if (!payloadString.compare(c_rawNotificationPayload))
-        {
             signalPhase(c_testProtocolScheme_Packaged);
         }
         else
