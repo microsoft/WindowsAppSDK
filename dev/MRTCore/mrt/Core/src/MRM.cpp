@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
-
+#include <Pathcch.h>
 #include "mrm/BaseInternal.h"
 #include "mrm/common/platform.h"
 #include "mrm/readers/MrmReaders.h"
@@ -25,6 +25,7 @@ typedef struct
 
 constexpr wchar_t ResourceUriPrefix[] = L"ms-resource://";
 constexpr int ResourceUriPrefixLength = ARRAYSIZE(ResourceUriPrefix) - 1;
+constexpr wchar_t c_defaultPriFilename[] = L"resources.pri";
 
 #define INDEX_RESOURCE_ID -1
 #define INDEX_RESOURCE_URI -2
@@ -853,17 +854,25 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
     return;
 }
 
-// Append filename to current module path. If the file doesn't exist, it will
+// When filename is provided, append filename to current module path. If the file doesn't exist, it will
 // append the filename to parent path. If none exists, file in current module
 // path will be returned.
-// Visual Studio usually builds the executable to a subfolder with project name 
+// Visual Studio usually builds the executable to a subfolder with project name for packaged project
 // unless TargetPlatformIdentifier is UAP. To accommodate this behavior, we will
 // try to search resources.pri from both module path and parent path.
-STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
+//
+// When filename is not provided or empty, we will search resources.pri under current module
+// path. If the file doesn't exist, search [modulename].pri instead.
+// For unpackaged app, the built resource name is [modulename].pri. We still search resources.pri
+// because that is a supported scenario for inbox MRT (Xaml islands).
+//
+// A file path is always returned even if none of the files under the above mentioned searching 
+// criteria exists. In that case, we will return filename (if provided) or resources.pri (if name not
+// provided) under module file path. The reason is that we don't want to fail the creation of 
+// ResourceManager even if an app doesn't have PRI file. 
+STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath)
 {
     *filePath = nullptr;
-
-    RETURN_HR_IF(E_INVALIDARG, filename == nullptr || *filename == L'\0');
 
     wchar_t path[MAX_PATH];
     DWORD size = ARRAYSIZE(path);
@@ -899,24 +908,38 @@ STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
         pointerToPath++;
     }
 
+    pointerToPath = pathAllocated ? pathAllocated.get() : path;
+
+    wchar_t moduleFilename[MAX_PATH];
+    RETURN_IF_FAILED(StringCchCopyW(moduleFilename, ARRAYSIZE(moduleFilename), lastSlash != nullptr ? lastSlash + 1 : pointerToPath));
+
     if (lastSlash != nullptr)
     {
         *(lastSlash + 1) = 0;
     }
 
-    pointerToPath = pathAllocated ? pathAllocated.get() : path;
-
     std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> finalPath(nullptr, MrmFreeResource);
 
+    PCWSTR filenameToUse = filename;
+    if (filename == nullptr || *filename == L'\0')
+    {
+        filenameToUse = c_defaultPriFilename;
+    }
+
     // Will build the path at most twice.
-    // First time using current path. If not exist, do another time with parent path.
+    // If filename is provided:
+    //   - search under exe path
+    //   - if not exist, search parent path
+    // If filename is not provided:
+    //   - search under exe path with default name (resources.pri)
+    //   - if not exist, search under same path with [modulename].pri
     for (int i = 0; i < 2; i++)
     {
         size_t lengthInSizeT;
         RETURN_IF_FAILED(StringCchLengthW(pointerToPath, STRSAFE_MAX_CCH, &lengthInSizeT));
         length = static_cast<DWORD>(lengthInSizeT);
 
-        RETURN_IF_FAILED(StringCchLengthW(filename, STRSAFE_MAX_CCH, &lengthInSizeT));
+        RETURN_IF_FAILED(StringCchLengthW(filenameToUse, STRSAFE_MAX_CCH, &lengthInSizeT));
         DWORD lengthOfName = static_cast<DWORD>(lengthInSizeT);
 
         RETURN_IF_FAILED(DWordAdd(length, lengthOfName, &length));
@@ -929,9 +952,11 @@ STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
         std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(rawOutputPath, MrmFreeResource);
 
         RETURN_IF_FAILED(StringCchCopyW(outputPath.get(), length, pointerToPath));
-        RETURN_IF_FAILED(StringCchCatW(outputPath.get(), length, filename));
+        RETURN_IF_FAILED(StringCchCatW(outputPath.get(), length, filenameToUse));
 
-        if (GetFileAttributes(outputPath.get()) != INVALID_FILE_ATTRIBUTES)
+        DWORD attributes = GetFileAttributes(outputPath.get());
+
+        if ((attributes != INVALID_FILE_ATTRIBUTES) && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
         {
             // The file exists. Done.
             finalPath.swap(outputPath);
@@ -940,16 +965,28 @@ STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath)
 
         if (i == 0)
         {
-            // If none of the file exists, will return the file in current path
+            // The filename in the first iteration (the file under module path) will be returned if no file is found
+            // in all iterations.
             finalPath.swap(outputPath);
-        }
 
-        if (secondToLastSlash == nullptr)
-        {
-            break;
-        }
+            // Prep for second iteration
+            if (filename == nullptr || *filename == L'\0')
+            {
+                // Change to [modulename].pri
+                RETURN_IF_FAILED(PathCchRenameExtension(moduleFilename, ARRAYSIZE(moduleFilename), L"pri"));
+                filenameToUse = moduleFilename;
+            }
+            else
+            {
+                // move to parent folder
+                if (secondToLastSlash == nullptr)
+                {
+                    break;
+                }
 
-        *(secondToLastSlash + 1) = 0;
+                *(secondToLastSlash + 1) = 0;
+            }
+        }
     }
 
     *filePath = finalPath.release();
