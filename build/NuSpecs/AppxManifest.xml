@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build" IgnorableNamespaces="uap build">
   <Identity Name="Microsoft.ProjectReunion.0.5" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
   <Properties>
@@ -35,8 +35,8 @@
           <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
 
           <!-- AppLifecycle -->
-          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.ActivationRegistrationManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Activation.AppLifecycle" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>
