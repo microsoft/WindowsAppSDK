@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
@@ -865,6 +865,11 @@ STDAPI_(void) MrmFreeResource(_In_opt_ void* resource)
 // path. If the file doesn't exist, search [modulename].pri instead.
 // For unpackaged app, the built resource name is [modulename].pri. We still search resources.pri
 // because that is a supported scenario for inbox MRT (Xaml islands).
+//
+// A file path is always returned even if none of the files under the above mentioned searching 
+// criteria exists. In that case, we will return filename (if provided) or resources.pri (if name not
+// provided) under module file path. The reason is that we don't want to fail the creation of 
+// ResourceManager even if an app doesn't have PRI file. 
 STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath)
 {
     *filePath = nullptr;
