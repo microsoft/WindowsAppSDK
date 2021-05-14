@@ -57,3 +57,54 @@ ABI.
 GitHub diff is line oriented. Keeping lines within the preferred limit makes changes easier to
 review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers." If new
 languages become common, we will describe the coding guidelines for such languages here.
+
+## Channels
+
+Symbols, files and other artifacts that are 'experimental' and not yet ready for the 'stable'
+channel need to be tagged accordingly. This tagging is removed when the API/file/etc is ready
+to be included in the next 'stable' release. The mechanism to tag artifacts varies depending
+on the technology.
+
+### C/C++
+
+TBD
+
+### COM
+
+TBD
+
+### WinRT
+
+Types are marked 'experimental' by adding the `[Experimental]` attribute in IDL. For example:
+
+```c# (but really MIDL3)
+namespace LolzCatEnterprises
+{
+runtimeclass LolzKitten
+{
+    String Name;
+
+    void Feed();
+
+    [Experimental]
+    void Pet();
+}
+
+[Experimental]
+runtimeclass KittyVideo
+{
+    TimeSpan Length { get; };
+
+    void Start();
+
+    void Stop();
+}
+```
+
+The 'LolzKitten' object and its Name property and Feed() method are not 'experimental'.
+
+The LolzKitten.Pet() method and KittyVideo object (and all its members) are 'experimental'.
+
+### Files
+
+TBD
