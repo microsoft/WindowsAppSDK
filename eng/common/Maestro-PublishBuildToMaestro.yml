@@ -3,7 +3,7 @@ parameters:
   AssetVersion: ''
   IsGitHubRepo: true
 steps:
- - task: PowerShell@2
+  - task: PowerShell@2
     displayName: Check prerequisites
     inputs:
       targetType: 'inline'
