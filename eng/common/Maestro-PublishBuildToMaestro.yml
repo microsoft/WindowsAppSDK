@@ -17,7 +17,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        $response .\eng\common\MaestroGetRequest.ps1 -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
+        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
         Write-Host "got response"
         Write-Host $response
   # - task: PowerShell@2
