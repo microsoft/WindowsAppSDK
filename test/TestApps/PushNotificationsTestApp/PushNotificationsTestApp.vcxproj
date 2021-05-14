@@ -19,11 +19,33 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.AppLifecycle">
+      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+      <Implementation>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+    <Reference Include="Microsoft.Windows.PushNotifications">
+      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+      <Implementation>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5b2d17fe-c371-417f-860c-3d32397c2404}</ProjectGuid>
-    <RootNamespace>PushNotificationsDemoApp</RootNamespace>
+    <ProjectGuid>{56a1d696-feda-4333-bf37-772ebececb10}</ProjectGuid>
+    <RootNamespace>PushNotificationsTestApp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -57,6 +79,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\..\inc\inc.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -139,28 +162,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.Windows.AppLifecycle">
-      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-      <Implementation>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ProjectReunion.dll</Implementation>
-    </Reference>
-    <Reference Include="Microsoft.Windows.PushNotifications">
-      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-      <Implementation>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ProjectReunion.dll</Implementation>
-    </Reference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210505.3\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210505.3\build\native\Microsoft.Windows.CppWinRT.targets')" />
