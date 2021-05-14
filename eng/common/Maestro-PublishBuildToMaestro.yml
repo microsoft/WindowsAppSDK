@@ -20,7 +20,15 @@ steps:
         $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
         Write-Host "got response"
         $jsonObj = ConvertFrom-Json $response.Content
+        Write-Host $jsonObj.channel.id
+
+
+        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '&repository=$(Build.Repository.Uri)&commit=f48fbfda0610f00dc86de2fee2c9100949711abf'
+        Write-Host "got response"
+        $jsonObj = ConvertFrom-Json $response.Content
         Write-Host $jsonObj.id
+
+
   # - task: PowerShell@2
   #   displayName: Build JsonBody 
   #   inputs:
