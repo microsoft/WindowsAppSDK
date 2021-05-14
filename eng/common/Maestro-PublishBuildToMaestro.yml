@@ -82,9 +82,9 @@ steps:
             "azureDevOpsProject"="$(System.TeamProject)";
             "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
             "azureDevOpsRepository"=$azureDevOpsRepo;
-            "azureDevOpsBranch"="$(Build.SourceBranch)";
+            "azureDevOpsBranch"="user/kythant/MaestroIntegrationTest";
             "gitHubRepository"=$gitHubRepo;
-            "gitHubBranch"="$(Build.SourceBranch)";
+            "gitHubBranch"="user/kythant/MaestroIntegrationTest";
             "released"=$true;
             "stable"=$true
             "incoherencies"=$null;
