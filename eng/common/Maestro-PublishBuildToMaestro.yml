@@ -29,7 +29,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        . .\build\maestro\MaestroHelpers.ps1
+        . .\eng\common\MaestroHelpers.ps1
         
         $jsonBase = @{}
 
