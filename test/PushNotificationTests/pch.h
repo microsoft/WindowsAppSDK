@@ -15,7 +15,7 @@
 #include <wil/cppwinrt.h>
 #include <wil/token_helpers.h>
 #include <wil/resource.h>
-
+#include <wrl.h>
 #include <WexTestClass.h>
 
 #include <string>
@@ -31,5 +31,6 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <ProjectReunion.Test.Package.h>
-
+#include <windows.applicationmodel.h>
+#include <windows.applicationmodel.background.h>
 namespace TP = ::Test::Packages;

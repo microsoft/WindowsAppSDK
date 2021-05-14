@@ -10,7 +10,7 @@
   <Identity
     Name="PushNotificationsTestAppPackage"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-    Version="1.0.1.0" />
+    Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>PushNotificationsTestAppPackage</DisplayName>
@@ -41,20 +41,20 @@
         <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
-      <Extensions>
-        <uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
-          <uap:Protocol Name="reuniontestprotocol-packaged">
-            <uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
-          </uap:Protocol>
-        </uap:Extension>
-        <com:Extension Category="windows.comServer">
-          <com:ComServer>
-            <com:ExeServer Executable="PushNotificationsTestApp\PushNotificationsTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
-              <com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Reunion Push" />
-            </com:ExeServer>
-          </com:ComServer>
-        </com:Extension>
-      </Extensions>
+		<Extensions>
+			<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
+				<uap:Protocol Name="reuniontestprotocol-packaged">
+					<uap:DisplayName>ReunionTestProtocol</uap:DisplayName>
+				</uap:Protocol>
+			</uap:Extension>
+			<com:Extension Category="windows.comServer">
+				<com:ComServer>
+					<com:ExeServer Executable="PushNotificationsTestApp\PushNotificationsTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="-ReunionPushServer">
+						<com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Reunion Push" />
+					</com:ExeServer>
+				</com:ComServer>
+			</com:Extension>
+		</Extensions>
     </Application>
   </Applications>
 
