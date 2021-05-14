@@ -16,11 +16,13 @@ $fullUri = $url + $api
 
 Write-Host $fullUri
 
-$Response = Invoke-WebRequest -Method 'GET' -Uri $fullUri -Headers $headers -ContentType $contentType
-Write-Host $Response
+$response = Invoke-WebRequest -Method 'GET' -Uri $fullUri -Headers $headers -ContentType $contentType
+Write-Host $response
 
-if ($Response.statuscode -ne '201')
+if ($response.statuscode -ne '200')
 {
-  Write-Host $Response.statuscode
+  Write-Host $response.statuscode
   Write-Host "##vso[task.complete result=Failed;]DONE"
 }
+
+return $response

@@ -15,10 +15,11 @@ steps:
   - task: powershell@2
     displayName: 'Get Default channel'
     inputs:
-      targetType: filePath
-      filePath: eng\common\MaestroGetRequest.ps1
-      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
-
+      targetType: 'inline'
+      script: |
+        $response .\eng\common\MaestroGetRequest.ps1 -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
+        Write-Host "got response"
+        Write-Host $response
   # - task: PowerShell@2
   #   displayName: Build JsonBody 
   #   inputs:

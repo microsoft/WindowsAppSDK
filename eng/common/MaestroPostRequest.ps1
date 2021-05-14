@@ -26,3 +26,5 @@ if ($Response.statuscode -ne '201')
   Write-Host $Response.statuscode
   Write-Host "##vso[task.complete result=Failed;]DONE"
 }
+
+return $Response
