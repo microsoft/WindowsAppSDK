@@ -15,7 +15,7 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 
 enum UnitTest {
     channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
-    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, registerActivator, unregisterActivator,
+    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, activatorTest,
 };
 
 static std::map<std::string, UnitTest> switchMapping;
@@ -39,8 +39,7 @@ void initUnitTestMapping()
     switchMapping["MultipleChannelRequestUsingSameRemoteId"] = UnitTest::multipleChannelRequestUsingSameRemoteId;
     switchMapping["MultipleChannelRequestUsingMultipleRemoteId"] = UnitTest::multipleChannelRequestUsingMultipleRemoteId;
     switchMapping["ThreeChannelRequestUsingSameRemoteId"] = UnitTest::threeChannelRequestUsingSameRemoteId;
-    switchMapping["RegisterActivator"] = UnitTest::registerActivator;
-    switchMapping["UnregisterActivator"] = UnitTest::unregisterActivator;
+    switchMapping["ActivatorTest"] = UnitTest::activatorTest;
 }
 
 bool ChannelRequestUsingNullRemoteId()
@@ -257,7 +256,7 @@ bool ThreeChannelRequestUsingSameRemoteId()
     return ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST));
 }
 
-bool RegisterActivator(winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken token)
+bool ActivatorTest(winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken token)
 {
     PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
     try
@@ -267,41 +266,12 @@ bool RegisterActivator(winrt::Microsoft::Windows::PushNotifications::PushNotific
             c_fakeComServerId);
 
         auto token = PushNotificationManager::RegisterActivator(info);
-        if (token.Cookie() == 0)
+        if (!token.TaskRegistration())
         {
             return false;
         }
 
-        if (token.TaskRegistration() == nullptr)
-        {
-            return false;
-        }
-
-    }
-    catch (...)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-bool UnregisterActivator(winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken token)
-{
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
-    try
-    {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
-            c_fakeComServerId);
-
-        auto token = PushNotificationManager::RegisterActivator(info);
-        if (token.Cookie() == 0 || token.TaskRegistration() == nullptr)
-        {
-            return false;
-        }
-
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
     }
     catch (...)
     {
@@ -329,11 +299,8 @@ bool runUnitTest(std::string unitTest, winrt::Microsoft::Windows::PushNotificati
     case UnitTest::threeChannelRequestUsingSameRemoteId:
         return ThreeChannelRequestUsingSameRemoteId();
 
-    case UnitTest::registerActivator:
-        return RegisterActivator(token);
-
-    case UnitTest::unregisterActivator:
-        return UnregisterActivator(token);
+    case UnitTest::activatorTest:
+        return ActivatorTest(token);
 
     default:
         return false;
