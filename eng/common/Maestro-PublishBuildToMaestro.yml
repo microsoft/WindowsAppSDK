@@ -8,23 +8,9 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        $succeeded = $true
-        $uri = '$(MaestroUri)'
-        $token = '$(MaestroToken)'
-        if ([string]::IsNullOrEmpty($uri))
-        {
-          Write-Host "Pipeline Variable 'MaestroUri' must have a value"
-          $succeeded = $false
-        }
-        if ([string]::IsNullOrEmpty($token))
-        {
-          Write-Host "Pipeline Variable 'MaestroToken' must have a value"
-          $succeeded = $false
-        }
-        if ($succeeded -eq 'false')
-        {
-          Write-Host "##vso[task.complete result=Failed;]DONE"
-        }
+        Write-Host "Pipeline Variable 'MaestroToken' and 'MaestroUri' must have a value"
+        Write-Host "##vso[task.complete result=Failed;]DONE"
+      condition: or(eq(variables['MaestroUri'], ''), ne(variables['MaestroToken'], ''))
 
   - task: PowerShell@2
     displayName: Build JsonBody 
