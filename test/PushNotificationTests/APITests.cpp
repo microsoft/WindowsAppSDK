@@ -10,20 +10,14 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-namespace winrt
-{
-    namespace Windows
-    {
-        using namespace ApplicationModel;
-        using namespace ApplicationModel::Activation;
-        using namespace ApplicationModel::Background;
-        using namespace Foundation;
-        using namespace Foundation::Collections;
-        using namespace Management::Deployment;
-        using namespace Storage;
-        using namespace System;
-    }
-}
+using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Windows::ApplicationModel::Background;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Management::Deployment;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::System;
+
 
 // TODO: Write Register/Unregister tests that utilize the Assoc APIs to validate results.
 
@@ -99,8 +93,8 @@ namespace Test::PushNotifications
 
             // This is associated protocol for the MSIX installed app for launch.
             // Use the ://path to define the component you want to test.
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://ChannelRequestUsingNullRemoteId" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ChannelRequestUsingNullRemoteId" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
@@ -112,8 +106,8 @@ namespace Test::PushNotifications
 
             // This is associated protocol for the MSIX installed app for launch.
             // Use the ://path to define the component you want to test.
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://ChannelRequestUsingRemoteId" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ChannelRequestUsingRemoteId" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
@@ -125,8 +119,8 @@ namespace Test::PushNotifications
 
             // This is associated protocol for the MSIX installed app for launch.
             // Use the ://path to define the component you want to test.
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleChannelRequestUsingSameRemoteId" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleChannelRequestUsingSameRemoteId" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
@@ -138,8 +132,8 @@ namespace Test::PushNotifications
 
             // This is associated protocol for the MSIX installed app for launch.
             // Use the ://path to define the component you want to test.
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleChannelRequestUsingMultipleRemoteId" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleChannelRequestUsingMultipleRemoteId" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
@@ -151,8 +145,8 @@ namespace Test::PushNotifications
 
             // This is associated protocol for the MSIX installed app for launch.
             // Use the ://path to define the component you want to test.
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://ThreeChannelRequestUsingSameRemoteId" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ThreeChannelRequestUsingSameRemoteId" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
@@ -170,8 +164,8 @@ namespace Test::PushNotifications
         TEST_METHOD(RegisterActivator)
         {
             wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://RegisterActivator" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://RegisterActivator" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
@@ -180,8 +174,8 @@ namespace Test::PushNotifications
         TEST_METHOD(UnregisterActivator)
         {
             wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-            winrt::Windows::Uri launchUri{ c_testProtocolScheme_Packaged + L"://UnregisterActivator" };
-            auto launchResult = winrt::Windows::Launcher::LaunchUriAsync(launchUri).get();
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://UnregisterActivator" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
             VERIFY_IS_TRUE(launchResult);
 
             WaitForEvent(event, m_failed);
