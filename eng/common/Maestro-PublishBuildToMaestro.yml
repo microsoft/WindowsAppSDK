@@ -17,10 +17,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: eng\common\MaestroPostRequest.ps1
-      arguments: |
-      -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels'
-      -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
-      -jsonBodyPath ''
+      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)' -jsonBodyPath ''
 
   # - task: PowerShell@2
   #   displayName: Build JsonBody 
