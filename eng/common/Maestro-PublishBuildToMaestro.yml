@@ -12,109 +12,113 @@ steps:
         Write-Host "##vso[task.complete result=Failed;]DONE"
     condition: or(eq(variables['MaestroUri'], ''), eq(variables['MaestroToken'], ''))
 
-  - task: powershell@2
-    displayName: 'Get Default channel'
+  - task: PowerShell@2
+    displayName: Build JsonBody 
     inputs:
       targetType: 'inline'
       script: |
-        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
-        Write-Host "got response"
-        $jsonObj = ConvertFrom-Json $response.Content
-        Write-Host $jsonObj.channel.id
-
-
-        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '&repository=$(Build.Repository.Uri)&commit=f48fbfda0610f00dc86de2fee2c9100949711abf'
-        Write-Host "got response"
-        $jsonObj = ConvertFrom-Json $response.Content
-        Write-Host $jsonObj.id
-
-
-  # - task: PowerShell@2
-  #   displayName: Build JsonBody 
-  #   inputs:
-  #     targetType: 'inline'
-  #     script: |
-  #       . .\eng\common\MaestroHelpers.ps1
+        . .\eng\common\MaestroHelpers.ps1
         
-  #       $jsonBase = @{}
+        $jsonBase = @{}
 
-  #       $assetList = New-Object System.Collections.ArrayList
-  #       $assetList.Add(
-  #         @{
-  #           "name"="${{ parameters.AssetName }}";
-  #           "version"="${{ parameters.AssetVersion }}";
-  #           "nonShipping"=$false;
-  #           "locations"=$null
-  #         }
-  #       )
+        $assetList = New-Object System.Collections.ArrayList
+        $assetList.Add(
+          @{
+            "name"="${{ parameters.AssetName }}";
+            "version"="${{ parameters.AssetVersion }}";
+            "nonShipping"=$false;
+            "locations"=$null
+          }
+        )
 
-  #       # These fields below are unused but can be enabled in the future
-  #       # $locationList = New-Object System.Collections.ArrayList
-  #       # $locationList.Add(@{"location"="maestroTestValue";"type"="none"})
+        # These fields below are unused but can be enabled in the future
+        # $locationList = New-Object System.Collections.ArrayList
+        # $locationList.Add(@{"location"="maestroTestValue";"type"="none"})
 
-  #       # $dependenciesList = New-Object System.Collections.ArrayList
-  #       # $dependenciesList.Add(
-  #       #   @{
-  #       #     "buildId"=0;
-  #       #     "isProduct"=$true;
-  #       #     "timeToInclusionInMinutes"=0;
-  #       #   }
-  #       # )
+        # $dependenciesList = New-Object System.Collections.ArrayList
+        # $dependenciesList.Add(
+        #   @{
+        #     "buildId"=0;
+        #     "isProduct"=$true;
+        #     "timeToInclusionInMinutes"=0;
+        #   }
+        # )
 
-  #       # $incoherenciesList = New-Object System.Collections.ArrayList
-  #       # $incoherenciesList.Add(
-  #       #   @{
-  #       #     "name"="maestroTestValue";
-  #       #     "version"="maestroTestValue";
-  #       #     "repository"="maestroTestValue";
-  #       #     "commit"="maestroTestValue";
-  #       #   }
-  #       # )
+        # $incoherenciesList = New-Object System.Collections.ArrayList
+        # $incoherenciesList.Add(
+        #   @{
+        #     "name"="maestroTestValue";
+        #     "version"="maestroTestValue";
+        #     "repository"="maestroTestValue";
+        #     "commit"="maestroTestValue";
+        #   }
+        # )
 
-  #       Write-Host "collectionuri: $(System.CollectionUri)"
-  #       $devOpsAccount = ExtractOrgFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
-  #       Write-Host "reposiitory: $(Build.Repository.Uri)"
-  #       Write-Host "account: " $devOpsAccount
+        Write-Host "collectionuri: $(System.CollectionUri)"
+        $devOpsAccount = ExtractOrgFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
+        Write-Host "reposiitory: $(Build.Repository.Uri)"
+        Write-Host "account: " $devOpsAccount
         
-  #       $gitHubRepo = ""
-  #       $azureDevOpsRepo = ""
-  #       if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
-  #       {
-  #         $gitHubRepo = "$(Build.Repository.Uri)"
-  #         $azureDevOpsRepo = "$(Build.Repository.Uri)"
-  #       }
-  #       if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
-  #       {
-  #         $azureDevOpsRepo = "$(Build.Repository.Uri)"
-  #       }
+        $gitHubRepo = ""
+        $azureDevOpsRepo = ""
+        if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
+        {
+          $gitHubRepo = "$(Build.Repository.Uri)"
+          $azureDevOpsRepo = "$(Build.Repository.Uri)"
+        }
+        if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
+        {
+          $azureDevOpsRepo = "$(Build.Repository.Uri)"
+        }
 
-  #       $jsonBase = 
-  #         @{
-  #           "commit"="$(Build.SourceVersion)";
-  #           "assets"=$assetList;
-  #           "dependencies"=$null;
-  #           "azureDevOpsBuildId"=$(Build.BuildId);
-  #           "azureDevOpsBuildDefinitionId"=$(System.DefinitionId);
-  #           "azureDevOpsAccount"=$devOpsAccount;
-  #           "azureDevOpsProject"="$(System.TeamProject)";
-  #           "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
-  #           "azureDevOpsRepository"=$azureDevOpsRepo;
-  #           "azureDevOpsBranch"="$(Build.SourceBranch)";
-  #           "gitHubRepository"=$gitHubRepo;
-  #           "gitHubBranch"="$(Build.SourceBranch)";
-  #           "released"=$true;
-  #           "stable"=$true
-  #           "incoherencies"=$null;
-  #         }
+        $jsonBase = 
+          @{
+            "commit"="$(Build.SourceVersion)";
+            "assets"=$assetList;
+            "dependencies"=$null;
+            "azureDevOpsBuildId"=$(Build.BuildId);
+            "azureDevOpsBuildDefinitionId"=$(System.DefinitionId);
+            "azureDevOpsAccount"=$devOpsAccount;
+            "azureDevOpsProject"="$(System.TeamProject)";
+            "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
+            "azureDevOpsRepository"=$azureDevOpsRepo;
+            "azureDevOpsBranch"="$(Build.SourceBranch)";
+            "gitHubRepository"=$gitHubRepo;
+            "gitHubBranch"="$(Build.SourceBranch)";
+            "released"=$true;
+            "stable"=$true
+            "incoherencies"=$null;
+          }
 
-  #       $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
-  #       $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
-  #       Write-host "Writing Json body"
-  #       Write-host $body
+        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+        Write-host "Writing Json body"
+        Write-host $body
 
-  # - task: powershell@2
-  #   displayName: 'Post Channel Test'
-  #   inputs:
-  #     targetType: filePath
-  #     filePath: eng\common\MaestroPostRequest.ps1
-  #     arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+  - task: powershell@2
+    displayName: 'Post Channel Test'
+    inputs:
+      targetType: filePath
+      filePath: eng\common\MaestroPostRequest.ps1
+      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+
+  - task: powershell@2
+    displayName: 'Publish Build to Default Channel'
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Get the id of the default channel of this branch
+        $api = "/api/default-channels"
+        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
+        $jsonObj = ConvertFrom-Json $response.Content
+        $channelId = $jsonObj.channel.id
+        
+        # Get the id of the build posted earlier
+        $api = "/api/builds"
+        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
+        $jsonObj = ConvertFrom-Json $response.Content
+        $buildId = $jsonObj.id
+
+        # AddBuildToChannel with the corresponding build id and channe id
+        $api = "/api/channels/" + $channelId + "/builds/" + $buildId
+        $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
