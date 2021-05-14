@@ -19,7 +19,8 @@ steps:
       script: |
         $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
         Write-Host "got response"
-        Write-Host $response
+        $jsonObj = ConvertFrom-Json $([String]::new($response.Content))
+        Write-Host $jsonObj
   # - task: PowerShell@2
   #   displayName: Build JsonBody 
   #   inputs:
