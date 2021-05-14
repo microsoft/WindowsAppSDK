@@ -62,7 +62,7 @@ bool ChannelRequestUsingNullRemoteId()
 bool ChannelRequestUsingRemoteId()
 {
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-    auto hr = S_OK;
+    auto channelOperationResult = S_OK;
     auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
 
     channelOperation.Progress(
@@ -80,7 +80,7 @@ bool ChannelRequestUsingRemoteId()
 
     // Setup the completed event handler
     channelOperation.Completed(
-        [&channelEvent](
+        [&channelEvent, &channelOperationResult](
             IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
             AsyncStatus const /* asyncStatus */)
         {
@@ -92,6 +92,7 @@ bool ChannelRequestUsingRemoteId()
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
+                channelOperationResult = result.ExtendedError();
             }
 
             SetEvent(channelEvent.get());
@@ -101,26 +102,26 @@ bool ChannelRequestUsingRemoteId()
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
     {
         channelOperation.Cancel();
-        hr = ERROR_TIMEOUT;
+        channelOperationResult = ERROR_TIMEOUT;
     }
     else
     {
         channelOperation.Close(); // Do not call getresults after this
     }
 
-    return (hr == S_OK);
+    return (channelOperationResult == S_OK);
 }
 
 bool MultipleChannelRequestUsingSameRemoteId()
 {
     wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-    auto hr = S_OK;
+    auto channelOperationResult2 = S_OK;
 
     auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
     auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
 
     channelOperation2.Completed(
-        [&channelEvent, &hr](
+        [&channelEvent, &channelOperationResult2](
             IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
             AsyncStatus const /* asyncStatus */)
         {
@@ -133,9 +134,8 @@ bool MultipleChannelRequestUsingSameRemoteId()
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                hr = result.ExtendedError();
+                channelOperationResult2 = result.ExtendedError();
             }
-
 
             SetEvent(channelEvent.get());
         });
@@ -144,10 +144,10 @@ bool MultipleChannelRequestUsingSameRemoteId()
     if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
     {
         channelOperation2.Cancel();
-        hr = ERROR_TIMEOUT;
+        channelOperationResult2 = ERROR_TIMEOUT;
     }
 
-    return (hr == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
+    return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
 }
 
 bool MultipleChannelRequestUsingMultipleRemoteId()
