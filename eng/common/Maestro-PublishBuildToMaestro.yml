@@ -16,8 +16,8 @@ steps:
     displayName: 'Get Default channel'
     inputs:
       targetType: filePath
-      filePath: eng\common\MaestroPostRequest.ps1
-      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)' -jsonBodyPath ''
+      filePath: eng\common\MaestroGetRequest.ps1
+      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels' -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
 
   # - task: PowerShell@2
   #   displayName: Build JsonBody 

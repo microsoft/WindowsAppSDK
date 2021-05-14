@@ -3,22 +3,20 @@ Param(
     [string]$url,
     [string]$token,
     [string]$api,
-    [string]$queryParameters,
-    [string]$jsonBodyPath
+    [string]$queryParameters
 )
 
 $headers = @{
     Authorization="Bearer $token"
 }
 
-$body = Get-Content -Raw -Path $jsonBodyPath
 $contentType = 'application/json'
 $api = $api + '?api-version=2020-02-20' + $queryParameters
 $fullUri = $url + $api
 
 Write-Host $fullUri
 
-$Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -Body $body -ContentType $contentType
+$Response = Invoke-WebRequest -Method 'GET' -Uri $fullUri -Headers $headers -ContentType $contentType
 Write-Host $Response
 
 if ($Response.statuscode -ne '201')
