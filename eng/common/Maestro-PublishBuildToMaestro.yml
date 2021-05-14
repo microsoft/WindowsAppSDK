@@ -21,7 +21,7 @@ steps:
           Write-Host "Pipeline Variable 'MaestroToken' must have a value"
           $succeeded = $false
         }
-        if (-not $succeeded)
+        if ($succeeded -eq 'false')
         {
           Write-Host "##vso[task.complete result=Failed;]DONE"
         }
