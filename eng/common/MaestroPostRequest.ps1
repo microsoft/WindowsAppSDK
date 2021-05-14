@@ -11,7 +11,12 @@ $headers = @{
     Authorization="Bearer $token"
 }
 
-$body = Get-Content -Raw -Path $jsonBodyPath
+$body = ''
+if (-not [string]::IsNullOrEmpty($jsonBodyPath))
+{
+  $body = Get-Content -Raw -Path $jsonBodyPath
+}
+
 $contentType = 'application/json'
 $api = $api + '?api-version=2020-02-20' + $queryParameters
 $fullUri = $url + $api
