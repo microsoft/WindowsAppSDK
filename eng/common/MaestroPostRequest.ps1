@@ -11,7 +11,7 @@ $headers = @{
     Authorization="Bearer $token"
 }
 
-$body = '{}'
+# $body = '{}'
 if (-not [string]::IsNullOrEmpty($jsonBodyPath))
 {
   $body = Get-Content -Raw -Path $jsonBodyPath
@@ -23,7 +23,7 @@ $fullUri = $url + $api
 
 Write-Host $fullUri
 
-$Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -Body $body -ContentType $contentType
+$Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -ContentType $contentType
 Write-Host $Response
 
 if ($Response.statuscode -ne '201')
