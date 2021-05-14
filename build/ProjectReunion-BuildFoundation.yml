@@ -13,7 +13,7 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  - template: ..\eng\common\Maestro-SubmitBuildToMaestro.yml
+  - template: ..\eng\common\Maestro-PublishBuildToMaestro.yml
     parameters:
       IsGitHubRepo: true
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
