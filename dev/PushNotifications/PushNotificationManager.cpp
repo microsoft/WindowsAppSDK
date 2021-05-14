@@ -63,7 +63,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return false;
         }
 
-        THROW_IF_FAILED(packagedProcessHResult);
+        THROW_IF_WIN32_ERROR(packagedProcessHResult);
 
         return true;
     }

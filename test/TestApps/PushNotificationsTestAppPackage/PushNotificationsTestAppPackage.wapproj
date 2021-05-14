@@ -59,10 +59,10 @@
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <AppxPackageDir>C:\Users\purifoypaul\Desktop\Work\ProjectReunionReset\ProjectReunion\BuildOutput\Release\x64\UnitTestPackages\</AppxPackageDir>
+    <AppxPackageDir>C:\Users\vemancha\Desktop\</AppxPackageDir>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
-    <AppInstallerUri>C:\Users\purifoypaul\Desktop\</AppInstallerUri>
+    <AppInstallerUri>C:\Users\vemancha\Desktop\</AppInstallerUri>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <PackageCertificateKeyFile>MSTest.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
@@ -110,7 +110,6 @@
     <Content Include="Images\StoreLogo.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
     <None Include="MSTest.pfx" />
-    <None Include="PushNotificationsTestAppPackage_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <ItemGroup>

@@ -65,19 +65,6 @@ bool ChannelRequestUsingRemoteId()
     auto channelOperationResult = S_OK;
     auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
 
-    channelOperation.Progress(
-        [](
-            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& /* sender */,
-            PushNotificationCreateChannelStatus const& args)
-        {
-            if (args.status == PushNotificationChannelStatus::InProgress)
-            {
-            }
-            else if (args.status == PushNotificationChannelStatus::InProgressRetry)
-            {
-            }
-        });
-
     // Setup the completed event handler
     channelOperation.Completed(
         [&channelEvent, &channelOperationResult](
@@ -87,8 +74,7 @@ bool ChannelRequestUsingRemoteId()
             auto result = sender.GetResults();
             if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
             {
-                auto channelUri = result.Channel().Uri();
-                auto channelExpiry = result.Channel().ExpirationTime();
+                result.Channel().Close(); // Avoids using cached channel everytime the test runs
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
@@ -114,37 +100,61 @@ bool ChannelRequestUsingRemoteId()
 
 bool MultipleChannelRequestUsingSameRemoteId()
 {
-    wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    wil::unique_handle channelEvent1 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    wil::unique_handle channelEvent2 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+
     auto channelOperationResult2 = S_OK;
 
     auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
 
-    channelOperation2.Completed(
-        [&channelEvent, &channelOperationResult2](
+    channelOperation1.Completed(
+        [&channelEvent1](
             IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
             AsyncStatus const /* asyncStatus */)
         {
             auto result = sender.GetResults();
             if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
             {
-                auto channelUri = result.Channel().Uri();
-                auto channelExpiry = result.Channel().ExpirationTime();
+                result.Channel().Close(); // Avoids using cached channel everytime the test runs
+            }
+            else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+            {
+            }
 
+            SetEvent(channelEvent1.get());
+        });
+
+    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
+
+    channelOperation2.Completed(
+        [&channelEvent2, &channelOperationResult2](
+            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+            AsyncStatus const /* asyncStatus */)
+        {
+            auto result = sender.GetResults();
+            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+            {
+                result.Channel().Close(); // Avoids using cached channel everytime the test runs
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
                 channelOperationResult2 = result.ExtendedError();
             }
 
-            SetEvent(channelEvent.get());
+            SetEvent(channelEvent2.get());
         });
 
     // The maximum amount of time it takes for channel request to be obtained - 16mins
-    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
+    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent2.get(), 960000 /* milliseconds */))
     {
         channelOperation2.Cancel();
         channelOperationResult2 = ERROR_TIMEOUT;
+    }
+
+    // The maximum amount of time it takes for channel request to be obtained - 16mins
+    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent1.get(), 960000 /* milliseconds */))
+    {
+        channelOperation1.Cancel();
     }
 
     return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
@@ -152,50 +162,30 @@ bool MultipleChannelRequestUsingSameRemoteId()
 
 bool MultipleChannelRequestUsingMultipleRemoteId()
 {
-    wil::unique_handle channelEvent = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    wil::unique_handle channelEvent1 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    wil::unique_handle channelEvent2 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+
     auto channelOperationResult2 = S_OK;
 
     auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
 
-    channelOperation2.Completed(
-        [&channelEvent, &channelOperationResult2](
+    channelOperation1.Completed(
+        [&channelEvent1](
             IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
             AsyncStatus const /* asyncStatus */)
         {
             auto result = sender.GetResults();
             if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
             {
-                auto channelUri = result.Channel().Uri();
-                auto channelExpiry = result.Channel().ExpirationTime();
+                result.Channel().Close();
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
-                channelOperationResult2 = result.ExtendedError();
             }
 
-            SetEvent(channelEvent.get());
+            SetEvent(channelEvent1.get());
         });
 
-    // The maximum amount of time it takes for channel request to be obtained - 16mins
-    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent.get(), 960000 /* milliseconds */))
-    {
-        channelOperation2.Cancel();
-        channelOperationResult2 = ERROR_TIMEOUT;
-    }
-
-    return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
-}
-
-bool ThreeChannelRequestUsingSameRemoteId()
-{
-    wil::unique_handle channelEvent2 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-    auto channelOperationResult2 = S_OK;
-
-    wil::unique_handle channelEvent3 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-    auto channelOperationResult3 = S_OK;
-
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
     auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
 
     channelOperation2.Completed(
@@ -206,8 +196,72 @@ bool ThreeChannelRequestUsingSameRemoteId()
             auto result = sender.GetResults();
             if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
             {
-                auto channelUri = result.Channel().Uri();
-                auto channelExpiry = result.Channel().ExpirationTime();
+                result.Channel().Close();
+            }
+            else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+            {
+                channelOperationResult2 = result.ExtendedError();
+            }
+
+            SetEvent(channelEvent2.get());
+        });
+
+    // The maximum amount of time it takes for channel request to be obtained - 16mins
+    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent2.get(), 960000 /* milliseconds */))
+    {
+        channelOperation2.Cancel();
+        channelOperationResult2 = ERROR_TIMEOUT;
+    }
+
+    // The maximum amount of time it takes for channel request to be obtained - 16mins
+    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent1.get(), 960000 /* milliseconds */))
+    {
+        channelOperation1.Cancel();
+    }
+
+    return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
+}
+
+bool ThreeChannelRequestUsingSameRemoteId()
+{
+    wil::unique_handle channelEvent1 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+
+    wil::unique_handle channelEvent2 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    auto channelOperationResult2 = S_OK;
+
+    wil::unique_handle channelEvent3 = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+    auto channelOperationResult3 = S_OK;
+
+    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
+
+    channelOperation1.Completed(
+        [&channelEvent1](
+            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+            AsyncStatus const /* asyncStatus */)
+        {
+            auto result = sender.GetResults();
+            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+            {
+                result.Channel().Close();
+            }
+            else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+            {
+            }
+
+            SetEvent(channelEvent1.get());
+        });
+
+    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
+
+    channelOperation2.Completed(
+        [&channelEvent2, &channelOperationResult2](
+            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
+            AsyncStatus const /* asyncStatus */)
+        {
+            auto result = sender.GetResults();
+            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+            {
+                result.Channel().Close();
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
@@ -228,8 +282,7 @@ bool ThreeChannelRequestUsingSameRemoteId()
             auto result = sender.GetResults();
             if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
             {
-                auto channelUri = result.Channel().Uri();
-                auto channelExpiry = result.Channel().ExpirationTime();
+                result.Channel().Close();
             }
             else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
             {
@@ -251,6 +304,12 @@ bool ThreeChannelRequestUsingSameRemoteId()
     {
         channelOperation3.Cancel();
         channelOperationResult3 = ERROR_TIMEOUT;
+    }
+
+    // The maximum amount of time it takes for channel request to be obtained - 16mins
+    if (WAIT_OBJECT_0 != WaitForSingleObject(channelEvent1.get(), 960000 /* milliseconds */))
+    {
+        channelOperation1.Cancel();
     }
 
     return ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST));
