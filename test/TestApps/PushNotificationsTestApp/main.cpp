@@ -315,9 +315,8 @@ bool ThreeChannelRequestUsingSameRemoteId()
     return ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST));
 }
 
-bool ActivatorTest(winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken token)
+bool ActivatorTest()
 {
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
     try
     {
         PushNotificationActivationInfo info(
@@ -339,7 +338,7 @@ bool ActivatorTest(winrt::Microsoft::Windows::PushNotifications::PushNotificatio
     return true;
 }
 
-bool runUnitTest(std::string unitTest, winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken token)
+bool runUnitTest(std::string unitTest)
 {
     switch (switchMapping[unitTest])
     {
@@ -359,7 +358,7 @@ bool runUnitTest(std::string unitTest, winrt::Microsoft::Windows::PushNotificati
         return ThreeChannelRequestUsingSameRemoteId();
 
     case UnitTest::activatorTest:
-        return ActivatorTest(token);
+        return ActivatorTest();
 
     default:
         return false;
@@ -387,8 +386,10 @@ int main()
 
         std::cout << unitTest << std::endl;
 
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
+
         // Switch on this variable to run specific components (uri://ComponentToTest)
-        auto output = runUnitTest(unitTest, token);
+        auto output = runUnitTest(unitTest);
 
         if (output)
         {
@@ -406,6 +407,7 @@ int main()
         PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
         auto payload = pushArgs.Payload();
         std::wstring payloadString(payload.begin(), payload.end());
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
         if (!payloadString.compare(c_rawNotificationPayload))
         {
             signalPhase(c_testProtocolScheme_Packaged);

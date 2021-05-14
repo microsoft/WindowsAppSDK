@@ -33,12 +33,12 @@
     <Reference Include="Microsoft.Windows.AppLifecycle">
       <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+      <Implementation>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
     <Reference Include="Microsoft.Windows.PushNotifications">
       <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+      <Implementation>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
   </ItemGroup>
   <PropertyGroup Label="Globals">

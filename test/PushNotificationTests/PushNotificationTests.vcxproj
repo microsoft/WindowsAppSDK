@@ -173,6 +173,13 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+    <PropertyGroup>
+    <TestPkgDebugConfigName Condition="$(Configuration) == 'Debug'">_Debug</TestPkgDebugConfigName>
+  </PropertyGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="$(OutDir)\..\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0_Test\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestAppPackage.msixbundle" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(OutDir)\..\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0_Test\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).cer" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestAppPackage.cer" TreatOutputAsContent="true" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />

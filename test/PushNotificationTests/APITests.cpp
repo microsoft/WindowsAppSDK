@@ -28,8 +28,8 @@ namespace Test::PushNotifications
     private:
         wil::unique_event m_failed;
 
-        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage_1.0.0.0_x64.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestAppPackage_1.0.0.0_x64.cer";
+        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage.msixbundle";
+        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestAppPackage.cer";
         const std::wstring c_testPackageFullName = L"PushNotificationsTestAppPackage_1.0.0.0_x64__8wekyb3d8bbwe";
 
     public:
