@@ -9,12 +9,14 @@ steps:
       targetType: 'inline'
       script: |
         $succeeded = $true
-        if ([string]::IsNullOrEmpty('$(MaestroUri)'))
+        $uri = '$(MaestroUri)'
+        $token = '$(MaestroToken)'
+        if ([string]::IsNullOrEmpty($uri))
         {
           Write-Host "Pipeline Variable 'MaestroUri' must have a value"
           $succeeded = $false
         }
-        if ([string]::IsNullOrEmpty('$(MaestroToken)'))
+        if ([string]::IsNullOrEmpty($token))
         {
           Write-Host "Pipeline Variable 'MaestroToken' must have a value"
           $succeeded = $false
