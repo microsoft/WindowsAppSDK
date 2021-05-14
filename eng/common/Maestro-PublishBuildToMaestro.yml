@@ -17,7 +17,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: eng\common\MaestroPostRequest.ps1
-      arguments: >
+      arguments: |
       -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/default-channels'
       -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
       -jsonBodyPath ''
