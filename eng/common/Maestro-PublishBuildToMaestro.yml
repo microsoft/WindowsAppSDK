@@ -102,8 +102,8 @@ steps:
             "incoherencies"=$null;
           }
 
-        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
-        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
         Write-host "Writing Json body"
         Write-host $body
 
@@ -111,5 +111,5 @@ steps:
     displayName: 'Post Channel Test'
     inputs:
       targetType: filePath
-      filePath: build\maestro\MaestroPostRequest.ps1
-      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -jsonBodyPath '$(Build.SourcesDirectory)\build\maestro\maestro-build.json'
+      filePath: eng\common\MaestroPostRequest.ps1
+      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -queryParameters '' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
