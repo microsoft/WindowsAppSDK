@@ -10,7 +10,7 @@ steps:
       script: |
         Write-Host "Pipeline Variable 'MaestroToken' and 'MaestroUri' must have a value"
         Write-Host "##vso[task.complete result=Failed;]DONE"
-      condition: or(eq(variables['MaestroUri'], ''), ne(variables['MaestroToken'], ''))
+      condition: or(eq(variables['MaestroUri'], ''), eq(variables['MaestroToken'], ''))
 
   - task: PowerShell@2
     displayName: Build JsonBody 
