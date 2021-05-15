@@ -64,7 +64,7 @@ steps:
         if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
         {
           $gitHubRepo = "$(Build.Repository.Uri)"
-          $azureDevOpsRepo = "$(Build.Repository.Uri)"
+          $azureDevOpsRepo = "$(Build.Repository.Uri)" # Maestro expects this to be always set
         }
         if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
         {
@@ -92,7 +92,6 @@ steps:
 
         $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
         $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
-        Write-host "Writing Json body"
         Write-host $body
 
   - task: powershell@2
@@ -119,6 +118,6 @@ steps:
         $jsonObj = ConvertFrom-Json $response.Content
         $buildId = $jsonObj.id
 
-        # AddBuildToChannel with the corresponding build id and channe id
+        # AddBuildToChannel with the corresponding build id and channel id
         $api = "/api/channels/" + $channelId + "/builds/" + $buildId
         $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
