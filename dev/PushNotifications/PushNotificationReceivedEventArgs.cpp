@@ -17,25 +17,20 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask)
+    winrt::com_array<uint8_t> GetRawPayload(RawNotification const& rawNotification)
     {
-        m_backgroundTaskInstance = backgroundTask;
-
-        // Need to process the RawNotification payload here because TriggerDetails is set to nullptr leaving IBackgroundTaskInstance::Run 
-        auto triggerDetails = m_backgroundTaskInstance.TriggerDetails();
-        RawNotification rawNotification = triggerDetails.as<RawNotification>();
-
         IBuffer rawContentAsBuffer = rawNotification.ContentBytes();
         DataReader dataReader = DataReader::FromBuffer(rawContentAsBuffer);
 
-        m_backgroundPayload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
-        dataReader.ReadBytes(m_backgroundPayload);
+        winrt::com_array<uint8_t> rawPayload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
+        dataReader.ReadBytes(rawPayload);
+        
+        return rawPayload;
     }
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args)
-    {
-        m_args = args;
-    }
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(GetRawPayload(backgroundTask.TriggerDetails().as<RawNotification>())) {}
+
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(GetRawPayload(args.RawNotification())) {}
 
     winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(winrt::IBackgroundTaskInstance const& backgroundTask)
     {
@@ -49,50 +44,28 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        auto lock = m_lock.lock_shared();
-        winrt::com_array<uint8_t> payload{};
-        if (m_args)
-        {
-            RawNotification rawNotification = m_args.RawNotification();
-
-            IBuffer rawContentAsBuffer = rawNotification.ContentBytes();
-            DataReader dataReader = DataReader::FromBuffer(rawContentAsBuffer);
-
-            payload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
-            dataReader.ReadBytes(payload);
-        }
-        else if (m_backgroundTaskInstance)
-        {
-            return winrt::com_array<uint8_t>(m_backgroundPayload.begin(), m_backgroundPayload.end());
-        }
-        return payload;
+        return { m_rawNotification.begin(), m_rawNotification.end() };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        auto lock = m_lock.lock_shared();
         if (m_backgroundTaskInstance)
         {
             return m_backgroundTaskInstance.GetDeferral();
         }
-        return nullptr;
+        // winrt::throw_hresult();
     }
 
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
+        if (m_backgroundTaskInstance)
         {
-            auto lock = m_lock.lock_shared();
-            if (m_backgroundTaskInstance)
-            {
-                return m_backgroundTaskInstance.Canceled(handler);
-            }
+            return m_backgroundTaskInstance.Canceled(handler);
         }
-
         return winrt::event_token{};
     }
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        auto lock = m_lock.lock_shared();
         if (m_backgroundTaskInstance)
         {
             m_backgroundTaskInstance.Canceled(token);
@@ -100,7 +73,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     bool PushNotificationReceivedEventArgs::Handled()
     {
-        auto lock = m_lock.lock_shared();
         if (m_args)
         {
             return m_args.Cancel();
@@ -109,10 +81,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        auto lock = m_lock.lock_shared();
         if (m_args)
         {
             m_args.Cancel(value);
         }
     }
 }
+

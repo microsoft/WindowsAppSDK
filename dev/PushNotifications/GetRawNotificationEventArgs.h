@@ -6,9 +6,9 @@ using namespace winrt;
 using namespace winrt::Windows::Foundation;
 constexpr PCWSTR pushServerArgument = L"-ReunionPushServer";
 
-namespace GetRawNotificationEventArgs
+namespace winrt::Microsoft::Windows::PushNotifications
 {
-    static Windows::Foundation::IInspectable GetRawNotificationEventArgs()
+    static winrt::Windows::Foundation::IInspectable GetRawNotificationEventArgs()
     {
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs args = nullptr;
 

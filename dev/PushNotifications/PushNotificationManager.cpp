@@ -6,15 +6,18 @@
 #include "PushNotificationCreateChannelResult.h"
 
 #include <winrt/Windows.ApplicationModel.background.h>
-#include <winrt\windows.networking.pushnotifications.h>
+#include <winrt/Windows.Networking.PushNotifications.h>
 #include "PushNotificationBackgroundTask.h"
 
 #include <winerror.h>
 #include <algorithm>
 #include "PushNotificationChannel.h"
 #include "externs.h"
+#include <string_view>
 
-constexpr PCWSTR backgroundTaskName = L"PushBackgroundTaskName";
+using namespace std::literals;
+
+constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 
 namespace winrt
 {
@@ -184,15 +187,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (WI_IsFlagSet(details.Kind(), PushNotificationRegistrationKind::PushTrigger))
         {
-            bool taskRegistered = false;
-            for (auto task : BackgroundTaskRegistration::AllTasks())
-            {
-                if (task.Value().Name() == backgroundTaskName)
-                {
-                    taskRegistered = true;
-                    break;
-                }
-            }
+            auto tasks = BackgroundTaskRegistration::AllTasks();
+            bool taskRegistered = std::any_of(begin(tasks), end(tasks), [&](auto&& task) { return task.Value().Name() == backgroundTaskName; });
 
             if (!taskRegistered)
             {
@@ -213,6 +209,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         {
                             builder.AddCondition(condition);
                         }
+                    }
+                    else
+                    {
+                        throw winrt::hresult_not_implemented();
                     }
                 }
 
@@ -255,9 +255,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
         }
 
-        if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::ComActivator) && (token.Cookie() != 0))
+        if (WI_IsFlagSet(kind, PushNotificationRegistrationKind::ComActivator) && token.Cookie())
         {
-            THROW_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
+            LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
         }
     }
 }
