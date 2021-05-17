@@ -9,15 +9,15 @@
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
     <Reference Include="Microsoft.ApplicationModel.DynamicDependency.winmd">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.DynamicDependency.winmd</HintPath>
-      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ApplicationModel.DynamicDependency.dll</Implementation>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.ApplicationModel.Activation.winmd">
-      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.Activation.winmd</HintPath>
-      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ApplicationModel.AppLifecycle.dll</Implementation>
+    <Reference Include="Microsoft.Windows.AppLifecycle.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
