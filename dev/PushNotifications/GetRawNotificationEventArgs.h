@@ -1,31 +1,26 @@
-﻿#include <pch.h>
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+#pragma once
 #include "PushNotificationReceivedEventArgs.h"
 #include "externs.h"
 
-using namespace winrt;
-using namespace winrt::Windows::Foundation;
-constexpr PCWSTR pushServerArgument = L"-ReunionPushServer";
+static PCWSTR c_pushContractId = L"Windows.Push";
 
 namespace winrt::Microsoft::Windows::PushNotifications
 {
-    static winrt::Windows::Foundation::IInspectable GetRawNotificationEventArgs()
+    static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs args = nullptr;
 
-        std::wstring commandLineArgs = GetCommandLine();
-        auto found = commandLineArgs.find(pushServerArgument, 0);
-        if (found != std::wstring::npos)
         {
-            {
-                auto lock = g_lock.lock();
-                THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");
-            }
+            auto lock = g_lock.lock();
+            THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");
+        }
 
-            if (WaitForSingleObject(g_waitHandleForArgs.get(), 1000) == WAIT_OBJECT_0)
-            {
-                auto lock = g_lock.lock();
-                std::swap(args, g_activatedEventArgs);
-            }
+        if (WaitForSingleObject(g_waitHandleForArgs.get(), 1000) == WAIT_OBJECT_0)
+        {
+            auto lock = g_lock.lock();
+            std::swap(args, g_activatedEventArgs);
         }
         return args;
     }

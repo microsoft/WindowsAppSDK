@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_kind = ActivationKind::StartupTask;
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
             std::wstring taskId = query.GetFirstValueByName(L"TaskId").c_str();
