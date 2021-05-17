@@ -21,7 +21,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_kind = ActivationKind::Protocol;
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
             auto args = query.GetFirstValueByName(L"Uri").c_str();

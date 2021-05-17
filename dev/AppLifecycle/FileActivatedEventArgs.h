@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
             std::wstring verb = query.GetFirstValueByName(L"Verb").c_str();

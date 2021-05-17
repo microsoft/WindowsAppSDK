@@ -309,30 +309,25 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
+        bool foundArgs = false;
 
+        // For packaged, try to get platform args first.
         if (HasIdentity())
         {
-
-            if (auto pushArgs = PushNotifications::GetRawNotificationEventArgs())
+            if (auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs())
             {
-                data = pushArgs;
-                kind = ExtendedActivationKind::Push;
-            }
-            else
-            {
-                if (auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs())
-                {
-                    data = args;
-                    kind = static_cast<ExtendedActivationKind>(args.Kind());
-                }
+                data = args;
+                kind = static_cast<ExtendedActivationKind>(args.Kind());
+                foundArgs = true;
             }
         }
-        else
+
+        // Handle all Reunion types next (both packaged and unpackaged).
+        std::wstring commandLine = std::wstring(GetCommandLine());
+        if (!foundArgs)
         {
-            // Generate IActivatedEventArgs for non-Packaged applications.
             std::wstring contractId;
             std::wstring contractData;
-            auto commandLine = std::wstring(GetCommandLine());
             std::tie(contractId, contractData) = ParseCommandLine(commandLine);
 
             // All specific launch types are encoded as a URI and transported as a
@@ -352,14 +347,16 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 if (IsEncodedLaunch(protocolArgs.Uri()))
                 {
                     std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(protocolArgs);
+                    foundArgs = true;
                 }
             }
+        }
 
-            // Haven't set the kind yet, and so let's default to Launch.
-            if (kind == ExtendedActivationKind::Launch)
-            {
-                data = make<LaunchActivatedEventArgs>(commandLine).as<IInspectable>();
-            }
+        // All scenarios should just be marked as Launch.
+        if (!foundArgs)
+        {
+            kind = ExtendedActivationKind::Launch;
+            data = make<LaunchActivatedEventArgs>(commandLine).as<IInspectable>();
         }
 
         return make<AppActivationArguments>(kind, data);
