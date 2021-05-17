@@ -313,18 +313,16 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         if (HasIdentity())
         {
 
-            auto pushArgs = GetRawNotificationEventArgs::GetRawNotificationEventArgs();
-            if (pushArgs)
+            if (auto pushArgs = PushNotifications::GetRawNotificationEventArgs())
             {
                 data = pushArgs;
                 kind = ExtendedActivationKind::Push;
             }
             else
             {
-                auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
-                if (args)
+                if (auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs())
                 {
-                    data = args.as<IInspectable>();
+                    data = args;
                     kind = static_cast<ExtendedActivationKind>(args.Kind());
                 }
             }

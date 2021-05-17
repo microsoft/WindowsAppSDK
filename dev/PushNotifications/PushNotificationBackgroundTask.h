@@ -4,11 +4,11 @@ struct PushNotificationBackgroundTask : winrt::implements<PushNotificationBackgr
 {
     PushNotificationBackgroundTask() {}
 
-    void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance taskInstance);
+    void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& taskInstance);
 
     void OnCanceled(
-        winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance /*taskInstance*/,
-        winrt::Windows::ApplicationModel::Background::BackgroundTaskCancellationReason /*cancellationReason*/)
+        [[maybe_unused]] winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const&,
+        [[maybe_unused]] winrt::Windows::ApplicationModel::Background::BackgroundTaskCancellationReason const&)
     {
     }
 };

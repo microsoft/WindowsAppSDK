@@ -17,9 +17,11 @@ namespace winrt
 wil::unique_handle g_waitHandleForArgs;
 winrt::PushNotificationReceivedEventArgs g_activatedEventArgs{ nullptr };
 
-void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance taskInstance)
+void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
+    {
+        auto lock = g_lock.lock();
+        g_activatedEventArgs = winrt::PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(taskInstance);
+    }
     SetEvent(g_waitHandleForArgs.get());
-    auto lock = g_lock.lock();
-    g_activatedEventArgs = winrt::PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(taskInstance);
 }

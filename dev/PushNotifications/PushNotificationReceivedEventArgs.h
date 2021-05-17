@@ -5,6 +5,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationReceivedEventArgs : PushNotificationReceivedEventArgsT<PushNotificationReceivedEventArgs>
     {
+        PushNotificationReceivedEventArgs() = delete;
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
         PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
 
@@ -18,10 +19,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void Handled(bool value);
 
     private:
-        winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
-        winrt::com_array<uint8_t> m_backgroundPayload{};
-        winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
-        wil::srwlock m_lock;
+        const winrt::com_array<uint8_t> m_rawNotification{};
+        const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
+        const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
