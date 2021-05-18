@@ -11,25 +11,8 @@ steps:
       targetType: 'inline'
       script: |
         Write-Host "Pipeline Variable 'MaestroToken' and 'MaestroUri' must have a value"
-        Write-Host "##vso[task.complete result=Failed;]DONE"
+        Write-Host "##vso[task.complete result=Skipped;]DONE"
     condition: or(eq(variables['MaestroUri'], ''), eq(variables['MaestroToken'], ''))
-
-  - task: PowerShell@2
-    displayName: Check DefaultChannel
-    inputs:
-      targetType: 'inline'
-      script: |
-        # Get the id of the default channel of this branch
-        $api = "/api/default-channels"
-        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
-        $jsonObj = ConvertFrom-Json $response.Content
-        $channelId = $jsonObj.channel.id
-        if ([string]::IsNullOrEmpty($channelId))
-        {
-          Write-Host "Error: Default channel not found. Please use darc add-default-channel to add a default channel for this repo and branch"
-          Write-Host "##vso[task.complete result=Failed;]DONE"
-        }
-        Write-Host "##vso[task.setvariable variable=maestroDefaultChannelId;]$channelId"
 
   - task: PowerShell@2
     displayName: Build JsonBody 
@@ -114,7 +97,7 @@ steps:
         Write-host $body
 
   - task: powershell@2
-    displayName: 'Post Channel Test'
+    displayName: 'Post build to Maestro'
     inputs:
       targetType: filePath
       filePath: eng\common\MaestroPostRequest.ps1
@@ -125,18 +108,34 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        # Get the id of the build posted earlier
-        $api = "/api/builds"
-        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
-        $jsonObj = ConvertFrom-Json $response.Content
-        $buildId = $jsonObj.id
-
-        # AddBuildToChannel with the corresponding build id and channel id
-        $api = "/api/channels/" + $(maestroDefaultChannelId) + "/builds/" + $buildId
-        $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
-
         if ('${{ parameters.TriggerSubscrption }}' -eq 'true')
         {
+          # Get the id of the default channel of this branch
+          $api = "/api/default-channels"
+          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
+          $jsonObj = ConvertFrom-Json $response.Content
+          $channelId = $jsonObj.channel.id
+          if ([string]::IsNullOrEmpty($channelId))
+          {
+            Write-Host "Error: Default channel not found. Please use darc add-default-channel to add a default channel for this repo and branch"
+            Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+          # Get the id of the build posted earlier
+          $api = "/api/builds"
+          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
+          $jsonObj = ConvertFrom-Json $response.Content
+          $buildId = $jsonObj.id
+          if ([string]::IsNullOrEmpty($buildId))
+          {
+            Write-Host "Error: build not found in Maestro"
+            Write-Host "##vso[task.complete result=Failed;]DONE"
+          }
+
+          # AddBuildToChannel with the corresponding build id and channel id
+          $api = "/api/channels/" + $channelId + "/builds/" + $buildId
+          $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
+
           # Get the list of subscriptions on the channel
           $api = "/api/subscriptions"
           $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&channelId=$(maestroDefaultChannelId)'
