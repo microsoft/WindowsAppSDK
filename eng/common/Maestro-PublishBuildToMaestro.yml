@@ -13,6 +13,18 @@ steps:
     condition: or(eq(variables['MaestroUri'], ''), eq(variables['MaestroToken'], ''))
 
   - task: PowerShell@2
+    displayName: Check prerequisites
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Get the id of the default channel of this branch
+        $api = "/api/default-channels"
+        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
+        $jsonObj = ConvertFrom-Json $response.Content
+        $channelId = $jsonObj.channel.id
+        Write-Host "##vso[task.setvariable variable=maestroDefaultChannelId;]$channelId"
+
+  - task: PowerShell@2
     displayName: Build JsonBody 
     inputs:
       targetType: 'inline'
@@ -106,12 +118,6 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        # Get the id of the default channel of this branch
-        $api = "/api/default-channels"
-        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
-        $jsonObj = ConvertFrom-Json $response.Content
-        $channelId = $jsonObj.channel.id
-        
         # Get the id of the build posted earlier
         $api = "/api/builds"
         $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
@@ -119,5 +125,17 @@ steps:
         $buildId = $jsonObj.id
 
         # AddBuildToChannel with the corresponding build id and channel id
-        $api = "/api/channels/" + $channelId + "/builds/" + $buildId
+        $api = "/api/channels/" + $(maestroDefaultChannelId) + "/builds/" + $buildId
         $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
+
+        # Trigger the subscrption
+        $api = "/api/subscriptions"
+        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&channelId=$(maestroDefaultChannelId)'
+        $jsonObj = ConvertFrom-Json $response.Content
+        foreach ($sub in $jsonObj)
+        {
+          $id = $sub.id
+          Write-Host "id: " $id
+        }
+
+
