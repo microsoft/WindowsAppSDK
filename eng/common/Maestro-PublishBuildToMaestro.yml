@@ -11,7 +11,7 @@ steps:
       targetType: 'inline'
       script: |
         Write-Host "Pipeline Variable 'MaestroToken' and 'MaestroUri' must have a value"
-        Write-Host "##vso[task.complete result=Skipped;]DONE"
+        Write-Host "##vso[task.complete result=Failed;]DONE"
     condition: or(eq(variables['MaestroUri'], ''), eq(variables['MaestroToken'], ''))
 
   - task: PowerShell@2
@@ -102,14 +102,13 @@ steps:
       targetType: filePath
       filePath: eng\common\MaestroPostRequest.ps1
       arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
-
-  - task: powershell@2
-    displayName: 'Publish Build to Default Channel'
-    inputs:
-      targetType: 'inline'
-      script: |
-        if ('${{ parameters.TriggerSubscrption }}' -eq 'true')
-        {
+ 
+  - ${{ if eq(parameters.TriggerSubscrption, 'true') }}:
+    - task: powershell@2
+      displayName: 'Publish Build to Default Channel'
+      inputs:
+        targetType: 'inline'
+        script: |
           # Get the id of the default channel of this branch
           $api = "/api/default-channels"
           $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
@@ -118,7 +117,7 @@ steps:
           if ([string]::IsNullOrEmpty($channelId))
           {
             Write-Host "Error: Default channel not found. Please use darc add-default-channel to add a default channel for this repo and branch"
-            Write-Host "##vso[task.complete result=Failed;]DONE"
+            Write-Host "##vso[task.complete result=SucceededWithIssues;]DONE"
           }
 
           # Get the id of the build posted earlier
@@ -149,4 +148,4 @@ steps:
             $api = "/api/subscriptions/" + $id + "/trigger"
             $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
           }
-        }
+        
