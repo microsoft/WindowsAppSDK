@@ -24,7 +24,7 @@ public:
         wchar_t* resourceString;
         VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Groove Music");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Groove Music"), 0);
 
         MrmFreeResource(resourceString);
         MrmDestroyResourceManager(resourceManager);
@@ -44,7 +44,7 @@ public:
         wchar_t* resourceString;
         VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, nullptr, childChildResourceMap, L"HelpTextMoreButton", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Invoke to show or hide the text entry fields.");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Invoke to show or hide the text entry fields."), 0);
 
         MrmFreeResource(resourceString);
         MrmDestroyResourceManager(resourceManager);
@@ -58,7 +58,7 @@ public:
         wchar_t* resourceString;
         VERIFY_ARE_EQUAL(MrmLoadStringResourceFromResourceUri(resourceManager, nullptr, L"ms-resource://Microsoft.ZuneMusic/resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Groove Music");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Groove Music"), 0);
 
         MrmFreeResource(resourceString);
         MrmDestroyResourceManager(resourceManager);
@@ -72,7 +72,7 @@ public:
         wchar_t* resourceString;
         VERIFY_ARE_EQUAL(MrmLoadStringResourceFromResourceUri(resourceManager, nullptr, L"ms-resource:///resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Groove Music");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Groove Music"), 0);
 
         MrmFreeResource(resourceString);
         MrmDestroyResourceManager(resourceManager);
@@ -123,8 +123,8 @@ public:
 
         // We currently support 12 qualifiers defined in MrmConstants.h
         VERIFY_ARE_EQUAL(size, 12u);
-        VERIFY_ARE_EQUAL(*qualifierNames, L"Language");
-        VERIFY_ARE_EQUAL(*(qualifierNames + 11), L"Custom");
+        VERIFY_ARE_EQUAL(wcscmp(*qualifierNames, L"Language"), 0);
+        VERIFY_ARE_EQUAL(wcscmp(*(qualifierNames + 11), L"Custom"), 0);
 
         MrmFreeQualifierNamesOrValues(size, qualifierNames);
 
@@ -140,11 +140,11 @@ public:
 
             wchar_t* qualifierValue;
             VERIFY_ARE_EQUAL(MrmGetQualifier(resourceContext, L"Contrast", &qualifierValue), S_OK);
-            VERIFY_ARE_EQUAL(qualifierValue, L"WHITE");
+            VERIFY_ARE_EQUAL(wcscmp(qualifierValue, L"WHITE"), 0);
             MrmFreeResource(qualifierValue);
 
             VERIFY_ARE_EQUAL(MrmGetQualifier(resourceContext, L"TargetSize", &qualifierValue), S_OK);
-            VERIFY_ARE_EQUAL(qualifierValue, L"96");
+            VERIFY_ARE_EQUAL(wcscmp(qualifierValue, L"96"), 0);
             MrmFreeResource(qualifierValue);
 
             MrmFreeResource(resourceString);
@@ -179,20 +179,20 @@ public:
         VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-US"), S_OK);
         VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, resourceContext, nullptr, L"resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Equalizer");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Equalizer"), 0);
         MrmFreeResource(resourceString);
 
         VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-GB"), S_OK);
         VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, resourceContext, nullptr, L"resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Equaliser");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Equaliser"), 0);
         MrmFreeResource(resourceString);
 
         // en-AU is closer to en-GB
         VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-AU"), S_OK);
         VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, resourceContext, nullptr, L"resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceString), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Equaliser");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Equaliser"), 0);
         MrmFreeResource(resourceString);
 
         MrmDestroyResourceManager(resourceManager);
@@ -267,7 +267,7 @@ public:
             VERIFY_IS_TRUE(resourceType == MrmType_String);
             VERIFY_IS_NULL(resourceData.data);
             VERIFY_ARE_EQUAL(resourceData.size, 0u);
-            VERIFY_ARE_EQUAL(resourceString, L"Groove Music");
+            VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Groove Music"), 0);
 
             MrmFreeResource(resourceString);
         }
@@ -375,29 +375,29 @@ public:
             {
             case 0:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"AutomationNameAlphaSlider");
-                VERIFY_ARE_EQUAL(resourceString, L"Opacity");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"AutomationNameAlphaSlider"), 0);
+                VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Opacity"), 0);
                 break;
             }
 
             case 1:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"AutomationNameAlphaTextBox");
-                VERIFY_ARE_EQUAL(resourceString, L"Opacity");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"AutomationNameAlphaTextBox"), 0);
+                VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Opacity"), 0);
                 break;
             }
 
             case 2:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"AutomationNameBlueTextBox");
-                VERIFY_ARE_EQUAL(resourceString, L"Blue");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"AutomationNameBlueTextBox"), 0);
+                VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Blue"), 0);
                 break;
             }
 
             case 77:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"ValueStringValueSliderWithoutColorName");
-                VERIFY_ARE_EQUAL(resourceString, L"%1!u!");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"ValueStringValueSliderWithoutColorName"), 0);
+                VERIFY_ARE_EQUAL(wcscmp(resourceString, L"%1!u!"), 0);
                 break;
             }
             }
@@ -429,25 +429,25 @@ public:
             {
             case 0:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"AlbumBasicInfoControl.xbf");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"AlbumBasicInfoControl.xbf"), 0);
                 break;
             }
 
             case 1:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"AlbumMetadataEditDialog.xbf");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"AlbumMetadataEditDialog.xbf"), 0);
                 break;
             }
 
             case 2:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"ArtistBasicInfoControl.xbf");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"ArtistBasicInfoControl.xbf"), 0);
                 break;
             }
 
             case 27:
             {
-                VERIFY_ARE_EQUAL(resourceName, L"TrackMetadataEditDialog.xbf");
+                VERIFY_ARE_EQUAL(wcscmp(resourceName, L"TrackMetadataEditDialog.xbf"), 0);
                 break;
             }
             }
@@ -481,7 +481,7 @@ public:
         VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-US"), S_OK);
         VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceWithQualifierValues(resourceManager, resourceContext, nullptr, L"resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceType, &resourceString, &resourceData, &qualifierCount, &qualifierNames, &qualifierValues), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Equalizer");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Equalizer"), 0);
         MrmFreeResource(resourceString);
 
         VerifyQualifierValue(qualifierCount, qualifierNames, qualifierValues, L"Language", L"en-US");
@@ -491,7 +491,7 @@ public:
         VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-GB"), S_OK);
         VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceWithQualifierValues(resourceManager, resourceContext, nullptr, L"resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceType, &resourceString, &resourceData, &qualifierCount, &qualifierNames, &qualifierValues), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Equaliser");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Equaliser"), 0);
         MrmFreeResource(resourceString);
 
         VerifyQualifierValue(qualifierCount, qualifierNames, qualifierValues, L"Language", L"en-GB");
@@ -502,7 +502,7 @@ public:
         VERIFY_ARE_EQUAL(MrmSetQualifier(resourceContext, L"Language", L"en-AU"), S_OK);
         VERIFY_ARE_EQUAL(MrmLoadStringOrEmbeddedResourceWithQualifierValues(resourceManager, resourceContext, nullptr, L"resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", &resourceType, &resourceString, &resourceData, &qualifierCount, &qualifierNames, &qualifierValues), S_OK);
 
-        VERIFY_ARE_EQUAL(resourceString, L"Equaliser");
+        VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Equaliser"), 0);
         MrmFreeResource(resourceString);
 
         // resource candidate for en-GB is picked as en-AU is closer to en-GB
@@ -539,7 +539,7 @@ public:
         {
             wchar_t* resourceString;
             VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceString), S_OK);
-            VERIFY_ARE_EQUAL(resourceString, L"Groove Music");
+            VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Groove Music"), 0);
 
             MrmFreeResource(resourceString);
         }
@@ -556,7 +556,7 @@ public:
 
             wchar_t* resourceString;
             VERIFY_ARE_EQUAL(MrmLoadStringResource(resourceManager, nullptr, nullptr, L"resources/IDS_MANIFEST_MUSIC_APP_NAME", &resourceString), S_OK);
-            VERIFY_ARE_EQUAL(resourceString, L"Groove Music");
+            VERIFY_ARE_EQUAL(wcscmp(resourceString, L"Groove Music"), 0);
 
             MrmFreeResource(resourceString);
             MrmDestroyResourceManager(resourceManager);
