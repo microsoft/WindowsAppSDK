@@ -135,6 +135,51 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: CmdLine@2
+  displayName: 'test MRT - UnitTest'
+  inputs:
+    script: |
+      echo te.exe UnitTest.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
+      te.exe UnitTest.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
+    workingDirectory: '${{ parameters.MRTBinariesDirectory }}\($buildConfiguration)\$(buildPlatform)\UnitTest'
+  env:
+    LogPath: ${{ parameters.MRTBinariesDirectory }}\($buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl
+  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+
+- task: PowerShell@2
+  displayName: 'Convert Test Logs from WTL to xUnit format'
+  inputs:
+    targetType: filePath
+    filePath: build\Helix\ConvertWttLogToXUnit.ps1
+    arguments: -WttInputPath $LogPath -WttSingleRerunInputPath 'unused.wtl' -WttMultipleRerunInputPath 'unused2.wtl' -XUnitOutputPath 'onBuildMachineResults.xml' -TestNamePrefix '$(BuildConfiguration).$(BuildPlatform)'
+  env:
+    LogPath: ${{ parameters.MRTBinariesDirectory }}\($buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl
+  condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
+
+- task: PublishTestResults@2
+  displayName: 'Upload converted test logs'
+  inputs:
+    testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+    testResultsFiles: '**/onBuildMachineResults.xml' 
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\($buildConfiguration)\$(buildPlatform)'
+    #mergeTestResults: false # Optional
+    #failTaskOnFailedTests: false # Optional
+    testRunTitle: 'test MRT - On Build Machine Tests' # Optional
+    buildPlatform: $(BuildPlatform) # Optional
+    buildConfiguration: $(BuildConfiguration) # Optional
+    #publishRunAttachments: true # Optional
+
+- task: CopyFiles@2
+  displayName: 'test MRT - Copy result logs to Artifacts'
+  inputs:
+    Contents: |
+     **/*.wtl
+     **/*onBuildMachineResults.xml
+     ${{ parameters.MRTBinariesDirectory }}\($buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_test\($buildConfiguration)\$(buildPlatform)'
+    OverWrite: true
+    flattenFolders: true
+
 - task: VSTest@2
   displayName: 'test MRT'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
@@ -146,7 +191,8 @@ steps:
       !**\TE.*.dll
       !**\obj\**
       !**\MrtCoreUnpackagedTests.dll
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+      !**\Unittest.dll
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\($buildConfiguration)\$(buildPlatform)'
     testRunTitle: 'test MRT $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -197,3 +243,9 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
     ArtifactName: 'mrtcore_binaries'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: MRT Test results'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_test'
+    ArtifactName: 'mrtcore_test'
