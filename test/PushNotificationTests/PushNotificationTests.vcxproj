@@ -173,12 +173,18 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-    <PropertyGroup>
-    <TestPkgDebugConfigName Condition="$(Configuration) == 'Debug'">_Debug</TestPkgDebugConfigName>
+  <PropertyGroup>
+    <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
+    <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
+
+    <TestPkgOutputPath>$(AppxPackageDir)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
+    <TestPkgOutputPath Condition="!Exists('$(TestPkgOutputPath)')">$(OutDir)\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
+    <TestPkgOutputFile>$(TestPkgOutputPath)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
+    <TestPkgOutputFile Condition="!Exists('$(TestPkgOutputFile)')">$(TestPkgOutputPath)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msixbundle</TestPkgOutputFile>
   </PropertyGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="$(OutDir)\..\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0_Test\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msixbundle" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestAppPackage.msixbundle" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(OutDir)\..\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0_Test\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).cer" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestAppPackage.cer" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestAppPackage.msix" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

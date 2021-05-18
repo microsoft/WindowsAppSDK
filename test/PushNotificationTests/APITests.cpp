@@ -18,9 +18,6 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
-
-// TODO: Write Register/Unregister tests that utilize the Assoc APIs to validate results.
-
 namespace Test::PushNotifications
 {
     class APITests
@@ -28,24 +25,31 @@ namespace Test::PushNotifications
     private:
         wil::unique_event m_failed;
 
-        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestAppPackage.cer";
-        const std::wstring c_testPackageFullName = L"PushNotificationsTestAppPackage_1.0.0.0_x64__8wekyb3d8bbwe";
+        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage.msix";
+        const std::wstring c_testPackageFullName = L"PushNotificationsTestAppPackage_1.0.0.0_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
+        const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
 
     public:
         BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"Description", L"Project Reunion Push Notifications test")
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            try
+            {
+                InstallPackage(c_testVCLibsPackageFile);
+            }
+            catch (...)
+            {
+                return false;
+            }
+
             TP::AddPackage_ProjectReunionFramework();
             try
             {
-                RunCertUtil(c_testPackageCertFile, false);
                 InstallPackage(c_testPackageFile);
             }
             catch (...)
@@ -62,7 +66,6 @@ namespace Test::PushNotifications
             try
             {
                 UninstallPackage(c_testPackageFullName);
-                RunCertUtil(c_testPackageCertFile, true);
             }
             catch (...)
             {
