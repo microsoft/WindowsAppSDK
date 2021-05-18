@@ -11,6 +11,9 @@
     <!-- If not set, default it to no . -->
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
+  <Target Name="DirectoryBuildPropsInfo">
+    <Message Importance="High" Text="ProjectReunion.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
+  </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
   <ItemDefinitionGroup Condition="$(ProjectReunionBuildPipeline) == '1'">
