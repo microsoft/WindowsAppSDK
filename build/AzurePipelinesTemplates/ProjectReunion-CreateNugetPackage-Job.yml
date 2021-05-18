@@ -8,6 +8,7 @@ parameters:
   primaryBuildArch: x86
   buildFlavor: Release
   prereleaseVersionTag: 'prerelease'
+  publishToMaestro: false
   condition: ''
 
 jobs:
