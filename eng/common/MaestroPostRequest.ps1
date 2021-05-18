@@ -25,7 +25,12 @@ Write-Host $fullUri
 $Response = Invoke-WebRequest -Method 'POST' -Uri $fullUri -Headers $headers -Body $body -ContentType $contentType
 Write-Host $Response
 
-if ($Response.statuscode -ne '201')
+if ($Response.statuscode -lt '200')
+{
+  Write-Host $Response.statuscode
+  Write-Host "##vso[task.complete result=Failed;]DONE"
+}
+if ($Response.statuscode -ge '300')
 {
   Write-Host $Response.statuscode
   Write-Host "##vso[task.complete result=Failed;]DONE"

@@ -19,10 +19,16 @@ Write-Host $fullUri
 $response = Invoke-WebRequest -Method 'GET' -Uri $fullUri -Headers $headers -ContentType $contentType
 Write-Host $response
 
-if ($response.statuscode -ne '200')
+if ($Response.statuscode -lt '200')
 {
-  Write-Host $response.statuscode
+  Write-Host $Response.statuscode
   Write-Host "##vso[task.complete result=Failed;]DONE"
 }
+if ($Response.statuscode -ge '300')
+{
+  Write-Host $Response.statuscode
+  Write-Host "##vso[task.complete result=Failed;]DONE"
+}
+
 
 return $response
