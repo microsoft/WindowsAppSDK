@@ -150,7 +150,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: build\Helix\ConvertWttLogToXUnit.ps1
-    arguments: -WttInputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl' -XUnitOutputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\onBuildMachineResults.xml' -TestNamePrefix 'MRTCore.UnitTest.$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
+    arguments: -WttInputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl' -XUnitOutputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\onBuildMachineResults.xml' -TestNamePrefix '$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: PublishTestResults@2
@@ -161,7 +161,7 @@ steps:
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)'
     #mergeTestResults: false # Optional
     #failTaskOnFailedTests: false # Optional
-    testRunTitle: 'test MRT - On Build Machine' # Optional
+    testRunTitle: 'test MRT - On Build Machine Tests' # Optional
     buildPlatform: $(BuildPlatform) # Optional
     buildConfiguration: $(BuildConfiguration) # Optional
     #publishRunAttachments: true # Optional
