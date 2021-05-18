@@ -249,3 +249,4 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_test'
     ArtifactName: 'mrtcore_test'
+  condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
