@@ -150,9 +150,7 @@ steps:
   inputs:
     targetType: filePath
     filePath: build\Helix\ConvertWttLogToXUnit.ps1
-    arguments: -WttInputPath '$(LogPath)\MrtUnitTest.wtl' -XUnitOutputPath '$(LogPath)\onBuildMachineResults.xml' -TestNamePrefix 'MRTCore.UnitTest.$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
-  env:
-    LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest
+    arguments: -WttInputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl' -XUnitOutputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\onBuildMachineResults.xml' -TestNamePrefix 'MRTCore.UnitTest.$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: PublishTestResults@2
@@ -170,7 +168,7 @@ steps:
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: CopyFiles@2
-  displayName: 'test MRT - Copy test result logs for Artifacts'
+  displayName: 'test MRT - Copy test logs for Artifacts'
   inputs:
     Contents: |
      **/*.wtl
@@ -178,6 +176,13 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_test\$(buildConfiguration)\$(buildPlatform)'
     OverWrite: true
     flattenFolders: true
+  condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: MRT Test results'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_test'
+    ArtifactName: 'mrtcore_test'
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: VSTest@2
@@ -243,10 +248,3 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
     ArtifactName: 'mrtcore_binaries'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: MRT Test results'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_test'
-    ArtifactName: 'mrtcore_test'
-  condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
