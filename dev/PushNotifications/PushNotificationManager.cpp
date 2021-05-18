@@ -116,7 +116,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
 
         PushNotificationCreateChannelStatus
-            channelStatus = { channelRequestResult, status, retryCount };
+            channelStatus = { status, channelRequestResult, retryCount };
 
         progress(channelStatus);
 
