@@ -18,10 +18,6 @@ public:
 
     TEST_METHOD(ReadResourceString)
     {
-        wchar_t path[MAX_PATH] = {};
-        VERIFY_WIN32_BOOL_SUCCEEDED(GetCurrentDirectory(ARRAYSIZE(path), path));
-        WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Current directory: %s", path));
-
         MrmManagerHandle resourceManager;
         VERIFY_ARE_EQUAL(MrmCreateResourceManager(L".\\resources.pri", &resourceManager), S_OK);
 
