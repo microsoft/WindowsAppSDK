@@ -42,7 +42,7 @@ $lifetimemanager_clsid_uuid = New-Guid
 $lifetimemanager_clsid_guid = Convert-Guid $lifetimemanager_clsid_uuid
 
 # Generate the json file
-$content_h=@"
+$content_json=@"
 {
     "LIBID": "1BF712E5-41ED-46a5-8402-2D40725F691E",
     "DataStore": {
@@ -58,9 +58,9 @@ $content_h=@"
     }
 }
 "@
-$file_h = Join-Path $Path 'DynamicDependency-Override.json'
-Write-Output "Writing $file_h..."
-"$content_h" | Out-File $file_h -Encoding utf8
+$file_json = Join-Path $Path 'DynamicDependency-Override.json'
+Write-Output "Writing $file_json..."
+"$content_json" | Out-File $file_json -Encoding utf8
 
 # Generate the header file
 $content_h=@"
