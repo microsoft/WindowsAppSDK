@@ -1,7 +1,9 @@
 parameters:
   AssetName: ''
   AssetVersion: ''
+  TriggerSubscrption: false
   IsGitHubRepo: true
+
 steps:
   - task: PowerShell@2
     displayName: Check prerequisites
@@ -133,17 +135,19 @@ steps:
         $api = "/api/channels/" + $(maestroDefaultChannelId) + "/builds/" + $buildId
         $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
 
-        # Get the list of subscriptions on the channel
-        $api = "/api/subscriptions"
-        $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&channelId=$(maestroDefaultChannelId)'
-        $jsonObj = ConvertFrom-Json $response.Content
-        foreach ($sub in $jsonObj)
+        if ('${{ parameters.TriggerSubscrption }}' -eq 'true')
         {
-          # Trigger the subscription
-          $id = $sub.id
-          Write-Host "Triggering subscription on " $id
-          # bar-build-id is always 0
-          $api = "/api/subscriptions/" + $id + "/trigger"
-          $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+          # Get the list of subscriptions on the channel
+          $api = "/api/subscriptions"
+          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&channelId=$(maestroDefaultChannelId)'
+          $jsonObj = ConvertFrom-Json $response.Content
+          foreach ($sub in $jsonObj)
+          {
+            # Trigger the subscription
+            $id = $sub.id
+            Write-Host "Triggering subscription on " $id
+            # bar-build-id is always 0
+            $api = "/api/subscriptions/" + $id + "/trigger"
+            $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+          }
         }
-
