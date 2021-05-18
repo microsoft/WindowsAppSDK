@@ -138,8 +138,6 @@ jobs:
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
   pool:
     vmImage: 'windows-latest'
-  variables:
-    rerunPassesRequiredToAvoidFailure: 5
   steps:
   - template: publish-mrt.yml
 
