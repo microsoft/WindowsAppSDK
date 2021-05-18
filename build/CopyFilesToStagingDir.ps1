@@ -1,6 +1,7 @@
 [CmdLetBinding()]
 Param(
     [string]$BuildOutputDir,
+    [string]$OverrideDir,
     [string]$PublishDir,
     [string]$NugetDir,
     [string]$Platform,
@@ -32,7 +33,7 @@ function PublishFile {
     }
 }
 
-PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $FullPublishDir\
+PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
 
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
@@ -123,4 +124,4 @@ PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.Dynam
 # C#/WinRT Projections
 #
 # Dynamic Dependency build overrides
-PublishFile $BuildOutputDir\override\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
+PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native

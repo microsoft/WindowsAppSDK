@@ -6,10 +6,6 @@
     <_ProjectReunionFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_ProjectReunionFoundationPlatform>
   </PropertyGroup>
 
-  <!--
-    Some of the manual reference adding below may not be necessary due to the files in question being in default locations, but there's no harm in it.
-  -->
-
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -20,10 +16,21 @@
     <Link>
       <AdditionalDependencies>
         $(MSBuildThisFileDirectory)..\..\lib\win10-$(_ProjectReunionFoundationPlatform)\Microsoft.ProjectReunion.lib;
+        %(AdditionalDependencies);
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemDefinitionGroup Condition="'$(AppxPackage)' != 'true'">
+    <Link>
+      <AdditionalDependencies>
         $(MSBuildThisFileDirectory)..\..\lib\win10-$(_ProjectReunionFoundationPlatform)\Microsoft.ProjectReunion.Bootstrap.lib;
         %(AdditionalDependencies);
       </AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(MSBuildThisFileDirectory)..\..\runtimes\lib\native\$(_ProjectReunionFoundationPlatform)\Microsoft.ProjectReunion.Bootstrap.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
 
 </Project>

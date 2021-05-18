@@ -7,19 +7,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\CopyFilesToStagingDir.ps1
-      arguments: -BuildOutputDir '$(buildOutputDir)' -PublishDir '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
-
-  - script: |
-      dir /s $(Build.ArtifactStagingDirectory)
-    displayName: HK
-
-  - script: |
-      dir /s $(buildOutputDir)
-    displayName: HK
-
-  - script: |
-      dir /s
-    displayName: HK
+      arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: ${{ parameters.artifactName }}'

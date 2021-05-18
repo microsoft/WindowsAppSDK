@@ -177,7 +177,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -201,7 +201,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -229,7 +229,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -253,7 +253,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -281,7 +281,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -309,7 +309,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -335,7 +335,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -363,7 +363,7 @@
       <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>

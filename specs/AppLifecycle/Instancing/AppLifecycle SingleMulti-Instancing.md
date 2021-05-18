@@ -170,7 +170,10 @@ int APIENTRY wWinMain(
         {
             // Some other instance has already registered for this file,
             // so we'll redirect this activation to that instance instead.
-            instance.RedirectActivationTo(activationArgs);
+            // This is an async operation: to ensure the target can get
+            // the payload before this instance terminates, we should
+            // wait for the call to complete.
+            instance.RedirectActivationToAsync(activationArgs).get();
         }
     }
     return 1;
@@ -232,7 +235,7 @@ int APIENTRY wWinMain(
             if (instance.Key == L"REUSABLE")
             {
                 isFound = true;
-                instance.RedirectActivationTo(activationArgs);
+                instance.RedirectActivationToAsync(activationArgs).get();
                 break;
             }
         }
@@ -324,7 +327,7 @@ void OnActivated(AppActivationArguments const& args)
         auto instance = AppInstance::FindOrRegisterForKey(uri.AbsoluteUri());
         if (!instance.IsCurrent)
         {
-            instance.RedirectActivationTo(args);
+            instance.RedirectActivationToAsync(args).get();
         }
         else
         {
@@ -361,7 +364,7 @@ unregister itself.
 ```c++
 void CALLBACK OnFileClosed(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    AppInstance::GetCurrent().UnregisterKey(g_fileName);
+    AppInstance::GetCurrent().UnregisterKey();
 }
 ```
 
@@ -404,20 +407,18 @@ namespace Microsoft.Windows.AppLifecycle
 {
     runtimeclass AppInstance
     {
-        // Existing activation functionality like GetCurrent and GetActivatedEventArgs
-
-        static event EventHandler<AppActivationArguments> Activated;
-
-        static Windows.Foundation.IVector<AppInstance> GetInstances();
-
+        static AppInstance GetCurrent();
+        static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
         static AppInstance FindOrRegisterForKey(String key);
-        void UnregisterKey(String key);
 
-        void RedirectActivationTo(AppActivationArguments args);
+        void UnregisterKey();
+        Windows.Foundation.IAsyncAction RedirectActivationToAsync(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
+        Microsoft.Windows.AppLifecycle.AppActivationArguments GetActivatedEventArgs();
+        event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.AppActivationArguments> Activated;
 
-        String Key { get; };
-        bool IsCurrent { get; };
-        UInt32 ProcessId { get; };
+        String Key{ get; };
+        Boolean IsCurrent{ get; };
+        UInt32 ProcessId{ get; };
     }
 }
 ```
