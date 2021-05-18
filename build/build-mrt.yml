@@ -139,7 +139,6 @@ steps:
   displayName: 'test MRT - UnitTest'
   inputs:
     script: |
-      echo te.exe UnitTest.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
       te.exe UnitTest.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
     workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
   env:
@@ -151,7 +150,9 @@ steps:
   inputs:
     targetType: filePath
     filePath: build\Helix\ConvertWttLogToXUnit.ps1
-    arguments: -WttInputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl' -XUnitOutputPath 'onBuildMachineResults.xml' -TestNamePrefix '$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
+    arguments: -WttInputPath '$(LogPath)\MrtUnitTest.wtl' -XUnitOutputPath '$(LogPath)\onBuildMachineResults.xml' -TestNamePrefix 'MRTCore.UnitTest.$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
+  env:
+    LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: PublishTestResults@2
@@ -162,19 +163,18 @@ steps:
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)'
     #mergeTestResults: false # Optional
     #failTaskOnFailedTests: false # Optional
-    testRunTitle: 'test MRT - On Build Machine Tests' # Optional
+    testRunTitle: 'test MRT - On Build Machine' # Optional
     buildPlatform: $(BuildPlatform) # Optional
     buildConfiguration: $(BuildConfiguration) # Optional
     #publishRunAttachments: true # Optional
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: CopyFiles@2
-  displayName: 'test MRT - Copy result logs to Artifacts'
+  displayName: 'test MRT - Copy test result logs for Artifacts'
   inputs:
     Contents: |
      **/*.wtl
      **/*onBuildMachineResults.xml
-     ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_test\$(buildConfiguration)\$(buildPlatform)'
     OverWrite: true
     flattenFolders: true
