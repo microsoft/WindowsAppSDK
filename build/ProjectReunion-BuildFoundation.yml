@@ -17,7 +17,7 @@ jobs:
     parameters:
       IsGitHubRepo: true
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-      AssetVersion: '0.8.0-main.20210513.28.nightly'
+      AssetVersion: '0.8.0-main.20210513.29.nightly'
 
 #   # Scans the root source folder for security vulnerability
 #   - task: CredScan@2

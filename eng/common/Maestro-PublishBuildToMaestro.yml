@@ -142,7 +142,8 @@ steps:
           # Trigger the subscription
           $id = $sub.id
           Write-Host "Triggering subscription on " $id
-          $api = "/api/subscriptions/" + $id + "/trigger?bar-build-id=0" // bar-build-id is always 0
+          # bar-build-id is always 0
+          $api = "/api/subscriptions/" + $id + "/trigger?bar-build-id=0"
           $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
         }
 
