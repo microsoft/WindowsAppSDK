@@ -61,11 +61,11 @@ namespace Microsoft.Windows.PushNotifications
     // The PushNotificationChannel Progress result
     struct PushNotificationCreateChannelStatus
     {
-        // The last extended error we failed Channel requests on that caused the inprogress retry status. S_OK if this is just progress status.
-        HRESULT extendedError;
-
         // Either InProgress or InProgressRetry status
         PushNotificationChannelStatus status;
+
+        // The last extended error we failed Channel requests on that caused the inprogress retry status. E_PENDING if this is just progress status.
+        HRESULT extendedError;
 
         // Total Retries so far
         UInt32 retryCount;
@@ -84,7 +84,7 @@ namespace Microsoft.Windows.PushNotifications
         // Unsubscribes the channel
         void Close();
 
-        // In-memory Event handler for Push Notifications
+        // Event handler for Push Notifications
         event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
     }
 
@@ -95,7 +95,7 @@ namespace Microsoft.Windows.PushNotifications
             HRESULT extendedError,
             PushNotificationChannelStatus status);
 
-        // The Push channel associated with the Result. Null if InProgress or completion failed
+        // The Push channel associated with the Result. Valid only if status is CompletedSuccess.
         PushNotificationChannel Channel { get; };
 
         // More detailed error code in addition to the ChannelStatus state.
@@ -128,7 +128,7 @@ namespace Microsoft.Windows.PushNotifications
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
         static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationKind kind);
 
-        // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
+        // Request a Push Channel using an encoded AAD GUID identifier from WNS.
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
     };
 }
