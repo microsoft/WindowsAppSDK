@@ -3,6 +3,7 @@
 
 namespace Microsoft.Windows.PushNotifications
 {
+    [experimental]
     // Event args for the Push payload.
     runtimeclass PushNotificationReceivedEventArgs
     {
@@ -32,6 +33,7 @@ namespace Microsoft.Windows.PushNotifications
         ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
     };
 
+    [experimental]
     // An abstraction over the activation Registration flow
     runtimeclass PushNotificationActivationInfo
     {
@@ -71,6 +73,7 @@ namespace Microsoft.Windows.PushNotifications
         UInt32 retryCount;
     };
 
+    [experimental]
     runtimeclass PushNotificationChannel
     {
         PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
@@ -88,6 +91,7 @@ namespace Microsoft.Windows.PushNotifications
         event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
     }
 
+    [experimental]
     runtimeclass PushNotificationCreateChannelResult
     {
         PushNotificationCreateChannelResult(
@@ -105,6 +109,7 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
+    [experimental]
     runtimeclass PushNotificationRegistrationToken
     {
         PushNotificationRegistrationToken(
@@ -118,6 +123,7 @@ namespace Microsoft.Windows.PushNotifications
         Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
     };
 
+    [experimental]
     static runtimeclass PushNotificationManager
     {
         // Register an activator using an ActivationInfo context and return a RegistrationToken
