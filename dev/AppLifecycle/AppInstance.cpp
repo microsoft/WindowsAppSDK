@@ -36,6 +36,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         auto argsEnd = commandLine.find_first_of(L" ", argsStart);
 
+        // Separate the argument from any behind it on the command-line.
         std::wstring argument;
         if (argsEnd == std::wstring::npos)
         {
@@ -52,16 +53,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-        auto argsDelim = argument.find_first_of(L":", argsStart);
+        auto argsDelim = argument.find_first_of(L":");
         if (argsDelim == std::wstring::npos)
         {
             return { argument, L"" };
         }
 
-        auto argsLength = argsDelim - argsStart;
-        auto dataStart = argsDelim + 1;
-
-        return { argument.substr(argsStart, argsLength), argument.substr(dataStart) };
+        return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
     }
 
     std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
