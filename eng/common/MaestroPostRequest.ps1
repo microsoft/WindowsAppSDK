@@ -3,7 +3,8 @@ Param(
     [string]$url,
     [string]$token,
     [string]$api,
-    [string]$jsonBodyPath
+    [string]$jsonBodyPath,
+    [string]$queryParameters = ''
 )
 
 $headers = @{
@@ -17,7 +18,7 @@ if (-not [string]::IsNullOrEmpty($jsonBodyPath))
 }
 
 $contentType = 'application/json'
-$api = $api + '?api-version=2020-02-20'
+$api = $api + '?api-version=2020-02-20' + $queryParameters
 $fullUri = $url + $api
 
 Write-Host $fullUri
