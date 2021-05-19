@@ -14,7 +14,7 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   # Scans the root source folder for security vulnerability
-  - template: ..\..\eng\common\Maestro-PublishBuildToMaestro.yml
+  - template: ..\eng\common\Maestro-PublishBuildToMaestro.yml
     parameters:
       IsGitHubRepo: true
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
