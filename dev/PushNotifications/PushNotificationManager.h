@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid remoteId);
 
     private:
-        static bool isChannelRequestRetryable(const winrt::hresult& hrException);
+        static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

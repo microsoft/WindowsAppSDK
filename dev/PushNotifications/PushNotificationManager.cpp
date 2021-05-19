@@ -37,7 +37,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     const HRESULT WNP_E_RECONNECTING = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x880403FEL);
 
-    bool PushNotificationManager::isChannelRequestRetryable(const hresult& hr)
+    bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
         {
@@ -137,7 +137,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
 
-                if ((backOffTimeInSeconds <= c_maxBackoffSeconds) && isChannelRequestRetryable(channelRequestException.code()))
+                if ((backOffTimeInSeconds <= c_maxBackoffSeconds) && IsChannelRequestRetryable(channelRequestException.code()))
                 {
                     channelStatus.extendedError = channelRequestException.code();
                     channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
@@ -182,8 +182,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
         winrt::guid taskClsid = details.TaskClsid();
+        THROW_HR_IF(E_INVALIDARG, taskClsid == winrt::guid(GUID_NULL));
+
         DWORD cookie = 0;
         BackgroundTaskRegistration registeredTask = nullptr;
+        BackgroundTaskBuilder builder = nullptr;
 
         if (WI_IsFlagSet(details.Kind(), PushNotificationRegistrationKind::PushTrigger))
         {
@@ -192,7 +195,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (!taskRegistered)
             {
-                BackgroundTaskBuilder builder;
+                builder = BackgroundTaskBuilder();
                 builder.Name(backgroundTaskName);
 
                 PushNotificationTrigger trigger{};
@@ -215,8 +218,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         throw winrt::hresult_not_implemented();
                     }
                 }
-
-                registeredTask = builder.Register();
             }
         }
 
@@ -238,6 +239,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     &cookie));
             }
         }
+
+        if (builder)
+        {
+            registeredTask = builder.Register();
+        }
+
         return PushNotificationRegistrationToken{ cookie, registeredTask };
     }
 
@@ -248,9 +255,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             for (auto task : BackgroundTaskRegistration::AllTasks())
             {
-                if (task.Value().Name() == backgroundTaskName)
+                if (task.Value().Name() == token.TaskRegistration().Name())
                 {
-                    task.Value().Unregister(false /*cancel task*/);
+                    task.Value().Unregister(true);
                 }
             }
         }

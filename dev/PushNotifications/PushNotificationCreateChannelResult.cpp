@@ -4,12 +4,13 @@
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationCreateChannelResult::PushNotificationCreateChannelResult(PushNotificationChannel const& channel, winrt::hresult const& extendedError, PushNotificationChannelStatus const& status)
+    PushNotificationCreateChannelResult::PushNotificationCreateChannelResult(PushNotificationChannel const& channel, winrt::hresult const& extendedError, PushNotificationChannelStatus const& status):
+        m_channel(channel),
+        m_extendedError(extendedError),
+        m_status(status)
     {
-        m_channel = channel;
-        m_extendedError = extendedError;
-        m_status = status;
     }
+
     PushNotificationChannel PushNotificationCreateChannelResult::Channel()
     {
         return m_channel;
