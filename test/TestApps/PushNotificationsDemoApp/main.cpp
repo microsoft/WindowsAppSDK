@@ -95,8 +95,6 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    winrt::init_apartment();
-
     time(&ltime);
     ctime_s(buf, sizeof buf, &ltime);
     std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;

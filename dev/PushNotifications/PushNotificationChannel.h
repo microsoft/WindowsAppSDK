@@ -5,8 +5,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
     {
-        PushNotificationChannel() = default;
-
         PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
