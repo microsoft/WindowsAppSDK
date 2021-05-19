@@ -180,17 +180,27 @@ void MddCore::WinRTPackage::ParseAppxManifest_InProcessServer(
                     }
 
                     // Next!
-                    hr =xmlReader->MoveToNextAttribute();
+                    hr = xmlReader->MoveToNextAttribute();
                 }
                 THROW_HR_IF_MSG(APPX_E_INVALID_MANIFEST, activatableClassId.empty() || (threadingModel == MddCore::WinRT::ThreadingModel::Unknown), "Error 0x%X parsing <ActivatableClass> in %ls", hr, filename.c_str());
                 winrtInProcModule.AddInprocServer(activatableClassId, threadingModel);
+            }
+        }
+        else if (nodeType == XmlNodeType_EndElement)
+        {
+            PCWSTR localName{};
+            THROW_IF_FAILED(xmlReader->GetLocalName(&localName, nullptr));
+            if (CompareStringOrdinal(localName, -1, L"InProcessServer", -1, FALSE) == CSTR_EQUAL)
+            {
+                // Found </InProcessServer> so we're done
+                break;
             }
         }
     }
     THROW_HR_IF_MSG(APPX_E_INVALID_MANIFEST, winrtInProcModule.Path().empty() || winrtInProcModule.InprocServers().empty(), "Error 0x%X parsing <ActivatableClass> in %ls", APPX_E_INVALID_MANIFEST, filename.c_str());
 
     // Gotcha!
-    m_inprocModules.push_back(std::move(winrtInProcModule));
+    AddInprocModule(winrtInProcModule);
 }
 
 std::wstring MddCore::WinRTPackage::ParseAppxManifest_GetElementText(
@@ -228,4 +238,35 @@ std::wstring MddCore::WinRTPackage::ParseAppxManifest_GetElementText(
     }
 
     return text;
+}
+
+void MddCore::WinRTPackage::AddInprocModule(MddCore::WinRTInprocModule& winrtInProcModule)
+{
+    // Path must be unique in m_inprocModules
+
+    // Do we already know the module?
+    auto module{ FindByPath(winrtInProcModule.Path()) };
+    if (module)
+    {
+        // Known! Merge the new information into the existing module
+        module->AddInprocServers(winrtInProcModule.InprocServers());
+    }
+    else
+    {
+        // It's new! Add it to the list
+        m_inprocModules.push_back(std::move(winrtInProcModule));
+    }
+}
+
+MddCore::WinRTInprocModule* MddCore::WinRTPackage::FindByPath(
+    const std::wstring& path)
+{
+    for (MddCore::WinRTInprocModule& module : m_inprocModules)
+    {
+        if (CompareStringOrdinal(module.Path().c_str(), -1, path.c_str(), -1, TRUE) == CSTR_EQUAL)
+        {
+            return &module;
+        }
+    }
+    return nullptr;
 }
