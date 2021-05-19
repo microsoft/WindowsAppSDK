@@ -119,34 +119,36 @@ steps:
             Write-Host "Error: Default channel not found. Please use darc add-default-channel to add a default channel for this repo and branch"
             Write-Host "##vso[task.complete result=SucceededWithIssues;]DONE"
           }
-
-          # Get the id of the build posted earlier
-          $api = "/api/builds"
-          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
-          $jsonObj = ConvertFrom-Json $response.Content
-          $buildId = $jsonObj.id
-          if ([string]::IsNullOrEmpty($buildId))
+          else
           {
-            Write-Host "Error: build not found in Maestro"
-            Write-Host "##vso[task.complete result=Failed;]DONE"
+            # Get the id of the build posted earlier
+            $api = "/api/builds"
+            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
+            $jsonObj = ConvertFrom-Json $response.Content
+            $buildId = $jsonObj.id
+            if ([string]::IsNullOrEmpty($buildId))
+            {
+              Write-Host "Error: build not found in Maestro"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+
+            # AddBuildToChannel with the corresponding build id and channel id
+            $api = "/api/channels/" + $channelId + "/builds/" + $buildId
+            $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
+
+            # Get the list of subscriptions on the channel
+            $api = "/api/subscriptions"
+            $queryParams = "&channelId=" + $channelId
+            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParams
+            $jsonObj = ConvertFrom-Json $response.Content
+            foreach ($sub in $jsonObj)
+            {
+              # Trigger the subscription
+              $id = $sub.id
+              Write-Host "Triggering subscription on " $id
+              # bar-build-id is always 0
+              $api = "/api/subscriptions/" + $id + "/trigger"
+              $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+            }
           }
 
-          # AddBuildToChannel with the corresponding build id and channel id
-          $api = "/api/channels/" + $channelId + "/builds/" + $buildId
-          $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
-
-          # Get the list of subscriptions on the channel
-          $api = "/api/subscriptions"
-          $queryParams = "&channelId=" + $channelId
-          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParams
-          $jsonObj = ConvertFrom-Json $response.Content
-          foreach ($sub in $jsonObj)
-          {
-            # Trigger the subscription
-            $id = $sub.id
-            Write-Host "Triggering subscription on " $id
-            # bar-build-id is always 0
-            $api = "/api/subscriptions/" + $id + "/trigger"
-            $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
-          }
-        
