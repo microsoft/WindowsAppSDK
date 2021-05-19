@@ -4,15 +4,15 @@
 #include "pch.h"
 
 #include "M.AM.DD.CreatePackageDependencyOptions.h"
-#include "Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions.g.cpp"
+#include "Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions.g.cpp"
 
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
 {
     winrt::PackageDependencyProcessorArchitectures CreatePackageDependencyOptions::Architectures()
     {
         return m_architectures;
     }
-    void CreatePackageDependencyOptions::Architectures(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value)
+    void CreatePackageDependencyOptions::Architectures(Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value)
     {
         m_architectures = value;
     }
@@ -32,7 +32,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         return m_lifetimeArtifactKind;
     }
 
-    void CreatePackageDependencyOptions::LifetimeArtifactKind(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value)
+    void CreatePackageDependencyOptions::LifetimeArtifactKind(Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value)
     {
         m_lifetimeArtifactKind = value;
     }

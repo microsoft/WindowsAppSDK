@@ -3,22 +3,22 @@
 
 #pragma once
 
-#include "Microsoft.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions.g.h"
+#include "Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions.g.h"
 
 #include "winrt_namespaces.h"
 
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
 {
     struct CreatePackageDependencyOptions : CreatePackageDependencyOptionsT<CreatePackageDependencyOptions>
     {
         CreatePackageDependencyOptions() = default;
 
         winrt::PackageDependencyProcessorArchitectures Architectures();
-        void Architectures(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value);
+        void Architectures(Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures const& value);
         bool VerifyDependencyResolution();
         void VerifyDependencyResolution(bool value);
         winrt::PackageDependencyLifetimeArtifactKind LifetimeArtifactKind();
-        void LifetimeArtifactKind(Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value);
+        void LifetimeArtifactKind(Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind const& value);
         hstring LifetimeArtifact();
         void LifetimeArtifact(hstring const& value);
 
@@ -29,7 +29,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         hstring m_lifetimeArtifact;
     };
 }
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::factory_implementation
 {
     struct CreatePackageDependencyOptions : CreatePackageDependencyOptionsT<CreatePackageDependencyOptions, implementation::CreatePackageDependencyOptions>
     {

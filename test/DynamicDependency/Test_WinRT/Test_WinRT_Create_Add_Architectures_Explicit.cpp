@@ -32,11 +32,11 @@ void Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Explicit()
     // That's OK, what matters is we're not using PackageDependencyProcessorArchitectures::None
     // so we exercise the not-default-whatever-deemed-appropriate architecture codepath.
     auto architectures{
-        winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral |
-        winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86 |
-        winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64 |
-        winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm |
-        winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral |
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86 |
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64 |
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm |
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64
     };
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(architectures) };
     VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);

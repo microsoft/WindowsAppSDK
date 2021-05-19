@@ -344,8 +344,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.ApplicationModel.DynamicDependency">
-      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.ApplicationModel.DynamicDependency.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.ApplicationModel.DynamicDependency">
+      <HintPath>$(OutDir)\..\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
