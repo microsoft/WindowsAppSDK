@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="Microsoft.ApplicationModel.DynamicDependency.winmd">
-      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.DynamicDependency.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd</HintPath>
       <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>

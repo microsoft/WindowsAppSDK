@@ -40,7 +40,7 @@ void Test::DynamicDependency::Test_WinRT::Add_Rank_Bneg10_A0()
 
     // -- Add
 
-    winrt::Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions{};
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions addOptions{};
     addOptions.Rank(-10);
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add(addOptions) };
     VERIFY_IS_FALSE(!packageDependencyContext_FrameworkMathAdd);
