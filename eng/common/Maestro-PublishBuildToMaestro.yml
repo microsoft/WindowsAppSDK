@@ -137,7 +137,8 @@ steps:
 
           # Get the list of subscriptions on the channel
           $api = "/api/subscriptions"
-          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&channelId=$(maestroDefaultChannelId)'
+          $queryParams = "&channelId=" + $channelId
+          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParams
           $jsonObj = ConvertFrom-Json $response.Content
           foreach ($sub in $jsonObj)
           {
