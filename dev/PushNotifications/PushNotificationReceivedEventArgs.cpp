@@ -7,11 +7,14 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
+#include <externs.h>
+#include "ValueMarshaling.h"
 
 namespace winrt
 {
     using namespace Windows::ApplicationModel::Background;
     using namespace Windows::Storage::Streams;
+    using namespace Windows::Storage;
     using namespace Windows::Networking::PushNotifications;
 }
 
@@ -49,42 +52,37 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        if (m_backgroundTaskInstance)
-        {
-            return m_backgroundTaskInstance.GetDeferral();
-        }
-        // winrt::throw_hresult();
+        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+
+        return m_backgroundTaskInstance.GetDeferral();
     }
 
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
-        if (m_backgroundTaskInstance)
-        {
-            return m_backgroundTaskInstance.Canceled(handler);
-        }
-        return winrt::event_token{};
+        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+
+        return m_backgroundTaskInstance.Canceled(handler);
     }
+
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        if (m_backgroundTaskInstance)
-        {
-            m_backgroundTaskInstance.Canceled(token);
-        }
+        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+
+        m_backgroundTaskInstance.Canceled(token);
     }
+
     bool PushNotificationReceivedEventArgs::Handled()
     {
-        if (m_args)
-        {
-            return m_args.Cancel();
-        }
-        return false;
+        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
+
+        return m_args.Cancel();
     }
+
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        if (m_args)
-        {
-            m_args.Cancel(value);
-        }
+        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
+
+        m_args.Cancel(value);
     }
 }
 

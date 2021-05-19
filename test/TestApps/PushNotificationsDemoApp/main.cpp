@@ -20,7 +20,7 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 time_t ltime;
 char buf[SIZE];
 
-void RequestChannel()
+winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
     // Register the AAD RemoteIdentifier for the App to receive Push
     auto channelOperation = PushNotificationManager::CreateChannelAsync(
@@ -28,9 +28,7 @@ void RequestChannel()
 
     // Setup the inprogress event handler
     channelOperation.Progress(
-        [](
-            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-            PushNotificationCreateChannelStatus const& args)
+        [](auto&& sender, auto&& args)
         {
             if (args.status == PushNotificationChannelStatus::InProgress)
             {
@@ -46,43 +44,59 @@ void RequestChannel()
             }
         });
 
-    winrt::event_token pushToken;
+    auto result = co_await channelOperation;
 
-    // Setup the completed event handler
-    channelOperation.Completed(
-        [&](
-            IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-            AsyncStatus const asyncStatus)
-        {
-            auto result = sender.GetResults();
-            if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+    if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+    {
+        auto channelUri = result.Channel().Uri();
+
+        std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl << std::endl;
+
+        auto channelExpiry = result.Channel().ExpirationTime();
+
+        // Register Push Event for Foreground
+        result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
-                auto channelUri = result.Channel().Uri();
+                auto payload = args.Payload();
 
-                std::cout << "channelUri: " << winrt::to_string(channelUri.ToString()) << std::endl << std::endl;
+                // Do stuff to process the raw payload
+                std::string payloadString(payload.begin(), payload.end());
+                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
+                args.Handled(true);
+            });
+        // Caller's responsibility to keep the channel alive
+        co_return result.Channel();
+    }
+    else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+    {
+        LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
+        co_return nullptr;
+    }
+    else
+    {
+        LOG_HR_MSG(result.ExtendedError(), "Some other failure occurred.");
+        co_return nullptr;
+    }
 
-                auto channelExpiry = result.Channel().ExpirationTime();
+};
 
-                // Register Push Event for Foreground
-                pushToken = result.Channel().PushReceived([&](const auto&, PushNotificationReceivedEventArgs args)
-                    {
-                        auto payload = args.Payload();
+winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestChannel()
+{
+    auto task = RequestChannelAsync();
+    if (task.wait_for(std::chrono::seconds(960)) != AsyncStatus::Completed)
+    {
+        task.Cancel();
+        return nullptr;
+    }
 
-                        // Do stuff to process the raw payload
-                        std::string payloadString(payload.begin(), payload.end());
-                        std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                        args.Handled(true);
-                    });
-            }
-            else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
-            {
-                LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
-            }
-        });
+    auto result = task.GetResults();
+    return result;
 }
 
 int main()
 {
+    winrt::init_apartment();
+
     time(&ltime);
     ctime_s(buf, sizeof buf, &ltime);
     std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
@@ -114,7 +128,7 @@ int main()
     }
     else if (kind == ExtendedActivationKind::Launch)
     {
-        RequestChannel();
+        PushNotificationChannel channel = RequestChannel();
         std::cout << "Press 'Enter' at any time to exit App." << std::endl << std::endl;
         std::cin.ignore();
     }

@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void PushReceived(winrt::event_token const& token) noexcept;
 
     private:
-        winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
 
     };
 }
