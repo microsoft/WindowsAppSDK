@@ -16,6 +16,30 @@ class BasicTest
 public:
     TEST_CLASS(BasicTest);
 
+    TEST_CLASS_SETUP(BasicTestSetup)
+    {
+        // This test might not always be invoked from the same directory as the test DLL and resources.pri file.
+        // The tests all assume that the resources.pri file is in the current directory, so we change the working
+        // directory for the duration of test to the location of the test DLL, and restore it afterwards.
+        DWORD sizeNeeded = GetCurrentDirectoryW(0, nullptr);
+        VERIFY_IS_TRUE(sizeNeeded <= ARRAYSIZE(previousWorkingDirectory));
+        VERIFY_ARE_NOT_EQUAL(0, GetCurrentDirectoryW(ARRAYSIZE(previousWorkingDirectory), previousWorkingDirectory));
+
+        Log::Comment(String().Format(L"Test Setup: GetCurrentDirectory: %s", previousWorkingDirectory));
+        
+        String testDeploymentDirectory;
+        VERIFY_SUCCEEDED(RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDirectory));
+        Log::Comment(String().Format(L"Test Setup: TestDeploymentDir: %s", testDeploymentDirectory.GetBuffer()));
+
+        return VERIFY_WIN32_BOOL_SUCCEEDED_RETURN(SetCurrentDirectoryW(reinterpret_cast<PCWSTR>(testDeploymentDirectory.GetBuffer())));
+    }
+
+    TEST_CLASS_CLEANUP(BasicTestCleanup)
+    {
+        Log::Comment(String().Format(L"Test Cleanup: Restoring working directory to: %s", previousWorkingDirectory));
+        return VERIFY_WIN32_BOOL_SUCCEEDED_RETURN(SetCurrentDirectoryW(previousWorkingDirectory));
+    }
+
     TEST_METHOD(ReadResourceString)
     {
         MrmManagerHandle resourceManager;
@@ -596,5 +620,7 @@ private:
         }
         VERIFY_IS_TRUE(found);
     }
+
+    wchar_t previousWorkingDirectory[MAX_PATH];
 };
 } // namespace UnitTest

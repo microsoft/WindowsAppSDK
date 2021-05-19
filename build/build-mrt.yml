@@ -138,8 +138,7 @@ steps:
 - task: CmdLine@2
   displayName: 'test MRT - UnitTest'
   inputs:
-    script: |
-      te.exe UnitTest.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
+    script: te.exe UnitTest.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
     workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
   env:
     LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl
@@ -150,21 +149,20 @@ steps:
   inputs:
     targetType: filePath
     filePath: build\Helix\ConvertWttLogToXUnit.ps1
-    arguments: -WttInputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\MrtUnitTest.wtl' -XUnitOutputPath '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest\onBuildMachineResults.xml' -TestNamePrefix '$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
+    arguments: -WttInputPath '$env:LogPath\MrtUnitTest.wtl' -XUnitOutputPath '$env:LogPath\onBuildMachineResults.xml' -TestNamePrefix '$(BuildConfiguration).$(BuildPlatform)' -HelixWorkItem 0
+  env:
+    LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: PublishTestResults@2
   displayName: 'Upload converted test logs'
   inputs:
-    testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+    testResultsFormat: 'xUnit'
     testResultsFiles: '**/onBuildMachineResults.xml' 
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)'
-    #mergeTestResults: false # Optional
-    #failTaskOnFailedTests: false # Optional
-    testRunTitle: 'test MRT - On Build Machine Tests' # Optional
-    buildPlatform: $(BuildPlatform) # Optional
-    buildConfiguration: $(BuildConfiguration) # Optional
-    #publishRunAttachments: true # Optional
+    testRunTitle: 'test MRT - On Build Machine Tests'
+    buildPlatform: $(BuildPlatform)
+    buildConfiguration: $(BuildConfiguration)
   condition: or(eq(variables['BuildPlatform'], 'x64'), eq(variables['BuildPlatform'], 'x86'))
 
 - task: CopyFiles@2
