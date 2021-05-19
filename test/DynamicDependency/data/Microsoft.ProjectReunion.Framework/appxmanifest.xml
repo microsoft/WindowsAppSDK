@@ -26,6 +26,14 @@
   </Resources>
 
   <Extensions>
+    <!-- Declare multiple InProcessServer extensions to ensure tests cover all possible declarations:
+           * InProcessServer extensions in a manifest
+           * 2+ InProcessServer extensions in a manifest
+           * 2+ InProcessServer extensions with the same <Path>
+         Schema validation ensures you can't make a package with 2+ ActivatableClass entries
+         in the same manifest with the same ActivatableClassId (regardless in same
+         or different <Extension>s).
+      -->
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.ProjectReunion.dll</Path>
@@ -34,6 +42,11 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Microsoft.ProjectReunion.dll</Path>
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationArguments" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />

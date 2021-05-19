@@ -38,6 +38,10 @@ namespace Test::DynamicDependency
         TEST_METHOD(Create_Add_Architectures_Explicit);
         TEST_METHOD(Create_Add_Architectures_Current);
 
+        TEST_METHOD(WinRT_RoGetActivationFactory_1);
+        TEST_METHOD(WinRT_RoGetActivationFactory_2);
+        TEST_METHOD(WinRT_RoGetActivationFactory_NotFound);
+
     private:
         static void VerifyPackageDependency(
             PCWSTR packageDependencyId,
