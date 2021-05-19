@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "Microsoft.ApplicationModel.DynamicDependency.PackageDependency.g.h"
+#include "Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency.g.h"
 
 #include "winrt_namespaces.h"
 
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
 {
     struct PackageDependency : PackageDependencyT<PackageDependency>
     {
@@ -17,13 +17,13 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 
         static winrt::PackageDependency GetFromId(hstring const& id);
         static winrt::PackageDependency GetFromIdForSystem(hstring const& id);
-        static winrt::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion);
-        static winrt::PackageDependency Create(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
-        static winrt::PackageDependency CreateForSystem(hstring const& packageFamilyName, Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
+        static winrt::PackageDependency Create(hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion const& minVersion);
+        static winrt::PackageDependency Create(hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
+        static winrt::PackageDependency CreateForSystem(hstring const& packageFamilyName, winrt::Windows::ApplicationModel::PackageVersion const& minVersion, winrt::CreatePackageDependencyOptions const& options);
         hstring Id();
         void Delete();
         winrt::PackageDependencyContext Add();
-        winrt::PackageDependencyContext Add(Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
+        winrt::PackageDependencyContext Add(Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions const& options);
 
     private:
         static winrt::PackageDependency Create(
@@ -39,7 +39,7 @@ namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
         hstring m_id;
     };
 }
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::factory_implementation
 {
     struct PackageDependency : PackageDependencyT<PackageDependency, implementation::PackageDependency>
     {

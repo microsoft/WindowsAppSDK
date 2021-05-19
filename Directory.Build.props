@@ -28,7 +28,7 @@
     <!-- If not set, default it to no . -->
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
-  <Target Name="DirectoryBuildPropsInfo">
+  <Target Name="DirectoryBuildPropsInfo" Condition="$(ProjectReunionBuildPipeline) == '1'">
     <Message Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
   </Target>
 

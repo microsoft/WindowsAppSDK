@@ -4,6 +4,6 @@
 #pragma once
 
 namespace winrt
-{                      
-    using namespace winrt::Microsoft::ApplicationModel::DynamicDependency;
+{
+    using namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency;
 }
