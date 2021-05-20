@@ -32,7 +32,7 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
     TP::RemovePackage_FrameworkMathAdd();
     VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::FrameworkMathAdd::c_PackageFullName));
 
-    winrt::Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions{};
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions{};
     createOptions.VerifyDependencyResolution(false);
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(createOptions) };
     VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);

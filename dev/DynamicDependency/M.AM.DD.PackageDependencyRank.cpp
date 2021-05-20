@@ -4,11 +4,11 @@
 #include "pch.h"
 
 #include "M.AM.DD.PackageDependencyRank.h"
-#include "Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank.g.cpp"
+#include "Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank.g.cpp"
 
 #include <MsixDynamicDependency.h>
 
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
 {
     int32_t PackageDependencyRank::Default()
     {

@@ -57,7 +57,7 @@ HRESULT ManageMuffins(int& countOfMuffinsManaged)
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel.DynamicDependency;
+using Microsoft.Windows.ApplicationModel.DynamicDependency;
 using System.Reflection;
 using Windows.ApplicationModel;
 

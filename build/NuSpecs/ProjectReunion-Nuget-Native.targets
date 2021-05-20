@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.DynamicDependency.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
