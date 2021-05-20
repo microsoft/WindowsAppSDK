@@ -20,20 +20,9 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    winrt::com_array<uint8_t> GetRawPayload(RawNotification const& rawNotification)
-    {
-        IBuffer rawContentAsBuffer = rawNotification.ContentBytes();
-        DataReader dataReader = DataReader::FromBuffer(rawContentAsBuffer);
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes()) {}
 
-        winrt::com_array<uint8_t> rawPayload = winrt::com_array<uint8_t>(rawContentAsBuffer.Length());
-        dataReader.ReadBytes(rawPayload);
-        
-        return rawPayload;
-    }
-
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(GetRawPayload(backgroundTask.TriggerDetails().as<RawNotification>())) {}
-
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(GetRawPayload(args.RawNotification())) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(args.RawNotification().ContentBytes()) {}
 
     winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(winrt::IBackgroundTaskInstance const& backgroundTask)
     {
@@ -47,7 +36,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        return { m_rawNotification.begin(), m_rawNotification.end() };
+        return { m_rawNotification.data(), m_rawNotification.data() + (m_rawNotification.Length() * sizeof(uint8_t)) };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()

@@ -56,14 +56,14 @@ namespace Test::PushNotifications
         std::wstring args{ action + L" TrustedPeople " + path };
         // VERIFY_ARE_NOT_EQUAL(args, args);
         auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
-            args.c_str(), g_deploymentDir);
+            args, g_deploymentDir);
 
         // Wait for the cer to be installed.
         auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
         if (waitResult != WAIT_OBJECT_0)
         {
-            auto lastError = GetLastError();
-            VERIFY_WIN32_FAILED(lastError);
+            if (waitResult == WAIT_FAILED) VERIFY_WIN32_SUCCEEDED(GetLastError());
+            VERIFY_ARE_EQUAL(waitResult, WAIT_OBJECT_0);
         }
 
         // Make sure the exitcode for the tool is success.
