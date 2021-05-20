@@ -18,7 +18,7 @@ jobs:
     parameters:
       IsGitHubRepo: true
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-      AssetVersion: '0.9.1'
+      AssetVersion: '0.9.2'
       TriggerSubscrption: true
 
 #   - task: CredScan@2
