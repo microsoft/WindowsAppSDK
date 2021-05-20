@@ -61,7 +61,7 @@ jobs:
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.ApplicationModel.DynamicDependency.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
 
   # - script: |
   #     dir /s $(Build.SourcesDirectory)
@@ -89,7 +89,8 @@ jobs:
       targetType: 'inline'
       script: |
         $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
-        Write-Host version: $packageVersion
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
@@ -156,7 +157,7 @@ jobs:
       parameters:
         IsGitHubRepo: true
         AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-        AssetVersion: '$(version).${{ parameters.prereleaseVersionTag }}'
+        AssetVersion: $(packageVersion)
         TriggerSubscrption: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\ProjectReunion-BuildAndPublishPGONuGet-Job.yml
