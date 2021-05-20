@@ -181,8 +181,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
-        winrt::guid taskClsid = details.TaskClsid();
-        THROW_HR_IF(E_INVALIDARG, taskClsid == winrt::guid(GUID_NULL));
+        GUID taskClsid = details.TaskClsid();
+        THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
         DWORD cookie = 0;
         BackgroundTaskRegistration registeredTask = nullptr;
@@ -190,54 +190,67 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (WI_IsFlagSet(details.Kind(), PushNotificationRegistrationKind::PushTrigger))
         {
+            winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
             auto tasks = BackgroundTaskRegistration::AllTasks();
-            bool taskRegistered = std::any_of(begin(tasks), end(tasks), [&](auto&& task) { return task.Value().Name() == backgroundTaskName; });
+            bool taskRegistered = std::any_of(begin(tasks), end(tasks),
+            [&](auto&& task)
+            {
+                std::wstring backgroundTaskNameStr = task.Value().Name().c_str();
+                if (backgroundTaskNameStr.find(backgroundTaskName) != std::wstring::npos)
+                {
+                    if (backgroundTaskNameStr.find(taskClsidStr) != std::wstring::npos)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        // Unregister background task here
+                        throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
+                    }
+                };
+                return false;
+            });
 
             if (!taskRegistered)
             {
                 builder = BackgroundTaskBuilder();
-                builder.Name(backgroundTaskName);
+                builder.Name(backgroundTaskName + taskClsidStr.c_str());
 
                 PushNotificationTrigger trigger{};
                 builder.SetTrigger(trigger);
 
-                if (taskClsid != winrt::guid())
+                auto builder5 = builder.try_as<winrt::IBackgroundTaskBuilder5>();
+                if (IsPackagedProcess() && builder5)
                 {
-                    auto builder5 = builder.try_as<winrt::IBackgroundTaskBuilder5>();
-                    if (IsPackagedProcess() && builder5)
+                    builder5.SetTaskEntryPointClsid(taskClsid);
+                    winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
+                    for (auto condition : conditions)
                     {
-                        builder5.SetTaskEntryPointClsid(taskClsid);
-                        winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
-                        for (auto condition : conditions)
-                        {
-                            builder.AddCondition(condition);
-                        }
+                        builder.AddCondition(condition);
                     }
-                    else
-                    {
-                        throw winrt::hresult_not_implemented();
-                    }
+                }
+                else
+                {
+                    throw winrt::hresult_not_implemented();
                 }
             }
         }
 
         if (WI_IsFlagSet(details.Kind(), PushNotificationRegistrationKind::ComActivator))
         {
-            if (taskClsid != winrt::guid())
             {
-                {
-                    auto lock = g_lock.lock();
-                    // Define handle that will be set during background task execution
-                    g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-                }
-
-                THROW_IF_FAILED(::CoRegisterClassObject(
-                    taskClsid,
-                    winrt::make<PushNotificationBackgroundTaskFactory>().get(),
-                    CLSCTX_LOCAL_SERVER,
-                    REGCLS_MULTIPLEUSE,
-                    &cookie));
+                auto lock = g_lock.lock();
+                // Define handle that will be set during background task execution
+                g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+                THROW_HR_IF_NULL(E_UNEXPECTED, g_waitHandleForArgs);
             }
+
+            THROW_IF_FAILED(::CoRegisterClassObject(
+                taskClsid,
+                winrt::make<PushNotificationBackgroundTaskFactory>().get(),
+                CLSCTX_LOCAL_SERVER,
+                REGCLS_MULTIPLEUSE,
+                &cookie));
         }
 
         if (builder)

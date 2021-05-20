@@ -19,7 +19,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void Handled(bool value);
 
     private:
-        const winrt::com_array<uint8_t> m_rawNotification{};
+        const winrt::Windows::Storage::Streams::IBuffer m_rawNotification{};
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
     };
