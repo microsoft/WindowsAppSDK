@@ -107,14 +107,27 @@ namespace MrtCoreUnpackagedTests
         private static string m_assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         [AssemblyInitialize]
-        public static void TestSetup()
+        public static void AssemblySetup()
         {
-            // Clean up from previous tests.
-            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
-            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
             Console.WriteLine("m_assemblyFolder: " + m_assemblyFolder);
             Console.WriteLine("current dir: " + Directory.GetCurrentDirectory());
             Console.WriteLine("domain base dir: " + Thread.GetDomain().BaseDirectory);
+        }
+
+        [TestInitialize]
+        public static void TestSetup()
+        {
+            GC.Collect();
+
+            // Clean up from previous tests.
+            if (File.Exists(Path.Combine(m_assemblyFolder, "resources.pri")))
+            {
+                File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
+            }
+            if (File.Exists(Path.Combine(m_assemblyFolder, "te.processhost.pri")))
+            {
+                File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            }
         }
 
         [TestMethod]
@@ -131,7 +144,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithResourcePri()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "resources.pri"));
@@ -145,7 +157,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithExePri()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "te.processhost.pri"));
@@ -159,7 +170,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
         public void ResourceManagerWithFile()
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
