@@ -9,6 +9,7 @@ namespace MrtCoreUnpackagedTests
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
+    using System.Threading;
     using WEX.TestExecution;
     using WEX.TestExecution.Markup;
     using Microsoft.ApplicationModel.Resources;
@@ -111,6 +112,9 @@ namespace MrtCoreUnpackagedTests
             // Clean up from previous tests.
             File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
             File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            Console.WriteLine("m_assemblyFolder: " + m_assemblyFolder);
+            Console.WriteLine("current dir: " + Directory.GetCurrentDirectory());
+            Console.WriteLine("domain base dir: " + Thread.GetDomain().BaseDirectory);
         }
 
         [TestMethod]
