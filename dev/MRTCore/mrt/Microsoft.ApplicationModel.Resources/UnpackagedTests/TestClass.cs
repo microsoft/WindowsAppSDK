@@ -5,13 +5,10 @@ namespace MrtCoreUnpackagedTests
 {
     using System;
     using System.ComponentModel;
-    using System.Data;
     using System.IO;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
-    using WEX.Common.Managed;
-    using WEX.Logging.Interop;
     using WEX.TestExecution;
     using WEX.TestExecution.Markup;
     using Microsoft.ApplicationModel.Resources;
@@ -107,13 +104,25 @@ namespace MrtCoreUnpackagedTests
     {
         private ActivationContext m_context = new ActivationContext();
         private static string m_assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private string m_previousCurrentDirectory;
 
-        [AssemblyInitialize]
-        public static void ModuleSetup(TestContext testContext)
+        [TestInitialize]
+        public void TestSetup()
         {
-            // Cleanup just in case
+            // Clean up from previous tests.
             File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
             File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+
+            m_previousCurrentDirectory = Directory.GetCurrentDirectory();
+            Console.WriteLine("Previous working directory: " + m_previousCurrentDirectory);
+            Console.WriteLine("Changing working directory to: " + m_assemblyFolder);
+            Directory.SetCurrentDirectory(m_assemblyFolder);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            Directory.SetCurrentDirectory(m_previousCurrentDirectory);
         }
 
         [TestMethod]
@@ -130,6 +139,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithResourcePri()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "resources.pri"));
@@ -140,11 +150,10 @@ namespace MrtCoreUnpackagedTests
             Verify.AreNotEqual(map.ResourceCount, 0u);
             var resource = map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME").ValueAsString;
             Verify.AreEqual(resource, "Groove Music");
-
-            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithExePri()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "te.processhost.pri"));
@@ -155,11 +164,10 @@ namespace MrtCoreUnpackagedTests
             Verify.AreNotEqual(map.ResourceCount, 0u);
             var resource = map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME").ValueAsString;
             Verify.AreEqual(resource, "Groove Music");
-
-            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void ResourceManagerWithFile()
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
