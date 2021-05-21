@@ -10,6 +10,8 @@
 
 #include "Test_WinRT.h"
 
+#include <wil/winrt.h>
+
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
@@ -173,6 +175,48 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+}
+
+void Test::DynamicDependency::Test_WinRT::WinRT_RoGetActivationFactory_1()
+{
+    IInspectable* packageDependency{};
+    {
+        auto acid{ wil::make_unique_string < wil::unique_hstring>(L"Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency") };
+        VERIFY_SUCCEEDED(::RoGetActivationFactory(acid.get(), IID_PPV_ARGS(&packageDependency)));
+    }
+    VERIFY_IS_NOT_NULL(packageDependency);
+
+    packageDependency->Release();
+}
+
+void Test::DynamicDependency::Test_WinRT::WinRT_RoGetActivationFactory_2()
+{
+    IInspectable* packageDependency{};
+    {
+        auto acid{ wil::make_unique_string < wil::unique_hstring>(L"Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency") };
+        VERIFY_SUCCEEDED(::RoGetActivationFactory(acid.get(), IID_PPV_ARGS(&packageDependency)));
+    }
+    VERIFY_IS_NOT_NULL(packageDependency);
+
+    IInspectable* activationRegistrationManager{};
+    {
+        auto acid{ wil::make_unique_string < wil::unique_hstring>(L"Microsoft.Windows.AppLifecycle.ActivationRegistrationManager") };
+        VERIFY_SUCCEEDED(::RoGetActivationFactory(acid.get(), IID_PPV_ARGS(&activationRegistrationManager)));
+    }
+    VERIFY_IS_NOT_NULL(activationRegistrationManager);
+
+    activationRegistrationManager->Release();
+    packageDependency->Release();
+}
+
+void Test::DynamicDependency::Test_WinRT::WinRT_RoGetActivationFactory_NotFound()
+{
+    IInspectable* doesNotExist{};
+    {
+        auto acid{ wil::make_unique_string < wil::unique_hstring>(L"Does.Not.Exist") };
+        VERIFY_ARE_EQUAL(REGDB_E_CLASSNOTREG, ::RoGetActivationFactory(acid.get(), IID_PPV_ARGS(&doesNotExist)));
+    }
+    VERIFY_IS_NULL(doesNotExist);
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency(

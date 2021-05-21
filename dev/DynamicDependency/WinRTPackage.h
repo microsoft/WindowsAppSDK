@@ -55,6 +55,12 @@ private:
         PCWSTR elementName,
         const std::filesystem::path& filename);
 
+    void AddInprocModule(
+        MddCore::WinRTInprocModule& winrtInProcModule);
+
+    MddCore::WinRTInprocModule* FindByPath(
+        const std::wstring& path);
+
 private:
     MDD_PACKAGEDEPENDENCY_CONTEXT m_context{};
     std::wstring m_packagePath;

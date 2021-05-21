@@ -86,6 +86,15 @@ public:
         m_inprocServers[activatableClassId] = threadingModel;
     }
 
+    void AddInprocServers(
+        const std::unordered_map<std::wstring, MddCore::WinRT::ThreadingModel>& inprocServers)
+    {
+        for (const auto& [activatableClassId, threadingModel] : inprocServers)
+        {
+            AddInprocServer(activatableClassId, threadingModel);
+        }
+    }
+
 private:
     void Load()
     {
