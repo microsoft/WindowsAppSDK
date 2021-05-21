@@ -104,25 +104,13 @@ namespace MrtCoreUnpackagedTests
     {
         private ActivationContext m_context = new ActivationContext();
         private static string m_assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private string m_previousCurrentDirectory;
 
-        [TestInitialize]
-        public void TestSetup()
+        [AssemblyInitialize]
+        public static void TestSetup()
         {
             // Clean up from previous tests.
             File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
             File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
-
-            m_previousCurrentDirectory = Directory.GetCurrentDirectory();
-            Console.WriteLine("Previous working directory: " + m_previousCurrentDirectory);
-            Console.WriteLine("Changing working directory to: " + m_assemblyFolder);
-            Directory.SetCurrentDirectory(m_assemblyFolder);
-        }
-
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            Directory.SetCurrentDirectory(m_previousCurrentDirectory);
         }
 
         [TestMethod]
