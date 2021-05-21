@@ -157,7 +157,10 @@ steps:
 - task: CmdLine@2
   displayName: 'test MRT (UnpackagedTests)'
   inputs:
-    script: te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
+    script: |
+      echo %cd%
+      dir
+      ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
     workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
   env:
     LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\MrtCoreUnpackagedTests.wtl
