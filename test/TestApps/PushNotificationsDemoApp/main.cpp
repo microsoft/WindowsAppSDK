@@ -100,7 +100,7 @@ int main()
     std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
 
     PushNotificationActivationInfo info(
-        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+        PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -137,6 +137,6 @@ int main()
         std::cin.ignore();
     }
 
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::ComActivator);
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::ComActivator);
     return 0;
 }

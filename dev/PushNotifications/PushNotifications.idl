@@ -27,25 +27,24 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     [flags]
-    enum PushNotificationRegistrationKind
+    enum PushNotificationRegistrationOption
     {
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
     };
 
     [experimental]
-    // An abstraction over the activation Registration flow
     runtimeclass PushNotificationActivationInfo
     {
-        // Initialize using a RegistrationKind and optionally defined parameters like manifest defined activatorId
-        // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
-        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
-        PushNotificationActivationInfo(PushNotificationRegistrationKind kind, Guid taskClsid);
+        // Initialize using a RegistrationOption and optionally defined parameters like manifest defined activatorId
+        // 1) If option = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
+        // 2) If option = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
+        PushNotificationActivationInfo(PushNotificationRegistrationOption option, Guid taskClsid);
 
         // The CLSID associated with the Client COM server that Project Reunion will activate
         Guid TaskClsid{ get; };
 
-        PushNotificationRegistrationKind Kind{ get; };
+        PushNotificationRegistrationOption Option{ get; };
 
         // The conditions under which Push Triggers would execute
         Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
@@ -129,10 +128,10 @@ namespace Microsoft.Windows.PushNotifications
         // Register an activator using an ActivationInfo context and return a RegistrationToken
         static PushNotificationRegistrationToken RegisterActivator(PushNotificationActivationInfo details);
 
-        // Unregister any activator if present using a token and registrationKind
-        // 1) If kind = PushTrigger is specified, the trigger itself will be removed
-        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
-        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationKind kind);
+        // Unregister any activator if present using a token and registrationOption
+        // 1) If option = PushTrigger is specified, the trigger itself will be removed
+        // 2) If option = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
+        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOption option);
 
         // Request a Push Channel using an encoded AAD GUID identifier from WNS.
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
