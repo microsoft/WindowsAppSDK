@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include <winrt/Microsoft.ApplicationModel.DynamicDependency.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
 
 #include <Math.Add.h>
 #include <Math.Multiply.h>
@@ -77,7 +77,7 @@ void Test::DynamicDependency::Test_WinRT::Create_Delete()
 {
     const winrt::hstring packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
     const winrt::Windows::ApplicationModel::PackageVersion minVersion{};
-    auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion) };
+    auto packageDependency{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion) };
 
     packageDependency.Delete();
 }
@@ -85,14 +85,14 @@ void Test::DynamicDependency::Test_WinRT::Create_Delete()
 void Test::DynamicDependency::Test_WinRT::GetFromId_Empty()
 {
     winrt::hstring packageDependencyId;
-    auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::GetFromId(packageDependencyId) };
+    auto packageDependency{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::GetFromId(packageDependencyId) };
     VERIFY_IS_TRUE(!packageDependency);
 }
 
 void Test::DynamicDependency::Test_WinRT::GetFromId_NotFound()
 {
     winrt::hstring packageDependencyId{ L"This.Does.Not.Exist" };
-    auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::GetFromId(packageDependencyId) };
+    auto packageDependency{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::GetFromId(packageDependencyId) };
     VERIFY_IS_TRUE(!packageDependency);
 }
 
@@ -216,14 +216,14 @@ void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency(
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency(
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency& packageDependency,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency& packageDependency,
     const HRESULT expectedHR)
 {
     VerifyPackageDependency(packageDependency.Id().c_str(), expectedHR);
 }
 
 void Test::DynamicDependency::Test_WinRT::VerifyPackageDependency(
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency& packageDependency,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency& packageDependency,
     const HRESULT expectedHR,
     const winrt::hstring& expectedPackageFullName)
 {
@@ -358,32 +358,32 @@ int Test::DynamicDependency::Test_WinRT::FindPackageFullNameInPackageInfoArray(
     return -1;
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
     const winrt::hstring& packageFamilyName,
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
     return _Create(S_OK, packageFamilyName, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
     const HRESULT expectedHR,
     const winrt::hstring& packageFamilyName,
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architectures{};
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architectures{};
     return _Create(expectedHR, packageFamilyName, architectures, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
     const HRESULT expectedHR,
     const winrt::hstring& packageFamilyName,
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architectures,
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architectures,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
-    winrt::Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions options;
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions options;
     options.Architectures(architectures);
     options.LifetimeArtifactKind(lifetimeKind);
     if (lifetimeArtifact)
@@ -393,15 +393,15 @@ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::D
     return _Create(expectedHR, packageFamilyName, options);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create(
     const HRESULT expectedHR,
     const winrt::hstring& packageFamilyName,
-    winrt::Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions& options)
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions& options)
 {
     try
     {
         winrt::Windows::ApplicationModel::PackageVersion minVersion{};
-        auto packageDependency{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion, options) };
+        auto packageDependency{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion, options) };
         VERIFY_ARE_EQUAL(expectedHR, S_OK);
         return packageDependency;
     }
@@ -412,78 +412,78 @@ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::D
     }
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_ProjectReunionFramework(
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_ProjectReunionFramework(
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
     return _Create(TP::ProjectReunionFramework::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd()
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd()
 {
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::Process };
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::Process };
     PCWSTR lifetimeArtifact{};
     return _Create(S_OK, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
     return _Create(TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architectures,
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures architectures,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
     return _Create(S_OK, TP::FrameworkMathAdd::c_PackageFamilyName, architectures, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
     const HRESULT expectedHR,
-    const winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
+    const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
     return _Create(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
-    winrt::Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions& options)
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency Test::DynamicDependency::Test_WinRT::_Create_FrameworkMathAdd(
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions& options)
 {
     return _Create(S_OK, TP::FrameworkMathAdd::c_PackageFamilyName, options);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
-    winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency packageDependency)
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency packageDependency)
 {
     return _Add(S_OK, packageDependency);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
     const HRESULT expectedHR,
-    winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency packageDependency)
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency packageDependency)
 {
-    const auto rank{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyRank::Default() };
+    const auto rank{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyRank::Default() };
     return _Add(expectedHR, packageDependency, rank);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
-    winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency packageDependency,
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency packageDependency,
     const INT32 rank)
 {
     return _Add(S_OK, packageDependency, rank);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyContext Test::DynamicDependency::Test_WinRT::_Add(
     const HRESULT expectedHR,
-    winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependency packageDependency,
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency packageDependency,
     const INT32 rank)
 {
     try
     {
-        winrt::Microsoft::ApplicationModel::DynamicDependency::AddPackageDependencyOptions options;
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::AddPackageDependencyOptions options;
         options.Rank(rank);
         auto packageDependencyContext{ packageDependency.Add(options) };
         VERIFY_ARE_EQUAL(expectedHR, S_OK);
@@ -605,16 +605,16 @@ std::wstring Test::DynamicDependency::Test_WinRT::GetPathEnvironmentVariableMinu
     return GetPathEnvironmentVariableMinusPathPrefix(packagePath_ProjectReunionFramework);
 }
 
-winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures Test::DynamicDependency::Test_WinRT::GetCurrentArchitectureAsFilter()
+winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures Test::DynamicDependency::Test_WinRT::GetCurrentArchitectureAsFilter()
 {
 #if defined(_M_ARM)
-    return winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm;
+    return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm;
 #elif defined(_M_ARM64)
-    return winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64;
+    return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Arm64;
 #elif defined(_M_IX86)
-    return winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86;
+    return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X86;
 #elif defined(_M_X64)
-    return winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64;
+    return winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::X64;
 #else
 #   error "Unknown processor architecture"
 #endif

@@ -60,7 +60,7 @@ HRESULT SavePackageDependencyId(_In_ PCWSTR packageDependencyId)
 ## WinRT
 
 ```c#
-using Microsoft.ApplicationModel.DynamicDependency;
+using Microsoft.Windows.ApplicationModel.DynamicDependency;
 using Windows.ApplicationModel;
 
 namespace LolzKitten
