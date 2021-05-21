@@ -151,6 +151,18 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+# The MRTCore UnpackagedTests need to be run from the same working directory as the test binary itself
+# The VSTest task (above) runs from a different working directory, and there is no way to change it, so
+# we invoke the test directly with te.exe
+- task: CmdLine@2
+  displayName: 'test MRT (UnpackagedTests)'
+  inputs:
+    script: te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
+    workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+  env:
+    LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\MrtCoreUnpackagedTests.wtl
+  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+
 - task: ComponentGovernanceComponentDetection@0
   inputs:
     scanType: 'Register'
