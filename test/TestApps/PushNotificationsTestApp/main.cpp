@@ -275,7 +275,7 @@ bool ActivatorTest()
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+            PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
             c_fakeComServerId);
 
         auto token = PushNotificationManager::RegisterActivator(info);
@@ -284,7 +284,7 @@ bool ActivatorTest()
             return false;
         }
 
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     }
     catch (...)
     {
@@ -325,7 +325,7 @@ int main()
     initUnitTestMapping();
 
     PushNotificationActivationInfo info(
-        PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator,
+        PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -341,7 +341,7 @@ int main()
 
         std::cout << unitTest << std::endl;
 
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
 
         // Switch on this variable to run specific components (uri://ComponentToTest)
         auto output = runUnitTest(unitTest);
@@ -362,7 +362,7 @@ int main()
         PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
         auto payload = pushArgs.Payload();
         std::wstring payloadString(payload.begin(), payload.end());
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationKind::PushTrigger | PushNotificationRegistrationKind::ComActivator);
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
         if (!payloadString.compare(c_rawNotificationPayload))
         {
             signalPhase(c_testProtocolScheme_Packaged);
