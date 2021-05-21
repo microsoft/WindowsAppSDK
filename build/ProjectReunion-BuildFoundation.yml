@@ -1,6 +1,7 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
-  minimumExpectedTestsExecutedCount: 35  # Sanity check for minimum expected tests to be reported
+- template: ProjectReunion-Versions.yml
+- template: ProjectReunion-CommonVariables.yml
 
 parameters:
   - name: "ReleaseSigning"
@@ -348,7 +349,7 @@ jobs:
     dependsOn: SignBinariesAndPublishSymbols
     signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
     useReleaseTag: '$(ProjectReunionFinalRelease)'
-    prereleaseVersionTag: prerelease
+    prereleaseVersionTag: nightly
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
