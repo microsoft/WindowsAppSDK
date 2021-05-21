@@ -31,12 +31,12 @@ int wmain(int argc, wchar_t *argv[])
         }
     }
 
-    const HRESULT deployPackagesResult = ProjectReunionInstaller::DeployPackages(quiet);
+    const HRESULT deployPackagesResult{ ProjectReunionInstaller::DeployPackages(quiet) };
     if (!quiet)
     {
         if (SUCCEEDED(deployPackagesResult))
         {
-            std::cout << "All packages were installed successfully." << std::endl;
+            std::wcout << "All packages were installed successfully." << std::endl;
         }
         else
         {

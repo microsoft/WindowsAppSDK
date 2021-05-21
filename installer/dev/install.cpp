@@ -78,7 +78,7 @@ namespace ProjectReunionInstaller {
 
         // It is assumed that all available architectures for non-framework packages are present,
         // so only the same-architecture or neutral will be matched for non-frameworks.
-        if (!packageProperties->isFramework && !(deploymentBehavior == DeploymentBehavior::Framework))
+        if (!packageProperties->isFramework && (deploymentBehavior != DeploymentBehavior::Framework))
         {
             return false;
         }
