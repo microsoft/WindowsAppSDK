@@ -151,6 +151,18 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: VSTest@2
+  displayName: 'test MRT (UnpackagedTests)'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\MrtCoreUnpackagedTests.dll
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    testRunTitle: 'test MRT $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
 # The MRTCore UnpackagedTests need to be run from the same working directory as the test binary itself
 # The VSTest task (above) runs from a different working directory, and there is no way to change it, so
 # we invoke the test directly with te.exe

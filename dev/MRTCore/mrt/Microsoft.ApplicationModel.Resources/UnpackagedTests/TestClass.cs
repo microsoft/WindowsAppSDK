@@ -114,10 +114,10 @@ namespace MrtCoreUnpackagedTests
             Console.WriteLine("domain base dir: " + Thread.GetDomain().BaseDirectory);
         }
 
-        [TestInitialize]
-        public static void TestSetup()
+        [TestCleanup]
+        public static void TestCleanup()
         {
-            GC.Collect();
+            GC.Collect(); // force any ResourceManager objects to be cleaned up.
 
             // Clean up from previous tests.
             if (File.Exists(Path.Combine(m_assemblyFolder, "resources.pri")))
