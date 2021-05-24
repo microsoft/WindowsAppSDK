@@ -22,6 +22,8 @@ static std::map<std::string, UnitTest> switchMapping;
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225");
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A");
 winrt::guid remoteId3(L"40FCE789-C6BF-4F47-A6CF-6B9C1DCE31BA");
+PushNotificationRegistrationToken appToken = nullptr;
+PushNotificationRegistrationToken fakeToken = nullptr;
 
 void signalPhase(const std::wstring& phaseEventName)
 {
@@ -59,232 +61,82 @@ bool ChannelRequestUsingNullRemoteId()
     return (hr == E_INVALIDARG);
 }
 
+HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
+{
+    if (channelOperation.wait_for(std::chrono::seconds(960)) != AsyncStatus::Completed)
+    {
+        channelOperation.Cancel();
+        return ERROR_TIMEOUT; // timed out or failed
+    }
+
+    auto result = channelOperation.GetResults();
+    auto status = result.Status();
+    if (status != PushNotificationChannelStatus::CompletedSuccess)
+    {
+        return result.ExtendedError(); // did not produce a channel
+    }
+
+    result.Channel().Close();
+    return S_OK;
+}
+
 bool ChannelRequestUsingRemoteId()
 {
-    auto channelOperationResult = S_OK;
     auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperationResult = ChannelRequestHelper(channelOperation);
 
-    switch (channelOperation.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult = channelOperation.GetResults();
-        if (channelResult.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult = channelResult.ExtendedError();
-        }
-        break;
-    }
-    default:
-        channelOperationResult = ERROR_TIMEOUT;
-        break;
-    }
-
-    return (channelOperationResult == S_OK);
+    return channelOperationResult == S_OK;
 }
 
 bool MultipleChannelRequestUsingSameRemoteId()
 {
-    auto channelOperationResult1 = S_OK;
+
     auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-
-    auto channelOperationResult2 = S_OK;
-
     auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
+    auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
-    switch (channelOperation2.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult2 = channelOperation2.GetResults();
-        if (channelResult2.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult2.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult2.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult2 = channelResult2.ExtendedError();
-        }
-        break;
-    }
-
-    default:
-        channelOperationResult2 = ERROR_TIMEOUT;
-        break;
-    }
-
-    switch (channelOperation1.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult1 = channelOperation1.GetResults();
-        if (channelResult1.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult1.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult1.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult1 = channelResult1.ExtendedError();
-        }
-        break;
-    }
-
-    default:
-        channelOperationResult1 = ERROR_TIMEOUT;
-        break;
-    }
-
-    return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
+    return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
 }
 
 bool MultipleChannelRequestUsingMultipleRemoteId()
 {
-    auto channelOperationResult1 = S_OK;
     auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-
-    auto channelOperationResult2 = S_OK;
-
     auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
+    auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
+    auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
-    switch (channelOperation2.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult2 = channelOperation2.GetResults();
-        if (channelResult2.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult2.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult2.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult2 = channelResult2.ExtendedError();
-        }
-        break;
-    }
-
-    default:
-        channelOperationResult2 = ERROR_TIMEOUT;
-        break;
-    }
-
-    switch (channelOperation1.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult1 = channelOperation1.GetResults();
-        if (channelResult1.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult1.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult1.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult1 = channelResult1.ExtendedError();
-        }
-        break;
-    }
-    default:
-        channelOperationResult1 = ERROR_TIMEOUT;
-        break;
-    }
-
-    return (channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST);
+    return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
 }
 
 bool ThreeChannelRequestUsingSameRemoteId()
 {
-    auto channelOperationResult1 = S_OK;
     auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
+    auto channelOperation3 = PushNotificationManager::CreateChannelAsync(remoteId3);
+    auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
+    auto channelOperationResult3 = ChannelRequestHelper(channelOperation3);
+    auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
-    auto channelOperationResult2 = S_OK;
-
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
-
-    auto channelOperationResult3 = S_OK;
-
-    auto channelOperation3 = PushNotificationManager::CreateChannelAsync(remoteId1);
-
-    switch (channelOperation2.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult2 = channelOperation2.GetResults();
-        if (channelResult2.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult2.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult2.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult2 = channelResult2.ExtendedError();
-        }
-        break;
-    }
-    default:
-        channelOperationResult2 = ERROR_TIMEOUT;
-        break;
-    }
-
-    switch (channelOperation3.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult3 = channelOperation3.GetResults();
-        if (channelResult3.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult3.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult3.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult3 = channelResult3.ExtendedError();
-        }
-        break;
-    }
-    default:
-        channelOperationResult3 = ERROR_TIMEOUT;
-        break;
-    }
-
-    switch (channelOperation1.wait_for(std::chrono::seconds(960)))
-    {
-    case AsyncStatus::Completed:
-    {
-        auto channelResult1 = channelOperation1.GetResults();
-        if (channelResult1.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            channelResult1.Channel().Close(); // Avoids using cached channel everytime the test runs
-        }
-        else if (channelResult1.Status() == PushNotificationChannelStatus::CompletedFailure)
-        {
-            channelOperationResult1 = channelResult1.ExtendedError();
-        }
-        break;
-    }
-    default:
-        channelOperationResult1 = ERROR_TIMEOUT;
-        break;
-    }
-
-    return ((channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST) && (channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST));
+    return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST && channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
 }
 
 bool ActivatorTest()
 {
+    PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     try
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
             c_fakeComServerId);
 
-        auto token = PushNotificationManager::RegisterActivator(info);
-        if (!token.TaskRegistration())
+        fakeToken = PushNotificationManager::RegisterActivator(info);
+        if (!fakeToken.TaskRegistration())
         {
             return false;
         }
 
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     }
     catch (...)
     {
@@ -320,15 +172,45 @@ bool runUnitTest(std::string unitTest)
     }
 }
 
+// Cleanup function for exiting test app.
+void UnregisterClsid()
+{
+    if (appToken)
+    {
+        ::CoRevokeClassObject(static_cast<DWORD>(appToken.Cookie()));
+        PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOption::PushTrigger);
+    }
+
+    if (fakeToken)
+    {
+        ::CoRevokeClassObject(static_cast<DWORD>(fakeToken.Cookie()));
+        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger);
+    }
+}
+
 int main()
 {
     initUnitTestMapping();
+    bool output = false;
+    auto scope_exit = wil::scope_exit([&] {
+        UnregisterClsid();
+        if (output)
+        {
+            // Signal TAEF that protocol was activated and valid.
+            signalPhase(c_testProtocolScheme_Packaged);
+        }
+        else
+        {
+            // Signal TAEF that the test failed
+            signalPhase(c_testFailureEventName);
+        }
+    });
 
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
-    auto token = PushNotificationManager::RegisterActivator(info);
+    appToken = PushNotificationManager::RegisterActivator(info);
     
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -341,37 +223,16 @@ int main()
 
         std::cout << unitTest << std::endl;
 
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
-
         // Switch on this variable to run specific components (uri://ComponentToTest)
-        auto output = runUnitTest(unitTest);
-
-        if (output)
-        {
-            // Signal TAEF that protocol was activated and valid.
-            signalPhase(c_testProtocolScheme_Packaged);
-        }
-        else
-        {
-            // Signal TAEF that the test failed
-            signalPhase(c_testFailureEventName);
-        }
+        output = runUnitTest(unitTest);
     }
     else if (kind == ExtendedActivationKind::Push)
     {
         PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
         auto payload = pushArgs.Payload();
         std::wstring payloadString(payload.begin(), payload.end());
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
-        if (!payloadString.compare(c_rawNotificationPayload))
-        {
-            signalPhase(c_testProtocolScheme_Packaged);
-        }
-        else
-        {
-            // Signal TAEF that the test failed
-            signalPhase(c_testFailureEventName);
-        }
+
+        output = !payloadString.compare(c_rawNotificationPayload);
     }
 
     return 0;

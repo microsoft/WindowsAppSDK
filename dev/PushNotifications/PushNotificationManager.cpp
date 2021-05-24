@@ -181,10 +181,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
-        GUID taskClsid = details.TaskClsid();
-        THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+        THROW_HR_IF(E_INVALIDARG, details.TaskClsid() == winrt::guid());
         THROW_HR_IF(E_INVALIDARG, !(WI_IsFlagSet(details.Option(), PushNotificationRegistrationOption::PushTrigger) || WI_IsFlagSet(details.Option(), PushNotificationRegistrationOption::ComActivator)));
 
+        GUID taskClsid = details.TaskClsid();
         DWORD cookie = 0;
         BackgroundTaskRegistration registeredTask = nullptr;
         BackgroundTaskBuilder builder = nullptr;
