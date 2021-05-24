@@ -1,0 +1,5 @@
+{
+  "msbuild-sdks": {
+    "arcade.sdk": "1.1.2"
+  }
+}

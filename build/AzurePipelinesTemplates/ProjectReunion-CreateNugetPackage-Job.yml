@@ -8,6 +8,7 @@ parameters:
   primaryBuildArch: x86
   buildFlavor: Release
   prereleaseVersionTag: 'prerelease'
+  publishToMaestro: false
   condition: ''
 
 jobs:
@@ -89,7 +90,8 @@ jobs:
       targetType: 'inline'
       script: |
         $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
-        Write-Host version: $packageVersion
+        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
@@ -151,6 +153,13 @@ jobs:
         #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
+  - ${{ if eq(parameters.publishToMaestro, 'true') }}:
+    - template: ..\..\eng\common\Maestro-PublishBuildToMaestro.yml
+      parameters:
+        IsGitHubRepo: true
+        AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
+        AssetVersion: $(packageVersion)
+        TriggerSubscrption: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\ProjectReunion-BuildAndPublishPGONuGet-Job.yml
 #
