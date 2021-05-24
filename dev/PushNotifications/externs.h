@@ -3,5 +3,6 @@
 #include "PushNotificationReceivedEventArgs.h"
 
 extern wil::unique_handle g_waitHandleForArgs;
-extern winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs g_activatedEventArgs;
 extern wil::critical_section g_lock;
+
+const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
