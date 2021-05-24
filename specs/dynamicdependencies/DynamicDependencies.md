@@ -1292,7 +1292,7 @@ STDAPI MddLifetimeManagementGC() noexcept;
 ## 6.2. WinRT API
 
 ```c# (but really MIDL3)
-namespace Microsoft.ApplicationModel.DynamicDependency
+namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 {
 /// CPU architectures to optionally filter available packages against a package dependency.
 /// These generally correspond to processor architecture types supported by MSIX.

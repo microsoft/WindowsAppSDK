@@ -2,7 +2,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doc>
   <assembly>
-    <name>Microsoft.ApplicationModel.DynamicDependency</name>
+    <name>Microsoft.Windows.ApplicationModel.DynamicDependency</name>
   </assembly>
   <members>
   </members>

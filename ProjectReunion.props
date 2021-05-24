@@ -11,13 +11,24 @@
     <!-- If not set, default it to no . -->
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
+  <Target Name="DirectoryBuildPropsInfo">
+    <Message Importance="High" Text="ProjectReunion.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
+  </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
   <ItemDefinitionGroup Condition="$(ProjectReunionBuildPipeline) == '1'">
     <ClCompile>
       <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\BuildOutput\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
 
   <!-- BaseOutputPath is defined in Directory.Build.props, but that file isn't loaded on lab machines
