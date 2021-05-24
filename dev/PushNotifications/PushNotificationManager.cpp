@@ -168,6 +168,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
+        THROW_HR_IF_NULL(E_INVALIDARG, details);
         THROW_HR_IF(E_INVALIDARG, details.TaskClsid() == winrt::guid());
         THROW_HR_IF(E_INVALIDARG, !(WI_IsFlagSet(details.Option(), PushNotificationRegistrationOption::PushTrigger) || WI_IsFlagSet(details.Option(), PushNotificationRegistrationOption::ComActivator)));
 
@@ -192,7 +193,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                     else
                     {
-                        // Unregister background task here
                         throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
                     }
                 };
@@ -251,9 +251,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::UnregisterActivator(PushNotificationRegistrationToken const& token, PushNotificationRegistrationOption const& option)
     {
-
+        THROW_HR_IF_NULL(E_INVALIDARG, token);
         if (WI_IsFlagSet(option, PushNotificationRegistrationOption::PushTrigger))
         {
+            THROW_HR_IF_NULL(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), token.TaskRegistration());
             for (auto task : BackgroundTaskRegistration::AllTasks())
             {
                 if (task.Value().Name() == token.TaskRegistration().Name())

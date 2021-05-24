@@ -15,7 +15,8 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 
 enum UnitTest {
     channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
-    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, activatorTest,
+    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, activatorTest, registerActivatorNullDetails,
+    registerActivatorNullClsid, unregisterActivatorNullToken, unregisterActivatorNullBackgroundRegistration, multipleRegisterActivatorTest
 };
 
 static std::map<std::string, UnitTest> switchMapping;
@@ -42,6 +43,11 @@ void initUnitTestMapping()
     switchMapping["MultipleChannelRequestUsingMultipleRemoteId"] = UnitTest::multipleChannelRequestUsingMultipleRemoteId;
     switchMapping["ThreeChannelRequestUsingSameRemoteId"] = UnitTest::threeChannelRequestUsingSameRemoteId;
     switchMapping["ActivatorTest"] = UnitTest::activatorTest;
+    switchMapping["RegisterActivatorNullDetails"] = UnitTest::registerActivatorNullDetails;
+    switchMapping["RegisterActivatorNullClsid"] = UnitTest::registerActivatorNullClsid;
+    switchMapping["UnregisterActivatorNullToken"] = UnitTest::unregisterActivatorNullToken;
+    switchMapping["UnregisterActivatorNullBackgroundRegistration"] = UnitTest::unregisterActivatorNullBackgroundRegistration;
+    switchMapping["MultipleRegisterActivatorTest"] = UnitTest::multipleRegisterActivatorTest;
 }
 
 bool ChannelRequestUsingNullRemoteId()
@@ -145,6 +151,89 @@ bool ActivatorTest()
     return true;
 }
 
+bool RegisterActivatorNullDetails()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationManager::RegisterActivator(nullptr);
+    }
+    catch (...)
+    {
+        auto registerActivatorException = hresult_error(to_hresult());
+        hr = registerActivatorException.code();
+    }
+    return hr == E_INVALIDARG;
+}
+
+bool RegisterActivatorNullClsid()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+            winrt::guid()); // same clsid as app manifest
+        PushNotificationManager::RegisterActivator(info);
+    }
+    catch (...)
+    {
+        auto registerActivatorException = hresult_error(to_hresult());
+        hr = registerActivatorException.code();
+    }
+    return hr == E_INVALIDARG;
+}
+
+bool UnregisterActivatorNullToken()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationManager::UnregisterActivator(nullptr, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+    }
+    catch (...)
+    {
+        auto registerActivatorException = hresult_error(to_hresult());
+        hr = registerActivatorException.code();
+    }
+    return hr == E_INVALIDARG;
+}
+
+bool UnregisterActivatorNullBackgroundRegistration()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationRegistrationToken badToken{ 0, nullptr };
+        PushNotificationManager::UnregisterActivator(badToken, PushNotificationRegistrationOption::PushTrigger);
+    }
+    catch (...)
+    {
+        auto registerActivatorException = hresult_error(to_hresult());
+        hr = registerActivatorException.code();
+    }
+    return hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+}
+
+bool MultipleRegisterActivatorTest()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+            c_fakeComServerId); // same clsid as app manifest
+
+        appToken = PushNotificationManager::RegisterActivator(info);
+    }
+    catch (...)
+    {
+        auto registerActivatorException = hresult_error(to_hresult());
+        hr = registerActivatorException.code();
+    }
+    return hr == E_INVALIDARG;
+}
+
 bool runUnitTest(std::string unitTest)
 {
     switch (switchMapping[unitTest])
@@ -167,6 +256,21 @@ bool runUnitTest(std::string unitTest)
     case UnitTest::activatorTest:
         return ActivatorTest();
 
+    case UnitTest::registerActivatorNullDetails:
+        return RegisterActivatorNullDetails();
+
+    case UnitTest::registerActivatorNullClsid:
+        return RegisterActivatorNullClsid();
+
+    case UnitTest::unregisterActivatorNullToken:
+        return UnregisterActivatorNullToken();
+
+    case UnitTest::unregisterActivatorNullBackgroundRegistration:
+        return UnregisterActivatorNullBackgroundRegistration();
+
+    case UnitTest::multipleRegisterActivatorTest:
+        return MultipleRegisterActivatorTest();
+
     default:
         return false;
     }
@@ -186,6 +290,7 @@ void UnregisterClsid()
         ::CoRevokeClassObject(static_cast<DWORD>(fakeToken.Cookie()));
         PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger);
     }
+
 }
 
 int main()
