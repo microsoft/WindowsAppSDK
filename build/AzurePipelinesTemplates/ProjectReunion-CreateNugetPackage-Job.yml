@@ -57,6 +57,7 @@ jobs:
         Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.WinRt.props" -Destination "$fullpackagePath\build\native\ProjectReunion-Nuget-Native.WinRt.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.props"
+        Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Bootstrap.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Bootstrap.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
