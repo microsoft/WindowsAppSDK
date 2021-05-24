@@ -164,6 +164,58 @@ namespace Test::PushNotifications
             WaitForEvent(event, m_failed);
         }
 
+        TEST_METHOD(RegisterActivatorNullDetails)
+        {
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://RegisterActivatorNullDetails" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            WaitForEvent(event, m_failed);
+        }
+
+        TEST_METHOD(RegisterActivatorNullClsid)
+        {
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://RegisterActivatorNullClsid" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            WaitForEvent(event, m_failed);
+        }
+
+        TEST_METHOD(UnregisterActivatorNullToken)
+        {
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://UnregisterActivatorNullToken" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            WaitForEvent(event, m_failed);
+        }
+
+        TEST_METHOD(UnregisterActivatorNullBackgroundRegistration)
+        {
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+
+            // This is associated protocol for the MSIX installed app for launch.
+            // Use the ://path to define the component you want to test.
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://UnregisterActivatorNullBackgroundRegistration" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            WaitForEvent(event, m_failed);
+        }
+
         TEST_METHOD(ActivatorTest)
         {
             wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
@@ -174,5 +226,14 @@ namespace Test::PushNotifications
             WaitForEvent(event, m_failed);
         }
 
+        TEST_METHOD(MultipleRegisterActivatorTest)
+        {
+            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+            Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleRegisterActivatorTest" };
+            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
+            VERIFY_IS_TRUE(launchResult);
+
+            WaitForEvent(event, m_failed);
+        }
     };
 }
