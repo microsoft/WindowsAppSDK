@@ -2,28 +2,41 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 #include "PushNotificationReceivedEventArgs.h"
+#include <winrt/Windows.ApplicationModel.Core.h>
 #include "externs.h"
 
 static PCWSTR c_pushContractId = L"Windows.Push";
 
+using namespace winrt::Windows::ApplicationModel::Core;
 namespace winrt::Microsoft::Windows::PushNotifications
 {
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
         {
             auto lock = g_lock.lock();
-            if (g_activatedEventArgs)
+
+            auto appProperties = CoreApplication::Properties();
+            if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
             {
-                return g_activatedEventArgs;
+                return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
             }
 
-            THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");      
+            THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");
         }
 
         if (WaitForSingleObject(g_waitHandleForArgs.get(), 1000) == WAIT_OBJECT_0)
         {
             auto lock = g_lock.lock();
-            return g_activatedEventArgs;
+
+            auto appProperties = CoreApplication::Properties();
+            if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
+            {
+                return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
+            }
+            else
+            {
+                return nullptr;
+            }
         }
         winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_TIMEOUT));
     }
