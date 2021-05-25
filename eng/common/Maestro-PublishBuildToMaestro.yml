@@ -103,7 +103,8 @@ steps:
 
           $repository = '$(Build.Repository.Uri)'
           $isGitHub = IsGitHubRepo $repository
-          if ($isGitHub -eq 'True')
+          Write-Host "github return " $isGitHub
+          if ($isGitHub -eq 'true')
           {
             # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
             # But the Build.Repository.Uri is untrustworthy and returns https://microsoft.visualstudio.com/xx/_git/xx
