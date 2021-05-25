@@ -2,7 +2,6 @@ parameters:
   AssetName: ''
   AssetVersion: ''
   TriggerSubscription: false
-  IsGitHubRepo: true
 
 steps:
   - task: PowerShell@2
@@ -60,19 +59,9 @@ steps:
         $devOpsAccount = ExtractOrgFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
         Write-Host "reposiitory: $(Build.Repository.Uri)"
         Write-Host "account: " $devOpsAccount
-        
-        $gitHubRepo = ""
-        $azureDevOpsRepo = ""
-        if ('${{ parameters.IsGitHubRepo }}' -eq 'true')
-        {
-          $gitHubRepo = "$(Build.Repository.Uri)"
-          $azureDevOpsRepo = "$(Build.Repository.Uri)" # Maestro expects this to be always set
-        }
-        if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
-        {
-          $gitHubRepo = "$(Build.Repository.Uri)"
-          $azureDevOpsRepo = "$(Build.Repository.Uri)" # Maestro expects this to be always set
-        }
+
+        $gitHubRepo = "$(Build.Repository.Uri)"
+        $azureDevOpsRepo = "$(Build.Repository.Uri)"
 
         $jsonBase = 
           @{
@@ -113,7 +102,7 @@ steps:
           . .\eng\common\MaestroHelpers.ps1
 
           $repository = '$(Build.Repository.Uri)'
-          if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
+          if (IsGitHubRepo($repository))
           {
             # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
             # But the Build.Repository.Uri is untrustworthy and returns https://microsoft.visualstudio.com/xx/_git/xx

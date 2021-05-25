@@ -16,10 +16,9 @@ jobs:
   # Scans the root source folder for security vulnerability
   - template: ..\eng\common\Maestro-PublishBuildToMaestro.yml
     parameters:
-      IsGitHubRepo: true
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-      AssetVersion: '2.0.4-brach'
-      TriggerSubscrption: true
+      AssetVersion: '2.0.5-branch'
+      TriggerSubscription: true
 
 #   - task: CredScan@2
 #     inputs:
