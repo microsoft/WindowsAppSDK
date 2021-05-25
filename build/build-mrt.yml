@@ -128,9 +128,8 @@ steps:
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\ManagedTest.build.appxrecipe
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+    testAssemblyVer2: '**\ManagedTest.build.appxrecipe'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\ManagedTest'
     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -165,8 +164,19 @@ steps:
     testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+
+- task: CmdLine@2
+  displayName: 'test MRT: UnpackagedTests TE'
+  inputs:
+    script: |
+      echo %cd%
+      dir
+      set
+      ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
+    workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+  env:
+    LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\MrtCoreUnpackagedTests.wtl
+  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
