@@ -172,6 +172,9 @@ steps:
       echo %cd%
       dir
       set
+      echo Changing path.
+      set PATH=%CD%;%PATH%
+      set
       ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
     workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
   env:
