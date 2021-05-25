@@ -1,7 +1,7 @@
 parameters:
   AssetName: ''
   AssetVersion: ''
-  TriggerSubscrption: false
+  TriggerSubscription: false
   IsGitHubRepo: true
 
 steps:
@@ -70,7 +70,8 @@ steps:
         }
         if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
         {
-          $azureDevOpsRepo = "$(Build.Repository.Uri)"
+          $gitHubRepo = "$(Build.Repository.Uri)"
+          $azureDevOpsRepo = "$(Build.Repository.Uri)" # Maestro expects this to be always set
         }
 
         $jsonBase = 
@@ -103,15 +104,27 @@ steps:
       filePath: eng\common\MaestroPostRequest.ps1
       arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
  
-  - ${{ if eq(parameters.TriggerSubscrption, 'true') }}:
+  - ${{ if eq(parameters.TriggerSubscription, 'true') }}:
     - task: powershell@2
       displayName: 'Publish Build to Default Channel'
       inputs:
         targetType: 'inline'
         script: |
+          . .\eng\common\MaestroHelpers.ps1
+
+          $repository = '$(Build.Repository.Uri)'
+          if ('${{ parameters.IsGitHubRepo }}' -ne 'true')
+          {
+            # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
+            # But the Build.Repository.Uri is untrustworthy and returns https://microsoft.visualstudio.com/xx/_git/xx
+            # The docs were so wrong. Sigh.
+            $repository = ConvertToMaestroFriendlyUri $repository
+          }
+
           # Get the id of the default channel of this branch
           $api = "/api/default-channels"
-          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&branch=$(Build.SourceBranch)'
+          $queryParam = "&repository=" + $repository + "&branch=$(Build.SourceBranch)"
+          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
           $jsonObj = ConvertFrom-Json $response.Content
           $channelId = $jsonObj.channel.id
           if ([string]::IsNullOrEmpty($channelId))
@@ -123,7 +136,8 @@ steps:
           {
             # Get the id of the build posted earlier
             $api = "/api/builds"
-            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters '&repository=$(Build.Repository.Uri)&commit=$(Build.SourceVersion)'
+            $queryParam = "&repository=" + $repository + "&commit=$(Build.SourceVersion)"
+            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
             $jsonObj = ConvertFrom-Json $response.Content
             $buildId = $jsonObj.id
             if ([string]::IsNullOrEmpty($buildId))
@@ -134,6 +148,8 @@ steps:
 
             # AddBuildToChannel with the corresponding build id and channel id
             $api = "/api/channels/" + $channelId + "/builds/" + $buildId
+            # buildId may return a space separated numbers if there are more than one build for the same commit
+            $api =  $api.Split(" ")[0] 
             $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
 
             # Get the list of subscriptions on the channel
@@ -143,12 +159,15 @@ steps:
             $jsonObj = ConvertFrom-Json $response.Content
             foreach ($sub in $jsonObj)
             {
-              # Trigger the subscription
-              $id = $sub.id
-              Write-Host "Triggering subscription on " $id
-              # bar-build-id is always 0
-              $api = "/api/subscriptions/" + $id + "/trigger"
-              $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+              if ($sub.sourceRepository -eq $repository)
+              {
+                # Trigger the subscription
+                $id = $sub.id
+                Write-Host "Triggering subscription on " $id
+                # bar-build-id is always 0
+                $api = "/api/subscriptions/" + $id + "/trigger"
+                $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+              }
             }
           }
 
