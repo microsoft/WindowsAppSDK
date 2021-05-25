@@ -124,30 +124,47 @@ steps:
     artifactName: binlogs
 
 - task: VSTest@2
-  displayName: 'test MRT (Managed)'
+  displayName: 'test MRT: ManagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: |
       **\ManagedTest.build.appxrecipe
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
+    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
-  displayName: 'test MRT'
+  displayName: 'test MRT: UnitTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\TE.*.dll
-      !**\obj\**
-      !**\MrtCoreUnpackagedTests.dll
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
+    testAssemblyVer2: '**\UnitTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
+    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: BaseUnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\BaseUnitTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\BaseUnitTests'
+    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
