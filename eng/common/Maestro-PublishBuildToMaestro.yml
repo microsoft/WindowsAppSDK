@@ -103,6 +103,7 @@ steps:
 
           $repository = '$(Build.Repository.Uri)'
           $isGitHub = IsGitHubRepo $repository
+          Write-Host "is debug " $isGitHub
           if ($isGitHub -eq 'true')
           {
             # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx

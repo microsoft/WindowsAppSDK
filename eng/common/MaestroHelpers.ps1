@@ -21,6 +21,7 @@ function IsGitHubRepo([string]$buildRepositoryUri)
     $githubUri = "https://github.com"
     if ($buildRepositoryUri.length -ge $githubUri.length)
     {
+        Write-Host "Debug " $buildRepositoryUri.Substring(0, $githubUri.length)
         if($buildRepositoryUri.Substring(0, $githubUri.length) -eq $githubUri)
         {
             return $true
