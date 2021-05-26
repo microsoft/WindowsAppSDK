@@ -63,6 +63,7 @@
     <None Include="resources.pri.standalone">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="UnpackagedTests.runsettings" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.ApplicationModel.Resources.vcxproj">

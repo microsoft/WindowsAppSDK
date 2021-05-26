@@ -156,6 +156,12 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- script: |
+    echo %TEST_ADAPTER_PATH%
+    echo ##vso[task.setvariable variable=TEST_ADAPTER_PATH]${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests
+    echo %TEST_ADAPTER_PATH%
+  displayName: 'Set TEST_ADAPTER_PATH'
+
 - task: VSTest@2
   displayName: 'test MRT: UnpackagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
@@ -164,6 +170,8 @@ steps:
     testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
 - task: CmdLine@2
   displayName: 'test MRT: UnpackagedTests TE'

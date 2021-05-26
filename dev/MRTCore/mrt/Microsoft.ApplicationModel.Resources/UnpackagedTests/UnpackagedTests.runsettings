@@ -2,6 +2,6 @@
 <RunSettings>
   <RunConfiguration>
     <!-- We want to invoke TE from the same folder as the test binaries. -->
-    <TestAdaptersPaths>$(OutputPath)</TestAdaptersPaths>
+    <TestAdaptersPaths>%TEST_ADAPTER_PATH%</TestAdaptersPaths>
   </RunConfiguration>
 </RunSettings>
