@@ -156,41 +156,7 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- script: |
-    echo %TEST_ADAPTER_PATH%
-    echo ##vso[task.setvariable variable=TEST_ADAPTER_PATH]${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests
-    echo %TEST_ADAPTER_PATH%
-  displayName: 'Set TEST_ADAPTER_PATH'
-
-- task: VSTest@2
-  displayName: 'test MRT: UnpackagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
-    pathtoCustomTestAdapters: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
-    runTestsInIsolation: True
-    runSettingsFile: '${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.ApplicationModel.Resources\UnpackagedTests\UnpackagedTests.runsettings'
-    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: CmdLine@2
-  displayName: 'test MRT: UnpackagedTests TE'
-  inputs:
-    script: |
-      echo %cd%
-      dir
-      set
-      echo Changing path.
-      set PATH=%CD%;%PATH%
-      set
-      ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:%LogPath%
-    workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
-  env:
-    LogPath: ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\MrtCoreUnpackagedTests.wtl
-  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+# Note: The MRT Unpackaged tests currently do not work in the CI pipeline.
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
