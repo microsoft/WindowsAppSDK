@@ -139,7 +139,7 @@ steps:
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\UnitTests.dll'
+    testAssemblyVer2: '**\UnitTest.dll'
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
