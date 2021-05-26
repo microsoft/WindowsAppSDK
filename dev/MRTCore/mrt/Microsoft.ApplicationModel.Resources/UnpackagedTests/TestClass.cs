@@ -122,7 +122,7 @@ namespace MrtCoreUnpackagedTests
         [TestMethod]
         public static void TestNop()
         {
-            Log.Comment("test");
+            Log.Comment("TEST_ADAPTER_PATH = " + Environment.GetEnvironmentVariable("TEST_ADAPTER_PATH"));
         }
 
         [TestCleanup]
