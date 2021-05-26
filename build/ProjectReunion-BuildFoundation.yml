@@ -17,7 +17,7 @@ jobs:
   - template: ..\eng\common\Maestro-PublishBuildToMaestro.yml
     parameters:
       AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-      AssetVersion: '0.6.3-branch'
+      AssetVersion: $(version)
       TriggerSubscription: true
 
 #   - task: CredScan@2
