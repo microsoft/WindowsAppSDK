@@ -119,6 +119,12 @@ namespace MrtCoreUnpackagedTests
             //File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
         }
 
+        [TestMethod]
+        public static void TestNop()
+        {
+            Log.Comment("test");
+        }
+
         [TestCleanup]
         public static void TestCleanup()
         {
