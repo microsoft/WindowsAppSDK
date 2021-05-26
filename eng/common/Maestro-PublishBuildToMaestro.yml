@@ -105,8 +105,8 @@ steps:
           if (!(IsGitHubRepo($repository)))
           {
             # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
-            # But the Build.Repository.Uri is untrustworthy and returns https://microsoft.visualstudio.com/xx/_git/xx
-            # The docs were so wrong. Sigh.
+            # But Build.Repository.Uri returns https://microsoft.visualstudio.com/xx/_git/xx
+            # So we convert it into the right form here
             $repository = ConvertToMaestroFriendlyUri $repository
           }
 
