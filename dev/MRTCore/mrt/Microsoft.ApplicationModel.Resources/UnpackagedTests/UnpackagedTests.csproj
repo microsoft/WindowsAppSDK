@@ -63,6 +63,7 @@
     <None Include="resources.pri.standalone">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include=".runsettings" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.ApplicationModel.Resources.vcxproj">
@@ -78,9 +79,14 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets'))" />
   </Target>
+  <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll" 
+    <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll"
+    powershell -command "$file = gi $(MSBuildProjectDirectory)\.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
     </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
