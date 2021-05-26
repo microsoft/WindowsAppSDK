@@ -36,7 +36,7 @@ steps:
   displayName: 'NuGet restore of applicationmodel'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\microsoft.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\microsoft.Windows.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -166,8 +166,8 @@ steps:
       mrm\mrm.dll
       mrm\mrm.lib
       mrm\mrm.pdb
-      Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-      Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
+      Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll
+      Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
     flattenFolders: true
 
@@ -175,10 +175,10 @@ steps:
   displayName: 'copy projection binaries and symbols for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.Windows.ApplicationModel.Resources.Projection'
     Contents: |
-      Microsoft.ApplicationModel.Resources.Projection.dll
-      Microsoft.ApplicationModel.Resources.Projection.pdb
+      Microsoft.Windows.ApplicationModel.Resources.Projection.dll
+      Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
     flattenFolders: false
 
@@ -186,9 +186,9 @@ steps:
   displayName: 'copy winmd for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.Windows.ApplicationModel.Resources'
     Contents: |
-      Microsoft.ApplicationModel.Resources.winmd
+      Microsoft.Windows.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
 
