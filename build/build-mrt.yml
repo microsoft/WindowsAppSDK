@@ -156,13 +156,6 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: CmdLine@2
-  displayName: 'Remove packages'
-  inputs:
-    script: |
-      rmdir /s /q ${{ parameters.MRTSourcesDirectory }}\mrt\packages
-  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
-
 - task: VSTest@2
   displayName: 'test MRT: UnpackagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
