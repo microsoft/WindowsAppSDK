@@ -102,9 +102,9 @@ steps:
           . .\eng\common\MaestroHelpers.ps1
 
           $repository = '$(Build.Repository.Uri)'
-          $isGitHub = IsGitHubRepo $repository
-          if ($isGitHub -eq 'true')
+          if (IsGitHubRepo($repository))
           {
+            Write-Host "is github"
             # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
             # But the Build.Repository.Uri is untrustworthy and returns https://microsoft.visualstudio.com/xx/_git/xx
             # The docs were so wrong. Sigh.

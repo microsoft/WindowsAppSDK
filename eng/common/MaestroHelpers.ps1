@@ -23,8 +23,10 @@ function IsGitHubRepo([string]$buildRepositoryUri)
     {
         if($buildRepositoryUri.Substring(0, $githubUri.length) -eq $githubUri)
         {
-            return 'true'
+            Write-Host "returning true"
+            return $true
         }
     }
-    return 'false'
+    Write-Host "returning false"
+    return $false
 }
