@@ -111,18 +111,9 @@ namespace MrtCoreUnpackagedTests
         [AssemblyInitialize]
         public static void ModuleSetup(TestContext testContext)
         {
-            Log.Comment("m_assemblyFolder: " + m_assemblyFolder);
-            Log.Comment("current dir: " + Directory.GetCurrentDirectory());
-
             // Clean up any left over files just in case
-            //File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
-            //File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
-        }
-
-        [TestMethod]
-        public static void TestNop()
-        {
-            Log.Comment("TEST_ADAPTER_PATH = " + Environment.GetEnvironmentVariable("TEST_ADAPTER_PATH"));
+            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
+            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
         }
 
         [TestCleanup]
