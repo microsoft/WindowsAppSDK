@@ -12,23 +12,17 @@ namespace winrt::Microsoft::Windows::PushNotifications
 {
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
+        auto appProperties = CoreApplication::Properties();
+        if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
         {
-            auto lock = g_lock.lock();
-
-            auto appProperties = CoreApplication::Properties();
-            if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
-            {
-                return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
-            }
-
-            THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");
+            return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
         }
+
+        THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");
 
         if (WaitForSingleObject(g_waitHandleForArgs.get(), 1000) == WAIT_OBJECT_0)
         {
-            auto lock = g_lock.lock();
-
-            auto appProperties = CoreApplication::Properties();
+            appProperties = CoreApplication::Properties();
             if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
             {
                 return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
@@ -38,6 +32,7 @@ namespace winrt::Microsoft::Windows::PushNotifications
                 return nullptr;
             }
         }
+
         winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_TIMEOUT));
     }
 }
