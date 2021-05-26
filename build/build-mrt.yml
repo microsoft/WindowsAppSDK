@@ -169,6 +169,7 @@ steps:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
     searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    pathtoCustomTestAdapters: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
     runSettingsFile: '${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.ApplicationModel.Resources\UnpackagedTests\UnpackagedTests.runsettings'
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
