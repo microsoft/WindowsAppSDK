@@ -63,7 +63,6 @@
     <None Include="resources.pri.standalone">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="UnpackagedTests.runsettings" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\Microsoft.ApplicationModel.Resources.vcxproj">
@@ -82,9 +81,6 @@
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll" 
     </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RunSettingsFilePath>$(MSBuildProjectDirectory)\UnpackagedTests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
