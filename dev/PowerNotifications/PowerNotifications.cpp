@@ -5,6 +5,7 @@
 #include <PowerNotifications.h>
 #include <PowerNotificationsPal.h>
 #include <PowerManager.g.cpp>
+#include <powrprof.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -270,6 +271,35 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         check_hresult(GetSystemAwayModeStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedSystemAwayModeStatus));
+    }
+
+    // SystemSuspendStatus Functions
+    EventType& SystemSuspendStatus_Event()
+    {
+        return make_self<factory_implementation::PowerManager>()->m_systemSuspendStatusChangedEvent;
+    }
+
+    ULONG SuspendResumeCallback(PVOID, ULONG powerEvent, PVOID)
+    {
+        make_self<factory_implementation::PowerManager>()->SystemSuspendStatusChanged_Callback(powerEvent);
+        return S_OK;
+    }
+
+    void SystemSuspendStatus_Register()
+    {
+        DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS powerParams = { 0 };
+        powerParams.Callback = SuspendResumeCallback;
+
+        check_win32(PowerRegisterSuspendResumeNotification(
+            DEVICE_NOTIFY_CALLBACK,
+            &powerParams,
+            &make_self<factory_implementation::PowerManager>()->m_systemSuspendHandle));
+    }
+
+    void SystemSuspendStatus_Unregister()
+    {
+        check_win32(PowerUnregisterSuspendResumeNotification(
+            make_self<factory_implementation::PowerManager>()->m_systemSuspendHandle));
     }
 
 }

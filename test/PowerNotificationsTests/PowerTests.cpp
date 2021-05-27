@@ -188,5 +188,13 @@ namespace ProjectReunionPowerTests
             PowerManager::SystemAwayModeStatusChanged(token);
             VERIFY_ARE_EQUAL(stat, SystemAwayModeStatus::Exiting);
         }
+
+        TEST_METHOD(SystemSuspendStatusCallback)
+        {
+            // Since the called API is for sleep/hibernate, we just test the registration
+            auto token = PowerManager::SystemSuspendStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable) {});
+            VERIFY_IS_NOT_NULL(token);
+            PowerManager::SystemSuspendStatusChanged(token);
+        }
     };
 }
