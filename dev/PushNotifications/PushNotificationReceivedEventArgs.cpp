@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Storage.Streams.h>
@@ -36,7 +39,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        return { m_rawNotification.data(), m_rawNotification.data() + (m_rawNotification.Length() * sizeof(uint8_t)) };
+        auto rawNotificationData = m_rawNotification.data();
+        return { rawNotificationData, rawNotificationData + (m_rawNotification.Length() * sizeof(uint8_t)) };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()

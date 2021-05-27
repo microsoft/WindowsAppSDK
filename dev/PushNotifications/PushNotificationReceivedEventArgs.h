@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -20,7 +23,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         const winrt::Windows::Storage::Streams::IBuffer m_rawNotification{};
-        const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance = nullptr;
+        const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
     };
 }

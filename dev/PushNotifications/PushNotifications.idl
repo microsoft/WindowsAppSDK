@@ -37,7 +37,7 @@ namespace Microsoft.Windows.PushNotifications
     runtimeclass PushNotificationActivationInfo
     {
         // Initialize using a RegistrationOption and optionally defined parameters like manifest defined activatorId
-        // 1) If option = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
+        // 1) If option = PushTrigger is specified, only the Push Trigger will be Registered with Background Infrastructure
         // 2) If option = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
         PushNotificationActivationInfo(PushNotificationRegistrationOption option, Guid taskClsid);
 

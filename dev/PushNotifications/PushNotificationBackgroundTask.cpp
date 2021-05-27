@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
 
 #include "pch.h"
 
@@ -17,7 +20,7 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
-wil::unique_handle g_waitHandleForArgs;
+wil::unique_handle g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
 
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
