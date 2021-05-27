@@ -52,6 +52,8 @@ namespace MrtCoreUnpackagedTests
 
         private void ActivateContext(string manifestPath)
         {
+            var exe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            Log.Warning(exe);
             var context = new NativeMethods.ACTCTX();
             context.cbSize = (uint)Marshal.SizeOf(typeof(NativeMethods.ACTCTX));
             context.lpSource = manifestPath;
