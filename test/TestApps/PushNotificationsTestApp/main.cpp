@@ -15,7 +15,7 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 
 enum UnitTest {
     channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
-    multipleChannelRequestUsingMultipleRemoteId, threeChannelRequestUsingSameRemoteId, activatorTest, registerActivatorNullDetails,
+    multipleChannelRequestUsingMultipleRemoteId, activatorTest, registerActivatorNullDetails,
     registerActivatorNullClsid, unregisterActivatorNullToken, unregisterActivatorNullBackgroundRegistration, multipleRegisterActivatorTest
 };
 
@@ -41,7 +41,6 @@ void initUnitTestMapping()
     switchMapping["ChannelRequestUsingRemoteId"] = UnitTest::channelRequestUsingRemoteId;
     switchMapping["MultipleChannelRequestUsingSameRemoteId"] = UnitTest::multipleChannelRequestUsingSameRemoteId;
     switchMapping["MultipleChannelRequestUsingMultipleRemoteId"] = UnitTest::multipleChannelRequestUsingMultipleRemoteId;
-    switchMapping["ThreeChannelRequestUsingSameRemoteId"] = UnitTest::threeChannelRequestUsingSameRemoteId;
     switchMapping["ActivatorTest"] = UnitTest::activatorTest;
     switchMapping["RegisterActivatorNullDetails"] = UnitTest::registerActivatorNullDetails;
     switchMapping["RegisterActivatorNullClsid"] = UnitTest::registerActivatorNullClsid;
@@ -113,18 +112,6 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
     auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
     return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
-}
-
-bool ThreeChannelRequestUsingSameRemoteId()
-{
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
-    auto channelOperation3 = PushNotificationManager::CreateChannelAsync(remoteId3);
-    auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
-    auto channelOperationResult3 = ChannelRequestHelper(channelOperation3);
-    auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
-
-    return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST && channelOperationResult3 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
 }
 
 bool ActivatorTest()
@@ -249,9 +236,6 @@ bool runUnitTest(std::string unitTest)
 
     case UnitTest::multipleChannelRequestUsingMultipleRemoteId:
         return MultipleChannelRequestUsingMultipleRemoteId();
-
-    case UnitTest::threeChannelRequestUsingSameRemoteId:
-        return ThreeChannelRequestUsingSameRemoteId();
 
     case UnitTest::activatorTest:
         return ActivatorTest();

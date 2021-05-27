@@ -142,19 +142,6 @@ namespace Test::PushNotifications
             WaitForEvent(event, m_failed);
         }
 
-        TEST_METHOD(ThreeChannelRequestUsingSameRemoteId)
-        {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ThreeChannelRequestUsingSameRemoteId" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
-        }
-
         TEST_METHOD(BackgroundActivation)
         {
             wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
