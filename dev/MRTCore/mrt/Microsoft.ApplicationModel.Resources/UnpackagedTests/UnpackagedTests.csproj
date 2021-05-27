@@ -88,7 +88,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <!--<RunSettingsFilePath>$(OutputPath).runsettings</RunSettingsFilePath>-->
+    <RunSettingsFilePath>$(OutputPath).runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

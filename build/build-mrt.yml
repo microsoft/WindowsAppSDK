@@ -162,6 +162,7 @@ steps:
     testRunTitle: 'test MRT Unpackaged $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    runSettingsFile: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\.runsettings'
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
