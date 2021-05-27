@@ -111,9 +111,24 @@ namespace MrtCoreUnpackagedTests
         [AssemblyInitialize]
         public static void ModuleSetup(TestContext testContext)
         {
-            // Cleanup just in case
+            // Clean up any left over files just in case
             File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
             File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+        }
+
+        [TestCleanup]
+        public static void TestCleanup()
+        {
+            GC.Collect(); // Force any ResourceManager objects to be cleaned up.
+
+            if (File.Exists(Path.Combine(m_assemblyFolder, "resources.pri")))
+            {
+                File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
+            }
+            if (File.Exists(Path.Combine(m_assemblyFolder, "te.processhost.pri")))
+            {
+                File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            }            
         }
 
         [TestMethod]
@@ -140,8 +155,6 @@ namespace MrtCoreUnpackagedTests
             Verify.AreNotEqual(map.ResourceCount, 0u);
             var resource = map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME").ValueAsString;
             Verify.AreEqual(resource, "Groove Music");
-
-            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
         }
 
         [TestMethod]
@@ -155,8 +168,6 @@ namespace MrtCoreUnpackagedTests
             Verify.AreNotEqual(map.ResourceCount, 0u);
             var resource = map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME").ValueAsString;
             Verify.AreEqual(resource, "Groove Music");
-
-            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
         }
 
         [TestMethod]
