@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
+
 #pragma once
 #include "PushNotificationReceivedEventArgs.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
@@ -12,17 +13,17 @@ namespace winrt::Microsoft::Windows::PushNotifications
 {
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
-        auto appProperties = CoreApplication::Properties();
+        /*auto appProperties = CoreApplication::Properties();
         if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
         {
             return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
         }
 
-        THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");
+        THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");*/
 
-        if (WaitForSingleObject(g_waitHandleForArgs.get(), 1000) == WAIT_OBJECT_0)
+        if (WaitForSingleObject(g_waitHandleForArgs.get(), 2000) == WAIT_OBJECT_0)
         {
-            appProperties = CoreApplication::Properties();
+            auto appProperties = CoreApplication::Properties();
             if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
             {
                 return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
