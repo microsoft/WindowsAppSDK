@@ -156,7 +156,28 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-# Note: The MRT Unpackaged tests currently do not work in the CI pipeline.
+# Note: The MRT Unpackaged Tests currently do not work in the CI pipeline.
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: CmdLine@2
+  displayName: 'test MRT (UnpackagedTests)'
+  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+  inputs:
+    script: |
+      echo %cd%
+      dir
+      dotnet --info
+      ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:MrtCoreUnpackagedTests.wtl
+    workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
