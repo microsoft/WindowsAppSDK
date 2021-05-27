@@ -104,7 +104,7 @@ namespace Microsoft.Windows.PushNotifications
         // More detailed error code in addition to the ChannelStatus state.
         HRESULT ExtendedError{ get; };
 
-        // The Status of the ChannelComplete operation
+        // The Status of the CreateChannel operation
         PushNotificationChannelStatus Status { get; };
     };
 
