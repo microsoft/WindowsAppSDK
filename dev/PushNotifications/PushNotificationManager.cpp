@@ -149,7 +149,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationOption, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator));
 
         DWORD cookie = 0;
-        BackgroundTaskRegistration registeredTask = nullptr;
+        IBackgroundTaskRegistration registeredTask = nullptr;
         BackgroundTaskBuilder builder = nullptr;
 
         if (WI_IsFlagSet(registrationOption, PushNotificationRegistrationOption::PushTrigger))
@@ -158,7 +158,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             winrt::hstring backgroundTaskFullName = backgroundTaskName + taskClsidStr;
 
             auto tasks = BackgroundTaskRegistration::AllTasks();
-            bool taskRegistered = std::any_of(std::begin(tasks), std::end(tasks),
+            bool isTaskRegistered = std::any_of(std::begin(tasks), std::end(tasks),
                 [&](auto&& task)
                 {
                     auto name = task.Value().Name();
@@ -170,13 +170,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                     if (name == backgroundTaskFullName)
                     {
+                        registeredTask = task.Value();
                         return true;
                     }
 
                     throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
                 });
 
-            if (!taskRegistered)
+            if (!isTaskRegistered)
             {
                 builder = BackgroundTaskBuilder();
                 builder.Name(backgroundTaskName + taskClsidStr);
@@ -211,6 +212,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     LOG_IF_FAILED(::CoRevokeClassObject(cookie));
                 }
 
+                // Clean the task registration only if it was created during this call
                 if (registeredWithBackgroundTask)
                 {
                     registeredTask.Unregister(true);
@@ -235,7 +237,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (builder)
         {
-            registeredTask = builder.Register();
+            auto registeredTaskFromBuilder = builder.Register();
+            registeredTask = registeredTaskFromBuilder.as<IBackgroundTaskRegistration>();
             registeredWithBackgroundTask = true;
         }
 
