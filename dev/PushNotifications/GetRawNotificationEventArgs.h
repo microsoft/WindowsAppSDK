@@ -13,14 +13,6 @@ namespace winrt::Microsoft::Windows::PushNotifications
 {
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
-        /*auto appProperties = CoreApplication::Properties();
-        if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
-        {
-            return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
-        }
-
-        THROW_HR_IF_NULL_MSG(E_UNEXPECTED, g_waitHandleForArgs, "PushNotificationManager::RegisterActivator has not been called.");*/
-
         if (WaitForSingleObject(g_waitHandleForArgs.get(), 2000) == WAIT_OBJECT_0)
         {
             auto appProperties = CoreApplication::Properties();

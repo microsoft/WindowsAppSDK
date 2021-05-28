@@ -113,13 +113,13 @@ namespace Microsoft.Windows.PushNotifications
     {
         PushNotificationRegistrationToken(
             UInt64 cookie,
-            Windows.ApplicationModel.Background.BackgroundTaskRegistration taskRegistration);
+            Windows.ApplicationModel.Background.IBackgroundTaskRegistration taskRegistration);
 
         // The cookie from CoRegisterClassObject
         UInt64 Cookie{ get; };
 
         // The Registration token for the Push Trigger
-        Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
+        Windows.ApplicationModel.Background.IBackgroundTaskRegistration TaskRegistration { get; };
     };
 
     [experimental]
