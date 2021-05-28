@@ -157,6 +157,34 @@ steps:
     configuration: '$(buildConfiguration)'
 
 # Note: The MRT Unpackaged tests currently do not work in the CI pipeline.
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MrtCoreUnpackagedTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: CmdLine@2
+  displayName: 'test MRT: (UnpackagedTests)'
+  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+  inputs:
+    script: |
+      echo %cd%
+      dir
+      dotnet --info
+      c:\Windows\System32\tttracer.exe -out $(Build.ArtifactStagingDirectory)\mrt_ttt -launch ${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests\te.exe MrtCoreUnpackagedTests.dll /enablewttlogging /appendwttlogging /logFile:MrtCoreUnpackagedTests.wtl /inproc
+    workingDirectory: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: Trace'
+  condition: or(eq(variables.buildPlatform, 'x64'), eq(variables.buildPlatform, 'x86'))
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_ttt'
+    ArtifactName: 'mrtcore_trace'
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
