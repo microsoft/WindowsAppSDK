@@ -758,10 +758,5 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             return make_self<factory_implementation::PowerManager>()->SystemAwayModeStatusChanged_Callback(systemAwayModeStatus);
         }
-
-        static void SystemSuspendStatusChanged_Callback(ULONG powerEvent)
-        {
-            return make_self<factory_implementation::PowerManager>()->SystemSuspendStatusChanged_Callback(powerEvent);
-        }
     };
 }
