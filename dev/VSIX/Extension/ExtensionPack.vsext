@@ -1,0 +1,10 @@
+{
+  "description": "Read about creating extension packs at https://aka.ms/vsextpack",
+  "version": "1.0.0.0",
+    "extensions": [
+        {
+            "vsixId": "Microsoft.SingleProjectMSIXPackagingTools",
+            "name": "Single-project MSIX Packaging Tools"
+        }
+    ]
+}

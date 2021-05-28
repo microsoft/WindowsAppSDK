@@ -32,11 +32,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -46,6 +46,9 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="LICENSE">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
@@ -216,6 +219,20 @@
     <ProjectReference Include="..\ProjectTemplates\UWP\CSharp\ClassLibrary\WinUI.UWP.Cs.ClassLibrary.csproj">
       <Project>{2A3D41EE-5641-4DEB-AC2C-B433CBC9174D}</Project>
       <Name>WinUI.UWP.Cs.ClassLibrary</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+      <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
+      <Project>{E54D1AD4-E935-479D-8A69-FC073E4DB33D}</Project>
+      <Name>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj">
+      <Project>{D9C038B7-6A62-4945-A030-4AC7597F53CA}</Project>
+      <Name>WinUI.Desktop.Cs.SingleProjectPackagedApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
