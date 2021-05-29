@@ -608,10 +608,10 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         //SystemSuspend Functions
         winrt::Microsoft::ProjectReunion::SystemSuspendStatus SystemSuspendStatus()
         {
-            // Review: Agree with this "only callable during SystemSuspendStatusChanged callback" enforcement?
+            // Review: Agree with this "only callable after subscription callback" enforcement?
             if (m_systemSuspendStatus == SystemSuspendStatus::Uninitialized)
             {
-                throw winrt::hresult_error(E_FAIL, L"There are no active subscriptions on SystemSuspendStatus");
+                throw winrt::hresult_error(E_FAIL, L"API only callable after a SystemSuspendStatusChanged callback");
             }
             return static_cast<winrt::Microsoft::ProjectReunion::SystemSuspendStatus>(m_systemSuspendStatus);
         }
