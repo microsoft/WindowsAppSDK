@@ -608,7 +608,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         //SystemSuspend Functions
         winrt::Microsoft::ProjectReunion::SystemSuspendStatus SystemSuspendStatus()
         {
-Addi            // Review: Agree with this usage-only-after-subscription enforcement?
+            // Review: Agree with this "only callable during SystemSuspendStatusChanged callback" enforcement?
             if (m_systemSuspendStatus == SystemSuspendStatus::Uninitialized)
             {
                 throw winrt::hresult_error(E_FAIL, L"There are no active subscriptions on SystemSuspendStatus");
