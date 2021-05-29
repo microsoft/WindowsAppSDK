@@ -608,6 +608,11 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         //SystemSuspend Functions
         winrt::Microsoft::ProjectReunion::SystemSuspendStatus SystemSuspendStatus()
         {
+Addi            // Review: Agree with this usage-only-after-subscription enforcement?
+            if (m_systemSuspendStatus == SystemSuspendStatus::Uninitialized)
+            {
+                throw winrt::hresult_error(E_FAIL, L"There are no active subscriptions on SystemSuspendStatus");
+            }
             return static_cast<winrt::Microsoft::ProjectReunion::SystemSuspendStatus>(m_systemSuspendStatus);
         }
 
@@ -639,6 +644,8 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
                 m_systemSuspendStatus = SystemSuspendStatus::ManualResume;
                 RaiseEvent(systemSuspendFunc);
             }
+            // Resetting the value after the callback
+            m_systemSuspendStatus = SystemSuspendStatus::Uninitialized;
         }
 
     };

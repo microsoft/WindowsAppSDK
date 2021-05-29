@@ -70,7 +70,8 @@ namespace Microsoft.ProjectReunion
 
     enum SystemSuspendStatus
     {
-        Entering = 0,
+        Uninitialized = 0,
+        Entering,
         AutoResume,
         ManualResume
     };
