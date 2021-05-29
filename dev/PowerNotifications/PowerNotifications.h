@@ -72,6 +72,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void SystemAwayModeStatus_Unregister();
     void SystemAwayModeStatus_Update();
 
+    EventType& SystemSuspendStatus_Event();
+    void SystemSuspendStatus_Register();
+    void SystemSuspendStatus_Unregister();
+
     // A place holder for an empty function, since not all events have every function defined
     void NoOperation() {}
 
@@ -99,6 +103,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         DWORD m_cachedPowerSourceStatus;
         GUID  m_cachedPowerSchemePersonality;
         ULONGLONG m_cachedDischargeTime;
+        winrt::Microsoft::ProjectReunion::SystemSuspendStatus m_systemSuspendStatus;
         ::EnergySaverStatus m_cachedEnergySaverStatus;
         CompositeBatteryStatus m_cachedCompositeBatteryStatus;
         winrt::Microsoft::ProjectReunion::BatteryStatus m_batteryStatus;
@@ -117,6 +122,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         EventType m_powerSchemePersonalityChangedEvent;
         EventType m_userPresenceStatusChangedEvent;
         EventType m_systemAwayModeStatusChangedEvent;
+        EventType m_systemSuspendStatusChangedEvent;
 
         EnergySaverStatusRegistration m_EnergySaverStatusHandle;
         CompositeBatteryStatusRegistration m_batteryStatusHandle;
@@ -127,6 +133,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         PowerSchemePersonalityRegistration m_powerSchemePersonalityHandle;
         UserPresenceStatusRegistration m_userPresenceStatusHandle;
         SystemAwayModeStatusRegistration m_systemAwayModeStatusHandle;
+        HPOWERNOTIFY m_systemSuspendHandle;
 
         PowerFunctionDetails energySaverStatusFunc{
             &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Event,
@@ -193,6 +200,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Register,
             &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Update };
+
+        PowerFunctionDetails systemSuspendFunc{
+            &winrt::Microsoft::ProjectReunion::implementation::SystemSuspendStatus_Event,
+            &winrt::Microsoft::ProjectReunion::implementation::SystemSuspendStatus_Register,
+            &winrt::Microsoft::ProjectReunion::implementation::SystemSuspendStatus_Unregister,
+            &winrt::Microsoft::ProjectReunion::implementation::NoOperation };
 
         bool RegisteredForEvents(const EventType& eventObj)
         {
@@ -592,6 +605,48 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             RaiseEvent(systemAwayModeStatusFunc);
         }
 
+        //SystemSuspend Functions
+        winrt::Microsoft::ProjectReunion::SystemSuspendStatus SystemSuspendStatus()
+        {
+            // Review: Agree with this "only callable after subscription callback" enforcement?
+            if (m_systemSuspendStatus == SystemSuspendStatus::Uninitialized)
+            {
+                throw winrt::hresult_error(E_FAIL, L"API only callable after a SystemSuspendStatusChanged callback");
+            }
+            return static_cast<winrt::Microsoft::ProjectReunion::SystemSuspendStatus>(m_systemSuspendStatus);
+        }
+
+        event_token SystemSuspendStatusChanged(const PowerEventHandle& handler)
+        {
+            return AddCallback(systemSuspendFunc, handler);
+        }
+
+        void SystemSuspendStatusChanged(const event_token& token)
+        {
+            RemoveCallback(systemSuspendFunc, token);
+        }
+
+        void SystemSuspendStatusChanged_Callback(ULONG PowerEvent)
+        {
+            using namespace winrt::Microsoft::ProjectReunion;
+            if (PowerEvent == PBT_APMSUSPEND)
+            {
+                m_systemSuspendStatus = SystemSuspendStatus::Entering;
+                RaiseEvent(systemSuspendFunc);
+            }
+            else if (PowerEvent == PBT_APMRESUMEAUTOMATIC)
+            {
+                m_systemSuspendStatus = SystemSuspendStatus::AutoResume;
+                RaiseEvent(systemSuspendFunc);
+            }
+            else if (PowerEvent == PBT_APMRESUMESUSPEND)
+            {
+                m_systemSuspendStatus = SystemSuspendStatus::ManualResume;
+                RaiseEvent(systemSuspendFunc);
+            }
+            // Resetting the value after the callback
+            m_systemSuspendStatus = SystemSuspendStatus::Uninitialized;
+        }
 
     };
 
@@ -658,6 +713,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static winrt::Microsoft::ProjectReunion::SystemAwayModeStatus SystemAwayModeStatus()
         {
             return make_self<factory_implementation::PowerManager>()->SystemAwayModeStatus();
+        }
+
+        static winrt::Microsoft::ProjectReunion::SystemSuspendStatus SystemSuspendStatus()
+        {
+            return make_self<factory_implementation::PowerManager>()->SystemSuspendStatus();
         }
 
         //Callback forwards
