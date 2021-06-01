@@ -33,4 +33,6 @@
 #include <ProjectReunion.Test.Package.h>
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
+#include <ShObjIdl_core.h>
+
 namespace TP = ::Test::Packages;

@@ -3,8 +3,8 @@
 
 #include "pch.h"
 #include <TestDef.h>
-#include "Shared.h"
 #include "MockBackgroundTaskInstance.h"
+#include "Shared.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -24,10 +24,12 @@ namespace Test::PushNotifications
     {
     private:
         wil::unique_event m_failed;
+        HANDLE m_process;
+        winrt::com_ptr<IApplicationActivationManager> m_testAppLauncher;
 
-        const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage_1.0.0.0_x64.msixbundle";
-        const std::wstring c_testPackageCertFile = g_deploymentDir + L"PushNotificationsTestAppPackage_1.0.0.0_x64.cer";
-        const std::wstring c_testPackageFullName = L"PushNotificationsTestAppPackage_1.0.0.0_x64__8wekyb3d8bbwe";
+        //const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage.msix";
+        //const std::wstring c_testPackageFullName = L"PushNotificationsTestAppPackage_1.0.0.0_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
+        //const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
 
     public:
         BEGIN_TEST_CLASS(APITests)
@@ -36,36 +38,56 @@ namespace Test::PushNotifications
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
+        static std::wstring GetDeploymentDir()
+        {
+            WEX::Common::String testDeploymentDir;
+            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
+            return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
+        }
+
+        static std::filesystem::path GetTestVCLibsPackageFile()
+        {
+            auto filename{ std::filesystem::path(GetDeploymentDir()) };
+            filename /= L"VCLibs.appx";
+            return filename;
+        }
+
+        static std::filesystem::path GetTestPackageFile()
+        {
+            auto filename{ std::filesystem::path(GetDeploymentDir()) };
+            filename /= L"PushNotificationsTestAppPackage.msix";
+            return filename;
+        }
+
+        static std::wstring GetTestPackageFullName()
+        {
+            return L"PushNotificationsTestAppPackage_1.0.0.0_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
+        }
+
         TEST_CLASS_SETUP(ClassInit)
         {
             try
             {
-                InstallPackage(c_testVCLibsPackageFile);
+                TP::AddPackage_ProjectReunionFramework();
+                InstallPackage(GetTestVCLibsPackageFile());
+                InstallPackage(GetTestPackageFile());
             }
             catch (...)
             {
                 return false;
             }
 
-            TP::AddPackage_ProjectReunionFramework();
-            try
-            {
-                InstallPackage(c_testPackageFile);
-            }
-            catch (...)
-            {
-                return false;
-            }
+            m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+            VERIFY_IS_NOT_NULL(m_testAppLauncher);
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            TP::RemovePackage_ProjectReunionFramework();
-
             try
             {
-                UninstallPackage(c_testPackageFullName);
+                TP::RemovePackage_ProjectReunionFramework();
+                UninstallPackage(GetTestPackageFullName());
             }
             catch (...)
             {
@@ -77,9 +99,6 @@ namespace Test::PushNotifications
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
-
-            m_failed = CreateTestEvent(c_testFailureEventName);
-
             return true;
         }
 
@@ -87,140 +106,89 @@ namespace Test::PushNotifications
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
 
+            if (m_process)
+            {
+                VERIFY_IS_TRUE(CloseHandle(m_process));
+            }
             return true;
         }
 
-        TEST_METHOD(ChannelRequestUsingNullRemoteId)
+        void RunTest(const PCWSTR& testName)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+            DWORD pid;
+            VERIFY_SUCCEEDED(m_testAppLauncher.get()->ActivateApplication(L"PushNotificationsTestAppPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &pid));
+            VERIFY_IS_NOT_NULL(pid);
 
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ChannelRequestUsingNullRemoteId" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
+            m_process = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+            VERIFY_IS_NOT_NULL(m_process);
 
-            WaitForEvent(event, m_failed);
-        }
+            VERIFY_ARE_EQUAL(WaitForSingleObject(m_process, 3000), WAIT_OBJECT_0);
 
-        TEST_METHOD(ChannelRequestUsingRemoteId)
-        {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+            DWORD exitCode;
+            VERIFY_IS_TRUE(GetExitCodeProcess(m_process, &exitCode));
+            VERIFY_ARE_EQUAL(exitCode, 0);
 
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ChannelRequestUsingRemoteId" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
-        }
-
-        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
-        {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleChannelRequestUsingSameRemoteId" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
-        }
-
-        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
-        {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleChannelRequestUsingMultipleRemoteId" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
+            VERIFY_IS_TRUE(CloseHandle(m_process));
+            m_process = nullptr;
         }
 
         TEST_METHOD(BackgroundActivation)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
+            RunTest(nullptr); // Just need to launch.
+
             auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
-            LocalBackgroundTask.Run(mockBackgroundTaskInstance);
-            WaitForEvent(event, m_failed);
+            VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
+        }
+
+        TEST_METHOD(ChannelRequestUsingNullRemoteId)
+        {
+            RunTest(L"ChannelRequestUsingNullRemoteId");
+        }
+
+        TEST_METHOD(ChannelRequestUsingRemoteId)
+        {
+            RunTest(L"ChannelRequestUsingRemoteId");
+        }
+
+        /*TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
+        {
+            RunTest(L"MultipleChannelRequestUsingSameRemoteId");
+        }
+
+        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
+        {
+            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId");
+        }*/
+
+        TEST_METHOD(ActivatorTest)
+        {
+            RunTest(L"ActivatorTest");
         }
 
         TEST_METHOD(RegisterActivatorNullDetails)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://RegisterActivatorNullDetails" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
+            RunTest(L"RegisterActivatorNullDetails");
         }
 
         TEST_METHOD(RegisterActivatorNullClsid)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://RegisterActivatorNullClsid" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
+            RunTest(L"RegisterActivatorNullClsid");
         }
 
         TEST_METHOD(UnregisterActivatorNullToken)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://UnregisterActivatorNullToken" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
+            RunTest(L"UnregisterActivatorNullToken");
         }
 
         TEST_METHOD(UnregisterActivatorNullBackgroundRegistration)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-
-            // This is associated protocol for the MSIX installed app for launch.
-            // Use the ://path to define the component you want to test.
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://UnregisterActivatorNullBackgroundRegistration" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
-        }
-
-        TEST_METHOD(ActivatorTest)
-        {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://ActivatorTest" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
+            RunTest(L"UnregisterActivatorNullBackgroundRegistration");
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
         {
-            wil::unique_event event = CreateTestEvent(c_testProtocolScheme_Packaged);
-            Uri launchUri{ c_testProtocolScheme_Packaged + L"://MultipleRegisterActivatorTest" };
-            auto launchResult = Launcher::LaunchUriAsync(launchUri).get();
-            VERIFY_IS_TRUE(launchResult);
-
-            WaitForEvent(event, m_failed);
+            RunTest(L"MultipleRegisterActivatorTest");
         }
     };
 }

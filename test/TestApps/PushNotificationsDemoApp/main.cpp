@@ -22,7 +22,8 @@ char buf[SIZE];
 
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
-    // Register the AAD RemoteIdentifier for the App to receive Push
+    // To obtain an AAD RemoteIdentifier for your app,
+    // follow the instructions on https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
     auto channelOperation = PushNotificationManager::CreateChannelAsync(
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
 
