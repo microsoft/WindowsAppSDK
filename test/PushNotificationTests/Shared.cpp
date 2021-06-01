@@ -19,59 +19,6 @@ using namespace winrt::Windows::System;
 
 namespace Test::PushNotifications
 {
-    StorageFile CreateDocFile(std::wstring filename)
-    {
-        return KnownFolders::DocumentsLibrary().CreateFileAsync(filename,
-            CreationCollisionOption::OpenIfExists).get();
-    }
-
-    StorageFile OpenDocFile(std::wstring filename)
-    {
-        return KnownFolders::DocumentsLibrary().GetFileAsync(filename).get();
-    }
-
-    wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
-        const std::wstring& directory)
-    {
-        SHELLEXECUTEINFO ei{};
-        ei.cbSize = sizeof(SHELLEXECUTEINFO);
-        ei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-        ei.lpFile = command.c_str();
-        ei.lpParameters = args.c_str();
-        ei.lpDirectory = directory.c_str();
-
-        if (!ShellExecuteEx(&ei))
-        {
-            auto lastError = GetLastError();
-            VERIFY_WIN32_SUCCEEDED(lastError);
-        }
-
-        wil::unique_handle process{ ei.hProcess };
-        return process;
-    }
-
-    void RunCertUtil(const std::wstring& path, bool removeCert)
-    {
-        std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
-        std::wstring args{ action + L" TrustedPeople " + path };
-        // VERIFY_ARE_NOT_EQUAL(args, args);
-        auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
-            args, g_deploymentDir);
-
-        // Wait for the cer to be installed.
-        auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
-        if (waitResult != WAIT_OBJECT_0)
-        {
-            if (waitResult == WAIT_FAILED) VERIFY_WIN32_SUCCEEDED(GetLastError());
-            VERIFY_ARE_EQUAL(waitResult, WAIT_OBJECT_0);
-        }
-
-        // Make sure the exitcode for the tool is success.
-        DWORD exitCode{};
-        THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(process.get(), &exitCode));
-        VERIFY_ARE_EQUAL(exitCode, 0);
-    }
-
     void InstallPackage(const std::wstring& packagePath)
     {
         // Deploy packaged app to register handler through the manifest.
@@ -93,63 +40,5 @@ namespace Test::PushNotifications
         auto errorText = result.ErrorText();
         auto errorCode = result.ExtendedErrorCode();
         VERIFY_SUCCEEDED(errorCode, errorText.c_str());
-    }
-
-    wil::unique_event CreateTestEvent(const std::wstring& eventName)
-    {
-        bool alreadyExists = false;
-        SECURITY_ATTRIBUTES attributes = {};
-        wil::unique_hlocal_security_descriptor descriptor;
-
-        // Grant access to world and appcontainer.
-        THROW_IF_WIN32_BOOL_FALSE(ConvertStringSecurityDescriptorToSecurityDescriptor(
-            L"D:(A;;GA;;;WD)(A;;GA;;;AC)", SDDL_REVISION_1, &descriptor, nullptr));
-        attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
-        attributes.lpSecurityDescriptor = descriptor.get();
-
-        wil::unique_event event;
-        event.create(wil::EventOptions::None, eventName.c_str(), &attributes, &alreadyExists);
-        return event;
-    }
-
-    void WaitForEvent(const wil::unique_event& successEvent, const wil::unique_event& failedEvent)
-    {
-        HANDLE waitEvents[2] = { successEvent.get(), failedEvent.get() };
-        auto waitResult = WaitForMultipleObjects(_countof(waitEvents), waitEvents, FALSE,
-            c_phaseTimeout);
-
-        // If waitResult == failureEventIndex, it means the remote test process signaled a
-        // failure event while we were waiting for a different event.
-        auto failureEventIndex = WAIT_OBJECT_0 + 1;
-        VERIFY_ARE_NOT_EQUAL(waitResult, failureEventIndex);
-
-        VERIFY_ARE_NOT_EQUAL(waitResult, WAIT_TIMEOUT);
-        if (waitResult == WAIT_FAILED)
-        {
-            auto lastError = GetLastError();
-            VERIFY_WIN32_FAILED(lastError);
-        }
-
-        successEvent.ResetEvent();
-        failedEvent.ResetEvent();
-    }
-
-    const std::wstring GetDeploymentDir()
-    {
-        WEX::Common::String testDeploymentDir;
-        WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
-        return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
-    }
-
-    void WriteContentFile(std::wstring filename)
-    {
-        auto file = CreateDocFile(filename);
-        FileIO::WriteTextAsync(file, L"Hello, World!").get();
-    }
-
-    void DeleteContentFile(std::wstring filename)
-    {
-        auto file = CreateDocFile(filename);
-        file.DeleteAsync().get();
     }
 }

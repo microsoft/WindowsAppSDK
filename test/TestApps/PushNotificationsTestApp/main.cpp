@@ -280,40 +280,27 @@ void UnregisterClsid()
 int main()
 {
     initUnitTestMapping();
-    bool output = false;
+    bool failed = false;
     auto scope_exit = wil::scope_exit([&] {
         UnregisterClsid();
-        if (output)
-        {
-            // Signal TAEF that protocol was activated and valid.
-            signalPhase(c_testProtocolScheme_Packaged);
-        }
-        else
-        {
-            // Signal TAEF that the test failed
-            signalPhase(c_testFailureEventName);
-        }
     });
 
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+        winrt::guid(c_comServerId)); // same clsid as app manifest
 
     appToken = PushNotificationManager::RegisterActivator(info);
     
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
-    if (kind == ExtendedActivationKind::Protocol)
+    if (kind == ExtendedActivationKind::Launch)
     {
-        auto protocolArgs = args.Data().as<IProtocolActivatedEventArgs>();
-        Uri actualUri = protocolArgs.Uri();
-        std::string unitTest = winrt::to_string(actualUri.Host());
-
+        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
+        std::string unitTest = to_string(launchArgs.Arguments());
         std::cout << unitTest << std::endl;
 
-        // Switch on this variable to run specific components (uri://ComponentToTest)
-        output = runUnitTest(unitTest);
+        failed = runUnitTest(unitTest);
     }
     else if (kind == ExtendedActivationKind::Push)
     {
@@ -321,8 +308,8 @@ int main()
         auto payload = pushArgs.Payload();
         std::wstring payloadString(payload.begin(), payload.end());
 
-        output = !payloadString.compare(c_rawNotificationPayload);
+        failed = !payloadString.compare(c_rawNotificationPayload);
     }
 
-    return 0;
+    return !failed;
 };
