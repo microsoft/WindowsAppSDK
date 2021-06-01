@@ -18,7 +18,7 @@ winrt::hstring MockRawNotification::Content()
 
 winrt::Windows::Storage::Streams::IBuffer MockRawNotification::ContentBytes()
 {
-    winrt::Windows::Storage::Streams::DataWriter dataWriter{};
-    dataWriter.WriteString(c_rawNotificationPayload);
-    return dataWriter.DetachBuffer();
+    return winrt::Windows::Security::Cryptography::CryptographicBuffer::ConvertStringToBinary(
+        c_rawNotificationPayload,
+        winrt::Windows::Security::Cryptography::BinaryStringEncoding::Utf8);
 }

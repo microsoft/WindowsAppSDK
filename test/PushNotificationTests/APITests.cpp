@@ -24,12 +24,8 @@ namespace Test::PushNotifications
     {
     private:
         wil::unique_event m_failed;
-        HANDLE m_process;
+        wil::unique_handle m_processHandle;
         winrt::com_ptr<IApplicationActivationManager> m_testAppLauncher;
-
-        //const std::wstring c_testPackageFile = g_deploymentDir + L"PushNotificationsTestAppPackage.msix";
-        //const std::wstring c_testPackageFullName = L"PushNotificationsTestAppPackage_1.0.0.0_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
-        //const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
 
     public:
         BEGIN_TEST_CLASS(APITests)
@@ -38,28 +34,21 @@ namespace Test::PushNotifications
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
-        static std::wstring GetDeploymentDir()
+        static PCWSTR GetDeploymentDir()
         {
             WEX::Common::String testDeploymentDir;
             WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
             return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
         }
 
-        static std::filesystem::path GetTestVCLibsPackageFile()
-        {
-            auto filename{ std::filesystem::path(GetDeploymentDir()) };
-            filename /= L"VCLibs.appx";
-            return filename;
-        }
-
         static std::filesystem::path GetTestPackageFile()
         {
             auto filename{ std::filesystem::path(GetDeploymentDir()) };
-            filename /= L"PushNotificationsTestAppPackage.msix";
+            filename /= L"PushNotificationsTestAppPackage";
             return filename;
         }
 
-        static std::wstring GetTestPackageFullName()
+        static PCWSTR GetTestPackageFullName()
         {
             return L"PushNotificationsTestAppPackage_1.0.0.0_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
         }
@@ -68,9 +57,8 @@ namespace Test::PushNotifications
         {
             try
             {
-                TP::AddPackage_ProjectReunionFramework();
-                InstallPackage(GetTestVCLibsPackageFile());
-                InstallPackage(GetTestPackageFile());
+                TP::AddPackage_ProjectReunionFramework(); // Installs PRfwk
+                TW::AddPackage(L"PushNotificationsTestAppPackage", L"1.0.0.0"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {
@@ -78,7 +66,6 @@ namespace Test::PushNotifications
             }
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
-            VERIFY_IS_NOT_NULL(m_testAppLauncher);
             return true;
         }
 
@@ -87,7 +74,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::RemovePackage_ProjectReunionFramework();
-                UninstallPackage(GetTestPackageFullName());
+                TP::RemovePackage(GetTestPackageFullName());
             }
             catch (...)
             {
@@ -106,35 +93,31 @@ namespace Test::PushNotifications
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
 
-            if (m_process)
+            if (m_processHandle)
             {
-                VERIFY_IS_TRUE(CloseHandle(m_process));
+                m_processHandle.reset();
             }
             return true;
         }
 
-        void RunTest(const PCWSTR& testName)
+        void RunTest(const PCWSTR& testName, const int& waitTime)
         {
-            DWORD pid;
-            VERIFY_SUCCEEDED(m_testAppLauncher.get()->ActivateApplication(L"PushNotificationsTestAppPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &pid));
-            VERIFY_IS_NOT_NULL(pid);
+            DWORD processId;
+            VERIFY_SUCCEEDED(m_testAppLauncher.get()->ActivateApplication(L"PushNotificationsTestAppPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
 
-            m_process = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
-            VERIFY_IS_NOT_NULL(m_process);
+            m_processHandle = wil::unique_handle(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
+            VERIFY_IS_TRUE(m_processHandle.is_valid());
 
-            VERIFY_ARE_EQUAL(WaitForSingleObject(m_process, 3000), WAIT_OBJECT_0);
+            VERIFY_ARE_EQUAL(WaitForSingleObject(m_processHandle.get(), waitTime), WAIT_OBJECT_0);
 
             DWORD exitCode;
-            VERIFY_IS_TRUE(GetExitCodeProcess(m_process, &exitCode));
+            VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
             VERIFY_ARE_EQUAL(exitCode, 0);
-
-            VERIFY_IS_TRUE(CloseHandle(m_process));
-            m_process = nullptr;
         }
 
         TEST_METHOD(BackgroundActivation)
         {
-            RunTest(nullptr); // Just need to launch.
+            RunTest(nullptr, c_pushTestWait); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
@@ -143,52 +126,53 @@ namespace Test::PushNotifications
 
         TEST_METHOD(ChannelRequestUsingNullRemoteId)
         {
-            RunTest(L"ChannelRequestUsingNullRemoteId");
+            RunTest(L"ChannelRequestUsingNullRemoteId", c_pushTestWait);
         }
 
         TEST_METHOD(ChannelRequestUsingRemoteId)
         {
-            RunTest(L"ChannelRequestUsingRemoteId");
+            RunTest(L"ChannelRequestUsingRemoteId", c_pushTestChannelWait);
         }
 
-        /*TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
+        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
         {
-            RunTest(L"MultipleChannelRequestUsingSameRemoteId");
+            RunTest(L"MultipleChannelRequestUsingSameRemoteId", c_pushTestChannelWait);
         }
 
         TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
         {
-            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId");
-        }*/
+           RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", c_pushTestChannelWait);
+        }
 
         TEST_METHOD(ActivatorTest)
         {
-            RunTest(L"ActivatorTest");
+            RunTest(L"ActivatorTest", c_pushTestWait);
         }
 
         TEST_METHOD(RegisterActivatorNullDetails)
         {
-            RunTest(L"RegisterActivatorNullDetails");
+            RunTest(L"RegisterActivatorNullDetails", c_pushTestWait);
         }
 
         TEST_METHOD(RegisterActivatorNullClsid)
         {
-            RunTest(L"RegisterActivatorNullClsid");
+            RunTest(L"RegisterActivatorNullClsid", c_pushTestWait);
         }
 
         TEST_METHOD(UnregisterActivatorNullToken)
         {
-            RunTest(L"UnregisterActivatorNullToken");
+            RunTest(L"UnregisterActivatorNullToken", c_pushTestWait);
         }
 
         TEST_METHOD(UnregisterActivatorNullBackgroundRegistration)
         {
-            RunTest(L"UnregisterActivatorNullBackgroundRegistration");
+            RunTest(L"UnregisterActivatorNullBackgroundRegistration", c_pushTestWait);
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
         {
-            RunTest(L"MultipleRegisterActivatorTest");
+            RunTest(L"MultipleRegisterActivatorTest", c_pushTestWait);
         }
+
     };
 }

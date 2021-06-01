@@ -28,6 +28,7 @@
 #include <winrt/Windows.Networking.PushNotifications.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Management.Deployment.h>
+#include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <ProjectReunion.Test.Package.h>
@@ -36,3 +37,4 @@
 #include <ShObjIdl_core.h>
 
 namespace TP = ::Test::Packages;
+namespace TW = ::Test::WapProj;

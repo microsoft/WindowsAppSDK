@@ -15,11 +15,13 @@ static const std::wstring c_testFileExtension_Packaged = L".reuniontestfile-pack
 static const std::wstring c_testFilePhaseEventName = L"ReunionTestFilePhaseEventName";
 
 static const std::wstring c_testStartupPhaseEventName = L"ReunionTestStartupPhaseEventName";
-
 static const std::wstring c_testInstanceRedirectedPhaseEventName = L"ReunionTestInstanceRedirectedPhaseEventName";
+
 inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
 inline IID c_comServerId = winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2");
 inline IID c_fakeComServerId = winrt::guid("00000000-0000-0000-0000-000000000001");
+inline const int c_pushTestWait = 3000;
+inline const int c_pushTestChannelWait = 303000;
 
 #ifndef WIDEN2
 #define WIDEN2(x) L ## x
