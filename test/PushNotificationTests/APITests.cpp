@@ -124,6 +124,21 @@ namespace Test::PushNotifications
             VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
         }
 
+        TEST_METHOD(MultipleBackgroundActivation)
+        {
+            RunTest(nullptr, c_pushTestWait); // Need to launch one time to enable background activation.
+
+            auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
+            auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
+
+            auto LocalBackgroundTask2 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
+            auto mockBackgroundTaskInstance2 = winrt::make<MockBackgroundTaskInstance>();
+
+            VERIFY_NO_THROW(LocalBackgroundTask1.Run(mockBackgroundTaskInstance1));
+            VERIFY_NO_THROW(LocalBackgroundTask2.Run(mockBackgroundTaskInstance2));
+
+        }
+
         TEST_METHOD(ChannelRequestUsingNullRemoteId)
         {
             RunTest(L"ChannelRequestUsingNullRemoteId", c_pushTestWait);
