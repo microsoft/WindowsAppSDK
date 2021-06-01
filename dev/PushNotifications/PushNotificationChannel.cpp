@@ -7,21 +7,25 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 
-namespace winrt
+namespace winrt::Windows
 {
-    using namespace Windows::Networking::PushNotifications;
-    using namespace Windows::Foundation;
+    using namespace winrt::Windows::Networking::PushNotifications;
+    using namespace winrt::Windows::Foundation;
+}
+namespace winrt::Microsoft
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications;
 }
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::PushNotificationChannel const& channel): m_channel(channel) {}
+    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
 
-    winrt::Uri PushNotificationChannel::Uri()
+    winrt::Windows::Uri PushNotificationChannel::Uri()
     {
-        return winrt::Uri{ m_channel.Uri() };
+        return winrt::Windows::Uri{ m_channel.Uri() };
     }
-    winrt::DateTime PushNotificationChannel::ExpirationTime()
+    winrt::Windows::DateTime PushNotificationChannel::ExpirationTime()
     {
         return m_channel.ExpirationTime();
     }
@@ -30,7 +34,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_channel.Close();
     }
 
-    winrt::event_token PushNotificationChannel::PushReceived(winrt::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler)
+    winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler)
     {
         return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
         {

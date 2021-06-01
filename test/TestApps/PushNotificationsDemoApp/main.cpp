@@ -84,7 +84,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestChannel()
 {
     auto task = RequestChannelAsync();
-    if (task.wait_for(std::chrono::seconds(960)) != AsyncStatus::Completed)
+    if (task.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
     {
         task.Cancel();
         return nullptr;

@@ -131,14 +131,14 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-WIN32_FILE_ATTRIBUTE_DATA data{};
-const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
-const auto lastError{ ::GetLastError() };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+            WIN32_FILE_ATTRIBUTE_DATA data{};
+            const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
+            const auto lastError{ ::GetLastError() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
 
-std::error_code errorcode{};
-auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
+            std::error_code errorcode{};
+            auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
 
             //VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
@@ -250,4 +250,45 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
     }
 }
 
+constexpr PCWSTR GetCurrentArchitectureAsString()
+{
+#if defined(_M_X64)
+    return L"x64";
+#elif defined(_M_IX86)
+    return L"x86";
+#elif defined(_M_ARM64)
+    return L"arm64";
+#elif defined(_M_ARM)
+    return L"arm";
+#else
+#   error "Unknown processor architecture"
+#endif
+}
+
+namespace Test::WapProj
+{
+    inline void AddPackage(PCWSTR packageDirName, PCWSTR packageName, PCWSTR packageVersion)
+    {
+        auto msix(::Test::FileSystem::GetSolutionOutDirPath());
+        msix /= packageDirName;
+        msix /= packageName;
+        msix += "_";
+        msix += packageVersion;
+        msix += "_";
+        msix += GetCurrentArchitectureAsString();
+        msix += ".msix";
+        auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
+
+        // Install the package
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+        auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", msix.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+
+    inline void AddPackage(PCWSTR packageDirName, PCWSTR packageVersion)
+    {
+        AddPackage(packageDirName, packageDirName, packageVersion);
+    }
+}
 #endif // __PROJECTREUNION_TEST_PACKAGE_H

@@ -68,7 +68,7 @@ bool ChannelRequestUsingNullRemoteId()
 
 HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
 {
-    if (channelOperation.wait_for(std::chrono::seconds(960)) != AsyncStatus::Completed)
+    if (channelOperation.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
         return ERROR_TIMEOUT; // timed out or failed
@@ -101,7 +101,7 @@ bool MultipleChannelRequestUsingSameRemoteId()
     auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
     auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
-    return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
+    return channelOperationResult2 == S_OK;
 }
 
 bool MultipleChannelRequestUsingMultipleRemoteId()
@@ -111,7 +111,7 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
     auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
     auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
-    return channelOperationResult2 == WPN_E_OUTSTANDING_CHANNEL_REQUEST;
+    return channelOperationResult2 == S_OK;
 }
 
 bool ActivatorTest()
@@ -280,7 +280,7 @@ void UnregisterClsid()
 int main()
 {
     initUnitTestMapping();
-    bool failed = false;
+    bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
         UnregisterClsid();
     });
@@ -300,7 +300,7 @@ int main()
         std::string unitTest = to_string(launchArgs.Arguments());
         std::cout << unitTest << std::endl;
 
-        failed = runUnitTest(unitTest);
+        testResult = runUnitTest(unitTest);
     }
     else if (kind == ExtendedActivationKind::Push)
     {
@@ -308,8 +308,8 @@ int main()
         auto payload = pushArgs.Payload();
         std::wstring payloadString(payload.begin(), payload.end());
 
-        failed = !payloadString.compare(c_rawNotificationPayload);
+        testResult = !payloadString.compare(c_rawNotificationPayload);
     }
 
-    return !failed;
+    return testResult ? 0 : 1; // We want 0 to be success and 1 failure
 };
