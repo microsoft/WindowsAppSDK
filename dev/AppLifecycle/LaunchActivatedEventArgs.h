@@ -9,13 +9,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static PCWSTR c_launchContractId = L"Windows.Launch";
+    constexpr PCWSTR c_launchContractId = L"Windows.Launch";
 
-    class LaunchActivatedEventArgs : public winrt::implements<LaunchActivatedEventArgs,
-        ActivatedEventArgsBase, ILaunchActivatedEventArgs, IInternalValueMarshalable>
+    class LaunchActivatedEventArgs : public winrt::implements<LaunchActivatedEventArgs, ILaunchActivatedEventArgs,
+        ActivatedEventArgsBase, IInternalValueMarshalable>
     {
     public:
-        LaunchActivatedEventArgs(const std::wstring& args) : m_args(args)
+        LaunchActivatedEventArgs(const std::wstring& args) : m_args(std::move(args))
         {
             m_kind = ActivationKind::Launch;
         }
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            auto args = query.GetFirstValueByName(L"Arguments").c_str();
+            auto args = std::wstring(query.GetFirstValueByName(L"Arguments"));
             return make<LaunchActivatedEventArgs>(args);
         }
 

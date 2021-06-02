@@ -6,7 +6,7 @@
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include "externs.h"
 
-static PCWSTR c_pushContractId = L"Windows.Push";
+constexpr PCWSTR c_pushContractId = L"Windows.Push";
 
 using namespace winrt::Windows::ApplicationModel::Core;
 namespace winrt::Microsoft::Windows::PushNotifications

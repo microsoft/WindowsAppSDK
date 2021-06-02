@@ -9,10 +9,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static PCWSTR c_startupTaskContractId = L"Windows.StartupTask";
+    constexpr PCWSTR c_startupTaskContractId = L"Windows.StartupTask";
 
-    class StartupActivatedEventArgs : public winrt::implements<StartupActivatedEventArgs,
-        ActivatedEventArgsBase, IStartupTaskActivatedEventArgs, IInternalValueMarshalable>
+    class StartupActivatedEventArgs : public winrt::implements<StartupActivatedEventArgs, IStartupTaskActivatedEventArgs,
+        ActivatedEventArgsBase, IInternalValueMarshalable>
     {
     public:
         StartupActivatedEventArgs(const std::wstring& taskId) : m_taskId(taskId)
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            std::wstring taskId = query.GetFirstValueByName(L"TaskId").c_str();
+            auto taskId = std::wstring(query.GetFirstValueByName(L"TaskId"));
             return make<StartupActivatedEventArgs>(taskId);
         }
 

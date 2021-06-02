@@ -64,10 +64,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
     {
-        auto kind = ExtendedActivationKind::Protocol;
-        winrt::Windows::Foundation::IInspectable data;
-
-        std::tie(kind, data) = DecodeActivatedEventArgs(args.Uri());
+        auto [kind, data] = DecodeActivatedEventArgs(args.Uri());
 
         // Let the caller args pass through if nothing was determined here.
         if (data == nullptr)
@@ -336,10 +333,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         std::wstring commandLine = std::wstring(GetCommandLine());
         if (!foundArgs)
         {
-            std::wstring contractArgument;
-            std::wstring contractData;
-
-            std::tie(contractArgument, contractData) = ParseCommandLine(commandLine);
+            auto [contractArgument, contractData] = ParseCommandLine(commandLine);
 
             // All specific launch types are encoded as a URI and transported as a
             // protocol, except the catch-all LaunchActivatedEventArgs case.
@@ -348,7 +342,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 if (contractData.empty())
                 {
                     // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), contractArgument.size(), L"ReunionPushServer", -1, TRUE) == CSTR_EQUAL)
+                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"ReunionPushServer", -1, TRUE) == CSTR_EQUAL)
                     {
                         contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
                         contractArgument = c_protocolArgumentString;
@@ -366,10 +360,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     // try to return the correct IActivatedEventArgs type that is
                     // encoded in the data rather than the IProtocolActivatedEventArgs
                     // itself.
-                    auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
-                    if (IsEncodedLaunch(protocolArgs.Uri()))
+                    if (IsEncodedLaunch(args.Uri()))
                     {
-                        std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(protocolArgs);
+                        std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(args);
                     }
 
                     foundArgs = true;

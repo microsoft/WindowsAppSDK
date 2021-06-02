@@ -10,13 +10,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     using namespace winrt::Windows::Foundation::Collections;
     using namespace winrt::Windows::ApplicationModel::Activation;
 
-    static PCWSTR c_protocolContractId = L"Windows.Protocol";
+    constexpr PCWSTR c_protocolContractId = L"Windows.Protocol";
 
-    class ProtocolActivatedEventArgs : public winrt::implements<ProtocolActivatedEventArgs, ActivatedEventArgsBase, IProtocolActivatedEventArgs,
+    class ProtocolActivatedEventArgs : public winrt::implements<ProtocolActivatedEventArgs, IProtocolActivatedEventArgs, ActivatedEventArgsBase,
         IInternalValueMarshalable>
     {
     public:
-        ProtocolActivatedEventArgs(const std::wstring& uri) : m_uri(winrt::Windows::Foundation::Uri(uri))
+        ProtocolActivatedEventArgs(const std::wstring& uri) : m_uri(winrt::Windows::Foundation::Uri(std::move(uri)))
         {
             m_kind = ActivationKind::Protocol;
         }
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            auto args = query.GetFirstValueByName(L"Uri").c_str();
+            auto args = std::wstring(query.GetFirstValueByName(L"Uri"));
             return make<ProtocolActivatedEventArgs>(args);
         }
 
