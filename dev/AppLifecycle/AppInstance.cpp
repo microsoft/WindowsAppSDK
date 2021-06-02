@@ -381,7 +381,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         if (!foundArgs)
         {
             kind = ExtendedActivationKind::Launch;
-            data = make<LaunchActivatedEventArgs>(commandLine).as<IInspectable>();
+            data = make<LaunchActivatedEventArgs>(commandLine);
         }
 
         return make<AppActivationArguments>(kind, data);
