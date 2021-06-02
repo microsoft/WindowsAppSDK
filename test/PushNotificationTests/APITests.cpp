@@ -58,7 +58,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::AddPackage_ProjectReunionFramework(); // Installs PRfwk
-                TW::AddPackage(L"PushNotificationsTestAppPackage", L"1.0.0.0"); // Installs PushNotificationsTestApp.msix
+                TP::WapProj::AddPackage(L"PushNotificationsTestAppPackage", L"1.0.0.0"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {
@@ -156,7 +156,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
         {
-           RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", c_pushTestChannelWait);
+            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", c_pushTestChannelWait);
         }
 
         TEST_METHOD(ActivatorTest)
