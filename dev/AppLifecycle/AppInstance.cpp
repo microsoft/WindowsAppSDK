@@ -359,7 +359,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 {
                     kind = ExtendedActivationKind::Protocol;
                     auto args = make<ProtocolActivatedEventArgs>(contractData);
-                    data = args.as<IInspectable>();
+                    data = args;
 
                     // Encoded launch is a protocol launch where the argument data is
                     // encapsulated in the Uri Query data.  We handle that here and
