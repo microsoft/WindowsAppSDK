@@ -21,7 +21,7 @@ inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
 inline IID c_comServerId = winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2");
 inline IID c_fakeComServerId = winrt::guid("00000000-0000-0000-0000-000000000001");
 inline const int c_pushTestWait = 3000;
-inline const int c_pushTestChannelWait = 303000;
+inline const int c_pushTestChannelWait = c_pushTestWait + 300000; // Need to wait 300000ms for channel request + 3000ms for application overhead 
 
 #ifndef WIDEN2
 #define WIDEN2(x) L ## x

@@ -37,4 +37,3 @@
 #include <ShObjIdl_core.h>
 
 namespace TP = ::Test::Packages;
-namespace TW = ::Test::WapProj;

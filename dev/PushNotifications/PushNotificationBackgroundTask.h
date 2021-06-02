@@ -3,6 +3,8 @@
 
 #include <winrt/Windows.ApplicationModel.background.h>
 
+static long g_backgroundTaskServerLock = 0;
+
 struct PushNotificationBackgroundTask : winrt::implements<PushNotificationBackgroundTask, winrt::Windows::ApplicationModel::Background::IBackgroundTask>
 {
     PushNotificationBackgroundTask() {}
@@ -24,8 +26,16 @@ struct PushNotificationBackgroundTaskFactory : winrt::implements<PushNotificatio
         return winrt::make<PushNotificationBackgroundTask>().as(interfaceId, object);
     }
 
-    HRESULT __stdcall LockServer(BOOL) noexcept final
+    HRESULT __stdcall LockServer(BOOL lock) noexcept final
     {
+        if (lock)
+        {
+            InterlockedIncrement(&g_backgroundTaskServerLock);
+        }
+        else
+        {
+            InterlockedDecrement(&g_backgroundTaskServerLock);
+        }
         return S_OK;
     }
 };

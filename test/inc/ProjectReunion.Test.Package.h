@@ -265,7 +265,7 @@ constexpr PCWSTR GetCurrentArchitectureAsString()
 #endif
 }
 
-namespace Test::WapProj
+namespace Test::Packages::WapProj
 {
     inline void AddPackage(PCWSTR packageDirName, PCWSTR packageName, PCWSTR packageVersion)
     {
