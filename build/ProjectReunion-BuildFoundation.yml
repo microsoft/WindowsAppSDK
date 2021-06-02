@@ -9,10 +9,7 @@ parameters:
     default: False
   - name: "PublishToMaestro"
     type: boolean
-  ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
-      default: True
-  ${{ if ne(variables['Build.Reason'], 'Schedule') }}:
-      default: False
+    default: False
 
 jobs:
 - job: CredScan
@@ -369,7 +366,10 @@ jobs:
     signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
     useReleaseTag: '$(ProjectReunionFinalRelease)'
     prereleaseVersionTag: nightly
-    publishToMaestro: ${{ parameters.PublishToMaestro }}
+    ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+      publishToMaestro: True
+    ${{ if ne(variables['Build.Reason'], 'Schedule') }}:
+      publishToMaestro: ${{ parameters.PublishToMaestro }}
 
 # Build solution that depends on nuget package
 #- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
