@@ -12,13 +12,14 @@
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     // This array holds the mapping between a class factory and it's extension contract Id.
-    static const struct ExtensionMap
+    struct ExtensionMap
     {
         ExtendedActivationKind kind;
-        std::wstring contractId;
+        PCWSTR contractId;
         winrt::Windows::Foundation::IInspectable(*factory)(winrt::Windows::Foundation::Uri const& uri);
-    }
-    c_extensionMap[] =
+    };
+
+    constexpr ExtensionMap c_extensionMap[] =
     {
         { ExtendedActivationKind::Launch, c_launchContractId, &LaunchActivatedEventArgs::Deserialize },
         { ExtendedActivationKind::File, c_fileContractId, &FileActivatedEventArgs::Deserialize },
@@ -41,7 +42,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 for (const auto& extension : c_extensionMap)
                 {
                     std::wstring contractId = pair.Value().c_str();
-                    if (CompareStringOrdinal(contractId.c_str(), -1, extension.contractId.c_str(), -1, TRUE) == CSTR_EQUAL)
+                    if (CompareStringOrdinal(contractId.c_str(), -1, extension.contractId, -1, TRUE) == CSTR_EQUAL)
                     {
                         return { extension.kind, extension.factory(uri).as<winrt::Windows::Foundation::IInspectable>() };
                     }
