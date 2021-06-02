@@ -7,13 +7,11 @@ parameters:
   - name: "ReleaseSigning"
     type: boolean
     default: False
+  - name: "PublishToMaestro"
+    type: boolean
   ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
-    - name: "PublishToMaestro"
-      type: boolean
       default: True
   ${{ if ne(variables['Build.Reason'], 'Schedule') }}:
-    - name: "PublishToMaestro"
-      type: boolean
       default: False
 
 jobs:
