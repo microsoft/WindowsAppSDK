@@ -31,7 +31,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     void PushNotificationChannel::Close()
     {
-        m_channel.Close();
+        try
+        {
+            m_channel.Close();
+        }
+        catch (...)
+        {
+            auto channelCloseException = hresult_error(to_hresult());
+            if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
+            {
+                throw channelCloseException;
+            }
+        }
     }
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler)
@@ -39,7 +50,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
         {
             auto strong = weak_self.get();
-            if (strong) handler(*strong, PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args));
+            if (strong)
+            {
+                handler(*strong, PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args));
+            };
         });
     }
 
