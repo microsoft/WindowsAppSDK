@@ -156,7 +156,6 @@
     <ClInclude Include="MockBackgroundTaskInstance.h" />
     <ClInclude Include="MockRawNotification.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Shared.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="APITests.cpp" />
@@ -168,7 +167,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -176,7 +174,6 @@
   <PropertyGroup>
     <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
     <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
-
     <TestPkgOutputPath>$(AppxPackageDir)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
     <TestPkgOutputPath Condition="!Exists('$(TestPkgOutputPath)')">$(OutDir)\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
     <TestPkgOutputFile>$(TestPkgOutputPath)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
