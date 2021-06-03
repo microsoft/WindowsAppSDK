@@ -62,12 +62,6 @@ namespace Microsoft.ProjectReunion
         Absent
     };
 
-    enum SystemAwayModeStatus
-    {
-        Entering = 0,
-        Exiting
-    };
-
     static runtimeclass PowerManager
     {
         // REVIEW: Properties and events duplicated from IPowerManagerStatics. That might not be the ideal API shape. We might want the BatteryStatusChanged event to
@@ -106,8 +100,5 @@ namespace Microsoft.ProjectReunion
         
         static UserPresenceStatus UserPresenceStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> UserPresenceStatusChanged;
-        
-        static SystemAwayModeStatus SystemAwayModeStatus{ get; };
-        static event Windows.Foundation.EventHandler<Object> SystemAwayModeStatusChanged;
     };
 }

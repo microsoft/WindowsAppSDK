@@ -205,21 +205,21 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void PowerSchemePersonality_Register()
     {
-        check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
-            &PowerManager::PowerSchemePersonalityChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        //check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
+        //    &PowerManager::PowerSchemePersonalityChanged_Callback,
+        //    &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
     }
 
     void PowerSchemePersonality_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        //check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
+        //    make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
     }
 
     void PowerSchemePersonality_Update()
     {
-        check_hresult(PowerNotifications_GetPowerSchemePersonality(
-            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
+        //check_hresult(PowerNotifications_GetPowerSchemePersonality(
+        //    &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
     }
    
     // UserPresenceStatus Functions
@@ -245,31 +245,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         check_hresult(PowerNotifications_GetUserPresenceStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedUserPresenceStatus));
-    }
-
-    // SystemAwayModeStatus Functions
-    EventType& SystemAwayModeStatus_Event()
-    {
-        return make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusChangedEvent;
-    }
-
-    void SystemAwayModeStatus_Register()
-    {
-        check_hresult(PowerNotifications_RegisterSystemAwayModeStatusChangedListener(
-            &PowerManager::SystemAwayModeStatusChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
-    }
-
-    void SystemAwayModeStatus_Unregister()
-    {
-        check_hresult(PowerNotifications_UnregisterSystemAwayModeStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
-    }
-
-    void SystemAwayModeStatus_Update()
-    {
-        check_hresult(PowerNotifications_GetSystemAwayModeStatus(
-            &make_self<factory_implementation::PowerManager>()->m_cachedSystemAwayModeStatus));
     }
 
 }

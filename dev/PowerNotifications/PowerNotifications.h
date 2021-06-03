@@ -102,9 +102,9 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         ::EnergySaverStatus m_cachedEnergySaverStatus;
         CompositeBatteryStatus m_cachedCompositeBatteryStatus;
         winrt::Microsoft::ProjectReunion::BatteryStatus m_batteryStatus;
-        winrt::Microsoft::ProjectReunion::BatteryStatus m_oldBatteryStatus { winrt::Microsoft::ProjectReunion::BatteryStatus::NotPresent };
+        winrt::Microsoft::ProjectReunion::BatteryStatus m_oldBatteryStatus{ winrt::Microsoft::ProjectReunion::BatteryStatus::NotPresent };
         winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus;
-        winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_oldPowerSupplyStatus { winrt::Microsoft::ProjectReunion::PowerSupplyStatus::NotPresent };
+        winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_oldPowerSupplyStatus{ winrt::Microsoft::ProjectReunion::PowerSupplyStatus::NotPresent };
 
         EventType m_EnergySaverStatusChangedEvent;
         EventType m_batteryStatusChangedEvent;
@@ -126,7 +126,6 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         SystemIdleStatusRegistration m_systemIdleStatusHandle;
         PowerSchemePersonalityRegistration m_powerSchemePersonalityHandle;
         UserPresenceStatusRegistration m_userPresenceStatusHandle;
-        SystemAwayModeStatusRegistration m_systemAwayModeStatusHandle;
 
         PowerFunctionDetails energySaverStatusFunc{
             &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Event,
@@ -187,12 +186,6 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::UserPresenceStatus_Register,
             &winrt::Microsoft::ProjectReunion::implementation::UserPresenceStatus_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::UserPresenceStatus_Update };
-
-        PowerFunctionDetails systemAwayModeStatusFunc{
-            &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Event,
-            &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Register,
-            &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Unregister,
-            &winrt::Microsoft::ProjectReunion::implementation::SystemAwayModeStatus_Update };
 
         bool RegisteredForEvents(const EventType& eventObj)
         {
@@ -489,7 +482,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             // PReview: Should this be the default value?
             // We expect a persistently-queryable value, but
             // low-level APIs provide an idle->non-idle pulse event
- 
+
             return SystemIdleStatus::Busy;
         }
 
@@ -567,34 +560,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             m_cachedUserPresenceStatus = userPresenceStatus;
             RaiseEvent(userPresenceStatusFunc);
         }
-
-
-        // SystemAwayModeStatus Functions
-        winrt::Microsoft::ProjectReunion::SystemAwayModeStatus SystemAwayModeStatus()
-        {
-            CheckRegistrationAndOrUpdateValue(systemAwayModeStatusFunc);
-            return static_cast<winrt::Microsoft::ProjectReunion::SystemAwayModeStatus>(m_cachedSystemAwayModeStatus);
-        }
-
-        event_token SystemAwayModeStatusChanged(const PowerEventHandle& handler)
-        {
-            return AddCallback(systemAwayModeStatusFunc, handler);
-        }
-
-        void SystemAwayModeStatusChanged(const event_token& token)
-        {
-            RemoveCallback(systemAwayModeStatusFunc, token);
-        }
-
-        void SystemAwayModeStatusChanged_Callback(DWORD systemAwayModeStatus)
-        {
-            m_cachedSystemAwayModeStatus = systemAwayModeStatus;
-            RaiseEvent(systemAwayModeStatusFunc);
-        }
-
-
     };
-
 };
 
 namespace winrt::Microsoft::ProjectReunion::implementation
@@ -655,18 +621,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->UserPresenceStatus();
         }
 
-        static winrt::Microsoft::ProjectReunion::SystemAwayModeStatus SystemAwayModeStatus()
-        {
-            return make_self<factory_implementation::PowerManager>()->SystemAwayModeStatus();
-        }
-
         //Callback forwards
         static void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
         {
             return make_self<factory_implementation::PowerManager>()->EnergySaverStatusChanged_Callback(energySaverStatus);
         }
 
-        static void CompositeBatteryStatusChanged_Callback(const CompositeBatteryStatus& compositeBatteryStatus)
+        static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus compositeBatteryStatus)
         {
             return make_self<factory_implementation::PowerManager>()->CompositeBatteryStatusChanged_Callback(compositeBatteryStatus);
         }
@@ -701,9 +662,5 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->UserPresenceStatusChanged_Callback(userPresenceStatus);
         }
 
-        static void SystemAwayModeStatusChanged_Callback(DWORD systemAwayModeStatus)
-        {
-            return make_self<factory_implementation::PowerManager>()->SystemAwayModeStatusChanged_Callback(systemAwayModeStatus);
-        }
     };
 }
