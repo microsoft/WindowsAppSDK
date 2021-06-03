@@ -76,7 +76,6 @@
     </Content>
     <Content Include="ProjectTemplate.vcxproj" />
     <Content Include="ProjectTemplate.vcxproj.user_template" />
-    <Content Include="PropertySheet.props" />
     <Content Include="App.xaml">
       <SubType>Designer</SubType>
     </Content>

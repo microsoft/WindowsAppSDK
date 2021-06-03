@@ -1,5 +1,5 @@
 {
-  "description": "Read about creating extension packs at https://aka.ms/vsextpack",
+  "description": "Project Reunion experimental extensions",
   "version": "1.0.0.0",
     "extensions": [
         {

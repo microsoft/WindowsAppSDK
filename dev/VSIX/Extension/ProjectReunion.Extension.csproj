@@ -223,7 +223,7 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-      <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
       <Project>{E54D1AD4-E935-479D-8A69-FC073E4DB33D}</Project>
       <Name>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>

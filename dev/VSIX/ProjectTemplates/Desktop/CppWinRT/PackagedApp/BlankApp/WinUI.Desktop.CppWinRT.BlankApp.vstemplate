@@ -39,7 +39,6 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.idl">MainWindow.idl</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cpp">MainWindow.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.h">MainWindow.h</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="PropertySheet.props">PropertySheet.props</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
   </TemplateContent>
