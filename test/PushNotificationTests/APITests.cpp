@@ -4,7 +4,6 @@
 #include "pch.h"
 #include <TestDef.h>
 #include "MockBackgroundTaskInstance.h"
-#include "Shared.h"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -58,7 +57,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::AddPackage_ProjectReunionFramework(); // Installs PRfwk
-                TP::WapProj::AddPackage(L"PushNotificationsTestAppPackage", L"1.0.0.0"); // Installs PushNotificationsTestApp.msix
+                TP::WapProj::AddPackage(L"PushNotificationTests", L"PushNotificationsTestAppPackage", L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {

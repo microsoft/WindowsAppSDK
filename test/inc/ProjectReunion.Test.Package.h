@@ -267,28 +267,24 @@ constexpr PCWSTR GetCurrentArchitectureAsString()
 
 namespace Test::Packages::WapProj
 {
-    inline void AddPackage(PCWSTR packageDirName, PCWSTR packageName, PCWSTR packageVersion)
+    inline void AddPackage(const PCWSTR& packageDirName, const PCWSTR& packageName, const PCWSTR& packageExtension)
     {
-        auto msix(::Test::FileSystem::GetSolutionOutDirPath());
-        msix /= packageDirName;
-        msix /= packageName;
-        msix += "_";
-        msix += packageVersion;
-        msix += "_";
-        msix += GetCurrentArchitectureAsString();
-        msix += ".msix";
-        auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
+        auto packagePath(::Test::FileSystem::GetSolutionOutDirPath());
+        packagePath /= packageDirName;
+        packagePath /= packageName;
+        packagePath += packageExtension;
+        auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
 
         // Install the package
         winrt::Windows::Management::Deployment::PackageManager packageManager;
         auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
-        auto deploymentResult{ packageManager.AddPackageAsync(msixUri, nullptr, options).get() };
-        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", msix.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+        auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packagePath.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
     }
 
-    inline void AddPackage(PCWSTR packageDirName, PCWSTR packageVersion)
+    inline void AddPackage(PCWSTR packageDirName)
     {
-        AddPackage(packageDirName, packageDirName, packageVersion);
+        AddPackage(packageDirName, packageDirName, L".msix");
     }
 }
 #endif // __PROJECTREUNION_TEST_PACKAGE_H
