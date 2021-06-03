@@ -61,7 +61,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(
             make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus);
     }
-   
+
     // PowerSupplyStatus Functions
     EventType& PowerSupplyStatus_Event()
     {
@@ -82,7 +82,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         BatteryStatus_Update();
     }
-   
+
     // RemainingChargePercent Functions
     EventType& RemainingChargePercent_Event()
     {
@@ -128,7 +128,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetDischargeTime(
             &make_self<factory_implementation::PowerManager>()->m_cachedDischargeTime));
     }
-   
+
     // PowerSourceStatus Functions
     EventType& PowerSourceStatus_Event()
     {
@@ -153,7 +153,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetPowerCondition(
             &make_self<factory_implementation::PowerManager>()->m_cachedPowerSourceStatus));
     }
-   
+
     // DisplayStatus Functions
     EventType& DisplayStatus_Event()
     {
@@ -178,7 +178,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetDisplayStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedDisplayStatus));
     }
-   
+
     // SystemIdleStatus Functions
     EventType& SystemIdleStatus_Event()
     {
@@ -197,7 +197,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(UnregisterSystemIdleStatusChangedListener(
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
-   
+
     // PowerSchemePersonality Functions
     EventType& PowerSchemePersonality_Event()
     {
@@ -206,23 +206,23 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void PowerSchemePersonality_Register()
     {
-        check_hresult(RegisterPowerSchemePersonalityChangedListener(
-            &PowerManager::PowerSchemePersonalityChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        //check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
+        //    &PowerManager::PowerSchemePersonalityChanged_Callback,
+        //    &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
     }
 
     void PowerSchemePersonality_Unregister()
     {
-        check_hresult(UnregisterPowerSchemePersonalityChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        //check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
+        //    make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
     }
 
     void PowerSchemePersonality_Update()
     {
-        check_hresult(GetPowerSchemePersonality(
-            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
+        //check_hresult(PowerNotifications_GetPowerSchemePersonality(
+        //    &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
     }
-   
+
     // UserPresenceStatus Functions
     EventType& UserPresenceStatus_Event()
     {
@@ -246,31 +246,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         check_hresult(GetUserPresenceStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedUserPresenceStatus));
-    }
-
-    // SystemAwayModeStatus Functions
-    EventType& SystemAwayModeStatus_Event()
-    {
-        return make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusChangedEvent;
-    }
-
-    void SystemAwayModeStatus_Register()
-    {
-        check_hresult(RegisterSystemAwayModeStatusChangedListener(
-            &PowerManager::SystemAwayModeStatusChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
-    }
-
-    void SystemAwayModeStatus_Unregister()
-    {
-        check_hresult(UnregisterSystemAwayModeStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
-    }
-
-    void SystemAwayModeStatus_Update()
-    {
-        check_hresult(GetSystemAwayModeStatus(
-            &make_self<factory_implementation::PowerManager>()->m_cachedSystemAwayModeStatus));
     }
 
     // SystemSuspendStatus Functions
@@ -301,5 +276,4 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_win32(PowerUnregisterSuspendResumeNotification(
             make_self<factory_implementation::PowerManager>()->m_systemSuspendHandle));
     }
-
 }

@@ -20,7 +20,7 @@ namespace Microsoft.ProjectReunion
         Idle,
         Charging
     };
-    
+
     enum PowerSupplyStatus
     {
         NotPresent = 0,
@@ -35,14 +35,14 @@ namespace Microsoft.ProjectReunion
         DC,
         ShortTerm
     };
-    
+
     enum DisplayStatus
     {
         Off = 0,
         On,
         Dimmed
     };
-    
+
     enum SystemIdleStatus
     {
         Idle = 0,
@@ -60,12 +60,6 @@ namespace Microsoft.ProjectReunion
     {
         Present = 0,
         Absent
-    };
-
-    enum SystemAwayModeStatus
-    {
-        Entering = 0,
-        Exiting
     };
 
     enum SystemSuspendStatus
@@ -99,7 +93,7 @@ namespace Microsoft.ProjectReunion
         // Properties and events based on PowerSettingRegisterNotification's state
         static PowerSourceStatus PowerSourceStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> PowerSourceStatusChanged;
-        
+
         static DisplayStatus DisplayStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> DisplayStatusChanged;
 
@@ -108,15 +102,12 @@ namespace Microsoft.ProjectReunion
         // system is idle or wishes to become so).
         static SystemIdleStatus SystemIdleStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
-        
+
         static PowerSchemePersonality PowerSchemePersonality{ get; };
         static event Windows.Foundation.EventHandler<Object> PowerSchemePersonalityChanged;
-        
+
         static UserPresenceStatus UserPresenceStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> UserPresenceStatusChanged;
-        
-        static SystemAwayModeStatus SystemAwayModeStatus{ get; };
-        static event Windows.Foundation.EventHandler<Object> SystemAwayModeStatusChanged;
 
         static SystemSuspendStatus SystemSuspendStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> SystemSuspendStatusChanged;
