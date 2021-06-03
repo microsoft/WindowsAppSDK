@@ -172,21 +172,5 @@ namespace ProjectReunionPowerTests
             VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Absent);
         }
 
-        TEST_METHOD(GetSystemAwayModeStatus)
-        {
-            auto stat = PowerManager::SystemAwayModeStatus();
-            VERIFY_ARE_EQUAL(stat, SystemAwayModeStatus::Entering);
-        }
-        TEST_METHOD(SystemAwayModeStatusCallback)
-        {
-            auto stat = SystemAwayModeStatus::Entering;
-            auto token = PowerManager::SystemAwayModeStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
-            {
-                stat = PowerManager::SystemAwayModeStatus();
-            });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            PowerManager::SystemAwayModeStatusChanged(token);
-            VERIFY_ARE_EQUAL(stat, SystemAwayModeStatus::Exiting);
-        }
     };
 }
