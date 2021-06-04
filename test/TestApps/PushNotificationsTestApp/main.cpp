@@ -16,7 +16,8 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 enum UnitTest {
     channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
     multipleChannelRequestUsingMultipleRemoteId, activatorTest, registerActivatorNullDetails,
-    registerActivatorNullClsid, unregisterActivatorNullToken, unregisterActivatorNullBackgroundRegistration, multipleRegisterActivatorTest
+    registerActivatorNullClsid, unregisterActivatorNullToken, unregisterActivatorNullBackgroundRegistration,
+    multipleRegisterActivatorTest, multipleChannelClose
 };
 
 static std::map<std::string, UnitTest> switchMapping;
@@ -39,6 +40,7 @@ void initUnitTestMapping()
 {
     switchMapping["ChannelRequestUsingNullRemoteId"] = UnitTest::channelRequestUsingNullRemoteId;
     switchMapping["ChannelRequestUsingRemoteId"] = UnitTest::channelRequestUsingRemoteId;
+    switchMapping["MultipleChannelClose"] = UnitTest::multipleChannelClose;
     switchMapping["MultipleChannelRequestUsingSameRemoteId"] = UnitTest::multipleChannelRequestUsingSameRemoteId;
     switchMapping["MultipleChannelRequestUsingMultipleRemoteId"] = UnitTest::multipleChannelRequestUsingMultipleRemoteId;
     switchMapping["ActivatorTest"] = UnitTest::activatorTest;
@@ -91,6 +93,35 @@ bool ChannelRequestUsingRemoteId()
     auto channelOperationResult = ChannelRequestHelper(channelOperation);
 
     return channelOperationResult == S_OK;
+}
+
+bool MultipleChannelClose()
+{
+    auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
+    if (channelOperation.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
+    {
+        channelOperation.Cancel();
+        return false; // timed out or failed
+    }
+
+    auto result = channelOperation.GetResults();
+    auto status = result.Status();
+    if (status != PushNotificationChannelStatus::CompletedSuccess)
+    {
+        return false; // did not produce a channel
+    }
+
+    result.Channel().Close();
+    try
+    {
+        result.Channel().Close();
+    }
+    catch (...)
+    {
+        auto channelRequestException = hresult_error(to_hresult());
+        return channelRequestException.code() == WPN_E_CHANNEL_CLOSED;
+    }
+    return false;
 }
 
 bool MultipleChannelRequestUsingSameRemoteId()
@@ -230,6 +261,9 @@ bool runUnitTest(std::string unitTest)
 
     case UnitTest::channelRequestUsingRemoteId:
         return ChannelRequestUsingRemoteId();
+
+    case UnitTest::multipleChannelClose:
+        return MultipleChannelClose();
 
     case UnitTest::multipleChannelRequestUsingSameRemoteId:
         return MultipleChannelRequestUsingSameRemoteId();
