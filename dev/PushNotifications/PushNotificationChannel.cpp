@@ -6,6 +6,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.cpp"
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
+#include "PushNotificationReceivedEventArgs.h"
 
 namespace winrt::Windows
 {
@@ -52,7 +53,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             auto strong = weak_self.get();
             if (strong)
             {
-                handler(*strong, PushNotificationReceivedEventArgs::CreateFromPushNotificationReceivedEventArgs(args));
+                handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
             };
         });
     }
