@@ -33,18 +33,16 @@ namespace Test::PushNotifications
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
-        static PCWSTR GetDeploymentDir()
+        static std::filesystem::path GetDeploymentDir()
         {
             WEX::Common::String testDeploymentDir;
             WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
             return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
         }
 
-        static std::filesystem::path GetTestPackageFile()
+        static PCWSTR GetTestPackageFile()
         {
-            auto filename{ std::filesystem::path(GetDeploymentDir()) };
-            filename /= L"PushNotificationsTestAppPackage";
-            return filename;
+            return L"PushNotificationsTestAppPackage";
         }
 
         static PCWSTR GetTestPackageFullName()
@@ -57,7 +55,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::AddPackage_ProjectReunionFramework(); // Installs PRfwk
-                TP::WapProj::AddPackage(L"PushNotificationTests", L"PushNotificationsTestAppPackage", L".msix"); // Installs PushNotificationsTestApp.msix
+                TP::WapProj::AddPackage(GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {

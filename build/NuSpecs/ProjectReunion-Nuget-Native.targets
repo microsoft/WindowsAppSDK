@@ -6,4 +6,12 @@
     <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
     <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
 </Project>
