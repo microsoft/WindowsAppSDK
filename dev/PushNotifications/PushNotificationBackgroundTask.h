@@ -24,8 +24,16 @@ struct PushNotificationBackgroundTaskFactory : winrt::implements<PushNotificatio
         return winrt::make<PushNotificationBackgroundTask>().as(interfaceId, object);
     }
 
-    HRESULT __stdcall LockServer(BOOL) noexcept final
+    HRESULT __stdcall LockServer(BOOL fLock) noexcept final
     {
+        if (fLock)
+        {
+            ++winrt::get_module_lock();
+        }
+        else
+        {
+            --winrt::get_module_lock();
+        }
         return S_OK;
     }
 };
