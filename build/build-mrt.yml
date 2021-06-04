@@ -5,7 +5,6 @@
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
-  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
@@ -114,7 +113,7 @@ steps:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
