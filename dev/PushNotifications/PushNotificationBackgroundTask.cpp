@@ -25,7 +25,7 @@ wil::unique_handle g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr,
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
     auto appProperties = winrt::CoreApplication::Properties();
-    winrt::PushNotificationReceivedEventArgs activatedEventArgs = winrt::PushNotificationReceivedEventArgs::CreateFromBackgroundTaskInstance(taskInstance);
+    winrt::PushNotificationReceivedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance);
     appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
 
     SetEvent(g_waitHandleForArgs.get());
