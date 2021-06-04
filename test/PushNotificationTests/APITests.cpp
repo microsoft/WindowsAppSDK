@@ -146,6 +146,11 @@ namespace Test::PushNotifications
             RunTest(L"ChannelRequestUsingRemoteId", c_pushTestChannelWait);
         }
 
+        TEST_METHOD(MultipleChannelClose)
+        {
+            RunTest(L"MultipleChannelClose", c_pushTestChannelWait);
+        }
+
         TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
         {
             RunTest(L"MultipleChannelRequestUsingSameRemoteId", c_pushTestChannelWait);
