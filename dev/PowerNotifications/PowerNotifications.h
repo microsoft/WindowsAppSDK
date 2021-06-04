@@ -57,10 +57,15 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void SystemIdleStatus_Register();
     void SystemIdleStatus_Unregister();
 
-    EventType& PowerSchemePersonality_Event();
-    void PowerSchemePersonality_Register();
-    void PowerSchemePersonality_Unregister();
-    void PowerSchemePersonality_Update();
+    EventType& PowerSchemePersonalityV1_Event();
+    void PowerSchemePersonalityV1_Register();
+    void PowerSchemePersonalityV1_Unregister();
+    void PowerSchemePersonalityV1_Update();
+
+    EventType& PowerSchemePersonalityV2_Event();
+    void PowerSchemePersonalityV2_Register();
+    void PowerSchemePersonalityV2_Unregister();
+    void PowerSchemePersonalityV2_Update();
 
     EventType& UserPresenceStatus_Event();
     void UserPresenceStatus_Register();
@@ -101,7 +106,8 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         DWORD m_cachedUserPresenceStatus;
         DWORD m_cachedSystemAwayModeStatus;
         DWORD m_cachedPowerSourceStatus;
-        GUID  m_cachedPowerSchemePersonality;
+        EFFECTIVE_POWER_MODE m_cachedPowerSchemePersonalityV1;
+        EFFECTIVE_POWER_MODE m_cachedPowerSchemePersonalityV2;
         ULONGLONG m_cachedDischargeTime;
         winrt::Microsoft::ProjectReunion::SystemSuspendStatus m_systemSuspendStatus;
         ::EnergySaverStatus m_cachedEnergySaverStatus;
@@ -119,7 +125,8 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         EventType m_powerSourceStatusChangedEvent;
         EventType m_displayStatusChangedEvent;
         EventType m_systemIdleStatusChangedEvent;
-        EventType m_powerSchemePersonalityChangedEvent;
+        EventType m_powerSchemePersonalityV1ChangedEvent;
+        EventType m_powerSchemePersonalityv2ChangedEvent;
         EventType m_userPresenceStatusChangedEvent;
         EventType m_systemAwayModeStatusChangedEvent;
         EventType m_systemSuspendStatusChangedEvent;
@@ -130,7 +137,8 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         DischargeTimeRegistration m_dischargeTimeHandle;
         DisplayStatusRegistration m_displayStatusHandle;
         SystemIdleStatusRegistration m_systemIdleStatusHandle;
-        PowerSchemePersonalityRegistration m_powerSchemePersonalityHandle;
+        PowerSchemePersonalityRegistration m_powerSchemePersonalityV1Handle;
+        PowerSchemePersonalityRegistration m_powerSchemePersonalityV2Handle;
         UserPresenceStatusRegistration m_userPresenceStatusHandle;
         HPOWERNOTIFY m_systemSuspendHandle;
 
@@ -182,11 +190,17 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::SystemIdleStatus_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::NoOperation };
 
-        PowerFunctionDetails powerSchemePersonalityFunc{
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonality_Event,
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonality_Register,
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonality_Unregister,
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonality_Update };
+        PowerFunctionDetails powerSchemePersonalityV1Func{
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV1_Event,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV1_Register,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV1_Unregister,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV1_Update };
+
+        PowerFunctionDetails powerSchemePersonalityV2Func{
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV2_Event,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV2_Register,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV2_Unregister,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSchemePersonalityV2_Update };
 
         PowerFunctionDetails userPresenceStatusFunc{
             &winrt::Microsoft::ProjectReunion::implementation::UserPresenceStatus_Event,
@@ -515,39 +529,50 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         }
 
 
-        // PowerSchemePersonality Functions
-        winrt::Microsoft::ProjectReunion::PowerSchemePersonality PowerSchemePersonality()
+        // PowerSchemePersonality v1 Functions
+        winrt::Microsoft::ProjectReunion::PowerSchemePersonalityV1 PowerSchemePersonalityV1()
         {
-            CheckRegistrationAndOrUpdateValue(powerSchemePersonalityFunc);
-            if (m_cachedPowerSchemePersonality == GUID_MAX_POWER_SAVINGS)
-            {
-                return PowerSchemePersonality::PowerSaver;
-            }
-            else if (m_cachedPowerSchemePersonality == GUID_MIN_POWER_SAVINGS)
-            {
-                return PowerSchemePersonality::HighPerformance;
-            }
-            else
-            {
-                return PowerSchemePersonality::Balanced;
-            }
-
+            CheckRegistrationAndOrUpdateValue(powerSchemePersonalityV1Func);
+            return static_cast<winrt::Microsoft::ProjectReunion::PowerSchemePersonalityV1>(m_cachedPowerSchemePersonalityV1);
         }
 
-        event_token PowerSchemePersonalityChanged(const PowerEventHandle& handler)
+        event_token PowerSchemePersonalityV1Changed(const PowerEventHandle& handler)
         {
-            return AddCallback(powerSchemePersonalityFunc, handler);
+            return AddCallback(powerSchemePersonalityV1Func, handler);
         }
 
-        void PowerSchemePersonalityChanged(const event_token& token)
+        void PowerSchemePersonalityV1Changed(const event_token& token)
         {
-            RemoveCallback(powerSchemePersonalityFunc, token);
+            RemoveCallback(powerSchemePersonalityV1Func, token);
         }
 
-        void PowerSchemePersonalityChanged_Callback(GUID powerSchemePersonality)
+        void PowerSchemePersonalityV1Changed_Callback(EFFECTIVE_POWER_MODE mode)
         {
-            m_cachedPowerSchemePersonality = powerSchemePersonality;
-            RaiseEvent(powerSchemePersonalityFunc);
+            m_cachedPowerSchemePersonalityV1 = mode;
+            RaiseEvent(powerSchemePersonalityV1Func);
+        }
+
+        // PowerSchemePersonality v2 Functions
+        winrt::Microsoft::ProjectReunion::PowerSchemePersonalityV2 PowerSchemePersonalityV2()
+        {
+            CheckRegistrationAndOrUpdateValue(powerSchemePersonalityV2Func);
+            return static_cast<winrt::Microsoft::ProjectReunion::PowerSchemePersonalityV2>(m_cachedPowerSchemePersonalityV2);
+        }
+
+        event_token PowerSchemePersonalityV2Changed(const PowerEventHandle& handler)
+        {
+            return AddCallback(powerSchemePersonalityV2Func, handler);
+        }
+
+        void PowerSchemePersonalityV2Changed(const event_token& token)
+        {
+            RemoveCallback(powerSchemePersonalityV2Func, token);
+        }
+
+        void PowerSchemePersonalityV2Changed_Callback(EFFECTIVE_POWER_MODE mode)
+        {
+            m_cachedPowerSchemePersonalityV2 = mode;
+            RaiseEvent(powerSchemePersonalityV2Func);
         }
 
 
@@ -668,9 +693,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->SystemIdleStatus();
         }
 
-        static winrt::Microsoft::ProjectReunion::PowerSchemePersonality PowerSchemePersonality()
+        static winrt::Microsoft::ProjectReunion::PowerSchemePersonalityV1 PowerSchemePersonalityV1()
         {
-            return make_self<factory_implementation::PowerManager>()->PowerSchemePersonality();
+            return make_self<factory_implementation::PowerManager>()->PowerSchemePersonalityV1();
+        }
+
+        static winrt::Microsoft::ProjectReunion::PowerSchemePersonalityV2 PowerSchemePersonalityV2()
+        {
+            return make_self<factory_implementation::PowerManager>()->PowerSchemePersonalityV2();
         }
 
         static winrt::Microsoft::ProjectReunion::UserPresenceStatus UserPresenceStatus()
@@ -714,9 +744,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->SystemIdleStatusChanged_Callback();
         }
 
-        static void PowerSchemePersonalityChanged_Callback(GUID powerSchemePersonality)
+        static void PowerSchemePersonalityV1Changed_Callback(EFFECTIVE_POWER_MODE mode)
         {
-            return make_self<factory_implementation::PowerManager>()->PowerSchemePersonalityChanged_Callback(powerSchemePersonality);
+            return make_self<factory_implementation::PowerManager>()->PowerSchemePersonalityV1Changed_Callback(mode);
+        }
+
+        static void PowerSchemePersonalityV2Changed_Callback(EFFECTIVE_POWER_MODE mode)
+        {
+            return make_self<factory_implementation::PowerManager>()->PowerSchemePersonalityV2Changed_Callback(mode);
         }
 
         static void UserPresenceStatusChanged_Callback(DWORD userPresenceStatus)

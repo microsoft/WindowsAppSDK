@@ -198,29 +198,58 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
-    // PowerSchemePersonality Functions
-    EventType& PowerSchemePersonality_Event()
+    // PowerSchemePersonality V1 Functions
+    EventType& PowerSchemePersonalityV1_Event()
     {
-        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV1ChangedEvent;
     }
 
-    void PowerSchemePersonality_Register()
+    void PowerSchemePersonalityV1_Register()
     {
-        //check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
-        //    &PowerManager::PowerSchemePersonalityChanged_Callback,
-        //    &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
+            EFFECTIVE_POWER_MODE_V1,
+            &PowerManager::PowerSchemePersonalityV1Changed_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV1Handle));
     }
 
-    void PowerSchemePersonality_Unregister()
+    void PowerSchemePersonalityV1_Unregister()
     {
-        //check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
-        //    make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV1Handle));
     }
 
-    void PowerSchemePersonality_Update()
+    void PowerSchemePersonalityV1_Update()
     {
-        //check_hresult(PowerNotifications_GetPowerSchemePersonality(
-        //    &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
+        check_hresult(PowerNotifications_GetPowerSchemePersonality(
+            EFFECTIVE_POWER_MODE_V1,
+            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonalityV1));
+    }
+
+    // PowerSchemePersonality V2 Functions
+    EventType& PowerSchemePersonalityV2_Event()
+    {
+        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityv2ChangedEvent;
+    }
+
+    void PowerSchemePersonalityV2_Register()
+    {
+        check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
+            EFFECTIVE_POWER_MODE_V2,
+            &PowerManager::PowerSchemePersonalityV2Changed_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV2Handle));
+    }
+
+    void PowerSchemePersonalityV2_Unregister()
+    {
+        check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
+            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV2Handle));
+    }
+
+    void PowerSchemePersonalityV2_Update()
+    {
+        check_hresult(PowerNotifications_GetPowerSchemePersonality(
+            EFFECTIVE_POWER_MODE_V2,
+            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonalityV2));
     }
 
     // UserPresenceStatus Functions
