@@ -23,4 +23,11 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
 </Project>

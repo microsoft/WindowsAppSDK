@@ -250,27 +250,10 @@ namespace Test::Packages
     }
 }
 
-constexpr PCWSTR GetCurrentArchitectureAsString()
-{
-#if defined(_M_X64)
-    return L"x64";
-#elif defined(_M_IX86)
-    return L"x86";
-#elif defined(_M_ARM64)
-    return L"arm64";
-#elif defined(_M_ARM)
-    return L"arm";
-#else
-#   error "Unknown processor architecture"
-#endif
-}
-
 namespace Test::Packages::WapProj
 {
-    inline void AddPackage(const PCWSTR& packageDirName, const PCWSTR& packageName, const PCWSTR& packageExtension)
+    inline void AddPackage(std::filesystem::path packagePath, const PCWSTR& packageName, const PCWSTR& packageExtension)
     {
-        auto packagePath(::Test::FileSystem::GetSolutionOutDirPath());
-        packagePath /= packageDirName;
         packagePath /= packageName;
         packagePath += packageExtension;
         auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
@@ -280,11 +263,6 @@ namespace Test::Packages::WapProj
         auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
         auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
         VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packagePath.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
-    }
-
-    inline void AddPackage(PCWSTR packageDirName)
-    {
-        AddPackage(packageDirName, packageDirName, L".msix");
     }
 }
 #endif // __PROJECTREUNION_TEST_PACKAGE_H
