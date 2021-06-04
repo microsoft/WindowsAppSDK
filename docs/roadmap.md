@@ -22,7 +22,7 @@ Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 Deploy Options: |  
 • In-app | ✅ Supported | ✅ Supported | ✅ Supported | 
 • Fx Package | ✅ Supported | ✅ Supported | ✅ Supported | 
-[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Preview | ✅ Supported |
+[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supporte | 🔄 Preview |
 
 ### Unpackaged Desktop Apps
 
@@ -39,7 +39,7 @@ Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 Deploy Options:  |  
 • In-app | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
 • Fx Package | ❌ Not Supported | 🔄 Preview | ✅ Supported |
-[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
+[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supported | 🔄 Preview |
 
 ## 2021 Focus Areas
 
