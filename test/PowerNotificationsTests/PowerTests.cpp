@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "winrt/Microsoft.ProjectReunion.h"
 #include <iostream>
+#include <mutex>
 
 using PowerEventHandle =
 winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
@@ -11,11 +12,96 @@ winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectabl
 using namespace winrt::Microsoft::ProjectReunion;
 using namespace std;
 
+std::mutex mtx;
+
+void Pr(string st, int val)
+{
+    std::scoped_lock<std::mutex> lock(mtx);
+    cout << st << val << endl;
+}
+
 int main()
 {
-    auto stat = PowerManager::DisplayStatus();
-    cout << static_cast<int>(stat);
+    // BatteryStatus
+    Pr("BatteryStatus Get() ", static_cast<int>(PowerManager::BatteryStatus()));
+    auto tokenB = PowerManager::BatteryStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+    {
+        Pr("BatteryStatus Subs() ", static_cast<int>(PowerManager::BatteryStatus()));
+    });
+
+    // PowerSchemePersonality
+    Pr("PowerScheme v1 Get() ", static_cast<int>(PowerManager::PowerSchemePersonalityV1()));
+    auto tokenV1 = PowerManager::PowerSchemePersonalityV1Changed([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("PowerScheme v1 Subs() ", static_cast<int>(PowerManager::PowerSchemePersonalityV1()));
+        });
+
+    Pr("PowerScheme v2 Get() ", static_cast<int>(PowerManager::PowerSchemePersonalityV2()));
+    auto tokenV2 = PowerManager::PowerSchemePersonalityV2Changed([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("PowerScheme v2 Subs() ", static_cast<int>(PowerManager::PowerSchemePersonalityV2()));
+        });
+
+    // UserPresenceStatus
+    Pr("UserPresenceStatus Get() ", static_cast<int>(PowerManager::UserPresenceStatus()));
+    auto tokenU = PowerManager::UserPresenceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("UserPresenceStatus Subs() ", static_cast<int>(PowerManager::UserPresenceStatus()));
+        });
+
+    // SystemIdleStatus
+    Pr("SystemIdleStatus Get() ", static_cast<int>(PowerManager::SystemIdleStatus()));
+    auto tokenS = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("SystemIdleStatus Subs() ", static_cast<int>(PowerManager::SystemIdleStatus()));
+        });
+    
+    // PowerSourceStatus
+    Pr("PowerSourceStatus Get() ", static_cast<int>(PowerManager::PowerSourceStatus()));
+    auto tokenD = PowerManager::PowerSourceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("PowerSourceStatus Subs() ", static_cast<int>(PowerManager::PowerSourceStatus()));
+        });
+    
+    // EnergySaverStatus
+    Pr("EnergySaverStatus Get() ", static_cast<int>(PowerManager::EnergySaverStatus()));
+    auto tokenE = PowerManager::EnergySaverStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("EnergySaverStatus Subs() ", static_cast<int>(PowerManager::EnergySaverStatus()));
+        });
+
+    // RemainingDischargeTime
+    Pr("RemainingDischargeTime Get() ", static_cast<int>(PowerManager::RemainingDischargeTime().count()));
+    auto tokenR = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("RemainingDischargeTime Subs() ", static_cast<int>(PowerManager::RemainingDischargeTime().count()));
+        });
+
+    // DisplayStatus
+    Pr("DisplayStatus Get() " , static_cast<int>(PowerManager::DisplayStatus()));
+    auto tokenDi = PowerManager::DisplayStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+    {
+            Pr("DisplayStatus Subs() ", static_cast<int>(PowerManager::DisplayStatus()));
+    });
+
+    // UserPresenceStatus
+    Pr("UserPresenceStatus Get() ", static_cast<int>(PowerManager::UserPresenceStatus()));
+    auto tokenUs = PowerManager::UserPresenceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+        {
+            Pr("UserPresenceStatus Subs() ", static_cast<int>(PowerManager::UserPresenceStatus()));
+        });
+
     getchar();
+    PowerManager::DisplayStatusChanged(tokenR);
+    PowerManager::DisplayStatusChanged(tokenE);
+    PowerManager::DisplayStatusChanged(tokenD);
+    PowerManager::DisplayStatusChanged(tokenS);
+    PowerManager::DisplayStatusChanged(tokenB);
+    PowerManager::DisplayStatusChanged(tokenV1);
+    PowerManager::DisplayStatusChanged(tokenV2);
+    PowerManager::DisplayStatusChanged(tokenU);
+    PowerManager::DisplayStatusChanged(tokenDi);
+    PowerManager::DisplayStatusChanged(tokenUs);
 }
 
 //
