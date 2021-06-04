@@ -877,7 +877,7 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     *filePath = nullptr;
 
     wil::unique_cotaskmem_string path;
-    RETURN_IF_FAILED((wil::GetModuleFileNameW<wil::unique_cotaskmem_string, 256>(nullptr, path)));
+    RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, path));
 
     PCWSTR name = wil::find_last_path_segment(path.get());
     wchar_t moduleFilename[MAX_PATH];
