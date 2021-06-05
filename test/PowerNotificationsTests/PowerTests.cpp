@@ -20,13 +20,23 @@ void Pr(string st, int val)
     cout << st << val << endl;
 }
 
+void Pr(string st, double val)
+{
+    std::scoped_lock<std::mutex> lock(mtx);
+    cout << st << val << endl;
+}
+
 int main()
 {
     // BatteryStatus
     Pr("BatteryStatus Get() ", static_cast<int>(PowerManager::BatteryStatus()));
+    Pr("PowerSupplyStatus Get() ", static_cast<int>(PowerManager::PowerSupplyStatus()));
+    Pr("RemainingChargePercent Get() ", static_cast<int>(PowerManager::RemainingChargePercent()));
     auto tokenB = PowerManager::BatteryStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
     {
         Pr("BatteryStatus Subs() ", static_cast<int>(PowerManager::BatteryStatus()));
+        Pr("PowerSupplyStatus Subs() ", static_cast<int>(PowerManager::PowerSupplyStatus()));
+        Pr("RemainingChargePercent Subs() ", static_cast<int>(PowerManager::RemainingChargePercent()));
     });
 
     // PowerSchemePersonality
@@ -49,12 +59,12 @@ int main()
             Pr("UserPresenceStatus Subs() ", static_cast<int>(PowerManager::UserPresenceStatus()));
         });
 
-    // SystemIdleStatus
-    Pr("SystemIdleStatus Get() ", static_cast<int>(PowerManager::SystemIdleStatus()));
-    auto tokenS = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
-        {
-            Pr("SystemIdleStatus Subs() ", static_cast<int>(PowerManager::SystemIdleStatus()));
-        });
+    //// SystemIdleStatus
+    //Pr("SystemIdleStatus Get() ", static_cast<int>(PowerManager::SystemIdleStatus()));
+    //auto tokenS = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+    //    {
+    //        Pr("SystemIdleStatus Subs() ", static_cast<int>(PowerManager::SystemIdleStatus()));
+    //    });
     
     // PowerSourceStatus
     Pr("PowerSourceStatus Get() ", static_cast<int>(PowerManager::PowerSourceStatus()));
@@ -71,10 +81,10 @@ int main()
         });
 
     // RemainingDischargeTime
-    Pr("RemainingDischargeTime Get() ", static_cast<int>(PowerManager::RemainingDischargeTime().count()));
+    Pr("RemainingDischargeTime Get() ", static_cast<double>(PowerManager::RemainingDischargeTime().count()));
     auto tokenR = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
         {
-            Pr("RemainingDischargeTime Subs() ", static_cast<int>(PowerManager::RemainingDischargeTime().count()));
+            Pr("RemainingDischargeTime Subs() ", static_cast<double>(PowerManager::RemainingDischargeTime().count()));
         });
 
     // DisplayStatus
@@ -91,15 +101,17 @@ int main()
             Pr("UserPresenceStatus Subs() ", static_cast<int>(PowerManager::UserPresenceStatus()));
         });
 
+    cout << "\n\n";
     getchar();
-    PowerManager::DisplayStatusChanged(tokenR);
-    PowerManager::DisplayStatusChanged(tokenE);
     PowerManager::DisplayStatusChanged(tokenD);
-    PowerManager::DisplayStatusChanged(tokenS);
+    //PowerManager::DisplayStatusChanged(tokenS);
     PowerManager::DisplayStatusChanged(tokenB);
     PowerManager::DisplayStatusChanged(tokenV1);
     PowerManager::DisplayStatusChanged(tokenV2);
     PowerManager::DisplayStatusChanged(tokenU);
+
+    PowerManager::DisplayStatusChanged(tokenR);
+    PowerManager::DisplayStatusChanged(tokenE);
     PowerManager::DisplayStatusChanged(tokenDi);
     PowerManager::DisplayStatusChanged(tokenUs);
 }
