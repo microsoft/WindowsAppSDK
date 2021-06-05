@@ -6,11 +6,8 @@
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="$(BuildingWithBuildExe) != 'true'">
     <IsTDPConfiguration>false</IsTDPConfiguration>
-    <IsTDPConfiguration Condition="'$(Configuration)' == 'Debug_test'">true</IsTDPConfiguration>
-    <Configuration Condition="'$(Configuration)' == 'Debug_test'">Debug</Configuration>
 
     <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(Configuration)</BaseOutputPath>
-	  <BaseOutputPath Condition="'$(Configuration)' == 'Debug_test'">$(MSBuildThisFileDirectory)BuildOutput\Debug</BaseOutputPath>
     <OutDir>$(BaseOutputPath)\$(Platform)\</OutDir>
 
     <!-- For native projects that use Win32 to mean x86, override the OutDir
