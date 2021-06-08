@@ -69,7 +69,7 @@ This isn't an exhaustive list: it's a sampling of some of the key infrastructure
 
 * Enhanced app packaging
 * Framework package deployment
-* Auto upate for all app types
+* Auto update for all app types
 
 ### 5. Platform unification and deployment
 
