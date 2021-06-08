@@ -119,6 +119,7 @@
     <AppxGeneratePrisForPortableLibrariesEnabled Condition="'$(AppxGeneratePrisForPortableLibrariesEnabled)' == ''">true</AppxGeneratePrisForPortableLibrariesEnabled>
     <AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent Condition="'$(AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent)' != 'false'">true</AppxExcludeXbfFromSdkPayloadWhenXamlIsPresent>
     <AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent Condition="'$(AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent)' != 'false'">true</AppxExcludeXamlFromLibraryLayoutsWhenXbfIsPresent>
+    <GenerateLibraryLayout Condition="'$(GenerateLibraryLayout)' == '' AND ('$(OutputType)' != 'AppContainerExe' AND '$(OutputType)' != 'Exe' AND '$(OutputType)' != 'WinExe')">true</GenerateLibraryLayout>
     <UseSdkBuildToolsPackage Condition="'$(UseSdkBuildToolsPackage)' == '' AND '$(WindowsSDKBuildToolsVersion)' != ''">true</UseSdkBuildToolsPackage>
   </PropertyGroup>
 
