@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include "MainWindow.g.h"
 
 namespace winrt::$safeprojectname$::implementation

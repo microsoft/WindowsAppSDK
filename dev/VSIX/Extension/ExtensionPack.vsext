@@ -1,0 +1,10 @@
+{
+  "description": "Project Reunion experimental extensions",
+  "version": "1.0.0.0",
+    "extensions": [
+        {
+            "vsixId": "Microsoft.SingleProjectMSIXPackagingTools",
+            "name": "Single-project MSIX Packaging Tools"
+        }
+    ]
+}
