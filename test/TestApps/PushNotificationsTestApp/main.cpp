@@ -111,7 +111,7 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
 
 bool ActivatorTest()
 {
-    PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+    PushNotificationManager::UnregisterActivator(std::exchange(appToken, nullptr), PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     try
     {
         PushNotificationActivationInfo info(
@@ -124,7 +124,7 @@ bool ActivatorTest()
             return false;
         }
 
-        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+        PushNotificationManager::UnregisterActivator(std::exchange(fakeToken, nullptr), PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     }
     catch (...)
     {
@@ -201,7 +201,7 @@ bool MultipleRegisterActivatorTest()
             PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
             c_fakeComServerId); // Fake clsid to test multiple activators
 
-        appToken = PushNotificationManager::RegisterActivator(info);
+        fakeToken = PushNotificationManager::RegisterActivator(info);
     }
     catch (...)
     {
@@ -251,14 +251,12 @@ void UnregisterClsid()
 {
     if (appToken)
     {
-        ::CoRevokeClassObject(static_cast<DWORD>(appToken.Cookie()));
-        PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOption::PushTrigger);
+        PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     }
 
     if (fakeToken)
     {
-        ::CoRevokeClassObject(static_cast<DWORD>(fakeToken.Cookie()));
-        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger);
+        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     }
 
 }
