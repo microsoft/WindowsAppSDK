@@ -14,9 +14,8 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
-winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225");
-winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A");
-winrt::guid remoteId3(L"40FCE789-C6BF-4F47-A6CF-6B9C1DCE31BA");
+winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
+winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
 
 PushNotificationRegistrationToken appToken = nullptr;
 PushNotificationRegistrationToken fakeToken = nullptr;
@@ -264,7 +263,7 @@ void UnregisterClsid()
 
 }
 
-int main()
+int main() try
 {
     bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
@@ -298,4 +297,9 @@ int main()
     }
 
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure
-};
+}
+catch (...)
+{
+    std::cout << winrt::to_string(winrt::to_message()) << std::endl;
+    return 1; // in the event of unhandled test crash
+}
