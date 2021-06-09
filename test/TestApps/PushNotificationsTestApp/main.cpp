@@ -4,68 +4,34 @@
 #include <sstream>
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
+
+using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
-using namespace winrt;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage::Streams;
-using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::Storage::Streams;
 
-enum UnitTest {
-    channelRequestUsingNullRemoteId, channelRequestUsingRemoteId, multipleChannelRequestUsingSameRemoteId,
-    multipleChannelRequestUsingMultipleRemoteId, activatorTest, registerActivatorNullDetails,
-    registerActivatorNullClsid, unregisterActivatorNullToken, unregisterActivatorNullBackgroundRegistration,
-    multipleRegisterActivatorTest, multipleChannelClose
-};
-
-static std::map<std::string, UnitTest> switchMapping;
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225");
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A");
 winrt::guid remoteId3(L"40FCE789-C6BF-4F47-A6CF-6B9C1DCE31BA");
+
 PushNotificationRegistrationToken appToken = nullptr;
 PushNotificationRegistrationToken fakeToken = nullptr;
 
-void signalPhase(const std::wstring& phaseEventName)
-{
-    wil::unique_event phaseEvent;
-    if (phaseEvent.try_open(phaseEventName.c_str(), EVENT_MODIFY_STATE, false))
-    {
-        phaseEvent.SetEvent();
-    }
-}
-
-void initUnitTestMapping()
-{
-    switchMapping["ChannelRequestUsingNullRemoteId"] = UnitTest::channelRequestUsingNullRemoteId;
-    switchMapping["ChannelRequestUsingRemoteId"] = UnitTest::channelRequestUsingRemoteId;
-    switchMapping["MultipleChannelClose"] = UnitTest::multipleChannelClose;
-    switchMapping["MultipleChannelRequestUsingSameRemoteId"] = UnitTest::multipleChannelRequestUsingSameRemoteId;
-    switchMapping["MultipleChannelRequestUsingMultipleRemoteId"] = UnitTest::multipleChannelRequestUsingMultipleRemoteId;
-    switchMapping["ActivatorTest"] = UnitTest::activatorTest;
-    switchMapping["RegisterActivatorNullDetails"] = UnitTest::registerActivatorNullDetails;
-    switchMapping["RegisterActivatorNullClsid"] = UnitTest::registerActivatorNullClsid;
-    switchMapping["UnregisterActivatorNullToken"] = UnitTest::unregisterActivatorNullToken;
-    switchMapping["UnregisterActivatorNullBackgroundRegistration"] = UnitTest::unregisterActivatorNullBackgroundRegistration;
-    switchMapping["MultipleRegisterActivatorTest"] = UnitTest::multipleRegisterActivatorTest;
-}
-
 bool ChannelRequestUsingNullRemoteId()
 {
-    winrt::hresult hr = S_OK;
-
     try
     {
         auto channelOperation = PushNotificationManager::CreateChannelAsync(winrt::guid()).get();
     }
     catch (...)
     {
-        auto channelRequestException = hresult_error(to_hresult());
-        hr = channelRequestException.code();
+        return to_hresult() == E_INVALIDARG;
     }
-
-    return (hr == E_INVALIDARG);
+    return false;
 }
 
 HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
@@ -73,7 +39,7 @@ HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateC
     if (channelOperation.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
-        return ERROR_TIMEOUT; // timed out or failed
+        return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
     }
 
     auto result = channelOperation.GetResults();
@@ -118,8 +84,7 @@ bool MultipleChannelClose()
     }
     catch (...)
     {
-        auto channelRequestException = hresult_error(to_hresult());
-        return channelRequestException.code() == WPN_E_CHANNEL_CLOSED;
+        return to_hresult() == WPN_E_CHANNEL_CLOSED;
     }
     return false;
 }
@@ -171,17 +136,15 @@ bool ActivatorTest()
 
 bool RegisterActivatorNullDetails()
 {
-    winrt::hresult hr = S_OK;
     try
     {
         PushNotificationManager::RegisterActivator(nullptr);
     }
     catch (...)
     {
-        auto registerActivatorException = hresult_error(to_hresult());
-        hr = registerActivatorException.code();
+        return to_hresult() == E_INVALIDARG;
     }
-    return hr == E_INVALIDARG;
+    return false;
 }
 
 bool RegisterActivatorNullClsid()
@@ -191,15 +154,14 @@ bool RegisterActivatorNullClsid()
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
-            winrt::guid()); // same clsid as app manifest
+            winrt::guid()); // Null guid
         PushNotificationManager::RegisterActivator(info);
     }
     catch (...)
     {
-        auto registerActivatorException = hresult_error(to_hresult());
-        hr = registerActivatorException.code();
+        return to_hresult() == E_INVALIDARG;
     }
-    return hr == E_INVALIDARG;
+    return false;
 }
 
 bool UnregisterActivatorNullToken()
@@ -211,10 +173,9 @@ bool UnregisterActivatorNullToken()
     }
     catch (...)
     {
-        auto registerActivatorException = hresult_error(to_hresult());
-        hr = registerActivatorException.code();
+        return to_hresult() == E_INVALIDARG;
     }
-    return hr == E_INVALIDARG;
+    return false;
 }
 
 bool UnregisterActivatorNullBackgroundRegistration()
@@ -227,10 +188,9 @@ bool UnregisterActivatorNullBackgroundRegistration()
     }
     catch (...)
     {
-        auto registerActivatorException = hresult_error(to_hresult());
-        hr = registerActivatorException.code();
+        return to_hresult() == HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
     }
-    return hr == HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+    return false;
 }
 
 bool MultipleRegisterActivatorTest()
@@ -240,58 +200,51 @@ bool MultipleRegisterActivatorTest()
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
-            c_fakeComServerId); // same clsid as app manifest
+            c_fakeComServerId); // Fake clsid to test multiple activators
 
         appToken = PushNotificationManager::RegisterActivator(info);
     }
     catch (...)
     {
-        auto registerActivatorException = hresult_error(to_hresult());
-        hr = registerActivatorException.code();
+        return to_hresult() == E_INVALIDARG;
     }
-    return hr == E_INVALIDARG;
+    return false;
+}
+
+bool BackgroundActivationTest() // Activating application for background.
+{
+    return true;
+}
+
+std::map<std::string, bool(*)()> const& GetSwitchMapping()
+{
+    static std::map<std::string, bool(*)()> switchMapping = {
+        { "ChannelRequestUsingNullRemoteId",  &ChannelRequestUsingNullRemoteId },
+        { "ChannelRequestUsingRemoteId", &ChannelRequestUsingRemoteId },
+        { "MultipleChannelClose", &MultipleChannelClose},
+        { "MultipleChannelRequestUsingSameRemoteId", &MultipleChannelRequestUsingSameRemoteId},
+        { "MultipleChannelRequestUsingMultipleRemoteId", &MultipleChannelRequestUsingMultipleRemoteId},
+        { "RegisterActivatorNullDetails", &RegisterActivatorNullDetails},
+        { "RegisterActivatorNullClsid", &RegisterActivatorNullClsid},
+        { "UnregisterActivatorNullToken", &UnregisterActivatorNullToken},
+        { "UnregisterActivatorNullBackgroundRegistration", &UnregisterActivatorNullBackgroundRegistration},
+        { "ActivatorTest", &ActivatorTest},
+        { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
+        { "BackgroundActivationTest", &BackgroundActivationTest}
+    };
+    return switchMapping;
 }
 
 bool runUnitTest(std::string unitTest)
 {
-    switch (switchMapping[unitTest])
+    auto const& switchMapping = GetSwitchMapping();
+    auto it = switchMapping.find(unitTest);
+    if (it == switchMapping.end())
     {
-    case UnitTest::channelRequestUsingNullRemoteId:
-        return ChannelRequestUsingNullRemoteId();
-
-    case UnitTest::channelRequestUsingRemoteId:
-        return ChannelRequestUsingRemoteId();
-
-    case UnitTest::multipleChannelClose:
-        return MultipleChannelClose();
-
-    case UnitTest::multipleChannelRequestUsingSameRemoteId:
-        return MultipleChannelRequestUsingSameRemoteId();
-
-    case UnitTest::multipleChannelRequestUsingMultipleRemoteId:
-        return MultipleChannelRequestUsingMultipleRemoteId();
-
-    case UnitTest::activatorTest:
-        return ActivatorTest();
-
-    case UnitTest::registerActivatorNullDetails:
-        return RegisterActivatorNullDetails();
-
-    case UnitTest::registerActivatorNullClsid:
-        return RegisterActivatorNullClsid();
-
-    case UnitTest::unregisterActivatorNullToken:
-        return UnregisterActivatorNullToken();
-
-    case UnitTest::unregisterActivatorNullBackgroundRegistration:
-        return UnregisterActivatorNullBackgroundRegistration();
-
-    case UnitTest::multipleRegisterActivatorTest:
-        return MultipleRegisterActivatorTest();
-
-    default:
         return false;
     }
+
+    return it->second();
 }
 
 // Cleanup function for exiting test app.
@@ -313,7 +266,6 @@ void UnregisterClsid()
 
 int main()
 {
-    initUnitTestMapping();
     bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
         UnregisterClsid();
@@ -342,7 +294,7 @@ int main()
         auto payload = pushArgs.Payload();
         std::wstring payloadString(payload.begin(), payload.end());
 
-        testResult = !payloadString.compare(c_rawNotificationPayload);
+        testResult = payloadString == c_rawNotificationPayload;
     }
 
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure

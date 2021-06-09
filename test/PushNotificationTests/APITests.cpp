@@ -23,7 +23,7 @@ namespace Test::PushNotifications
     {
     private:
         wil::unique_event m_failed;
-        wil::unique_handle m_processHandle;
+        wil::unique_process_handle m_processHandle;
         winrt::com_ptr<IApplicationActivationManager> m_testAppLauncher;
 
     public:
@@ -90,22 +90,19 @@ namespace Test::PushNotifications
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
 
-            if (m_processHandle)
-            {
-                m_processHandle.reset();
-            }
+            m_processHandle.reset();
             return true;
         }
 
         void RunTest(const PCWSTR& testName, const int& waitTime)
         {
             DWORD processId;
-            VERIFY_SUCCEEDED(m_testAppLauncher.get()->ActivateApplication(L"PushNotificationsTestAppPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
+            VERIFY_SUCCEEDED(m_testAppLauncher->ActivateApplication(L"PushNotificationsTestAppPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
 
-            m_processHandle = wil::unique_handle(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
+            m_processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
             VERIFY_IS_TRUE(m_processHandle.is_valid());
 
-            VERIFY_ARE_EQUAL(WaitForSingleObject(m_processHandle.get(), waitTime), WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), waitTime));
 
             DWORD exitCode;
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
@@ -114,7 +111,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(BackgroundActivation)
         {
-            RunTest(nullptr, c_pushTestWait); // Need to launch one time to enable background activation.
+            RunTest(L"BackgroundActivationTest", c_pushTestWait); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
@@ -123,7 +120,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(MultipleBackgroundActivation)
         {
-            RunTest(nullptr, c_pushTestWait); // Need to launch one time to enable background activation.
+            RunTest(L"BackgroundActivationTest", c_pushTestWait); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
