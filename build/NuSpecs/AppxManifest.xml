@@ -24,6 +24,8 @@
           <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
+    <!-- 
+      Disable experimental applifecycle and dyndep code for 0.8 only (this change should not appear in main branch)
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
         <Path>Microsoft.ProjectReunion.dll</Path>
@@ -38,6 +40,6 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
       </InProcessServer>
-    </Extension>
+    </Extension> -->
   </Extensions>
 </Package>
