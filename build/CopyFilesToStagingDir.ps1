@@ -42,6 +42,24 @@ PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
 # PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.ProjectReunion\
 # PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.ProjectReunion\
 # PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
+# # Includes (*.h)
+# PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\MddBootstrap.h $NugetDir\include
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $NugetDir\include
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $NugetDir\include
+# # Libraries (*.lib)
+# PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.lib $NugetDir\lib\win10-$Platform
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $NugetDir\lib\win10-$Platform
+# # MSIX Framework package - DLLs
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $NugetDir\runtimes\win10-$Platform\native
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.pdb $NugetDir\runtimes\win10-$Platform\native
+# # WinMD for UWP apps
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
+# # Native (not managed, no MSIX)
+# PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
+# PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
+# PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
+
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
 PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.dll $FullPublishDir\DynamicDependency.DataStore\
@@ -88,19 +106,6 @@ PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunio
 
 # Copy files to Full Nuget package
 #
-# Includes (*.h)
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\MddBootstrap.h $NugetDir\include
-PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $NugetDir\include
-PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $NugetDir\include
-#
-# Libraries (*.lib)
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.lib $NugetDir\lib\win10-$Platform
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $NugetDir\lib\win10-$Platform
-#
-# MSIX Framework package - DLLs
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $NugetDir\runtimes\win10-$Platform\native
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.pdb $NugetDir\runtimes\win10-$Platform\native
-#
 # MSIX Main package
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.pdb $NugetDir\runtimes\win10-$Platform\native
@@ -112,15 +117,6 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyL
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.pdb $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.dll $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
-#
-# WinMD for UWP apps
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
-#
-# Native (not managed, no MSIX)
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
 #
 # C#/WinRT Projections
 #
