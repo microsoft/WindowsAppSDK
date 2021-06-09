@@ -121,7 +121,8 @@ int main()
         std::cout << "Push notification content received from BACKGROUND: " << payloadString << std::endl << std::endl;
         std::cout << "Press 'Enter' to exit the App." << std::endl;
 
-        // Call Complete on the deferral as good practice: Needed mainly for low power usage
+        // Call Complete on the deferral when finished processing the payload.
+        // This removes the override that kept the app running even when the system was in a low power mode.
         deferral.Complete();
         std::cin.ignore();
     }
@@ -138,6 +139,6 @@ int main()
         std::cin.ignore();
     }
 
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::ComActivator); // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure. 
     return 0;
 }
