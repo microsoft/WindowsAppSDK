@@ -3,7 +3,6 @@
 
 #ifndef PCH_H
 #define PCH_H
-#endif //PCH_H
 
 #include <unknwn.h>
 
@@ -37,3 +36,5 @@
 #include <ShObjIdl_core.h>
 
 namespace TP = ::Test::Packages;
+
+#endif //PCH_H

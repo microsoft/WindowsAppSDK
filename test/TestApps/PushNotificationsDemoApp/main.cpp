@@ -10,15 +10,11 @@
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
-using namespace winrt;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage::Streams;
-using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
-
-time_t ltime;
-char buf[SIZE];
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::Storage::Streams;
 
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
@@ -96,6 +92,9 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
+    time_t ltime;
+    char buf[SIZE];
+
     time(&ltime);
     ctime_s(buf, sizeof buf, &ltime);
     std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
@@ -121,9 +120,10 @@ int main()
         std::string payloadString(payload.begin(), payload.end());
         std::cout << "Push notification content received from BACKGROUND: " << payloadString << std::endl << std::endl;
         std::cout << "Press 'Enter' to exit the App." << std::endl;
-        std::cin.ignore();
-        // Call Complete on the deferral as good practise: Needed mainly for low power usage
+
+        // Call Complete on the deferral as good practice: Needed mainly for low power usage
         deferral.Complete();
+        std::cin.ignore();
     }
     else if (kind == ExtendedActivationKind::Launch)
     {
@@ -138,6 +138,6 @@ int main()
         std::cin.ignore();
     }
 
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::ComActivator);
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
     return 0;
 }

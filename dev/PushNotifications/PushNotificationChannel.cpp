@@ -41,7 +41,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             auto channelCloseException = hresult_error(to_hresult());
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {
-                throw channelCloseException;
+                throw hresult_error(to_hresult());
             }
         }
     }
