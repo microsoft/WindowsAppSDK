@@ -33,7 +33,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     inline constexpr auto c_maxBackoff{ 5min };
     inline constexpr auto c_initialBackoff{ 60s };
-    inline constexpr auto c_backoffFactor{ 60s };
+    inline constexpr auto c_backoffIncrement{ 60s };
 
     const HRESULT WNP_E_NOT_CONNECTED = (HRESULT)0x880403E8L;
     const HRESULT WNP_E_RECONNECTING = (HRESULT)0x880403E9L;
@@ -98,7 +98,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         progress(channelStatus);
 
-        for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffFactor)
+        for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
         {
             try
             {
@@ -134,7 +134,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
             }
 
-            co_await winrt::resume_after(std::chrono::milliseconds(backOffTime));
+            co_await winrt::resume_after(backOffTime);
         }
     }
 
