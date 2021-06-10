@@ -56,7 +56,16 @@
             <com:Interface Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" ProxyStubClsid="DDEB4D6A-E146-476d-B729-0BFB1A29A86E"/> <!-- IID_IDynamicDependencyDataStore -->
           </com:ComInterface>
         </com:Extension>
-      </Extensions>
+        <uap5:Extension
+            Category="windows.startupTask"
+            Executable="PushNotificationsReunionTask.exe"
+            EntryPoint="Windows.FullTrustApplication">
+            <uap5:StartupTask
+                TaskId="PushNotificationsId"
+                Enabled="true"
+                DisplayName="Push Notifications Reunion Task" />
+        </uap5:Extension>
+        </Extensions>
     </Application>
   </Applications>
 

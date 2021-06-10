@@ -52,6 +52,8 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(ProjectDir)Assets\* $(WorkDir)\Assets\* >NUL
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL
     @copy /Y $(TARGET_PROXYSTUB_FILE) $(WorkDir) >NUL
+    @copy /Y $(OutDir)PushNotificationsReunionTask\PushNotificationsReunionTask.exe $(WorkDir)\PushNotificationsReunionTask.exe
+    @copy /Y $(OutDir)PushNotificationsReunionTask\PushNotificationsReunionTask.pdb $(WorkDir)\PushNotificationsReunionTask.pdb
     @makeappx.exe pack $(MAKEAPPX_OPTS) /o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
