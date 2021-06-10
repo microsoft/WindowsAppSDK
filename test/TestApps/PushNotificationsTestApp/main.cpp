@@ -111,11 +111,12 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
 
 bool ActivatorTest()
 {
-    PushNotificationManager::UnregisterActivator(std::exchange(appToken, nullptr), PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+    PushNotificationManager::UnregisterActivator(std::exchange(appToken, nullptr), PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             c_fakeComServerId);
 
         fakeToken = PushNotificationManager::RegisterActivator(info);
@@ -124,7 +125,7 @@ bool ActivatorTest()
             return false;
         }
 
-        PushNotificationManager::UnregisterActivator(std::exchange(fakeToken, nullptr), PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+        PushNotificationManager::UnregisterActivator(std::exchange(fakeToken, nullptr), PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
     }
     catch (...)
     {
@@ -152,7 +153,7 @@ bool RegisterActivatorNullClsid()
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             winrt::guid()); // Null guid
         PushNotificationManager::RegisterActivator(info);
     }
@@ -168,7 +169,7 @@ bool UnregisterActivatorNullToken()
     winrt::hresult hr = S_OK;
     try
     {
-        PushNotificationManager::UnregisterActivator(nullptr, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+        PushNotificationManager::UnregisterActivator(nullptr, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
     }
     catch (...)
     {
@@ -183,7 +184,7 @@ bool UnregisterActivatorNullBackgroundRegistration()
     try
     {
         PushNotificationRegistrationToken badToken{ 0, nullptr };
-        PushNotificationManager::UnregisterActivator(badToken, PushNotificationRegistrationOption::PushTrigger);
+        PushNotificationManager::UnregisterActivator(badToken, PushNotificationRegistrationOptions::PushTrigger);
     }
     catch (...)
     {
@@ -198,7 +199,7 @@ bool MultipleRegisterActivatorTest()
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             c_fakeComServerId); // Fake clsid to test multiple activators
 
         fakeToken = PushNotificationManager::RegisterActivator(info);
@@ -251,12 +252,12 @@ void UnregisterClsid()
 {
     if (appToken)
     {
-        PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+        PushNotificationManager::UnregisterActivator(appToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
     }
 
     if (fakeToken)
     {
-        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator);
+        PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
     }
 
 }
@@ -269,7 +270,7 @@ int main() try
     });
 
     PushNotificationActivationInfo info(
-        PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+        PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid(c_comServerId)); // same clsid as app manifest
 
     appToken = PushNotificationManager::RegisterActivator(info);

@@ -20,7 +20,7 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
-wil::unique_handle g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+wil::unique_event g_waitHandleForArgs;
 
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {

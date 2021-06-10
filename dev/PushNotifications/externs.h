@@ -5,6 +5,6 @@
 #include "pch.h"
 #include "PushNotificationReceivedEventArgs.h"
 
-extern wil::unique_handle g_waitHandleForArgs;
+extern wil::unique_event g_waitHandleForArgs;
 
-const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
+inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
