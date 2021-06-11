@@ -3,7 +3,7 @@
   <Identity Name="Microsoft.ProjectReunion.0.5" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>Microsoft.ProjectReunion.0.5</DisplayName>
+    <DisplayName>Microsoft.ProjectReunion.0.8</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Description>Microsoft Project Reunion Framework</Description>
     <Logo>logo.png</Logo>
@@ -24,22 +24,5 @@
           <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
-    <!-- 
-      Disable experimental applifecycle and dyndep code for 0.8 only (this change should not appear in main branch)
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
-        <Path>Microsoft.ProjectReunion.dll</Path>
-          <!-- Dynamic Dependency -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
-
-          <!-- AppLifecycle -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension> -->
   </Extensions>
 </Package>

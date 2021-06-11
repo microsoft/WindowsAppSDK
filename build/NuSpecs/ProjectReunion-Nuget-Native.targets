@@ -9,20 +9,4 @@
     <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
   </PropertyGroup>
 
-  <!-- Experimental features disabled in release builds
-  <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
-      <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
-      <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
-    </Reference>
-  </ItemGroup> 
-  -->
-
 </Project>
