@@ -242,30 +242,3 @@ HRESULT UnregisterUserPresenceStatusChangedListener(UserPresenceStatusRegistrati
     onUserPresenceStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
     return S_OK;
 }
-
-HRESULT GetSystemAwayModeStatus(DWORD* systemAwayModeStatusOut)
-{
-    *systemAwayModeStatusOut = static_cast<DWORD>(winrt::Microsoft::ProjectReunion::SystemAwayModeStatus::Entering);
-    return S_OK;
-}
-
-HRESULT RegisterSystemAwayModeStatusChangedListener(OnSystemAwayModeStatusChanged listener, SystemAwayModeStatusRegistration* registration)
-{
-    *registration = reinterpret_cast<SystemAwayModeStatusRegistration>(g_idx++);
-    onSystemAwayModeStatusChanged_callbacks[g_idx] = listener;
-    std::thread thread([]() {
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        for (const auto& [key, callbackFn] : onSystemAwayModeStatusChanged_callbacks)
-        {
-            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::SystemAwayModeStatus::Exiting));
-        }
-        });
-    thread.detach();
-    return S_OK;
-}
-
-HRESULT UnregisterSystemAwayModeStatusChangedListener(SystemAwayModeStatusRegistration registration)
-{
-    onSystemAwayModeStatusChanged_callbacks.erase(reinterpret_cast<index>(registration));
-    return S_OK;
-}

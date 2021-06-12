@@ -138,23 +138,6 @@ namespace ProjectReunionPowerTests
             VERIFY_ARE_EQUAL(callback_success, true);
         }
 
-        TEST_METHOD(GetPowerSchemePersonality)
-        {
-            auto stat = PowerManager::PowerSchemePersonality();
-            VERIFY_ARE_EQUAL(stat, PowerSchemePersonality::HighPerformance);
-        }
-        TEST_METHOD(PowerSchemePersonalityCallback)
-        {
-            auto stat = PowerSchemePersonality::HighPerformance;
-            auto token = PowerManager::PowerSchemePersonalityChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
-            {
-                stat = PowerManager::PowerSchemePersonality();
-            });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            PowerManager::PowerSchemePersonalityChanged(token);
-            VERIFY_ARE_EQUAL(stat, PowerSchemePersonality::PowerSaver);
-        }
-
         TEST_METHOD(GetUserPresenceStatus)
         {
             auto stat = PowerManager::UserPresenceStatus();

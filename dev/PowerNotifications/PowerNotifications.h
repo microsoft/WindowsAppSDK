@@ -4,6 +4,7 @@
 #pragma once
 
 #include <mutex>
+#include <powersetting.h>
 #include <PowerManager.g.h>
 #include <PowerNotificationsPal.h>
 #include <wil/resource.h>
