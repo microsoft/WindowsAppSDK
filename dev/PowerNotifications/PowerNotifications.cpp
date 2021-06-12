@@ -199,7 +199,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
-    bool IsV2Supported()
+    bool IsEffectivePowerModeV2Supported()
     {
         // We check for the version supported by checking if the feature is supported
         // Using NULL as an indicator for uninitialized cache value
@@ -207,10 +207,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         {
             PVOID handle;
             auto hr = PowerRegisterForEffectivePowerModeNotifications(
-                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID)
-                {
-                    // Set a cached value?
-                }, NULL, &handle);
+                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID) {}, NULL, &handle);
             g_powerModeVersion = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
             check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
@@ -224,7 +221,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EffectivePowerMode_Register()
     {
-        ULONG version = IsV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+        ULONG version = IsEffectivePowerModeV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
         check_hresult(PowerRegisterForEffectivePowerModeNotifications(
             version, [](EFFECTIVE_POWER_MODE mode, PVOID)
             {
@@ -245,7 +242,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static std::promise<EFFECTIVE_POWER_MODE> promiseObj;
         static std::future<EFFECTIVE_POWER_MODE> futureObj;
         PVOID handle;
-        ULONG version = IsV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+        ULONG version = IsEffectivePowerModeV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
         promiseObj = std::promise<EFFECTIVE_POWER_MODE>();
         futureObj = promiseObj.get_future();
 

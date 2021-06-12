@@ -131,7 +131,6 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         DischargeTimeRegistration m_dischargeTimeHandle;
         DisplayStatusRegistration m_displayStatusHandle;
         SystemIdleStatusRegistration m_systemIdleStatusHandle;
-        PVOID m_powerModeHandle;
         UserPresenceStatusRegistration m_userPresenceStatusHandle;
         HPOWERNOTIFY m_systemSuspendHandle;
 
