@@ -49,16 +49,7 @@ namespace Microsoft.ProjectReunion
         Busy
     };
 
-    enum PowerSchemePersonalityV1
-    {
-        BatterySaver,
-        BetterBattery,
-        Balanced,
-        HighPerformance,
-        MaxPerformance, // v1 last supported
-    };
-
-    enum PowerSchemePersonalityV2
+    enum EffectivePowerMode
     {
         BatterySaver,
         BetterBattery,
@@ -108,11 +99,8 @@ namespace Microsoft.ProjectReunion
         static SystemIdleStatus SystemIdleStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
         
-        static PowerSchemePersonalityV1 PowerSchemePersonalityV1{ get; };
-        static event Windows.Foundation.EventHandler<Object> PowerSchemePersonalityV1Changed;
-
-        static PowerSchemePersonalityV2 PowerSchemePersonalityV2{ get; };
-        static event Windows.Foundation.EventHandler<Object> PowerSchemePersonalityV2Changed;
+        static EffectivePowerMode EffectivePowerMode{ get; };
+        static event Windows.Foundation.EventHandler<Object> EffectivePowerModeChanged;
         
         static UserPresenceStatus UserPresenceStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> UserPresenceStatusChanged;
