@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <pch.h>
+#include <future>
 #include <PowerNotifications.h>
 #include <PowerNotificationsPal.h>
 #include <PowerManager.g.cpp>
@@ -198,58 +199,64 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
-    // PowerSchemePersonality V1 Functions
-    EventType& PowerSchemePersonalityV1_Event()
+    bool IsV2Supported()
     {
-        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV1ChangedEvent;
+        // We check for the version supported by checking if the feature is supported
+        // Using NULL as an indicator for uninitialized cache value
+        if (g_powerModeVersion == NULL)
+        {
+            PVOID handle;
+            auto hr = PowerRegisterForEffectivePowerModeNotifications(
+                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID)
+                {
+                    // Set a cached value?
+                }, NULL, &handle);
+            g_powerModeVersion = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+            check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
+        }
+        return g_powerModeVersion == EFFECTIVE_POWER_MODE_V2;
     }
 
-    void PowerSchemePersonalityV1_Register()
+    EventType& EffectivePowerMode_Event()
     {
-        check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
-            EFFECTIVE_POWER_MODE_V1,
-            &PowerManager::PowerSchemePersonalityV1Changed_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV1Handle));
+        return make_self<factory_implementation::PowerManager>()->m_powerModeChangedEvent;
     }
 
-    void PowerSchemePersonalityV1_Unregister()
+    void EffectivePowerMode_Register()
     {
-        check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV1Handle));
+        ULONG version = IsV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+        check_hresult(PowerRegisterForEffectivePowerModeNotifications(
+            version, [](EFFECTIVE_POWER_MODE mode, PVOID)
+            {
+                PowerManager::EffectivePowerModeChanged_Callback(mode);
+            }, nullptr, &g_powerModeHandle));
     }
 
-    void PowerSchemePersonalityV1_Update()
+    void EffectivePowerMode_Unregister()
     {
-        check_hresult(PowerNotifications_GetPowerSchemePersonality(
-            EFFECTIVE_POWER_MODE_V1,
-            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonalityV1));
+        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(g_powerModeHandle));
+        g_powerModeHandle = NULL;
     }
 
-    // PowerSchemePersonality V2 Functions
-    EventType& PowerSchemePersonalityV2_Event()
+    void EffectivePowerMode_Update()
     {
-        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityv2ChangedEvent;
-    }
+        // Effectively the Get() for PowerMode
+        // Needs to get a temporary subscription to get most recent value
+        static std::promise<EFFECTIVE_POWER_MODE> promiseObj;
+        static std::future<EFFECTIVE_POWER_MODE> futureObj;
+        PVOID handle;
+        ULONG version = IsV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+        promiseObj = std::promise<EFFECTIVE_POWER_MODE>();
+        futureObj = promiseObj.get_future();
 
-    void PowerSchemePersonalityV2_Register()
-    {
-        check_hresult(PowerNotifications_RegisterPowerSchemePersonalityChangedListener(
-            EFFECTIVE_POWER_MODE_V2,
-            &PowerManager::PowerSchemePersonalityV2Changed_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV2Handle));
-    }
-
-    void PowerSchemePersonalityV2_Unregister()
-    {
-        check_hresult(PowerNotifications_UnregisterPowerSchemePersonalityChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityV2Handle));
-    }
-
-    void PowerSchemePersonalityV2_Update()
-    {
-        check_hresult(PowerNotifications_GetPowerSchemePersonality(
-            EFFECTIVE_POWER_MODE_V2,
-            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonalityV2));
+        check_hresult(PowerRegisterForEffectivePowerModeNotifications(
+            version, [](EFFECTIVE_POWER_MODE mode, PVOID)
+            {
+                promiseObj.set_value(mode);
+            }, NULL, &handle));
+        auto& mode = make_self<factory_implementation::PowerManager>()->m_cachedPowerMode;
+        mode = futureObj.get();
+        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
     }
 
     // UserPresenceStatus Functions
