@@ -180,7 +180,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             if (!isTaskRegistered)
             {
                 builder = BackgroundTaskBuilder();
-                builder.Name(backgroundTaskName + taskClsidStr);
+                builder.Name(backgroundTaskFullName);
 
                 PushNotificationTrigger trigger{};
                 builder.SetTrigger(trigger);
