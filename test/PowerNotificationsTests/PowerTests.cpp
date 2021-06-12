@@ -39,18 +39,13 @@ int main()
         Pr("RemainingChargePercent Subs() ", static_cast<int>(PowerManager::RemainingChargePercent()));
     });
 
-    // PowerSchemePersonality
-    Pr("PowerScheme v1 Get() ", static_cast<int>(PowerManager::PowerSchemePersonalityV1()));
-    auto tokenV1 = PowerManager::PowerSchemePersonalityV1Changed([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+    // EffectivePowerMode
+    Pr("EffectivePowerMode Get() ", static_cast<int>(PowerManager::EffectivePowerMode()));
+    auto tokenEP = PowerManager::EffectivePowerModeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
         {
-            Pr("PowerScheme v1 Subs() ", static_cast<int>(PowerManager::PowerSchemePersonalityV1()));
+            Pr("EffectivePowerMode Subs() ", static_cast<int>(PowerManager::EffectivePowerMode()));
         });
 
-    Pr("PowerScheme v2 Get() ", static_cast<int>(PowerManager::PowerSchemePersonalityV2()));
-    auto tokenV2 = PowerManager::PowerSchemePersonalityV2Changed([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
-        {
-            Pr("PowerScheme v2 Subs() ", static_cast<int>(PowerManager::PowerSchemePersonalityV2()));
-        });
 
     // UserPresenceStatus
     Pr("UserPresenceStatus Get() ", static_cast<int>(PowerManager::UserPresenceStatus()));
@@ -106,8 +101,7 @@ int main()
     PowerManager::DisplayStatusChanged(tokenD);
     //PowerManager::DisplayStatusChanged(tokenS);
     PowerManager::DisplayStatusChanged(tokenB);
-    PowerManager::DisplayStatusChanged(tokenV1);
-    PowerManager::DisplayStatusChanged(tokenV2);
+    PowerManager::DisplayStatusChanged(tokenEP);
     PowerManager::DisplayStatusChanged(tokenU);
 
     PowerManager::DisplayStatusChanged(tokenR);
