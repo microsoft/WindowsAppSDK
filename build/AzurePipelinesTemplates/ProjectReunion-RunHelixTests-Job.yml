@@ -53,7 +53,7 @@ jobs:
     displayName: 'NuGet restore build/Helix/packages.config'
     inputs:
       command: 'restore'
-      restoreSolution: test/Helix/packages.config
+      restoreSolution: build/Helix/packages.config
       feedsToUse: config
       nugetConfigPath: build/Helix/nuget.config
       restoreDirectory: packages

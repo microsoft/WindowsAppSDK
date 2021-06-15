@@ -131,9 +131,9 @@ steps:
       ManagedTest\**
       UnitTest\**
       UnpackagedTests\**
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_testbin\$(buildPlatform)'
+    TargetFolder: '$(Build.TempDirectory)\mrt_testbin\$(buildPlatform)'
 
-- powershell: tree /f /a $(Build.ArtifactStagingDirectory)\mrt_testbin\$(buildPlatform)
+- powershell: tree /f /a $(Build.TempDirectory)\mrt_testbin\$(buildPlatform)
   displayName: 'DIAG: dump mrtcore_testbin'
 
 # Publish the test binaries so we can run them in Helix later.
@@ -141,7 +141,7 @@ steps:
   displayName: 'Publish mrtcore test binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_testbin\$(buildPlatform)'
+    PathtoPublish: '$(Build.TempDirectory)\mrt_testbin\$(buildPlatform)'
     artifactName: mrtcore_test_binaries_$(buildPlatform)
 
 - task: VSTest@2
