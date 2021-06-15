@@ -55,7 +55,7 @@ jobs:
       command: 'restore'
       restoreSolution: test/Helix/packages.config
       feedsToUse: config
-      nugetConfigPath: nuget.config
+      nugetConfigPath: build/Helix/nuget.config
       restoreDirectory: packages
       
   - task: CmdLine@1
