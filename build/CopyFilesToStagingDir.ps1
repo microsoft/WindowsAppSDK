@@ -13,7 +13,7 @@ $FullBuildOutput = "$($BuildOutputDir)\$($Configuration)\$($Platform)"
 $FullPublishDir = "$($PublishDir)\$($Configuration)\$($Platform)"
 
 if (!(Test-Path $FullPublishDir)) { mkdir $FullPublishDir }
-
+if (!(Test-Path $NugetDir)) { mkdir $NugetDir }
 
 function PublishFile {
     Param($source, $destinationDir, [switch]$IfExists = $false)
@@ -41,8 +41,3 @@ if($PublishAppxFiles)
 {
     $AppxPackagesDir = "$FullPublishDir\AppxPackages"
 }
-
-# Copy files to Full Nuget package
-#
-# Dynamic Dependency build overrides
-PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
