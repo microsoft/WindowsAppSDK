@@ -1,28 +1,22 @@
 parameters:
-  name: 'RunTestsInHelix'
+  jobName: 'RunTestsInHelix'
   dependsOn: ''
   condition: ''
-  testSuite: 'DevTestSuite'
-  # If a Pipeline runs this template more than once, this parameter should be unique per build flavor to differentiate the
-  # the different test runs:
-  helixType: 'test/devtest'
-  maxParallel: 4
-  rerunPassesRequiredToAvoidFailure: 5
-  taefQuery: ''
-  # if 'useBuildOutputFromBuildId' is set, we will default to using a build from this pipeline:
-  useBuildOutputFromPipeline: $(System.DefinitionId)
-  matrix: 
+  maxParallel: 10
+  matrix:
     Release_x86:
       buildPlatform: 'x86'
       buildConfiguration: 'Release'
-      outputDirectory: BuildOutput\Release\x86\BaseUnitTests\
     Release_x64:
       buildPlatform: 'x64'
       buildConfiguration: 'Release'
-      outputDirectory: BuildOutput\Release\x64\BaseUnitTests\
+  
+  # Both Azure DevOps and Helix don't have support for arm64.
+  conditionForRunTests: and(succeeded(), ne(variables['buildPlatform'], 'arm64'))
+  conditionForProcessTestResults: and(succeededOrFailed(), ne(variables['buildPlatform'], 'arm64'))
 
 jobs:
-- job: ${{ parameters.name }}
+- job: ${{ parameters.jobName }}
   dependsOn: ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
   pool:
@@ -32,99 +26,185 @@ jobs:
     maxParallel: ${{ parameters.maxParallel }}
     matrix: ${{ parameters.matrix }}
   variables:
-    artifactsDir: $(Build.SourcesDirectory)\Artifacts
-    taefPath: $(Build.SourcesDirectory)\build\Helix\packages\taef.redist.wlk.10.31.180822002\build\Binaries\$(buildPlatform)
-    helixCommonArgs: '/binaryLogger:$(Build.SourcesDirectory)/${{parameters.name}}.$(buildPlatform).$(buildConfiguration).binlog /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:HelixType=${{parameters.helixType}} /p:TestSuite=${{parameters.testSuite}} /p:ProjFilesPath=$(Build.ArtifactStagingDirectory) /p:rerunPassesRequiredToAvoidFailure=${{parameters.rerunPassesRequiredToAvoidFailure}}'
+    # This should be kept in sync with the value in build\Helix\packages.config
+    winUIHelixVer: 0.5.0
+    winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
+
+    # TODO: I had to make changes on top of the WinUI Helix Nuget to fix things for the PR feeder repo.
+    # Once the nuget is updated with the modifications then these files can be removed from the repo.
+    modifiedWinUIHelixPipelineScripts: build\Helix\pipeline
+
+    # The target queues to run the tests on.
+    # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
+    helixTargetQueues: 'Windows.10.Amd64.ClientRS5.Open.Xaml'
+
+    # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
+    rerunPassesRequiredToAvoidFailure: 8
+    
+    # This must be unique for each test pass that is run in a given Pipeline execution.
+    helixType: devtest.$(buildPlatform).$(buildConfiguration)
+
+    helixTestOutputBaseDir: $(Build.SourcesDirectory)\HelixTestOutput
+    helixTestOutputDir: $(helixTestOutputBaseDir)\$(buildConfiguration)\$(buildPlatform)
+    
+    # This directory contains the Test payload, and Helix test binaries and scripts.
+    # Note: TAEF must be present in this directory, as GenerateHelixWorkItems.ps1 expects to invoke te.exe from here.
+    testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
+
+    helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
       
   steps:
   - task: CmdLine@1
     displayName: 'Display build machine environment variables'
     inputs:
       filename: 'set'
-      
-  - task: NuGetToolInstaller@0
-    displayName: 'Use NuGet 5.2.0'
+
+  - task: powershell@2
+    displayName: 'Download .NET Runtime Windows installer'
     inputs:
-      versionSpec: 5.2.0
+      targetType: filePath
+      workingDirectory: $(Build.SourcesDirectory)\dev\MRTCore\build
+      filePath: $(Build.SourcesDirectory)\dev\MRTCore\build\DownloadDotNetRuntimeInstaller.ps1
+      arguments: -Platform $(buildPlatform) -OutputDirectory $(testPayloadDir)
+
+  - task: NuGetToolInstaller@0
+
+  - task: NuGetAuthenticate@0
+
+  - template: ProjectReunion-BuildHelixTestProject-Steps.yml
+    parameters:
+      displayName: ProjectReunion.Helix.Test
+      solutionPath: test\ProjectReunion.Helix.Test\ProjectReunion.Helix.Test.sln
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish BuildOutput
+    condition: always()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)\BuildOutput
+      artifactName: HelixTestBinaries
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore build/Helix/packages.config'
     inputs:
-      restoreSolution: test/Helix/packages.config
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-      restoreDirectory: packages
-      
-
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore MRTCore unit tests'
-    inputs:
-      command: 'custom'
-      arguments: 'restore dev\MRTCore\mrt\mrm\unittests\packages.config -ConfigFile nuget.config -PackagesDirectory dev\MRTCore\mrt\packages'
-      
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: Restore NuGet Packages for Taef
-    inputs:
+      command: 'restore'
       restoreSolution: build/Helix/packages.config
       feedsToUse: config
       nugetConfigPath: nuget.config
-      restoreDirectory: dev\MRTCore\mrt\packages
-      
-  - task: VSBuild@1
-    displayName: Build solution BaseUnitTest
+      restoreDirectory: packages
+
+  # - powershell: tree /f /a $(Build.SourcesDirectory)\build\Helix\packages
+  #   displayName: 'DIAG: dump packages'
+  #   continueOnError: true
+
+  # Download the MRT Core test binaries
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: Binaries'
     inputs:
-      solution: dev/MRTCore/mrt/mrm/UnitTests/BaseUnitTests.vcxproj
-      platform: $(buildPlatform)
-      configuration: $(buildConfiguration)
+      artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
+      downloadPath: $(testPayloadDir)
 
-#  These test projects need to be converted over to TAEF in order to be run on helix queues      
-#  - task: VSBuild@1
-#    displayName: Build solution UnitTests
-#    inputs:
-#      solution: dev/MRTCore/mrt/core/unittests/UnitTest.vcxproj
-#      platform: $(buildPlatform)
-#      configuration: $(buildConfiguration)
-#  - task: MSBuild@1
-#    displayName: Build solution ManagedTests
-#    inputs:
-#      solution: dev/MRTCore/mrt/Microsoft.Windows.ApplicationModel.Resources/unittests/ManagedTest.csproj
-#      platform: $(buildPlatform)
-#      configuration: $(buildConfiguration)  
+  - powershell: tree /f /a $(testPayloadDir)
+    displayName: 'DIAG: dump testPayloadDir'
+    continueOnError: true
 
-  - task: PowerShell@2
-    displayName: Collect Build Outputs
-    inputs:
-      targetType: inline
-      script: >
-        mkdir $(buildPlatform)-$(buildConfiguration)-taeftest
-
-        cp $(outputDirectory)/*.dll $(buildPlatform)-$(buildConfiguration)-taeftest
-
-        cp $(outputDirectory)/*.pdb $(buildPlatform)-$(buildConfiguration)-taeftest
-
-        dir $(buildPlatform)-$(buildConfiguration)-taeftest
-        
-  - task: PublishBuildArtifacts@1
-    displayName: Publish Build Outputs
-    inputs:
-      PathtoPublish: $(buildPlatform)-$(buildConfiguration)-taeftest
-      ArtifactName: $(buildPlatform)-$(buildConfiguration)-taeftest
-      publishLocation: Container
-      
+  # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
+  # Note: There are 3 test suites for MRT Core. We currently run 2 of them in Helix.
   - task: powershell@2
-    displayName: 'PrepareHelixPayload.ps1'
+    displayName: 'Discover tests'
+    condition: ${{ parameters.conditionForRunTests }}
     inputs:
       targetType: filePath
-      filePath: build\Helix\PrepareHelixPayload.ps1
-      arguments: -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
-      
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnitTests.proj' -WorkItemPrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)'
+
+  - task: powershell@2
+    displayName: 'Discover tests'
+    condition: ${{ parameters.conditionForRunTests }}
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\BaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-BaseUnitTests.proj' -WorkItemPrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)'
+
+  # TODO: This test needs to be converted to TAEF to run in Helix.
+  # - task: powershell@2
+  #   displayName: 'Discover tests'
+  #   condition: ${{ parameters.conditionForRunTests }}
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+  #     arguments: -TestFilePattern 'mrtcore_test_binaries_x64\ManagedTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-ManagedTest.proj' -WorkItemPrefix 'MrtCore-ManagedTest-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.ManagedTest.$(buildPlatform).$(buildConfiguration)'
+
+  # Publish the generated test work items (*.proj file) as Pipeline artifact(s).
+  # This is not required, but it is useful for debugging purposes to see what tests were discovered.
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish test work items'
+    condition: ${{ parameters.conditionForRunTests }}
+    inputs:
+      PathtoPublish: $(helixWorkItemsDir)
+      artifactName: 'HelixWorkItems'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
+    condition: ${{ parameters.conditionForRunTests }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      restoreSolution: build\Helix\RunTestsInHelix.proj
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+      restoreDirectory: packages
+
+  # Run the tests in Helix
+  # By executing 'dotnet msbuild' against RunTestsInHelix.proj the test payload and the work items to execute get sent to Helix.
   - task: DotNetCoreCLI@2
-    displayName: Run tests in Helix
+    displayName: 'Run tests in Helix'
+    condition: ${{ parameters.conditionForRunTests }}
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       command: custom
-      projects: build/Helix/RunTestsInHelix.proj
+      projects: build\Helix\RunTestsInHelix.proj
       custom: msbuild
-      arguments: /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestSuite=${{parameters.TestSuite}} /p:IsExternal=true /p:Creator=ProjectReunion
- 
+      arguments: /p:HelixBuild=$(Build.BuildId) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:HelixTargetQueues=$(helixTargetQueues) /p:IsExternal=true /p:Creator=ProjectReunion
+
+  # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
+  - task: powershell@2
+    displayName: 'UpdateUnreliableTests.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(modifiedWinUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
+      arguments: -HelixIsExternal -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
+
+  # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
+  - task: powershell@2
+    displayName: 'OutputTestResults.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(modifiedWinUIHelixPipelineScripts)\OutputTestResults.ps1
+      arguments: -HelixIsExternal -HelixTypeJobFilter $(helixType)
+
+  # This downloads files from Helix so that they can be published as a Pipeline artifact. This makes debugging test failures a lot easier since the
+  # full logs and any supporting files can be downloaded from the Pipeline.
+  - task: powershell@2
+    displayName: 'ProcessHelixFiles.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(modifiedWinUIHelixPipelineScripts)\ProcessHelixFiles.ps1
+      # Remove -ProcessAllJobs to only download the files from work items with failing tests
+      arguments: -HelixIsExternal -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Helix files'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    inputs:
+      PathtoPublish: $(helixTestOutputBaseDir)
+      artifactName: HelixTestOutput

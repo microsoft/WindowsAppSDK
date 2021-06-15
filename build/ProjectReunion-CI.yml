@@ -145,15 +145,8 @@ jobs:
     name: 'RunTestsInHelix'
     dependsOn:
       - Build
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-    testSuite: 'DevTestSuite'
-    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-
-- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-  parameters:
-    dependsOn: RunTestsInHelix
-    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-    minimumExpectedTestsExecutedCount: 2
+      - BuildMRT
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
@@ -191,13 +184,3 @@ jobs:
 #    helixType: 'test/frpkg'
 #    dependsOn: CreateNugetPackage
 #    pkgArtifactPath: '$(artifactDownloadPath)\drop\FrameworkPackage'
-
-#UNDONE - subsequent PR
-#- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-#  parameters:
-#    dependsOn:
-#    - RunTestsInHelix
-#    - RunNugetPkgTestsInHelix
-#    - RunFrameworkPkgTestsInHelix
-#    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-#    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
