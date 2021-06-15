@@ -150,11 +150,11 @@ jobs:
     testSuite: 'DevTestSuite'
     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
 
-- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-  parameters:
-    dependsOn: RunTestsInHelix
-    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-    minimumExpectedTestsExecutedCount: 2
+# - template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
+#   parameters:
+#     dependsOn: RunTestsInHelix
+#     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+#     minimumExpectedTestsExecutedCount: 2
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml

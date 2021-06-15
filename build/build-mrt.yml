@@ -122,6 +122,30 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
+- task: CopyFiles@2
+  displayName: 'copy mrtcore test binaries for publishing'
+  inputs:
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+    Contents: |
+      BaseUnitTests\**
+      ManagedTest\**
+      UnitTest\**
+      UnpackagedTests\**
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_testbin\$(buildPlatform)'
+
+- task: CmdLine@1
+  displayName: 'DIAG: dump mrtcore_testbin'
+  inputs:
+    filename: 'tree /f /a $(Build.ArtifactStagingDirectory)\mrt_testbin\$(buildPlatform)'
+
+# Publish the test binaries so we can run them in Helix later.
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore test binaries'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_testbin\$(buildPlatform)'
+    artifactName: mrtcore_test_binaries_$(buildPlatform)
+
 - task: VSTest@2
   displayName: 'test MRT: ManagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
