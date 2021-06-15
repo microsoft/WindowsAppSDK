@@ -41,3 +41,8 @@ if($PublishAppxFiles)
 {
     $AppxPackagesDir = "$FullPublishDir\AppxPackages"
 }
+
+# Copy files to Full Nuget package
+#
+# Dynamic Dependency build overrides
+PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
