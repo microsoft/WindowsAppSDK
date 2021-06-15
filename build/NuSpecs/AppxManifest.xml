@@ -24,20 +24,5 @@
           <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
-    <Extension Category="windows.activatableClass.inProcessServer">
-      <InProcessServer>
-        <Path>Microsoft.ProjectReunion.dll</Path>
-          <!-- Dynamic Dependency -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
-
-          <!-- AppLifecycle -->
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
-      </InProcessServer>
-    </Extension>
   </Extensions>
 </Package>

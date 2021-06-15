@@ -2,5 +2,4 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.props"/>
   <Import Project="$(MSBuildThisFileDirectory)ProjectReunion-Nuget-Native.C.props" />
-  <Import Project="$(MSBuildThisFileDirectory)ProjectReunion-Nuget-Native.WinRt.props" />
 </Project>

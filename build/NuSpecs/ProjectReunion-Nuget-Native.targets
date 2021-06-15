@@ -4,23 +4,4 @@
 
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.targets"/>
 
-  <PropertyGroup>
-    <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
-    <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
-      <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
-      <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
-    </Reference>
-  </ItemGroup>
-
 </Project>
