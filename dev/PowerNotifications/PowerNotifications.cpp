@@ -198,7 +198,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
-    bool IsEffectivePowerModeV2Supported()
+    ULONG GetEffectivePowerModeVersion()
     {
         // We check for the version supported by checking if the feature is supported
         // Using NULL as an indicator for uninitialized cache value
@@ -210,7 +210,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             g_powerModeVersion = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
             check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
-        return g_powerModeVersion == EFFECTIVE_POWER_MODE_V2;
+        return g_powerModeVersion;
     }
 
     EventType& EffectivePowerMode_Event()
@@ -220,7 +220,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EffectivePowerMode_Register()
     {
-        ULONG version = IsEffectivePowerModeV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+        ULONG version = GetEffectivePowerModeVersion();
         check_hresult(PowerRegisterForEffectivePowerModeNotifications(
             version, [](EFFECTIVE_POWER_MODE mode, PVOID)
             {
@@ -238,10 +238,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         // Effectively the Get() for PowerMode
         // Needs to get a temporary subscription to get most recent value
+        // Also, we need a static so that it can be accessed in the lambda below
+        // since references or [&] doesn't work
         static std::promise<EFFECTIVE_POWER_MODE> promiseObj;
         static std::future<EFFECTIVE_POWER_MODE> futureObj;
         PVOID handle;
-        ULONG version = IsEffectivePowerModeV2Supported() ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+        ULONG version = GetEffectivePowerModeVersion();
         promiseObj = std::promise<EFFECTIVE_POWER_MODE>();
         futureObj = promiseObj.get_future();
 
@@ -250,8 +252,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 promiseObj.set_value(mode);
             }, NULL, &handle));
-        auto& mode = make_self<factory_implementation::PowerManager>()->m_cachedPowerMode;
-        mode = futureObj.get();
+        make_self<factory_implementation::PowerManager>()->m_cachedPowerMode = futureObj.get();
         check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
     }
 
