@@ -553,7 +553,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
     // EffectivePowerMode variables
-    static ULONG g_powerModeVersion = NULL;
+    static std::atomic<ULONG> g_powerModeVersion = NULL;
     static PVOID g_powerModeHandle;
 
     struct PowerManager
