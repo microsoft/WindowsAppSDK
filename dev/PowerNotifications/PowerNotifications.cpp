@@ -238,21 +238,23 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         // Effectively the Get() for PowerMode
         // Needs to get a temporary subscription to get most recent value
-        // Also, we need a static so that it can be accessed in the lambda below
-        // since references or [&] doesn't work
-        static std::promise<EFFECTIVE_POWER_MODE> promiseObj;
-        static std::future<EFFECTIVE_POWER_MODE> futureObj;
+
+        struct notify_callback {
+            EFFECTIVE_POWER_MODE mode;
+            wil::slim_event done;
+        } context;
+
         PVOID handle;
         ULONG version = GetEffectivePowerModeVersion();
-        promiseObj = std::promise<EFFECTIVE_POWER_MODE>();
-        futureObj = promiseObj.get_future();
+        auto handler = [](EFFECTIVE_POWER_MODE mode, PVOID rawContext) {
+            auto context = reinterpret_cast<notify_callback*>(rawContext);
+            context->mode = mode;
+            context->done.SetEvent();
+        };
 
-        check_hresult(PowerRegisterForEffectivePowerModeNotifications(
-            version, [](EFFECTIVE_POWER_MODE mode, PVOID)
-            {
-                promiseObj.set_value(mode);
-            }, NULL, &handle));
-        make_self<factory_implementation::PowerManager>()->m_cachedPowerMode = futureObj.get();
+        check_hresult(PowerRegisterForEffectivePowerModeNotifications(version, handler, &context, &handle));
+        context.done.wait();
+        make_self<factory_implementation::PowerManager>()->m_cachedPowerMode = context.mode;
         check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
     }
 
