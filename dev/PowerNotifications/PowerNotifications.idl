@@ -107,7 +107,7 @@ namespace Microsoft.ProjectReunion
         static SystemIdleStatus SystemIdleStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
 
-        static EffectivePowerMode EffectivePowerMode{ get; };
+        static Windows.Foundation.IAsyncOperation<EffectivePowerMode> EffectivePowerMode{ get; };
         static event Windows.Foundation.EventHandler<Object> EffectivePowerModeChanged;
 
         static UserPresenceStatus UserPresenceStatus{ get; };
