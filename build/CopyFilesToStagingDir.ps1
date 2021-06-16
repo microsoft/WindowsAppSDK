@@ -39,7 +39,7 @@ PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $Fu
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.ProjectReunion\
 PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
 #
