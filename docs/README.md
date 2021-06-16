@@ -192,6 +192,7 @@ communication, and the Windows Shell Namespace with user consent through brokeri
 so you can use the power of ResX/ResW in your Win32 applications 
 instead of MUI.
 
+* **[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md)** enable your app to deliver real time experiences in a power-efficient and dependable way.    
 
 # Future direction
 We aim to grow Project Reunion to provide a modern, simple, and accessible version of much 
