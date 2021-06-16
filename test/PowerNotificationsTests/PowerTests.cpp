@@ -40,10 +40,13 @@ int main()
     });
 
     // EffectivePowerMode
-    Pr("EffectivePowerMode Get() ", static_cast<int>(PowerManager::EffectivePowerMode()));
+    auto val = PowerManager::EffectivePowerMode();
+    Pr("EffectivePowerMode Get() ", static_cast<int>(val.get()));
+   
     auto tokenEP = PowerManager::EffectivePowerModeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
         {
-            Pr("EffectivePowerMode Subs() ", static_cast<int>(PowerManager::EffectivePowerMode()));
+            auto EM = PowerManager::EffectivePowerMode();
+            Pr("EffectivePowerMode Subs() ", static_cast<int>(EM.get()));
         });
 
 
@@ -97,6 +100,7 @@ int main()
         });
 
     cout << "\n\n";
+
     getchar();
     PowerManager::DisplayStatusChanged(tokenD);
     //PowerManager::DisplayStatusChanged(tokenS);
@@ -108,6 +112,8 @@ int main()
     PowerManager::DisplayStatusChanged(tokenE);
     PowerManager::DisplayStatusChanged(tokenDi);
     PowerManager::DisplayStatusChanged(tokenUs);
+
+
 }
 
 //
