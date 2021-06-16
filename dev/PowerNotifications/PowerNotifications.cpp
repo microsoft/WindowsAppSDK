@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <pch.h>
+#include <future>
 #include <PowerNotifications.h>
 #include <PowerNotificationsPal.h>
 #include <PowerManager.g.cpp>
@@ -61,7 +62,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(
             make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus);
     }
-   
+
     // PowerSupplyStatus Functions
     EventType& PowerSupplyStatus_Event()
     {
@@ -82,7 +83,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         BatteryStatus_Update();
     }
-   
+
     // RemainingChargePercent Functions
     EventType& RemainingChargePercent_Event()
     {
@@ -128,7 +129,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetDischargeTime(
             &make_self<factory_implementation::PowerManager>()->m_cachedDischargeTime));
     }
-   
+
     // PowerSourceStatus Functions
     EventType& PowerSourceStatus_Event()
     {
@@ -153,7 +154,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetPowerCondition(
             &make_self<factory_implementation::PowerManager>()->m_cachedPowerSourceStatus));
     }
-   
+
     // DisplayStatus Functions
     EventType& DisplayStatus_Event()
     {
@@ -178,7 +179,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(GetDisplayStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedDisplayStatus));
     }
-   
+
     // SystemIdleStatus Functions
     EventType& SystemIdleStatus_Event()
     {
@@ -197,32 +198,67 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_hresult(UnregisterSystemIdleStatusChangedListener(
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
-   
-    // PowerSchemePersonality Functions
-    EventType& PowerSchemePersonality_Event()
+
+    ULONG GetEffectivePowerModeVersion()
     {
-        return make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityChangedEvent;
+        // We check for the version supported by checking if the feature is supported
+        // Using NULL as an indicator for uninitialized cache value
+        if (g_powerModeVersion == NULL)
+        {
+            PVOID handle;
+            auto hr = PowerRegisterForEffectivePowerModeNotifications(
+                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID) {}, NULL, &handle);
+            g_powerModeVersion = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+            check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
+        }
+        return g_powerModeVersion;
     }
 
-    void PowerSchemePersonality_Register()
+    EventType& EffectivePowerMode_Event()
     {
-        check_hresult(RegisterPowerSchemePersonalityChangedListener(
-            &PowerManager::PowerSchemePersonalityChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        return make_self<factory_implementation::PowerManager>()->m_powerModeChangedEvent;
     }
 
-    void PowerSchemePersonality_Unregister()
+    void EffectivePowerMode_Register()
     {
-        check_hresult(UnregisterPowerSchemePersonalityChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_powerSchemePersonalityHandle));
+        ULONG version = GetEffectivePowerModeVersion();
+        check_hresult(PowerRegisterForEffectivePowerModeNotifications(
+            version, [](EFFECTIVE_POWER_MODE mode, PVOID)
+            {
+                PowerManager::EffectivePowerModeChanged_Callback(mode);
+            }, nullptr, &g_powerModeHandle));
     }
 
-    void PowerSchemePersonality_Update()
+    void EffectivePowerMode_Unregister()
     {
-        check_hresult(GetPowerSchemePersonality(
-            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSchemePersonality));
+        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(g_powerModeHandle));
+        g_powerModeHandle = NULL;
     }
-   
+
+    void EffectivePowerMode_Update()
+    {
+        // Effectively the Get() for PowerMode
+        // Needs to get a temporary subscription to get most recent value
+
+        struct notify_callback {
+            EFFECTIVE_POWER_MODE mode;
+            wil::slim_event done;
+        } context;
+
+        PVOID handle;
+        ULONG version = GetEffectivePowerModeVersion();
+        auto handler = [](EFFECTIVE_POWER_MODE mode, PVOID rawContext) {
+            auto context = reinterpret_cast<notify_callback*>(rawContext);
+            context->mode = mode;
+            context->done.SetEvent();
+        };
+
+        check_hresult(PowerRegisterForEffectivePowerModeNotifications(version, handler, &context, &handle));
+        context.done.wait();
+        make_self<factory_implementation::PowerManager>()->m_cachedPowerMode = context.mode;
+        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
+    }
+
     // UserPresenceStatus Functions
     EventType& UserPresenceStatus_Event()
     {
@@ -246,31 +282,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         check_hresult(GetUserPresenceStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedUserPresenceStatus));
-    }
-
-    // SystemAwayModeStatus Functions
-    EventType& SystemAwayModeStatus_Event()
-    {
-        return make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusChangedEvent;
-    }
-
-    void SystemAwayModeStatus_Register()
-    {
-        check_hresult(RegisterSystemAwayModeStatusChangedListener(
-            &PowerManager::SystemAwayModeStatusChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
-    }
-
-    void SystemAwayModeStatus_Unregister()
-    {
-        check_hresult(UnregisterSystemAwayModeStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_systemAwayModeStatusHandle));
-    }
-
-    void SystemAwayModeStatus_Update()
-    {
-        check_hresult(GetSystemAwayModeStatus(
-            &make_self<factory_implementation::PowerManager>()->m_cachedSystemAwayModeStatus));
     }
 
     // SystemSuspendStatus Functions
@@ -301,5 +312,4 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         check_win32(PowerUnregisterSuspendResumeNotification(
             make_self<factory_implementation::PowerManager>()->m_systemSuspendHandle));
     }
-
 }
