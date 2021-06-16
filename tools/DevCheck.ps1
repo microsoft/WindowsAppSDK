@@ -255,14 +255,15 @@ function Test-DevTestCert
     $pfx = Get-PfxCertificate -FilePath $path
     $thumbprint = $pfx.Thumbprint
 
-    $cert = Get-ChildItem -Path "cert:\LocalMachine\TrustedPeople\$thumbprint"
-    if ([string]::IsNullOrEmpty($cert))
+    $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
+    if (-not(Test-Path -Path $cert_path))
     {
         Write-Host 'Test certificate...Not Found'
         $global:issues += 1
     }
     else
     {
+        $cert = Get-ChildItem -Path $cert_path
         $expiration = $cert.NotAfter
         $now = Get-Date
         if ($expiration -lt $now)

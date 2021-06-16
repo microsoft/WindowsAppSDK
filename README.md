@@ -22,11 +22,6 @@ Some notes about 0.5...
 * Only includes WinUI 3 / Text rendering / Localization
 * To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(in the future, XAML Islands will enable incrementally adopting WinUI 3)*
 
-### Please let us know how we can make this repo better. Your voice matters!
-The Windows Developer Platform team strives to continually improve the developer experience on our open-source GitHub repositories. Survey responses will not be associated with any personal information. Data collected will only be used to improve this repository. This survey will take approximately 4-7 minutes to complete. **You can find the Project Reunion Survey [here](https://customervoice.microsoft.com/Pages/ResponsePage.aspx?id=v4j5cvGGr0GRqy180BHbR8hRacjHEXxFkhwDmnqBYbJUN1k1WTRXNFhCUUs2SkdOS1QzSTNCM0o2Wi4u)**.
-
-Thank you for your time and consideration to do this! Our team truly appreciates you! 👌🤩
-
 ### Roadmap
 
 Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*: 

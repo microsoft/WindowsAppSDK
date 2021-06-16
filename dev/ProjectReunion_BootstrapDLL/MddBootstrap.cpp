@@ -167,24 +167,32 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     auto buffer{ wil::make_unique_cotaskmem<BYTE[]>(bufferLength) };
     THROW_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
-    // Find the Project Reunion Framework package in the package graph to determine its path
-    const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
-    for (size_t index = 0; index < packageInfoCount; ++index, ++packageInfo)
-    {
-        PCWSTR frameworkPackageFamilyName{ L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe" };
-        if (CompareStringOrdinal(packageInfo->packageFamilyName, -1, frameworkPackageFamilyName, -1, TRUE) == CSTR_EQUAL)
-        {
-            frameworkPackageInfo = packageInfo;
-            return buffer;
-        }
-    }
-
-    // We didn't find the framework package as a dependency of the package
-    // providing the LifetimeManager.
+    // Find the Project Reunion framework package in the package graph to determine its path
     //
-    // Verify the package providing the LifetimeManager declares
-    // <PackageDependency> on the Project Reunion Framework package.
-    THROW_WIN32(APPMODEL_ERROR_PACKAGE_NOT_AVAILABLE);
+    // NOTE: The Project Reunion DDLM package...
+    //          * ...has 1 framework package dependency
+    //          * ...its framework package dependency's name starts with "Microsoft.ProjectReunion"
+    //          * ...its publisher id is "8wekyb3d8bbwe"
+    // Any failure to find the DDLM's package graph but not find the expected framework dependency
+    // implies the DDLM is improperly built and cannot be used. Of course ThisShouldNeverHappen
+    // but a little paranoia isn't a bad thing :-)
+    //
+    // Verify the package providing the LifetimeManager declares a <PackageDependency> on the Project Reunion framework package.
+    THROW_HR_IF_MSG(E_UNEXPECTED, packageInfoCount != 1, "PRddlm:%ls PackageGraph.Count:%u", packageFullName, packageInfoCount);
+    //
+    const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
+    const WCHAR c_expectedNamePrefix[]{ L"Microsoft.ProjectReunion" };
+    const int c_expectedNamePrefixLength{ ARRAYSIZE(c_expectedNamePrefix) - 1 };
+    THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.name, c_expectedNamePrefixLength, c_expectedNamePrefix, c_expectedNamePrefixLength, TRUE) != CSTR_EQUAL,
+                    "PRddlm:%ls Expected.Name:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, c_expectedNamePrefix, packageInfo->packageFullName);
+    //
+    PCWSTR c_expectedPublisherId{ L"8wekyb3d8bbwe" };
+    THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.publisherId, -1, c_expectedPublisherId, -1, TRUE) != CSTR_EQUAL,
+                    "PRddlm:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, packageInfo->packageFullName);
+
+    // Gotcha!
+    frameworkPackageInfo = packageInfo;
+    return buffer;
 }
 
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR frameworkPath)

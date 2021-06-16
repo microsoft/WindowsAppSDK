@@ -159,6 +159,7 @@ jobs:
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
   parameters:
+    publishToMaestro: false
     jobName: CreateNugetPackage
     dependsOn:
       - Build

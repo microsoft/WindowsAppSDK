@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainWindow.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="App.idl"/>
+    <Midl Include="MainWindow.idl"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="App.cpp"/>
+    <ClCompile Include="MainWindow.cpp"/>
+    <ClCompile Include="Generated Files\module.g.cpp">
+        <Filter>Generated Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClCompile Include="App.h"/>
+    <ClCompile Include="MainWindow.h"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Images\Wide310x150Logo.scale-200.png">
+      <Filter>Images</Filter>
+    </Image>
+    <Image Include="Images\StoreLogo.png">
+      <Filter>Images</Filter>
+    </Image>
+    <Image Include="Images\Square150x150Logo.scale-200.png">
+      <Filter>Images</Filter>
+    </Image>
+    <Image Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Images</Filter>
+    </Image>
+    <Image Include="Images\Square44x44Logo.scale-200.png">
+      <Filter>Images</Filter>
+    </Image>
+    <Image Include="Images\SplashScreen.scale-200.png">
+      <Filter>Images</Filter>
+    </Image>
+    <Image Include="Images\LockScreenLogo.scale-200.png">
+      <Filter>Images</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Images">
+      <UniqueIdentifier>{$guid1$}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+</Project>

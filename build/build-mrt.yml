@@ -5,7 +5,6 @@
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
-  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
@@ -114,7 +113,7 @@ steps:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
@@ -124,32 +123,39 @@ steps:
     artifactName: binlogs
 
 - task: VSTest@2
-  displayName: 'test MRT (Managed)'
+  displayName: 'test MRT: ManagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\ManagedTest.build.appxrecipe
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
+    testAssemblyVer2: '**\ManagedTest.build.appxrecipe'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\ManagedTest'
+    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
-  displayName: 'test MRT'
+  displayName: 'test MRT: UnitTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\TE.*.dll
-      !**\obj\**
-      !**\MrtCoreUnpackagedTests.dll
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
+    testAssemblyVer2: '**\UnitTest.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
+    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: BaseUnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\BaseUnitTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\BaseUnitTests'
+    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+# Note: The MRT Unpackaged tests currently do not work in the CI pipeline.
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
