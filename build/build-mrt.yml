@@ -133,7 +133,7 @@ steps:
       UnpackagedTests\**
     TargetFolder: '$(Build.TempDirectory)\mrt_testbin\$(buildPlatform)'
 
-- powershell: tree /f /a $(Build.TempDirectory)\mrt_testbin\$(buildPlatform)
+- powershell: tree /f /a $env:BUILD_TEMPDIRECTORY\mrt_testbin\$(buildPlatform)
   displayName: 'DIAG: dump mrtcore_testbin'
 
 # Publish the test binaries so we can run them in Helix later.

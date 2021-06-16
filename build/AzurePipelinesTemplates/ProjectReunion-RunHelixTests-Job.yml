@@ -64,7 +64,7 @@ jobs:
   - task: CmdLine@1
     displayName: 'DIAG: dump packages'
     inputs:
-      filename: 'tree /f /a $(Build.SourcesDirectory)\packages'
+      filename: 'tree /f /a $env:BUILD_SOURCESDIRECTORY\packages'
 
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
@@ -72,7 +72,7 @@ jobs:
       artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
       downloadPath: '$(Build.ArtifactStagingDirectory)\bits'
 
-  - powershell: tree /f /a $(Build.SourcesDirectory)\bits
+  - powershell: tree /f /a $env:BUILD_SOURCESDIRECTORY\bits
     displayName: 'DIAG: dump bits'
 
 
