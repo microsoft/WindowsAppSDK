@@ -26,8 +26,34 @@ void Pr(string st, double val)
     cout << st << val << endl;
 }
 
+void AllGet()
+{
+    auto val = PowerManager::EffectivePowerMode();
+    Pr("EffectivePowerMode Get() ", static_cast<int>(val.get()));
+
+    Pr("BatteryStatus Get() ", static_cast<int>(PowerManager::BatteryStatus()));
+    Pr("PowerSupplyStatus Get() ", static_cast<int>(PowerManager::PowerSupplyStatus()));
+    Pr("RemainingChargePercent Get() ", static_cast<int>(PowerManager::RemainingChargePercent()));
+    Pr("UserPresenceStatus Get() ", static_cast<int>(PowerManager::UserPresenceStatus()));
+    Pr("PowerSourceStatus Get() ", static_cast<int>(PowerManager::PowerSourceStatus()));
+    Pr("EnergySaverStatus Get() ", static_cast<int>(PowerManager::EnergySaverStatus()));
+    Pr("RemainingDischargeTime Get() ", static_cast<double>(PowerManager::RemainingDischargeTime().count()));
+    Pr("DisplayStatus Get() ", static_cast<int>(PowerManager::DisplayStatus()));
+    Pr("UserPresenceStatus Get() ", static_cast<int>(PowerManager::UserPresenceStatus()));
+}
+
 int main()
 {
+
+    for (auto i = 0; i < 5; i++)
+    {
+        AllGet();
+        cout << "\n\n";
+        Sleep(10000);
+    }
+
+    return 0;
+
     // BatteryStatus
     Pr("BatteryStatus Get() ", static_cast<int>(PowerManager::BatteryStatus()));
     Pr("PowerSupplyStatus Get() ", static_cast<int>(PowerManager::PowerSupplyStatus()));
@@ -102,16 +128,16 @@ int main()
     cout << "\n\n";
 
     getchar();
-    PowerManager::DisplayStatusChanged(tokenD);
-    //PowerManager::DisplayStatusChanged(tokenS);
-    PowerManager::DisplayStatusChanged(tokenB);
-    PowerManager::DisplayStatusChanged(tokenEP);
-    PowerManager::DisplayStatusChanged(tokenU);
+    //PowerManager::DisplayStatusChanged(tokenD);
+    ////PowerManager::DisplayStatusChanged(tokenS);
+    //PowerManager::DisplayStatusChanged(tokenB);
+    //PowerManager::DisplayStatusChanged(tokenEP);
+    //PowerManager::DisplayStatusChanged(tokenU);
 
-    PowerManager::DisplayStatusChanged(tokenR);
-    PowerManager::DisplayStatusChanged(tokenE);
-    PowerManager::DisplayStatusChanged(tokenDi);
-    PowerManager::DisplayStatusChanged(tokenUs);
+    //PowerManager::DisplayStatusChanged(tokenR);
+    //PowerManager::DisplayStatusChanged(tokenE);
+    //PowerManager::DisplayStatusChanged(tokenDi);
+    //PowerManager::DisplayStatusChanged(tokenUs);
 
 
 }
