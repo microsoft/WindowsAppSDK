@@ -501,10 +501,12 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         }
 
         // EffectivePowerMode Functions
-        winrt::Microsoft::ProjectReunion::EffectivePowerMode EffectivePowerMode()
+        Windows::Foundation::IAsyncOperation<winrt::Microsoft::ProjectReunion::EffectivePowerMode> EffectivePowerMode()
         {
+            co_await resume_background();
             CheckRegistrationAndOrUpdateValue(EffectivePowerModeFunc);
-            return static_cast<winrt::Microsoft::ProjectReunion::EffectivePowerMode>(m_cachedPowerMode);
+            auto res = static_cast<winrt::Microsoft::ProjectReunion::EffectivePowerMode>(m_cachedPowerMode);
+            co_return res;
         }
 
         event_token EffectivePowerModeChanged(const PowerEventHandle& handler)
@@ -599,7 +601,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->SystemIdleStatus();
         }
 
-        static winrt::Microsoft::ProjectReunion::EffectivePowerMode EffectivePowerMode()
+        static Windows::Foundation::IAsyncOperation<winrt::Microsoft::ProjectReunion::EffectivePowerMode> EffectivePowerMode()
         {
             return make_self<factory_implementation::PowerManager>()->EffectivePowerMode();
         }
