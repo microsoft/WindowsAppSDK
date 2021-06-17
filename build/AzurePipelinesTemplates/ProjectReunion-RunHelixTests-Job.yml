@@ -64,7 +64,7 @@ jobs:
   - task: CmdLine@1
     displayName: 'DIAG: dump packages'
     inputs:
-      filename: 'tree /f /a $env:BUILD_SOURCESDIRECTORY\packages'
+      filename: 'tree /f /a $env:BUILD_SOURCESDIRECTORY\build\Helix\packages'
 
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
