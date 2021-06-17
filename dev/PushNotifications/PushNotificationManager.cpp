@@ -35,9 +35,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     inline constexpr auto c_initialBackoff{ 60s };
     inline constexpr auto c_backoffIncrement{ 60s };
 
-    const HRESULT WNP_E_NOT_CONNECTED = (HRESULT)0x880403E8L;
-    const HRESULT WNP_E_RECONNECTING = (HRESULT)0x880403E9L;
-    const HRESULT WNP_E_BIND_USER_BUSY = (HRESULT)0x880403FEL;
+    const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
+    const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
+    const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
     bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
     {
@@ -55,30 +55,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    inline bool IsPackagedProcess()
-    {
-        wchar_t packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1] = {};
-
-        UINT32 packageFullNameLength = static_cast<UINT32>(ARRAYSIZE(packageFullName));
-
-        const auto packagedProcessError = ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName);
-
-        if (packagedProcessError == APPMODEL_ERROR_NO_PACKAGE)
-        {
-            return false;
-        }
-
-        THROW_IF_WIN32_ERROR(packagedProcessError);
-
-        return true;
-    }
-
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
-        THROW_HR_IF(E_NOTIMPL, !IsPackagedProcess());
+        THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
 
@@ -185,10 +167,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 PushNotificationTrigger trigger{};
                 builder.SetTrigger(trigger);
 
-                if (!IsPackagedProcess())
-                {
-                    throw winrt::hresult_not_implemented();
-                }
+                THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
                 // In case the interface is not supported, let it throw.
                 auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
@@ -216,7 +195,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     registeredTask.Unregister(true);
                 }
-
             }
         );
 

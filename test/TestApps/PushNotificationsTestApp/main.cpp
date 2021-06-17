@@ -19,6 +19,8 @@ winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid fr
 
 PushNotificationRegistrationToken g_appToken = nullptr;
 
+constexpr auto timeout{ std::chrono::seconds(300) };
+
 bool ChannelRequestUsingNullRemoteId()
 {
     try
@@ -34,7 +36,7 @@ bool ChannelRequestUsingNullRemoteId()
 
 HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
 {
-    if (channelOperation.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
+    if (channelOperation.wait_for(timeout) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
         return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
@@ -63,7 +65,7 @@ bool ChannelRequestUsingRemoteId()
 bool MultipleChannelClose()
 {
     auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
-    if (channelOperation.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
+    if (channelOperation.wait_for(timeout) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
         return false; // timed out or failed
