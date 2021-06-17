@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<!-- This is a special MSBuild file that is parsed before everything else when MSBuild detects it in our directory structure.
+     Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
+     to ensure that all of our build output files end up in the same location.  This is parsed too late when put in mux.controls.props. -->
+<Project InitialTargets="DisplayLateProperties"  ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Semi-colon delimited list of target dependencies. -->
+    <!-- <PostBuildDependsOn>VerboseOutputLayoutInfo</PostBuildDependsOn> -->
+  </PropertyGroup>
+
+  <!-- Helper for seeing what the output directory looks like at different stages of the build. -->
+  <Target Name="DisplayLateProperties">
+    <Message Importance="High" Text="DisplayLateProperties: BaseOutputPath=$(BaseOutputPath)"/>
+    <Message Importance="High" Text="DisplayLateProperties: OutDir=$(OutDir)"/>
+    <Message Importance="High" Text="DisplayLateProperties: TargetDir=$(TargetDir)"/>
+    <Message Importance="High" Text="DisplayLateProperties: AppxPackageDir=$(AppxPackageDir)"/>
+  </Target>
+
+  <!-- Display late defined properties. -->
+  <Target Name="VerboseOutputLayoutInfo">
+    <ItemGroup>
+      <FilesInOutput Include="$(BaseOutputPath)\**\*" />
+    </ItemGroup>
+    <Message Importance="High" Text="Global BaseOutputPath: @(FilesInOutput->'%(fullpath)')" Condition="'%(Identity)' != ''" />
+  </Target>
+
+  <!-- Global project level post build event target.  This runs after every project in the solution. It's currently set to just
+       chain targets together. -->
+  <Target Name="PostBuildEvent" DependsOnTargets="$(PostBuildDependsOn)" />
+</Project>

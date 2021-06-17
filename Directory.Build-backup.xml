@@ -4,44 +4,17 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location.  This is parsed too late when put in mux.controls.props. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <!-- This is normally defined in Platform.Default.props for each platform, but we need it early in order to ensure
-       our output directories are formatted consistently. -->
-  <Choose>
-    <When Condition="'$(Platform)' == 'x64'">
-      <PropertyGroup>
-        <PlatformTarget>x64</PlatformTarget>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(Platform)' == 'Win32'">
-      <PropertyGroup>
-        <PlatformTarget>x86</PlatformTarget>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(Platform)' == 'ARM'">
-      <PropertyGroup>
-        <PlatformTarget>arm</PlatformTarget>
-      </PropertyGroup>
-    </When>
-  </Choose>
-
   <PropertyGroup Condition="$(BuildingWithBuildExe) != 'true'">
     <IsTDPConfiguration>false</IsTDPConfiguration>
 
-    <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
-    <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(PlatformTarget)\$(Configuration)\</BaseOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(Configuration)</BaseOutputPath>
 
-    <!-- This is later fixed up to contain the project name, but if we specify it here then it ends up being included twice. -->
-    <OutDir>$(BaseOutputPath)</OutDir>
-    <TargetDir>$(OutDir)</TargetDir>
-    
-    <!-- <AppxPackageDirWasSpecified>true</AppxPackageDirWasSpecified> -->    
+    <AppxBundle>Never</AppxBundle>
+
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
 
-    <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)ProjectReunion.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
-    <ForceImportAfterCppDefaultProps>$(MSBuildThisFileDirectory)ProjectReunion.AfterDefaults.props</ForceImportAfterCppDefaultProps>
-    <ForceImportAfterCppTargets>$(MSBuildThisFileDirectory)ProjectReunion.AfterCpp.targets</ForceImportAfterCppTargets>
+    <ForceImportAfterCppTargets>$(MSBuildThisFileDirectory)PostBuild.targets</ForceImportAfterCppTargets>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
@@ -51,9 +24,17 @@
   </PropertyGroup>
 
   <Target Name="DirectoryBuildPropsInfo">
+    <PropertyGroup>
+      <!-- Set these during the target to ensure it is scheduled after PlatformTarget is populated. -->
+      <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
+      <!-- <OutDir>$(BaseOutputPath)$(PlatformTarget)\</OutDir>
+      <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
+      <AppxPackageDir>$(OutDir)\AppxPackages</AppxPackageDir> -->
+    </PropertyGroup>
     <Message  Condition="$(ProjectReunionBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
-    <Message Importance="High" Text="DisplayLateProperties: BaseOutputPath=$(BaseOutputPath)"/>
-    <Message Importance="High" Text="DisplayLateProperties: AppxPackageDir=$(AppxPackageDir)"/>
+
+    <Message Importance="High" Text="Directory.Build.props: BaseOutputPath=$(BaseOutputPath)"/>
+    <Message Importance="High" Text="Directory.Build.props: OutDir=$(OutDir)"/>
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
