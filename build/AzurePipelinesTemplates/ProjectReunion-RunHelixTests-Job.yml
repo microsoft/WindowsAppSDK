@@ -55,7 +55,7 @@ jobs:
       command: 'restore'
       restoreSolution: build/Helix/packages.config
       feedsToUse: config
-      nugetConfigPath: build/Helix/nuget.config
+      nugetConfigPath: nuget.config
       restoreDirectory: packages
 
   - powershell: tree /f /a $(Build.SourcesDirectory)\packages
