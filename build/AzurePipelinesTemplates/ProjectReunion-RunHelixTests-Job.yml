@@ -58,13 +58,8 @@ jobs:
       nugetConfigPath: nuget.config
       restoreDirectory: packages
 
-  - powershell: tree /f /a $(Build.SourcesDirectory)\packages
+  - powershell: tree /f /a $(Build.SourcesDirectory)\build\Helix\packages
     displayName: 'DIAG: dump mrtcore_testbin'
-
-  - task: CmdLine@1
-    displayName: 'DIAG: dump packages'
-    inputs:
-      filename: 'tree /f /a $env:BUILD_SOURCESDIRECTORY\build\Helix\packages'
 
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
