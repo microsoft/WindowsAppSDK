@@ -123,7 +123,6 @@ PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunio
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
 PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\native
-
 #
 # C#/WinRT Projections
 #

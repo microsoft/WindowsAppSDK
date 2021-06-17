@@ -35,7 +35,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     inline constexpr auto c_initialBackoff{ 60s };
     inline constexpr auto c_backoffIncrement{ 60s };
 
-    const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
+    const HRESULT WNP_E_NOT_CONNECTED{ 0x880403E8L };
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
@@ -201,7 +201,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         if (WI_IsFlagSet(registrationOptions, PushNotificationRegistrationOptions::ComActivator))
         {
             g_waitHandleForArgs.create();
-            THROW_HR_IF_NULL(E_UNEXPECTED, g_waitHandleForArgs);
+            THROW_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_waitHandleForArgs);
 
             THROW_IF_FAILED(::CoRegisterClassObject(
                 taskClsid,
