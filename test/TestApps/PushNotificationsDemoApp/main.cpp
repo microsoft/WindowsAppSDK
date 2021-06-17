@@ -108,7 +108,7 @@ int main()
 
         // Do stuff to process the raw payload
         std::string payloadString(payload.begin(), payload.end());
-        printf("Push notification content received from BACKGROUND: %ws\n", payloadString);
+        printf("Push notification content received from BACKGROUND: %s\n", payloadString.c_str());
         printf("Press 'Enter' to exit the App.");
 
         // Call Complete on the deferral when finished processing the payload.
