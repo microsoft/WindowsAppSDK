@@ -191,8 +191,6 @@ communication, and the Windows Shell Namespace with user consent through brokeri
 * **[Modern Resource Tooling](https://github.com/microsoft/ProjectReunion/issues/11)** 
 so you can use the power of ResX/ResW in your Win32 applications 
 instead of MUI.
-
-
 # Future direction
 We aim to grow Project Reunion to provide a modern, simple, and accessible version of much 
 of the power of the Windows Application Platform.  Working in the open with our development 

@@ -19,6 +19,7 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
 [Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
 Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
+[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supported | 🔄 Preview |
 Deploy Options: |  
 • In-app | ✅ Supported | ✅ Supported | ✅ Supported | 
 • Fx Package | ✅ Supported | ✅ Supported | ✅ Supported | 
@@ -35,6 +36,7 @@ As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX]
 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
 [Power state notifications](https://github.com/microsoft/ProjectReunion/issues/111) | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
 Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported | 
+[Push Notifications](https://github.com/microsoft/ProjectReunion/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supported | 🔄 Preview |
 Deploy Options:  |  
 • In-app | ❌ Not Supported | 🔄 Preview | ✅ Supported | 
 • Fx Package | ❌ Not Supported | 🔄 Preview | ✅ Supported |
@@ -69,7 +71,7 @@ This isn't an exhaustive list: it's a sampling of some of the key infrastructure
 
 * Enhanced app packaging
 * Framework package deployment
-* Auto upate for all app types
+* Auto update for all app types
 
 ### 5. Platform unification and deployment
 
