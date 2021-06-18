@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::PushNotifications
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
         const DWORD receiveArgsTimeoutInMSec{ 2000 };
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !g_waitHandleForArgs.wait(receiveArgsTimeoutInMSec));
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
         return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().TryLookup(ACTIVATED_EVENT_ARGS_KEY).as<PushNotificationReceivedEventArgs>();
     }
 }

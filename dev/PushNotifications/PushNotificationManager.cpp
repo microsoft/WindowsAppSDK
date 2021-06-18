@@ -22,6 +22,13 @@ using namespace std::literals;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 
+static wil::unique_event g_waitHandleForArgs;
+
+wil::unique_event& GetWaitHandleForArgs()
+{
+    return g_waitHandleForArgs;
+}
+
 namespace winrt
 {
     using namespace Windows::ApplicationModel::Background;
@@ -200,8 +207,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (WI_IsFlagSet(registrationOptions, PushNotificationRegistrationOptions::ComActivator))
         {
-            g_waitHandleForArgs.create();
-            THROW_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), g_waitHandleForArgs);
+            GetWaitHandleForArgs().create();
 
             THROW_IF_FAILED(::CoRegisterClassObject(
                 taskClsid,
