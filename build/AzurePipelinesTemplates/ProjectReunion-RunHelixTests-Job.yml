@@ -43,7 +43,6 @@ jobs:
     helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
 
 
-
     artifactsDir: $(Build.SourcesDirectory)\Artifacts
     taefPath: $(Build.SourcesDirectory)\build\Helix\packages\taef.redist.wlk.10.31.180822002\build\Binaries\$(buildPlatform)
     helixCommonArgs: '/binaryLogger:$(Build.SourcesDirectory)/${{parameters.name}}.$(buildPlatform).$(buildConfiguration).binlog /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:HelixType=${{parameters.helixType}} /p:TestSuite=${{parameters.testSuite}} /p:ProjFilesPath=$(Build.ArtifactStagingDirectory) /p:rerunPassesRequiredToAvoidFailure=${{parameters.rerunPassesRequiredToAvoidFailure}}'
@@ -66,20 +65,17 @@ jobs:
 
   - task: NuGetAuthenticate@0
 
-  # TODO: Should we be pulling in a copy of TAEF here, or use TAEF from the MRTCore bits instead?
+  - template: ProjectReunion-BuildHelixTestProject-Steps.yml
+    parameters:
+      displayName: Build ProjectReunion.Helix.Test
+      solutionPath: test\ProjectReunion.Helix.Test\ProjectReunion.Helix.Test.sln
 
-  # In the dev.azure.com/microsoft account, 'NuGetCommand' is ambiguous so the specific task guid must be used instead
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore build/Helix/packages.config'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish BuildOutput
+    condition: always()
     inputs:
-      command: 'restore'
-      restoreSolution: build/Helix/packages.config
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-      restoreDirectory: packages
-
-  - powershell: tree /f /a $(Build.SourcesDirectory)\build\Helix\packages
-    displayName: 'DIAG: dump mrtcore_testbin'
+      PathtoPublish: $(Build.SourcesDirectory)\BuildOutput
+      artifactName: Tests
 
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
@@ -87,9 +83,10 @@ jobs:
       artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
       downloadPath: '$(Build.ArtifactStagingDirectory)\bits'
 
-  - powershell: tree /f /a $env:BUILD_SOURCESDIRECTORY\bits
+  - powershell: tree /f /a $env:BUILD_ArtifactStagingDirectory\bits
     displayName: 'DIAG: dump bits'
 
+  # -------------------------------------------------------
 
   # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   #   displayName: 'NuGet restore MRTCore unit tests'
