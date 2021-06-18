@@ -28,7 +28,7 @@ jobs:
   variables:
     # This should be kept in sync with the value in build\Helix\packages.config
     winUIHelixVer: 0.5.0
-    winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix\$(winUIHelixVer)\scripts\pipeline
+    winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
     # The target queues to run the tests on.
     # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
