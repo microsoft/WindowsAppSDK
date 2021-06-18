@@ -45,11 +45,6 @@ jobs:
     
     testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\
     helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
-
-
-    artifactsDir: $(Build.SourcesDirectory)\Artifacts
-    taefPath: $(Build.SourcesDirectory)\build\Helix\packages\taef.redist.wlk.10.31.180822002\build\Binaries\$(buildPlatform)
-    helixCommonArgs: '/binaryLogger:$(Build.SourcesDirectory)/${{parameters.name}}.$(buildPlatform).$(buildConfiguration).binlog /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:HelixType=${{parameters.helixType}} /p:TestSuite=${{parameters.testSuite}} /p:ProjFilesPath=$(Build.ArtifactStagingDirectory) /p:rerunPassesRequiredToAvoidFailure=${{parameters.rerunPassesRequiredToAvoidFailure}}'
       
   steps:
   - task: CmdLine@1
@@ -92,6 +87,14 @@ jobs:
   - powershell: tree /f /a $env:BUILD_ArtifactStagingDirectory\bits
     displayName: 'DIAG: dump bits'
 
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
+    condition: ${{ parameters.conditionForRunTests }}
+    inputs:
+      restoreSolution: build\Helix\RunTestsInHelix.proj
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+
   # Discover the tests to run and generate the Helix Work Items.
   # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
   - task: powershell@2
@@ -110,14 +113,6 @@ jobs:
     inputs:
       PathtoPublish: $(helixWorkItemsDir)
       artifactName: 'HelixWorkItems'
-
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
-    condition: ${{ parameters.conditionForRunTests }}
-    inputs:
-      restoreSolution: build\Helix\RunTestsInHelix.proj
-      feedsToUse: config
-      nugetConfigPath: nuget.config
 
   # -------------------------------------------------------
 
