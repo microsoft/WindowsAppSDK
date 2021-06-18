@@ -110,9 +110,9 @@ jobs:
     inputs:
       targetType: inline
       script: >
-        mv $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.* $(testPayloadDir)
-        mv $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.* $(testPayloadDir)
-        mv $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\resources.pri $(testPayloadDir)
+        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.* -destination $(testPayloadDir)
+        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.* -destination $(testPayloadDir)
+        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\resources.pri -destination $(testPayloadDir)
 
   # Discover the tests to run and generate the Helix Work Items.
   # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
