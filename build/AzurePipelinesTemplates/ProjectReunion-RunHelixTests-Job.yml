@@ -87,7 +87,7 @@ jobs:
 #  - task: MSBuild@1
 #    displayName: Build solution ManagedTests
 #    inputs:
-#      solution: dev/MRTCore/mrt/Microsoft.ApplicationModel.Resources/unittests/ManagedTest.csproj
+#      solution: dev/MRTCore/mrt/Microsoft.Windows.ApplicationModel.Resources/unittests/ManagedTest.csproj
 #      platform: $(buildPlatform)
 #      configuration: $(buildConfiguration)  
 
