@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows10.0.18362</TargetFramework>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <OutDir>$(BaseOutputPath)\$(Platform)\Tests\</OutDir>
+    <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
+    <Platforms>x86;x64;arm64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0" />
+    <PackageReference Include="Microsoft.Taef" Version="10.58.210222006-develop" />
+    <PackageReference Include="Microsoft.Internal.WinUI.Helix" Version="0.5.0" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TestPass-OneTimeMachineSetup.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestPass-EnsureMachineState.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestPass-PreRun.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestPass-PostRun.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestPass-EnsureProjectReunionFrameworkPackage.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestMachineSetup.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="RunAllTests.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- We also want to copy the support scripts from the Microsoft.Internal.WinUI.Helix nuget package. -->
+  <Target Name="CopyHelixScripts" AfterTargets="Build">
+    <ItemGroup>
+      <FilesToCopy Include="$(PkgMicrosoft_Internal_WinUI_Helix)\scripts\test\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OutDir)" />
+  </Target>
+
+</Project>
