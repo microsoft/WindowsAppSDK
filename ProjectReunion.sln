@@ -120,14 +120,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManualTestApp", "test\TestA
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "AppLifecycleTestPackage", "test\TestApps\AppLifecycleTestPackage\AppLifecycleTestPackage.wapproj", "{A3FBA80D-5B35-471F-9A45-DB4B29E195B9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerNotifications", "PowerNotifications", "{8A674426-F5E0-4BC0-847F-56FD17FEADD2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\PowerNotifications\PowerNotifications.vcxitems", "{877A6C56-41CA-424F-872B-93BAFDA9E322}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
+		dev\PowerNotifications\PowerNotifications.vcxitems*{877a6c56-41ca-424f-872b-93bafda9e322}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
@@ -474,6 +480,8 @@ Global
 		{A657A14D-910D-43F3-9994-DAB0E22C4530} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{8E52D7EA-A200-4A6B-BA74-8EFB49468CAF} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
+		{8A674426-F5E0-4BC0-847F-56FD17FEADD2} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{877A6C56-41CA-424F-872B-93BAFDA9E322} = {8A674426-F5E0-4BC0-847F-56FD17FEADD2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
