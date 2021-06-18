@@ -28,7 +28,7 @@ jobs:
   variables:
     # This should be kept in sync with the value in build\Helix\packages.config
     winUIHelixVer: 0.5.0
-    winUIHelixPipelineScripts: packages\Microsoft.Internal.WinUI.Helix\$(winUIHelixVer)\scripts\pipeline
+    winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix\$(winUIHelixVer)\scripts\pipeline
 
     # The target queues to run the tests on.
     # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
@@ -76,6 +76,19 @@ jobs:
       PathtoPublish: $(Build.SourcesDirectory)\BuildOutput
       artifactName: Tests
 
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore build/Helix/packages.config'
+    inputs:
+      command: 'restore'
+      restoreSolution: build/Helix/packages.config
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+      restoreDirectory: packages
+
+  - powershell: tree /f /a $(Build.SourcesDirectory)\build\Helix\packages
+    displayName: 'DIAG: dump packages'
+    continueOnError: true
+
   # Download the tests binaries
 
   - task: DownloadBuildArtifacts@0
@@ -86,19 +99,6 @@ jobs:
 
   - powershell: tree /f /a $(testPayloadDir)
     displayName: 'DIAG: dump test binaries'
-    continueOnError: true
-
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore build/Helix/packages.config'
-    inputs:
-      command: 'restore'
-      restoreSolution: build/Helix/packages.config
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-      restoreDirectory: packages
-
-  - powershell: tree /f /a $(Build.SourcesDirectory)\packages
-    displayName: 'DIAG: dump packages'
     continueOnError: true
 
   # Discover the tests to run and generate the Helix Work Items.
