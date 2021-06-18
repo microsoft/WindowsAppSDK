@@ -103,6 +103,17 @@ jobs:
     displayName: 'DIAG: dump test binaries'
     continueOnError: true
 
+  # TODO: Need a way to recursively enumerate and run tests. The Helix scripts expect everything to be in one giant folder.
+  - task: PowerShell@2
+    displayName: Move test binaires
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      targetType: inline
+      script: >
+        mv $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.* $(testPayloadDir)
+        mv $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.* $(testPayloadDir)
+        mv $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\resources.pri $(testPayloadDir)
+
   # Discover the tests to run and generate the Helix Work Items.
   # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
   - task: powershell@2
