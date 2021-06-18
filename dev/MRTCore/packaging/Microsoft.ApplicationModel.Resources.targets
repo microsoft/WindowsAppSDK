@@ -12,6 +12,5 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.PriGen.targets" Condition="'$(EnableCoreMrtTooling)'=='true'"/>
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.References.targets" Condition="'$(EnableCoreMrtTooling)'=='true'"/>
 
 </Project>
