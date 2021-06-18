@@ -6,7 +6,7 @@
     <RuntimeIdentifier>win10-$(Platform)</RuntimeIdentifier>
     <RuntimeIdentifier Condition="'$(Platform)'=='AnyCpu'" >win10-x86</RuntimeIdentifier>
     <IsPackable>false</IsPackable>
-    <OutDir>$(BaseOutputPath)\$(Platform)\Tests\net5</OutDir>
+    <OutDir>$(BaseOutputPath)\$(Platform)\HelixTests\net5</OutDir>
     <GenerateProjectSpecificOutputFolder>False</GenerateProjectSpecificOutputFolder>
     <Platforms>x86;x64;arm64</Platforms>
   </PropertyGroup>
