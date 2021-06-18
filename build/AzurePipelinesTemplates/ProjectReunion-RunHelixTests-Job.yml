@@ -131,6 +131,7 @@ jobs:
       restoreSolution: build\Helix\RunTestsInHelix.proj
       feedsToUse: config
       nugetConfigPath: nuget.config
+      restoreDirectory: packages
 
   # -------------------------------------------------------
 
