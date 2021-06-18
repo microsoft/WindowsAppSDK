@@ -116,7 +116,7 @@ HRESULT UnregisterEnergySaverStatusChangedListener(EnergySaverStatusRegistration
 
 HRESULT GetPowerCondition(DWORD* powerConditionOut)
 {
-    *powerConditionOut = static_cast<DWORD>(winrt::Microsoft::ProjectReunion::PowerSourceStatus::AC);
+    *powerConditionOut = static_cast<DWORD>(winrt::Microsoft::ProjectReunion::PowerSourceKind::AC);
     return S_OK;
 }
 
@@ -128,7 +128,7 @@ HRESULT RegisterPowerConditionChangedListener(OnPowerConditionChanged listener, 
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         for (const auto& [key, callbackFn] : onPowerConditionChanged_callbacks)
         {
-            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::PowerSourceStatus::DC));
+            callbackFn(static_cast<DWORD>(winrt::Microsoft::ProjectReunion::PowerSourceKind::DC));
         }
     });
     thread.detach();

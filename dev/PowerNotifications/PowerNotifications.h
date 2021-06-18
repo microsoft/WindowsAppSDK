@@ -44,10 +44,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void RemainingDischargeTime_Unregister();
     void RemainingDischargeTime_Update();
 
-    EventType& PowerSourceStatus_Event();
-    void PowerSourceStatus_Register();
-    void PowerSourceStatus_Unregister();
-    void PowerSourceStatus_Update();
+    EventType& PowerSourceKind_Event();
+    void PowerSourceKind_Register();
+    void PowerSourceKind_Unregister();
+    void PowerSourceKind_Update();
 
     EventType& DisplayStatus_Event();
     void DisplayStatus_Register();
@@ -101,7 +101,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         DWORD m_cachedDisplayStatus;
         DWORD m_cachedUserPresenceStatus;
         DWORD m_cachedSystemAwayModeStatus;
-        DWORD m_cachedPowerSourceStatus;
+        DWORD m_cachedPowerSourceKind;
         EFFECTIVE_POWER_MODE m_cachedPowerMode;
         ULONGLONG m_cachedDischargeTime;
         winrt::Microsoft::ProjectReunion::SystemSuspendStatus m_systemSuspendStatus;
@@ -117,7 +117,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         EventType m_powerSupplyStatusChangedEvent;
         EventType m_remainingChargePercentChangedEvent;
         EventType m_remainingDischargeTimeChangedEvent;
-        EventType m_powerSourceStatusChangedEvent;
+        EventType m_PowerSourceKindChangedEvent;
         EventType m_displayStatusChangedEvent;
         EventType m_systemIdleStatusChangedEvent;
         EventType m_powerModeChangedEvent;
@@ -127,7 +127,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 
         EnergySaverStatusRegistration m_EnergySaverStatusHandle;
         CompositeBatteryStatusRegistration m_batteryStatusHandle;
-        PowerConditionRegistration m_powerSourceStatusHandle;
+        PowerConditionRegistration m_PowerSourceKindHandle;
         DischargeTimeRegistration m_dischargeTimeHandle;
         DisplayStatusRegistration m_displayStatusHandle;
         SystemIdleStatusRegistration m_systemIdleStatusHandle;
@@ -164,11 +164,11 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             &winrt::Microsoft::ProjectReunion::implementation::RemainingDischargeTime_Unregister,
             &winrt::Microsoft::ProjectReunion::implementation::RemainingDischargeTime_Update };
 
-        PowerFunctionDetails powerSourceStatusFunc{
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceStatus_Event,
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceStatus_Register,
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceStatus_Unregister,
-            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceStatus_Update };
+        PowerFunctionDetails PowerSourceKindFunc{
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Event,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Register,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Unregister,
+            &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Update };
 
         PowerFunctionDetails displayStatusFunc{
             &winrt::Microsoft::ProjectReunion::implementation::DisplayStatus_Event,
@@ -441,27 +441,27 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         }
 
 
-        // PowerSourceStatus Functions
-        winrt::Microsoft::ProjectReunion::PowerSourceStatus PowerSourceStatus()
+        // PowerSourceKind Functions
+        winrt::Microsoft::ProjectReunion::PowerSourceKind PowerSourceKind()
         {
-            CheckRegistrationAndOrUpdateValue(powerSourceStatusFunc);
-            return static_cast<winrt::Microsoft::ProjectReunion::PowerSourceStatus>(m_cachedPowerSourceStatus);
+            CheckRegistrationAndOrUpdateValue(PowerSourceKindFunc);
+            return static_cast<winrt::Microsoft::ProjectReunion::PowerSourceKind>(m_cachedPowerSourceKind);
         }
 
-        event_token PowerSourceStatusChanged(const PowerEventHandle& handler)
+        event_token PowerSourceKindChanged(const PowerEventHandle& handler)
         {
-            return AddCallback(powerSourceStatusFunc, handler);
+            return AddCallback(PowerSourceKindFunc, handler);
         }
 
-        void PowerSourceStatusChanged(const event_token& token)
+        void PowerSourceKindChanged(const event_token& token)
         {
-            RemoveCallback(powerSourceStatusFunc, token);
+            RemoveCallback(PowerSourceKindFunc, token);
         }
 
-        void PowerSourceStatusChanged_Callback(DWORD powerCondition)
+        void PowerSourceKindChanged_Callback(DWORD powerCondition)
         {
-            m_cachedPowerSourceStatus = powerCondition;
-            RaiseEvent(powerSourceStatusFunc);
+            m_cachedPowerSourceKind = powerCondition;
+            RaiseEvent(PowerSourceKindFunc);
         }
 
 
@@ -644,9 +644,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->RemainingDischargeTime();
         }
 
-        static winrt::Microsoft::ProjectReunion::PowerSourceStatus PowerSourceStatus()
+        static winrt::Microsoft::ProjectReunion::PowerSourceKind PowerSourceKind()
         {
-            return make_self<factory_implementation::PowerManager>()->PowerSourceStatus();
+            return make_self<factory_implementation::PowerManager>()->PowerSourceKind();
         }
 
         static winrt::Microsoft::ProjectReunion::DisplayStatus DisplayStatus()
@@ -690,9 +690,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return make_self<factory_implementation::PowerManager>()->RemainingDischargeTimeChanged_Callback(remainingDischargeTime);
         }
 
-        static void PowerSourceStatusChanged_Callback(DWORD powerCondition)
+        static void PowerSourceKindChanged_Callback(DWORD powerCondition)
         {
-            return make_self<factory_implementation::PowerManager>()->PowerSourceStatusChanged_Callback(powerCondition);
+            return make_self<factory_implementation::PowerManager>()->PowerSourceKindChanged_Callback(powerCondition);
         }
 
         static void DisplayStatusChanged_Callback(DWORD displayStatus)

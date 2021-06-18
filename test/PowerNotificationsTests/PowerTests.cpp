@@ -89,22 +89,22 @@ namespace ProjectReunionPowerTests
             VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Off);
         }
 
-        TEST_METHOD(GetPowerSourceStatus)
+        TEST_METHOD(GetPowerSourceKind)
         {
-            auto stat = PowerManager::PowerSourceStatus();
-            VERIFY_ARE_EQUAL(stat, PowerSourceStatus::AC);
+            auto stat = PowerManager::PowerSourceKind();
+            VERIFY_ARE_EQUAL(stat, PowerSourceKind::AC);
         }
 
-        TEST_METHOD(PowerSourceStatusCallback)
+        TEST_METHOD(PowerSourceKindCallback)
         {
-            auto stat = PowerSourceStatus::ShortTerm;
-            auto token = PowerManager::PowerSourceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
+            auto stat = PowerSourceKind::AC;
+            auto token = PowerManager::PowerSourceKindChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
             {
-                stat = PowerManager::PowerSourceStatus();
+                stat = PowerManager::PowerSourceKind();
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            PowerManager::PowerSourceStatusChanged(token);
-            VERIFY_ARE_EQUAL(stat, PowerSourceStatus::DC);
+            PowerManager::PowerSourceKindChanged(token);
+            VERIFY_ARE_EQUAL(stat, PowerSourceKind::DC);
         }
 
         TEST_METHOD(GetDisplayStatus)

@@ -29,11 +29,10 @@ namespace Microsoft.ProjectReunion
     };
 
     // Enums based on on PowerSettingRegisterNotification's state
-    enum PowerSourceStatus
+    enum PowerSourceKind
     {
         AC = 0,
-        DC,
-        ShortTerm
+        DC
     };
 
     enum DisplayStatus
@@ -95,8 +94,8 @@ namespace Microsoft.ProjectReunion
         static event Windows.Foundation.EventHandler<Object> RemainingDischargeTimeChanged;
 
         // Properties and events based on PowerSettingRegisterNotification's state
-        static PowerSourceStatus PowerSourceStatus{ get; };
-        static event Windows.Foundation.EventHandler<Object> PowerSourceStatusChanged;
+        static PowerSourceKind PowerSourceKind{ get; };
+        static event Windows.Foundation.EventHandler<Object> PowerSourceKindChanged;
 
         static DisplayStatus DisplayStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> DisplayStatusChanged;
