@@ -1,28 +1,18 @@
 parameters:
-  name: 'RunTestsInHelix'
+  jobName: 'RunTestsInHelix'
   dependsOn: ''
   condition: ''
-  testSuite: 'DevTestSuite'
-  # If a Pipeline runs this template more than once, this parameter should be unique per build flavor to differentiate the
-  # the different test runs:
-  helixType: 'test/devtest'
-  maxParallel: 4
-  rerunPassesRequiredToAvoidFailure: 5
-  taefQuery: ''
-  # if 'useBuildOutputFromBuildId' is set, we will default to using a build from this pipeline:
-  useBuildOutputFromPipeline: $(System.DefinitionId)
-  matrix: 
+  maxParallel: 10
+  matrix:
     Release_x86:
       buildPlatform: 'x86'
       buildConfiguration: 'Release'
-      outputDirectory: BuildOutput\Release\x86\BaseUnitTests\
     Release_x64:
       buildPlatform: 'x64'
       buildConfiguration: 'Release'
-      outputDirectory: BuildOutput\Release\x64\BaseUnitTests\
 
 jobs:
-- job: ${{ parameters.name }}
+- job: ${{ parameters.jobName }}
   dependsOn: ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
   pool:
@@ -32,6 +22,28 @@ jobs:
     maxParallel: ${{ parameters.maxParallel }}
     matrix: ${{ parameters.matrix }}
   variables:
+    # This should be kept in sync with the value in build\Helix\packages.config
+    winUIHelixVer: 0.5.0
+    winUIHelixPipelineScripts: packages\Microsoft.Internal.WinUI.Helix\$(winUIHelixVer)\scripts\pipeline
+
+    # The target queues to run the tests on.
+    # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
+    helixTargetQueues: 'Windows.10.Amd64.ClientRS5.Open.Xaml'
+
+    # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
+    rerunPassesRequiredToAvoidFailure: 8
+    
+    # This must be unique for each test pass that is run in a given Pipeline execution.
+    helixType: devtest.$(buildPlatform).$(buildConfiguration)
+
+    helixTestOutputBaseDir: $(Build.SourcesDirectory)\HelixTestOutput
+    helixTestOutputDir: $(helixTestOutputBaseDir)\$(buildConfiguration)\$(buildPlatform)
+    
+    testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests\
+    helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
+
+
+
     artifactsDir: $(Build.SourcesDirectory)\Artifacts
     taefPath: $(Build.SourcesDirectory)\build\Helix\packages\taef.redist.wlk.10.31.180822002\build\Binaries\$(buildPlatform)
     helixCommonArgs: '/binaryLogger:$(Build.SourcesDirectory)/${{parameters.name}}.$(buildPlatform).$(buildConfiguration).binlog /p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:HelixType=${{parameters.helixType}} /p:TestSuite=${{parameters.testSuite}} /p:ProjFilesPath=$(Build.ArtifactStagingDirectory) /p:rerunPassesRequiredToAvoidFailure=${{parameters.rerunPassesRequiredToAvoidFailure}}'
@@ -41,7 +53,15 @@ jobs:
     displayName: 'Display build machine environment variables'
     inputs:
       filename: 'set'
-      
+
+  - task: powershell@2
+    displayName: 'Download .NET Runtime Windows installer'
+    inputs:
+      targetType: filePath
+      workingDirectory: $(Build.SourcesDirectory)\dev\MRTCore\build
+      filePath: $(Build.SourcesDirectory)\dev\MRTCore\build\DownloadDotNetRuntimeInstaller.ps1
+      arguments: -Platform $(buildPlatform) -OutputDirectory $(testPayloadDir)
+
   - task: NuGetToolInstaller@0
 
   - task: NuGetAuthenticate@0

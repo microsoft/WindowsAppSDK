@@ -1,7 +1,4 @@
-# Universal Windows Platform
-# Build a Universal Windows Platform project using Visual Studio.
-# Add steps that test and distribute an app, save build artifacts, and more:
-# https://aka.ms/yaml
+# See https://aka.ms/yaml for details on the YAML schema and ADO jobs.
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
@@ -23,7 +20,7 @@ steps:
   continueOnError: true
 
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
-# NuGetCommand@2
+# Note: 'NuGetCommand@2' is ambiguous so the specific task guid must be used instead.
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of core'
   inputs:
@@ -94,11 +91,12 @@ steps:
     modifyEnvironment: true
 
 - task: powershell@2
-  displayName: 'Download .net runtime Windows installer'
+  displayName: 'Download .NET Runtime Windows installer'
   inputs:
     targetType: filePath
     workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
     filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetRuntimeInstaller.ps1
+    arguments: -Platform $(buildPlatform) -OutputDirectory $(Build.SourcesDirectory)\BuildOutput\$(buildPlatform)\$(buildConfiguration)\TestDependencies
 
 #  - task: BatchScript@1
 #    displayName: 'Debug'
@@ -122,6 +120,7 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
+# Copy and Publish the test binaries so we can run them in Helix later.
 - task: CopyFiles@2
   displayName: 'copy mrtcore test binaries'
   inputs:
@@ -136,13 +135,14 @@ steps:
 - powershell: tree /f /a $env:AGENT_TEMPDIRECTORY\mrt_testbin\$(buildPlatform)
   displayName: 'DIAG: dump mrtcore_testbin'
 
-# Publish the test binaries so we can run them in Helix later.
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore test binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
     artifactName: mrtcore_test_binaries_$(buildPlatform)
+
+# Run the test locally on the Azure VM.
 
 - task: VSTest@2
   displayName: 'test MRT: ManagedTests'
