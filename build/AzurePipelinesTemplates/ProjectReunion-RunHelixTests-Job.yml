@@ -67,7 +67,7 @@ jobs:
 
   - template: ProjectReunion-BuildHelixTestProject-Steps.yml
     parameters:
-      displayName: Build ProjectReunion.Helix.Test
+      displayName: ProjectReunion.Helix.Test
       solutionPath: test\ProjectReunion.Helix.Test\ProjectReunion.Helix.Test.sln
 
   - task: PublishBuildArtifacts@1
