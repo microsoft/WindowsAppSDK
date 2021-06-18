@@ -124,6 +124,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerNotifications", "Power
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\PowerNotifications\PowerNotifications.vcxitems", "{877A6C56-41CA-424F-872B-93BAFDA9E322}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotificationsTests", "test\PowerNotificationsTests\PowerNotificationsTests.vcxproj", "{11F537D7-4602-43D2-BDF2-53722C4DABB5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
@@ -441,6 +443,18 @@ Global
 		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9}.Release|x86.ActiveCfg = Release|x86
 		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9}.Release|x86.Build.0 = Release|x86
 		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9}.Release|x86.Deploy.0 = Release|x86
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Debug|x64.ActiveCfg = Debug|x64
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Debug|x64.Build.0 = Debug|x64
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Debug|x86.ActiveCfg = Debug|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Debug|x86.Build.0 = Debug|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|Any CPU.ActiveCfg = Release|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|ARM64.ActiveCfg = Release|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x64.ActiveCfg = Release|x64
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x64.Build.0 = Release|x64
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x86.ActiveCfg = Release|Win32
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -482,6 +496,7 @@ Global
 		{A3FBA80D-5B35-471F-9A45-DB4B29E195B9} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{8A674426-F5E0-4BC0-847F-56FD17FEADD2} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{877A6C56-41CA-424F-872B-93BAFDA9E322} = {8A674426-F5E0-4BC0-847F-56FD17FEADD2}
+		{11F537D7-4602-43D2-BDF2-53722C4DABB5} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
