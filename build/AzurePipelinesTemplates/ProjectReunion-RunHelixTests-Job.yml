@@ -10,6 +10,10 @@ parameters:
     Release_x64:
       buildPlatform: 'x64'
       buildConfiguration: 'Release'
+  
+  # For arm64 we build the tests, but don't run them.
+  conditionForRunTests: and(succeeded(), ne(variables['buildPlatform'], 'arm64'))
+  conditionForProcessTestResults: and(succeededOrFailed(), ne(variables['buildPlatform'], 'arm64'))
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -77,6 +81,8 @@ jobs:
       PathtoPublish: $(Build.SourcesDirectory)\BuildOutput
       artifactName: Tests
 
+  # Download the tests
+
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
     inputs:
@@ -85,6 +91,33 @@ jobs:
 
   - powershell: tree /f /a $env:BUILD_ArtifactStagingDirectory\bits
     displayName: 'DIAG: dump bits'
+
+  # Discover the tests to run and generate the Helix Work Items.
+  # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
+  - task: powershell@2
+    displayName: 'Discover tests'
+    condition: ${{ parameters.conditionForRunTests }}
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern '*Test*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj'
+
+  # Publish the generated TestWorkItems.proj as a Pipeline artifact
+  # This is not required, but it is useful for debugging purposes to see what tests were discovered.
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish test work items'
+    condition: ${{ parameters.conditionForRunTests }}
+    inputs:
+      PathtoPublish: $(helixWorkItemsDir)
+      artifactName: 'HelixWorkItems'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
+    condition: ${{ parameters.conditionForRunTests }}
+    inputs:
+      restoreSolution: build\Helix\RunTestsInHelix.proj
+      feedsToUse: config
+      nugetConfigPath: nuget.config
 
   # -------------------------------------------------------
 

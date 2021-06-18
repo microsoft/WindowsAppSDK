@@ -90,6 +90,7 @@ steps:
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
+# TODO: Is this actually used? (ie: What installs it?)
 - task: powershell@2
   displayName: 'Download .NET Runtime Windows installer'
   inputs:
