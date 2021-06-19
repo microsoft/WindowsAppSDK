@@ -139,20 +139,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void PowerSourceKind_Register()
     {
         check_hresult(PowerNotifications_RegisterPowerConditionChangedListener(
-            &PowerManager::PowerSourceStatusChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_powerSourceStatusHandle));
+            &PowerManager::PowerSourceKindChanged_Callback,
+            &make_self<factory_implementation::PowerManager>()->m_PowerSourceKindHandle));
     }
 
     void PowerSourceKind_Unregister()
     {
         check_hresult(PowerNotifications_UnregisterPowerConditionChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_powerSourceStatusHandle));
+            make_self<factory_implementation::PowerManager>()->m_PowerSourceKindHandle));
     }
 
     void PowerSourceKind_Update()
     {
         check_hresult(PowerNotifications_GetPowerCondition(
-            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSourceStatus));
+            &make_self<factory_implementation::PowerManager>()->m_cachedPowerSourceKind));
     }
 
     // DisplayStatus Functions
