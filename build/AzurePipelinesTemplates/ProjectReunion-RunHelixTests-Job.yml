@@ -110,8 +110,11 @@ jobs:
     inputs:
       targetType: inline
       script: >
-        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.* -destination $(testPayloadDir)
-        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.* -destination $(testPayloadDir)
+        write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll
+        write-host ''
+        write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.*
+        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll -destination $(testPayloadDir)
+        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.dll -destination $(testPayloadDir)
         mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\resources.pri -destination $(testPayloadDir)
 
   # Discover the tests to run and generate the Helix Work Items.
