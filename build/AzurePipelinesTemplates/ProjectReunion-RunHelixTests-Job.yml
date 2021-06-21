@@ -155,7 +155,7 @@ jobs:
       command: custom
       projects: build\Helix\RunTestsInHelix.proj
       custom: msbuild
-      arguments: /p:HelixBuild=$(Build.BuildId) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:HelixTargetQueues=$(helixTargetQueues)
+      arguments: /p:HelixBuild=$(Build.BuildId) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:HelixTargetQueues=$(helixTargetQueues) /p:IsExternal=true /p:Creator=ProjectReunion
 
   # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
   - task: powershell@2
