@@ -104,13 +104,11 @@ jobs:
     continueOnError: true
 
   # TODO: Need a way to recursively enumerate and run tests. The Helix scripts expect everything to be in one giant folder.
-  - task: PowerShell@2
-    displayName: Copy test binaires
-    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  - task: CopyFiles@2
     inputs:
-      targetType: inline
-      script: >
-        copy-item $(Agent.TempDirectory)\mrtcore_test_binaries_$(buildPlatform)\UnitTest -Destination $(testPayloadDir) -Recurse
+      sourceFolder: $(Agent.TempDirectory)\mrtcore_test_binaries_$(buildPlatform)\UnitTest
+      contents: '**'
+      targetFolder: $(testPayloadDir)
 
   - powershell: tree /f /a $(testPayloadDir)
     displayName: 'DIAG: dump testPayloadDir'
