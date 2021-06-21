@@ -48,15 +48,15 @@ namespace ProjectReunionPowerTests
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             PowerManager::BatteryStatusChanged(token);
-            VERIFY_ARE_EQUAL(batteryStat, BatteryStatus::Charging);
-            VERIFY_ARE_EQUAL(powerStat, PowerSupplyStatus::Adequate);
+            VERIFY_ARE_EQUAL(batteryStat, BatteryStatus::Discharging);
+            VERIFY_ARE_EQUAL(powerStat, PowerSupplyStatus::Inadequate);
             VERIFY_ARE_EQUAL(remainingCharge, 57);
         }
 
         TEST_METHOD(GetRemainingDischargeTime)
         {
             auto stat = PowerManager::RemainingDischargeTime();
-            VERIFY_ARE_EQUAL(stat.count(), 30000000);
+            VERIFY_ARE_EQUAL(stat.count(), -10000000);
         }
 
         TEST_METHOD(RemainingDischargeTimeCallback)
@@ -68,13 +68,13 @@ namespace ProjectReunionPowerTests
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             PowerManager::RemainingDischargeTimeChanged(token);
-            VERIFY_ARE_EQUAL(stat.count(), 50000000);
+            VERIFY_ARE_EQUAL(stat.count(), -10000000);
         }
 
         TEST_METHOD(GetEnergySaverStatus)
         {
             auto stat = PowerManager::EnergySaverStatus();
-            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::On);
+            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Off);
         }
 
         TEST_METHOD(EnergySaverStatusCallback)
@@ -84,7 +84,7 @@ namespace ProjectReunionPowerTests
             {
                 stat = PowerManager::EnergySaverStatus();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10000));
             PowerManager::EnergySaverStatusChanged(token);
             VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Off);
         }
@@ -97,20 +97,20 @@ namespace ProjectReunionPowerTests
 
         TEST_METHOD(PowerSourceKindCallback)
         {
-            auto stat = PowerSourceKind::AC;
+            auto stat = PowerSourceKind::DC;
             auto token = PowerManager::PowerSourceKindChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
             {
                 stat = PowerManager::PowerSourceKind();
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             PowerManager::PowerSourceKindChanged(token);
-            VERIFY_ARE_EQUAL(stat, PowerSourceKind::DC);
+            VERIFY_ARE_EQUAL(stat, PowerSourceKind::AC);
         }
 
         TEST_METHOD(GetDisplayStatus)
         {
             auto stat = PowerManager::DisplayStatus();
-            VERIFY_ARE_EQUAL(stat, DisplayStatus::Dimmed);
+            VERIFY_ARE_EQUAL(stat, DisplayStatus::On);
         }
 
         TEST_METHOD(DisplayStatusCallback)
@@ -124,10 +124,14 @@ namespace ProjectReunionPowerTests
             PowerManager::DisplayStatusChanged(token);
             VERIFY_ARE_EQUAL(stat, DisplayStatus::On);
         }
-
-
         TEST_METHOD(SystemIdleStatusCallback)
         {
+            // Ignoring this test since there is no default value for SystemIdle
+            // and there is no way to know when the callback will be fired
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"Ignore", L"true")
+            END_TEST_METHOD_PROPERTIES()
+
             auto callback_success = false;
             auto token = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
             {
@@ -145,14 +149,14 @@ namespace ProjectReunionPowerTests
         }
         TEST_METHOD(UserPresenceStatusCallback)
         {
-            auto stat = UserPresenceStatus::Present;
+            auto stat = UserPresenceStatus::Absent;
             auto token = PowerManager::UserPresenceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
             {
                 stat = PowerManager::UserPresenceStatus();
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
             PowerManager::UserPresenceStatusChanged(token);
-            VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Absent);
+            VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Present);
         }
 
         TEST_METHOD(SystemSuspendStatusCallback)
