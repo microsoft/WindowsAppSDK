@@ -65,6 +65,8 @@ namespace ProjectReunionEnvironmentManagerTests
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
         winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyName) };
 
+        ProcessCleanup();
+
         VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
     }
 
@@ -120,11 +122,10 @@ namespace ProjectReunionEnvironmentManagerTests
 
     void EnvironmentManagerUWPTests::UWPTestAppendToPathForProcess()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForProcess(c_pathName) };
+        ProcessSetup();
 
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ pathToRestore };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
@@ -140,11 +141,11 @@ namespace ProjectReunionEnvironmentManagerTests
         pathToManipulate += c_evValueName;
         pathToManipulate += L";";
 
+        ProcessCleanup();
+
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreProcessPath(pathToRestore);
     }
 
     void EnvironmentManagerUWPTests::UWPTestAppendToPathForUser()
@@ -161,33 +162,18 @@ namespace ProjectReunionEnvironmentManagerTests
 
     void EnvironmentManagerUWPTests::UWPTestRemoveFromPathForProcess()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForProcess(c_pathName) };
+        ProcessSetup();
 
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ pathToRestore };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        // This will append c_evValueName to the path with a semi-colon.
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
-        if (pathToManipulate.back() != L';')
-        {
-            pathToManipulate += L';';
-        }
-
-        pathToManipulate += c_evValueName;
-        pathToManipulate += L";";
+        environmentManager.RemoveFromPath(c_evValueName);
 
         std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
 
-        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
-
-        std::wstring pathPart{ currentPath, 0, currentPath.find(L';') + 1 };
-        environmentManager.RemoveFromPath(pathPart);
-        currentPath = GetEnvironmentVariableForProcess(c_pathName);
-
-        pathToManipulate.erase(pathToManipulate.rfind(pathPart), pathPart.length());
+        ProcessCleanup();
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
@@ -195,9 +181,6 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
-        VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreProcessPath(pathToRestore);
     }
 
     void EnvironmentManagerUWPTests::UWPTestRemoveFromPathForUser()

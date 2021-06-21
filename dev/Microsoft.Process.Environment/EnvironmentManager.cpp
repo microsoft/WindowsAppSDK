@@ -5,6 +5,9 @@
 #include <EnvironmentManager.h>
 #include <EnvironmentManager.g.cpp>
 #include <EnvironmentVariableChangeTracker.h>
+#include <PathChangeTracker.h>
+#include <PathExtChangeTracker.h>
+#include <IChangeTracker.h>
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
@@ -185,7 +188,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return S_OK;
         };
 
-        EnvironmentVariableChangeTracker changeTracker(c_PathName, std::wstring(newPath), m_Scope);
+        PathChangeTracker changeTracker(std::wstring(path), m_Scope, IChangeTracker::PathOperation::Append);
 
         THROW_IF_FAILED(changeTracker.TrackChange(setPath));
     }
@@ -267,7 +270,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (foundPathPart)
         {
-            EnvironmentVariableChangeTracker changeTracker(c_PathName, std::wstring(currentPath), m_Scope);
+            PathChangeTracker changeTracker(std::wstring(path), m_Scope, IChangeTracker::PathOperation::Remove);
 
             THROW_IF_FAILED(changeTracker.TrackChange(removeFromPath));
         }
@@ -275,12 +278,141 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF(E_INVALIDARG, pathExt.empty());
+
+        // Get the existing path because we will append to it.
+        std::wstring existingPathExt{ GetPathExt() };
+
+        // Don't append to the path if the addition already exists.
+        if (existingPathExt.find(pathExt) != std::wstring::npos)
+        {
+            return;
+        }
+
+        std::wstring newPathExt{ existingPathExt.append(pathExt) };
+
+        if (newPathExt.back() != L';')
+        {
+            newPathExt += L';';
+        }
+
+        auto setPathExt = [&, newPathExt, this]()
+        {
+            if (m_Scope == Scope::Process)
+            {
+                THROW_IF_WIN32_BOOL_FALSE(::SetEnvironmentVariable(c_PathExtName, newPathExt.c_str()));
+            }
+            else //Scope is either user or machine
+            {
+                wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
+
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                    environmentVariableKey.get()
+                    , c_PathExtName
+                    , 0
+                    , REG_EXPAND_SZ
+                    , reinterpret_cast<const BYTE*>(newPathExt.c_str())
+                    , static_cast<DWORD>((newPathExt.size() + 1) * sizeof(wchar_t)))));
+
+                LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
+                    reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
+                    SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr) };
+
+                if (broadcastResult == 0)
+                {
+                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                }
+            }
+
+            return S_OK;
+        };
+
+        PathExtChangeTracker changeTracker(std::wstring(newPathExt), m_Scope, IChangeTracker::PathOperation::Append);
+
+        THROW_IF_FAILED(changeTracker.TrackChange(setPathExt));
     }
 
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF(E_INVALIDARG, pathExt.empty());
+
+        // A user is only allowed to remove something from the PATHEXT if
+        // 1. path exists in PATHEXT
+        // 2. path matches a path part exactly (ignoring case)
+        std::wstring currentPathExt{ GetPathExt() };
+        std::wstring pathExtPartToFind(pathExt);
+
+        if (pathExtPartToFind.back() != L';')
+        {
+            pathExtPartToFind += L';';
+        }
+
+        int left{ static_cast<int>(currentPathExt.size()) };
+        int right{ static_cast<int>(currentPathExt.size() - 1) };
+        bool foundPathExtPart{ false };
+
+        while (!foundPathExtPart && left >= 0)
+        {
+            if (left == 0 || currentPathExt[left - 1] == L';')
+            {
+                std::wstring pathExtPart(currentPathExt, left, right - left);
+
+                if (CompareStringOrdinal(pathExtPart.c_str(), -1,
+                    pathExtPartToFind.c_str(), -1,
+                    TRUE) == CSTR_EQUAL)
+                {
+                    foundPathExtPart = true;
+                }
+                else
+                {
+                    right = left;
+                }
+            }
+
+            left--;
+        }
+
+        // foundPathPart is used to check if we need to track and
+        // apply the change.
+        currentPathExt.erase(left + 1, right - left - 1);
+
+        auto removeFromPathExt = [&, currentPathExt, this]()
+        {
+            if (m_Scope == Scope::Process)
+            {
+                THROW_IF_WIN32_BOOL_FALSE(::SetEnvironmentVariable(c_PathExtName, currentPathExt.c_str()));
+            }
+            else //Scope is either user or machine
+            {
+                wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
+
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                    environmentVariableKey.get()
+                    , c_PathExtName
+                    , 0
+                    , REG_EXPAND_SZ
+                    , reinterpret_cast<const BYTE*>(currentPathExt.c_str())
+                    , static_cast<DWORD>((currentPathExt.size() + 1) * sizeof(wchar_t)))));
+
+                LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
+                    reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
+                    SMTO_NOTIMEOUTIFNOTHUNG | SMTO_BLOCK, 1000, nullptr) };
+
+                if (broadcastResult == 0)
+                {
+                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                }
+            }
+
+            return S_OK;
+        };
+
+        if (foundPathExtPart)
+        {
+            PathExtChangeTracker changeTracker(std::wstring(currentPathExt), m_Scope, IChangeTracker::PathOperation::Remove);
+
+            THROW_IF_FAILED(changeTracker.TrackChange(removeFromPathExt));
+        }
     }
 
     std::wstring EnvironmentManager::GetPath() const
@@ -320,6 +452,45 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         }
 
         return path;
+    }
+
+    std::wstring EnvironmentManager::GetPathExt() const
+    {
+        std::wstring pathExt;
+        if (m_Scope == Scope::Process)
+        {
+            pathExt = GetProcessEnvironmentVariable(c_PathExtName);
+        }
+        else
+        {
+            wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope() };
+
+            DWORD sizeOfEnvironmentValue{};
+
+            // See how big we need the buffer to be
+            LSTATUS queryResult{ RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, nullptr, &sizeOfEnvironmentValue) };
+
+            if (queryResult == ERROR_FILE_NOT_FOUND)
+            {
+                pathExt = L"";
+            }
+            else if (queryResult != ERROR_SUCCESS)
+            {
+                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+            }
+
+            std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
+            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+
+            pathExt = std::wstring(environmentValue.get());
+        }
+
+        if (pathExt.back() != L';')
+        {
+            pathExt += L';';
+        }
+
+        return pathExt;
     }
 
     StringMap EnvironmentManager::GetProcessEnvironmentVariables() const

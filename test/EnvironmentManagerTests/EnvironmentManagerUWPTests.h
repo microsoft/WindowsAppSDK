@@ -12,14 +12,14 @@ namespace ProjectReunionEnvironmentManagerTests
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
             END_TEST_CLASS()
 
-        TEST_CLASS_SETUP(UWPWriteEVs)
+        TEST_METHOD_SETUP(UWPWriteEVs)
         {
             UserSetup();
             MachineSetup();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(UWPRemoveEVs)
+        TEST_METHOD_CLEANUP(UWPRemoveEVs)
         {
             UserCleanup();
             MachineCleanup();

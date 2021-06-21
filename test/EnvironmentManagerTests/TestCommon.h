@@ -22,7 +22,7 @@ enum class ProcessRunLevel
     Elevated
 };
 
-inline bool ValidateTokenRunLevel(ProcessRunLevel expectedRunLevel)
+inline bool IsILAtOrAbove(ProcessRunLevel minimumIL)
 {
     HANDLE processToken;
     VERIFY_WIN32_BOOL_SUCCEEDED(OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &processToken));
@@ -31,23 +31,23 @@ inline bool ValidateTokenRunLevel(ProcessRunLevel expectedRunLevel)
     LONG levelRid = static_cast<SID*>(mandatoryLabel->Label.Sid)->SubAuthority[0];
 
     bool isExpectedRunLevel = false;
-    switch (expectedRunLevel)
+    switch (minimumIL)
     {
     case ProcessRunLevel::UntrustedIL:
-        isExpectedRunLevel = SECURITY_MANDATORY_UNTRUSTED_RID ==levelRid;
+        isExpectedRunLevel = levelRid >= SECURITY_MANDATORY_UNTRUSTED_RID;
         break;
 
     case ProcessRunLevel::AppContainer:
     case ProcessRunLevel::LegacyLowIL:
-        isExpectedRunLevel = SECURITY_MANDATORY_LOW_RID == levelRid;
+        isExpectedRunLevel = levelRid >= SECURITY_MANDATORY_LOW_RID;
         break;
 
     case ProcessRunLevel::Standard:
-        isExpectedRunLevel == SECURITY_MANDATORY_MEDIUM_RID == levelRid;
+        isExpectedRunLevel = levelRid >= SECURITY_MANDATORY_MEDIUM_RID;
         break;
 
     case ProcessRunLevel::Elevated:
-        isExpectedRunLevel = SECURITY_MANDATORY_HIGH_RID == levelRid;
+        isExpectedRunLevel = levelRid >= SECURITY_MANDATORY_HIGH_RID;
         break;
 
     default:
