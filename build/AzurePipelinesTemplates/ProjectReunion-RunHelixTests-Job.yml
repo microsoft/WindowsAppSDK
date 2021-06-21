@@ -158,15 +158,15 @@ jobs:
       arguments: /p:HelixBuild=$(Build.BuildId) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:HelixTargetQueues=$(helixTargetQueues) /p:IsExternal=true /p:Creator=ProjectReunion
 
   # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
-  - task: powershell@2
-    displayName: 'UpdateUnreliableTests.ps1'
-    condition: ${{ parameters.conditionForProcessTestResults }}
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
-      arguments: -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
+  # - task: powershell@2
+  #   displayName: 'UpdateUnreliableTests.ps1'
+  #   condition: ${{ parameters.conditionForProcessTestResults }}
+  #   env:
+  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  #   inputs:
+  #     targetType: filePath
+  #     filePath: $(winUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
+  #     arguments: -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
 
   # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
   - task: powershell@2
