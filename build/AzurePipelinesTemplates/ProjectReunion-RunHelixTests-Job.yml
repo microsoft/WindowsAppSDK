@@ -100,7 +100,7 @@ jobs:
       downloadPath: $(testPayloadDir)
 
   - powershell: tree /f /a $(testPayloadDir)
-    displayName: 'DIAG: dump test binaries'
+    displayName: 'DIAG: dump testPayloadDir'
     continueOnError: true
 
   # TODO: Need a way to recursively enumerate and run tests. The Helix scripts expect everything to be in one giant folder.
@@ -110,12 +110,17 @@ jobs:
     inputs:
       targetType: inline
       script: >
-        write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll
-        write-host ''
+        write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll 
+        write-host "\n"
         write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.*
+        write-host "\n"
         mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll -destination $(testPayloadDir)
         mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.dll -destination $(testPayloadDir)
         mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\resources.pri -destination $(testPayloadDir)
+
+  - powershell: tree /f /a $(testPayloadDir)
+    displayName: 'DIAG: dump testPayloadDir'
+    continueOnError: true
 
   # Discover the tests to run and generate the Helix Work Items.
   # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
@@ -125,7 +130,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern '*Test*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj'
+      arguments: -TestFilePattern 'UnitTest.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj'
 
   # Publish the generated TestWorkItems.proj as a Pipeline artifact
   # This is not required, but it is useful for debugging purposes to see what tests were discovered.
