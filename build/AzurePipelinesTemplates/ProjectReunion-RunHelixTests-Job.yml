@@ -144,6 +144,61 @@ jobs:
       nugetConfigPath: nuget.config
       restoreDirectory: packages
 
+  # Run the tests in Helix
+  # By executing 'dotnet msbuild' against RunTestsInHelix.proj the test payload and the work items to execute get sent to Helix.
+  - task: DotNetCoreCLI@2
+    displayName: 'Run tests in Helix'
+    condition: ${{ parameters.conditionForRunTests }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      command: custom
+      projects: build\Helix\RunTestsInHelix.proj
+      custom: msbuild
+      arguments: /p:HelixBuild=$(Build.BuildId) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:HelixTargetQueues=$(helixTargetQueues)
+
+  # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
+  - task: powershell@2
+    displayName: 'UpdateUnreliableTests.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
+      arguments: -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
+
+  # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
+  - task: powershell@2
+    displayName: 'OutputTestResults.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\OutputTestResults.ps1
+      arguments: -HelixTypeJobFilter $(helixType)
+
+  # This downloads files from Helix so that they can be published as a Pipeline artifact. This makes debugging test failures a lot easier since the
+  # full logs and any supporting files can be downloaded from the Pipeline.
+  - task: powershell@2
+    displayName: 'ProcessHelixFiles.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\ProcessHelixFiles.ps1
+      # Remove -ProcessAllJobs to only download the files from work items with failing tests
+      arguments: -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Helix files'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    inputs:
+      PathtoPublish: $(helixTestOutputBaseDir)
+      artifactName: HelixTestOutput
+
   # -------------------------------------------------------
 
   # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
