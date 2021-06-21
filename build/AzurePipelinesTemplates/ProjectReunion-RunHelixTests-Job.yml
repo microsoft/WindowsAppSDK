@@ -97,26 +97,20 @@ jobs:
     displayName: 'Download: Binaries'
     inputs:
       artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
-      downloadPath: $(testPayloadDir)
+      downloadPath: $(Agent.TempDirectory)
 
-  - powershell: tree /f /a $(testPayloadDir)
-    displayName: 'DIAG: dump testPayloadDir'
+  - powershell: tree /f /a $(Agent.TempDirectory)
+    displayName: 'DIAG: dump Agent.TempDirectory'
     continueOnError: true
 
   # TODO: Need a way to recursively enumerate and run tests. The Helix scripts expect everything to be in one giant folder.
   - task: PowerShell@2
-    displayName: Move test binaires
+    displayName: Copy test binaires
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
       targetType: inline
       script: >
-        write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll 
-        write-host "\n"
-        write-host $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.*
-        write-host "\n"
-        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\UnitTest.dll -destination $(testPayloadDir)
-        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\MRM.dll -destination $(testPayloadDir)
-        mv -path $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnitTest\resources.pri -destination $(testPayloadDir)
+        copy-item $(Agent.TempDirectory)\mrtcore_test_binaries_$(buildPlatform)\UnitTest -Destination $(testPayloadDir) -Recurse
 
   - powershell: tree /f /a $(testPayloadDir)
     displayName: 'DIAG: dump testPayloadDir'
