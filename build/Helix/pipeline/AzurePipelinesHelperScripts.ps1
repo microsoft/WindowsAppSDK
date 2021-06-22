@@ -48,7 +48,13 @@ function Get-HelixJobTypeFromTestRun
     {
         $info = ConvertFrom-Json $singleTestResult.value.comment
         $helixJobId = $info.HelixJobId
-        $job = Invoke-RestMethodWithRetries "https://helix.dot.net/api/2019-06-17/jobs/${helixJobId}?access_token=${HelixAccessToken}"
+        $queryUrl = "https://helix.dot.net/api/2019-06-17/jobs/${helixJobId}"
+        if (!$HelixIsExternal)
+        {
+            $queryUrl += "?access_token=${HelixAccessToken}"
+        }
+
+        $job = Invoke-RestMethodWithRetries $queryUrl
         return $job.Type
     }
 }

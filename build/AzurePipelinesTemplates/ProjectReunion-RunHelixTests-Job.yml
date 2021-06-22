@@ -30,6 +30,10 @@ jobs:
     winUIHelixVer: 0.5.0
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
+    # TODO: I had to make changes on top of the WinUI Helix nuget. Once the nuget is updated with the modifications then
+    # these files can be removed from the repo.
+    modifiedWinUIHelixPipelineScripts: build\Helix\pipeline
+
     # The target queues to run the tests on.
     # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
     helixTargetQueues: 'Windows.10.Amd64.ClientRS5.Open.Xaml'
@@ -158,15 +162,15 @@ jobs:
       arguments: /p:HelixBuild=$(Build.BuildId) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:HelixTargetQueues=$(helixTargetQueues) /p:IsExternal=true /p:Creator=ProjectReunion
 
   # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
-  # - task: powershell@2
-  #   displayName: 'UpdateUnreliableTests.ps1'
-  #   condition: ${{ parameters.conditionForProcessTestResults }}
-  #   env:
-  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-  #   inputs:
-  #     targetType: filePath
-  #     filePath: $(winUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
-  #     arguments: -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
+  - task: powershell@2
+    displayName: 'UpdateUnreliableTests.ps1'
+    condition: ${{ parameters.conditionForProcessTestResults }}
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    inputs:
+      targetType: filePath
+      filePath: $(modifiedWinUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
+      arguments: -HelixIsExternal -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
 
   # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
   - task: powershell@2
@@ -176,8 +180,8 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\OutputTestResults.ps1
-      arguments: -HelixTypeJobFilter $(helixType)
+      filePath: $(modifiedWinUIHelixPipelineScripts)\OutputTestResults.ps1
+      arguments: -HelixIsExternal -HelixTypeJobFilter $(helixType)
 
   # This downloads files from Helix so that they can be published as a Pipeline artifact. This makes debugging test failures a lot easier since the
   # full logs and any supporting files can be downloaded from the Pipeline.
@@ -188,9 +192,9 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\ProcessHelixFiles.ps1
+      filePath: $(modifiedWinUIHelixPipelineScripts)\ProcessHelixFiles.ps1
       # Remove -ProcessAllJobs to only download the files from work items with failing tests
-      arguments: -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
+      arguments: -HelixIsExternal -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Helix files'

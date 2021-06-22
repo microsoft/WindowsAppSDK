@@ -2,10 +2,13 @@ Param(
     [int]$MinimumExpectedTestsExecutedCount = 1,
 
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
-    [string]$HelixAccessToken = $env:HelixAccessToken, 
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
+
+    # If external then we don't have a HelixAccessToken.
+    [Parameter(Mandatory=$false)]
+    [switch]$HelixIsExternal = $false,
     
     [string]$HelixTypeJobFilter # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
 )
@@ -14,7 +17,13 @@ Write-Host "MinimumExpectedTestsExecutedCount: $MinimumExpectedTestsExecutedCoun
 Write-Host "CollectionUri:                     $CollectionUri"
 Write-Host "TeamProject:                       $TeamProject"
 Write-Host "BuildUri:                          $BuildUri"
+Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
+
+if (!$HelixIsExternal)
+{
+    $HelixAccessToken = $env:HelixAccessToken
+}
 
 if($env:taefquery)
 {

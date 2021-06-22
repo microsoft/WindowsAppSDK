@@ -3,10 +3,13 @@ Param(
     [int]$RerunPassesRequiredToAvoidFailure = 8,
 
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
-    [string]$HelixAccessToken = $env:HelixAccessToken,
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
+
+    # If external then we don't have a HelixAccessToken.
+    [Parameter(Mandatory=$false)]
+    [switch]$HelixIsExternal = $false,
 
     [string]$HelixTypeJobFilter, # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
 
@@ -20,7 +23,13 @@ Write-Host "CollectionUri:                     $CollectionUri"
 Write-Host "TeamProject:                       $TeamProject"
 Write-Host "BuildUri:                          $BuildUri"
 Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
+Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "ReadOnlyTestMode:                  $ReadOnlyTestMode"
+
+if (!$HelixIsExternal)
+{
+    $HelixAccessToken = $env:HelixAccessToken
+}
 
 . "$PSScriptRoot/AzurePipelinesHelperScripts.ps1"
 
@@ -107,7 +116,12 @@ foreach ($testRun in $testRuns.value)
                 $subresultsFileName = $testResult.errorMessage
 
                 Write-Host "Downloading $subresultsFileName from Helix"
-                $subResultsFileUrl = Append-HelixAccessTokenToUrl "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files/$($subresultsFileName)" $HelixAccessToken
+                $subResultsFileUrl = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files/$($subresultsFileName)"
+                if (!$HelixIsExternal)
+                {
+                    $subResultsFileUrl = Append-HelixAccessTokenToUrl $subResultsFileUrl $HelixAccessToken
+                }
+                
                 try
                 {
                     $subResultsJson = Download-StringWithRetries $subresultsFileName $subResultsFileUrl
