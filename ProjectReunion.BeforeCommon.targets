@@ -4,17 +4,10 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location.  This is parsed too late when put in mux.controls.props. -->
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.props" Condition="$(DirectoryBuildPropsIncluded) == ''" />
+  <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
   <PropertyGroup>
     <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
-    <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(PlatformTarget)\$(Configuration)\</BaseOutputPath>
-
-    <AppxBundle>Never</AppxBundle>
-
-    <!-- Due to import order complexities and differences between the targets for individual build types,
-         this must be here instead of Directory.Build.props.  For a one other scenario it must be set a 
-         second time in the 'BeforeCommon' targets. -->
-    <AppxPackageDir>$(BaseOutputPath)AppxPackages</AppxPackageDir>
+    <!-- <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(PlatformTarget)\$(Configuration)\</BaseOutputPath> -->
   </PropertyGroup>
 </Project>
