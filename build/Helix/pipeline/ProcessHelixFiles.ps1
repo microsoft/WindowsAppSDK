@@ -21,6 +21,7 @@ Write-Host "ProcessAllJobs:     $ProcessAllJobs"
 Write-Host "HelixIsExternal     $HelixIsExternal"
 Write-Host "HelixTypeJobFilter: $HelixTypeJobFilter"
 
+$helixAccessToken = ''
 if (!$HelixIsExternal)
 {
     $HelixAccessToken = $env:HelixAccessToken
@@ -106,7 +107,7 @@ Copy your token into the URIs below, excluding the braces.</p>
 
 foreach ($testRun in $testRuns.value)
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun)
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))
@@ -151,7 +152,7 @@ foreach ($testRun in $testRuns.value)
                     $filesQueryUri = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files"
                     if (!$HelixIsExternal)
                     {
-                        $filesQueryUri = Append-HelixAccessTokenToUrl $filesQueryUri $HelixAccessToken
+                        $filesQueryUri = Append-HelixAccessTokenToUrl $filesQueryUri $helixAccessToken
                     }
 
                     $files = @() # Clear $files so we don't retain a stale value in case of an error
@@ -181,7 +182,7 @@ foreach ($testRun in $testRuns.value)
                             $fileurl = $file.Link
                             if (!$HelixIsExternal)
                             {
-                                $fileurl = Append-HelixAccessTokenToUrl $fileurl $HelixAccessToken
+                                $fileurl = Append-HelixAccessTokenToUrl $fileurl $helixAccessToken
                             }
 
                             try

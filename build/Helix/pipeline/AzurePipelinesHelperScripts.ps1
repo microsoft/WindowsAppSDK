@@ -33,7 +33,11 @@ function GetQueryTestRunsUri
 
 function Get-HelixJobTypeFromTestRun
 {
-    Param ($testRun)
+    Param (
+        $testRun,
+        [Parameter(Mandatory=$false)]
+        [string]$helixAccessToken
+    )
 
     $testRunSingleResultUri = "$($testRun.url)/results?`$top=1&`$skip=0&api-version=5.1"
     $singleTestResult = Invoke-RestMethod -Uri $testRunSingleResultUri -Method Get -Headers $azureDevOpsRestApiHeaders
@@ -49,9 +53,9 @@ function Get-HelixJobTypeFromTestRun
         $info = ConvertFrom-Json $singleTestResult.value.comment
         $helixJobId = $info.HelixJobId
         $queryUrl = "https://helix.dot.net/api/2019-06-17/jobs/${helixJobId}"
-        if (!$HelixIsExternal)
+        if ($helixAccessToken)
         {
-            $queryUrl += "?access_token=${HelixAccessToken}"
+            $queryUrl += "?access_token=${helixAccessToken}"
         }
 
         $job = Invoke-RestMethodWithRetries $queryUrl

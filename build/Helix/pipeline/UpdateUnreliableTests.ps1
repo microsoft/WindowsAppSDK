@@ -26,6 +26,7 @@ Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
 Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "ReadOnlyTestMode:                  $ReadOnlyTestMode"
 
+$helixAccessToken = ''
 if (!$HelixIsExternal)
 {
     $HelixAccessToken = $env:HelixAccessToken
@@ -52,7 +53,7 @@ $timesSeenByRunName = @{}
       
 foreach ($testRun in $testRuns.value)
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun)
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))
@@ -119,7 +120,7 @@ foreach ($testRun in $testRuns.value)
                 $subResultsFileUrl = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files/$($subresultsFileName)"
                 if (!$HelixIsExternal)
                 {
-                    $subResultsFileUrl = Append-HelixAccessTokenToUrl $subResultsFileUrl $HelixAccessToken
+                    $subResultsFileUrl = Append-HelixAccessTokenToUrl $subResultsFileUrl $helixAccessToken
                 }
                 
                 try

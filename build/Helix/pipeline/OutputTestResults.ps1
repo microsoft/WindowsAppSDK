@@ -20,9 +20,10 @@ Write-Host "BuildUri:                          $BuildUri"
 Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
 
+$helixAccessToken = ''
 if (!$HelixIsExternal)
 {
-    $HelixAccessToken = $env:HelixAccessToken
+    $helixAccessToken = $env:HelixAccessToken
 }
 
 if($env:taefquery)
@@ -58,7 +59,7 @@ $totalTestsExecutedCount = 0
 
 foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -Descending))
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun)
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))
