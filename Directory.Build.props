@@ -25,7 +25,8 @@
     </When>
   </Choose>
 
-  <PropertyGroup Condition="$(BuildingWithBuildExe) != 'true'">
+  <PropertyGroup>
+    <DirectoryBuildPropsIncluded>true</DirectoryBuildPropsIncluded>
     <IsTDPConfiguration>false</IsTDPConfiguration>
 
     <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
