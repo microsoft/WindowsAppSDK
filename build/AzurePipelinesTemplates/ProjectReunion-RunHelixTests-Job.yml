@@ -30,8 +30,8 @@ jobs:
     winUIHelixVer: 0.5.0
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
-    # TODO: I had to make changes on top of the WinUI Helix nuget. Once the nuget is updated with the modifications then
-    # these files can be removed from the repo.
+    # TODO: I had to make changes on top of the WinUI Helix Nuget to fix things for the PR feeder repo.
+    # Once the nuget is updated with the modifications then these files can be removed from the repo.
     modifiedWinUIHelixPipelineScripts: build\Helix\pipeline
 
     # The target queues to run the tests on.

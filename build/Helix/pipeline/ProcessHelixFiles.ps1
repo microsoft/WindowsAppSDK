@@ -107,7 +107,7 @@ Copy your token into the URIs below, excluding the braces.</p>
 
 foreach ($testRun in $testRuns.value)
 {
-    $jobType = Get-HelixJobTypeFromTestRun $testRun $helixAccessToken
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))

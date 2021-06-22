@@ -57,8 +57,6 @@ $totalTestsExecutedCount = 0
 # The name of a testRun is set to the Helix queue that it was run on (e.g. windows.10.amd64.client19h1.xaml)
 # If we have multiple test runs on the same queue they must have different Helix JobTypes
 
-Write-Host ($testRuns.count)
-
 foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -Descending))
 {
     $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
@@ -93,15 +91,8 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
 
         Write-Host "Retrieving test results..."
 
-        Write-Host "debugging 0"
-        Write-Host $testRun.url
-        Write-Host "debugging 0.1"
-
         $testRunResultsUri = "$($testRun.url)/results?`$top=$sizeOfPage&`$skip=$numItemsToSkip&api-version=5.1"
-        Write-Host "testRunResultsUri = " $testRunResultsUri
         $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
-
-        Write-Host "debugging 1"
 
         foreach ($testResult in $testResults.value)
         {
@@ -130,7 +121,6 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
                 }
             }
         }
-        Write-Host "debugging 2"
     }
 }
 
@@ -138,8 +128,6 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
 $unreliableTests = $unreliableTests | Sort-Object
 $failingTests = $failingTests | Sort-Object
 $unexpectedResultTest = $unexpectedResultTest | Sort-Object
-
-Write-Host "debugging 3"
 
 if ($unreliableTests.Count -gt 0)
 {
