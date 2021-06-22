@@ -50,16 +50,28 @@ function Get-HelixJobTypeFromTestRun
     }
     else
     {
-        $info = ConvertFrom-Json $singleTestResult.value.comment
-        $helixJobId = $info.HelixJobId
-        $queryUrl = "https://helix.dot.net/api/2019-06-17/jobs/${helixJobId}"
-        if ($token)
-        {
-            $queryUrl += "?access_token=${token}"
+        # There may already be other test results reported in the pipeline from other non-Helix tests.
+        # In this case, there won't be a comment on the test run, or the HelixJobId will be missing, so
+        # we need to first check if they exist in order to prevent errors.
+
+        if($singleTestResult.value.comment){
+            $info = ConvertFrom-Json $singleTestResult.value.comment
+            if ($info.HelixJobId) {
+                $helixJobId = $info.HelixJobId
+
+                $queryUrl = "https://helix.dot.net/api/2019-06-17/jobs/${helixJobId}"
+                if ($token)
+                {
+                    $queryUrl += "?access_token=${token}"
+                }
+
+                $job = Invoke-RestMethodWithRetries $queryUrl
+                return $job.Type
+            }
         }
 
-        $job = Invoke-RestMethodWithRetries $queryUrl
-        return $job.Type
+        # If we couldn't find the HelixJobType the test run is likely another non-Helix test, so we'll return unknown.
+        return "UNKNOWN"
     }
 }
 

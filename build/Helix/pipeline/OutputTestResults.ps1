@@ -20,7 +20,7 @@ Write-Host "BuildUri:                          $BuildUri"
 Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
 
-$helixAccessToken = ''
+$helixAccessToken = ""
 if (!$HelixIsExternal)
 {
     $helixAccessToken = $env:HelixAccessToken
@@ -43,8 +43,6 @@ Write-Host "Checking test results..."
 
 $queryUri = GetQueryTestRunsUri -CollectionUri $CollectionUri -TeamProject $TeamProject -BuildUri $BuildUri -IncludeRunDetails
 Write-Host "queryUri = $queryUri"
-
-Write-Host "azureDevOpsRestApiHeaders = " $azureDevOpsRestApiHeaders
 
 $testRuns = Invoke-RestMethod -Uri $queryUri -Method Get -Headers $azureDevOpsRestApiHeaders
 [System.Collections.Generic.List[string]]$failingTests = @()
