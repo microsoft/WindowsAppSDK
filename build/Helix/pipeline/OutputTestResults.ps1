@@ -90,8 +90,14 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
         $numItemsToSkip = $page * $sizeOfPage
 
         Write-Host "Retrieving test results..."
+
+        Write-Host "debugging 0"
+        Write-Host "testRun.url = $(testRun.url)"
+
         $testRunResultsUri = "$($testRun.url)/results?`$top=$sizeOfPage&`$skip=$numItemsToSkip&api-version=5.1"
         $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
+
+        Write-Host "debugging 1"
 
         foreach ($testResult in $testResults.value)
         {
@@ -120,6 +126,7 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
                 }
             }
         }
+        Write-Host "debugging 2"
     }
 }
 
@@ -127,6 +134,8 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
 $unreliableTests = $unreliableTests | Sort-Object
 $failingTests = $failingTests | Sort-Object
 $unexpectedResultTest = $unexpectedResultTest | Sort-Object
+
+Write-Host "debugging 3"
 
 if ($unreliableTests.Count -gt 0)
 {
