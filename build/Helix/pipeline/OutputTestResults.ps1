@@ -44,6 +44,8 @@ Write-Host "Checking test results..."
 $queryUri = GetQueryTestRunsUri -CollectionUri $CollectionUri -TeamProject $TeamProject -BuildUri $BuildUri -IncludeRunDetails
 Write-Host "queryUri = $queryUri"
 
+Write-Host "azureDevOpsRestApiHeaders = " $azureDevOpsRestApiHeaders
+
 $testRuns = Invoke-RestMethod -Uri $queryUri -Method Get -Headers $azureDevOpsRestApiHeaders
 [System.Collections.Generic.List[string]]$failingTests = @()
 [System.Collections.Generic.List[string]]$unreliableTests = @()
@@ -56,6 +58,8 @@ $totalTestsExecutedCount = 0
 # This is to handle the case where a failing Pipeline Job was re-run.
 # The name of a testRun is set to the Helix queue that it was run on (e.g. windows.10.amd64.client19h1.xaml)
 # If we have multiple test runs on the same queue they must have different Helix JobTypes
+
+Write-Host ($testRuns.count)
 
 foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -Descending))
 {
@@ -92,9 +96,11 @@ foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -D
         Write-Host "Retrieving test results..."
 
         Write-Host "debugging 0"
-        Write-Host "testRun.url = $(testRun.url)"
+        Write-Host $testRun.url
+        Write-Host "debugging 0.1"
 
         $testRunResultsUri = "$($testRun.url)/results?`$top=$sizeOfPage&`$skip=$numItemsToSkip&api-version=5.1"
+        Write-Host "testRunResultsUri = " $testRunResultsUri
         $testResults = Invoke-RestMethod -Uri $testRunResultsUri -Method Get -Headers $azureDevOpsRestApiHeaders
 
         Write-Host "debugging 1"

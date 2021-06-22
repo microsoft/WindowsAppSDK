@@ -29,7 +29,7 @@ Write-Host "ReadOnlyTestMode:                  $ReadOnlyTestMode"
 $helixAccessToken = ''
 if (!$HelixIsExternal)
 {
-    $HelixAccessToken = $env:HelixAccessToken
+    $helixAccessToken = $env:HelixAccessToken
 }
 
 . "$PSScriptRoot/AzurePipelinesHelperScripts.ps1"
