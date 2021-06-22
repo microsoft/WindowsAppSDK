@@ -9,8 +9,8 @@ Param(
     [switch]$PublishAppxFiles=$false
 )
 
-$FullBuildOutput = "$($BuildOutputDir)\$($Configuration)\$($Platform)"
-$FullPublishDir = "$($PublishDir)\$($Configuration)\$($Platform)"
+$FullBuildOutput = "$($BuildOutputDir)\$($Platform)\$($Configuration)"
+$FullPublishDir = "$($PublishDir)\$($Platform)\$($Configuration)"
 
 if (!(Test-Path $FullPublishDir)) { mkdir $FullPublishDir }
 
