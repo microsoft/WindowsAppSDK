@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project InitialTargets="DisplayLayoutInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
   <PropertyGroup>
     <!-- Due to import ordering inconsistencies between different project types, we import this file
          from multiple places.  We use this property to denote that it has been imported, to avoid
          multiple import warnings. -->
     <EnsureOutputLayoutPropsIncluded>true</EnsureOutputLayoutPropsIncluded>
+
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</RepoRoot>
 
     <!-- This is normally defined in Platform.Default.props for each platform, but we need it early in order to ensure
          our output directories are formatted consistently. -->
@@ -14,7 +15,7 @@
     <PlatformTarget Condition="$(Platform) == 'Win32'">x86</PlatformTarget>
 
     <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
-    <BaseOutputPath>$(MSBuildThisFileDirectory)..\BuildOutput\$(PlatformTarget)\$(Configuration)\</BaseOutputPath>
+    <BaseOutputPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(PlatformTarget)\</BaseOutputPath>
 
     <!-- This is later fixed up to contain the project name, but if we specify it here then it ends up being included twice. -->
     <OutDir>$(BaseOutputPath)</OutDir>
@@ -28,6 +29,7 @@
   </PropertyGroup>
 
   <Target Name="DisplayLayoutInfo">
+    <Message Importance="High" Text="DisplayLateProperties: RepoRoot=$(RepoRoot)"/>
     <Message Importance="High" Text="DisplayLateProperties: BaseOutputPath=$(BaseOutputPath)"/>
     <Message Importance="High" Text="DisplayLateProperties: AppxPackageDir=$(AppxPackageDir)"/>
   </Target>

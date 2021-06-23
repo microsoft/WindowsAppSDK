@@ -5,7 +5,7 @@
      to ensure that all of our build output files end up in the same location.  This is parsed too late when put in mux.controls.props. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
-  
+
   <PropertyGroup>    
     <IsTDPConfiguration>false</IsTDPConfiguration>
 
@@ -13,7 +13,6 @@
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
 
     <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)ProjectReunion.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
-    <ForceImportAfterCppDefaultProps>$(MSBuildThisFileDirectory)ProjectReunion.AfterDefaults.props</ForceImportAfterCppDefaultProps>
     <ForceImportAfterCppTargets>$(MSBuildThisFileDirectory)ProjectReunion.AfterCpp.targets</ForceImportAfterCppTargets>
   </PropertyGroup>
 
