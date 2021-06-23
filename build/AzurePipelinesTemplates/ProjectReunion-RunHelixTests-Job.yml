@@ -126,7 +126,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'UnitTest.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj'
+      arguments: -TestFilePattern 'UnitTest.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj' -WorkItemPrefix '$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MRTCoreUnitTests'
 
   # Publish the generated TestWorkItems.proj as a Pipeline artifact
   # This is not required, but it is useful for debugging purposes to see what tests were discovered.
