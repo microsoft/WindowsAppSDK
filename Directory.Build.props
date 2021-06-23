@@ -14,8 +14,8 @@
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
 
-    <CustomBeforeMicrosoftCommonTargets>$(MSBuildThisFileDirectory)ProjectReunion.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
-    <ForceImportAfterCppTargets>$(MSBuildThisFileDirectory)ProjectReunion.AfterCpp.targets</ForceImportAfterCppTargets>
+    <CustomBeforeMicrosoftCommonTargets>$(BuildRoot)BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
+    <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
@@ -24,8 +24,8 @@
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
 
-  <Target Name="DirectoryBuildPropsInfo" Condition="$(ProjectReunionBuildPipeline) == '1'">
-    <Message Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
+  <Target Name="DirectoryBuildPropsInfo">
+    <Message Condition="$(ProjectReunionBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
