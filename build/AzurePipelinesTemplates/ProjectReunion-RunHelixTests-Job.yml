@@ -114,7 +114,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_x64\UnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnitTests.proj' -WorkItemPrefix 'MrtCore-UnitTests-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnitTests.proj' -WorkItemPrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover tests'
@@ -122,7 +122,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_x64\BaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-BaseUnitTests.proj' -WorkItemPrefix 'MrtCore-BaseUnitTests-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\BaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-BaseUnitTests.proj' -WorkItemPrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
