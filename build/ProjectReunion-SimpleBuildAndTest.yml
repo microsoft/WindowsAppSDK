@@ -34,9 +34,3 @@ jobs:
     matrix: 
       config:
         isDummyMatrix: true
-
-- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-  parameters:
-    dependsOn: RunTestsInHelix
-    rerunPassesRequiredToAvoidFailure: 5
-    minimumExpectedTestsExecutedCount: 1

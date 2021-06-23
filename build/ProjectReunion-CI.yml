@@ -149,12 +149,6 @@ jobs:
       - BuildMRT
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
-# - template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-#   parameters:
-#     dependsOn: RunTestsInHelix
-#     rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-#     minimumExpectedTestsExecutedCount: 2
-
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
   parameters:
@@ -191,13 +185,3 @@ jobs:
 #    helixType: 'test/frpkg'
 #    dependsOn: CreateNugetPackage
 #    pkgArtifactPath: '$(artifactDownloadPath)\drop\FrameworkPackage'
-
-#UNDONE - subsequent PR
-#- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-#  parameters:
-#    dependsOn:
-#    - RunTestsInHelix
-#    - RunNugetPkgTestsInHelix
-#    - RunFrameworkPkgTestsInHelix
-#    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
-#    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
