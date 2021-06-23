@@ -4,6 +4,8 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location.  This is parsed too late when put in mux.controls.props. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
   <PropertyGroup>    
@@ -22,10 +24,8 @@
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
 
-  <Target Name="DirectoryBuildPropsInfo">
-    <Message  Condition="$(ProjectReunionBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
-    <Message Importance="High" Text="DisplayLateProperties: BaseOutputPath=$(BaseOutputPath)"/>
-    <Message Importance="High" Text="DisplayLateProperties: AppxPackageDir=$(AppxPackageDir)"/>
+  <Target Name="DirectoryBuildPropsInfo" Condition="$(ProjectReunionBuildPipeline) == '1'">
+    <Message Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
