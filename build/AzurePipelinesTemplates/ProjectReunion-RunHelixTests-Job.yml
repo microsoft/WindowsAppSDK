@@ -47,7 +47,8 @@ jobs:
     helixTestOutputBaseDir: $(Build.SourcesDirectory)\HelixTestOutput
     helixTestOutputDir: $(helixTestOutputBaseDir)\$(buildConfiguration)\$(buildPlatform)
     
-    # Note: TAEF must be present in this directory, as GenerateHelixWorkItems.ps1 expects to invoke te.exe here.
+    # This directory contains the Test payload, and Helix test binaries and scripts.
+    # Note: TAEF must be present in this directory, as GenerateHelixWorkItems.ps1 expects to invoke te.exe from here.
     testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
 
     helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
@@ -91,9 +92,9 @@ jobs:
       nugetConfigPath: nuget.config
       restoreDirectory: packages
 
-  - powershell: tree /f /a $(Build.SourcesDirectory)\build\Helix\packages
-    displayName: 'DIAG: dump packages'
-    continueOnError: true
+  # - powershell: tree /f /a $(Build.SourcesDirectory)\build\Helix\packages
+  #   displayName: 'DIAG: dump packages'
+  #   continueOnError: true
 
   # Download the MRT Core test binaries
   - task: DownloadBuildArtifacts@0
@@ -106,8 +107,8 @@ jobs:
     displayName: 'DIAG: dump testPayloadDir'
     continueOnError: true
 
-  # Discover the test binaries to run and generate the Helix Work Items.
-  # There are 3 test suites that we run for MRT Core in Helix.
+  # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
+  # Note: There are 3 test suites for MRT Core. We currently run 2 of them in Helix.
   - task: powershell@2
     displayName: 'Discover tests'
     condition: ${{ parameters.conditionForRunTests }}
@@ -133,7 +134,7 @@ jobs:
   #     filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
   #     arguments: -TestFilePattern 'mrtcore_test_binaries_x64\ManagedTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-ManagedTest.proj' -WorkItemPrefix 'MrtCore-ManagedTest-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.ManagedTest.$(buildPlatform).$(buildConfiguration)'
 
-  # Publish the generated TestWorkItems.proj as a Pipeline artifact
+  # Publish the generated test work items (*.proj file) as Pipeline artifact(s).
   # This is not required, but it is useful for debugging purposes to see what tests were discovered.
   - task: PublishBuildArtifacts@1
     displayName: 'Publish test work items'
