@@ -5,12 +5,12 @@ Param(
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
+    
+    [string]$HelixTypeJobFilter, # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
 
     # If external then we don't have a HelixAccessToken.
     [Parameter(Mandatory=$false)]
-    [switch]$HelixIsExternal = $false,
-    
-    [string]$HelixTypeJobFilter # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
+    [switch]$HelixIsExternal = $false
 )
 
 Write-Host "MinimumExpectedTestsExecutedCount: $MinimumExpectedTestsExecutedCount"

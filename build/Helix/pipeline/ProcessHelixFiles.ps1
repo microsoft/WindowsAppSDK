@@ -6,11 +6,11 @@ Param(
     [string]$OutputFolder = "HelixOutput",
     [Parameter(Mandatory=$false)][Switch]$ProcessAllJobs,
 
+    [string]$HelixTypeJobFilter, # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
+
     # If external then we don't have a HelixAccessToken.
     [Parameter(Mandatory=$false)]
-    [switch]$HelixIsExternal = $false,
-
-    [string]$HelixTypeJobFilter # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
+    [switch]$HelixIsExternal = $false
 )
 
 Write-Host "CollectionUri:      $CollectionUri"
