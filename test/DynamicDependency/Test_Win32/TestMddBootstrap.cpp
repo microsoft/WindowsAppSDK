@@ -76,6 +76,18 @@ namespace Test::DynamicDependency
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
         }
 
+        TEST_METHOD(Initialize_DDLMMinVersionMatch)
+        {
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Requesting 3.0, but indicating we'll accept 0.1.0.0 or higher.
+            const UINT32 requested_version{ 0x00030000 };
+            PACKAGE_VERSION minimum_version{};
+            minimum_version.Minor = 1;
+
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(S_OK), MddBootstrapInitialize(requested_version, nullptr, minimum_version));
+        }
+
         TEST_METHOD(Initialize)
         {
             VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
