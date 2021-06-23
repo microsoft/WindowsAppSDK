@@ -1,19 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
-<Project InitialTargets="DisplayLateProperties"  ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- <PostBuildDependsOn>$(PostBuildDependsOn);VerboseOutputLayoutInfo</PostBuildDependsOn> -->
   </PropertyGroup>
 
-  <!-- Helper for seeing what the output directory looks like at different stages of the build. -->
-  <Target Name="DisplayLateProperties">
-    <Message Importance="High" Text="DisplayLateProperties: BaseOutputPath=$(BaseOutputPath)"/>
-    <Message Importance="High" Text="DisplayLateProperties: OutDir=$(OutDir)"/>
-    <Message Importance="High" Text="DisplayLateProperties: TargetDir=$(TargetDir)"/>
-    <Message Importance="High" Text="DisplayLateProperties: AppxPackageDir=$(AppxPackageDir)"/>
-  </Target>
-
-  <!-- Display late defined properties. -->
+  <!-- Display the entire build output directory structure. -->
   <Target Name="VerboseOutputLayoutInfo">
     <ItemGroup>
       <FilesInOutput Include="$(BaseOutputPath)\**\*" />
