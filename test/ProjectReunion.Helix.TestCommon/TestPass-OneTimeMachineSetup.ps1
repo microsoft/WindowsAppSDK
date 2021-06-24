@@ -84,10 +84,10 @@ function Enable-CrashDumpsForProcesses {
     }
 }
 
-# enable dump collection for our test apps:
+# enable dump collection for the following apps:
 $namesOfProcessesForDumpCollection = @(
-    "ProjectReunionCppApp.exe",
-    "ProjectReunionCsApp.exe"
+    "te.exe",
+    "te.processhost.exe"
 )
 
 Enable-CrashDumpsForProcesses $namesOfProcessesForDumpCollection
