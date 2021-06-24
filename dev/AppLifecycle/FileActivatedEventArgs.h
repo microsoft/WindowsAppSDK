@@ -10,9 +10,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Storage;
 
-    static PCWSTR c_fileContractId = L"Windows.File";
+    constexpr PCWSTR c_fileContractId = L"Windows.File";
 
-    class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs, ActivatedEventArgsBase, IFileActivatedEventArgs,
+    class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs, IFileActivatedEventArgs, ActivatedEventArgsBase,
         IInternalValueMarshalable>
     {
     public:
@@ -29,8 +29,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
 
             m_kind = ActivationKind::File;
-            m_verb = verb;
-            m_path = file;
+            m_verb = std::move(verb);
+            m_path = std::move(file);
             m_files = winrt::single_threaded_vector<IStorageItem>();
 
             // There is a scenario where we just want to create an object to serialize it.  In that situation
@@ -44,11 +44,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
-        static IActivatedEventArgs Deserialize(winrt::Windows::Foundation::Uri const& uri)
+        static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            std::wstring verb = query.GetFirstValueByName(L"Verb").c_str();
-            std::wstring file = query.GetFirstValueByName(L"File").c_str();
+            auto verb = std::wstring(query.GetFirstValueByName(L"Verb"));
+            auto file = std::wstring(query.GetFirstValueByName(L"File"));
             return make<FileActivatedEventArgs>(verb, file);
         }
 
