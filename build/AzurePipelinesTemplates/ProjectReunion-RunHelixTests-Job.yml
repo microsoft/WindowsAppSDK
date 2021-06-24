@@ -176,7 +176,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(modifiedWinUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
-      arguments: -HelixIsExternal -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
+      arguments: -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
 
   # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
   - task: powershell@2
@@ -187,7 +187,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(modifiedWinUIHelixPipelineScripts)\OutputTestResults.ps1
-      arguments: -HelixIsExternal -HelixTypeJobFilter $(helixType)
+      arguments: -HelixTypeJobFilter $(helixType)
 
   # This downloads files from Helix so that they can be published as a Pipeline artifact. This makes debugging test failures a lot easier since the
   # full logs and any supporting files can be downloaded from the Pipeline.
@@ -200,7 +200,7 @@ jobs:
       targetType: filePath
       filePath: $(modifiedWinUIHelixPipelineScripts)\ProcessHelixFiles.ps1
       # Remove -ProcessAllJobs to only download the files from work items with failing tests
-      arguments: -HelixIsExternal -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
+      arguments: -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Helix files'
