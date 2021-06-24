@@ -78,14 +78,22 @@ function Get-HelixJobTypeFromTestRun
 
 function Append-HelixAccessTokenToUrl
 {
-    Param ([string]$url, [string]$token)
-    if($url.Contains("?"))
+    Param (
+        [string]$url,
+        [Parameter(Mandatory=$false)]
+        [string]$token = ''
+    )
+
+    if ($token)
     {
-        $url = "$($url)&access_token=$($token)"
-    }
-    else
-    {
-        $url = "$($url)?access_token=$($token)"
+        if ($url.Contains("?"))
+        {
+            $url = "$($url)&access_token=$($token)"
+        }
+        else
+        {
+            $url = "$($url)?access_token=$($token)"
+        }
     }
     return $url
 }
