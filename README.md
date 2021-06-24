@@ -65,8 +65,8 @@ More on what the project is and how we're approaching the work.
 
 ### Contributing
 
-[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
-[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Proposals](https://img.shields.io/github/issues/microsoft/WindowsAppSDK/feature%20proposal)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
+[![Bugs](https://img.shields.io/github/issues/microsoft/WindowsAppSDK/bug)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 _We want to hear from you!_
 
