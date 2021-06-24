@@ -36,13 +36,13 @@ function Get-HelixJobTypeFromTestRun
     Param (
         $testRun,
         [Parameter(Mandatory=$false)]
-        [string]$token
+        [string]$helixToken
     )
 
     $testRunSingleResultUri = "$($testRun.url)/results?`$top=1&`$skip=0&api-version=5.1"
     $singleTestResult = Invoke-RestMethod -Uri $testRunSingleResultUri -Method Get -Headers $azureDevOpsRestApiHeaders
     $count = $singleTestResult.value.Length
-    if($count -eq 0)
+    if ($count -eq 0)
     {
         # If the count is 0, then results have not yet been reported for this run.
         # We only care about completed runs with results, so it is ok to just return 'UNKNOWN' for this run.
@@ -52,17 +52,18 @@ function Get-HelixJobTypeFromTestRun
     {
         # There may already be other test results reported in the pipeline from other non-Helix tests.
         # In this case, there won't be a comment on the test run, or the HelixJobId will be missing, so
-        # we need to first check if they exist in order to prevent errors.
-
-        if($singleTestResult.value.comment){
+        # we need to first check if they exist in order to prevent errors about non-existant properties.
+        if ($singleTestResult.value.comment)
+        {
             $info = ConvertFrom-Json $singleTestResult.value.comment
-            if ($info.HelixJobId) {
+            if ($info.HelixJobId)
+            {
                 $helixJobId = $info.HelixJobId
 
                 $queryUrl = "https://helix.dot.net/api/2019-06-17/jobs/${helixJobId}"
-                if ($token)
+                if ($helixToken)
                 {
-                    $queryUrl += "?access_token=${token}"
+                    $queryUrl += "?access_token=${helixToken}"
                 }
 
                 $job = Invoke-RestMethodWithRetries $queryUrl
@@ -70,7 +71,7 @@ function Get-HelixJobTypeFromTestRun
             }
         }
 
-        # If we couldn't find the HelixJobType the test run is likely another non-Helix test, so we'll return unknown.
+        # If we couldn't find the HelixJobType then the test run is likely another non-Helix test, so we'll return 'UNKNOWN'.
         return "UNKNOWN"
     }
 }

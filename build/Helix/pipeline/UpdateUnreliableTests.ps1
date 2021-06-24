@@ -3,15 +3,12 @@ Param(
     [int]$RerunPassesRequiredToAvoidFailure = 8,
 
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
+    [string]$HelixAccessToken,
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
 
     [string]$HelixTypeJobFilter, # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
-
-    # If external then we don't have a HelixAccessToken.
-    [Parameter(Mandatory=$false)]
-    [switch]$HelixIsExternal = $false,
 
     # Don't actually update results in AzDO. Useful for testing the script locally.
     [switch]$ReadOnlyTestMode
@@ -23,13 +20,11 @@ Write-Host "CollectionUri:                     $CollectionUri"
 Write-Host "TeamProject:                       $TeamProject"
 Write-Host "BuildUri:                          $BuildUri"
 Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
-Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "ReadOnlyTestMode:                  $ReadOnlyTestMode"
 
-$helixAccessToken = ''
-if (!$HelixIsExternal)
+if ((!$HelixAccessToken) -and ($env:HelixAccessToken))
 {
-    $helixAccessToken = $env:HelixAccessToken
+    $HelixAccessToken = $env:HelixAccessToken
 }
 
 . "$PSScriptRoot/AzurePipelinesHelperScripts.ps1"
@@ -53,7 +48,7 @@ $timesSeenByRunName = @{}
       
 foreach ($testRun in $testRuns.value)
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $HelixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))
@@ -117,11 +112,7 @@ foreach ($testRun in $testRuns.value)
                 $subresultsFileName = $testResult.errorMessage
 
                 Write-Host "Downloading $subresultsFileName from Helix"
-                $subResultsFileUrl = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files/$($subresultsFileName)"
-                if (!$HelixIsExternal)
-                {
-                    $subResultsFileUrl = Append-HelixAccessTokenToUrl $subResultsFileUrl $helixAccessToken
-                }
+                $subResultsFileUrl = Append-HelixAccessTokenToUrl "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files/$($subresultsFileName)" $HelixAccessToken
                 
                 try
                 {
