@@ -25,11 +25,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             wil::unique_hkey environmentVariablesHKey{};
             if (m_Scope == EnvironmentManager::Scope::User)
             {
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation.c_str(), 0, KEY_READ, environmentVariablesHKey.addressof())));
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation.c_str(), 0, KEY_READ, environmentVariablesHKey.addressof())));
             }
             else //Scope is Machine
             {
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation.c_str(), 0, KEY_READ, environmentVariablesHKey.addressof())));
+                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation.c_str(), 0, KEY_READ, environmentVariablesHKey.addressof())));
             }
 
             return environmentVariablesHKey;
