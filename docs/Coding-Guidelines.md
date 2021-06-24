@@ -1,6 +1,6 @@
 # General
 
-Project Reunion prefers using industry-standard coding styles, guidelines, and patterns for any
+The Windows App SDK prefers using industry-standard coding styles, guidelines, and patterns for any
 languages used in implementation or testing.
 
 ## Languages
