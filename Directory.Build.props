@@ -14,7 +14,7 @@
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
 
-    <CustomBeforeMicrosoftCommonTargets>$(BuildRoot)BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
+    <!-- <CustomBeforeMicrosoftCommonTargets>$(BuildRoot)BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets> -->
     <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
   </PropertyGroup>
 
