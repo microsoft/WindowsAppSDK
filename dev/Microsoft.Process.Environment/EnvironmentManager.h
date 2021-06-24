@@ -24,7 +24,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static Microsoft::ProjectReunion::EnvironmentManager GetForMachine();
         Windows::Foundation::Collections::IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
-        bool IsSupported();
         void SetEnvironmentVariable(hstring const& name, hstring const& value);
         void AppendToPath(hstring const& path);
         void RemoveFromPath(hstring const& path);

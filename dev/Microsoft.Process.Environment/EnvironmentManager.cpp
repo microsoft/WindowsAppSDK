@@ -69,11 +69,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         }
     }
 
-    bool EnvironmentManager::IsSupported()
-    {
-        throw hresult_not_implemented();
-    }
-
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
         auto setEV = [&, name, value, this]()
