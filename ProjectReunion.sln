@@ -134,9 +134,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsDemoApp", 
 	EndProjectSection
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PushNotificationsDemoPackage", "test\TestApps\PushNotificationsDemoPackage\PushNotificationsDemoPackage.wapproj", "{424A6D96-37EE-4456-8347-08AB425C8DBE}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9C1A6C58-52D6-4514-9120-5C339C5DF4BE} = {9C1A6C58-52D6-4514-9120-5C339C5DF4BE}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsTestApp", "test\TestApps\PushNotificationsTestApp\PushNotificationsTestApp.vcxproj", "{56A1D696-FEDA-4333-BF37-772EBECECB10}"
 	ProjectSection(ProjectDependencies) = postProject
