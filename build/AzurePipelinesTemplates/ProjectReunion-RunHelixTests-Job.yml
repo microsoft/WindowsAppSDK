@@ -26,7 +26,9 @@ jobs:
     maxParallel: ${{ parameters.maxParallel }}
     matrix: ${{ parameters.matrix }}
   variables:
-    # This should be kept in sync with the value in build\Helix\packages.config
+    # This should be kept in sync with the value in these files:
+    #   build\Helix\packages.config
+    #   test\ProjectReunion.Helix.TestCommon\ProjectReunion.Helix.TestCommon.csproj
     winUIHelixVer: 0.5.0
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
@@ -59,6 +61,7 @@ jobs:
     inputs:
       filename: 'set'
 
+  # This is installed on the Helix VM by TestPass-OneTimeMachineSetup.ps1
   - task: powershell@2
     displayName: 'Download .NET Runtime Windows installer'
     inputs:

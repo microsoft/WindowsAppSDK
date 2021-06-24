@@ -5,4 +5,3 @@ Write-Host "TestPass-PreRun.ps1"
 
 # This script is called by TestPass-PreRunCore.ps1 which is a part of the WinUI.Helix package.
 
-.\TestPass-EnsureProjectReunionFrameworkPackage
