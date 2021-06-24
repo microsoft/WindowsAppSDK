@@ -2,28 +2,23 @@ Param(
     [int]$MinimumExpectedTestsExecutedCount = 1,
 
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
+    [string]$HelixAccessToken,
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
     
-    [string]$HelixTypeJobFilter, # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
-
-    # If external then we don't have a HelixAccessToken.
-    [Parameter(Mandatory=$false)]
-    [switch]$HelixIsExternal = $false
+    [string]$HelixTypeJobFilter # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
 )
 
 Write-Host "MinimumExpectedTestsExecutedCount: $MinimumExpectedTestsExecutedCount"
 Write-Host "CollectionUri:                     $CollectionUri"
 Write-Host "TeamProject:                       $TeamProject"
 Write-Host "BuildUri:                          $BuildUri"
-Write-Host "HelixIsExternal                    $HelixIsExternal"
 Write-Host "HelixTypeJobFilter:                $HelixTypeJobFilter"
 
-$helixAccessToken = ""
-if (!$HelixIsExternal)
+if ((!$HelixAccessToken) -and ($env:HelixAccessToken))
 {
-    $helixAccessToken = $env:HelixAccessToken
+    $HelixAccessToken = $env:HelixAccessToken
 }
 
 if($env:taefquery)
@@ -59,7 +54,7 @@ $totalTestsExecutedCount = 0
 
 foreach ($testRun in ($testRuns.value | Sort-Object -Property "completedDate" -Descending))
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $HelixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))

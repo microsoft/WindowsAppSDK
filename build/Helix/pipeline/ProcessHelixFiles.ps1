@@ -1,16 +1,13 @@
 Param(
     [string]$AccessToken = $env:SYSTEM_ACCESSTOKEN,
+    [string]$HelixAccessToken,
     [string]$CollectionUri = $env:SYSTEM_COLLECTIONURI,
     [string]$TeamProject = $env:SYSTEM_TEAMPROJECT,
     [string]$BuildUri = $env:BUILD_BUILDURI,
     [string]$OutputFolder = "HelixOutput",
     [Parameter(Mandatory=$false)][Switch]$ProcessAllJobs,
 
-    [string]$HelixTypeJobFilter, # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
-
-    # If external then we don't have a HelixAccessToken.
-    [Parameter(Mandatory=$false)]
-    [switch]$HelixIsExternal = $false
+    [string]$HelixTypeJobFilter # e.g. "DevTestSuite", "ScenarioTestSuite", "pgo/x86", "pgo/x64"
 )
 
 Write-Host "CollectionUri:      $CollectionUri"
@@ -18,13 +15,11 @@ Write-Host "TeamProject:        $TeamProject"
 Write-Host "BuildUri:           $BuildUri"
 Write-Host "OutputFolder:       $OutputFolder"
 Write-Host "ProcessAllJobs:     $ProcessAllJobs"
-Write-Host "HelixIsExternal     $HelixIsExternal"
 Write-Host "HelixTypeJobFilter: $HelixTypeJobFilter"
 
-$helixAccessToken = ''
-if (!$HelixIsExternal)
+if ((!$HelixAccessToken) -and ($env:HelixAccessToken))
 {
-    $helixAccessToken = $env:HelixAccessToken
+    $HelixAccessToken = $env:HelixAccessToken
 }
 
 $ErrorActionPreference = "Stop"
@@ -107,7 +102,7 @@ Copy your token into the URIs below, excluding the braces.</p>
 
 foreach ($testRun in $testRuns.value)
 {
-    $jobType = Get-HelixJobTypeFromTestRun($testRun, $helixAccessToken)
+    $jobType = Get-HelixJobTypeFromTestRun($testRun, $HelixAccessToken)
     if($HelixTypeJobFilter)
     {
         if(!($jobType -like "$HelixTypeJobFilter*"))
@@ -148,12 +143,7 @@ foreach ($testRun in $testRuns.value)
                 {
                     Write-Host "WorkItem: $workItem"
                     $workItems.Add($workItem)
-
-                    $filesQueryUri = "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files"
-                    if (!$HelixIsExternal)
-                    {
-                        $filesQueryUri = Append-HelixAccessTokenToUrl $filesQueryUri $helixAccessToken
-                    }
+                    $filesQueryUri = Append-HelixAccessTokenToUrl "https://helix.dot.net/api/2019-06-17/jobs/$helixJobId/workitems/$helixWorkItemName/files" $HelixAccessToken
 
                     $files = @() # Clear $files so we don't retain a stale value in case of an error
                     try
@@ -179,11 +169,7 @@ foreach ($testRun in $testRuns.value)
                         {
                             $destination = "$workItemOutputDir\$($file.Name)"
                             Write-Host "Copying $($file.Name) to $destination"
-                            $fileurl = $file.Link
-                            if (!$HelixIsExternal)
-                            {
-                                $fileurl = Append-HelixAccessTokenToUrl $fileurl $helixAccessToken
-                            }
+                            $fileurl = Append-HelixAccessTokenToUrl $file.Link  $HelixAccessToken
 
                             try
                             {
