@@ -171,15 +171,15 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& cons
 
     if (isProcess)
     {
-        existingPath = GetEnvironmentVariableForProcess(L"PATH");
+        existingPath = GetEnvironmentVariableForProcess(c_pathName);
     }
     else if (isUser)
     {
-        existingPath = GetEnvironmentVariableForUser(L"PATH");
+        existingPath = GetEnvironmentVariableForUser(c_pathName);
     }
     else
     {
-        existingPath = GetEnvironmentVariableForMachine(L"PATH");
+        existingPath = GetEnvironmentVariableForMachine(c_pathName);
     }
 
     std::list<std::wstring> pathParts{};
@@ -226,13 +226,89 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& cons
 
     if (isProcess)
     {
-        SetEnvironmentVariable(L"PATH", newPath.c_str());
+        SetEnvironmentVariable(c_pathName, newPath.c_str());
     }
     else
     {
         THROW_IF_WIN32_ERROR(RegSetValueEx(
             GetKeyToEnvironmentVariables(isUser).get()
-            , L"PATH"
+            , c_pathName
+            , 0
+            , REG_EXPAND_SZ
+            , reinterpret_cast<const BYTE*>(newPath.c_str())
+            , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t))));
+    }
+
+}
+
+inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& const pathExtPart, int index)
+{
+    std::wstring existingPathExt{};
+
+    if (isProcess)
+    {
+        existingPathExt = GetEnvironmentVariableForProcess(c_pathExtName);
+    }
+    else if (isUser)
+    {
+        existingPathExt = GetEnvironmentVariableForUser(c_pathExtName);
+    }
+    else
+    {
+        existingPathExt = GetEnvironmentVariableForMachine(c_pathExtName);
+    }
+
+    std::list<std::wstring> pathExtParts{};
+
+    wchar_t* token;
+    wchar_t* tokenizationState;
+    token = wcstok_s(existingPathExt.data(), L";", &tokenizationState);
+    while (token != nullptr)
+    {
+        std::wstring pathExtPartToken{ token };
+
+        pathExtPartToken += L';';
+
+        pathExtParts.push_back(pathExtPartToken);
+
+        token = wcstok_s(NULL, L";", &tokenizationState);
+    }
+
+
+    int currentIndex{ 0 };
+    for (auto iterator = pathExtParts.begin(); iterator != pathExtParts.end(); ++iterator)
+    {
+        if (currentIndex == index)
+        {
+            std::wstring pathExtPartToInsert{ pathExtPart };
+
+            if (pathExtPartToInsert.back() != L';')
+            {
+                pathExtPartToInsert += L';';
+            }
+
+            pathExtParts.insert(iterator, pathExtPartToInsert);
+            break;
+        }
+
+        currentIndex++;
+    }
+
+    std::wstring newPath{};
+    for (auto pathPart : pathExtParts)
+    {
+        newPath += pathPart;
+    }
+
+    if (isProcess)
+    {
+        SetEnvironmentVariable(c_pathExtName, newPath.c_str());
+    }
+    else
+    {
+        THROW_IF_WIN32_ERROR(RegSetValueEx(
+            GetKeyToEnvironmentVariables(isUser).get()
+            , c_pathExtName
             , 0
             , REG_EXPAND_SZ
             , reinterpret_cast<const BYTE*>(newPath.c_str())
@@ -247,15 +323,54 @@ inline std::wstring GetSecondValueFromPath(bool isProcess, bool isUser)
 
     if (isProcess)
     {
-        existingPath = GetEnvironmentVariableForProcess(L"PATH");
+        existingPath = GetEnvironmentVariableForProcess(c_pathName);
     }
     else if (isUser)
     {
-        existingPath = GetEnvironmentVariableForUser(L"PATH");
+        existingPath = GetEnvironmentVariableForUser(c_pathName);
     }
     else
     {
-        existingPath = GetEnvironmentVariableForMachine(L"PATH");
+        existingPath = GetEnvironmentVariableForMachine(c_pathName);
+    }
+
+    int index{ 0 };
+    wchar_t* token;
+    wchar_t* tokenizationState;
+    token = wcstok_s(existingPath.data(), L";", &tokenizationState);
+    while (token != nullptr)
+    {
+        std::wstring pathPartToken{ token };
+
+        pathPartToken += L';';
+
+        if (index == 1)
+        {
+            return pathPartToken;
+        }
+
+        token = wcstok_s(NULL, L";", &tokenizationState);
+        index++;
+    }
+
+    return {};
+}
+
+inline std::wstring GetSecondValueFromPathExt(bool isProcess, bool isUser)
+{
+    std::wstring existingPath{};
+
+    if (isProcess)
+    {
+        existingPath = GetEnvironmentVariableForProcess(c_pathExtName);
+    }
+    else if (isUser)
+    {
+        existingPath = GetEnvironmentVariableForUser(c_pathExtName);
+    }
+    else
+    {
+        existingPath = GetEnvironmentVariableForMachine(c_pathExtName);
     }
 
     int index{ 0 };

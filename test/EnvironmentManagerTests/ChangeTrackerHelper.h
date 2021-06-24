@@ -51,6 +51,14 @@ inline wil::unique_hkey GetKeyForPathTrackingChange(bool isUser, std::wstring pa
     return GetKeyForTrackingChange(isUser, subKey.get());
 }
 
+inline wil::unique_hkey GetKeyForPathExtTrackingChange(bool isUser, std::wstring packageFullName)
+{
+    auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(
+    L"Software\\ChangeTracker\\%ws\\%ws\\", L"PATHEXT", packageFullName.c_str()) };
+
+    return GetKeyForTrackingChange(isUser, subKey.get());
+}
+
 inline wil::unique_hkey GetKeyForEVTrackingChange(bool isUser, std::wstring packageFullName, LPCWSTR EVKeyName)
 {
     auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(

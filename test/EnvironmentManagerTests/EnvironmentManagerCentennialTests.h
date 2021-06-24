@@ -51,6 +51,15 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(CentennialTestRemoveFromPathForProcess);
         TEST_METHOD(CentennialTestRemoveFromPathForUser);
         TEST_METHOD(CentennialTestRemoveFromPathForMachine);
+
+        TEST_METHOD(CentennialTestAppendToPathExtForProcess);
+        TEST_METHOD(CentennialTestAppendToPathExtForUser);
+        TEST_METHOD(CentennialTestAppendToPathExtForMachine);
+
+        TEST_METHOD(CentennialTestRemoveFromPathExtForProcess);
+        TEST_METHOD(CentennialTestRemoveFromPathExtForUser);
+        TEST_METHOD(CentennialTestRemoveFromPathExtForMachine);
+
     };
 
 }

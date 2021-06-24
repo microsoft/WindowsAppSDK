@@ -8,13 +8,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     struct PathExtChangeTracker : public IChangeTracker
     {
 
-        PathExtChangeTracker(std::wstring const& pathPart, EnvironmentManager::Scope scope, PathOperation operation);
+        PathExtChangeTracker(std::wstring const& pathExtPart, EnvironmentManager::Scope scope, PathOperation operation);
         HRESULT TrackChange(std::function<HRESULT(void)> callBack);
 
 
     private:
         EnvironmentManager::Scope m_Scope;
-        std::wstring m_PathPart{};
+        std::wstring m_PathExtPart{};
         std::wstring KeyName();
         PathOperation m_Operation;
 

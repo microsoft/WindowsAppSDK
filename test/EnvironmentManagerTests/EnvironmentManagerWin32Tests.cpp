@@ -318,4 +318,171 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
     }
+
+    void EnvironmentManagerWin32Tests::TestAppendToPathExtForProcess()
+    {
+        ProcessSetup();
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathExtName) };
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_evValueName;
+        pathToManipulate += L";";
+
+        ProcessCleanup();
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerWin32Tests::TestAppendToPathExtForUser()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Standard))
+        {
+            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_evValueName), winrt::hresult_access_denied);
+            return;
+        }
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathExtName) };
+
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_evValueName;
+        pathToManipulate += L";";
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerWin32Tests::TestAppendToPathExtForMachine()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
+        {
+            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_evValueName), winrt::hresult_access_denied);
+            return;
+        }
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_pathExtName) };
+
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_evValueName;
+        pathToManipulate += L";";
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForProcess()
+    {
+        ProcessSetup();
+
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+
+        InjectIntoPath(true, false, c_evValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathExtName) };
+
+        ProcessCleanup();
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
+
+    void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForUser()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_pathExtName) };
+
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L';';
+        }
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Standard))
+        {
+            std::wstring pathPart{ GetSecondValueFromPathExt(false, true) };
+            VERIFY_THROWS(environmentManager.RemoveExecutableFileExtension(pathPart), winrt::hresult_access_denied);
+            return;
+        }
+
+        InjectIntoPathExt(false, true, c_evValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathExtName) };
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
+
+    void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForMachine()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
+        {
+            std::wstring pathPart{ GetSecondValueFromPathExt(false, false) };
+            VERIFY_THROWS(environmentManager.RemoveExecutableFileExtension(pathPart), winrt::hresult_access_denied);
+            return;
+        }
+
+        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_pathExtName) };
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
 }

@@ -5,9 +5,9 @@
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
 
-    PathExtChangeTracker::PathExtChangeTracker(std::wstring const& pathPart, EnvironmentManager::Scope scope, PathOperation operation)
+    PathExtChangeTracker::PathExtChangeTracker(std::wstring const& pathExtPart, EnvironmentManager::Scope scope, PathOperation operation)
     {
-        THROW_HR_IF(E_INVALIDARG, pathPart.empty());
+        THROW_HR_IF(E_INVALIDARG, pathExtPart.empty());
 
         // Check if we need to track the changes.
         // If we do need to track the changes get the Package Full Name
@@ -33,7 +33,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         }
 
         m_Scope = scope;
-        m_PathPart = pathPart;
+        m_PathExtPart = pathExtPart;
         m_Operation = operation;
     }
 
@@ -46,9 +46,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         if (m_ShouldTrackChange)
         {
-            if (m_PathPart.back() != L';')
+            if (m_PathExtPart.back() != L';')
             {
-                m_PathPart += L';';
+                m_PathExtPart += L';';
             }
 
             wil::unique_hkey regLocationToWriteChange{ GetKeyForTrackingChange(nullptr) };
@@ -57,7 +57,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 std::wstring previouslyAppendedValues{ GetValueFromTracking(std::wstring(L"AppendedValues")) };
 
-                previouslyAppendedValues += m_PathPart;
+                previouslyAppendedValues += m_PathExtPart;
 
                 RETURN_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(regLocationToWriteChange.get(),
                     L"AppendedValues", 0, REG_SZ,
@@ -69,46 +69,47 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 // Find the index of the path part to remove.
                 // The index allows the DEH best-effort to add the
                 // removed value at its correct location.
-                std::wstring existingPath{ QueryEvFromRegistry(L"Path", GetKeyForEnvironmentVariable().get()) };
+                std::wstring existingPathExt{ QueryEvFromRegistry(L"PathExt", GetKeyForEnvironmentVariable().get()) };
 
                 int index{ -1 };
 
                 wchar_t* token;
                 wchar_t* tokenizationState;
-                token = wcstok_s(existingPath.data(), L";", &tokenizationState);
-                bool foundPathPart{ false };
-                while (token != nullptr && !foundPathPart)
+                token = wcstok_s(existingPathExt.data(), L";", &tokenizationState);
+                bool foundPathExtPart{ false };
+                while (token != nullptr && !foundPathExtPart)
                 {
-                    std::wstring pathPartToken{ token };
+                    std::wstring pathExtPartToken{ token };
 
-                    pathPartToken += L';';
+                    pathExtPartToken += L';';
 
-                    if (CompareStringOrdinal(m_PathPart.c_str(), -1,
-                        pathPartToken.c_str(), -1,
+                    if (CompareStringOrdinal(m_PathExtPart.c_str(), -1,
+                        pathExtPartToken.c_str(), -1,
                         TRUE) == CSTR_EQUAL)
                     {
-                        foundPathPart = true;
+                        foundPathExtPart = true;
                     }
 
                     index++;
                     token = wcstok_s(NULL, L";", &tokenizationState);
                 }
 
-                std::wstring previouslyRemovedValues{ GetValueFromTracking(std::wstring(L"RemovedValues")) };
+                if (foundPathExtPart)
+                {
+                    std::wstring previouslyRemovedValues{ GetValueFromTracking(std::wstring(L"RemovedValues")) };
 
-                std::wstring removalInformation{ m_PathPart };
-                removalInformation += L",";
-                removalInformation += std::to_wstring(index);
-                removalInformation += L"\t";
+                    std::wstring removalInformation{ m_PathExtPart };
+                    removalInformation += L",";
+                    removalInformation += std::to_wstring(index);
+                    removalInformation += L"\t";
 
-                previouslyRemovedValues += removalInformation;
+                    previouslyRemovedValues += removalInformation;
 
-                previouslyRemovedValues += m_PathPart;
-
-                RETURN_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(regLocationToWriteChange.get(),
-                    L"RemovedValues", 0, REG_SZ,
-                    reinterpret_cast<const BYTE*>(previouslyRemovedValues.c_str()),
-                    static_cast<DWORD>((previouslyRemovedValues.size() + 1) * sizeof(wchar_t)))));
+                    RETURN_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(regLocationToWriteChange.get(),
+                        L"RemovedValues", 0, REG_SZ,
+                        reinterpret_cast<const BYTE*>(previouslyRemovedValues.c_str()),
+                        static_cast<DWORD>((previouslyRemovedValues.size() + 1) * sizeof(wchar_t)))));
+                }
             }
         }
 

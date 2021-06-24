@@ -327,7 +327,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return S_OK;
         };
 
-        PathExtChangeTracker changeTracker(std::wstring(newPathExt), m_Scope, IChangeTracker::PathOperation::Append);
+        PathExtChangeTracker changeTracker(std::wstring(pathExt), m_Scope, IChangeTracker::PathOperation::Append);
 
         THROW_IF_FAILED(changeTracker.TrackChange(setPathExt));
     }
@@ -409,7 +409,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (foundPathExtPart)
         {
-            PathExtChangeTracker changeTracker(std::wstring(currentPathExt), m_Scope, IChangeTracker::PathOperation::Remove);
+            PathExtChangeTracker changeTracker(std::wstring(pathExt), m_Scope, IChangeTracker::PathOperation::Remove);
 
             THROW_IF_FAILED(changeTracker.TrackChange(removeFromPathExt));
         }
@@ -468,7 +468,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             DWORD sizeOfEnvironmentValue{};
 
             // See how big we need the buffer to be
-            LSTATUS queryResult{ RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, nullptr, &sizeOfEnvironmentValue) };
+            LSTATUS queryResult{ RegQueryValueEx(environmentVariableKey.get(), c_PathExtName, 0, nullptr, nullptr, &sizeOfEnvironmentValue) };
 
             if (queryResult == ERROR_FILE_NOT_FOUND)
             {
@@ -480,7 +480,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
 
             std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
-            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), c_PathExtName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
 
             pathExt = std::wstring(environmentValue.get());
         }

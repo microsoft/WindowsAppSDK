@@ -11,7 +11,8 @@ inline constexpr PCWSTR c_evValueName2 = L"TheBestTestValue2";
 
 inline constexpr PCWSTR c_packageFullName = L"TAEF.TailoredApplication.HostProcess_1.0.0.0_neutral_en-us_8wekyb3d8bbwe";
 
-inline constexpr PCWSTR c_pathName = L"Path";
+inline constexpr PCWSTR c_pathName = L"PATH";
+inline constexpr PCWSTR c_pathExtName = L"PATHEXT";
 
 enum class ProcessRunLevel
 {

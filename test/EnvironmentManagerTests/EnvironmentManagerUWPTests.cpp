@@ -194,4 +194,81 @@ namespace ProjectReunionEnvironmentManagerTests
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
         VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
     }
+
+    void EnvironmentManagerUWPTests::UWPTestAppendToPathExtForProcess()
+    {
+        ProcessSetup();
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathExtName) };
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_evValueName;
+        pathToManipulate += L";";
+
+        ProcessCleanup();
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestAppendToPathExtForUser()
+    {
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_evValueName), winrt::hresult_access_denied);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestAppendToPathExtForMachine()
+    {
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_evValueName), winrt::hresult_access_denied);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestRemoveFromPathExtForProcess()
+    {
+        ProcessSetup();
+
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+
+        InjectIntoPath(true, false, c_evValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathExtName) };
+
+        ProcessCleanup();
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestRemoveFromPathExtForUser()
+    {
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+        std::wstring pathPart{ GetSecondValueFromPathExt(false, true) };
+        VERIFY_THROWS(environmentManager.RemoveExecutableFileExtension(pathPart), winrt::hresult_access_denied);
+    }
+
+    void EnvironmentManagerUWPTests::UWPTestRemoveFromPathExtForMachine()
+    {
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+        std::wstring pathPart{ GetSecondValueFromPathExt(false, false) };
+        VERIFY_THROWS(environmentManager.RemoveExecutableFileExtension(pathPart), winrt::hresult_access_denied);
+    }
 }

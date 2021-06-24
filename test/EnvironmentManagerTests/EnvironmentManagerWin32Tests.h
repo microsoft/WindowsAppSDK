@@ -51,5 +51,13 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(TestRemoveFromPathForProcess);
         TEST_METHOD(TestRemoveFromPathForUser);
         TEST_METHOD(TestRemoveFromPathForMachine);
+
+        TEST_METHOD(TestAppendToPathExtForProcess);
+        TEST_METHOD(TestAppendToPathExtForUser);
+        TEST_METHOD(TestAppendToPathExtForMachine);
+
+        TEST_METHOD(TestRemoveFromPathExtForProcess);
+        TEST_METHOD(TestRemoveFromPathExtForUser);
+        TEST_METHOD(TestRemoveFromPathExtForMachine);
     };
 }

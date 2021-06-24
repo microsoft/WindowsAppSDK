@@ -49,5 +49,13 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(UWPTestRemoveFromPathForProcess);
         TEST_METHOD(UWPTestRemoveFromPathForUser);
         TEST_METHOD(UWPTestRemoveFromPathForMachine);
+
+        TEST_METHOD(UWPTestAppendToPathExtForProcess);
+        TEST_METHOD(UWPTestAppendToPathExtForUser);
+        TEST_METHOD(UWPTestAppendToPathExtForMachine);
+
+        TEST_METHOD(UWPTestRemoveFromPathExtForProcess);
+        TEST_METHOD(UWPTestRemoveFromPathExtForUser);
+        TEST_METHOD(UWPTestRemoveFromPathExtForMachine);
     };
 }
