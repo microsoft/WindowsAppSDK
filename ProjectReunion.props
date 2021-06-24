@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="SdkVersion.props" />
   <Target Name="ProjectReunionPropsInfoTask">
     <Message Text="Including $(MSBuildThisFileDirectory)projectreunion.props"/>
@@ -12,6 +12,9 @@
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
   <Target Name="DirectoryBuildPropsInfo">
+    
+    <Error Code="42" Text="ProjectReunion.props is being used!!!" />
+
     <Message Importance="High" Text="ProjectReunion.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
   </Target>
 
