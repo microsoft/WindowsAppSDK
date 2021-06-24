@@ -10,7 +10,6 @@ namespace ProjectReunionEnvironmentManagerTests
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
-            // PackagedCwaFullTrust is standard.  Not elevated
             TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"{PackagedCwaFullTrust, PackagedCwaPartialTrust}")
             END_TEST_CLASS()
 

@@ -64,9 +64,9 @@ namespace ProjectReunionEnvironmentManagerTests
     {
         ProcessSetup();
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
-        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyName) };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_EvKeyName) };
 
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, environmentValue);
 
         ProcessCleanup();
     }
@@ -74,37 +74,37 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariableForUser()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
-        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyNameForGet) };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_EvKeyNameForGet) };
 
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, environmentValue);
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestGetEnvironmentVariableForMachine()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
-        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyNameForGet) };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_EvKeyNameForGet) };
 
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, environmentValue);
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForProcess()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName));
 
-        std::wstring writtenEV{ GetEnvironmentVariableForProcess(c_evKeyName) };
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
+        std::wstring writtenEV{ GetEnvironmentVariableForProcess(c_EvKeyName) };
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
-        writtenEV = GetEnvironmentVariableForProcess(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName2));
+        writtenEV = GetEnvironmentVariableForProcess(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName2 }, writtenEV);
 
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, L""));
-        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_evKeyName, nullptr, 0));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
+        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForUser()
@@ -113,30 +113,30 @@ namespace ProjectReunionEnvironmentManagerTests
 
         if (!IsILAtOrAbove(ProcessRunLevel::Standard))
         {
-            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
-        std::wstring writtenEV{ GetEnvironmentVariableForUser(c_evKeyName) };
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName));
+        std::wstring writtenEV{ GetEnvironmentVariableForUser(c_EvKeyName) };
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
-        writtenEV = GetEnvironmentVariableForUser(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName2));
+        writtenEV = GetEnvironmentVariableForUser(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName2 }, writtenEV);
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, L""));
-        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_evKeyName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_EvKeyName));
 
         // Check the values in Change Tracker.
         // Both values should be empty.
         // Previous Value is empty because the EV did not exist.
         // Current value is empty because it was deleted.
-        wil::unique_hkey keyChangeTracker{ GetKeyForEVTrackingChange(true, GetPackageFullName(), c_evKeyName) };
-        VERIFY_ARE_EQUAL(c_evValueName2, GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
+        wil::unique_hkey keyChangeTracker{ GetKeyForEVTrackingChange(true, GetPackageFullName(), c_EvKeyName) };
+        VERIFY_ARE_EQUAL(c_EvValueName2, GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
         VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableFromRegistry(L"CurrentValue", keyChangeTracker.get()));
     }
 
@@ -146,31 +146,31 @@ namespace ProjectReunionEnvironmentManagerTests
 
         if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
         {
-            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName));
 
-        std::wstring writtenEV{ GetEnvironmentVariableForMachine(c_evKeyName) };
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
+        std::wstring writtenEV{ GetEnvironmentVariableForMachine(c_EvKeyName) };
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
-        writtenEV = GetEnvironmentVariableForMachine(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName2));
+        writtenEV = GetEnvironmentVariableForMachine(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName2 }, writtenEV);
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, L""));
-        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForMachine(c_evKeyName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForMachine(c_EvKeyName));
 
         // Check the values in Change Tracker.
         // Both values should be empty.
         // Previous Value is empty because the EV did not exist.
         // Current value is empty because it was deleted.
-        wil::unique_hkey keyChangeTracker{ GetKeyForEVTrackingChange(false, GetPackageFullName(), c_evKeyName) };
-        VERIFY_ARE_EQUAL(c_evValueName2, GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
+        wil::unique_hkey keyChangeTracker{ GetKeyForEVTrackingChange(false, GetPackageFullName(), c_EvKeyName) };
+        VERIFY_ARE_EQUAL(c_EvValueName2, GetEnvironmentVariableFromRegistry(L"PreviousValue", keyChangeTracker.get()));
         VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableFromRegistry(L"CurrentValue", keyChangeTracker.get()));
     }
 
@@ -178,20 +178,20 @@ namespace ProjectReunionEnvironmentManagerTests
     {
         ProcessSetup();
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathName) };
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         ProcessCleanup();
@@ -203,7 +203,7 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForUser()
     {
         // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForUser(c_pathName) };
+        std::wstring pathToRestore{ GetEnvironmentVariableForUser(c_PathName) };
 
         // Keep a local string to match all operations to PATH
         std::wstring pathToManipulate{ pathToRestore };
@@ -212,28 +212,28 @@ namespace ProjectReunionEnvironmentManagerTests
 
         if (!IsILAtOrAbove(ProcessRunLevel::Standard))
         {
-            VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.AppendToPath(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathName) };
 
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L';';
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathTrackingChange(true, GetPackageFullName()) };
@@ -243,34 +243,34 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForMachine()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_pathName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
         if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
         {
-            VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.AppendToPath(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathName) };
 
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L';';
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathTrackingChange(false, GetPackageFullName()) };
@@ -282,7 +282,7 @@ namespace ProjectReunionEnvironmentManagerTests
         ProcessSetup();
 
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathName) };
 
         if (pathToManipulate.back() != L';')
         {
@@ -291,10 +291,10 @@ namespace ProjectReunionEnvironmentManagerTests
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        InjectIntoPath(true, false, c_evValueName, 5);
-        environmentManager.RemoveFromPath(c_evValueName);
+        InjectIntoPath(true, false, c_EvValueName, 5);
+        environmentManager.RemoveFromPath(c_EvValueName);
 
-        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathName) };
 
         ProcessCleanup();
 
@@ -308,7 +308,7 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestRemoveFromPathForUser()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_pathName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
@@ -319,10 +319,10 @@ namespace ProjectReunionEnvironmentManagerTests
             return;
         }
 
-        InjectIntoPath(false, true, c_evValueName, 5);
-        environmentManager.RemoveFromPath(c_evValueName);
+        InjectIntoPath(false, true, c_EvValueName, 5);
+        environmentManager.RemoveFromPath(c_EvValueName);
 
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathName) };
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
@@ -330,7 +330,7 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L";,5\t";
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathTrackingChange(true, GetPackageFullName()) };
@@ -340,7 +340,7 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestRemoveFromPathForMachine()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_pathName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
@@ -351,9 +351,9 @@ namespace ProjectReunionEnvironmentManagerTests
             return;
         }
 
-        environmentManager.RemoveFromPath(c_evValueName);
+        environmentManager.RemoveFromPath(c_EvValueName);
 
-        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_PathName) };
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
@@ -361,7 +361,7 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L";,5\t";
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathTrackingChange(false, GetPackageFullName()) };
@@ -372,20 +372,20 @@ namespace ProjectReunionEnvironmentManagerTests
     {
         ProcessSetup();
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathExtName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathExtName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathExtName) };
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathExtName) };
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         ProcessCleanup();
@@ -397,34 +397,34 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestAppendToPathExtForUser()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_pathExtName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathExtName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
         if (!IsILAtOrAbove(ProcessRunLevel::Standard))
         {
-            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathExtName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathExtName) };
 
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L';';
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(true, GetPackageFullName()) };
@@ -434,34 +434,34 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestAppendToPathExtForMachine()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_pathExtName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathExtName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
         if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
         {
-            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathExtName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathExtName) };
 
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L';';
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(false, GetPackageFullName()) };
@@ -473,14 +473,14 @@ namespace ProjectReunionEnvironmentManagerTests
         ProcessSetup();
 
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_pathExtName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathExtName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        InjectIntoPath(true, false, c_evValueName, 5);
-        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+        InjectIntoPath(true, false, c_EvValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_EvValueName);
 
-        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathExtName) };
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathExtName) };
 
         ProcessCleanup();
 
@@ -494,7 +494,7 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestRemoveFromPathExtForUser()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_pathExtName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathExtName) };
 
         if (pathToManipulate.back() != L';')
         {
@@ -510,10 +510,10 @@ namespace ProjectReunionEnvironmentManagerTests
             return;
         }
 
-        InjectIntoPathExt(false, true, c_evValueName, 5);
-        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+        InjectIntoPathExt(false, true, c_EvValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_EvValueName);
 
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathExtName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathExtName) };
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
@@ -521,7 +521,7 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L";,5\t";
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(true, GetPackageFullName()) };
@@ -531,7 +531,7 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerCentennialTests::CentennialTestRemoveFromPathExtForMachine()
     {
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_pathExtName) };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathExtName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
@@ -542,9 +542,9 @@ namespace ProjectReunionEnvironmentManagerTests
             return;
         }
 
-        environmentManager.RemoveExecutableFileExtension(c_evValueName);
+        environmentManager.RemoveExecutableFileExtension(c_EvValueName);
 
-        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_pathExtName) };
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_PathExtName) };
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
@@ -552,7 +552,7 @@ namespace ProjectReunionEnvironmentManagerTests
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
-        std::wstring expectedValue{ c_evValueName };
+        std::wstring expectedValue{ c_EvValueName };
         expectedValue += L";,5\t";
 
         wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(false, GetPackageFullName()) };

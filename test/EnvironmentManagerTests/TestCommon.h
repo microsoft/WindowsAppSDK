@@ -1,18 +1,16 @@
 ﻿#pragma once
 #include "pch.h"
 
-inline constexpr PCWSTR c_userEvRegLocation = L"Environment";
-inline constexpr PCWSTR c_machineEvRegLocation = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+inline constexpr PCWSTR c_UserEvRegLocation = L"Environment";
+inline constexpr PCWSTR c_MachineEvRegLocation = L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
-inline constexpr PCWSTR c_evKeyName = L"TheBestTestKey";
-inline constexpr PCWSTR c_evKeyNameForGet = L"TheBestTestKey2";
-inline constexpr PCWSTR c_evValueName = L"TheBestTestValue";
-inline constexpr PCWSTR c_evValueName2 = L"TheBestTestValue2";
+inline constexpr PCWSTR c_EvKeyName = L"TheBestTestKey";
+inline constexpr PCWSTR c_EvKeyNameForGet = L"TheBestTestKey2";
+inline constexpr PCWSTR c_EvValueName = L"TheBestTestValue";
+inline constexpr PCWSTR c_EvValueName2 = L"TheBestTestValue2";
 
-inline constexpr PCWSTR c_packageFullName = L"TAEF.TailoredApplication.HostProcess_1.0.0.0_neutral_en-us_8wekyb3d8bbwe";
-
-inline constexpr PCWSTR c_pathName = L"PATH";
-inline constexpr PCWSTR c_pathExtName = L"PATHEXT";
+inline constexpr PCWSTR c_PathName = L"PATH";
+inline constexpr PCWSTR c_PathExtName = L"PATHEXT";
 
 enum class ProcessRunLevel
 {

@@ -101,11 +101,11 @@ inline wil::unique_hkey GetKeyToEnvironmentVariables(bool isUser)
     wil::unique_hkey environmentVariablesHKey{};
     if (isUser)
     {
-        THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_ALL_ACCESS, environmentVariablesHKey.addressof()));
+        THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_ALL_ACCESS, environmentVariablesHKey.addressof()));
     }
     else
     {
-        THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_ALL_ACCESS, environmentVariablesHKey.addressof()));
+        THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_ALL_ACCESS, environmentVariablesHKey.addressof()));
     }
 
     return environmentVariablesHKey;
@@ -114,21 +114,21 @@ inline wil::unique_hkey GetKeyToEnvironmentVariables(bool isUser)
 inline EnvironmentVariables GetEnvironmentVariablesForUser()
 {
     wil::unique_hkey environmentVariablesHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 
 inline std::wstring GetEnvironmentVariableForUser(const std::wstring variableName)
 {
     wil::unique_hkey environmentVariableHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
     return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
 }
 
 inline std::wstring GetEnvironmentVariableForMachine(const std::wstring variableName)
 {
     wil::unique_hkey environmentVariableHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
     return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
 }
 
@@ -171,15 +171,15 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& cons
 
     if (isProcess)
     {
-        existingPath = GetEnvironmentVariableForProcess(c_pathName);
+        existingPath = GetEnvironmentVariableForProcess(c_PathName);
     }
     else if (isUser)
     {
-        existingPath = GetEnvironmentVariableForUser(c_pathName);
+        existingPath = GetEnvironmentVariableForUser(c_PathName);
     }
     else
     {
-        existingPath = GetEnvironmentVariableForMachine(c_pathName);
+        existingPath = GetEnvironmentVariableForMachine(c_PathName);
     }
 
     std::list<std::wstring> pathParts{};
@@ -226,13 +226,13 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& cons
 
     if (isProcess)
     {
-        SetEnvironmentVariable(c_pathName, newPath.c_str());
+        SetEnvironmentVariable(c_PathName, newPath.c_str());
     }
     else
     {
         THROW_IF_WIN32_ERROR(RegSetValueEx(
             GetKeyToEnvironmentVariables(isUser).get()
-            , c_pathName
+            , c_PathName
             , 0
             , REG_EXPAND_SZ
             , reinterpret_cast<const BYTE*>(newPath.c_str())
@@ -247,15 +247,15 @@ inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& c
 
     if (isProcess)
     {
-        existingPathExt = GetEnvironmentVariableForProcess(c_pathExtName);
+        existingPathExt = GetEnvironmentVariableForProcess(c_PathExtName);
     }
     else if (isUser)
     {
-        existingPathExt = GetEnvironmentVariableForUser(c_pathExtName);
+        existingPathExt = GetEnvironmentVariableForUser(c_PathExtName);
     }
     else
     {
-        existingPathExt = GetEnvironmentVariableForMachine(c_pathExtName);
+        existingPathExt = GetEnvironmentVariableForMachine(c_PathExtName);
     }
 
     std::list<std::wstring> pathExtParts{};
@@ -302,13 +302,13 @@ inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& c
 
     if (isProcess)
     {
-        SetEnvironmentVariable(c_pathExtName, newPath.c_str());
+        SetEnvironmentVariable(c_PathExtName, newPath.c_str());
     }
     else
     {
         THROW_IF_WIN32_ERROR(RegSetValueEx(
             GetKeyToEnvironmentVariables(isUser).get()
-            , c_pathExtName
+            , c_PathExtName
             , 0
             , REG_EXPAND_SZ
             , reinterpret_cast<const BYTE*>(newPath.c_str())
@@ -323,15 +323,15 @@ inline std::wstring GetSecondValueFromPath(bool isProcess, bool isUser)
 
     if (isProcess)
     {
-        existingPath = GetEnvironmentVariableForProcess(c_pathName);
+        existingPath = GetEnvironmentVariableForProcess(c_PathName);
     }
     else if (isUser)
     {
-        existingPath = GetEnvironmentVariableForUser(c_pathName);
+        existingPath = GetEnvironmentVariableForUser(c_PathName);
     }
     else
     {
-        existingPath = GetEnvironmentVariableForMachine(c_pathName);
+        existingPath = GetEnvironmentVariableForMachine(c_PathName);
     }
 
     int index{ 0 };
@@ -362,15 +362,15 @@ inline std::wstring GetSecondValueFromPathExt(bool isProcess, bool isUser)
 
     if (isProcess)
     {
-        existingPath = GetEnvironmentVariableForProcess(c_pathExtName);
+        existingPath = GetEnvironmentVariableForProcess(c_PathExtName);
     }
     else if (isUser)
     {
-        existingPath = GetEnvironmentVariableForUser(c_pathExtName);
+        existingPath = GetEnvironmentVariableForUser(c_PathExtName);
     }
     else
     {
-        existingPath = GetEnvironmentVariableForMachine(c_pathExtName);
+        existingPath = GetEnvironmentVariableForMachine(c_PathExtName);
     }
 
     int index{ 0 };
@@ -399,7 +399,7 @@ inline std::wstring GetSecondValueFromPathExt(bool isProcess, bool isUser)
 inline EnvironmentVariables GetEnvironmentVariablesForMachine()
 {
     wil::unique_hkey environmentVariablesHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 

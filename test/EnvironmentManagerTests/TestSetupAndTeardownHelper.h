@@ -15,34 +15,34 @@ inline std::wstring machinePathExt{};
 inline void RestoreUserPath(std::wstring originalPath)
 {
     wil::unique_hkey userEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
-    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(userEnvironmentVariablesHKey.get(), c_pathName, 0, REG_EXPAND_SZ, (LPBYTE)originalPath.c_str(), static_cast<DWORD>(wcslen(originalPath.c_str()) * sizeof(wchar_t))));
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
+    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(userEnvironmentVariablesHKey.get(), c_PathName, 0, REG_EXPAND_SZ, (LPBYTE)originalPath.c_str(), static_cast<DWORD>(wcslen(originalPath.c_str()) * sizeof(wchar_t))));
 }
 
 inline void RestoreUserPathExt(std::wstring originalPathExt)
 {
     wil::unique_hkey userEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
-    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(userEnvironmentVariablesHKey.get(), c_pathExtName, 0, REG_EXPAND_SZ, (LPBYTE)originalPathExt.c_str(), static_cast<DWORD>(wcslen(originalPathExt.c_str()) * sizeof(wchar_t))));
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
+    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(userEnvironmentVariablesHKey.get(), c_PathExtName, 0, REG_EXPAND_SZ, (LPBYTE)originalPathExt.c_str(), static_cast<DWORD>(wcslen(originalPathExt.c_str()) * sizeof(wchar_t))));
 }
 
 inline void RestoreMachinePath(std::wstring originalPath)
 {
     wil::unique_hkey machineEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
-    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(machineEnvironmentVariablesHKey.get(), c_pathName, 0, REG_EXPAND_SZ, (LPBYTE)originalPath.c_str(), static_cast<DWORD>(wcslen(originalPath.c_str()) * sizeof(wchar_t))));
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
+    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(machineEnvironmentVariablesHKey.get(), c_PathName, 0, REG_EXPAND_SZ, (LPBYTE)originalPath.c_str(), static_cast<DWORD>(wcslen(originalPath.c_str()) * sizeof(wchar_t))));
 }
 
 inline void RestoreMachinePathExt(std::wstring originalPathExt)
 {
     wil::unique_hkey machineEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
-    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(machineEnvironmentVariablesHKey.get(), c_pathExtName, 0, REG_EXPAND_SZ, (LPBYTE)originalPathExt.c_str(), static_cast<DWORD>(wcslen(originalPathExt.c_str()) * sizeof(wchar_t))));
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
+    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(machineEnvironmentVariablesHKey.get(), c_PathExtName, 0, REG_EXPAND_SZ, (LPBYTE)originalPathExt.c_str(), static_cast<DWORD>(wcslen(originalPathExt.c_str()) * sizeof(wchar_t))));
 }
 
 inline void RestoreProcessPath(std::wstring originalPath)
 {
-    BOOL result{ ::SetEnvironmentVariable(c_pathName, originalPath.c_str()) };
+    BOOL result{ ::SetEnvironmentVariable(c_PathName, originalPath.c_str()) };
 
     if (result == 0)
     {
@@ -52,7 +52,7 @@ inline void RestoreProcessPath(std::wstring originalPath)
 
 inline void RestoreProcessPathExt(std::wstring originalPathExt)
 {
-    BOOL result{ ::SetEnvironmentVariable(c_pathExtName, originalPathExt.c_str()) };
+    BOOL result{ ::SetEnvironmentVariable(c_PathExtName, originalPathExt.c_str()) };
 
     if (result == 0)
     {
@@ -62,11 +62,11 @@ inline void RestoreProcessPathExt(std::wstring originalPathExt)
 
 inline void ProcessSetup()
 {
-    processPath = GetEnvironmentVariableForProcess(c_pathName);
+    processPath = GetEnvironmentVariableForProcess(c_PathName);
 
-    processPathExt = GetEnvironmentVariableForProcess(c_pathExtName);
+    processPathExt = GetEnvironmentVariableForProcess(c_PathExtName);
 
-    BOOL setResult{ SetEnvironmentVariable(c_evKeyName, c_evValueName) };
+    BOOL setResult{ SetEnvironmentVariable(c_EvKeyName, c_EvValueName) };
 
     if (!setResult)
     {
@@ -82,13 +82,13 @@ inline void ProcessCleanup()
 
 inline void UserSetup()
 {
-    userPath = GetEnvironmentVariableForUser(c_pathName);
+    userPath = GetEnvironmentVariableForUser(c_PathName);
 
-    userPathExt = GetEnvironmentVariableForUser(c_pathExtName);
+    userPathExt = GetEnvironmentVariableForUser(c_PathExtName);
 
     wil::unique_hkey userEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
-    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(userEnvironmentVariablesHKey.get(), c_evKeyNameForGet, 0, REG_SZ, (LPBYTE)c_evValueName, static_cast<DWORD>((wcslen(c_evValueName) + 1) * sizeof(wchar_t))));
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
+    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(userEnvironmentVariablesHKey.get(), c_EvKeyNameForGet, 0, REG_SZ, (LPBYTE)c_EvValueName, static_cast<DWORD>((wcslen(c_EvValueName) + 1) * sizeof(wchar_t))));
 }
 
 inline void UserCleanup()
@@ -96,8 +96,8 @@ inline void UserCleanup()
     RestoreUserPath(userPath);
     RestoreUserPathExt(userPathExt);
     wil::unique_hkey userEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
-    LSTATUS deleteResult = RegDeleteValueW(userEnvironmentVariablesHKey.get(), c_evKeyNameForGet);
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_WRITE, userEnvironmentVariablesHKey.addressof()));
+    LSTATUS deleteResult = RegDeleteValueW(userEnvironmentVariablesHKey.get(), c_EvKeyNameForGet);
 
     if (deleteResult != ERROR_SUCCESS && deleteResult != ERROR_FILE_NOT_FOUND)
     {
@@ -109,13 +109,13 @@ inline void UserCleanup()
 
 inline void MachineSetup()
 {
-    machinePath = GetEnvironmentVariableForMachine(c_pathName);
+    machinePath = GetEnvironmentVariableForMachine(c_PathName);
 
-    machinePathExt = GetEnvironmentVariableForMachine(c_pathExtName);
+    machinePathExt = GetEnvironmentVariableForMachine(c_PathExtName);
 
     wil::unique_hkey machineEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
-    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(machineEnvironmentVariablesHKey.get(), c_evKeyNameForGet, 0, REG_SZ, (LPBYTE)c_evValueName, static_cast<DWORD>((wcslen(c_evValueName) + 1) * sizeof(wchar_t))));
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
+    VERIFY_WIN32_SUCCEEDED(RegSetValueExW(machineEnvironmentVariablesHKey.get(), c_EvKeyNameForGet, 0, REG_SZ, (LPBYTE)c_EvValueName, static_cast<DWORD>((wcslen(c_EvValueName) + 1) * sizeof(wchar_t))));
 }
 
 inline void MachineCleanup()
@@ -123,8 +123,8 @@ inline void MachineCleanup()
     RestoreMachinePath(machinePath);
     RestoreMachinePathExt(machinePathExt);
     wil::unique_hkey machineEnvironmentVariablesHKey{};
-    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
-    LSTATUS deleteResult{ RegDeleteValueW(machineEnvironmentVariablesHKey.get(), c_evKeyNameForGet) };
+    VERIFY_WIN32_SUCCEEDED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_WRITE, machineEnvironmentVariablesHKey.addressof()));
+    LSTATUS deleteResult{ RegDeleteValueW(machineEnvironmentVariablesHKey.get(), c_EvKeyNameForGet) };
 
     if (deleteResult != ERROR_SUCCESS && deleteResult != ERROR_FILE_NOT_FOUND)
     {
