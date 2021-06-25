@@ -137,15 +137,15 @@ jobs:
       PathtoPublish: $(helixWorkItemsDir)
       artifactName: 'HelixWorkItems'
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-    inputs:
-      restoreSolution: build\Helix\RunTestsInHelix.proj
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-      restoreDirectory: packages
+  # - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  #   displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
+  #   env:
+  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  #   inputs:
+  #     restoreSolution: build\Helix\RunTestsInHelix.proj
+  #     feedsToUse: config
+  #     nugetConfigPath: nuget.config
+  #     restoreDirectory: packages
 
   # Run the tests in Helix
   # By executing 'dotnet msbuild' against RunTestsInHelix.proj the test payload and the work items to execute get sent to Helix.
