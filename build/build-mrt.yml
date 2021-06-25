@@ -170,9 +170,6 @@ steps:
       UnpackagedTests\**
     TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
 
-# - powershell: tree /f /a $env:AGENT_TEMPDIRECTORY\mrt_testbin\$(buildPlatform)
-#   displayName: 'DIAG: dump mrtcore_testbin'
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore test binaries'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
