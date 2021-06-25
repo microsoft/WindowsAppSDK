@@ -25,12 +25,8 @@ jobs:
     # This should be kept in sync with the value in these files:
     #   build\Helix\packages.config
     #   test\ProjectReunion.Helix.TestCommon\ProjectReunion.Helix.TestCommon.csproj
-    winUIHelixVer: 0.5.0
+    winUIHelixVer: 0.5.1
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
-
-    # TODO: I had to make changes on top of the WinUI Helix Nuget to fix things for the PR feeder repo.
-    # Once the nuget is updated with the modifications then these files can be removed from the repo.
-    modifiedWinUIHelixPipelineScripts: build\Helix\pipeline
 
     # The target queues to run the tests on.
     # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
@@ -167,7 +163,7 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: filePath
-      filePath: $(modifiedWinUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
+      filePath: $(winUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
       arguments: -RerunPassesRequiredToAvoidFailure $(rerunPassesRequiredToAvoidFailure) -HelixTypeJobFilter $(helixType)
 
   # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
@@ -177,7 +173,7 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: filePath
-      filePath: $(modifiedWinUIHelixPipelineScripts)\OutputTestResults.ps1
+      filePath: $(winUIHelixPipelineScripts)\OutputTestResults.ps1
       arguments: -HelixTypeJobFilter $(helixType)
 
   # This downloads files from Helix so that they can be published as a Pipeline artifact. This makes debugging test failures a lot easier since the
@@ -188,7 +184,7 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
       targetType: filePath
-      filePath: $(modifiedWinUIHelixPipelineScripts)\ProcessHelixFiles.ps1
+      filePath: $(winUIHelixPipelineScripts)\ProcessHelixFiles.ps1
       # Remove -ProcessAllJobs to only download the files from work items with failing tests
       arguments: -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
 
