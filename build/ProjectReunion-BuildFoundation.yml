@@ -370,37 +370,3 @@ jobs:
       publishToMaestro: True
     ${{ if ne(variables['Build.Reason'], 'Schedule') }}:
       publishToMaestro: ${{ parameters.PublishToMaestro }}
-
-# Build solution that depends on nuget package
-#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
-#  parameters:
-#    buildJobName: 'BuildNugetPkgTests'
-#    buildArtifactName: 'NugetPkgTestsDrop'
-#    runTestJobName: 'RunNugetPkgTestsInHelix'
-#    helixType: 'test/nuget'
-#    dependsOn: CreateNugetPackage
-#    pkgArtifactPath: '$(artifactDownloadPath)\fullnuget'
-
-# Framework package tests
-#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
-#  parameters:
-#    buildJobName: 'BuildFrameworkPkgTests'
-#    buildArtifactName: 'FrameworkPkgTestsDrop'
-#    runTestJobName: 'RunFrameworkPkgTestsInHelix'
-#    helixType: 'test/frpkg'
-#    dependsOn: CreateNugetPackage
-#    pkgArtifactPath: '$(artifactDownloadPath)\fullnuget\FrameworkPackage'
-
-# NuGet package WACK tests
-#- template: AzurePipelinesTemplates\ProjectReunion-WACKTests-Job.yml
-#  parameters:
-#    name: 'NugetPkgWACKTests'
-#    dependsOn: BuildNugetPkgTests
-#    artifactName: 'NugetPkgTestsDrop'
-
-# Framework package WACK tests
-#- template: AzurePipelinesTemplates\ProjectReunion-WACKTests-Job.yml
-#  parameters:
-#    name: 'FrameworkPkgWACKTests'
-#    dependsOn: BuildFrameworkPkgTests
-#    artifactName: 'FrameworkPkgTestsDrop'
