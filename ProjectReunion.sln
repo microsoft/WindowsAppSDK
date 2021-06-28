@@ -126,6 +126,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\P
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotificationsTests", "test\PowerNotificationsTests\PowerNotificationsTests.vcxproj", "{11F537D7-4602-43D2-BDF2-53722C4DABB5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleTest", "ConsoleTest\ConsoleTest.vcxproj", "{780531A1-85F3-409A-8158-496269E60014}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
@@ -455,6 +457,18 @@ Global
 		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x64.Build.0 = Release|x64
 		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x86.ActiveCfg = Release|Win32
 		{11F537D7-4602-43D2-BDF2-53722C4DABB5}.Release|x86.Build.0 = Release|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Debug|x64.ActiveCfg = Debug|x64
+		{780531A1-85F3-409A-8158-496269E60014}.Debug|x64.Build.0 = Debug|x64
+		{780531A1-85F3-409A-8158-496269E60014}.Debug|x86.ActiveCfg = Debug|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Debug|x86.Build.0 = Debug|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Release|Any CPU.ActiveCfg = Release|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Release|ARM64.ActiveCfg = Release|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Release|x64.ActiveCfg = Release|x64
+		{780531A1-85F3-409A-8158-496269E60014}.Release|x64.Build.0 = Release|x64
+		{780531A1-85F3-409A-8158-496269E60014}.Release|x86.ActiveCfg = Release|Win32
+		{780531A1-85F3-409A-8158-496269E60014}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -497,6 +511,7 @@ Global
 		{8A674426-F5E0-4BC0-847F-56FD17FEADD2} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{877A6C56-41CA-424F-872B-93BAFDA9E322} = {8A674426-F5E0-4BC0-847F-56FD17FEADD2}
 		{11F537D7-4602-43D2-BDF2-53722C4DABB5} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{780531A1-85F3-409A-8158-496269E60014} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

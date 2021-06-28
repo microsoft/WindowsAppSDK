@@ -96,8 +96,8 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
     struct PowerManager : PowerManagerT<PowerManager, implementation::PowerManager, static_lifetime>
     {
         std::mutex m_mutex;
-        int m_batteryChargePercent;
-        int m_oldBatteryChargePercent;
+        int m_batteryChargePercent = 100;
+        int m_oldBatteryChargePercent = 100;
         DWORD m_cachedDisplayStatus;
         DWORD m_cachedUserPresenceStatus;
         DWORD m_cachedSystemAwayModeStatus;
@@ -106,11 +106,11 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
         ULONGLONG m_cachedDischargeTime;
         winrt::Microsoft::ProjectReunion::SystemSuspendStatus m_systemSuspendStatus;
         ::EnergySaverStatus m_cachedEnergySaverStatus;
-        CompositeBatteryStatus m_cachedCompositeBatteryStatus;
-        winrt::Microsoft::ProjectReunion::BatteryStatus m_batteryStatus;
+        CompositeBatteryStatus m_cachedCompositeBatteryStatus{ 0 };
+        winrt::Microsoft::ProjectReunion::BatteryStatus m_batteryStatus{ winrt::Microsoft::ProjectReunion::BatteryStatus::NotPresent };
         winrt::Microsoft::ProjectReunion::BatteryStatus m_oldBatteryStatus{ winrt::Microsoft::ProjectReunion::BatteryStatus::NotPresent };
-        winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus;
-        winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_oldPowerSupplyStatus{ winrt::Microsoft::ProjectReunion::PowerSupplyStatus::NotPresent };
+        winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus{ winrt::Microsoft::ProjectReunion::PowerSupplyStatus::Adequate };
+        winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_oldPowerSupplyStatus{ winrt::Microsoft::ProjectReunion::PowerSupplyStatus::Adequate };
 
         EventType m_EnergySaverStatusChangedEvent;
         EventType m_batteryStatusChangedEvent;
