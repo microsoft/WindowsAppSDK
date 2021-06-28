@@ -162,13 +162,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
 
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                THROW_IF_WIN32_ERROR(RegSetValueEx(
                     environmentVariableKey.get()
                     , c_PathName
                     , 0
                     , REG_EXPAND_SZ
                     , reinterpret_cast<const BYTE*>(newPath.c_str())
-                    , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t)))));
+                    , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t))));
 
                 LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
                     reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
@@ -176,7 +176,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 if (broadcastResult == 0)
                 {
-                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                    THROW_WIN32(GetLastError());
                 }
             }
 
@@ -242,13 +242,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
 
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                THROW_IF_WIN32_ERROR(RegSetValueEx(
                     environmentVariableKey.get()
                     , c_PathName
                     , 0
                     , REG_EXPAND_SZ
                     , reinterpret_cast<const BYTE*>(currentPath.c_str())
-                    , static_cast<DWORD>((currentPath.size() + 1) * sizeof(wchar_t)))));
+                    , static_cast<DWORD>((currentPath.size() + 1) * sizeof(wchar_t))));
 
                 LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
                     reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
@@ -256,7 +256,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 if (broadcastResult == 0)
                 {
-                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                    THROW_WIN32(GetLastError());
                 }
             }
 
@@ -301,13 +301,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
 
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                THROW_IF_WIN32_ERROR(RegSetValueEx(
                     environmentVariableKey.get()
                     , c_PathExtName
                     , 0
                     , REG_EXPAND_SZ
                     , reinterpret_cast<const BYTE*>(newPathExt.c_str())
-                    , static_cast<DWORD>((newPathExt.size() + 1) * sizeof(wchar_t)))));
+                    , static_cast<DWORD>((newPathExt.size() + 1) * sizeof(wchar_t))));
 
                 LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
                     reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
@@ -315,7 +315,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 if (broadcastResult == 0)
                 {
-                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                    THROW_WIN32(GetLastError());
                 }
             }
 
@@ -381,13 +381,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 wil::unique_hkey environmentVariableKey{ GetRegHKeyForEVUserAndMachineScope(true) };
 
-                THROW_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(
+                THROW_IF_WIN32_ERROR(RegSetValueEx(
                     environmentVariableKey.get()
                     , c_PathExtName
                     , 0
                     , REG_EXPAND_SZ
                     , reinterpret_cast<const BYTE*>(currentPathExt.c_str())
-                    , static_cast<DWORD>((currentPathExt.size() + 1) * sizeof(wchar_t)))));
+                    , static_cast<DWORD>((currentPathExt.size() + 1) * sizeof(wchar_t))));
 
                 LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
                     reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),
@@ -395,7 +395,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 if (broadcastResult == 0)
                 {
-                    THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+                    THROW_WIN32(GetLastError());
                 }
             }
 
@@ -432,11 +432,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
             else if (queryResult != ERROR_SUCCESS)
             {
-                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+                THROW_WIN32(queryResult);
             }
 
             std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
-            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+            THROW_IF_WIN32_ERROR(RegQueryValueEx(environmentVariableKey.get(), c_PathName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue));
 
             path = std::wstring(environmentValue.get());
         }
@@ -471,11 +471,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
             else if (queryResult != ERROR_SUCCESS)
             {
-                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+                THROW_WIN32(queryResult);
             }
 
             std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
-            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableKey.get(), c_PathExtName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+            THROW_IF_WIN32_ERROR(RegQueryValueEx(environmentVariableKey.get(), c_PathExtName, 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue));
 
             pathExt = std::wstring(environmentValue.get());
         }
@@ -556,7 +556,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             // If there was an error getting the value
             if (enumerationStatus != ERROR_SUCCESS && enumerationStatus != ERROR_NO_MORE_ITEMS)
             {
-                THROW_HR(HRESULT_FROM_WIN32(enumerationStatus));
+                THROW_WIN32(enumerationStatus);
             }
             environmentVariableValue.get()[valueSize] = L'\0';
             environmentVariables.Insert(environmentVariableName.get(), reinterpret_cast<PWSTR>(environmentVariableValue.get()));
@@ -595,7 +595,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
         if (getResult == 0)
         {
-            THROW_HR(HRESULT_FROM_WIN32(GetLastError()));
+            THROW_WIN32(GetLastError());
         }
 
         return environmentVariableValue;
@@ -615,11 +615,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         wil::unique_hkey environmentVariablesHKey{};
         if (m_Scope == Scope::User)
         {
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof())));
+            THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof()));
         }
         else //Scope is Machine
         {
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof())));
+            THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof()));
         }
 
         return environmentVariablesHKey;
@@ -641,11 +641,11 @@ namespace winrt::Microsoft::ProjectReunion::implementation
                 return L"";
             }
 
-            THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+            THROW_WIN32(queryResult);
         }
 
         std::unique_ptr<wchar_t[]> environmentValue{ new wchar_t[sizeOfEnvironmentValue] };
-        THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue))));
+        THROW_IF_WIN32_ERROR(RegQueryValueEx(environmentVariableHKey.get(), variableName.c_str(), 0, nullptr, (LPBYTE)environmentValue.get(), &sizeOfEnvironmentValue));
 
         return std::wstring(environmentValue.get());
     }
@@ -654,6 +654,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         const auto deleteResult{ RegDeleteValue(hkey, name.c_str()) };
 
-        THROW_HR_IF(HRESULT_FROM_WIN32(deleteResult), (deleteResult != ERROR_SUCCESS) && (deleteResult != ERROR_FILE_NOT_FOUND));
+        THROW_IF_WIN32_ERROR(deleteResult, (deleteResult != ERROR_SUCCESS) && (deleteResult != ERROR_FILE_NOT_FOUND));
     }
 }

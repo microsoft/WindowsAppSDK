@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+#pragma once
 #include "IChangeTracker.h"
 #include <EnvironmentManager.h>
 #include <wil/registry.h>
@@ -7,17 +9,17 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 {
     struct PathChangeTracker : public IChangeTracker
     {
-        PathChangeTracker(std::wstring const& pathPart, EnvironmentManager::Scope scope, PathOperation operation);
+        PathChangeTracker(const std::wstring& pathPart, EnvironmentManager::Scope scope, PathOperation operation);
         HRESULT TrackChange(std::function<HRESULT(void)> callBack);
 
 
     private:
         EnvironmentManager::Scope m_Scope;
         std::wstring m_PathPart{};
-        std::wstring KeyName();
+        PCWSTR KeyName() const;
         PathOperation m_Operation;
 
-        wil::unique_hkey GetKeyForEnvironmentVariable()
+        wil::unique_hkey GetKeyForEnvironmentVariable() const
         {
             FAIL_FAST_HR_IF(E_INVALIDARG, m_Scope == EnvironmentManager::Scope::Process);
 
@@ -34,7 +36,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             return environmentVariablesHKey;
         }
 
-        wil::unique_hkey GetKeyForTrackingChange(LPDWORD disposition)
+        wil::unique_hkey GetKeyForTrackingChange(DWORD* disposition) const
         {
             HKEY topLevelKey{};
 
@@ -48,20 +50,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             }
 
             auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(
-                L"Software\\ChangeTracker\\%ws\\%ws\\", KeyName().c_str(), m_PackageFullName.c_str()) };
+                L"Software\\ChangeTracker\\%ws\\%ws\\", KeyName(), m_PackageFullName.c_str()) };
 
             wil::unique_hkey keyToTrackChanges{};
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(RegCreateKeyEx(HKEY_CURRENT_USER,
+            THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,
                 subKey.get(), 0, nullptr, REG_OPTION_NON_VOLATILE,
-                KEY_ALL_ACCESS | KEY_WOW64_64KEY, nullptr, keyToTrackChanges.put(), disposition)));
+                KEY_ALL_ACCESS | KEY_WOW64_64KEY, nullptr, keyToTrackChanges.put(), disposition));
 
             return keyToTrackChanges;
         }
 
-        std::wstring GetValueFromTracking(std::wstring valueName)
+        std::wstring GetValueFromTracking(const std::wstring& valueName) const
         {
             wil::unique_hkey changeTrackingKey{ GetKeyForTrackingChange(nullptr) };
-            DWORD sizeOfEnvironmentValue;
+            DWORD sizeOfEnvironmentValue{};
 
             // See how big we need the buffer to be
             LSTATUS queryResult{ RegQueryValueEx(changeTrackingKey.get(),
@@ -72,22 +74,22 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 if (queryResult == ERROR_FILE_NOT_FOUND)
                 {
-                    return L"";
+                    return {};
                 }
 
-                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+                THROW_WIN32(queryResult);
             }
 
             std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
-            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(
+            THROW_IF_WIN32_ERROR(RegQueryValueEx(
                 changeTrackingKey.get(), valueName.c_str(), 0, nullptr,
-                (LPBYTE)environmentValue.get(),
-                &sizeOfEnvironmentValue))));
+                reinterpret_cast<BYTE*>(environmentValue.get()),
+                &sizeOfEnvironmentValue));
 
             return std::wstring(environmentValue.get());
         }
 
-        std::wstring QueryEvFromRegistry(std::wstring variableKey, HKEY KeyToOpen)
+        std::wstring QueryEvFromRegistry(const std::wstring& variableKey, const HKEY KeyToOpen) const
         {
             DWORD sizeOfEnvironmentValue;
 
@@ -100,17 +102,17 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             {
                 if (queryResult == ERROR_FILE_NOT_FOUND)
                 {
-                    return L"";
+                    return {};
                 }
 
-                THROW_HR(HRESULT_FROM_WIN32((queryResult)));
+                THROW_WIN32(queryResult);
             }
 
             std::unique_ptr<wchar_t[]> environmentValue(new wchar_t[sizeOfEnvironmentValue]);
-            THROW_IF_FAILED(HRESULT_FROM_WIN32((RegQueryValueEx(
+            THROW_IF_WIN32_ERROR(RegQueryValueEx(
                 KeyToOpen, variableKey.c_str(), 0, nullptr,
-                (LPBYTE)environmentValue.get(),
-                &sizeOfEnvironmentValue))));
+                reinterpret_cast<BYTE*>(environmentValue.get()),
+                &sizeOfEnvironmentValue));
 
             return std::wstring(environmentValue.get());
         }

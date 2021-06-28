@@ -1,35 +1,34 @@
-﻿#include <pch.h>
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+#include <pch.h>
 #include <PathChangeTracker.h>
 
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-
-    PathChangeTracker::PathChangeTracker(std::wstring const& pathPart, EnvironmentManager::Scope scope, PathOperation operation)
+    PathChangeTracker::PathChangeTracker(const std::wstring& pathPart, EnvironmentManager::Scope scope, PathOperation operation)
     {
         THROW_HR_IF(E_INVALIDARG, pathPart.empty());
 
         // Check if we need to track the changes.
         // If we do need to track the changes get the Package Full Name
-        UINT32 sizeOfBuffer{};
-        long fullNameResult{ ::GetCurrentPackageFullName(&sizeOfBuffer, nullptr) };
+        WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFullNameLength{ static_cast<UINT32>(ARRAYSIZE(packageFullName)) };
+        const long getPackageFullNameRC{ ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName) };
 
-        if (scope == EnvironmentManager::Scope::Process || fullNameResult == APPMODEL_ERROR_NO_PACKAGE)
+
+        if (scope == EnvironmentManager::Scope::Process || getPackageFullNameRC == APPMODEL_ERROR_NO_PACKAGE)
         {
             m_ShouldTrackChange = false;
         }
-        else if (fullNameResult == ERROR_INSUFFICIENT_BUFFER)
+        else if (getPackageFullNameRC == ERROR_SUCCESS)
         {
-            std::unique_ptr<WCHAR> packageFullName(new WCHAR[sizeOfBuffer]);
-
-            LONG getNameResult{ ::GetCurrentPackageFullName(&sizeOfBuffer, packageFullName.get()) };
-            THROW_IF_FAILED(HRESULT_FROM_WIN32(getNameResult));
-            m_PackageFullName = std::wstring(packageFullName.get());
+            m_PackageFullName = std::wstring(packageFullName);
             m_ShouldTrackChange = true;
         }
         else
         {
-            THROW_HR(HRESULT_FROM_WIN32(fullNameResult));
+            THROW_WIN32(getPackageFullNameRC);
         }
 
         m_Scope = scope;
@@ -37,7 +36,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         m_Operation = operation;
     }
 
-    std::wstring PathChangeTracker::KeyName()
+    PCWSTR PathChangeTracker::KeyName() const
     {
         return L"PATH";
     }
@@ -59,10 +58,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 previouslyAppendedValues += m_PathPart;
 
-                RETURN_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(regLocationToWriteChange.get(),
+                RETURN_IF_WIN32_ERROR(RegSetValueEx(regLocationToWriteChange.get(),
                     L"AppendedValues", 0, REG_SZ,
                     reinterpret_cast<const BYTE*>(previouslyAppendedValues.c_str()),
-                    static_cast<DWORD>((previouslyAppendedValues.size() + 1) * sizeof(wchar_t)))));
+                    static_cast<DWORD>((previouslyAppendedValues.size() + 1) * sizeof(wchar_t))));
             }
             else
             {
@@ -73,10 +72,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                 int index{ -1 };
 
-                wchar_t* token;
-                wchar_t* tokenizationState;
-                token = wcstok_s(existingPath.data(), L";", &tokenizationState);
-                bool foundPathPart{ false };
+                PWSTR tokenizationState;
+                PWSTR token{ wcstok_s(existingPath.data(), L";", &tokenizationState) };
+                bool foundPathPart{};
                 while (token != nullptr && !foundPathPart)
                 {
                     std::wstring pathPartToken{ token };
@@ -106,10 +104,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
                     previouslyRemovedValues += removalInformation;
 
-                    RETURN_IF_FAILED(HRESULT_FROM_WIN32(RegSetValueEx(regLocationToWriteChange.get(),
+                    RETURN_IF_WIN32_ERROR(RegSetValueEx(regLocationToWriteChange.get(),
                         L"RemovedValues", 0, REG_SZ,
                         reinterpret_cast<const BYTE*>(previouslyRemovedValues.c_str()),
-                        static_cast<DWORD>((previouslyRemovedValues.size() + 1) * sizeof(wchar_t)))));
+                        static_cast<DWORD>((previouslyRemovedValues.size() + 1) * sizeof(wchar_t))));
                 }
             }
         }
