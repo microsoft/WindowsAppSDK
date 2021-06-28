@@ -20,6 +20,11 @@
       <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
+    <Reference Include="Microsoft.Windows.PushNotifications.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,7 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.Windows.ApplicationModel.Resources.targets"/>
 
   <PropertyGroup>
     <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
@@ -18,6 +18,13 @@
 
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
