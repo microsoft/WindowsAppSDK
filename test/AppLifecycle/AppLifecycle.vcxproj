@@ -259,9 +259,7 @@
     <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
 
     <TestPkgOutputPath>$(AppxPackageDir)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
-    <TestPkgOutputPath Condition="!Exists('$(TestPkgOutputPath)')">$(OutDir)\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
     <TestPkgOutputFile>$(TestPkgOutputPath)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
-    <TestPkgOutputFile Condition="!Exists('$(TestPkgOutputFile)')">$(TestPkgOutputPath)\AppLifecycleTestPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msixbundle</TestPkgOutputFile>
   </PropertyGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />

@@ -260,9 +260,7 @@
     <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
     <TestPkgDebugConfigName Condition="'$(Configuration)' == 'Debug'">_Debug</TestPkgDebugConfigName>
     <TestPkgOutputPath>$(AppxPackageDir)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
-    <TestPkgOutputPath Condition="!Exists('$(TestPkgOutputPath)')">$(OutDir)\PushNotificationsTestAppPackage\AppPackages\PushNotificationsTestAppPackage_1.0.0.0$(TestPkgDebugConfigName)_Test</TestPkgOutputPath>
     <TestPkgOutputFile>$(TestPkgOutputPath)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msix</TestPkgOutputFile>
-    <TestPkgOutputFile Condition="!Exists('$(TestPkgOutputFile)')">$(TestPkgOutputPath)\PushNotificationsTestAppPackage_1.0.0.0_$(PlatformTarget)$(TestPkgDebugConfigName).msixbundle</TestPkgOutputFile>
   </PropertyGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" DestinationFolders="$(TargetDir)" DestinationFileName="PushNotificationsTestAppPackage.msix" TreatOutputAsContent="true" />

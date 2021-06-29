@@ -4,20 +4,16 @@
      Adding Sdk="Microsoft.NET.Sdk" to a project causes NuGet files to be generated very early on, so we need these defines to be here
      to ensure that all of our build output files end up in the same location.  This is parsed too late when put in mux.controls.props. -->
 <Project InitialTargets="DirectoryBuildPropsInfo" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="$(BuildingWithBuildExe) != 'true'">
+
+  <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
+  <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
+
+  <PropertyGroup>    
     <IsTDPConfiguration>false</IsTDPConfiguration>
-
-    <BaseOutputPath>$(MSBuildThisFileDirectory)BuildOutput\$(Configuration)</BaseOutputPath>
-    <OutDir>$(BaseOutputPath)\$(Platform)\</OutDir>
-
-    <!-- For native projects that use Win32 to mean x86, override the OutDir
-         property to provide consistency between projects. -->
-    <OutDir Condition="'$(Platform)' == 'Win32'">$(BaseOutputPath)\x86\</OutDir>
-
-    <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
 
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
+    <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
@@ -25,8 +21,9 @@
     <!-- If not set, default it to no . -->
     <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
   </PropertyGroup>
-  <Target Name="DirectoryBuildPropsInfo" Condition="$(ProjectReunionBuildPipeline) == '1'">
-    <Message Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
+
+  <Target Name="DirectoryBuildPropsInfo">
+    <Message Condition="$(ProjectReunionBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
@@ -44,5 +41,4 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
   </ItemDefinitionGroup>
-
 </Project>
