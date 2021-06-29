@@ -5,7 +5,7 @@
 
 #include "PushNotificationManager.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
-
+#include "PushNotifications-Constants.h"
 #include "PushNotificationCreateChannelResult.h"
 
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -17,10 +17,12 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
-
+#include <iostream>
 using namespace std::literals;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
+
+constexpr winrt::guid PushNotifications_uuid{ PR_PUSHNOTIFICATIONS_CLSID_UUID_STRING };
 
 namespace winrt
 {
@@ -140,6 +142,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
+        std::cout << PR_PUSHNOTIFICATIONS_CLSID_UUID_STRING << std::endl;
         THROW_HR_IF_NULL(E_INVALIDARG, details);
 
         GUID taskClsid = details.TaskClsid();

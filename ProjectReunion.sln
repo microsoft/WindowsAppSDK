@@ -169,7 +169,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationTests", "te
 		{5B2D17FE-C371-417F-860C-3D32397C2404} = {5B2D17FE-C371-417F-860C-3D32397C2404}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsReunionTask", "dev\PushNotifications\PushNotificationsReunionTask\PushNotificationsReunionTask.vcxproj", "{CE1D3A34-F10F-43CF-85B5-BC79D9C6F0E8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask", "dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj", "{CE1D3A34-F10F-43CF-85B5-BC79D9C6F0E8}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

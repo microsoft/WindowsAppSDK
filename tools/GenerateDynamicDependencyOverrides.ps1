@@ -41,6 +41,8 @@ else
 $lifetimemanager_clsid_uuid = New-Guid
 $lifetimemanager_clsid_guid = Convert-Guid $lifetimemanager_clsid_uuid
 
+$pushnotifications_clsid_uuid = New-Guid
+
 # Generate the json file
 $content_h=@"
 {
@@ -48,6 +50,11 @@ $content_h=@"
     "DataStore": {
         "CLSID": {
             "UUID": "D1AD16C7-EC59-4765-BF95-9A243EB00507"
+        }
+    },
+    "PushNotifications": {
+        "CLSID": {
+            "UUID": "$pushnotifications_clsid_uuid"
         }
     },
     "LifetimeManager": {
@@ -62,7 +69,7 @@ $file_h = Join-Path $Path 'DynamicDependency-Override.json'
 Write-Output "Writing $file_h..."
 "$content_h" | Out-File $file_h -Encoding utf8
 
-# Generate the header file
+# Generate the Dynamic Dependency header file
 $content_h=@"
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
@@ -88,6 +95,16 @@ $content_h=@"
 #define PR_DYNDEP_DATASTORE_CLSID_STRING            _STRINGIZE(PR_DYNDEP_DATASTORE_CLSID_UUID)
 #endif
 
+#idef PR_PUSHNOTIFICATIONS_CLSID_UUID
+#undef PR_PUSHNOTIFICATIONS_CLSID_UUID
+#define PR_PUSHNOTIFICATIONS_CLSID_UUID             $pushnotifications_clsid_uuid
+#endif
+
+#idef PR_PUSHNOTIFICATIONS_CLSID_STRING
+#undef PR_PUSHNOTIFICATIONS_CLSID_STRING
+#define PR_PUSHNOTIFICATIONS_CLSID_STRING            _STRINGIZE(PR_PUSHNOTIFICATIONS_CLSID_STRING)
+#endif
+
 #idef PR_DYNDEP_LIFETIMEMANAGER_CLSID_UUID
 #undef PR_DYNDEP_LIFETIMEMANAGER_CLSID_UUID
 #define PR_DYNDEP_LIFETIMEMANAGER_CLSID_UUID        $lifetimemanager_clsid_uuid
@@ -104,5 +121,30 @@ $content_h=@"
 #endif
 "@
 $file_h = Join-Path $Path 'DynamicDependency-Override.h'
+Write-Output "Writing $file_h..."
+"$content_h" | Out-File $file_h -Encoding utf8
+
+# Generate the Push Notifications header file
+$content_h=@"
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+// Rely on _STRINGIZE(x) in yvals_core.h
+#ifndef _STRINGIZE
+#define _STRINGIZEX(x)  #x
+#define _STRINGIZE(x)   _STRINGIZEX(x)
+#endif
+
+#idef PR_PUSHNOTIFICATIONS_CLSID_UUID
+#undef PR_PUSHNOTIFICATIONS_CLSID_UUID
+#define PR_PUSHNOTIFICATIONS_CLSID_UUID             $pushnotifications_clsid_uuid
+#endif
+
+#idef PR_PUSHNOTIFICATIONS_CLSID_STRING
+#undef PR_PUSHNOTIFICATIONS_CLSID_STRING
+#define PR_PUSHNOTIFICATIONS_CLSID_STRING            _STRINGIZE(PR_PUSHNOTIFICATIONS_CLSID_STRING)
+#endif
+"@
+$file_h = Join-Path $Path 'PushNotifications-Override.h'
 Write-Output "Writing $file_h..."
 "$content_h" | Out-File $file_h -Encoding utf8
