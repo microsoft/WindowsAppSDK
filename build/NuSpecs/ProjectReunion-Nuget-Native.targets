@@ -1,18 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.targets"/>
+
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.Windows.ApplicationModel.Resources.targets"/>
+
   <PropertyGroup>
     <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
     <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ProjectReunion.winmd">
+
+  <ItemGroup Condition="'$(AppxPackage)' != 'true'">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.ProjectReunion.dll</Implementation>
     </Reference>
-    <!--  Figure out the right long term approach for VS to not pick these up when using them with a framework package. -->
-    <!-- <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.dll" /> -->
-    <!-- <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(Native-Platform)\native\Microsoft.ProjectReunion.pri" /> -->
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
 </Project>

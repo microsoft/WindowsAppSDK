@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -126,7 +126,7 @@ extern "C"
     STDAPI_(void*) MrmAllocateBuffer(size_t size);
     STDAPI_(void) MrmFreeResource(_In_opt_ void* resource);
 
-    STDAPI MrmGetFilePathFromName(_In_ PCWSTR filename, _Outptr_ PWSTR* filePath);
+    STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath);
 
 #ifdef __cplusplus
 }

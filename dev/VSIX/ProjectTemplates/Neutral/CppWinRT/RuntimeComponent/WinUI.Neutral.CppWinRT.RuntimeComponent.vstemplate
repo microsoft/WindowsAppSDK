@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>Windows Runtime Component (WinUI)</Name>
-    <Description>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both Desktop and Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI).</Description>
+    <Name>Windows Runtime Component (WinUI 3)</Name>
+    <Description>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both Desktop and Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3).</Description>
     <Icon>WinUI.Neutral.CppWinRT.RuntimeComponent.ico</Icon>
     <TemplateID>Microsoft.WinUI.Neutral.CppWinRT.RuntimeComponent</TemplateID>
     <ProjectType>VC</ProjectType>
@@ -34,7 +34,6 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="Class.cpp">Class.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Class.h">Class.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="$safeprojectname$.def">RuntimeComponent.def</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="PropertySheet.props">PropertySheet.props</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
   </TemplateContent>

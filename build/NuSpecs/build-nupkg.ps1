@@ -64,7 +64,7 @@ if ($prereleaseversion)
     }
 
     $version = "$version-$prereleaseversion.$versiondate$subversion"
-   
+
 }
 
 if (!(Test-Path $OutputDir)) { mkdir $OutputDir }
@@ -127,7 +127,7 @@ Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)
 {
     Write-Host "Nuget returned $lastexitcode"
-    Exit $lastexitcode; 
+    Exit $lastexitcode;
 }
 Write-Host
 
@@ -145,7 +145,7 @@ Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)
 {
     Write-Host "Nuget returned $lastexitcode"
-    Exit $lastexitcode; 
+    Exit $lastexitcode;
 }
 
 Write-Host
@@ -154,18 +154,18 @@ Write-Host
 
 if(-not $SkipFrameworkPackage)
 {
-    ConfigureNugetCommandLine("Microsoft.ProjectReunion") 
-   
+    ConfigureNugetCommandLine("Microsoft.ProjectReunion")
+
     # Nuget package with framework package encapsulation
     $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir\FrameworkPackage"
 
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\x86\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\x64\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.ProjectReunion.*.appx "$toolsDir\AppX\arm64\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.ProjectReunion-*.msix "$toolsDir\AppX\x86\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.ProjectReunion-*.msix "$toolsDir\AppX\x64\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.ProjectReunion-*.msix "$toolsDir\AppX\arm64\Release"
     # Currently we don't have a separate Debug package that we want to ship to customers
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x86\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\x86\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x64\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\x64\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\arm64\FrameworkPackage\Microsoft.ProjectReunion.Debug.*.appx "$toolsDir\AppX\arm64\Debug"
+    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x86\FrameworkPackage\Microsoft.ProjectReunion.Debug-*.msix "$toolsDir\AppX\x86\Debug"
+    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x64\FrameworkPackage\Microsoft.ProjectReunion.Debug-*.msix "$toolsDir\AppX\x64\Debug"
+    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\arm64\FrameworkPackage\Microsoft.ProjectReunion.Debug-*.msix "$toolsDir\AppX\arm64\Debug"
 
     $NugetCmdLine = "$nugetExe pack ProjectReunionFrameworkPackage.nuspec $NugetArgs -version $version"
     Write-Host $NugetCmdLine
@@ -173,7 +173,7 @@ if(-not $SkipFrameworkPackage)
     if ($lastexitcode -ne 0)
     {
         Write-Host "Nuget returned $lastexitcode"
-        Exit $lastexitcode; 
+        Exit $lastexitcode;
     }
 }
 

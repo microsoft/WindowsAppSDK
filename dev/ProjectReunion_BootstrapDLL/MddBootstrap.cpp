@@ -13,80 +13,47 @@
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
-CLSID FindDDLM(const PACKAGE_VERSION minVersion);
-CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension);
+CLSID FindDDLM(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion);
+CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
-wil::unique_hmodule g_projectReunionDll{};
+wil::unique_hmodule g_projectReunionDll;
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
-std::wstring g_test_ddlmPackageNamePrefix;
-std::wstring g_test_ddlmPackagePublisherId;
+static std::wstring g_test_ddlmPackageNamePrefix;
+static std::wstring g_test_ddlmPackagePublisherId;
 
-inline winrt::Windows::System::ProcessorArchitecture GetCurrentArchitecture()
+namespace MddCore
 {
-#if defined(_M_X64)
-    return winrt::Windows::System::ProcessorArchitecture::X64;
-#elif defined(_M_IX86)
-    return winrt::Windows::System::ProcessorArchitecture::X86;
-#elif defined(_M_ARM64)
-    return winrt::Windows::System::ProcessorArchitecture::Arm64;
-#elif defined(_M_ARM)
-    return winrt::Windows::System::ProcessorArchitecture::Arm;
-#else
-#   error "Unknown processor architecture"
-#endif
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+void FailFastIfElevated()
+{
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
 }
-
-inline PCWSTR GetCurrentArchitectureAsString()
-{
-#if defined(_M_X64)
-    return L"x64";
-#elif defined(_M_IX86)
-    return L"x86";
-#elif defined(_M_ARM64)
-    return L"arm64";
-#elif defined(_M_ARM)
-    return L"arm";
-#else
-#   error "Unknown processor architecture"
-#endif
-}
-
-inline winrt::Windows::System::ProcessorArchitecture ParseArchitecture(PCWSTR architecture)
-{
-    if (CompareStringOrdinal(architecture, -1, L"x64", -1, TRUE) == CSTR_EQUAL)
-    {
-        return winrt::Windows::System::ProcessorArchitecture::X64;
-    }
-    else if (CompareStringOrdinal(architecture, -1, L"x86", -1, TRUE) == CSTR_EQUAL)
-    {
-        return winrt::Windows::System::ProcessorArchitecture::X86;
-    }
-    else if (CompareStringOrdinal(architecture, -1, L"arm64", -1, TRUE) == CSTR_EQUAL)
-    {
-    return winrt::Windows::System::ProcessorArchitecture::Arm64;
-    }
-    else if (CompareStringOrdinal(architecture, -1, L"arm", -1, TRUE) == CSTR_EQUAL)
-    {
-    return winrt::Windows::System::ProcessorArchitecture::Arm;
-    }
-    else
-    {
-        return winrt::Windows::System::ProcessorArchitecture::Unknown;
-    }
 }
 
 STDAPI MddBootstrapInitialize(
-    const PACKAGE_VERSION minVersion) noexcept try
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion) noexcept try
 {
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    MddCore::FailFastIfElevated();
+
+    // Dynamic Dependencies Bootstrap API requires a non-packaged process
+    LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
+
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
-    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(minVersion) };
+    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(majorMinorVersion, versionTag, minVersion) };
 
     wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager(wil::CoCreateInstance<IDynamicDependencyLifetimeManager>(appDynamicDependencyLifetimeManagerClsid, CLSCTX_LOCAL_SERVER));
 
@@ -133,8 +100,11 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    MddRemovePackageDependency(g_packageDependencyContext);
-    g_packageDependencyContext = nullptr;
+    if (g_packageDependencyContext && g_projectReunionDll)
+    {
+        MddRemovePackageDependency(g_packageDependencyContext);
+        g_packageDependencyContext = nullptr;
+    }
 
     g_packageDependencyId.reset();
 
@@ -197,24 +167,32 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     auto buffer{ wil::make_unique_cotaskmem<BYTE[]>(bufferLength) };
     THROW_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
-    // Find the Project Reunion Framework package in the package graph to determine its path
-    const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
-    for (size_t index = 0; index < packageInfoCount; ++index, ++packageInfo)
-    {
-        PCWSTR frameworkPackageFamilyName{ L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe" };
-        if (CompareStringOrdinal(packageInfo->packageFamilyName, -1, frameworkPackageFamilyName, -1, TRUE) == CSTR_EQUAL)
-        {
-            frameworkPackageInfo = packageInfo;
-            return buffer;
-        }
-    }
-
-    // We didn't find the framework package as a dependency of the package
-    // providing the LifetimeManager.
+    // Find the Project Reunion framework package in the package graph to determine its path
     //
-    // Verify the package providing the LifetimeManager declares
-    // <PackageDependency> on the Project Reunion Framework package.
-    THROW_WIN32(APPMODEL_ERROR_PACKAGE_NOT_AVAILABLE);
+    // NOTE: The Project Reunion DDLM package...
+    //          * ...has 1 framework package dependency
+    //          * ...its framework package dependency's name starts with "Microsoft.ProjectReunion"
+    //          * ...its publisher id is "8wekyb3d8bbwe"
+    // Any failure to find the DDLM's package graph but not find the expected framework dependency
+    // implies the DDLM is improperly built and cannot be used. Of course ThisShouldNeverHappen
+    // but a little paranoia isn't a bad thing :-)
+    //
+    // Verify the package providing the LifetimeManager declares a <PackageDependency> on the Project Reunion framework package.
+    THROW_HR_IF_MSG(E_UNEXPECTED, packageInfoCount != 1, "PRddlm:%ls PackageGraph.Count:%u", packageFullName, packageInfoCount);
+    //
+    const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
+    const WCHAR c_expectedNamePrefix[]{ L"Microsoft.ProjectReunion" };
+    const int c_expectedNamePrefixLength{ ARRAYSIZE(c_expectedNamePrefix) - 1 };
+    THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.name, c_expectedNamePrefixLength, c_expectedNamePrefix, c_expectedNamePrefixLength, TRUE) != CSTR_EQUAL,
+                    "PRddlm:%ls Expected.Name:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, c_expectedNamePrefix, packageInfo->packageFullName);
+    //
+    PCWSTR c_expectedPublisherId{ L"8wekyb3d8bbwe" };
+    THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.publisherId, -1, c_expectedPublisherId, -1, TRUE) != CSTR_EQUAL,
+                    "PRddlm:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, packageInfo->packageFullName);
+
+    // Gotcha!
+    frameworkPackageInfo = packageInfo;
+    return buffer;
 }
 
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR frameworkPath)
@@ -272,17 +250,29 @@ void RemoveFrameworkFromPath(PCWSTR frameworkPath)
     }
 }
 
-
-CLSID FindDDLM(const PACKAGE_VERSION minVersion)
+CLSID FindDDLM(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion)
 {
     // Find the best fit
     bool foundAny{};
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
-    // Look for windows.appExtension with name="com.microsoft.projectreunion.ddlm.<majorversion>.<architecture>"
+    // Look for windows.appExtension with name="com.microsoft.reunion.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
     WCHAR appExtensionName[100]{};
-    wsprintf(appExtensionName, L"com.microsoft.projectreunion.ddlm.%hu.%s", minVersion.Major, GetCurrentArchitectureAsString());
+    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
+    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
+    const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
+    if (versionShortTag != L'\0')
+    {
+        wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s-%c", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString(), versionShortTag);
+    }
+    else
+    {
+        wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+    }
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
     auto appExtensions{ catalog.FindAllAsync().get() };
@@ -305,7 +295,7 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
         const auto id{ appExtension.Id() };
         PACKAGE_VERSION version{};
         WCHAR architectureAsString[9 + 1]{};
-        const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345.abcdefghi") - 1 }; // -1 for length not counting null-terminator
+        const auto maxIdLength{ ARRAYSIZE(L"ddlm-12345.12345.12345.12345-abcdefghi") - 1 }; // -1 for length not counting null-terminator
         if ((id.size() >= maxIdLength) ||
             (swscanf_s(id.c_str(), L"ddlm-%hu.%hu.%hu.%hu-%9s", &version.Major, &version.Minor, &version.Build, &version.Revision, architectureAsString, static_cast<unsigned>(ARRAYSIZE(architectureAsString))) != 5))
         {
@@ -320,8 +310,8 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
         }
 
         // Does the architecture match?
-        const auto architecture{ ParseArchitecture(architectureAsString) };
-        if (architecture != GetCurrentArchitecture())
+        const auto architecture{ AppModel::Identity::ParseArchitecture(architectureAsString) };
+        if (architecture != AppModel::Identity::GetCurrentArchitecture())
         {
             continue;
         }
@@ -343,12 +333,12 @@ CLSID FindDDLM(const PACKAGE_VERSION minVersion)
             continue;
         }
     }
-    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, MinVersion=%hu.%hu.%hu.%hu",
-                    appExtensionName, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    appExtensionName, majorVersion, minorVersion, (!versionTag ? L"" : versionTag), minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
 }
 
-CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension appExtension)
+CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension)
 {
     const auto properties{ appExtension.GetExtensionPropertiesAsync().get() };
     auto propertiesClsid{ properties.Lookup(L"CLSID").as<winrt::Windows::Foundation::Collections::IPropertySet>() };

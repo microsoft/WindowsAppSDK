@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>Blank App (WinUI in UWP)</Name>
-    <Description>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI).</Description>
+    <Name>Blank App (WinUI 3 in UWP)</Name>
+    <Description>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Project Reunion prerelease support.</Description>
     <Icon>WinUI.UWP.CppWinRT.BlankApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.UWP.CppWinRT.BlankApp</TemplateID>
     <ProjectType>VC</ProjectType>
@@ -47,7 +47,6 @@
         <ProjectItem ReplaceParameters="false" TargetFileName="StoreLogo.png">StoreLogo.png</ProjectItem>
         <ProjectItem ReplaceParameters="false" TargetFileName="Wide310x150Logo.scale-200.png">Wide310x150Logo.scale-200.png</ProjectItem>
       </Folder>
-      <ProjectItem ReplaceParameters="false" TargetFileName="PropertySheet.props">PropertySheet.props</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
   </TemplateContent>

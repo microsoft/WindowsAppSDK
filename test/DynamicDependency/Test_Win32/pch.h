@@ -19,6 +19,8 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.ApplicationModel.AppExtensions.h>
+#include <winrt/Windows.Management.Core.h>
 #include <winrt/Windows.Management.Deployment.h>
 
 #include <filesystem>
@@ -28,9 +30,10 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
-#include "CppUnitTest.h"
+#include <appmodel_msixdynamicdependency.h>
 
-#include "TestCom.h"
+#include <WexTestClass.h>
+
 #include "TestFilesystem.h"
 #include "TestPackages.h"
 

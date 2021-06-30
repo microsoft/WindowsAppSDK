@@ -13,8 +13,6 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 void Test::DynamicDependency::Test_Win32::Add_Rank_A0_B10()
 {
     // Setup our dynamic dependencies
@@ -42,9 +40,9 @@ void Test::DynamicDependency::Test_Win32::Add_Rank_A0_B10()
     wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
     const INT32 rank{ 10 };
     MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{ Mdd_Add(packageDependencyId_FrameworkMathAdd.get(), rank, packageFullName_FrameworkMathAdd) };
-    Assert::IsNotNull(packageFullName_FrameworkMathAdd.get());
+    VERIFY_IS_NOT_NULL(packageFullName_FrameworkMathAdd.get());
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
-    Assert::AreEqual(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
+    VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
     VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
@@ -60,15 +58,15 @@ void Test::DynamicDependency::Test_Win32::Add_Rank_A0_B10()
     {
         const auto lastError{ GetLastError() };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
-        Assert::IsNotNull(mathAddDll.get(), message.get());
+        VERIFY_IS_NOT_NULL(mathAddDll.get(), message.get());
     }
 
     auto mathAdd{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add) };
-    Assert::IsNotNull(mathAdd);
+    VERIFY_IS_NOT_NULL(mathAdd);
 
     const int expectedValue{ 2 + 3 };
     const auto actualValue{ mathAdd(2, 3) };
-    Assert::AreEqual(expectedValue, actualValue);
+    VERIFY_ARE_EQUAL(expectedValue, actualValue);
 
     // Tear down our dynamic dependencies
 

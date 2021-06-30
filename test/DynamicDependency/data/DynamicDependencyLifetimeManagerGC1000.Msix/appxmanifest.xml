@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 uap5 com rescap">
+
+  <Identity
+    Name="ProjectReunion.Test.DDLM.GC-1.0.0.0-###architecture###"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="1.0.0.0"
+    ProcessorArchitecture="###architecture###" />
+
+  <Properties>
+    <DisplayName>ProjectReunion.Test.DynamicDependency.LifetimeManager (aka Microsoft.ProjectReunion.DDLM) fake for GC tests v1</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>Assets\logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <PackageDependency Name="Microsoft.ProjectReunion.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="DynamicDependencyLifetimeManager.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Microsoft ProjectReunion DynamicDependency LifetimeManager GC v1"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="Microsoft ProjectReunion DynamicDependency LifetimeManager GC v1"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.reunion.ddlm-4.1-###architecture###"
+                             Id="ddlm-GC-1.0.0.0-###architecture###"
+                             PublicFolder="public\ddlm"
+                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (4.1.* ###architecture###)">
+            <uap3:Properties>
+              <CLSID>DEADBEEF-DEAD-BEEF-DEAD-BEEFDEADBEEF</CLSID>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

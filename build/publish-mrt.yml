@@ -1,0 +1,219 @@
+parameters:
+  MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet 5.6'
+  inputs:
+    versionSpec: 5.6
+  continueOnError: true
+
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Binaries'
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'mrtcore_binaries'
+    downloadPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
+
+# START of copying files into their final package location.
+
+- task: CopyFiles@2
+  displayName: 'copy winmd into uap10.0 folder'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.winmd
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy Intellisense into uap10.0 folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.xml
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
+    flattenFolders: true
+
+# Needed so that the NuGet package can be installed in a win32 app. It avoids this error: "You are trying to
+# install this package into a project that targets 'native,Version=v0.0', but the package does not contain any
+# assembly references or content files that are compatible with that framework."
+- task: CopyFiles@2
+  displayName: 'copy winmd into native folder'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.winmd
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy Intellisense into native folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.xml
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native\'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy .net 5 projection DLL and PDB'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
+    Contents: |
+      net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
+      net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy Intellisense into .net 5 folder'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.Projection.xml
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy x86'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
+    Contents: |
+      mrm.pdb
+      Microsoft.Windows.ApplicationModel.Resources.pdb
+      mrm.dll
+      Microsoft.Windows.ApplicationModel.Resources.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-x86\native'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy x64'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
+    Contents: |
+      mrm.pdb
+      Microsoft.Windows.ApplicationModel.Resources.pdb
+      mrm.dll
+      Microsoft.Windows.ApplicationModel.Resources.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-x64\native'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy ARM64'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
+    Contents: |
+      mrm.pdb
+      Microsoft.Windows.ApplicationModel.Resources.pdb
+      mrm.dll
+      Microsoft.Windows.ApplicationModel.Resources.dll
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-arm64\native'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy import lib x86'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
+    Contents: |
+      mrm.lib
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x86'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy import lib x64'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
+    Contents: |
+      mrm.lib
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x64'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy import lib ARM64'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
+    Contents: |
+      mrm.lib
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-arm64'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy packaging files'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
+    Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.PriGen.targets
+      Microsoft.Windows.ApplicationModel.Resources.References.targets
+      Microsoft.Windows.ApplicationModel.Resources.targets
+      native\Microsoft.Windows.ApplicationModel.Resources.C.props
+      native\Microsoft.Windows.ApplicationModel.Resources.props
+      native\Microsoft.Windows.ApplicationModel.Resources.targets
+      native\Microsoft.Windows.ApplicationModel.Resources.WinRt.props
+      README.md
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
+    flattenFolders: false
+
+- task: CopyFiles@2
+  displayName: 'copy header'
+  inputs:
+    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\mrt\core\src'
+    Contents: |
+      mrm.h
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
+    ArtifactName: 'FullNuget'
+
+# NuGetCommand@2
+#  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+#    condition: and(succeeded(), eq(variables.codeSign, true))
+#    displayName: 'publish to MRTCore feed'
+#    inputs:
+#      command: 'push'
+#      packagesToPush: '$(Build.ArtifactStagingDirectory)/nuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+#      nuGetFeedType: 'internal'
+#      publishVstsFeed: '2771a91e-5705-4d88-a3e9-70623b166f8d/659bea81-0d99-4dc0-b32f-200cd635e5ad'
+
+# TODO: get the test app to build using the NuGet package generated earlier in the pipeline.
+#- task: NuGetCommand@2
+#  displayName: 'NuGet restore of test apps'
+#  env:
+#    # The RuntimeIdentifier property in a .csproj is constructed using win-$(Platform). AnyCPU is the default platform, but
+#    # "win-AnyCPU" is an invalid RuntimeIdentifier. Just use the platform x64 instead! It doesn't matter whether x86 or x64 is used.
+#    NUGET_RESTORE_MSBUILD_ARGS: /p:Platform=x64
+#  inputs:
+#    command: 'restore'
+#    restoreSolution: |
+#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
+#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+#    feedsToUse: 'select'
+#    includeNuGetOrg: false
+#    vstsFeed: '$(Build.ArtifactStagingDirectory)\nuget'
+
+# TODO: use the $(solution) variable instead. That'll build all solution files in the repo. Currently, this isn't being done because getting
+# $(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln to build in the pipeline is being deferred.
+
+#- task: VSBuild@1
+#  displayName: 'build x86'
+#  inputs:
+#    platform: 'x86'
+#    solution: |
+#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
+#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+#    configuration: '$(buildConfiguration)'
+#    msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:UapAppxPackageBuildMode=StoreUpload'
+
+#- task: VSBuild@1
+#  displayName: 'build x64'
+#  inputs:
+#    platform: 'x64'
+#    solution: |
+#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
+#      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
+#    configuration: '$(buildConfiguration)'
+#    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:UapAppxPackageBuildMode=StoreUpload'
+

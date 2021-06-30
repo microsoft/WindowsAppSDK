@@ -8,23 +8,19 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 namespace Test::DynamicDependency
 {
-    TEST_CLASS(BootstrapTests)
+    class BootstrapTests
     {
     public:
+        BEGIN_TEST_CLASS(BootstrapTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
 
-        TEST_CLASS_INITIALIZE(Setup)
+        TEST_CLASS_SETUP(Setup)
         {
-            // CppUnitTest initializes COM as STA before we get called
-            // But we don't need (or want) STA, and we do want MTA. We can't
-            // stop CppUnitTest from initializing COM but we can uninitialize
-            // it and (re)initialize it as MTA. Don't think of it as crude
-            // and brutish but rather 'thinking outside the box'...
-            COM::CoSuperInitialize();
-
             // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
             // but that's not true of our test project (a dll) in our build environment
@@ -33,14 +29,21 @@ namespace Test::DynamicDependency
             auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
             wil::unique_hmodule bootstrapDll(LoadLibrary(bootstrapDllAbsoluteFilename.c_str()));
             const auto lastError{ GetLastError() };
-            Assert::IsNotNull(bootstrapDll.get());
+            VERIFY_IS_NOT_NULL(bootstrapDll.get());
 
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_ProjectReunionFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             m_bootstrapDll = std::move(bootstrapDll);
+
+            return true;
         }
 
         TEST_CLASS_CLEANUP(Cleanup)
@@ -50,34 +53,37 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_ProjectReunionFramework();
 
-            winrt::uninit_apartment();
+            return true;
         }
 
         TEST_METHOD(Initialize_DDLMNotFound)
         {
-            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-            // Version 0.0.0.0 == Major version 0 == No such framework package
-            const PACKAGE_VERSION doesNotExist{};
-            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist));
+            // Major.Minor = 0.0 == No such framework package
+            const UINT32 doesNotExist{};
+            const PACKAGE_VERSION minVersionMatchAny{};
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(doesNotExist, nullptr, minVersionMatchAny));
         }
 
         TEST_METHOD(Initialize_DDLMMinVersionNoMatch)
         {
-            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-            // Version <major>.65535.65535.65535 to find framework packages for the major version but none meeting this minVersion criteria
+            // Version <major>.65535.65535.65535 to find framework packages for the major.minor version but none meeting this minVersion criteria
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             PACKAGE_VERSION minVersionNoMatch{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 | 0x0000FFFFFFFFFFFFuI64 };
-            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(minVersionNoMatch));
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
         }
 
         TEST_METHOD(Initialize)
         {
-            Assert::AreEqual(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
-            // Version <major>.0.0.0 to find any framework package for this major version
-            PACKAGE_VERSION minVersion{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 };
-            Assert::AreEqual(S_OK, MddBootstrapInitialize(minVersion));
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION minVersion{};
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
             MddBootstrapShutdown();
         }
@@ -86,6 +92,98 @@ namespace Test::DynamicDependency
         {
             MddBootstrapShutdown();
             MddBootstrapShutdown();
+        }
+
+        TEST_METHOD(GetCurrentPackageInfo_NotPackaged_InvalidParameter)
+        {
+            const UINT32 c_filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC };
+
+            {
+                VERIFY_ARE_EQUAL(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, nullptr, nullptr, nullptr)));
+            }
+            {
+                UINT32 count{};
+                VERIFY_ARE_EQUAL(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, nullptr, nullptr, &count)));
+            }
+
+            {
+                UINT32 bufferLength{ 1 };
+                VERIFY_ARE_EQUAL(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, &bufferLength, nullptr, nullptr)));
+            }
+            {
+                UINT32 bufferLength{ 1 };
+                UINT32 count{};
+                VERIFY_ARE_EQUAL(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, &bufferLength, nullptr, &count)));
+            }
+
+            {
+                BYTE buffer[1]{};
+                UINT32 bufferLength{ static_cast<UINT32>(ARRAYSIZE(buffer)) };
+                VERIFY_ARE_EQUAL(E_INVALIDARG, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(c_filter, &bufferLength, buffer, nullptr)));
+            }
+        }
+
+        TEST_METHOD(GetCurrentPackageInfo_NotPackaged)
+        {
+            VerifyGetCurrentPackageInfo();
+
+            winrt::hstring packageFamilyName{ Test::Packages::DynamicDependencyLifetimeManager::c_PackageFamilyName };
+            auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION minVersion{};
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+            VerifyGetCurrentPackageInfo(HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER), 1, 700);
+
+            winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(L"Does.Not.Exist");
+
+            MddBootstrapShutdown();
+
+            VerifyGetCurrentPackageInfo();
+        }
+
+#if defined(TODO_EnableAfterConvertingToTAEF)
+        TEST_METHOD(GetCurrentPackageInfo_Packaged)
+        {
+            VerifyGetCurrentPackageInfo();
+
+            winrt::hstring packageFamilyName{ Test::Packages::DynamicDependencyLifetimeManager::c_PackageFamilyName };
+            auto applicationData{ winrt::Windows::Management::Core::ApplicationDataManager::CreateForPackageFamily(packageFamilyName) };
+
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION minVersion{};
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+            VerifyGetCurrentPackageInfo();
+        }
+#endif
+
+    private:
+        static void VerifyGetCurrentPackageInfo(
+            const HRESULT expectedHR = HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE),
+            const UINT32 expectedCount = 0,
+            const UINT32 minExpectedBufferLength = 0)
+        {
+            UINT32 bufferLength{};
+            UINT32 count{};
+            VERIFY_ARE_EQUAL(expectedHR, HRESULT_FROM_WIN32(::GetCurrentPackageInfo(PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC | PACKAGE_INFORMATION_BASIC, &bufferLength, nullptr, &count)));
+            VERIFY_ARE_EQUAL(expectedCount, count);
+            if (minExpectedBufferLength > 0)
+            {
+                auto message{ wil::str_printf<wil::unique_process_heap_string>(L"GetCurrentPackageInfo() expectedBufferLength>=%u bufferLength=%u", minExpectedBufferLength, bufferLength) };
+                VERIFY_IS_TRUE(bufferLength >= minExpectedBufferLength, message.get());
+            }
+            else
+            {
+                VERIFY_ARE_EQUAL(0u, bufferLength);
+            }
         }
 
     private:

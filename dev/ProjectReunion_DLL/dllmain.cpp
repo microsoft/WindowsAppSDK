@@ -10,6 +10,12 @@
 
 static HRESULT DetoursInitialize()
 {
+    // Only detour APIs for not-packaged processes
+    if (AppModel::Identity::IsPackagedProcess())
+    {
+        return S_OK;
+    }
+
     // Do we need to detour APIs?
     if (DetourIsHelperProcess())
     {
@@ -29,6 +35,12 @@ static HRESULT DetoursInitialize()
 
 static HRESULT DetoursShutdown()
 {
+    // Only detour APIs for not-packaged processes
+    if (AppModel::Identity::IsPackagedProcess())
+    {
+        return S_OK;
+    }
+
     // Did we detour APIs?
     if (DetourIsHelperProcess())
     {

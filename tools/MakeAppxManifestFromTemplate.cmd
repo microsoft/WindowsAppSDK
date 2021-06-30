@@ -1,3 +1,3 @@
 @echo off
 
-powershell %~dpn0.ps1 %*
+powershell -ExecutionPolicy Unrestricted -NoLogo -NoProfile %~dpn0.ps1 %*

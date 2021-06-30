@@ -6,7 +6,7 @@
 
 #include <appmodel.h>
 
-#include <WexAssert.h>
+#include <Verify.h>
 
 namespace Test::AppModel
 {

@@ -1,9 +1,13 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
-  minimumExpectedTestsExecutedCount: 35  # Sanity check for minimum expected tests to be reported
+- template: ProjectReunion-Versions.yml
+- template: ProjectReunion-CommonVariables.yml
 
 parameters:
   - name: "ReleaseSigning"
+    type: boolean
+    default: False
+  - name: "PublishToMaestro"
     type: boolean
     default: False
 
@@ -12,7 +16,7 @@ jobs:
   pool:
     vmImage: 'windows-2019'
   steps:
-  # Scans the root source folder for security vulnerability 
+  # Scans the root source folder for security vulnerability
   - task: CredScan@2
     inputs:
       toolMajorVersion: 'V2'
@@ -62,7 +66,6 @@ jobs:
         normalizedConfiguration: 'fre'
 
   variables:
-    appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
@@ -91,6 +94,31 @@ jobs:
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeVerbose: true
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
+
+
 - job: BuildMRT
   pool:
     vmImage: 'windows-latest'
@@ -107,9 +135,33 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: ..\dev\MRTCore\build-mrt.yml
+  - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeVerbose: true
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
 - job: PublishMRT
   dependsOn:
@@ -118,7 +170,7 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   steps:
-  - template: ..\dev\MRTCore\publish-mrt.yml
+  - template: publish-mrt.yml
 
 - job: SignBinariesAndPublishSymbols
   variables:
@@ -176,18 +228,31 @@ jobs:
       contents: |
         **\*.pdb
       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
-      
+
 # dump symbols artifact directory - this is normally turned off
 #  - script: |
 #      echo $(Build.ArtifactStagingDirectory)\symbols
 #      dir /s $(Build.ArtifactStagingDirectory)\symbols
 
   - task: PublishSymbols@2
-    displayName: 'Publish symbols (without source indexing)'
+    displayName: 'Publish private symbols to internal server (without source indexing)'
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-# this ADO task does not support indexing of github sources currently :-(      
+    # This ADO task does not support indexing of github sources currently :-(      
+      indexSources: false 
+      detailedLog: true
+    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+    # To work around this issue, we just force LIB to be any dir that we know exists.
+    env:
+      LIB: $(Build.SourcesDirectory)
+
+  - task: PublishSymbols@2
+    displayName: 'Publish symbols to public server(without source indexing)'
+    inputs:
+      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+      symbolServerType: 'TeamServices'
+    # This ADO task does not support indexing of github sources currently :-(      
       indexSources: false 
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
@@ -238,7 +303,7 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
-    condition: 
+    condition:
       eq(${{ parameters.ReleaseSigning }}, true)
 
   - task: EsrpCodeSigning@1
@@ -282,7 +347,7 @@ jobs:
       SessionTimeout: '60'
       MaxConcurrency: '50'
       MaxRetryAttempts: '5'
-    condition: 
+    condition:
       eq(${{ parameters.ReleaseSigning }}, false)
 
   # Re-publish signed artifacts to the fullnuget artifact.
@@ -299,46 +364,8 @@ jobs:
     dependsOn: SignBinariesAndPublishSymbols
     signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
     useReleaseTag: '$(ProjectReunionFinalRelease)'
-    prereleaseVersionTag: prerelease
-
-# Build solution that depends on nuget package
-#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
-#  parameters:
-#    buildJobName: 'BuildNugetPkgTests'
-#    buildArtifactName: 'NugetPkgTestsDrop'
-#    runTestJobName: 'RunNugetPkgTestsInHelix'
-#    helixType: 'test/nuget'
-#    dependsOn: CreateNugetPackage
-#    pkgArtifactPath: '$(artifactDownloadPath)\fullnuget'
-
-# Framework package tests
-#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
-#  parameters:
-#    buildJobName: 'BuildFrameworkPkgTests'
-#    buildArtifactName: 'FrameworkPkgTestsDrop'
-#    runTestJobName: 'RunFrameworkPkgTestsInHelix'
-#    helixType: 'test/frpkg'
-#    dependsOn: CreateNugetPackage
-#    pkgArtifactPath: '$(artifactDownloadPath)\fullnuget\FrameworkPackage'
-
-#- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
-#  parameters:
-#    dependsOn:
-#    - RunNugetPkgTestsInHelix
-#    - RunFrameworkPkgTestsInHelix
-#    rerunPassesRequiredToAvoidFailure: 5
-#    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)
-
-# NuGet package WACK tests
-#- template: AzurePipelinesTemplates\ProjectReunion-WACKTests-Job.yml
-#  parameters:
-#    name: 'NugetPkgWACKTests'
-#    dependsOn: BuildNugetPkgTests
-#    artifactName: 'NugetPkgTestsDrop'
-
-# Framework package WACK tests
-#- template: AzurePipelinesTemplates\ProjectReunion-WACKTests-Job.yml
-#  parameters:
-#    name: 'FrameworkPkgWACKTests'
-#    dependsOn: BuildFrameworkPkgTests
-#    artifactName: 'FrameworkPkgTestsDrop'
+    prereleaseVersionTag: nightly
+    ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
+      publishToMaestro: True
+    ${{ if ne(variables['Build.Reason'], 'Schedule') }}:
+      publishToMaestro: ${{ parameters.PublishToMaestro }}

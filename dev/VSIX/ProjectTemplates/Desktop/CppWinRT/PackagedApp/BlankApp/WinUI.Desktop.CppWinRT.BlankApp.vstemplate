@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Hidden>true</Hidden>
-    <Name>Blank App (WinUI in Desktop)</Name>
-    <Description>A project for creating a Desktop app based on the Windows UI Library (WinUI).</Description>
+    <Name>Blank App (WinUI 3 in Desktop)</Name>
+    <Description>A project for creating a Desktop app based on the Windows UI Library (WinUI 3).</Description>
     <Icon>WinUI.Desktop.CppWinRT.BlankApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.CppWinRT.BlankApp</TemplateID>
     <ProjectType>VC</ProjectType>
@@ -39,14 +39,9 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.idl">MainWindow.idl</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cpp">MainWindow.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.h">MainWindow.h</ProjectItem>
-      <ProjectItem ReplaceParameters="false" TargetFileName="PropertySheet.props">PropertySheet.props</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
   </TemplateContent>
-  <WizardExtension>
-    <Assembly>Microsoft.VisualStudio.WinRT.TemplateWizards, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
-    <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.CreateProjectCertificate.Wizard</FullClassName>
-  </WizardExtension>
   <WizardExtension>
     <Assembly>NuGet.VisualStudio.Interop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
     <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>

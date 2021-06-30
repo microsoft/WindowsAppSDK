@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <DefaultName>BlankWindow.xaml</DefaultName>
-    <Name>Blank Window (WinUI in Desktop)</Name>
-    <Description>A blank window for Desktop apps based on the Windows UI Library (WinUI).</Description>
+    <Name>Blank Window (WinUI 3 in Desktop)</Name>
+    <Description>A blank window for Desktop apps based on the Windows UI Library (WinUI 3).</Description>
     <Icon>WinUI.Desktop.Cs.BlankWindow.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Desktop.Cs.BlankWindow</TemplateID>

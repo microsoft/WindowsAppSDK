@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Due to import ordering inconsistencies between different project types, we import this file
+         from multiple places.  We use this property to denote that it has been imported, to avoid
+         multiple import warnings. -->
+    <EnsureOutputLayoutPropsIncluded>true</EnsureOutputLayoutPropsIncluded>
+
+    <!-- The root of the repo. -->
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..'))</RepoRoot>
+    <BuildRoot>$(RepoRoot)\build\</BuildRoot>
+
+    <!-- This is normally defined in Platform.Default.props for each platform, but we need it early in order to ensure
+         our output directories are formatted consistently. -->
+    <PlatformTarget>$(Platform)</PlatformTarget>
+    <PlatformTarget Condition="$(Platform) == 'Win32'">x86</PlatformTarget>
+
+    <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
+    <BaseOutputPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(PlatformTarget)\</BaseOutputPath>
+
+    <!-- This is later fixed up to contain the project name, but if we specify it here then it ends up being included twice. -->
+    <OutDir>$(BaseOutputPath)</OutDir>
+    <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
+    <TargetDir>$(OutDir)</TargetDir>
+
+    <!-- Due to import order complexities and differences between the targets for individual build types,
+         this must be here instead of Directory.Build.props.  For a one other scenario it must be set a 
+         second time in the 'BeforeCommon' targets. -->
+    <AppxPackageDir>$(BaseOutputPath)AppxPackages</AppxPackageDir>
+    <AppxBundle>Never</AppxBundle>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows10.0.18362.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
+    <Platforms>x64;x86</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Microsoft.Windows.ApplicationModel.Resources.vcxproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
+    <CSWinRTWindowsMetadata>10.0.18362.0</CSWinRTWindowsMetadata>
+    <NoWarn>MSB3271</NoWarn>
+  </PropertyGroup>
+
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>	
+
+  <ItemGroup>
+    <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+  </ItemGroup>
+
+</Project>

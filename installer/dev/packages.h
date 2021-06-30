@@ -11,10 +11,17 @@ using namespace Windows::System;
 
 namespace ProjectReunionInstaller {
 
+    enum class DeploymentBehavior
+    {
+        Default,        // Package will be deployed based on its properties alone.
+        Framework,      // Package will be treated as a framework, even if it is not.
+    };
+
     struct ResourcePackageInfo
     {
         std::wstring id;
         std::wstring resourceType;
+        DeploymentBehavior deploymentBehavior{ DeploymentBehavior::Default };
     };
 
     static ResourcePackageInfo c_packages[] =
@@ -27,6 +34,24 @@ namespace ProjectReunionInstaller {
     #endif
     #if defined(PR_FRAMEWORK_ARM64_LISTENTRY)
         PR_FRAMEWORK_ARM64_LISTENTRY
+    #endif
+    #if defined(PR_MAIN_X86_LISTENTRY)
+        PR_MAIN_X86_LISTENTRY
+    #endif
+    #if defined(PR_MAIN_X64_LISTENTRY)
+        PR_MAIN_X64_LISTENTRY
+    #endif
+    #if defined(PR_MAIN_ARM64_LISTENTRY)
+        PR_MAIN_ARM64_LISTENTRY
+    #endif
+    #if defined(PR_DDLM_X86_LISTENTRY)
+        PR_DDLM_X86_LISTENTRY
+    #endif
+    #if defined(PR_DDLM_X64_LISTENTRY)
+        PR_DDLM_X64_LISTENTRY
+    #endif
+    #if defined(PR_DDLM_ARM64_LISTENTRY)
+        PR_DDLM_ARM64_LISTENTRY
     #endif
     };
 }
