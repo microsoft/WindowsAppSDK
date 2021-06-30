@@ -68,6 +68,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency.DataStore.ProxyStub", "dev\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj", "{1A41BB90-CC34-4EDD-9A27-50714CDBC169}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency.DataStore.Msix", "test\DynamicDependency\data\DynamicDependency.DataStore.Msix\DynamicDependencies.DataStore.Msix.vcxproj", "{B71E818A-882E-456A-87E5-4DE4A6602B99}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CE1D3A34-F10F-43CF-85B5-BC79D9C6F0E8} = {CE1D3A34-F10F-43CF-85B5-BC79D9C6F0E8}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyLifetimeManager", "DynamicDependencyLifetimeManager", "{D043D403-31F1-43F1-B2D4-FA8F7090006D}"
 EndProject

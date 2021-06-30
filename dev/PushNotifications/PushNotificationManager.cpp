@@ -142,7 +142,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationRegistrationToken PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
-        std::cout << PR_PUSHNOTIFICATIONS_CLSID_UUID_STRING << std::endl;
         THROW_HR_IF_NULL(E_INVALIDARG, details);
 
         GUID taskClsid = details.TaskClsid();

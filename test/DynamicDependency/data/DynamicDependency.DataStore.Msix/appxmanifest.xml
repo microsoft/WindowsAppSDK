@@ -56,14 +56,21 @@
             <com:Interface Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" ProxyStubClsid="DDEB4D6A-E146-476d-B729-0BFB1A29A86E"/> <!-- IID_IDynamicDependencyDataStore -->
           </com:ComInterface>
         </com:Extension>
+        <com:Extension Category="windows.comServer">
+            <com:ComServer>
+                <com:ExeServer Executable="PushNotificationsLongRunningTask.exe" DisplayName="Push Notifications Long Running Task">
+                    <com:Class Id="8FCFB82B-DB93-4E1D-9008-76D768CEB9EA" DisplayName="Push Notifications Long Running Task"/>
+                  </com:ExeServer>
+            </com:ComServer>
+        </com:Extension>
         <uap5:Extension
-            Category="windows.startupTask"
-            Executable="PushNotificationsReunionTask.exe"
-            EntryPoint="Windows.FullTrustApplication">
-            <uap5:StartupTask
-                TaskId="PushNotificationsId"
-                Enabled="true"
-                DisplayName="Push Notifications Reunion Task" />
+              Category="windows.startupTask"
+              Executable="PushNotificationsLongRunningTask.exe"
+              EntryPoint="Windows.FullTrustApplication">
+              <uap5:StartupTask
+                  TaskId="PushNotificationsId"
+                  Enabled="true"
+                  DisplayName="Push Notifications Long Running Task" />
         </uap5:Extension>
         </Extensions>
     </Application>
