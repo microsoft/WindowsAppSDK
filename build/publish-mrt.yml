@@ -205,7 +205,7 @@ steps:
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
 #    configuration: '$(buildConfiguration)'
-#    msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
+#    msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:UapAppxPackageBuildMode=StoreUpload'
 
 #- task: VSBuild@1
 #  displayName: 'build x64'
@@ -215,5 +215,5 @@ steps:
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
 #    configuration: '$(buildConfiguration)'
-#    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
+#    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:UapAppxPackageBuildMode=StoreUpload'
 

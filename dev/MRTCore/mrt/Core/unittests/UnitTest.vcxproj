@@ -136,12 +136,6 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
@@ -157,12 +151,6 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -178,12 +166,6 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -199,12 +181,6 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -224,12 +200,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
@@ -249,12 +219,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -274,12 +238,6 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
@@ -299,15 +257,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>
-        copy $(TargetDir)..\MRM\mrm.dll $(TargetDir)
-        copy $(TargetDir)..\MRM\mrm.pdb $(TargetDir)
-      </Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MrmTests.cpp" />
+    <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.dll" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(BaseOutputPath)MRM\mrm.pdb" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\MRM.vcxproj">

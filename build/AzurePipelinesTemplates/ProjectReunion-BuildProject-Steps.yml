@@ -2,7 +2,6 @@ parameters:
   solutionPath: ''
   nugetConfigPath: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
-  appxPackageDir: '$(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages'
   artifactName: 'drop'
 
 steps:
@@ -11,7 +10,6 @@ steps:
   - script: |
       echo parameters.solutionPath = '${{ parameters.solutionPath }}'
       echo parameters.nugetConfigPath = '${{ parameters.nugetConfigPath }}'
-      echo parameters.appxPackageDir = '${{ parameters.appxPackageDir }}'
       echo parameters.buildOutputDir = '${{ parameters.buildOutputDir }}'
     displayName: 'BuildProject: Display parameters'
 
@@ -79,7 +77,7 @@ steps:
       vsVersion: 16.0
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Never /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:ProjectReunionBuildPipeline=1'
+      msbuildArgs: '/p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:ProjectReunionBuildPipeline=1'
 
   - task: CmdLine@2
     displayName: 'Install Test Certificate'
