@@ -14,14 +14,14 @@ namespace ProjectReunionEnvironmentManagerTests
             TEST_CLASS_PROPERTY(L"RunAs", L"{ElevatedUser,RestrictedUser,LowIL}")
         END_TEST_CLASS()
 
-            TEST_CLASS_SETUP(WriteEVs)
+            TEST_METHOD_SETUP(WriteEVs)
         {
             UserSetup();
             MachineSetup();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(RemoveEVs)
+        TEST_METHOD_CLEANUP(RemoveEVs)
         {
             UserCleanup();
             MachineCleanup();
@@ -51,5 +51,13 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(TestRemoveFromPathForProcess);
         TEST_METHOD(TestRemoveFromPathForUser);
         TEST_METHOD(TestRemoveFromPathForMachine);
+
+        TEST_METHOD(TestAppendToPathExtForProcess);
+        TEST_METHOD(TestAppendToPathExtForUser);
+        TEST_METHOD(TestAppendToPathExtForMachine);
+
+        TEST_METHOD(TestRemoveFromPathExtForProcess);
+        TEST_METHOD(TestRemoveFromPathExtForUser);
+        TEST_METHOD(TestRemoveFromPathExtForMachine);
     };
 }

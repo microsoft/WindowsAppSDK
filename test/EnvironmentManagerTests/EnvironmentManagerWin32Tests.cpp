@@ -39,7 +39,6 @@ namespace ProjectReunionEnvironmentManagerTests
 
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariablesForUser()
     {
-
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
         EnvironmentVariables environmentVariablesFromWinRTAPI{ environmentManager.GetEnvironmentVariables() };
 
@@ -61,335 +60,429 @@ namespace ProjectReunionEnvironmentManagerTests
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariableForProcess()
     {
         ProcessSetup();
-        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
-        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyName) };
 
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_EvKeyName) };
+
+        ProcessCleanup();
+
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, environmentValue);
     }
 
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariableForUser()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
-        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyNameForGet) };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_EvKeyNameForGet) };
 
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, environmentValue);
     }
 
     void EnvironmentManagerWin32Tests::TestGetEnvironmentVariableForMachine()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
-        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_evKeyNameForGet) };
+        winrt::hstring environmentValue{ environmentManager.GetEnvironmentVariable(c_EvKeyNameForGet) };
 
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, environmentValue);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, environmentValue);
     }
 
     void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForProcess()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName));
 
-        std::wstring writtenEV = GetEnvironmentVariableForProcess(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
+        std::wstring writtenEV = GetEnvironmentVariableForProcess(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
-        writtenEV = GetEnvironmentVariableForProcess(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName2));
+        writtenEV = GetEnvironmentVariableForProcess(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName2 }, writtenEV);
 
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, L""));
-        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_evKeyName, nullptr, 0));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
+        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
     }
 
     void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForUser()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
-        if (ValidateTokenRunLevel(ProcessRunLevel::LegacyLowIL) || ValidateTokenRunLevel(ProcessRunLevel::UntrustedIL))
+        if (!IsILAtOrAbove(ProcessRunLevel::Standard))
         {
-            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName));
 
-        std::wstring writtenEV = GetEnvironmentVariableForUser(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
+        std::wstring writtenEV = GetEnvironmentVariableForUser(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
-        writtenEV = GetEnvironmentVariableForUser(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName2));
+        writtenEV = GetEnvironmentVariableForUser(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName2 }, writtenEV);
 
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, L""));
-        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_evKeyName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForUser(c_EvKeyName));
     }
 
     void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForMachine()
     {
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
-        if (!ValidateTokenRunLevel(ProcessRunLevel::Elevated))
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
         {
-            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName));
 
-        std::wstring writtenEV{ GetEnvironmentVariableForMachine(c_evKeyName) };
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName }, writtenEV);
+        std::wstring writtenEV{ GetEnvironmentVariableForMachine(c_EvKeyName) };
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName }, writtenEV);
 
         // Update the environment variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, c_evValueName2));
-        writtenEV = GetEnvironmentVariableForMachine(c_evKeyName);
-        VERIFY_ARE_EQUAL(std::wstring{ c_evValueName2 }, writtenEV);
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, c_EvValueName2));
+        writtenEV = GetEnvironmentVariableForMachine(c_EvKeyName);
+        VERIFY_ARE_EQUAL(std::wstring{ c_EvValueName2 }, writtenEV);
 
 
         // Remove the value
         // setting the value to empty is the same as deleting the variable
-        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_evKeyName, L""));
-        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForMachine(c_evKeyName));
+        VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
+        VERIFY_ARE_EQUAL(L"", GetEnvironmentVariableForMachine(c_EvKeyName));
 
     }
 
     void EnvironmentManagerWin32Tests::TestAppendToPathForProcess()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForProcess(c_pathName) };
-
+        ProcessSetup();
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ pathToRestore };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathName) };
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
+
+        ProcessCleanup();
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreProcessPath(pathToRestore);
     }
 
     void EnvironmentManagerWin32Tests::TestAppendToPathForUser()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForUser(c_pathName) };
-
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ pathToRestore };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
-        if (ValidateTokenRunLevel(ProcessRunLevel::LegacyLowIL) || ValidateTokenRunLevel(ProcessRunLevel::UntrustedIL))
+        if (!IsILAtOrAbove(ProcessRunLevel::Standard))
         {
-            VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.AppendToPath(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathName) };
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreUserPath(pathToRestore);
     }
 
     void EnvironmentManagerWin32Tests::TestAppendToPathForMachine()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForMachine(c_pathName) };
-
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate(pathToRestore);
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
-        if (!ValidateTokenRunLevel(ProcessRunLevel::Elevated))
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
         {
-            VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
+            VERIFY_THROWS(environmentManager.AppendToPath(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
+        VERIFY_NO_THROW(environmentManager.AppendToPath(c_EvValueName));
 
         // Current path should have the semi-colon
-        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_pathName) };
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_PathName) };
         if (pathToManipulate.back() != L';')
         {
             pathToManipulate += L";";
         }
 
-        pathToManipulate += c_evValueName;
+        pathToManipulate += c_EvValueName;
         pathToManipulate += L";";;
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreMachinePath(pathToRestore);
     }
 
     void EnvironmentManagerWin32Tests::TestRemoveFromPathForProcess()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForProcess(c_pathName) };
+        ProcessSetup();
 
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate(pathToRestore);
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
 
-        // This will append c_evValueName to the path with a semi-colon.
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
-        if (pathToManipulate.back() != L';')
-        {
-            pathToManipulate += L';';
-        }
+        environmentManager.RemoveFromPath(c_EvValueName);
 
-        pathToManipulate += c_evValueName;
-        pathToManipulate += L";";
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathName) };
 
-        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_pathName) };
-
-        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
-
-        std::wstring pathPart{ currentPath, 0, currentPath.find(L';') + 1 };
-        environmentManager.RemoveFromPath(pathPart);
-        currentPath = GetEnvironmentVariableForProcess(c_pathName);
-
-        pathToManipulate.erase(pathToManipulate.rfind(pathPart), pathPart.length());
+        ProcessCleanup();
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_NO_THROW(environmentManager.RemoveFromPath(L"I do not exist"));
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
-
-        VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreProcessPath(pathToRestore);
     }
 
     void EnvironmentManagerWin32Tests::TestRemoveFromPathForUser()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForUser(c_pathName) };
-
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate(pathToRestore);
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
-        if (ValidateTokenRunLevel(ProcessRunLevel::LegacyLowIL) || ValidateTokenRunLevel(ProcessRunLevel::UntrustedIL))
+        if (!IsILAtOrAbove(ProcessRunLevel::LegacyLowIL))
         {
-            VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
+            std::wstring pathPart{ GetSecondValueFromPath(false, true) };
+            VERIFY_THROWS(environmentManager.RemoveFromPath(c_EvValueName), winrt::hresult_access_denied);
             return;
         }
 
-        // This will append c_evValueName to the path with a semi-colon.
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
-        if (pathToManipulate.back() != L';')
-        {
-            pathToManipulate += L';';
-        }
+        environmentManager.RemoveFromPath(c_EvValueName);
 
-        pathToManipulate += c_evValueName;
-        pathToManipulate += L";";
-
-        std::wstring currentPath{ GetEnvironmentVariableForUser(c_pathName) };
-
-        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
-
-        std::wstring pathPart{ currentPath, 0, currentPath.find(L';') + 1 };
-        environmentManager.RemoveFromPath(pathPart);
-        currentPath = GetEnvironmentVariableForUser(c_pathName);
-
-        pathToManipulate.erase(pathToManipulate.rfind(pathPart), pathPart.length());
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathName) };
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_NO_THROW(environmentManager.RemoveFromPath(L"I do not exist"));
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
-
-        VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
-
-        RestoreUserPath(pathToRestore);
     }
 
     void EnvironmentManagerWin32Tests::TestRemoveFromPathForMachine()
     {        
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForMachine(c_pathName) };
-
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate(pathToRestore);
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
 
-        if (!ValidateTokenRunLevel(ProcessRunLevel::Elevated))
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
         {
-            VERIFY_THROWS(environmentManager.AppendToPath(c_evValueName), winrt::hresult_access_denied);
+            std::wstring pathPart{ GetSecondValueFromPath(false, false) };
+            VERIFY_THROWS(environmentManager.RemoveFromPath(pathPart), winrt::hresult_access_denied);
             return;
         }
 
+        environmentManager.RemoveFromPath(c_EvValueName);
 
-        // This will append c_evValueName to the path with a semi-colon.
-        VERIFY_NO_THROW(environmentManager.AppendToPath(c_evValueName));
-        if (pathToManipulate.back() != L';')
-        {
-            pathToManipulate += L';';
-        }
-
-        pathToManipulate += c_evValueName;
-        pathToManipulate += L";";
-
-        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_pathName) };
-
-        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
-
-        std::wstring pathPart{ currentPath, 0, currentPath.find(L';') + 1 };
-        environmentManager.RemoveFromPath(pathPart);
-        currentPath = GetEnvironmentVariableForMachine(c_pathName);
-
-        pathToManipulate.erase(pathToManipulate.rfind(pathPart), pathPart.length());
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_PathName) };
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
 
         VERIFY_NO_THROW(environmentManager.RemoveFromPath(L"I do not exist"));
 
         VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
 
-        VERIFY_THROWS(environmentManager.AppendToPath(L""), winrt::hresult_invalid_argument);
+    void EnvironmentManagerWin32Tests::TestAppendToPathExtForProcess()
+    {
+        ProcessSetup();
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathExtName) };
 
-        RestoreMachinePath(pathToRestore);
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathExtName) };
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_EvValueName;
+        pathToManipulate += L";";
+
+        ProcessCleanup();
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerWin32Tests::TestAppendToPathExtForUser()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Standard))
+        {
+            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_EvValueName), winrt::hresult_access_denied);
+            return;
+        }
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathExtName) };
+
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_EvValueName;
+        pathToManipulate += L";";
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerWin32Tests::TestAppendToPathExtForMachine()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
+        {
+            VERIFY_THROWS(environmentManager.AddExecutableFileExtension(c_EvValueName), winrt::hresult_access_denied);
+            return;
+        }
+
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
+
+        // Current path should have the semi-colon
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_PathExtName) };
+
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L";";
+        }
+
+        pathToManipulate += c_EvValueName;
+        pathToManipulate += L";";
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_THROWS(environmentManager.AddExecutableFileExtension(L""), winrt::hresult_invalid_argument);
+    }
+
+    void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForProcess()
+    {
+        ProcessSetup();
+
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForProcess() };
+
+        InjectIntoPath(true, false, c_EvValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_EvValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForProcess(c_PathExtName) };
+
+        ProcessCleanup();
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
+
+    void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForUser()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathExtName) };
+
+        if (pathToManipulate.back() != L';')
+        {
+            pathToManipulate += L';';
+        }
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Standard))
+        {
+            std::wstring pathPart{ GetSecondValueFromPathExt(false, true) };
+            VERIFY_THROWS(environmentManager.RemoveExecutableFileExtension(pathPart), winrt::hresult_access_denied);
+            return;
+        }
+
+        InjectIntoPathExt(false, true, c_EvValueName, 5);
+        environmentManager.RemoveExecutableFileExtension(c_EvValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathExtName) };
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+    }
+
+    void EnvironmentManagerWin32Tests::TestRemoveFromPathExtForMachine()
+    {
+        // Keep a local string to match all operations to PATH
+        std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathExtName) };
+
+        EnvironmentManager environmentManager{ EnvironmentManager::GetForMachine() };
+
+        if (!IsILAtOrAbove(ProcessRunLevel::Elevated))
+        {
+            std::wstring pathPart{ GetSecondValueFromPathExt(false, false) };
+            VERIFY_THROWS(environmentManager.RemoveExecutableFileExtension(pathPart), winrt::hresult_access_denied);
+            return;
+        }
+
+        environmentManager.RemoveExecutableFileExtension(c_EvValueName);
+
+        std::wstring currentPath{ GetEnvironmentVariableForMachine(c_PathExtName) };
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
+
+        VERIFY_NO_THROW(environmentManager.RemoveExecutableFileExtension(L"I do not exist"));
+
+        VERIFY_ARE_EQUAL(currentPath, pathToManipulate);
     }
 }

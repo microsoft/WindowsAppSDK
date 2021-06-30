@@ -96,53 +96,40 @@ inline std::wstring GetEnvironmentVariableFromRegistry(const std::wstring variab
     return std::wstring{ environmentValue.get() };
 }
 
+inline wil::unique_hkey GetKeyToEnvironmentVariables(bool isUser)
+{
+    wil::unique_hkey environmentVariablesHKey{};
+    if (isUser)
+    {
+        THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_ALL_ACCESS, environmentVariablesHKey.addressof()));
+    }
+    else
+    {
+        THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_ALL_ACCESS, environmentVariablesHKey.addressof()));
+    }
+
+    return environmentVariablesHKey;
+}
+
 inline EnvironmentVariables GetEnvironmentVariablesForUser()
 {
     wil::unique_hkey environmentVariablesHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
     return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 
 inline std::wstring GetEnvironmentVariableForUser(const std::wstring variableName)
 {
     wil::unique_hkey environmentVariableHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_userEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
     return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
-}
-
-inline EnvironmentVariables GetEnvironmentVariablesForMachine()
-{
-    wil::unique_hkey environmentVariablesHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
-    return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
 }
 
 inline std::wstring GetEnvironmentVariableForMachine(const std::wstring variableName)
 {
     wil::unique_hkey environmentVariableHKey{};
-    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_machineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_READ, environmentVariableHKey.addressof()));
     return GetEnvironmentVariableFromRegistry(variableName, environmentVariableHKey.get());
-}
-
-inline EnvironmentVariables GetEnvironmentVariablesForProcess()
-{
-    //Get the pointer to the process block
-    PWSTR environmentVariablesString{ GetEnvironmentStrings() };
-    THROW_HR_IF_NULL(E_POINTER, environmentVariablesString);
-
-    StringMap environmentVariables{};
-    for (auto environmentVariableOffset = environmentVariablesString; *environmentVariableOffset; environmentVariableOffset += wcslen(environmentVariableOffset) + 1)
-    {
-        auto delimiter{ wcschr(environmentVariableOffset, L'=') };
-        FAIL_FAST_HR_IF_NULL(E_UNEXPECTED, delimiter);
-        std::wstring variableName{ environmentVariableOffset, 0, static_cast<std::size_t> (delimiter - environmentVariableOffset) };
-        auto variableValue{ delimiter + 1 };
-        environmentVariables.Insert(variableName, variableValue);
-    }
-
-    THROW_IF_WIN32_BOOL_FALSE(FreeEnvironmentStrings(environmentVariablesString));
-
-    return environmentVariables.GetView();
 }
 
 inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variableName)
@@ -177,6 +164,268 @@ inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variable
 
     return environmentVariableValue;
 }
+
+inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& const pathPart, int index)
+{
+    std::wstring existingPath{};
+
+    if (isProcess)
+    {
+        existingPath = GetEnvironmentVariableForProcess(c_PathName);
+    }
+    else if (isUser)
+    {
+        existingPath = GetEnvironmentVariableForUser(c_PathName);
+    }
+    else
+    {
+        existingPath = GetEnvironmentVariableForMachine(c_PathName);
+    }
+
+    std::list<std::wstring> pathParts{};
+
+    wchar_t* token;
+    wchar_t* tokenizationState;
+    token = wcstok_s(existingPath.data(), L";", &tokenizationState);
+    while (token != nullptr)
+    {
+        std::wstring pathPartToken{ token };
+
+        pathPartToken += L';';
+
+        pathParts.push_back(pathPartToken);
+
+        token = wcstok_s(NULL, L";", &tokenizationState);
+    }
+
+
+    int currentIndex{ 0 };
+    for (auto iterator = pathParts.begin(); iterator != pathParts.end(); ++iterator)
+    {
+        if (currentIndex == index)
+        {
+            std::wstring pathPartToInsert{ pathPart };
+
+            if (pathPartToInsert.back() != L';')
+            {
+                pathPartToInsert += L';';
+            }
+
+            pathParts.insert(iterator, pathPartToInsert);
+            break;
+        }
+
+        currentIndex++;
+    }
+
+    std::wstring newPath{};
+    for (auto pathPart : pathParts)
+    {
+        newPath += pathPart;
+    }
+
+    if (isProcess)
+    {
+        SetEnvironmentVariable(c_PathName, newPath.c_str());
+    }
+    else
+    {
+        THROW_IF_WIN32_ERROR(RegSetValueEx(
+            GetKeyToEnvironmentVariables(isUser).get()
+            , c_PathName
+            , 0
+            , REG_EXPAND_SZ
+            , reinterpret_cast<const BYTE*>(newPath.c_str())
+            , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t))));
+    }
+
+}
+
+inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& const pathExtPart, int index)
+{
+    std::wstring existingPathExt{};
+
+    if (isProcess)
+    {
+        existingPathExt = GetEnvironmentVariableForProcess(c_PathExtName);
+    }
+    else if (isUser)
+    {
+        existingPathExt = GetEnvironmentVariableForUser(c_PathExtName);
+    }
+    else
+    {
+        existingPathExt = GetEnvironmentVariableForMachine(c_PathExtName);
+    }
+
+    std::list<std::wstring> pathExtParts{};
+
+    wchar_t* token;
+    wchar_t* tokenizationState;
+    token = wcstok_s(existingPathExt.data(), L";", &tokenizationState);
+    while (token != nullptr)
+    {
+        std::wstring pathExtPartToken{ token };
+
+        pathExtPartToken += L';';
+
+        pathExtParts.push_back(pathExtPartToken);
+
+        token = wcstok_s(NULL, L";", &tokenizationState);
+    }
+
+
+    int currentIndex{ 0 };
+    for (auto iterator = pathExtParts.begin(); iterator != pathExtParts.end(); ++iterator)
+    {
+        if (currentIndex == index)
+        {
+            std::wstring pathExtPartToInsert{ pathExtPart };
+
+            if (pathExtPartToInsert.back() != L';')
+            {
+                pathExtPartToInsert += L';';
+            }
+
+            pathExtParts.insert(iterator, pathExtPartToInsert);
+            break;
+        }
+
+        currentIndex++;
+    }
+
+    std::wstring newPath{};
+    for (auto pathPart : pathExtParts)
+    {
+        newPath += pathPart;
+    }
+
+    if (isProcess)
+    {
+        SetEnvironmentVariable(c_PathExtName, newPath.c_str());
+    }
+    else
+    {
+        THROW_IF_WIN32_ERROR(RegSetValueEx(
+            GetKeyToEnvironmentVariables(isUser).get()
+            , c_PathExtName
+            , 0
+            , REG_EXPAND_SZ
+            , reinterpret_cast<const BYTE*>(newPath.c_str())
+            , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t))));
+    }
+
+}
+
+inline std::wstring GetSecondValueFromPath(bool isProcess, bool isUser)
+{
+    std::wstring existingPath{};
+
+    if (isProcess)
+    {
+        existingPath = GetEnvironmentVariableForProcess(c_PathName);
+    }
+    else if (isUser)
+    {
+        existingPath = GetEnvironmentVariableForUser(c_PathName);
+    }
+    else
+    {
+        existingPath = GetEnvironmentVariableForMachine(c_PathName);
+    }
+
+    int index{ 0 };
+    wchar_t* token;
+    wchar_t* tokenizationState;
+    token = wcstok_s(existingPath.data(), L";", &tokenizationState);
+    while (token != nullptr)
+    {
+        std::wstring pathPartToken{ token };
+
+        pathPartToken += L';';
+
+        if (index == 1)
+        {
+            return pathPartToken;
+        }
+
+        token = wcstok_s(NULL, L";", &tokenizationState);
+        index++;
+    }
+
+    return {};
+}
+
+inline std::wstring GetSecondValueFromPathExt(bool isProcess, bool isUser)
+{
+    std::wstring existingPath{};
+
+    if (isProcess)
+    {
+        existingPath = GetEnvironmentVariableForProcess(c_PathExtName);
+    }
+    else if (isUser)
+    {
+        existingPath = GetEnvironmentVariableForUser(c_PathExtName);
+    }
+    else
+    {
+        existingPath = GetEnvironmentVariableForMachine(c_PathExtName);
+    }
+
+    int index{ 0 };
+    wchar_t* token;
+    wchar_t* tokenizationState;
+    token = wcstok_s(existingPath.data(), L";", &tokenizationState);
+    while (token != nullptr)
+    {
+        std::wstring pathPartToken{ token };
+
+        pathPartToken += L';';
+
+        if (index == 1)
+        {
+            return pathPartToken;
+        }
+
+        token = wcstok_s(NULL, L";", &tokenizationState);
+        index++;
+    }
+
+    return {};
+}
+
+
+inline EnvironmentVariables GetEnvironmentVariablesForMachine()
+{
+    wil::unique_hkey environmentVariablesHKey{};
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, KEY_READ, environmentVariablesHKey.addressof()));
+    return GetEnvironmentVariablesFromRegistry(environmentVariablesHKey.get());
+}
+
+
+inline EnvironmentVariables GetEnvironmentVariablesForProcess()
+{
+    //Get the pointer to the process block
+    PWSTR environmentVariablesString{ GetEnvironmentStrings() };
+    THROW_HR_IF_NULL(E_POINTER, environmentVariablesString);
+
+    StringMap environmentVariables{};
+    for (auto environmentVariableOffset = environmentVariablesString; *environmentVariableOffset; environmentVariableOffset += wcslen(environmentVariableOffset) + 1)
+    {
+        auto delimiter{ wcschr(environmentVariableOffset, L'=') };
+        FAIL_FAST_HR_IF_NULL(E_UNEXPECTED, delimiter);
+        std::wstring variableName{ environmentVariableOffset, 0, static_cast<std::size_t> (delimiter - environmentVariableOffset) };
+        auto variableValue{ delimiter + 1 };
+        environmentVariables.Insert(variableName, variableValue);
+    }
+
+    THROW_IF_WIN32_BOOL_FALSE(FreeEnvironmentStrings(environmentVariablesString));
+
+    return environmentVariables.GetView();
+}
+
+
 
 
 /// Compares two IMapView<winrt::hstring, winrt::hstring> collections for

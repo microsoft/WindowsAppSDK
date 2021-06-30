@@ -24,7 +24,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static Microsoft::ProjectReunion::EnvironmentManager GetForMachine();
         Windows::Foundation::Collections::IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
-        bool IsSupported();
         void SetEnvironmentVariable(hstring const& name, hstring const& value);
         void AppendToPath(hstring const& path);
         void RemoveFromPath(hstring const& path);
@@ -37,6 +36,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         PCWSTR c_UserEvRegLocation{ L"Environment" };
         PCWSTR c_MachineEvRegLocation{ L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" };
         PCWSTR c_PathName{ L"PATH" };
+        PCWSTR c_PathExtName{ L"PATHEXT" };
 
         StringMap GetProcessEnvironmentVariables() const;
         StringMap GetUserOrMachineEnvironmentVariables() const;
@@ -47,6 +47,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         wil::unique_hkey GetRegHKeyForEVUserAndMachineScope(bool needsWriteAccess = false) const;
 
         std::wstring GetPath() const;
+        std::wstring GetPathExt() const;
 
         void DeleteEnvironmentVariableIfExists(const HKEY hkey, const std::wstring name) const;
     };

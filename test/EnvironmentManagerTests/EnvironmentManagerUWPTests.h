@@ -12,14 +12,14 @@ namespace ProjectReunionEnvironmentManagerTests
             TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
             END_TEST_CLASS()
 
-        TEST_CLASS_SETUP(UWPWriteEVs)
+        TEST_METHOD_SETUP(UWPWriteEVs)
         {
             UserSetup();
             MachineSetup();
             return true;
         }
 
-        TEST_CLASS_CLEANUP(UWPRemoveEVs)
+        TEST_METHOD_CLEANUP(UWPRemoveEVs)
         {
             UserCleanup();
             MachineCleanup();
@@ -49,5 +49,13 @@ namespace ProjectReunionEnvironmentManagerTests
         TEST_METHOD(UWPTestRemoveFromPathForProcess);
         TEST_METHOD(UWPTestRemoveFromPathForUser);
         TEST_METHOD(UWPTestRemoveFromPathForMachine);
+
+        TEST_METHOD(UWPTestAppendToPathExtForProcess);
+        TEST_METHOD(UWPTestAppendToPathExtForUser);
+        TEST_METHOD(UWPTestAppendToPathExtForMachine);
+
+        TEST_METHOD(UWPTestRemoveFromPathExtForProcess);
+        TEST_METHOD(UWPTestRemoveFromPathExtForUser);
+        TEST_METHOD(UWPTestRemoveFromPathExtForMachine);
     };
 }
