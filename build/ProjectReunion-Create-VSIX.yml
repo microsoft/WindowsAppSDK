@@ -1,0 +1,90 @@
+parameters:
+  - name: "ReunionVersion"
+    type: string
+    default: ''
+  - name: "releaseBuild"
+    type: boolean
+    default: True
+  - name: "OptionalVSIXVersion"
+    # if blank, the project template will select the version matching the Project Reunion
+    # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
+    type: string
+    default: 'default'
+  - name: "EnableExperimentalVSIXFeatures"
+    type: boolean
+    default: False
+
+jobs:
+
+- job: CreateVSIX
+  pool:
+    vmImage: 'windows-2019'
+
+  steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: Internal-ReleaseSigned
+
+  - task: VSBuild@1
+    displayName: 'Restore ProjectReunion.Extension.sln'
+    inputs:
+      solution: dev\VSIX\ProjectReunion.Extension.sln
+      platform: 'Any CPU'
+      configuration: '$(buildConfiguration)'
+      msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+
+  - task: VSBuild@1
+    displayName: 'Build ProjectReunion.Extension.sln'
+    inputs:
+      solution: dev\VSIX\ProjectReunion.Extension.sln
+      platform: 'Any CPU'
+      configuration: '$(buildConfiguration)'
+      msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Governance Detection'
+    inputs:
+      scanType: 'Register'
+      failOnAlert: true
+
+  - ${{ if eq( parameters.releaseBuild, true) }}:
+    - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+      displayName: 'CodeSign (vsix)'
+      inputs:
+        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+        FolderPath: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
+        Pattern: ProjectReunion.Extension.vsix
+        signConfigType: inlineSignParams
+        inlineOperation: |
+          [
+              {
+                  "KeyCode" : "CP-233016",
+                  "OperationCode" : "OpcSign",
+                  "Parameters" : {
+                      "FileDigest" : "/fd SHA256"
+                  },
+                  "ToolName" : "sign",
+                  "ToolVersion" : "1.0"
+              },
+              {
+                  "KeyCode" : "CP-233016",
+                  "OperationCode" : "OpcVerify",
+                  "Parameters" : {},
+                  "ToolName" : "sign",
+                  "ToolVersion" : "1.0"
+              }
+          ]
+
+  - ${{ if eq( parameters.EnableExperimentalVSIXFeatures, false) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish ProjectReunion.Extension.VSIX'
+      inputs:
+        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.vsix'
+        artifactName: 'VSIX'
+
+  - ${{ if eq( parameters.EnableExperimentalVSIXFeatures, true) }}:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish ProjectReunion.Extension.Preview.VSIX'
+      inputs:
+        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.Preview.vsix'
+        artifactName: 'VSIX'

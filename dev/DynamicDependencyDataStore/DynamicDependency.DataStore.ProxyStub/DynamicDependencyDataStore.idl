@@ -1,0 +1,28 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "..\DynamicDependencyDataStore-Constants.h"
+
+[object]
+[uuid(DDEB4D6A-E146-476d-B729-0BFB1A29A86E)]
+[pointer_default(unique)]
+interface IDynamicDependencyDataStore : IUnknown
+{
+    HRESULT GetApplicationData([out, retval] IUnknown** applicationData);
+
+    HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
+};
+
+[uuid(PR_DYNDEP_LIBID_UUID)]
+[version(1.0)]
+library DynamicDependencyDataStoreLib
+{
+    [uuid(PR_DYNDEP_DATASTORE_CLSID_UUID)]
+    coclass DynamicDependencyDataStore
+    {
+        [default] interface IDynamicDependencyDataStore;
+    };
+};

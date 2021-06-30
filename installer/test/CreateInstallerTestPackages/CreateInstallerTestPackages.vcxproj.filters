@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Xml Include="appxmanifest_fw_arm64.xml" />
+    <Xml Include="appxmanifest_fw_x64.xml" />
+    <Xml Include="appxmanifest_fw_x86.xml" />
+    <Xml Include="appxmanifest_ddlm_arm64.xml" />
+    <Xml Include="appxmanifest_ddlm_x64.xml" />
+    <Xml Include="appxmanifest_ddlm_x86.xml" />
+    <Xml Include="appxmanifest_main_arm64.xml" />
+    <Xml Include="appxmanifest_main_x64.xml" />
+    <Xml Include="appxmanifest_main_x86.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.mak" />
+    <None Include="README.md" />
+    <None Include="Assets\NonFunctioning.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\logo.png" />
+    <Image Include="Assets\SplashScreen.png" />
+    <Image Include="Assets\Square44x44Logo.png" />
+    <Image Include="Assets\Square150x150Logo.png" />
+    <Image Include="Assets\Wide310x150Logo.png" />
+  </ItemGroup>
+</Project>

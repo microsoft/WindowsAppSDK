@@ -2,26 +2,42 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-#include <ActivationRegistrationManager.g.h>
+#include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    // Registration constant values.
+    static PCWSTR c_argumentPrefix{ L"----" };
+    static PCWSTR c_argumentSuffix{ L":" };
+    static PCWSTR c_protocolArgumentString{ L"ms-protocol" };
+    static PCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
+
     struct ActivationRegistrationManager
     {
         ActivationRegistrationManager() = default;
 
         static void RegisterForFileTypeActivation(array_view<hstring const> supportedFileTypes,
-            array_view<hstring const> supportedVerbs, hstring const& applicationDisplayName,
-            hstring const& logo);
-        static void RegisterForProtocolActivation(hstring const& scheme,
-            hstring const& applicationDisplayName, hstring const& logo);
+            hstring const& logo, hstring const& displayName, array_view<hstring const> supportedVerbs,
+            hstring const& exePath);
+        static void RegisterForProtocolActivation(hstring const& schemeName,
+            hstring const& logo, hstring const& displayName, hstring const& exePath);
+        static void RegisterForStartupActivation(hstring const& taskId, hstring const& exePath);
 
-        static void UnregisterForFileTypeActivation(hstring const& fileType);
-        static void UnregisterForProtocolActivation(hstring const& scheme);
+        static void UnregisterForFileTypeActivation(array_view<hstring const> fileTypes,
+            hstring const& exePath);
+        static void UnregisterForProtocolActivation(hstring const& scheme, hstring const& exePath);
+        static void UnregisterForStartupActivation(hstring const& taskId);
+
+    private:
+        static void RegisterForProtocolActivationInternal(std::wstring const& schemeName,
+            std::wstring const& appUserModelId, std::wstring const& logo, std::wstring const& displayName,
+            std::wstring const& exePath);
+        static void RegisterEncodedLaunchCommand();
+        static void RegisterEncodedLaunchSupport(std::wstring const& appUserModelId, std::wstring const& exePath);
     };
 }
 
-namespace winrt::Microsoft::ProjectReunion::factory_implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::factory_implementation
 {
     struct ActivationRegistrationManager : ActivationRegistrationManagerT<ActivationRegistrationManager,
         implementation::ActivationRegistrationManager>

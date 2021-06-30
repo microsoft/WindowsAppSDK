@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{103c0c23-7ba8-4d44-a63c-83488e2e3a81}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+    <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationChannel.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GetRawNotificationEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.h" />
+  </ItemGroup>
+</Project>

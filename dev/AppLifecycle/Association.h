@@ -2,26 +2,30 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-    static const std::wstring c_protocolArgumentString = L"ms-protocol";
-    static const std::wstring c_fileArgumentString = L"ms-file";
-    static const std::wstring c_openWithProgIdsKeyName = L"OpenWithProgids";
-    static const std::wstring c_softwareClassesKeyPath = LR"(Software\Classes\)";
-    static const std::wstring c_progIdPrefix = L"PRF";
-    static const std::wstring c_fileTypeProgIdSuffix = L".File";
-    static const std::wstring c_protocolProgIdSuffix = L".Protocol";
-    static const std::wstring c_applicationKeyName = L"Application";
-    static const std::wstring c_applicationNameKeyName = L"ApplicationName";
-    static const std::wstring c_defaultIconKeyName = L"DefaultIcon";
-    static const std::wstring c_applicationsKeyPath = LR"(Software\Microsoft\ReunionApplications\)";
-    static const std::wstring c_capabilitiesKeyPath = LR"(\Capabilties)";
-    static const std::wstring c_registeredApplicationsKeyPath = LR"(Software\RegisteredApplications\)";
-    static const std::wstring c_shellKeyName = L"shell";
-    static const std::wstring c_commandKeyName = L"command";
-    static const std::wstring c_delegateExecuteValueName = L"DelegateExecute";
-    static const std::wstring c_urlProtocolValueName = L"URL Protocol";
-    static const std::wstring c_urlDefaultValuePrefix = L"URL:";
+    // Association registry key values.
+    static PCWSTR c_openWithProgIdsKeyName{ L"OpenWithProgids" };
+    static PCWSTR c_softwareClassesKeyPath{ LR"(Software\Classes\)" };
+    static PCWSTR c_applicationKeyName{ L"Application" };
+    static PCWSTR c_applicationNameValueName{ L"ApplicationName" };
+    static PCWSTR c_defaultIconKeyName{ L"DefaultIcon" };
+    static PCWSTR c_appUserModelIdValueName{ L"AppUserModelId" };
+    static PCWSTR c_applicationsKeyPath{ LR"(Software\Microsoft\ReunionApplications\)" };
+    static PCWSTR c_capabilitiesKeyPath{ LR"(\Capabilties)" };
+    static PCWSTR c_registeredApplicationsKeyPath{ LR"(Software\RegisteredApplications\)" };
+    static PCWSTR c_shellKeyName{ L"shell" };
+    static PCWSTR c_commandKeyName{ L"command" };
+    static PCWSTR c_delegateExecuteValueName{ L"DelegateExecute" };
+    static PCWSTR c_urlProtocolValueName{ L"URL Protocol" };
+    static PCWSTR c_urlDefaultValuePrefix{ L"URL:" };
+    static PCWSTR c_openVerbName{ L"open" };
+    static PCWSTR c_commandLineArgumentFormat{ L"%1" };
+
+    // ProgId generation values.
+    static PCWSTR c_progIdPrefix{ L"App." };
+    static PCWSTR c_fileTypeProgIdSuffix{ L".File" };
+    static PCWSTR c_protocolProgIdSuffix{ L".Protocol" };
 
     enum AssociationType
     {
@@ -33,15 +37,16 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     std::wstring GetFullIdentityString();
     bool HasIdentity();
     std::wstring GetModulePath();
-    std::wstring ComputeAppId();
+    std::wstring ComputeAppId(const std::wstring& customSeed = L"");
     std::wstring ComputeProgId(AssociationType type);
     std::wstring ComputeProgId(const std::wstring& appId, AssociationType type);
     std::wstring CreateAssocKeyPath(const std::wstring& assoc);
     wil::unique_hkey CreateAssocKey(const std::wstring& assoc, REGSAM samDesired = KEY_WRITE);
     wil::unique_hkey OpenAssocKey(const std::wstring& assoc, REGSAM samDesired = KEY_READ);
     void DeleteAssocKey(const std::wstring& assoc);
-    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& displayName = L"",
-        const std::wstring& applicationDisplayName = L"", const std::wstring& logo = L"");
+    wil::unique_hkey RegisterProgId(const std::wstring& progId, const std::wstring& defaultValue = L"",
+        const std::wstring& appUserModelId = L"", const std::wstring& applicationDisplayName = L"",
+        const std::wstring& logo = L"");
     void UnregisterProgId(const std::wstring& progId);
     std::wstring CreateApplicationKeyPath();
     wil::unique_hkey CreateApplicationKey(const std::wstring& progId, REGSAM samDesired = KEY_WRITE);

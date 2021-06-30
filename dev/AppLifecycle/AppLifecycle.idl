@@ -1,20 +1,96 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.ProjectReunion
+namespace Microsoft.Windows.AppLifecycle
 {
-    static runtimeclass AppLifecycle
+    [experimental]
+    enum ExtendedActivationKind
     {
-        static Windows.ApplicationModel.Activation.IActivatedEventArgs GetActivatedEventArgs();
+        Launch = 0,
+        Search,
+        ShareTarget,
+        File,
+        Protocol,
+        FileOpenPicker,
+        FileSavePicker,
+        CachedFileUpdater,
+        ContactPicker,
+        Device,
+        PrintTaskSettings,
+        CameraSettings,
+        RestrictedLaunch,
+        AppointmentsProvider,
+        Contact,
+        LockScreenCall,
+        VoiceCommand,
+        LockScreen,
+        PickerReturned = 1000,
+        WalletAction,
+        PickFileContinuation,
+        PickSaveFileContinuation,
+        PickFolderContinuation,
+        WebAuthenticationBrokerContinuation,
+        WebAccountProvider,
+        ComponentUI,
+        ProtocolForResults = 1009,
+        ToastNotification,
+        Print3DWorkflow,
+        DialReceiver,
+        DevicePairing,
+        UserDataAccountsProvider,
+        FilePickerExperience,
+        LockScreenComponent,
+        ContactPanel,
+        PrintWorkflowForegroundTask,
+        GameUIProvider,
+        StartupTask,
+        CommandLineLaunch,
+        BarcodeScannerProvider,
+        PrintSupportJobUI,
+        PrintSupportSettingsUI,
+        PhoneCallActivation,
+        VpnForeground,
+        // NOTE: Values below 5000 are designated for the platform.  The above list is kept in sync with
+        // Windows.ApplicationModel.Activation.ActivationKind.
+
+        Push = 5000,
+    };
+
+    [experimental]
+    runtimeclass AppActivationArguments
+    {
+        ExtendedActivationKind Kind { get; };
+        IInspectable Data{ get; };
+    };
+
+    [experimental]
+    runtimeclass AppInstance
+    {
+        static AppInstance GetCurrent();
+        static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
+        static AppInstance FindOrRegisterForKey(String key);
+
+        void UnregisterKey();
+        Windows.Foundation.IAsyncAction RedirectActivationToAsync(Microsoft.Windows.AppLifecycle.AppActivationArguments args);
+        Microsoft.Windows.AppLifecycle.AppActivationArguments GetActivatedEventArgs();
+        event Windows.Foundation.EventHandler<Microsoft.Windows.AppLifecycle.AppActivationArguments> Activated;
+
+        String Key{ get; };
+        Boolean IsCurrent{ get; };
+        UInt32 ProcessId{ get; };
     }
 
+    [experimental]
     static runtimeclass ActivationRegistrationManager
     {
-        static void RegisterForFileTypeActivation(String[] supportedFileTypes, String[] supportedVerbs,
-            String applicationDisplayName, String logo);
-        static void RegisterForProtocolActivation(String scheme, String applicationDisplayName, String logo);
+        static void RegisterForFileTypeActivation(String[] supportedFileTypes, String logo,
+            String displayName, String[] supportedVerbs, String exePath);
+        static void RegisterForProtocolActivation(String scheme, String logo, String displayName,
+            String exePath);
+        static void RegisterForStartupActivation(String taskId, String exePath);
 
-        static void UnregisterForFileTypeActivation(String fileType);
-        static void UnregisterForProtocolActivation(String scheme);
+        static void UnregisterForFileTypeActivation(String[] fileTypes, String exePath);
+        static void UnregisterForProtocolActivation(String scheme, String exePath);
+        static void UnregisterForStartupActivation(String taskId);
     };
 }

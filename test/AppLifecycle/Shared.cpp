@@ -8,8 +8,8 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt;
-using namespace winrt::Microsoft::ProjectReunion;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
@@ -18,7 +18,7 @@ using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 
-namespace ProjectReunionCppTest
+namespace Test::AppLifecycle
 {
     StorageFile CreateDocFile(std::wstring filename)
     {
@@ -49,27 +49,6 @@ namespace ProjectReunionCppTest
 
         wil::unique_handle process{ ei.hProcess };
         return process;
-    }
-
-    void RunCertUtil(const std::wstring& path, bool removeCert)
-    {
-        std::wstring action = (removeCert ? L"-delstore" : L"-addstore");
-        std::wstring args{ action + L" TrustedPeople " + path };
-        auto process = Execute(L"%SystemRoot%\\system32\\certutil.exe",
-            args.c_str(), g_deploymentDir);
-
-        // Wait for the cer to be installed.
-        auto waitResult = WaitForSingleObject(process.get(), c_phaseTimeout);
-        if (waitResult != WAIT_OBJECT_0)
-        {
-            auto lastError = GetLastError();
-            VERIFY_WIN32_FAILED(lastError);
-        }
-
-        // Make sure the exitcode for the tool is success.
-        DWORD exitCode{};
-        THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(process.get(), &exitCode));
-        VERIFY_ARE_EQUAL(exitCode, 0);
     }
 
     void InstallPackage(const std::wstring& packagePath)
@@ -138,7 +117,7 @@ namespace ProjectReunionCppTest
     {
         WEX::Common::String testDeploymentDir;
         WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
-        return reinterpret_cast<LPCWSTR>(testDeploymentDir.GetBuffer());
+        return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
     }
 
     void WriteContentFile(std::wstring filename)
