@@ -1,7 +1,7 @@
 # Issue/Pull Request Management
 
 ## Overview
-The Windows App SDK team manages issues and PRs in the repo using a process we call
+The Project Reunion team manages issues and PRs in the repo using a process we call
 "triage". It helps us keep issues organized and focuses the attention of the different
 groups that work in our project.
 
@@ -23,7 +23,7 @@ Each issue should only have one type.
 top priority.
 3.	Issues with needs-author-feedback are waiting for the author to reply.
 
-Because many groups are involved in the Windows App SDK, we have area-... labels to help
+Because many groups are involved in Project Reunion, we have area-... labels to help
 filter issues further for triage.
 
 

@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank.g.h"
+#include "Microsoft.ApplicationModel.DynamicDependency.PackageDependencyRank.g.h"
 
-namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
     struct PackageDependencyRank
     {
@@ -14,7 +14,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         static int32_t Default();
     };
 }
-namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::factory_implementation
+namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation
 {
     struct PackageDependencyRank : PackageDependencyRankT<PackageDependencyRank, implementation::PackageDependencyRank>
     {

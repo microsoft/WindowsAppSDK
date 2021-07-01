@@ -27,7 +27,7 @@
 
 #include <MsixDynamicDependency.h>
 
-#include <winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h>
+#include <winrt/Microsoft.ApplicationModel.DynamicDependency.h>
 
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>

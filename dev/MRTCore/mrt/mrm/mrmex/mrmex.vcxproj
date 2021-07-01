@@ -111,13 +111,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <!-- Shared settings for all Configurations and Platforms -->
-  <ItemDefinitionGroup>
-    <ClCompile>
-      <!-- MRT Core doesn't use RTTI. -->
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>

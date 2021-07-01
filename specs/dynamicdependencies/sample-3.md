@@ -49,7 +49,7 @@ int __cdecl wmain(_In_ int argc, _In_reads_(argc) WCHAR * argv[])
 ## WinRT
 
 ```c#
-using Microsoft.Windows.ApplicationModel.DynamicDependency;
+using Microsoft.ApplicationModel.DynamicDependency;
 using Windows.ApplicationModel;
 
 namespace MyApp

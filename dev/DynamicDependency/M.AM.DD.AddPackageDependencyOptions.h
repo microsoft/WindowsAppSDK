@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions.g.h"
+#include "Microsoft.ApplicationModel.DynamicDependency.AddPackageDependencyOptions.g.h"
 
 #include <MsixDynamicDependency.h>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
 {
     struct AddPackageDependencyOptions : AddPackageDependencyOptionsT<AddPackageDependencyOptions>
     {
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
         bool m_prependIfRankCollision{};
     };
 }
-namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::factory_implementation
+namespace winrt::Microsoft::ApplicationModel::DynamicDependency::factory_implementation
 {
     struct AddPackageDependencyOptions : AddPackageDependencyOptionsT<AddPackageDependencyOptions, implementation::AddPackageDependencyOptions>
     {

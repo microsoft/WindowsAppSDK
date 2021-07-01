@@ -33,14 +33,11 @@ namespace Test::PushNotifications
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
-        static const int testWaitTime()
+        static std::filesystem::path GetDeploymentDir()
         {
-            return 3000;
-        }
-
-        static const int channelTestWaitTime()
-        {
-            return 303000; // Need to wait 300000ms for channel request + 3000ms for application overhead
+            WEX::Common::String testDeploymentDir;
+            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
+            return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
         }
 
         static PCWSTR GetTestPackageFile()
@@ -58,7 +55,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::AddPackage_ProjectReunionFramework(); // Installs PRfwk
-                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+                TP::WapProj::AddPackage(GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {
@@ -99,7 +96,7 @@ namespace Test::PushNotifications
 
         void RunTest(const PCWSTR& testName, const int& waitTime)
         {
-            DWORD processId {};
+            DWORD processId;
             VERIFY_SUCCEEDED(m_testAppLauncher->ActivateApplication(L"PushNotificationsTestAppPackage_8wekyb3d8bbwe!App", testName, AO_NONE, &processId));
 
             m_processHandle.reset(OpenProcess(SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId));
@@ -107,14 +104,14 @@ namespace Test::PushNotifications
 
             VERIFY_IS_TRUE(wil::handle_wait(m_processHandle.get(), waitTime));
 
-            DWORD exitCode {};
+            DWORD exitCode;
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(m_processHandle.get(), &exitCode));
             VERIFY_ARE_EQUAL(exitCode, 0);
         }
 
         TEST_METHOD(BackgroundActivation)
         {
-            RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+            RunTest(L"BackgroundActivationTest", c_pushTestWait); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
@@ -123,7 +120,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(MultipleBackgroundActivation)
         {
-            RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+            RunTest(L"BackgroundActivationTest", c_pushTestWait); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
@@ -138,57 +135,57 @@ namespace Test::PushNotifications
 
         TEST_METHOD(ChannelRequestUsingNullRemoteId)
         {
-            RunTest(L"ChannelRequestUsingNullRemoteId", testWaitTime());
+            RunTest(L"ChannelRequestUsingNullRemoteId", c_pushTestWait);
         }
 
         TEST_METHOD(ChannelRequestUsingRemoteId)
         {
-            RunTest(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
+            RunTest(L"ChannelRequestUsingRemoteId", c_pushTestChannelWait);
         }
 
         TEST_METHOD(MultipleChannelClose)
         {
-            RunTest(L"MultipleChannelClose", channelTestWaitTime());
+            RunTest(L"MultipleChannelClose", c_pushTestChannelWait);
         }
 
         TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
         {
-            RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
+            RunTest(L"MultipleChannelRequestUsingSameRemoteId", c_pushTestChannelWait);
         }
 
         TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
         {
-            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
+            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", c_pushTestChannelWait);
         }
 
         TEST_METHOD(ActivatorTest)
         {
-            RunTest(L"ActivatorTest", testWaitTime());
+            RunTest(L"ActivatorTest", c_pushTestWait);
         }
 
         TEST_METHOD(RegisterActivatorNullDetails)
         {
-            RunTest(L"RegisterActivatorNullDetails", testWaitTime());
+            RunTest(L"RegisterActivatorNullDetails", c_pushTestWait);
         }
 
         TEST_METHOD(RegisterActivatorNullClsid)
         {
-            RunTest(L"RegisterActivatorNullClsid", testWaitTime());
+            RunTest(L"RegisterActivatorNullClsid", c_pushTestWait);
         }
 
         TEST_METHOD(UnregisterActivatorNullToken)
         {
-            RunTest(L"UnregisterActivatorNullToken", testWaitTime());
+            RunTest(L"UnregisterActivatorNullToken", c_pushTestWait);
         }
 
         TEST_METHOD(UnregisterActivatorNullBackgroundRegistration)
         {
-            RunTest(L"UnregisterActivatorNullBackgroundRegistration", testWaitTime());
+            RunTest(L"UnregisterActivatorNullBackgroundRegistration", c_pushTestWait);
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
         {
-            RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
+            RunTest(L"MultipleRegisterActivatorTest", c_pushTestWait);
         }
 
     };

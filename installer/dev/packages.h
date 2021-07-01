@@ -11,17 +11,10 @@ using namespace Windows::System;
 
 namespace ProjectReunionInstaller {
 
-    enum class DeploymentBehavior
-    {
-        Default,        // Package will be deployed based on its properties alone.
-        Framework,      // Package will be treated as a framework, even if it is not.
-    };
-
     struct ResourcePackageInfo
     {
         std::wstring id;
         std::wstring resourceType;
-        DeploymentBehavior deploymentBehavior{ DeploymentBehavior::Default };
     };
 
     static ResourcePackageInfo c_packages[] =

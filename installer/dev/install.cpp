@@ -58,7 +58,7 @@ namespace ProjectReunionInstaller {
         return S_OK;
     }
 
-    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, DeploymentBehavior deploymentBehavior)
+    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties)
     {
         // Neutral package architecture is applicable on all systems.
         if (packageProperties->architecture == ProcessorArchitecture::Neutral)
@@ -78,7 +78,7 @@ namespace ProjectReunionInstaller {
 
         // It is assumed that all available architectures for non-framework packages are present,
         // so only the same-architecture or neutral will be matched for non-frameworks.
-        if (!packageProperties->isFramework && (deploymentBehavior != DeploymentBehavior::Framework))
+        if (!packageProperties->isFramework)
         {
             return false;
         }
@@ -164,7 +164,7 @@ namespace ProjectReunionInstaller {
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
         // Skip non-applicable packages.
-        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior))
+        if (!IsPackageApplicable(packageProperties))
         {
             return;
         }
@@ -181,7 +181,8 @@ namespace ProjectReunionInstaller {
 
         if (!quiet)
         {
-            std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
+            std::wcout << "Package Full Name: " << packageProperties->fullName.get() << std::endl;
+            std::wcout << "Temp package path: " << packageFilename << std::endl;
         }
 
         // Write the package to a temp file. The PackageManager APIs require a Uri.

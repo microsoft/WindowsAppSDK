@@ -20,11 +20,13 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
+wil::unique_handle g_waitHandleForArgs = wil::unique_handle(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
     auto appProperties = winrt::CoreApplication::Properties();
     winrt::PushNotificationReceivedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance);
     appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
 
-    SetEvent(GetWaitHandleForArgs().get());
+    SetEvent(g_waitHandleForArgs.get());
 }

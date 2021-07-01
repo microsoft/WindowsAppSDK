@@ -23,7 +23,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.winmd
+      Microsoft.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
     flattenFolders: true
 
@@ -32,7 +32,7 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.xml
+      Microsoft.ApplicationModel.Resources.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
     flattenFolders: true
 
@@ -44,7 +44,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.winmd
+      Microsoft.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native'
     flattenFolders: true
 
@@ -53,7 +53,7 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.xml
+      Microsoft.ApplicationModel.Resources.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native\'
     flattenFolders: true
 
@@ -62,8 +62,8 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
     Contents: |
-      net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
-      net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll
+      net5.0\Microsoft.ApplicationModel.Resources.Projection.pdb
+      net5.0\Microsoft.ApplicationModel.Resources.Projection.dll
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
     flattenFolders: true
 
@@ -72,7 +72,7 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.Projection.xml
+      Microsoft.ApplicationModel.Resources.Projection.xml
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
     flattenFolders: true
 
@@ -82,9 +82,9 @@ steps:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x86'
     Contents: |
       mrm.pdb
-      Microsoft.Windows.ApplicationModel.Resources.pdb
+      Microsoft.ApplicationModel.Resources.pdb
       mrm.dll
-      Microsoft.Windows.ApplicationModel.Resources.dll
+      Microsoft.ApplicationModel.Resources.dll
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-x86\native'
     flattenFolders: true
 
@@ -94,9 +94,9 @@ steps:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\x64'
     Contents: |
       mrm.pdb
-      Microsoft.Windows.ApplicationModel.Resources.pdb
+      Microsoft.ApplicationModel.Resources.pdb
       mrm.dll
-      Microsoft.Windows.ApplicationModel.Resources.dll
+      Microsoft.ApplicationModel.Resources.dll
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-x64\native'
     flattenFolders: true
 
@@ -106,9 +106,9 @@ steps:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\ARM64'
     Contents: |
       mrm.pdb
-      Microsoft.Windows.ApplicationModel.Resources.pdb
+      Microsoft.ApplicationModel.Resources.pdb
       mrm.dll
-      Microsoft.Windows.ApplicationModel.Resources.dll
+      Microsoft.ApplicationModel.Resources.dll
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\runtimes\win10-arm64\native'
     flattenFolders: true
 
@@ -144,16 +144,20 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.PriGen.targets
-      Microsoft.Windows.ApplicationModel.Resources.References.targets
-      Microsoft.Windows.ApplicationModel.Resources.targets
-      native\Microsoft.Windows.ApplicationModel.Resources.C.props
-      native\Microsoft.Windows.ApplicationModel.Resources.props
-      native\Microsoft.Windows.ApplicationModel.Resources.targets
-      native\Microsoft.Windows.ApplicationModel.Resources.WinRt.props
+      Microsoft.ApplicationModel.Resources.PriGen.targets
+      Microsoft.ApplicationModel.Resources.References.targets
+      Microsoft.ApplicationModel.Resources.targets
+      native\Microsoft.ApplicationModel.Resources.C.props
+      native\Microsoft.ApplicationModel.Resources.props
+      native\Microsoft.ApplicationModel.Resources.targets
+      native\Microsoft.ApplicationModel.Resources.WinRt.props
       README.md
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
+
+#- script: |
+#    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+#  displayName: HK 1
 
 - task: CopyFiles@2
   displayName: 'copy header'
@@ -163,10 +167,18 @@ steps:
       mrm.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
 
+#- script: |
+#    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+#  displayName: HK 2
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
     ArtifactName: 'FullNuget'
+
+#- script: |
+#    dir /s $(Build.ArtifactStagingDirectory)\fullnuget
+#  displayName: HK 3
 
 # NuGetCommand@2
 #  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -205,7 +217,7 @@ steps:
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
 #    configuration: '$(buildConfiguration)'
-#    msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:UapAppxPackageBuildMode=StoreUpload'
+#    msbuildArgs: '/p:AppxBundlePlatforms="x86" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 
 #- task: VSBuild@1
 #  displayName: 'build x64'
@@ -215,5 +227,5 @@ steps:
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app.sln'
 #      '$(Build.SourcesDirectory)\tools\TestApps\winui_desktop_packaged_app\winui_desktop_packaged_app_cpp.sln'
 #    configuration: '$(buildConfiguration)'
-#    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:UapAppxPackageBuildMode=StoreUpload'
+#    msbuildArgs: '/p:AppxBundlePlatforms="x64" /p:AppxPackageDir="$(appxPackageDir)" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload'
 

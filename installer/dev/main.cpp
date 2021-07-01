@@ -31,19 +31,6 @@ int wmain(int argc, wchar_t *argv[])
         }
     }
 
-    const HRESULT deployPackagesResult{ ProjectReunionInstaller::DeployPackages(quiet) };
-    if (!quiet)
-    {
-        if (SUCCEEDED(deployPackagesResult))
-        {
-            std::wcout << "All packages were installed successfully." << std::endl;
-        }
-        else
-        {
-            std::wcerr << "One or more packages failed to install. Result: 0x" << std::hex << deployPackagesResult << std::endl;
-        }
-    }
-
-    return deployPackagesResult;
+    return ProjectReunionInstaller::DeployPackages(quiet);
 }
 

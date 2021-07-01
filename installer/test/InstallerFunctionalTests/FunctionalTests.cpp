@@ -68,7 +68,6 @@ namespace ProjectReunionInstallerTests
                 Assert::AreEqual(true, IsPackageRegistered(c_x86FrameworkName));
                 Assert::AreEqual(true, IsPackageRegistered(c_x64FrameworkName));
                 Assert::AreEqual(true, IsPackageRegistered(c_x64MainName));
-                Assert::AreEqual(true, IsPackageRegistered(c_x86DDLMName));
                 Assert::AreEqual(true, IsPackageRegistered(c_x64DDLMName));
             }
 
@@ -79,8 +78,6 @@ namespace ProjectReunionInstallerTests
                 Assert::AreEqual(true, IsPackageRegistered(c_x64FrameworkName));
                 Assert::AreEqual(true, IsPackageRegistered(c_arm64FrameworkName));
                 Assert::AreEqual(true, IsPackageRegistered(c_arm64MainName));
-                Assert::AreEqual(true, IsPackageRegistered(c_x86DDLMName));
-                Assert::AreEqual(true, IsPackageRegistered(c_x64DDLMName));
                 Assert::AreEqual(true, IsPackageRegistered(c_arm64DDLMName));
             }
         }

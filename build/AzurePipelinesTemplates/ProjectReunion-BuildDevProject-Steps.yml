@@ -3,5 +3,6 @@ steps:
     parameters:
       solutionPath: ProjectReunion.sln
       nugetConfigPath: nuget.config
+      appxPackageDir: $(appxPackageDir)
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)

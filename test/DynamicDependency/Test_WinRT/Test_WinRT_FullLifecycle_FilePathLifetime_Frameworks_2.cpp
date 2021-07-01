@@ -34,7 +34,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_FilePathLifetime_Framewo
     VERIFY_IS_TRUE(lifetimeArtifactFile.is_valid());
     VERIFY_IS_TRUE(std::filesystem::exists(lifetimeArtifactFilename));
 
-    const auto lifetimeArtifactKind{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::FilePath };
+    const auto lifetimeArtifactKind{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::FilePath };
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(lifetimeArtifactKind, lifetimeArtifactFilename.c_str()) };
     VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);
     auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };

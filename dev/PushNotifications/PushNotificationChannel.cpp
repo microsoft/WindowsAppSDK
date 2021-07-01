@@ -46,7 +46,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
+    winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> const& handler)
     {
         return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
         {

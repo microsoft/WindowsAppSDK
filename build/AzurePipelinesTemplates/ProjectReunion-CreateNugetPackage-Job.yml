@@ -8,7 +8,6 @@ parameters:
   primaryBuildArch: x86
   buildFlavor: Release
   prereleaseVersionTag: 'prerelease'
-  publishToMaestro: false
   condition: ''
 
 jobs:
@@ -57,12 +56,11 @@ jobs:
         Copy-Item -Path "$targetsFilePath\ProjectReunion-Nuget-Native.WinRt.props" -Destination "$fullpackagePath\build\native\ProjectReunion-Nuget-Native.WinRt.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Foundation.props"
-        Copy-Item -Path "$targetsFilePath\Microsoft.ProjectReunion.Bootstrap.targets" -Destination "$fullpackagePath\build\Microsoft.ProjectReunion.Bootstrap.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
 
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.ApplicationModel.DynamicDependency.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.PushNotifications.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.PushNotifications.xml"
 
   # - script: |
@@ -91,8 +89,7 @@ jobs:
       targetType: 'inline'
       script: |
         $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
-        Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
-        Write-Host $packageVersion
+        Write-Host version: $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
         Set-Content -Value $publicNuspec.OuterXml $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.ProjectReunion.Foundation.nuspec
@@ -154,12 +151,6 @@ jobs:
         #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
-  - ${{ if eq(parameters.publishToMaestro, 'true') }}:
-    - template: ..\..\eng\common\Maestro-PublishBuildToMaestro.yml
-      parameters:
-        AssetName: 'Microsoft.ProjectReunion.Foundation.TransportPackage'
-        AssetVersion: $(packageVersion)
-        TriggerSubscription: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\ProjectReunion-BuildAndPublishPGONuGet-Job.yml
 #

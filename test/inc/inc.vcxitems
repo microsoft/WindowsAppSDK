@@ -20,7 +20,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.FileSystem.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Metadata.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Package.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.TAEF.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TestDef.h" />
   </ItemGroup>
 </Project>

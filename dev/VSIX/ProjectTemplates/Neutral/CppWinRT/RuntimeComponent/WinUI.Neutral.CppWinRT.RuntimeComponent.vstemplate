@@ -34,6 +34,7 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="Class.cpp">Class.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Class.h">Class.h</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="$safeprojectname$.def">RuntimeComponent.def</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="PropertySheet.props">PropertySheet.props</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="readme.txt">readme.txt</ProjectItem>
     </Project>
   </TemplateContent>

@@ -42,9 +42,9 @@ std::vector<std::wstring> MddCore::PackageDependency::FindPackagesByFamily() con
     THROW_IF_WIN32_ERROR(FindPackagesByPackageFamily(m_packageFamilyName.c_str(), PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT, &count, packageFullNames.get(), &bufferLength, buffer.get(), nullptr));
 
     std::vector<std::wstring> packageFullNamesList;
-    for (UINT32 index=0; index < count; ++index)
+    auto packageFullName{ *packageFullNames.get() };
+    for (UINT32 index=0; index < count; ++index, ++packageFullName)
     {
-        const auto packageFullName{ packageFullNames[index] };
         packageFullNamesList.push_back(std::wstring(packageFullName));
     }
     return packageFullNamesList;

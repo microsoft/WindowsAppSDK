@@ -1,7 +1,0 @@
-{
-  "profiles": {
-    "$projectname$": {
-      "commandName": "AppContainer"
-    }
-  }
-}

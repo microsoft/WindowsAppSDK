@@ -34,7 +34,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_RegistryLifetime_Framewo
         VERIFY_IS_TRUE(lifetimeArtifactKey.is_valid());
     }
 
-    const auto lifetimeArtifactKind{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::RegistryKey};
+    const auto lifetimeArtifactKind{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::RegistryKey};
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(lifetimeArtifactKind, lifetimeArtifactRegistryKey.c_str()) };
     VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);
     auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };

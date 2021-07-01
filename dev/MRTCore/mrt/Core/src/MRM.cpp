@@ -1,10 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
 #include <Pathcch.h>
-#include "wil/win32_helpers.h"
-#include "wil/filesystem.h"
 #include "mrm/BaseInternal.h"
 #include "mrm/common/platform.h"
 #include "mrm/readers/MrmReaders.h"
@@ -876,20 +874,49 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
 {
     *filePath = nullptr;
 
-    wil::unique_cotaskmem_string path;
-    RETURN_IF_FAILED(wil::GetModuleFileNameW(nullptr, path));
+    wchar_t path[MAX_PATH];
+    DWORD size = ARRAYSIZE(path);
+    DWORD length = GetModuleFileName(nullptr, path, size);
+    DWORD lastError = GetLastError();
+    std::unique_ptr<wchar_t[]> pathAllocated;
 
-    PCWSTR name = wil::find_last_path_segment(path.get());
+    while ((length == size) && (lastError == ERROR_INSUFFICIENT_BUFFER))
+    {
+        size *= 2;
+        RETURN_HR_IF(E_UNEXPECTED, size > 32 * 1024);
+
+        pathAllocated.reset(new (std::nothrow) wchar_t[size]);
+        RETURN_IF_NULL_ALLOC(pathAllocated);
+
+        length = GetModuleFileName(nullptr, pathAllocated.get(), size);
+        lastError = GetLastError();
+    }
+
+    RETURN_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != 0);
+
+    // Remove module file name
+    PWSTR pointerToPath = pathAllocated ? pathAllocated.get() : path;
+    PWSTR lastSlash = nullptr;
+    PWSTR secondToLastSlash = nullptr;
+    while (*pointerToPath)
+    {
+        if (*pointerToPath == L'\\')
+        {
+            secondToLastSlash = lastSlash;
+            lastSlash = pointerToPath;
+        }
+        pointerToPath++;
+    }
+
+    pointerToPath = pathAllocated ? pathAllocated.get() : path;
+
     wchar_t moduleFilename[MAX_PATH];
-    RETURN_IF_FAILED(StringCchCopyW(moduleFilename, ARRAYSIZE(moduleFilename), *name ? name : path.get()));
+    RETURN_IF_FAILED(StringCchCopyW(moduleFilename, ARRAYSIZE(moduleFilename), lastSlash != nullptr ? lastSlash + 1 : pointerToPath));
 
-    size_t length;
-    RETURN_IF_FAILED(StringCchLengthW(path.get(), STRSAFE_MAX_CCH, &length));
-
-    size_t bufferCount;
-    RETURN_IF_FAILED(SizeTAdd(length, 1, &bufferCount));
-
-    RETURN_IF_FAILED(PathCchRemoveFileSpec(path.get(), bufferCount));
+    if (lastSlash != nullptr)
+    {
+        *(lastSlash + 1) = 0;
+    }
 
     std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> finalPath(nullptr, MrmFreeResource);
 
@@ -908,25 +935,24 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
     //   - if not exist, search under same path with [modulename].pri
     for (int i = 0; i < 2; i++)
     {
-        size_t lengthOfName;
-        RETURN_IF_FAILED(StringCchLengthW(filenameToUse, STRSAFE_MAX_CCH, &lengthOfName));
+        size_t lengthInSizeT;
+        RETURN_IF_FAILED(StringCchLengthW(pointerToPath, STRSAFE_MAX_CCH, &lengthInSizeT));
+        length = static_cast<DWORD>(lengthInSizeT);
 
-        // We over-allocate a little bit so that we don't have to calculate the path length each time.
-        RETURN_IF_FAILED(SizeTAdd(bufferCount, lengthOfName, &length));
+        RETURN_IF_FAILED(StringCchLengthW(filenameToUse, STRSAFE_MAX_CCH, &lengthInSizeT));
+        DWORD lengthOfName = static_cast<DWORD>(lengthInSizeT);
 
-        size_t size;
-        RETURN_IF_FAILED(SizeTMult(length, sizeof(wchar_t), &size));
+        RETURN_IF_FAILED(DWordAdd(length, lengthOfName, &length));
+        RETURN_IF_FAILED(DWordAdd(length, 1, &length));
+        RETURN_IF_FAILED(DWordMult(length, sizeof(wchar_t), &size));
 
         PWSTR rawOutputPath = reinterpret_cast<PWSTR>(MrmAllocateBuffer(size));
         RETURN_IF_NULL_ALLOC(rawOutputPath);
 
         std::unique_ptr<wchar_t, decltype(&MrmFreeResource)> outputPath(rawOutputPath, MrmFreeResource);
-        RETURN_IF_FAILED(PathCchCombineEx(
-            outputPath.get(),
-            size,
-            path.get(),
-            filenameToUse,
-            PATHCCH_ALLOW_LONG_PATHS));
+
+        RETURN_IF_FAILED(StringCchCopyW(outputPath.get(), length, pointerToPath));
+        RETURN_IF_FAILED(StringCchCatW(outputPath.get(), length, filenameToUse));
 
         DWORD attributes = GetFileAttributes(outputPath.get());
 
@@ -953,7 +979,12 @@ STDAPI MrmGetFilePathFromName(_In_opt_ PCWSTR filename, _Outptr_ PWSTR* filePath
             else
             {
                 // move to parent folder
-                RETURN_IF_FAILED(PathCchRemoveFileSpec(path.get(), bufferCount));
+                if (secondToLastSlash == nullptr)
+                {
+                    break;
+                }
+
+                *(secondToLastSlash + 1) = 0;
             }
         }
     }

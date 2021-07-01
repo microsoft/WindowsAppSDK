@@ -29,9 +29,9 @@ void Test::DynamicDependency::Test_WinRT::Create_Add_Architectures_Current()
     // -- Create
 
     // We're using the Neutral arhitecture as that's our test package's defined architecture.
-    // That's OK, what matters is we're not using winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::None
+    // That's OK, what matters is we're not using winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::None
     // so we exercise the not-default-whatever-deemed-appropriate architecture codepath.
-    auto architectures{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral };
+    auto architectures{ winrt::Microsoft::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures::Neutral };
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(architectures) };
     VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);
     auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };

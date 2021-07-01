@@ -3,7 +3,8 @@
 
 #pragma once
 #include "pch.h"
+#include "PushNotificationReceivedEventArgs.h"
 
-wil::unique_event& GetWaitHandleForArgs();
+extern wil::unique_handle g_waitHandleForArgs;
 
-inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
+const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";

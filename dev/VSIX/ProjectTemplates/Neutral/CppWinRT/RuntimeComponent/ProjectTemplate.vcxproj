@@ -15,7 +15,6 @@
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">$targetplatformversion$</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>$targetplatformminversion$</WindowsTargetPlatformMinVersion>
     <DesktopCompatible>true</DesktopCompatible>
-    <UseWinUI>true</UseWinUI>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -67,6 +66,9 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -123,6 +125,7 @@
     <None Include="$safeprojectname$.def" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="PropertySheet.props" />
     <Text Include="readme.txt">
       <DeploymentContent>false</DeploymentContent>
     </Text>

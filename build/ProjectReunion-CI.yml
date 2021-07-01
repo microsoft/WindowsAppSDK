@@ -55,6 +55,7 @@ jobs:
         buildConfiguration: 'Release'
 
   variables:
+    appxPackageDir : $(build.artifactStagingDirectory)\$(buildConfiguration)\$(buildPlatform)\AppxPackages
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
@@ -145,13 +146,19 @@ jobs:
     name: 'RunTestsInHelix'
     dependsOn:
       - Build
-      - BuildMRT
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+    testSuite: 'DevTestSuite'
+    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+
+- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
+  parameters:
+    dependsOn: RunTestsInHelix
+    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+    minimumExpectedTestsExecutedCount: 2
 
 # Create Nuget Package
 - template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
   parameters:
-    publishToMaestro: false
     jobName: CreateNugetPackage
     dependsOn:
       - Build
@@ -163,3 +170,34 @@ jobs:
         in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
         in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
       )
+
+# Build solution that depends on nuget package
+#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
+#  parameters:
+#    buildJobName: 'BuildNugetPkgTests'
+#    buildArtifactName: 'NugetPkgTestsDrop'
+#    runTestJobName: 'RunNugetPkgTestsInHelix'
+#    helixType: 'test/nuget'
+#    dependsOn: CreateNugetPackage
+#    pkgArtifactPath: '$(artifactDownloadPath)\drop'
+
+#UNDONE - depends on Helix infrastructure, subsequent PR
+# Framework package tests
+#- template: AzurePipelinesTemplates\ProjectReunion-NugetReleaseTest-Job.yml
+#  parameters:
+#    buildJobName: 'BuildFrameworkPkgTests'
+#    buildArtifactName: 'FrameworkPkgTestsDrop'
+#    runTestJobName: 'RunFrameworkPkgTestsInHelix'
+#    helixType: 'test/frpkg'
+#    dependsOn: CreateNugetPackage
+#    pkgArtifactPath: '$(artifactDownloadPath)\drop\FrameworkPackage'
+
+#UNDONE - subsequent PR
+#- template: AzurePipelinesTemplates\ProjectReunion-ProcessTestResults-Job.yml
+#  parameters:
+#    dependsOn:
+#    - RunTestsInHelix
+#    - RunNugetPkgTestsInHelix
+#    - RunFrameworkPkgTestsInHelix
+#    rerunPassesRequiredToAvoidFailure: $(rerunPassesRequiredToAvoidFailure)
+#    minimumExpectedTestsExecutedCount: $(minimumExpectedTestsExecutedCount)

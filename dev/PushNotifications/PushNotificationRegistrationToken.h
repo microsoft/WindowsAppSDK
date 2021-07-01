@@ -8,12 +8,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationRegistrationToken : PushNotificationRegistrationTokenT<PushNotificationRegistrationToken>
     {
-        PushNotificationRegistrationToken(uint32_t const& cookie, winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& taskRegistration);
-        uint32_t Cookie();
+        PushNotificationRegistrationToken(uint64_t const& cookie, winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& taskRegistration);
+        uint64_t Cookie();
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration TaskRegistration();
 
     private:
-        const uint32_t m_cookie;
+        const uint64_t m_cookie;
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_taskRegistration;
     };
 }
