@@ -7,7 +7,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
 
 #include "PushNotificationCreateChannelResult.h"
-
+#include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
 #include "PushNotificationBackgroundTask.h"

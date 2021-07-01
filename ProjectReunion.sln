@@ -159,6 +159,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationTests", "te
 		{5B2D17FE-C371-417F-860C-3D32397C2404} = {5B2D17FE-C371-417F-860C-3D32397C2404}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask", "dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj", "{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -567,6 +569,18 @@ Global
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9}.Release|x64.Build.0 = Release|x64
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9}.Release|x86.ActiveCfg = Release|Win32
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9}.Release|x86.Build.0 = Release|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Debug|x64.ActiveCfg = Debug|x64
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Debug|x64.Build.0 = Debug|x64
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Debug|x86.ActiveCfg = Debug|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Debug|x86.Build.0 = Debug|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Release|ARM64.ActiveCfg = Release|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Release|x64.ActiveCfg = Release|x64
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Release|x64.Build.0 = Release|x64
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Release|x86.ActiveCfg = Release|Win32
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -613,6 +627,7 @@ Global
 		{56A1D696-FEDA-4333-BF37-772EBECECB10} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{D012E4BB-F16B-472D-A26D-D449CEFA988E} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
