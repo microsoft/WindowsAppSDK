@@ -22,21 +22,27 @@ namespace ProjectReunionPowerTests
         TEST_METHOD(GetBatteryStatus)
         {
             auto stat = PowerManager::BatteryStatus();
-            VERIFY_ARE_EQUAL(stat, BatteryStatus::Discharging);
+            VERIFY_ARE_EQUAL(stat, BatteryStatus::NotPresent);
         }
         TEST_METHOD(GetPowerSupplyStatus)
         {
             auto stat = PowerManager::PowerSupplyStatus();
-            VERIFY_ARE_EQUAL(stat, PowerSupplyStatus::Inadequate);
+            VERIFY_ARE_EQUAL(stat, PowerSupplyStatus::Adequate);
         }
         TEST_METHOD(GetRemainingChargePercent)
         {
             auto stat = PowerManager::RemainingChargePercent();
-            VERIFY_ARE_EQUAL(stat, 77);
+            VERIFY_ARE_EQUAL(stat, 100);
         }
 
         TEST_METHOD(CompositeBatteryStatusCallback)
         {
+            // This test can only be run on systems/VM with a battery
+            // The values will need to be changed to reflect real-time values
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"Ignore", L"true")
+            END_TEST_METHOD_PROPERTIES()
+
             auto batteryStat = BatteryStatus::Discharging;
             auto powerStat = PowerSupplyStatus::Inadequate;
             int32_t remainingCharge = 15;
@@ -46,11 +52,11 @@ namespace ProjectReunionPowerTests
                 powerStat = PowerManager::PowerSupplyStatus();
                 remainingCharge = PowerManager::RemainingChargePercent();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::BatteryStatusChanged(token);
-            VERIFY_ARE_EQUAL(batteryStat, BatteryStatus::Discharging);
-            VERIFY_ARE_EQUAL(powerStat, PowerSupplyStatus::Inadequate);
-            VERIFY_ARE_EQUAL(remainingCharge, 57);
+            VERIFY_ARE_EQUAL(batteryStat, BatteryStatus::Idle);
+            VERIFY_ARE_EQUAL(powerStat, PowerSupplyStatus::Adequate);
+            VERIFY_ARE_EQUAL(remainingCharge, 100);
         }
 
         TEST_METHOD(GetRemainingDischargeTime)
@@ -66,7 +72,7 @@ namespace ProjectReunionPowerTests
             {
                 stat = PowerManager::RemainingDischargeTime();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::RemainingDischargeTimeChanged(token);
             VERIFY_ARE_EQUAL(stat.count(), -10000000);
         }
@@ -84,7 +90,7 @@ namespace ProjectReunionPowerTests
             {
                 stat = PowerManager::EnergySaverStatus();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::EnergySaverStatusChanged(token);
             VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Off);
         }
@@ -102,7 +108,7 @@ namespace ProjectReunionPowerTests
             {
                 stat = PowerManager::PowerSourceKind();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::PowerSourceKindChanged(token);
             VERIFY_ARE_EQUAL(stat, PowerSourceKind::AC);
         }
@@ -120,7 +126,7 @@ namespace ProjectReunionPowerTests
             {
                 stat = PowerManager::DisplayStatus();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::DisplayStatusChanged(token);
             VERIFY_ARE_EQUAL(stat, DisplayStatus::On);
         }
@@ -137,7 +143,7 @@ namespace ProjectReunionPowerTests
             {
                 callback_success = true;
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::SystemIdleStatusChanged(token);
             VERIFY_ARE_EQUAL(callback_success, true);
         }
@@ -154,7 +160,7 @@ namespace ProjectReunionPowerTests
             {
                 stat = PowerManager::UserPresenceStatus();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::UserPresenceStatusChanged(token);
             VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Present);
         }
