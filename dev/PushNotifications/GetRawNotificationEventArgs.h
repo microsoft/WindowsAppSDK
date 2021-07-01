@@ -8,24 +8,12 @@
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
 
-using namespace winrt::Windows::ApplicationModel::Core;
 namespace winrt::Microsoft::Windows::PushNotifications
 {
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const&)
     {
-        if (WaitForSingleObject(g_waitHandleForArgs.get(), 2000) == WAIT_OBJECT_0)
-        {
-            auto appProperties = CoreApplication::Properties();
-            if (auto foundActivatedEventArgs = appProperties.TryLookup(ACTIVATED_EVENT_ARGS_KEY))
-            {
-                return foundActivatedEventArgs.as<PushNotificationReceivedEventArgs>();
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
-
-        winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_TIMEOUT));
+        const DWORD receiveArgsTimeoutInMSec{ 2000 };
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().TryLookup(ACTIVATED_EVENT_ARGS_KEY).as<PushNotificationReceivedEventArgs>();
     }
 }

@@ -32,11 +32,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg"/>
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg"/>
+    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -48,16 +48,19 @@
     <Content Include="LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.206" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-1-31325-273" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.8.1017">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.1600">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -220,6 +223,20 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
+      <Project>{E54D1AD4-E935-479D-8A69-FC073E4DB33D}</Project>
+      <Name>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTemplates\Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj">
+      <Project>{D9C038B7-6A62-4945-A030-4AC7597F53CA}</Project>
+      <Name>WinUI.Desktop.Cs.SingleProjectPackagedApp</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
@@ -284,7 +301,7 @@
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
-      Value="$(_OriginalVsixId).Preview"
+      Value="$(_OriginalVsixId).Preview" 
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"

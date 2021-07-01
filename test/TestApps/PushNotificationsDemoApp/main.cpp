@@ -3,10 +3,7 @@
 #include "pch.h"
 #include <wil/win32_helpers.h>
 #include <iostream>
-#include <time.h>
-#include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
-
-#define SIZE 26
+#include <winrt/Windows.ApplicationModel.Background.h>
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
@@ -92,15 +89,8 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    time_t ltime;
-    char buf[SIZE];
-
-    time(&ltime);
-    ctime_s(buf, sizeof buf, &ltime);
-    std::cout << "Project Reunion Push Notification Test App: " << buf << std::endl;
-
     PushNotificationActivationInfo info(
-        PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator,
+        PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -118,8 +108,8 @@ int main()
 
         // Do stuff to process the raw payload
         std::string payloadString(payload.begin(), payload.end());
-        std::cout << "Push notification content received from BACKGROUND: " << payloadString << std::endl << std::endl;
-        std::cout << "Press 'Enter' to exit the App." << std::endl;
+        printf("Push notification content received from BACKGROUND: %s\n", payloadString.c_str());
+        printf("Press 'Enter' to exit the App.");
 
         // Call Complete on the deferral when finished processing the payload.
         // This removes the override that kept the app running even when the system was in a low power mode.
@@ -129,16 +119,18 @@ int main()
     else if (kind == ExtendedActivationKind::Launch)
     {
         PushNotificationChannel channel = RequestChannel();
-        std::cout << "Press 'Enter' at any time to exit App." << std::endl << std::endl;
+        printf("Press 'Enter' at any time to exit App.");
         std::cin.ignore();
     }
     else if (kind == ExtendedActivationKind::ToastNotification)
     {
-        std::cout << "ToastNotification received!" << std::endl << std::endl;
-        std::cout << "Press 'Enter' at any time to exit App." << std::endl << std::endl;
+        printf("ToastNotification received!");
+        printf("Press 'Enter' at any time to exit App.");
         std::cin.ignore();
     }
 
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOption::ComActivator); // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure. 
+    // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure. 
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
+
     return 0;
 }

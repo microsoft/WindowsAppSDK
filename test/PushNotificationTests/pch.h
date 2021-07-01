@@ -31,10 +31,11 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
 #include <ProjectReunion.Test.Package.h>
+#include <ProjectReunion.Test.TAEF.h>
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
 
 namespace TP = ::Test::Packages;
-
+namespace TAEF = ::Test::TAEF;
 #endif //PCH_H

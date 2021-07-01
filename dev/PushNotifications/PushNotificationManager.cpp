@@ -5,7 +5,7 @@
 
 #include "PushNotificationManager.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
-#include "PushNotifications-Constants.h"
+
 #include "PushNotificationCreateChannelResult.h"
 
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -17,12 +17,17 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
-#include <iostream>
+
 using namespace std::literals;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 
-constexpr winrt::guid PushNotifications_uuid{ PR_PUSHNOTIFICATIONS_CLSID_UUID_STRING };
+static wil::unique_event g_waitHandleForArgs;
+
+wil::unique_event& GetWaitHandleForArgs()
+{
+    return g_waitHandleForArgs;
+}
 
 namespace winrt
 {
@@ -35,11 +40,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     inline constexpr auto c_maxBackoff{ 5min };
     inline constexpr auto c_initialBackoff{ 60s };
-    inline constexpr auto c_backoffFactor{ 60s };
+    inline constexpr auto c_backoffIncrement{ 60s };
 
-    const HRESULT WNP_E_NOT_CONNECTED = (HRESULT)0x880403E8L;
-    const HRESULT WNP_E_RECONNECTING = (HRESULT)0x880403E9L;
-    const HRESULT WNP_E_BIND_USER_BUSY = (HRESULT)0x880403FEL;
+    const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
+    const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
+    const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
     bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
     {
@@ -57,30 +62,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    inline bool IsPackagedProcess()
-    {
-        wchar_t packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1] = {};
-
-        UINT32 packageFullNameLength = static_cast<UINT32>(ARRAYSIZE(packageFullName));
-
-        const auto packagedProcessError = ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName);
-
-        if (packagedProcessError == APPMODEL_ERROR_NO_PACKAGE)
-        {
-            return false;
-        }
-
-        THROW_IF_WIN32_ERROR(packagedProcessError);
-
-        return true;
-    }
-
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
-        THROW_HR_IF(E_NOTIMPL, !IsPackagedProcess());
+        THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
 
@@ -100,7 +87,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         progress(channelStatus);
 
-        for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffFactor)
+        for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
         {
             try
             {
@@ -136,7 +123,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
             }
 
-            co_await winrt::resume_after(std::chrono::milliseconds(backOffTime));
+            co_await winrt::resume_after(backOffTime);
         }
     }
 
@@ -147,14 +134,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         GUID taskClsid = details.TaskClsid();
         THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
-        auto registrationOption = details.Option();
-        THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationOption, PushNotificationRegistrationOption::PushTrigger | PushNotificationRegistrationOption::ComActivator));
+        auto registrationOptions = details.Options();
+        THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationOptions, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator));
 
         DWORD cookie = 0;
         IBackgroundTaskRegistration registeredTask = nullptr;
         BackgroundTaskBuilder builder = nullptr;
 
-        if (WI_IsFlagSet(registrationOption, PushNotificationRegistrationOption::PushTrigger))
+        if (WI_IsFlagSet(registrationOptions, PushNotificationRegistrationOptions::PushTrigger))
         {
             winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
             winrt::hstring backgroundTaskFullName = backgroundTaskName + taskClsidStr;
@@ -182,15 +169,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             if (!isTaskRegistered)
             {
                 builder = BackgroundTaskBuilder();
-                builder.Name(backgroundTaskName + taskClsidStr);
+                builder.Name(backgroundTaskFullName);
 
                 PushNotificationTrigger trigger{};
                 builder.SetTrigger(trigger);
 
-                if (!IsPackagedProcess())
-                {
-                    throw winrt::hresult_not_implemented();
-                }
+                THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
                 // In case the interface is not supported, let it throw.
                 auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
@@ -203,29 +187,27 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
         }
 
-        bool registeredWithCom = false;
-        bool registeredWithBackgroundTask = false;
+        BackgroundTaskRegistration registeredTaskFromBuilder = nullptr;
 
         auto scopeExitToCleanRegistrations = wil::scope_exit(
             [&]()
             {
-                if (registeredWithCom)
+                if (cookie > 0)
                 {
                     LOG_IF_FAILED(::CoRevokeClassObject(cookie));
                 }
 
                 // Clean the task registration only if it was created during this call
-                if (registeredWithBackgroundTask)
+                if (registeredTaskFromBuilder)
                 {
                     registeredTask.Unregister(true);
                 }
-
             }
         );
 
-        if (WI_IsFlagSet(registrationOption, PushNotificationRegistrationOption::ComActivator))
+        if (WI_IsFlagSet(registrationOptions, PushNotificationRegistrationOptions::ComActivator))
         {
-            THROW_HR_IF_NULL(E_UNEXPECTED, g_waitHandleForArgs);
+            GetWaitHandleForArgs().create();
 
             THROW_IF_FAILED(::CoRegisterClassObject(
                 taskClsid,
@@ -233,34 +215,31 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 CLSCTX_LOCAL_SERVER,
                 REGCLS_MULTIPLEUSE,
                 &cookie));
-
-            registeredWithCom = true;
         }
 
         if (builder)
         {
-            auto registeredTaskFromBuilder = builder.Register();
-            registeredTask = registeredTaskFromBuilder.as<IBackgroundTaskRegistration>();
-            registeredWithBackgroundTask = true;
+            registeredTaskFromBuilder = builder.Register();
         }
 
-        PushNotificationRegistrationToken token = { cookie, registeredTask };
+        PushNotificationRegistrationToken token = { cookie, registeredTaskFromBuilder };
         scopeExitToCleanRegistrations.release();
 
         return token;
     }
 
-    void PushNotificationManager::UnregisterActivator(PushNotificationRegistrationToken const& token, PushNotificationRegistrationOption const& option)
+    void PushNotificationManager::UnregisterActivator(PushNotificationRegistrationToken const& token, PushNotificationRegistrationOptions const& options)
     {
         THROW_HR_IF_NULL(E_INVALIDARG, token);
-        if (WI_IsFlagSet(option, PushNotificationRegistrationOption::PushTrigger))
+        if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::PushTrigger))
         {
             auto taskRegistration = token.TaskRegistration();
             THROW_HR_IF_NULL(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), taskRegistration);
             taskRegistration.Unregister(true);
         }
 
-        if (WI_IsFlagSet(option, PushNotificationRegistrationOption::ComActivator) && token.Cookie())
+        // Check for COM flag, a valid cookie and if there are outstanding locks on the PushNotificationBackgroundTask class factory
+        if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator) && token.Cookie() && winrt::get_module_lock() == 0)
         {
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
         }

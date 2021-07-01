@@ -6,18 +6,23 @@
     <_ProjectReunionFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_ProjectReunionFoundationPlatform>
   </PropertyGroup>
 
-  <!-- Some of the manual reference adding below may not be necessary due to the files in question being in default locations, but there's no harm in it. -->
-
-  <!-- OutputType Exe corresponds to C++ -->
-  <ItemGroup Condition="'$(OutputType)' == 'Exe'">
-    <Reference Include="Microsoft.Windows.AppLifecycle.winmd">
-      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd</HintPath>
-      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.Windows.AppLifecycle.dll</Implementation>
+  <ItemGroup Condition="'$(AppxPackage)' != 'true'">
+    <Reference Include="Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-    <Reference Include="Microsoft.ApplicationModel.DynamicDependency.winmd">
-      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.DynamicDependency.winmd</HintPath>
-      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ApplicationModel.DynamicDependency.dll</Implementation>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.AppLifecycle.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.PushNotifications.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd</HintPath>
+      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_ProjectReunionFoundationPlatform)\native\Microsoft.ProjectReunion.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
     <Reference Include="Microsoft.Windows.PushNotifications.winmd">

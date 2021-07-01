@@ -1,11 +1,7 @@
-# Universal Windows Platform
-# Build a Universal Windows Platform project using Visual Studio.
-# Add steps that test and distribute an app, save build artifacts, and more:
-# https://aka.ms/yaml
+# See https://aka.ms/yaml for details on the YAML schema and ADO jobs.
 
 #name: $(BuildDefinitionName)-$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
-  appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
   MRTSourcesDirectory: $(Build.SourcesDirectory)\dev\MRTCore
   MRTBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
@@ -24,7 +20,7 @@ steps:
   continueOnError: true
 
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
-# NuGetCommand@2
+# Note: 'NuGetCommand@2' is ambiguous so the specific task GUID must be used instead.
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
   displayName: 'NuGet restore of core'
   inputs:
@@ -36,7 +32,7 @@ steps:
   displayName: 'NuGet restore of applicationmodel'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\microsoft.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\microsoft.windows.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -94,12 +90,14 @@ steps:
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
+# TODO: Is this actually used? (It gets downloaded, but nothing installs it...)
 - task: powershell@2
-  displayName: 'Download .net runtime Windows installer'
+  displayName: 'Download .NET Runtime Windows installer'
   inputs:
     targetType: filePath
     workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
     filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetRuntimeInstaller.ps1
+    arguments: -Platform $(buildPlatform) -OutputDirectory $(Build.SourcesDirectory)\BuildOutput\$(buildPlatform)\$(buildConfiguration)\TestDependencies
 
 #  - task: BatchScript@1
 #    displayName: 'Debug'
@@ -114,7 +112,7 @@ steps:
     platform: '$(buildPlatform)'
     solution: '${{ parameters.MRTSourcesDirectory }}\mrt\MrtCore.sln'
     configuration: '$(buildConfiguration)'
-    msbuildArguments: '/restore /p:AppxBundlePlatforms="$(buildPlatform)" /p:AppxPackageDir="${{ parameters.appxPackageDir }}" /p:AppxBundle=Always /p:UapAppxPackageBuildMode=StoreUpload /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
+    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish mrtcore binlog'
@@ -123,33 +121,61 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
+# Run the test locally on the Azure VM.
 - task: VSTest@2
-  displayName: 'test MRT (Managed)'
+  displayName: 'test MRT: ManagedTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\ManagedTest.build.appxrecipe
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
+    testAssemblyVer2: '**\ManagedTest.build.appxrecipe'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\ManagedTest'
+    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
-  displayName: 'test MRT'
+  displayName: 'test MRT: UnitTests'
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*test*.dll
-      !**\*TestAdapter.dll
-      !**\TE.*.dll
-      !**\obj\**
-      !**\MrtCoreUnpackagedTests.dll
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
+    testAssemblyVer2: '**\UnitTest.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
+    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: 'test MRT: BaseUnitTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\BaseUnitTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\BaseUnitTests'
+    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+# Note: The MRT Unpackaged tests currently do not work in the CI pipeline. (They rely on changes not present in Server2019).
+
+# Copy and Publish the test binaries so we can run them in Helix later.
+- task: CopyFiles@2
+  displayName: 'copy mrtcore test binaries'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+    Contents: |
+      BaseUnitTests\**
+      ManagedTest\**
+      UnitTest\**
+      UnpackagedTests\**
+    TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore test binaries'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
+    artifactName: mrtcore_test_binaries_$(buildPlatform)
 
 - task: ComponentGovernanceComponentDetection@0
   inputs:
@@ -166,8 +192,8 @@ steps:
       mrm\mrm.dll
       mrm\mrm.lib
       mrm\mrm.pdb
-      Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-      Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
+      Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll
+      Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
     flattenFolders: true
 
@@ -175,10 +201,10 @@ steps:
   displayName: 'copy projection binaries and symbols for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.Windows.ApplicationModel.Resources.Projection'
     Contents: |
-      Microsoft.ApplicationModel.Resources.Projection.dll
-      Microsoft.ApplicationModel.Resources.Projection.pdb
+      Microsoft.Windows.ApplicationModel.Resources.Projection.dll
+      Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
     flattenFolders: false
 
@@ -186,9 +212,9 @@ steps:
   displayName: 'copy winmd for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.Windows.ApplicationModel.Resources'
     Contents: |
-      Microsoft.ApplicationModel.Resources.winmd
+      Microsoft.Windows.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
 

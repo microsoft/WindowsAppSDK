@@ -44,7 +44,7 @@ $lifetimemanager_clsid_guid = Convert-Guid $lifetimemanager_clsid_uuid
 $pushnotifications_clsid_uuid = New-Guid
 
 # Generate the json file
-$content_h=@"
+$content_json=@"
 {
     "LIBID": "1BF712E5-41ED-46a5-8402-2D40725F691E",
     "DataStore": {
@@ -65,9 +65,9 @@ $content_h=@"
     }
 }
 "@
-$file_h = Join-Path $Path 'DynamicDependency-Override.json'
-Write-Output "Writing $file_h..."
-"$content_h" | Out-File $file_h -Encoding utf8
+$file_json = Join-Path $Path 'DynamicDependency-Override.json'
+Write-Output "Writing $file_json..."
+"$content_json" | Out-File $file_json -Encoding utf8
 
 # Generate the Dynamic Dependency header file
 $content_h=@"
@@ -80,17 +80,17 @@ $content_h=@"
 #define _STRINGIZE(x)   _STRINGIZEX(x)
 #endif
 
-#idef PR_DYNDEP_LIBID_UUID
+#ifdef PR_DYNDEP_LIBID_UUID
 #undef PR_DYNDEP_LIBID_UUID
 #define PR_DYNDEP_LIBID_UUID                        1BF712E5-41ED-46a5-8402-2D40725F691E
 #endif
 
-#idef PR_DYNDEP_DATASTORE_CLSID_UUID
+#ifdef PR_DYNDEP_DATASTORE_CLSID_UUID
 #undef PR_DYNDEP_DATASTORE_CLSID_UUID
 #define PR_DYNDEP_DATASTORE_CLSID_UUID              D1AD16C7-EC59-4765-BF95-9A243EB00507
 #endif
 
-#idef PR_DYNDEP_DATASTORE_CLSID_STRING
+#ifdef PR_DYNDEP_DATASTORE_CLSID_STRING
 #undef PR_DYNDEP_DATASTORE_CLSID_STRING
 #define PR_DYNDEP_DATASTORE_CLSID_STRING            _STRINGIZE(PR_DYNDEP_DATASTORE_CLSID_UUID)
 #endif
@@ -110,12 +110,12 @@ $content_h=@"
 #define PR_DYNDEP_LIFETIMEMANAGER_CLSID_UUID        $lifetimemanager_clsid_uuid
 #endif
 
-#idef PR_DYNDEP_LIFETIMEMANAGER_CLSID_STRING
+#ifdef PR_DYNDEP_LIFETIMEMANAGER_CLSID_STRING
 #undef PR_DYNDEP_LIFETIMEMANAGER_CLSID_STRING
 #define PR_DYNDEP_LIFETIMEMANAGER_CLSID_STRING      _STRINGIZE(PR_DYNDEP_LIFETIMEMANAGER_CLSID_UUID)
 #endif
 
-#idef PR_DYNDEP_LIFETIMEMANAGER_CLSID_GUID
+#ifdef PR_DYNDEP_LIFETIMEMANAGER_CLSID_GUID
 #undef PR_DYNDEP_LIFETIMEMANAGER_CLSID_GUID
 #define PR_DYNDEP_LIFETIMEMANAGER_CLSID_GUID        $lifetimemanager_clsid_guid
 #endif

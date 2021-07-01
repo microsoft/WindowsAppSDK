@@ -1,0 +1,104 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Windows.ApplicationModel.Resources
+{
+    [contractversion(1.0)]
+    apicontract MrtContract{};
+
+    [contract(MrtContract, 1.0)]
+    [default_interface]
+    runtimeclass ResourceLoader
+    {
+        ResourceLoader();
+        ResourceLoader(String fileName);
+        ResourceLoader(String fileName, String resourceMap);
+
+        static String GetDefaultResourceFilePath();
+
+        String GetString(String resourceId);
+        String GetStringForUri(Windows.Foundation.Uri resourceUri);
+    }
+
+    [contract(MrtContract, 1.0)]
+    runtimeclass ResourceNotFoundEventArgs
+    {
+        ResourceContext Context { get; };
+        String Name { get; };
+        void SetResolvedCandidate(ResourceCandidate candidate);
+    }
+
+    [contract(MrtContract, 1.0)]
+    runtimeclass ResourceManager
+    {
+        ResourceManager();
+        ResourceManager(String fileName);
+
+        ResourceMap MainResourceMap { get; };
+        ResourceContext CreateResourceContext();
+
+        event Windows.Foundation.TypedEventHandler<ResourceManager, ResourceNotFoundEventArgs> ResourceNotFound;
+    }
+
+    [contract(MrtContract, 1.0)]
+    runtimeclass ResourceMap
+    {
+        UInt32 ResourceCount { get; }; 
+
+        ResourceMap GetSubtree(String reference);
+
+        ResourceCandidate GetValue(String resource);
+        [method_name("GetValueWithContext")]
+        ResourceCandidate GetValue(String resource, ResourceContext context);
+
+        IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index);
+        [method_name("GetValueByIndexWithContext")]
+        IKeyValuePair<String, ResourceCandidate> GetValueByIndex(UInt32 index, ResourceContext context);
+
+        ResourceCandidate TryGetValue(String resource);
+        [method_name("TryGetValueWithContext")]
+        ResourceCandidate TryGetValue(String resource, ResourceContext context);
+    }
+
+    [contract(MrtContract, 1.0)]
+    runtimeclass ResourceContext
+    {
+        IMap<String, String> QualifierValues { get; };
+    }
+
+    [contract(MrtContract, 1.0)]
+    enum ResourceCandidateKind
+    {
+        Unknown = 0,
+        String,
+        FilePath,
+        EmbeddedData,
+    };
+
+    [contract(MrtContract, 1.0)]
+    runtimeclass ResourceCandidate
+    {
+        ResourceCandidate(ResourceCandidateKind kind, String data);
+        ResourceCandidate(byte[] data);
+
+        String ValueAsString { get; };
+        byte[] ValueAsBytes { get; };
+        ResourceCandidateKind Kind { get; };
+
+        IMapView<String, String> QualifierValues { get; };
+    }
+
+    [contract(MrtContract, 1.0)]
+    runtimeclass KnownResourceQualifierName
+    {
+        static String Contrast { get; };
+        static String Custom { get; };
+        static String DeviceFamily{ get; };
+        static String HomeRegion{ get; };
+        static String Language { get; };
+        static String LayoutDirection{ get; };
+        static String Scale { get; };
+        static String TargetSize { get; };
+        static String Theme { get; };
+    }
+} // namespace Microsoft.Windows.ApplicationModel.Resources

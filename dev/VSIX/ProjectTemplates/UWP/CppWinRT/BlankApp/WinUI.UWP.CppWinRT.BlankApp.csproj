@@ -96,7 +96,6 @@
     <Content Include="Package.appxmanifest" />
     <Content Include="ProjectTemplate.vcxproj" />
     <Content Include="ProjectTemplate.vcxproj.filters" />
-    <Content Include="PropertySheet.props" />
     <Content Include="readme.txt" />
     <Content Include="WinUI.UWP.CppWinRT.BlankApp.ico" />
     <Content Include="WinUI.UWP.CppWinRT.BlankApp.png" />

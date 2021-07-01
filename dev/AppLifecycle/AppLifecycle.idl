@@ -3,6 +3,7 @@
 
 namespace Microsoft.Windows.AppLifecycle
 {
+    [experimental]
     enum ExtendedActivationKind
     {
         Launch = 0,
@@ -55,12 +56,14 @@ namespace Microsoft.Windows.AppLifecycle
         Push = 5000,
     };
 
+    [experimental]
     runtimeclass AppActivationArguments
     {
         ExtendedActivationKind Kind { get; };
         IInspectable Data{ get; };
     };
 
+    [experimental]
     runtimeclass AppInstance
     {
         static AppInstance GetCurrent();
@@ -77,6 +80,7 @@ namespace Microsoft.Windows.AppLifecycle
         UInt32 ProcessId{ get; };
     }
 
+    [experimental]
     static runtimeclass ActivationRegistrationManager
     {
         static void RegisterForFileTypeActivation(String[] supportedFileTypes, String logo,

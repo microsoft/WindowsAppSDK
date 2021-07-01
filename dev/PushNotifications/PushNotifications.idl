@@ -10,18 +10,19 @@ namespace Microsoft.Windows.PushNotifications
         // The Push payload
         byte[] Payload { get; };
 
-        // Gets a deferral to run under specific modes like low power mode
+        // Gets a deferral to allow push notification processing even if the system goes into low power mode.
         Windows.ApplicationModel.Background.BackgroundTaskDeferral GetDeferral();
 
         // Subscribe to Cancelled event handler to be signalled when resource policies are no longer true like 30s wallclock timer
         event Windows.ApplicationModel.Background.BackgroundTaskCanceledEventHandler Canceled;
 
-        // Set to true to prevent proceeding launch due to Background Activation: false by default
+        // Indicates if the foreground push notification will be re-posted through background activation.
+        // Default value is false, which allows re-posting.
         Boolean Handled;
     };
 
     [flags]
-    enum PushNotificationRegistrationOption
+    enum PushNotificationRegistrationOptions
     {
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
@@ -33,18 +34,19 @@ namespace Microsoft.Windows.PushNotifications
         // Initialize using a RegistrationOption and optionally defined parameters like manifest defined activatorId
         // 1) If option = PushTrigger is specified, only the Push Trigger will be Registered with Background Infrastructure
         // 2) If option = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
-        PushNotificationActivationInfo(PushNotificationRegistrationOption option, Guid taskClsid);
+        PushNotificationActivationInfo(PushNotificationRegistrationOptions options, Guid taskClsid);
 
         // The CLSID associated with the Client COM server that Project Reunion will activate
         Guid TaskClsid{ get; };
 
-        PushNotificationRegistrationOption Option{ get; };
+        PushNotificationRegistrationOptions Options{ get; };
 
         // The conditions under which Push Triggers would execute
         Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
         void SetConditions(Windows.ApplicationModel.Background.IBackgroundCondition[] conditions);
     };
 
+    [experimental]
     enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
@@ -54,6 +56,7 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     // The PushNotificationChannel Progress result
+    [experimental]
     struct PushNotificationCreateChannelStatus
     {
         // Either InProgress or InProgressRetry status
@@ -106,13 +109,13 @@ namespace Microsoft.Windows.PushNotifications
     runtimeclass PushNotificationRegistrationToken
     {
         PushNotificationRegistrationToken(
-            UInt64 cookie,
+            UInt32 cookie,
             Windows.ApplicationModel.Background.IBackgroundTaskRegistration taskRegistration);
 
         // The cookie from CoRegisterClassObject
-        UInt64 Cookie{ get; };
+        UInt32 Cookie{ get; };
 
-        // The Registration token for the Push Trigger
+        // The registration for the Push Trigger
         Windows.ApplicationModel.Background.IBackgroundTaskRegistration TaskRegistration { get; };
     };
 
@@ -125,7 +128,7 @@ namespace Microsoft.Windows.PushNotifications
         // Unregister any activator if present using a token and registrationOption
         // 1) If option = PushTrigger is specified, the trigger itself will be removed
         // 2) If option = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
-        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOption option);
+        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOptions options);
 
         // Request a Push Channel using an encoded AAD GUID identifier from WNS.
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
