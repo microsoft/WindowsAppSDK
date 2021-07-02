@@ -5,10 +5,10 @@
 #include <future>
 #include <PowerNotifications.h>
 #include <frameworkudk\PowerNotificationsPal.h>
-#include <PowerManager.g.cpp>
+#include <Microsoft.Windows.System.Power.PowerManager.g.cpp>
 #include <powrprof.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::System::Power::implementation
 {
 
     // EnergySaverStatus Functions
