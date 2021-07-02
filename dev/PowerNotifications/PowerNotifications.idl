@@ -43,12 +43,6 @@ namespace Microsoft.ProjectReunion
         Dimmed
     };
 
-    enum SystemIdleStatus
-    {
-        Idle = 0,
-        Busy
-    };
-
     enum EffectivePowerMode
     {
         BatterySaver,
@@ -101,10 +95,6 @@ namespace Microsoft.ProjectReunion
         static DisplayStatus DisplayStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> DisplayStatusChanged;
 
-        // REVIEW: The corresponding low-level signal, GUID_IDLE_BACKGROUND_TASK, is dataless. Therefore it's unclear what this get operation could actually do.
-        // May need to be removed and have this be an event-only thing (event fires when the system is non-idle. There is no corresponding event for when the
-        // system is idle or wishes to become so).
-        static SystemIdleStatus SystemIdleStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> SystemIdleStatusChanged;
 
         static Windows.Foundation.IAsyncOperation<EffectivePowerMode> EffectivePowerMode{ get; };

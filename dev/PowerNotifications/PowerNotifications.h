@@ -490,15 +490,7 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
 
 
         // SystemIdleStatus Functions
-        winrt::Microsoft::ProjectReunion::SystemIdleStatus SystemIdleStatus()
-        {
-            // PReview: Should this be the default value?
-            // We expect a persistently-queryable value, but
-            // low-level APIs provide an idle->non-idle pulse event
-
-            return SystemIdleStatus::Busy;
-        }
-
+        // There is no get function as there is no data to be returned
         event_token SystemIdleStatusChanged(const PowerEventHandle& handler)
         {
             return AddCallback(systemIdleStatusFunc, handler);
@@ -652,11 +644,6 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         static winrt::Microsoft::ProjectReunion::DisplayStatus DisplayStatus()
         {
             return make_self<factory_implementation::PowerManager>()->DisplayStatus();
-        }
-
-        static winrt::Microsoft::ProjectReunion::SystemIdleStatus SystemIdleStatus()
-        {
-            return make_self<factory_implementation::PowerManager>()->SystemIdleStatus();
         }
 
         static Windows::Foundation::IAsyncOperation<winrt::Microsoft::ProjectReunion::EffectivePowerMode> EffectivePowerMode()
