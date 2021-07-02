@@ -18,10 +18,14 @@ wchar_t* REUNION_PACKAGE_VER()
    if(s_ReunionPackageVer.empty())
    {
        HMODULE resourceDll = LoadLibraryW(L"ProjectReunionTelemetryResource.dll");
-       wchar_t packageVer[256];
-       LoadStringW((HINSTANCE)resourceDll, _REUNION_PACKAGE_VER_RESOURCEID, packageVer, 256);
-       s_ReunionPackageVer = packageVer;
-       FreeLibrary(resourceDll);
+
+       if(resourceDll)
+       {
+        wchar_t packageVer[256];
+        LoadStringW((HINSTANCE)resourceDll, _REUNION_PACKAGE_VER_RESOURCEID, packageVer, 256);
+        s_ReunionPackageVer = packageVer;
+        FreeLibrary(resourceDll);
+       }
    }
 
    return s_ReunionPackageVer.c_str();
@@ -32,10 +36,14 @@ wchar_t* REUNION_EXPERIMENTATION_LEVEL()
     if (s_ExperimentationLevel.compare(L"not_initialized") == 0)
     {
         HMODULE resourceDll = LoadLibraryW(L"ProjectReunionTelemetryResource.dll");
-        wchar_t experimentationLevel[256];
-        LoadStringW((HINSTANCE)resourceDll, _REUNION_EXPERIMENTATION_FLAG_RESOURCEID, experimentationLevel, 256);
-        s_ExperimentationLevel = experimentationLevel;
-        FreeLibrary(resourceDll);
+
+        if(resourceDll)
+        {
+            wchar_t experimentationLevel[256];
+            LoadStringW((HINSTANCE)resourceDll, _REUNION_EXPERIMENTATION_FLAG_RESOURCEID, experimentationLevel, 256);
+            s_ExperimentationLevel = experimentationLevel;
+            FreeLibrary(resourceDll);
+        }
     }
 
     return s_ExperimentationLevel.c_str();
