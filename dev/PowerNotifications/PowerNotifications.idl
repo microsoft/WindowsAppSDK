@@ -8,7 +8,8 @@ namespace Microsoft.ProjectReunion
     // Enums duplicated from IPowerManagerStatics
     enum EnergySaverStatus
     {
-        Disabled = 0,
+        Uninitialized = 0,
+        Disabled,
         Off,
         On
     };
