@@ -276,23 +276,18 @@ namespace winrt::Microsoft::ProjectReunion::factory_implementation
             if (fullChargedCapacity == BATTERY_UNKNOWN_CAPACITY ||
                 fullChargedCapacity == 0)
             {
-                throw winrt::hresult_error(E_FAIL, L"Unknown charge ratio: FullChargedCapacity Unknown");
+                LOG_HR_MSG(E_FAIL, "Unknown charge ratio: FullChargedCapacity Unknown");
             }
             else if (remainingCapacity == BATTERY_UNKNOWN_CAPACITY)
             {
-                throw winrt::hresult_error(E_FAIL, L"Unknown charge ratio: RemainingCapacity Unknown");
+                LOG_HR_MSG(E_FAIL, "Unknown charge ratio: RemainingCapacity Unknown");
             }
             else if (remainingCapacity > fullChargedCapacity) {
-                std::wstring message = L"High charge ratio: RemainingCapacity " + std::to_wstring(remainingCapacity)
-                    + L" FullChargedCapacity " + std::to_wstring(fullChargedCapacity);
-                throw winrt::hresult_error(E_FAIL, message);
-
+                LOG_HR_MSG(E_FAIL, "High charge ratio: %d/%d", remainingCapacity, fullChargedCapacity);
             }
             else if (remainingCapacity > (INT_MAX / 200))
             {
-                std::wstring message = L"Absurd capacity:: RemainingCapacity " + std::to_wstring(remainingCapacity)
-                    + L" FullChargedCapacity " + std::to_wstring(fullChargedCapacity);
-                throw winrt::hresult_error(E_FAIL, message);
+                LOG_HR_MSG(E_FAIL, "Absurd capacity: %d/%d", remainingCapacity, fullChargedCapacity);
             }
             else
             {
