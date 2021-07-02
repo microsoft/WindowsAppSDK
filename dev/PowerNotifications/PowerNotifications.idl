@@ -3,7 +3,7 @@
 
 // REVIEW: We're not doing doing any versioning within IDL/WinMDs, right?
 
-namespace Microsoft.ProjectReunion
+namespace Microsoft.Windows.System.Power
 {
     // Enums duplicated from IPowerManagerStatics
     enum EnergySaverStatus
