@@ -135,9 +135,6 @@
     <ProjectReference Include="..\..\..\..\dev\DynamicDependencyDataStore\DynamicDependency.DataStore\DynamicDependency.DataStore.vcxproj">
       <Project>{51293dfa-614b-4355-a60d-b30df3228fd1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
-      <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
