@@ -13,8 +13,15 @@ inline std::string load_resource_string(const char* dllName, uint32_t id)
     if (module)
     {
         char buffer[256];
-        LoadStringA(module.get(), id, buffer, ARRAYSIZE(buffer));
-        return buffer;
+        if (0 <= LoadStringA(module.get(), id, buffer, ARRAYSIZE(buffer)))
+        {
+            return buffer;
+        }
+        else
+        {
+            LOG_LAST_ERROR_MSG("Unable to load resource string, id: %d, error: %d", id, GetLastError());
+        }
+        
     }
     else
     {
