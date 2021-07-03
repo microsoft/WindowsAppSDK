@@ -82,7 +82,7 @@ namespace winrt::Microsoft::Windows::System::Power
             EventType& (*event)();
             void (*registerListener)();
             void (*unregisterListener)();
-            void (*getStatus)();
+            void (*updateValue)();
         };
     }
 
@@ -205,7 +205,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 return eventObj ? true : false;
             }
 
-            event_token AddCallback(PowerFunctionDetails fn, const PowerEventHandle& handler)
+            event_token AddCallback(const PowerFunctionDetails& fn, const PowerEventHandle& handler)
             {
                 auto& eventObj = fn.event();
                 std::scoped_lock<std::mutex> lock(m_mutex);
@@ -216,30 +216,31 @@ namespace winrt::Microsoft::Windows::System::Power
                 return eventObj.add(handler);
             }
 
-            void RemoveCallback(PowerFunctionDetails fn, const event_token& token)
+            void RemoveCallback(const PowerFunctionDetails& fn, const event_token& token)
             {
                 auto& eventObj = fn.event();
-                eventObj.remove(token);
                 std::scoped_lock<std::mutex> lock(m_mutex);
+                eventObj.remove(token);
                 if (RegisteredForEvents(eventObj))
                 {
                     fn.unregisterListener();
                 }
             }
 
-            void RaiseEvent(PowerFunctionDetails fn)
+            void RaiseEvent(const PowerFunctionDetails& fn)
             {
                 std::scoped_lock<std::mutex> lock(m_mutex);
                 fn.event()(nullptr, nullptr);
             }
 
-            // Checks if an event is already registered. If none are, then gets the status
-            void CheckRegistrationAndOrUpdateValue(PowerFunctionDetails fn)
+            // Checks if an event is already registered. If it isn't then gets fresh value
+            void CheckRegistrationAndOrUpdateValue(const PowerFunctionDetails& fn)
             {
                 auto& eventObj = fn.event();
+                std::scoped_lock<std::mutex> lock(m_mutex);
                 if (!RegisteredForEvents(eventObj))
                 {
-                    fn.getStatus();
+                    fn.updateValue();
                 }
             }
 
