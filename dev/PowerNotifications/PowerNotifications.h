@@ -229,6 +229,7 @@ namespace winrt::Microsoft::Windows::System::Power
 
             void RaiseEvent(PowerFunctionDetails fn)
             {
+                std::scoped_lock<std::mutex> lock(m_mutex);
                 fn.event()(nullptr, nullptr);
             }
 

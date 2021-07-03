@@ -26,8 +26,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void EnergySaverStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusHandle;
+		check_hresult(PowerNotifications_UnregisterEnergySaverStatusChangedListener(handle));
+		handle = 0;
     }
 
     void EnergySaverStatus_Update()
@@ -51,8 +52,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void BatteryStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterCompositeBatteryStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_batteryStatusHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_batteryStatusHandle;
+		check_hresult(PowerNotifications_UnregisterCompositeBatteryStatusChangedListener(handle));
+		handle = 0;
     }
 
     void BatteryStatus_Update()
@@ -122,8 +124,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void RemainingDischargeTime_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterDischargeTimeChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_dischargeTimeHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_dischargeTimeHandle;
+		check_hresult(PowerNotifications_UnregisterDischargeTimeChangedListener(handle));
+		handle = 0;
     }
 
     void RemainingDischargeTime_Update()
@@ -147,8 +150,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void PowerSourceKind_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterPowerConditionChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_PowerSourceKindHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_PowerSourceKindHandle;
+		check_hresult(PowerNotifications_UnregisterPowerConditionChangedListener(handle));
+		handle = 0;
     }
 
     void PowerSourceKind_Update()
@@ -172,8 +176,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void DisplayStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterDisplayStatusChangedListener
-        (make_self<factory_implementation::PowerManager>()->m_displayStatusHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_displayStatusHandle;
+		check_hresult(PowerNotifications_UnregisterDisplayStatusChangedListener(handle));
+		handle = 0;
     }
 
     void DisplayStatus_Update()
@@ -197,8 +202,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void SystemIdleStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterSystemIdleStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle;
+		check_hresult(PowerNotifications_UnregisterSystemIdleStatusChangedListener(handle));
+		handle = 0;
     }
 
     ULONG GetEffectivePowerModeVersion()
@@ -276,8 +282,9 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void UserPresenceStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterUserPresenceStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_userPresenceStatusHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_userPresenceStatusHandle;
+		check_hresult(PowerNotifications_UnregisterUserPresenceStatusChangedListener(handle));
+		handle = 0;
     }
 
     void UserPresenceStatus_Update()
@@ -311,7 +318,8 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void SystemSuspendStatus_Unregister()
     {
-        check_win32(PowerUnregisterSuspendResumeNotification(
-            make_self<factory_implementation::PowerManager>()->m_systemSuspendHandle));
+        auto& handle = make_self<factory_implementation::PowerManager>()->m_systemSuspendHandle;
+		check_win32(PowerUnregisterSuspendResumeNotification(handle));
+		handle = 0;
     }
 }
