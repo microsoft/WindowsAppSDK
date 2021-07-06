@@ -88,6 +88,13 @@ namespace Test::Packages::PushNotificationsLongRunningTask
     constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.PushNotificationsTask_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
 }
 
+namespace Test::Packages::PushNotificationsLongRunningTask
+{
+    constexpr PCWSTR c_PackageDirName = L"PushNotificationsLongRunningTask";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.PushNotificationsTask_" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.PushNotificationsTask_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+}
+
 namespace Test::Packages
 {
     inline std::wstring GetPackagePath(PCWSTR packageFullName)
