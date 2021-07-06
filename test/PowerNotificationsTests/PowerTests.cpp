@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "winrt/Microsoft.ProjectReunion.h"
+#include "winrt/Microsoft.Windows.System.Power.h"
 
 using PowerEventHandle =
 winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
 
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Microsoft::Windows::System::Power;
 
 namespace ProjectReunionPowerTests
 {
