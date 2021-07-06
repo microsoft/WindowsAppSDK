@@ -8,7 +8,7 @@
   <!-- Due to import ordering inconsistencies between different project types, we import this file from multiple places. -->
   <Import Project="$(MSBuildThisFileDirectory)build\EnsureOutputLayout.props" Condition="$(EnsureOutputLayoutPropsIncluded) == ''" />
 
-  <PropertyGroup>    
+  <PropertyGroup>
     <IsTDPConfiguration>false</IsTDPConfiguration>
 
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
@@ -41,4 +41,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
   </ItemDefinitionGroup>
+
+  <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
+  <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
 </Project>
