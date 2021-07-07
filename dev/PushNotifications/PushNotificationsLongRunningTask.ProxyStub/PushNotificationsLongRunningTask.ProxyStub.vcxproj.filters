@@ -15,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -23,11 +26,24 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="winmain.cpp">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_i.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Midl Include="NotificationsReunionEndpoint.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NotificationsReunionEndpoint.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

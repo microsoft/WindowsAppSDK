@@ -163,6 +163,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunnin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\DynamicDependency\data\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -585,6 +587,18 @@ Global
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x64.Build.0 = Release|x64
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x86.ActiveCfg = Release|Win32
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x86.Build.0 = Release|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Debug|x64.ActiveCfg = Debug|x64
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Debug|x64.Build.0 = Debug|x64
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Debug|x86.ActiveCfg = Debug|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Debug|x86.Build.0 = Debug|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|Any CPU.ActiveCfg = Release|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|ARM64.ActiveCfg = Release|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|x64.ActiveCfg = Release|x64
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|x64.Build.0 = Release|x64
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|x86.ActiveCfg = Release|Win32
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -633,6 +647,7 @@ Global
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
 		{C422B090-F501-4204-8068-1084B0799405} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
+		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
