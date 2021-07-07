@@ -53,8 +53,16 @@ $content_json=@"
         }
     },
     "PushNotifications": {
-        "CLSID": {
-            "UUID": "$pushnotifications_clsid_uuid"
+        "LIBID": "CE96C745-3017-460E-895B-4FD98E1194F2",
+        "Impl": {
+            "CLSID": {
+                "UUID": "E739C755-0D09-48DF-A468-A5DF0B5422DC",
+            }
+        },
+        "Task": {
+            "CLSID": {
+                "UUID": "$pushnotifications_clsid_uuid"
+            }
         }
     },
     "LifetimeManager": {
@@ -125,14 +133,29 @@ $content_h=@"
 #define _STRINGIZE(x)   _STRINGIZEX(x)
 #endif
 
-#ifdef PR_PUSHNOTIFICATIONS_CLSID_UUID
-#undef PR_PUSHNOTIFICATIONS_CLSID_UUID
-#define PR_PUSHNOTIFICATIONS_CLSID_UUID             $pushnotifications_clsid_uuid
+#ifdef PR_PUSHNOTIFICATIONS_LIBID_UUID
+#undef PR_PUSHNOTIFICATIONS_LIBID_UUID
+#define PR_PUSHNOTIFICATIONS_LIBID_UUID             CE96C745-3017-460E-895B-4FD98E1194F2
 #endif
 
-#ifdef PR_PUSHNOTIFICATIONS_CLSID_STRING
-#undef PR_PUSHNOTIFICATIONS_CLSID_STRING
-#define PR_PUSHNOTIFICATIONS_CLSID_STRING            _STRINGIZE(PR_PUSHNOTIFICATIONS_CLSID_UUID)
+#ifdef PR_PUSHNOTIFICATIONS_IMPL_CLSID_UUID
+#undef PR_PUSHNOTIFICATIONS_IMPL_CLSID_UUID
+#define PR_PUSHNOTIFICATIONS_IMPL_CLSID_UUID        E739C755-0D09-48DF-A468-A5DF0B5422DC
+#endif
+
+#ifdef PR_PUSHNOTIFICATIONS_IMPL_CLSID_STRING
+#undef PR_PUSHNOTIFICATIONS_IMPL_CLSID_STRING
+#define PR_PUSHNOTIFICATIONS_IMPL_CLSID_STRING      _STRINGIZE(PR_PUSHNOTIFICATIONS_IMPL_CLSID_UUID)
+#endif
+
+#ifdef PR_PUSHNOTIFICATIONS_TASK_CLSID_UUID
+#undef PR_PUSHNOTIFICATIONS_TASK_CLSID_UUID
+#define PR_PUSHNOTIFICATIONS_TASK_CLSID_UUID        $pushnotifications_clsid_uuid
+#endif
+
+#ifdef PR_PUSHNOTIFICATIONS_TASK_CLSID_STRING
+#undef PR_PUSHNOTIFICATIONS_TASK_CLSID_STRING
+#define PR_PUSHNOTIFICATIONS_TASK_CLSID_STRING      _STRINGIZE(PR_PUSHNOTIFICATIONS_TASK_CLSID_UUID)
 #endif
 "@
 $file_h = Join-Path $Path 'PushNotifications-Override.h'
