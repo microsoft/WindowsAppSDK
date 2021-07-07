@@ -80,7 +80,7 @@ namespace ProjectReunionPowerTests
         TEST_METHOD(GetEnergySaverStatus)
         {
             auto stat = PowerManager::EnergySaverStatus();
-            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Off);
+            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Disabled);
         }
 
         TEST_METHOD(EnergySaverStatusCallback)
@@ -92,7 +92,7 @@ namespace ProjectReunionPowerTests
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(300));
             PowerManager::EnergySaverStatusChanged(token);
-            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Off);
+            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Disabled);
         }
 
         TEST_METHOD(GetPowerSourceKind)
