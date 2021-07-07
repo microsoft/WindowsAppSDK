@@ -20,7 +20,8 @@
 #include <windows.h>
 
 #include "WexTestClass.h"
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Foundation.Collections.h>
+#include <wil\resource.h>
+#include <winrt\Windows.Foundation.h>
+#include <winrt\Windows.Foundation.Collections.h>
 
 #endif //PCH_H

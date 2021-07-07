@@ -11,6 +11,7 @@ using namespace winrt::Microsoft::ProjectReunion;
 
 namespace ProjectReunionPowerTests
 {
+    constexpr auto TIMEOUT = 2000;
     class PowerTests
     {
     public:
@@ -67,13 +68,18 @@ namespace ProjectReunionPowerTests
 
         TEST_METHOD(RemainingDischargeTimeCallback)
         {
+            static wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
+            THROW_LAST_ERROR_IF_NULL(event.get());
+
             auto stat = winrt::Windows::Foundation::TimeSpan(std::chrono::seconds(1));
             auto token = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
             {
+                SetEvent(event.get());
                 stat = PowerManager::RemainingDischargeTime();
             });
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
-            PowerManager::RemainingDischargeTimeChanged(token);
+            PowerManager::RemainingDischargeTimeChanged(token);           
+
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(stat.count(), -10000000);
         }
 
