@@ -152,10 +152,15 @@ steps:
               {
                 # Trigger the subscription
                 $id = $sub.id
-                Write-Host "Triggering subscription on " $id
-                # bar-build-id is always 0
-                $api = "/api/subscriptions/" + $id + "/trigger"
-                $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+                $updateFrequency = $sub.policy.updateFrequency
+                Write-Host "updateFrequency " $updateFrequency
+                if ($updateFrequency -eq 'everyBuild')
+                {
+                  Write-Host "Triggering subscription on " $id
+                  # bar-build-id is always 0
+                  $api = "/api/subscriptions/" + $id + "/trigger"
+                  $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+                }
               }
             }
           }
