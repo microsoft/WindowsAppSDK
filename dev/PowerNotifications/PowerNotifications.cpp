@@ -14,20 +14,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     // EnergySaverStatus Functions
     EventType& EnergySaverStatus_Event()
     {
-        return make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_energySaverStatusChangedEvent;
     }
 
     void EnergySaverStatus_Register()
     {
         check_hresult(PowerNotifications_RegisterEnergySaverStatusChangedListener(
             &PowerManager::EnergySaverStatusChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusHandle));
+            &make_self<factory_implementation::PowerManager>()->m_energySaverStatusHandle));
     }
 
     void EnergySaverStatus_Unregister()
     {
         check_hresult(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_EnergySaverStatusHandle));
+            make_self<factory_implementation::PowerManager>()->m_energySaverStatusHandle));
     }
 
     void EnergySaverStatus_Update()
@@ -57,11 +57,10 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void BatteryStatus_Update()
     {
-        auto ref = &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus;
-        auto res = PowerNotifications_GetCompositeBatteryStatus(ref);
-        if (res == S_OK)
+        auto status = &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus;
+        if (PowerNotifications_GetCompositeBatteryStatus(status) == S_OK)
         {
-            make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(*ref);
+            make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(*status);
         }
     }
 
@@ -135,20 +134,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     // PowerSourceKind Functions
     EventType& PowerSourceKind_Event()
     {
-        return make_self<factory_implementation::PowerManager>()->m_PowerSourceKindChangedEvent;
+        return make_self<factory_implementation::PowerManager>()->m_powerSourceKindChangedEvent;
     }
 
     void PowerSourceKind_Register()
     {
         check_hresult(PowerNotifications_RegisterPowerConditionChangedListener(
             &PowerManager::PowerSourceKindChanged_Callback,
-            &make_self<factory_implementation::PowerManager>()->m_PowerSourceKindHandle));
+            &make_self<factory_implementation::PowerManager>()->m_powerSourceKindHandle));
     }
 
     void PowerSourceKind_Unregister()
     {
         check_hresult(PowerNotifications_UnregisterPowerConditionChangedListener(
-            make_self<factory_implementation::PowerManager>()->m_PowerSourceKindHandle));
+            make_self<factory_implementation::PowerManager>()->m_powerSourceKindHandle));
     }
 
     void PowerSourceKind_Update()

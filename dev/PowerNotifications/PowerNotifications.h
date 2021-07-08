@@ -82,7 +82,7 @@ namespace winrt::Microsoft::ProjectReunion
             EventType& (*event)();
             void (*registerListener)();
             void (*unregisterListener)();
-            void (*getStatus)();
+            void (*updateValue)();
         };
     }
 
@@ -109,12 +109,12 @@ namespace winrt::Microsoft::ProjectReunion
             winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_powerSupplyStatus{ winrt::Microsoft::ProjectReunion::PowerSupplyStatus::Adequate };
             winrt::Microsoft::ProjectReunion::PowerSupplyStatus m_oldPowerSupplyStatus;
 
-            EventType m_EnergySaverStatusChangedEvent;
+            EventType m_energySaverStatusChangedEvent;
             EventType m_batteryStatusChangedEvent;
             EventType m_powerSupplyStatusChangedEvent;
             EventType m_remainingChargePercentChangedEvent;
             EventType m_remainingDischargeTimeChangedEvent;
-            EventType m_PowerSourceKindChangedEvent;
+            EventType m_powerSourceKindChangedEvent;
             EventType m_displayStatusChangedEvent;
             EventType m_systemIdleStatusChangedEvent;
             EventType m_powerModeChangedEvent;
@@ -122,9 +122,9 @@ namespace winrt::Microsoft::ProjectReunion
             EventType m_systemAwayModeStatusChangedEvent;
             EventType m_systemSuspendStatusChangedEvent;
 
-            EnergySaverStatusRegistration m_EnergySaverStatusHandle;
+            EnergySaverStatusRegistration m_energySaverStatusHandle;
             CompositeBatteryStatusRegistration m_batteryStatusHandle;
-            PowerConditionRegistration m_PowerSourceKindHandle;
+            PowerConditionRegistration m_powerSourceKindHandle;
             DischargeTimeRegistration m_dischargeTimeHandle;
             DisplayStatusRegistration m_displayStatusHandle;
             SystemIdleStatusRegistration m_systemIdleStatusHandle;
@@ -161,7 +161,7 @@ namespace winrt::Microsoft::ProjectReunion
                 &winrt::Microsoft::ProjectReunion::implementation::RemainingDischargeTime_Unregister,
                 &winrt::Microsoft::ProjectReunion::implementation::RemainingDischargeTime_Update };
 
-            PowerFunctionDetails PowerSourceKindFunc{
+            PowerFunctionDetails powerSourceKindFunc{
                 &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Event,
                 &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Register,
                 &winrt::Microsoft::ProjectReunion::implementation::PowerSourceKind_Unregister,
@@ -179,7 +179,7 @@ namespace winrt::Microsoft::ProjectReunion
                 &winrt::Microsoft::ProjectReunion::implementation::SystemIdleStatus_Unregister,
                 &winrt::Microsoft::ProjectReunion::implementation::NoOperation };
 
-            PowerFunctionDetails EffectivePowerModeFunc{
+            PowerFunctionDetails effectivePowerModeFunc{
                 &winrt::Microsoft::ProjectReunion::implementation::EffectivePowerMode_Event,
                 &winrt::Microsoft::ProjectReunion::implementation::EffectivePowerMode_Register,
                 &winrt::Microsoft::ProjectReunion::implementation::EffectivePowerMode_Unregister,
@@ -235,7 +235,7 @@ namespace winrt::Microsoft::ProjectReunion
                 auto& eventObj = fn.event();
                 if (!RegisteredForEvents(eventObj))
                 {
-                    fn.getStatus();
+                    fn.updateValue();
                 }
             }
 
@@ -436,24 +436,24 @@ namespace winrt::Microsoft::ProjectReunion
             // PowerSourceKind Functions
             winrt::Microsoft::ProjectReunion::PowerSourceKind PowerSourceKind()
             {
-                CheckRegistrationAndOrUpdateValue(PowerSourceKindFunc);
+                CheckRegistrationAndOrUpdateValue(powerSourceKindFunc);
                 return static_cast<winrt::Microsoft::ProjectReunion::PowerSourceKind>(m_cachedPowerSourceKind);
             }
 
             event_token PowerSourceKindChanged(const PowerEventHandle& handler)
             {
-                return AddCallback(PowerSourceKindFunc, handler);
+                return AddCallback(powerSourceKindFunc, handler);
             }
 
             void PowerSourceKindChanged(const event_token& token)
             {
-                RemoveCallback(PowerSourceKindFunc, token);
+                RemoveCallback(powerSourceKindFunc, token);
             }
 
             void PowerSourceKindChanged_Callback(DWORD powerCondition)
             {
                 m_cachedPowerSourceKind = powerCondition;
-                RaiseEvent(PowerSourceKindFunc);
+                RaiseEvent(powerSourceKindFunc);
             }
 
 
@@ -502,25 +502,25 @@ namespace winrt::Microsoft::ProjectReunion
             Windows::Foundation::IAsyncOperation<winrt::Microsoft::ProjectReunion::EffectivePowerMode> EffectivePowerMode()
             {
                 co_await resume_background();
-                CheckRegistrationAndOrUpdateValue(EffectivePowerModeFunc);
+                CheckRegistrationAndOrUpdateValue(effectivePowerModeFunc);
                 auto res = static_cast<winrt::Microsoft::ProjectReunion::EffectivePowerMode>(m_cachedPowerMode);
                 co_return res;
             }
 
             event_token EffectivePowerModeChanged(const PowerEventHandle& handler)
             {
-                return AddCallback(EffectivePowerModeFunc, handler);
+                return AddCallback(effectivePowerModeFunc, handler);
             }
 
             void EffectivePowerModeChanged(const event_token& token)
             {
-                RemoveCallback(EffectivePowerModeFunc, token);
+                RemoveCallback(effectivePowerModeFunc, token);
             }
 
             void EffectivePowerModeChanged_Callback(EFFECTIVE_POWER_MODE mode)
             {
                 m_cachedPowerMode = mode;
-                RaiseEvent(EffectivePowerModeFunc);
+                RaiseEvent(effectivePowerModeFunc);
             }
 
             // UserPresenceStatus Functions
