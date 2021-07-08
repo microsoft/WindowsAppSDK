@@ -18,7 +18,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE ProjectDir                  =$(ProjectDir)
 !MESSAGE OutDir                      =$(OutDir)
 !MESSAGE TargetName                  =$(TargetName)
-!MESSAGE ProjectReunionBuildPipeline =$(ProjectReunionBuildPipeline)
+!MESSAGE WindowsAppSDKBuildPipeline =$(WindowsAppSDKBuildPipeline)
 !ENDIF
 
 TARGET_BASENAME=PushNotificationsLongRunningTask

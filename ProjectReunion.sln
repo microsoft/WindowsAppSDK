@@ -161,7 +161,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationTests", "te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask", "dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj", "{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\DynamicDependency\data\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PushNotifications", "PushNotifications", "{A1B25DCF-6A54-414D-8E24-F4D24EE9299D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\PushNotifications\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -632,7 +634,8 @@ Global
 		{D012E4BB-F16B-472D-A26D-D449CEFA988E} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
-		{C422B090-F501-4204-8068-1084B0799405} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
+		{A1B25DCF-6A54-414D-8E24-F4D24EE9299D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{C422B090-F501-4204-8068-1084B0799405} = {A1B25DCF-6A54-414D-8E24-F4D24EE9299D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
