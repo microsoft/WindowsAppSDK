@@ -161,6 +161,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationTests", "te
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\PowerNotifications\PowerNotifications.vcxitems", "{3418759E-FB57-41A1-A485-9F7A363510E4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "test\PowerNotifications\PowerNotifications.vcxproj", "{CBD95746-61CE-4F31-B6CC-C5ABF1766180}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -571,6 +573,18 @@ Global
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9}.Release|x64.Build.0 = Release|x64
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9}.Release|x86.ActiveCfg = Release|Win32
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9}.Release|x86.Build.0 = Release|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x64.ActiveCfg = Debug|x64
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x64.Build.0 = Debug|x64
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x86.ActiveCfg = Debug|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x86.Build.0 = Debug|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|ARM64.ActiveCfg = Release|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x64.ActiveCfg = Release|x64
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x64.Build.0 = Release|x64
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x86.ActiveCfg = Release|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -618,6 +632,7 @@ Global
 		{D012E4BB-F16B-472D-A26D-D449CEFA988E} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{0A5FEE93-48B7-40EC-BB9A-B27D11060DA9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{3418759E-FB57-41A1-A485-9F7A363510E4} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
