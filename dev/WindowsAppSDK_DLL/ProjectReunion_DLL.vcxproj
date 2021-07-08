@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props')" />
-  <Import Project="..\ProjectReunion.Build.Cpp.props" />
+  <Import Project="..\WindowsAppSDK.Build.Cpp.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -38,15 +38,15 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{B73AD907-6164-4294-88FB-F3C9C10DA1F1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</ProjectGuid>
-    <RootNamespace>Microsoft.ProjectReunion.Bootstrap</RootNamespace>
+    <RootNamespace>Microsoft.WindowsAppSDK</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <UseUnicrt>true</UseUnicrt>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
     <CppWinRTOptimized>true</CppWinRTOptimized>
-    <CppWinRTGenerateWindowsMetadata>false</CppWinRTGenerateWindowsMetadata>
+    <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
     <CppWinRTNamespaceMergeDepth>9</CppWinRTNamespaceMergeDepth>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -106,6 +106,10 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
+    <Import Project="..\PushNotifications\PushNotifications.vcxitems" Label="PushNotifications" />
+    <Import Project="..\DynamicDependency\DynamicDependency.vcxitems" Label="Shared" />
+    <Import Project="..\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems" Label="Shared" />
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -135,35 +139,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.ProjectReunion.Bootstrap</TargetName>
+    <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -195,131 +199,89 @@
     </Link>
   </ItemDefinitionGroup>
 
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)appmodel\identity;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -327,31 +289,21 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -359,31 +311,21 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -391,31 +333,21 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\ProjectReunion_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;PROJECTREUNIONBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPSDKDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -423,28 +355,16 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\ProjectReunion_DLL</AdditionalLibraryDirectories>
-      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.ProjectReunion.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>ProjectReunion.Bootstrap.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>Microsoft.ProjectReunion.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
     </Link>
-    <Midl>
-      <GenerateClientFiles>None</GenerateClientFiles>
-      <GenerateServerFiles>None</GenerateServerFiles>
-      <GenerateTypeLibrary>false</GenerateTypeLibrary>
-      <HeaderFileName>%(Filename).h</HeaderFileName>
-      <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
-    </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="MddBootstrap.h" />
-    <ClInclude Include="MddBootstrapTest.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MddBootstrap.cpp" />
+    <ClCompile Include="COMExports.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create</PrecompiledHeader>
@@ -455,10 +375,19 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ProjectReunion.Bootstrap.def" />
+    <None Include="WindowsAppSDK.def" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Detours\Detours.vcxproj">
+      <Project>{d6bc25c5-1aa7-4c4a-a02c-b42dedbfea33}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
+      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -477,13 +406,4 @@
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
   </Target>
-  <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapTest.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj">
-      <Project>{ccd23028-b9d3-410b-836e-20b2e7c08451}</Project>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectReunion.Helix.TestCommon", "..\ProjectReunion.Helix.TestCommon\ProjectReunion.Helix.TestCommon.csproj", "{8F41529B-ECA3-4D71-9E3F-DE91D8103B78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.Helix.TestCommon", "..\WindowsAppSDK.Helix.TestCommon\WindowsAppSDK.Helix.TestCommon.csproj", "{8F41529B-ECA3-4D71-9E3F-DE91D8103B78}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectReunion.Helix.Test.NetCore", "..\ProjectReunion.Helix.Test.NetCore\ProjectReunion.Helix.Test.NetCore.csproj", "{F323A6C2-7CA1-4BE5-ACA2-310596FF1111}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsAppSDK.Helix.Test.NetCore", "..\WindowsAppSDK.Helix.Test.NetCore\WindowsAppSDK.Helix.Test.NetCore.csproj", "{F323A6C2-7CA1-4BE5-ACA2-310596FF1111}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

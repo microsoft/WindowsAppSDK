@@ -12,11 +12,11 @@
   <PropertyGroup>
     <UseInsiderSDK>true</UseInsiderSDK>
     <!-- By default we use the publicly shipped SDK version which is 19H1 now -->
-    <ProjectReunionSdkVersion Condition="$(UseInsiderSDK) != 'true'">$(SDKVersion19H1)</ProjectReunionSdkVersion>
+    <WindowsAppSDKSdkVersion Condition="$(UseInsiderSDK) != 'true'">$(SDKVersion19H1)</WindowsAppSDKSdkVersion>
 
-    <!-- Setting UseInsiderSDK will allow the code to build to the newest insider SDK 
-         In order to get this from a cmd prompt run 
+    <!-- Setting UseInsiderSDK will allow the code to build to the newest insider SDK
+         In order to get this from a cmd prompt run
          set UseInsiderSDK=true and then launch muxcontrols.sln from that cmd prompt-->
-    <ProjectReunionSdkVersion Condition="$(UseInsiderSDK)=='true'">$(SDKVersionInsider)</ProjectReunionSdkVersion>
+    <WindowsAppSDKSdkVersion Condition="$(UseInsiderSDK)=='true'">$(SDKVersionInsider)</WindowsAppSDKSdkVersion>
   </PropertyGroup>
 </Project>

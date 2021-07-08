@@ -6,9 +6,9 @@
 
 #include <appmodel.h>
 
-/// Iniitalize the calling process to use Project Reunion's framework package.
+/// Iniitalize the calling process to use Windows App SDK's framework package.
 ///
-/// Find a Project Reunion framework package meeting the criteria and make it available
+/// Find a Windows App SDK framework package meeting the criteria and make it available
 /// for use by the current process. If multiple packages meet the criteria the best
 /// candidate is selected.
 ///

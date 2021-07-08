@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __PROJECTREUNION_TEST_APPMODEL_H
-#define __PROJECTREUNION_TEST_APPMODEL_H
+#ifndef __WINDOWSAPPSDK_TEST_APPMODEL_H
+#define __WINDOWSAPPSDK_TEST_APPMODEL_H
 
 #include <appmodel.h>
 
@@ -19,4 +19,4 @@ namespace Test::AppModel
     }
 }
 
-#endif // __PROJECTREUNION_TEST_APPMODEL_H
+#endif // __WINDOWSAPPSDK_TEST_APPMODEL_H

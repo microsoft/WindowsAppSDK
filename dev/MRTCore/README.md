@@ -1,9 +1,9 @@
 # Welcome to MRT Core!
 
-## Overview 
+## Overview
 
 ### What is MRT Core?
-Thanks for asking! MRT Core was born from the need for [Project Reunion](https://aka.ms/projectreunion) applications to use MRT - Modern Resource Technology. MRT was introduced to Windows in the Windows 8 timeframe and has evolved as the resource management system since that time. You can use these links to learn more about [MRT and resource management](https://docs.microsoft.com/en-us/windows/uwp/app-resources/resource-management-system) as well as the benefits of [globalization and localization](https://docs.microsoft.com/en-us/windows/uwp/design/globalizing/globalizing-portal).
+Thanks for asking! MRT Core was born from the need for [Windows App SDK](https://aka.ms/windowsappsdk) applications to use MRT - Modern Resource Technology. MRT was introduced to Windows in the Windows 8 timeframe and has evolved as the resource management system since that time. You can use these links to learn more about [MRT and resource management](https://docs.microsoft.com/en-us/windows/uwp/app-resources/resource-management-system) as well as the benefits of [globalization and localization](https://docs.microsoft.com/en-us/windows/uwp/design/globalizing/globalizing-portal).
 
 > If you're looking for Core MRT, you're in the right place! Internal project naming was Core MRT and so some of our external communication has also used that terminology - sorry for any confusion! But rest assured, Core MRT or MRT Core, you're in the right place! 😉
 
@@ -17,7 +17,7 @@ and use MRT Core APIs to load resources in your app.
 The C APIs can be found in [mrm.h](mrt/Core/src/MRM.h). The WinRT APIs can be found in [Microsoft.Windows.ApplicationModel.Resources.idl](mrt/Microsoft.Windows.ApplicationModel.Resources/src/Microsoft.Windows.ApplicationModel.Resources.idl).
 
 ## Build and Test
-Load [MrtCore.sln](mrt/MrtCore.sln) in Visual Studion 2019, and build the solution. 
+Load [MrtCore.sln](mrt/MrtCore.sln) in Visual Studion 2019, and build the solution.
 
 Run the tests in Test Explorer.
 

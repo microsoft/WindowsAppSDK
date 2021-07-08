@@ -6,7 +6,7 @@ using WEX.Logging.Interop;
 using WEX.TestExecution;
 using WEX.TestExecution.Markup;
 
-namespace ProjectReunion.TestCommon
+namespace WindowsAppSDK.TestCommon
 {
     [TestClass]
     class TestAssembly

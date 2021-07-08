@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __PROJECTREUNION_TEST_BOOTSTRAP_H
-#define __PROJECTREUNION_TEST_BOOTSTRAP_H
+#ifndef __WINDOWSAPPSDK_TEST_BOOTSTRAP_H
+#define __WINDOWSAPPSDK_TEST_BOOTSTRAP_H
 
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
-#include <ProjectReunion.Test.AppModel.h>
-#include <ProjectReunion.Test.Package.h>
+#include <WindowsAppSDK.Test.AppModel.h>
+#include <WindowsAppSDK.Test.Package.h>
 
 #include <WexTestClass.h>
 
@@ -30,10 +30,10 @@ namespace Test::Bootstrap
         // Remove our packages in case they were previously installed and incompletely removed
         TP::RemovePackage_DynamicDependencyLifetimeManager();
         TP::RemovePackage_DynamicDependencyDataStore();
-        TP::RemovePackage_ProjectReunionFramework();
+        TP::RemovePackage_WindowsAppSDKFramework();
 
         // Install our needed packages
-        TP::AddPackage_ProjectReunionFramework();
+        TP::AddPackage_WindowsAppSDKFramework();
         TP::AddPackage_DynamicDependencyDataStore();
         TP::AddPackage_DynamicDependencyLifetimeManager();
     }
@@ -43,7 +43,7 @@ namespace Test::Bootstrap
         // Uninstall the packages we installed via SetupPackages()
         TP::RemovePackage_DynamicDependencyLifetimeManager();
         TP::RemovePackage_DynamicDependencyDataStore();
-        TP::RemovePackage_ProjectReunionFramework();
+        TP::RemovePackage_WindowsAppSDKFramework();
     }
 
     inline void SetupBootstrap()
@@ -54,7 +54,7 @@ namespace Test::Bootstrap
             return;
         }
 
-        // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
+        // We need to find Microsoft.WindowsAppSDK.Bootstrap.dll.
         // Normally it's colocated with the application (i.e. same dir as the exe)
         // but that's not true of our test project (a dll) in our build environment
         // (different directories). So we'll explicitly find and load it so the
@@ -105,4 +105,4 @@ namespace Test::Bootstrap
     }
 }
 
-#endif // __PROJECTREUNION_TEST_BOOTSTRAP_H
+#endif // __WINDOWSAPPSDK_TEST_BOOTSTRAP_H

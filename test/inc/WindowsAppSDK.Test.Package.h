@@ -1,60 +1,60 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __PROJECTREUNION_TEST_PACKAGE_H
-#define __PROJECTREUNION_TEST_PACKAGE_H
+#ifndef __WINDOWSAPPSDK_TEST_PACKAGE_H
+#define __WINDOWSAPPSDK_TEST_PACKAGE_H
 
 #include <appmodel.h>
 
-#include <ProjectReunion.Test.FileSystem.h>
+#include <WindowsAppSDK.Test.FileSystem.h>
 
 #include <WexTestClass.h>
 
-#define PROJECTREUNION_TEST_METADATA_VERSION            0x0004000107AF014DLLu
-#define PROJECTREUNION_TEST_METADATA_VERSION_MAJOR      4
-#define PROJECTREUNION_TEST_METADATA_VERSION_MINOR      1
-#define PROJECTREUNION_TEST_METADATA_VERSION_BUILD      1967
-#define PROJECTREUNION_TEST_METADATA_VERSION_REVISION   333
-#define PROJECTREUNION_TEST_METADATA_VERSION_STRING     L"4.1.1967.333"
+#define WINDOWSAPPSDK_TEST_METADATA_VERSION            0x0004000107AF014DLLu
+#define WINDOWSAPPSDK_TEST_METADATA_VERSION_MAJOR      4
+#define WINDOWSAPPSDK_TEST_METADATA_VERSION_MINOR      1
+#define WINDOWSAPPSDK_TEST_METADATA_VERSION_BUILD      1967
+#define WINDOWSAPPSDK_TEST_METADATA_VERSION_REVISION   333
+#define WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING     L"4.1.1967.333"
 
-#define PROJECTREUNION_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define PROJECTREUNION_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.ProjectReunion.Framework"
-#define PROJECTREUNION_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.ProjectReunion.DDLM"
-#define PROJECTREUNION_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.ProjectReunion.Main"
+#define WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Framework"
+#define WINDOWSAPPSDK_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.DDLM"
+#define WINDOWSAPPSDK_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.Main"
 
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_NAMEPREFIX     L"ProjectReunion.Test.DDLM"
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION        PROJECTREUNION_TEST_METADATA_VERSION_STRING
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppSDK.Test.DDLM"
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING
 #if defined(_M_X64)
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x64"
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x64"
 #elif defined(_M_IX86)
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x86"
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x86"
 #elif defined(_M_ARM64)
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm64"
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm64"
 #elif defined(_M_ARM)
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm"
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm"
 #else
 #   error "Unknown processor architecture"
 #endif
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_NAME           PROJECTREUNION_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"-" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_PUBLISHERID    PROJECTREUNION_TEST_MSIX_PUBLISHERID
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_FAMILYNAME     PROJECTREUNION_TEST_PACKAGE_DDLM_NAME L"_" PROJECTREUNION_TEST_PACKAGE_DDLM_PUBLISHERID
-#define PROJECTREUNION_TEST_PACKAGE_DDLM_FULLNAME       PROJECTREUNION_TEST_PACKAGE_DDLM_NAME L"_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" PROJECTREUNION_TEST_PACKAGE_DDLM_PUBLISHERID
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"-" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID
+#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID
 
 namespace Test::Packages::DynamicDependencyLifetimeManager
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManager";
-    constexpr PCWSTR c_PackageNamePrefix = PROJECTREUNION_TEST_PACKAGE_DDLM_NAMEPREFIX;
-    constexpr PCWSTR c_PackagePublisherId = PROJECTREUNION_TEST_PACKAGE_DDLM_PUBLISHERID;
-    constexpr PCWSTR c_PackageFamilyName = PROJECTREUNION_TEST_PACKAGE_DDLM_FAMILYNAME;
-    constexpr PCWSTR c_PackageFullName = PROJECTREUNION_TEST_PACKAGE_DDLM_FULLNAME;
+    constexpr PCWSTR c_PackageNamePrefix = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FAMILYNAME;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FULLNAME;
     constexpr const PACKAGE_VERSION GetPackageVersion()
     {
         PACKAGE_VERSION version{};
-        version.Major = PROJECTREUNION_TEST_METADATA_VERSION_MAJOR;
-        version.Minor = PROJECTREUNION_TEST_METADATA_VERSION_MINOR;
-        version.Build = PROJECTREUNION_TEST_METADATA_VERSION_BUILD;
-        version.Revision = PROJECTREUNION_TEST_METADATA_VERSION_REVISION;
+        version.Major = WINDOWSAPPSDK_TEST_METADATA_VERSION_MAJOR;
+        version.Minor = WINDOWSAPPSDK_TEST_METADATA_VERSION_MINOR;
+        version.Build = WINDOWSAPPSDK_TEST_METADATA_VERSION_BUILD;
+        version.Revision = WINDOWSAPPSDK_TEST_METADATA_VERSION_REVISION;
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
@@ -66,19 +66,19 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
     constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
-namespace Test::Packages::ProjectReunionFramework
+namespace Test::Packages::WindowsAppSDKFramework
 {
-    constexpr PCWSTR c_PackageDirName = L"Microsoft.ProjectReunion.Framework";
-    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.ProjectReunion.Framework.msix";
-    constexpr PCWSTR c_PackageFamilyName = PROJECTREUNION_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = PROJECTREUNION_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" PROJECTREUNION_TEST_METADATA_VERSION_STRING L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppSDK.Framework";
+    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppSDK.Framework.msix";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages::DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppSDK.Test.DynDep.DataStore_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.DynDep.DataStore_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages
@@ -198,12 +198,12 @@ namespace Test::Packages
         return IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
-    inline void AddPackage_ProjectReunionFramework()
+    inline void AddPackage_WindowsAppSDKFramework()
     {
-        AddPackage(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
+        AddPackage(Test::Packages::WindowsAppSDKFramework::c_PackageDirName, Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
     }
 
-    inline void RemovePackage_ProjectReunionFramework()
+    inline void RemovePackage_WindowsAppSDKFramework()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -211,12 +211,12 @@ namespace Test::Packages
         // we need do, we're happy as long as the package isn't registered when we're done
         //
         // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
+        RemovePackageIfNecessary(Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
     }
 
-    inline bool IsPackageRegistered_ProjectReunionFramework()
+    inline bool IsPackageRegistered_WindowsAppSDKFramework()
     {
-        return IsPackageRegistered(Test::Packages::ProjectReunionFramework::c_PackageFullName);
+        return IsPackageRegistered(Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
     }
 
     inline void AddPackage_DynamicDependencyDataStore()
@@ -240,12 +240,12 @@ namespace Test::Packages
         return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    inline std::filesystem::path GetProjectReunionFrameworkMsixPath()
+    inline std::filesystem::path GetWindowsAppSDKFrameworkMsixPath()
     {
-        // Determine the location of ProjectReunion's Framework's msix. See GetSolutionOutDirPath() for more details.
+        // Determine the location of WindowsAppSDK's Framework's msix. See GetSolutionOutDirPath() for more details.
         auto path = ::Test::FileSystem::GetSolutionOutDirPath();
-        path /= Test::Packages::ProjectReunionFramework::c_PackageDirName;
-        path /= Test::Packages::ProjectReunionFramework::c_PackageMsixFilename;
+        path /= Test::Packages::WindowsAppSDKFramework::c_PackageDirName;
+        path /= Test::Packages::WindowsAppSDKFramework::c_PackageMsixFilename;
         return path;
     }
 }
@@ -265,4 +265,4 @@ namespace Test::Packages::WapProj
         VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packagePath.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
     }
 }
-#endif // __PROJECTREUNION_TEST_PACKAGE_H
+#endif // __WINDOWSAPPSDK_TEST_PACKAGE_H

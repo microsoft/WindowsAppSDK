@@ -20,7 +20,7 @@ CLSID FindDDLM(
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
-wil::unique_hmodule g_projectReunionDll;
+wil::unique_hmodule g_windowsAppSdkDll;
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
@@ -29,11 +29,11 @@ static std::wstring g_test_ddlmPackagePublisherId;
 
 namespace MddCore
 {
-// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSdk/issues/567
 void FailFastIfElevated()
 {
     FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
 }
 }
 
@@ -42,14 +42,14 @@ STDAPI MddBootstrapInitialize(
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
 
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_projectReunionDll != nullptr);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_windowsAppSdkDll != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
@@ -68,12 +68,12 @@ STDAPI MddBootstrapInitialize(
     // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
-    auto projectReunionDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.ProjectReunion.dll" };
-    wil::unique_hmodule projectReunionDll(LoadLibraryEx(projectReunionDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
-    if (!projectReunionDll)
+    auto windowsAppSdkDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppSDK.dll" };
+    wil::unique_hmodule windowsAppSdkDll(LoadLibraryEx(windowsAppSdkDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
+    if (!windowsAppSdkDll)
     {
         const auto lastError{ GetLastError() };
-        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, projectReunionDllFilename.c_str());
+        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppSdkDllFilename.c_str());
     }
 
     const MddPackageDependencyProcessorArchitectures architectureFilter{};
@@ -91,7 +91,7 @@ STDAPI MddBootstrapInitialize(
     dllDirectoryCookie.reset();
 
     g_lifetimeManager = lifetimeManager.detach();
-    g_projectReunionDll = std::move(projectReunionDll);
+    g_windowsAppSdkDll = std::move(windowsAppSdkDll);
     g_packageDependencyId = std::move(packageDependencyId);
     g_packageDependencyContext = packageDependencyContext;
     return S_OK;
@@ -100,7 +100,7 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    if (g_packageDependencyContext && g_projectReunionDll)
+    if (g_packageDependencyContext && g_windowsAppSdkDll)
     {
         MddRemovePackageDependency(g_packageDependencyContext);
         g_packageDependencyContext = nullptr;
@@ -108,7 +108,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 
     g_packageDependencyId.reset();
 
-    g_projectReunionDll.reset();
+    g_windowsAppSdkDll.reset();
 
     if (g_lifetimeManager)
     {
@@ -133,12 +133,12 @@ STDAPI MddBootstrapTestInitialize(
     return S_OK;
 } CATCH_RETURN();
 
-/// Determine the path for the Project Reunion Framework package
+/// Determine the path for the Windows App SDK Framework package
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo)
 {
     frameworkPackageInfo = nullptr;
 
-    // We need to determine the exact Project Reunion Framework package
+    // We need to determine the exact Windows App SDK Framework package
     // in the Dynamic Dependency Lifetime Manager package's dependencies,
     // as resolved by Windows. A user can have multiple framework packages
     // in a family registered at a time, for multiple reasons:
@@ -167,21 +167,21 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     auto buffer{ wil::make_unique_cotaskmem<BYTE[]>(bufferLength) };
     THROW_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
-    // Find the Project Reunion framework package in the package graph to determine its path
+    // Find the Windows App SDK framework package in the package graph to determine its path
     //
-    // NOTE: The Project Reunion DDLM package...
+    // NOTE: The Windows App SDK DDLM package...
     //          * ...has 1 framework package dependency
-    //          * ...its framework package dependency's name starts with "Microsoft.ProjectReunion"
+    //          * ...its framework package dependency's name starts with "Microsoft.WindowsAppSDK"
     //          * ...its publisher id is "8wekyb3d8bbwe"
     // Any failure to find the DDLM's package graph but not find the expected framework dependency
     // implies the DDLM is improperly built and cannot be used. Of course ThisShouldNeverHappen
     // but a little paranoia isn't a bad thing :-)
     //
-    // Verify the package providing the LifetimeManager declares a <PackageDependency> on the Project Reunion framework package.
+    // Verify the package providing the LifetimeManager declares a <PackageDependency> on the Windows App SDK framework package.
     THROW_HR_IF_MSG(E_UNEXPECTED, packageInfoCount != 1, "PRddlm:%ls PackageGraph.Count:%u", packageFullName, packageInfoCount);
     //
     const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
-    const WCHAR c_expectedNamePrefix[]{ L"Microsoft.ProjectReunion" };
+    const WCHAR c_expectedNamePrefix[]{ L"Microsoft.WindowsAppSDK" };
     const int c_expectedNamePrefixLength{ ARRAYSIZE(c_expectedNamePrefix) - 1 };
     THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.name, c_expectedNamePrefixLength, c_expectedNamePrefix, c_expectedNamePrefixLength, TRUE) != CSTR_EQUAL,
                     "PRddlm:%ls Expected.Name:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, c_expectedNamePrefix, packageInfo->packageFullName);
@@ -260,18 +260,18 @@ CLSID FindDDLM(
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
-    // Look for windows.appExtension with name="com.microsoft.reunion.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
+    // Look for windows.appExtension with name="com.microsoft.winappsdk.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
     WCHAR appExtensionName[100]{};
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
     if (versionShortTag != L'\0')
     {
-        wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s-%c", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString(), versionShortTag);
+        wsprintf(appExtensionName, L"com.microsoft.winappsdk.ddlm-%hu.%hu-%s-%c", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString(), versionShortTag);
     }
     else
     {
-        wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+        wsprintf(appExtensionName, L"com.microsoft.winappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
     }
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\..\ProjectReunion.Build.Cpp.props" />
+  <Import Project="..\..\..\..\WindowsAppSDK.Build.Cpp.props" />
   <PropertyGroup Label="DevEnvironmentScenario">
     <ConsumeWinRT>false</ConsumeWinRT>
     <UseModernCompliantVclibs>true</UseModernCompliantVclibs>
@@ -138,7 +138,7 @@
            than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
-      <!-- Configure the release build binary to be as required by internal API scanning tools. -->      
+      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
       <LinkIncremental>false</LinkIncremental>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <!-- EnableCOMDATFolding and OptimizeReferences are set to true below for all build configurations. -->

@@ -11,11 +11,11 @@
 
 namespace MddCore
 {
-// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
 void FailFastIfElevated()
 {
     FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                        "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567");
+                        "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
 }
 }
 
@@ -29,7 +29,7 @@ STDAPI MddTryCreatePackageDependency(
     MddCreatePackageDependencyOptions options,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     *packageDependencyId = nullptr;
@@ -45,7 +45,7 @@ CATCH_RETURN();
 STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies requires a non-packaged process
@@ -62,7 +62,7 @@ STDAPI MddAddPackageDependency(
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* packageDependencyContext,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     *packageDependencyContext = nullptr;
@@ -82,7 +82,7 @@ CATCH_RETURN();
 STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     // Dynamic Dependencies requires a non-packaged process
@@ -96,7 +96,7 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _In_ PCWSTR packageDependencyId,
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     *packageFullName = nullptr;
@@ -118,7 +118,7 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/ProjectReunion/issues/567
+    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
     MddCore::FailFastIfElevated();
 
     *packageDependencyId = nullptr;

@@ -8,9 +8,9 @@
     <ProjectGuid>{EBAC2D3E-B3DB-428A-9A9D-3607FB6D9C17}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProjectReunion.Extension</RootNamespace>
-    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">ProjectReunion.Extension</AssemblyName>
-    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">ProjectReunion.Extension.Preview</AssemblyName>
+    <RootNamespace>WindowsAppSDK.Extension</RootNamespace>
+    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">WindowsAppSDK.Extension</AssemblyName>
+    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">WindowsAppSDK.Extension.Preview</AssemblyName>
     <TargetFramework>net472</TargetFramework>
     <!-- This project may not have any C# source files, so suppress that compiler warning. -->
     <NoWarn>2008</NoWarn>
@@ -33,15 +33,15 @@
   </ItemGroup>
   <ItemGroup>
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_Foundation)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_DWrite)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_ProjectReunion_WinUI)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_Foundation)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_DWrite)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_WinUI)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
-    <Content Include="Reunion.png">
+    <Content Include="WindowsAppSDK.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -67,16 +67,16 @@
     <PackageReference Include="Microsoft.Windows.CppWinRT" Version="[$(CppWinRTVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.DWrite" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
@@ -250,7 +250,7 @@
     † Note: Yes, this introduces a Year 2088 problem for the locally-built VSIX because the
     final component of the version number can wrap around after 68 years. No, this is not
     a concern because it seems unlikely that we'll go 68 years without resetting the clock
-    by increasing the Project Reunion version number.
+    by increasing the Windows App SDK version number.
   -->
   <PropertyGroup Condition="'$(VSIXVersion)' == '' AND '$(OptionalVSIXVersion)'!='default' AND '$(OptionalVSIXVersion)'!=''">
     <!-- Optional VSIX version is provided by the pipeline definition to override package version -->
@@ -301,7 +301,7 @@
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
-      Value="$(_OriginalVsixId).Preview" 
+      Value="$(_OriginalVsixId).Preview"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"

@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#!include <ProjectReunion.Tools.MakeMsix.mak>
+#!include <WindowsAppSDK.Tools.MakeMsix.mak>
 
 MAKEAPPX_OPTS=
 !IFDEF VERBOSE
@@ -20,7 +20,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
-TARGET_BASENAME=Microsoft.ProjectReunion.Framework
+TARGET_BASENAME=Microsoft.WindowsAppSDK.Framework
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
@@ -37,8 +37,8 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir) md $(WorkDir) >NUL
     @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml >NUL
     @copy /Y $(ProjectDir)logo.png $(WorkDir)\logo.png >NUL
-    @copy /Y $(OutDir)ProjectReunion_DLL\Microsoft.ProjectReunion.dll $(WorkDir)\Microsoft.ProjectReunion.dll
-    @copy /Y $(OutDir)ProjectReunion_DLL\Microsoft.ProjectReunion.pdb $(WorkDir)\Microsoft.ProjectReunion.pdb
+    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $(WorkDir)\Microsoft.WindowsAppSDK.dll
+    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $(WorkDir)\Microsoft.WindowsAppSDK.pdb
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 

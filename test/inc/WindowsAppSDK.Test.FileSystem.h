@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __PROJECTREUNION_TEST_FILESYSTEM_H
-#define __PROJECTREUNION_TEST_FILESYSTEM_H
+#ifndef __WINDOWSAPPSDK_TEST_FILESYSTEM_H
+#define __WINDOWSAPPSDK_TEST_FILESYSTEM_H
 
 #include <filesystem>
 
@@ -54,8 +54,8 @@ namespace Test::FileSystem
         //         \<Configuration>                             <== ARM64|X64|X86
         //             \<project>.Msix
         //                 <project>.Msix
-        //             \ProjectReunion_BootstrapDLL
-        //                 Microsoft.ProjectReunion.Bootstrap.dll
+        //             \WindowsAppSDK_BootstrapDLL
+        //                 Microsoft.WindowsAppSDK.Bootstrap.dll
         //             \<TestProjectName>
         //                 <TestProjectName>.dll                <== Test .dll
 
@@ -71,19 +71,19 @@ namespace Test::FileSystem
     {
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"ProjectReunion_BootstrapDLL";
-        path /= L"Microsoft.ProjectReunion.Bootstrap.dll";
+        path /= L"WindowsAppSDK_BootstrapDLL";
+        path /= L"Microsoft.WindowsAppSDK.Bootstrap.dll";
         return path;
     }
 
-    inline std::filesystem::path GetProjectReunionDllAbsoluteFilename()
+    inline std::filesystem::path GetWindowsAppSDKDllAbsoluteFilename()
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"ProjectReunion_DLL";
-        path /= L"Microsoft.ProjectReunion.dll";
+        path /= L"WindowsAppSDK_DLL";
+        path /= L"Microsoft.WindowsAppSDK.dll";
         return path;
     }
 }
 
-#endif // __PROJECTREUNION_TEST_FILESYSTEM_H
+#endif // __WINDOWSAPPSDK_TEST_FILESYSTEM_H

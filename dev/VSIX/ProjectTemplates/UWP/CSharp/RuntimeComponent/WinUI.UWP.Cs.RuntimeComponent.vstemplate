@@ -2,7 +2,7 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name>Windows Runtime Component (WinUI 3 in UWP)</Name>
-    <Description>A project for creating a managed Windows Runtime Component (.winmd) for Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3). Requires Project Reunion prerelease support.</Description>
+    <Description>A project for creating a managed Windows Runtime Component (.winmd) for Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3). Requires Windows App SDK prerelease support.</Description>
     <Icon>WinUI.UWP.Cs.RuntimeComponent.ico</Icon>
     <TemplateID>Microsoft.WinUI.UWP.Cs.RuntimeComponent</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
@@ -21,7 +21,7 @@
     <LanguageTag>csharp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Project Reunion</PlatformTag>
+    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>

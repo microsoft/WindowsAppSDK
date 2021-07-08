@@ -16,7 +16,7 @@
   <ItemGroup Condition="'$(OutputType)' == 'Exe'">
     <Reference Include="Microsoft.Windows.ApplicationModel.Resources.winmd">
       <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.Resources.winmd</HintPath>
-      <Implementation Condition="'$(ProjectReunionFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

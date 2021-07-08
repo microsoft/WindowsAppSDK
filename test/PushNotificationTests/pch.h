@@ -30,8 +30,8 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
-#include <ProjectReunion.Test.Package.h>
-#include <ProjectReunion.Test.TAEF.h>
+#include <WindowsAppSDK.Test.Package.h>
+#include <WindowsAppSDK.Test.TAEF.h>
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
