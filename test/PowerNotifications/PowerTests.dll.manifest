@@ -4,7 +4,7 @@
 
     <file name="Microsoft.ProjectReunion.dll">
         <activatableClass
-            name="Microsoft.ProjectReunion.PowerManager"
+            name="Microsoft.Windows.System.Power.PowerManager"
             threadingModel="both"
             xmlns="urn:schemas-microsoft-com:winrt.v1" />
     </file>

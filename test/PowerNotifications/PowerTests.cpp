@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "winrt/Microsoft.ProjectReunion.h"
+#include "winrt/Microsoft.Windows.System.Power.h"
 
 using namespace std::chrono_literals;
 using namespace winrt::Microsoft::ProjectReunion;
