@@ -35,13 +35,13 @@ function PublishFile {
 
 PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
 
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.ProjectReunion\
-PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.ProjectReunion\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
 PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.dll $FullPublishDir\DynamicDependency.DataStore\
@@ -49,13 +49,13 @@ PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDepend
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe $FullPublishDir\DynamicDependencyLifetimeManager\
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.dll $FullPublishDir\DynamicDependencyLifetimeManager\
 #
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.dll $FullPublishDir\Microsoft.ProjectReunion.Bootstrap\
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.lib $FullPublishDir\Microsoft.ProjectReunion.Bootstrap\
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\MddBootstrap.h $FullPublishDir\Microsoft.ProjectReunion.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
 
-#PublishFile -IfExists $FullBuildOutput\ProjectReunion_DLL\Generic.xaml $FullPublishDir\Microsoft.ProjectReunion\
-#PublishFile -IfExists $FullBuildOutput\Microsoft.ProjectReunion.Design\Microsoft.ProjectReunion.Design.dll $FullPublishDir\Microsoft.ProjectReunion.Design\
-#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.ProjectReunion.FrameworkPackagePRI\Microsoft.ProjectReunion.pri $FullPublishDir\Microsoft.ProjectReunion.FrameworkPackagePRI\
+#PublishFile -IfExists $FullBuildOutput\WindowsAppSDK_DLL\Generic.xaml $FullPublishDir\Microsoft.WindowsAppSDK\
+#PublishFile -IfExists $FullBuildOutput\Microsoft.WindowsAppSDK.Design\Microsoft.WindowsAppSDK.Design.dll $FullPublishDir\Microsoft.WindowsAppSDK.Design\
+#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.WindowsAppSDK.FrameworkPackagePRI\Microsoft.WindowsAppSDK.pri $FullPublishDir\Microsoft.WindowsAppSDK.FrameworkPackagePRI\
 
 #UNDONE - PGO etc. later PR
 # pgosweep and vcruntime are required to run pgo instrumented test run. They are placed from the
@@ -80,26 +80,26 @@ if($PublishAppxFiles)
 
 # Publish pdbs:
 $symbolsOutputDir = "$($FullPublishDir)\Symbols\"
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.pdb $symbolsOutputDir
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.pdb $symbolsOutputDir
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $symbolsOutputDir
 
 # Copy files to Full Nuget package
 #
 # Includes (*.h)
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\MddBootstrap.h $NugetDir\include
-PublishFile $FullBuildOutput\ProjectReunion_DLL\MsixDynamicDependency.h $NugetDir\include
-PublishFile $FullBuildOutput\ProjectReunion_DLL\wil_msixdynamicdependency.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $NugetDir\include
 #
 # Libraries (*.lib)
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.lib $NugetDir\lib\win10-$Platform
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.lib $NugetDir\lib\win10-$Platform
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $NugetDir\lib\win10-$Platform
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $NugetDir\lib\win10-$Platform
 #
 # MSIX Framework package - DLLs
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.dll $NugetDir\runtimes\win10-$Platform\native
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.ProjectReunion.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # MSIX Main package
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $NugetDir\runtimes\win10-$Platform\native
@@ -114,15 +114,15 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # WinMD for UWP apps
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 #
 # Native (not managed, no MSIX)
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
-PublishFile $FullBuildOutput\ProjectReunion_BootstrapDLL\Microsoft.ProjectReunion.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
-PublishFile $FullBuildOutput\ProjectReunion_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\native
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\native
 #
 # C#/WinRT Projections
 #

@@ -1,6 +1,6 @@
 parameters:
   dependsOn: ''
-  pgdFile: Microsoft.ProjectReunion.pgd
+  pgdFile: Microsoft.WindowsAppSDK.pgd
   pgoArtifact: PGO
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     vmImage: 'windows-2019'
   variables:
     artifactsPath: $(Build.SourcesDirectory)\Artifacts
-    pgoToolsPath: $(Build.SourcesDirectory)\tools\ProjectReunionPGODatabase
+    pgoToolsPath: $(Build.SourcesDirectory)\tools\WindowsAppSDKPGODatabase
     nuspecPath: $(pgoToolsPath)\NuSpecs
     nuspecFilename: PGO.nuspec
 

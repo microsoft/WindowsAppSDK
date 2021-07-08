@@ -1,5 +1,5 @@
 parameters:
-  artifactName: 'reunion_binaries'
+  artifactName: 'windowsappsdk_binaries'
 
 steps:
   - task: powershell@2
@@ -16,7 +16,7 @@ steps:
       artifactName: ${{ parameters.artifactName }}
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget (Reunion DLLs)'
+    displayName: 'Publish artifact: Full Nuget (Windows App SDK DLLs)'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
       artifactName: FullNuget

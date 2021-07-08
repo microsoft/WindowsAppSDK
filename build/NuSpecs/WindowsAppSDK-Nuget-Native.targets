@@ -12,21 +12,21 @@
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.ProjectReunion.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
 

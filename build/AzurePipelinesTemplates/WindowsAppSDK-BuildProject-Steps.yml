@@ -5,7 +5,7 @@ parameters:
   artifactName: 'drop'
 
 steps:
-  - template: ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
+  - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
   - script: |
       echo parameters.solutionPath = '${{ parameters.solutionPath }}'
@@ -13,9 +13,9 @@ steps:
       echo parameters.buildOutputDir = '${{ parameters.buildOutputDir }}'
     displayName: 'BuildProject: Display parameters'
 
-  - template: ProjectReunion-InstallWindowsSDK-Steps.yml
+  - template: WindowsAppSDK-InstallWindowsSDK-Steps.yml
 
-  - template: ProjectReunion-InstallNuget-Steps.yml
+  - template: WindowsAppSDK-InstallNuget-Steps.yml
 
   # The environment variable VCToolsInstallDir isn't defined on lab machines, so we need to retrieve it ourselves.
   - script: |
@@ -31,17 +31,6 @@ steps:
     displayName: 'Display build machine environment variables'
     inputs:
       filename: 'set'
-
-# UNDONE - will be turned on in later PR
-#  - task: powershell@2
-#    displayName: 'Restore PGO database'
-#    condition: eq(variables['PGOBuildMode'], 'Optimize')
-#    inputs:
-#      targetType: filePath
-#      workingDirectory: $(Build.SourcesDirectory)\tools\ProjectReunionPGODatabase
-#      filePath: $(Build.SourcesDirectory)\tools\ProjectReunionPGODatabase\restore-pgodb.ps1
-
-#UNDONE- fix guid?
 
   - task: NuGetAuthenticate@0
     inputs:
@@ -77,7 +66,7 @@ steps:
       vsVersion: 16.0
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
-      msbuildArgs: '/p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:ProjectReunionVersionBuild=$(builddate_yymm) /p:ProjectReunionVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:ProjectReunionBuildPipeline=1'
+      msbuildArgs: '/p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:WindowsAppSDKBuildPipeline=1'
 
   - task: CmdLine@2
     displayName: 'Install Test Certificate'

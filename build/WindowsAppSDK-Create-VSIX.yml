@@ -1,12 +1,12 @@
 parameters:
-  - name: "ReunionVersion"
+  - name: "WindowsAppSDKVersion"
     type: string
     default: ''
   - name: "releaseBuild"
     type: boolean
     default: True
   - name: "OptionalVSIXVersion"
-    # if blank, the project template will select the version matching the Project Reunion
+    # if blank, the project template will select the version matching the Windows App SDK
     # nuget. If provided, it should be a 4-part dotted version ('1.2.3.4')
     type: string
     default: 'default'
@@ -26,20 +26,20 @@ jobs:
       nuGetServiceConnections: Internal-ReleaseSigned
 
   - task: VSBuild@1
-    displayName: 'Restore ProjectReunion.Extension.sln'
+    displayName: 'Restore WindowsAppSDK.Extension.sln'
     inputs:
-      solution: dev\VSIX\ProjectReunion.Extension.sln
+      solution: dev\VSIX\WindowsAppSDK.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+      msBuildArgs: '/t:restore /p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="${{ parameters.WindowsAppSDKVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
 
   - task: VSBuild@1
-    displayName: 'Build ProjectReunion.Extension.sln'
+    displayName: 'Build WindowsAppSDK.Extension.sln'
     inputs:
-      solution: dev\VSIX\ProjectReunion.Extension.sln
+      solution: dev\VSIX\WindowsAppSDK.Extension.sln
       platform: 'Any CPU'
       configuration: '$(buildConfiguration)'
-      msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:ReunionVersion="${{ parameters.ReunionVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
+      msBuildArgs: '/p:OptionalVSIXVersion="${{ parameters.OptionalVSIXVersion }}" /p:WindowsAppSDKVersion="${{ parameters.WindowsAppSDKVersion }}" /p:EnableExperimentalVSIXFeatures="${{ parameters.EnableExperimentalVSIXFeatures }}"'
 
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
     displayName: 'Component Governance Detection'
@@ -51,9 +51,9 @@ jobs:
     - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
       displayName: 'CodeSign (vsix)'
       inputs:
-        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+        ConnectedServiceName: 'Windows App SDK ESRP Code Signing Connection'
         FolderPath: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)'
-        Pattern: ProjectReunion.Extension.vsix
+        Pattern: WindowsAppSDK.Extension.vsix
         signConfigType: inlineSignParams
         inlineOperation: |
           [
@@ -77,14 +77,14 @@ jobs:
 
   - ${{ if eq( parameters.EnableExperimentalVSIXFeatures, false) }}:
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish ProjectReunion.Extension.VSIX'
+      displayName: 'Publish WindowsAppSDK.Extension.VSIX'
       inputs:
-        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.vsix'
+        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\WindowsAppSDK.Extension\WindowsAppSDK.Extension.vsix'
         artifactName: 'VSIX'
 
   - ${{ if eq( parameters.EnableExperimentalVSIXFeatures, true) }}:
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish ProjectReunion.Extension.Preview.VSIX'
+      displayName: 'Publish WindowsAppSDK.Extension.Preview.VSIX'
       inputs:
-        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\ProjectReunion.Extension\ProjectReunion.Extension.Preview.vsix'
+        PathtoPublish: 'dev\VSIX\BuildOutput\obj\AnyCPU$(buildConfiguration)\WindowsAppSDK.Extension\WindowsAppSDK.Extension.Preview.vsix'
         artifactName: 'VSIX'

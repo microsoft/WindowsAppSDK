@@ -24,24 +24,24 @@ jobs:
   variables:
     # This version number should be kept in sync with the value in these files:
     #   build\Helix\packages.config
-    #   test\ProjectReunion.Helix.TestCommon\ProjectReunion.Helix.TestCommon.csproj
+    #   test\WindowsAppSDK.Helix.TestCommon\WindowsAppSDK.Helix.TestCommon.csproj
     winUIHelixVer: 0.5.2
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
     # The target queues to run the tests on.
-    # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
+    # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by WindowsAppSDK in the future.
     helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.Xaml'
     helixTargetQueuesClosed: 'Windows.10.Amd64.ClientRS5.Xaml'
 
     # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
     rerunPassesRequiredToAvoidFailure: 8
-    
+
     # This must be unique for each test pass that is run in a given Pipeline execution.
     helixType: devtest.$(buildPlatform).$(buildConfiguration)
 
     helixTestOutputBaseDir: $(Build.SourcesDirectory)\HelixTestOutput
     helixTestOutputDir: $(helixTestOutputBaseDir)\$(buildConfiguration)\$(buildPlatform)
-    
+
     # This directory contains the Test payload, Helix test binaries and scripts. It is sent to the Helix machines.
     # Note: TAEF must be present in this directory, as GenerateHelixWorkItems.ps1 expects to invoke te.exe from here.
     testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\HelixTests
@@ -51,7 +51,7 @@ jobs:
 
     # Shared arguments for both open and closed Helix queues.
     helixCommonArgs: '/p:HelixBuild=$(Build.BuildId).$(buildPlatform).$(buildConfiguration) /p:Platform=$(buildPlatform) /p:Configuration=$(buildConfiguration) /p:TestPayloadDir=$(testPayloadDir) /p:HelixType=$(helixType) /p:rerunPassesRequiredToAvoidFailure=$(rerunPassesRequiredToAvoidFailure)'
-      
+
   steps:
   - task: CmdLine@1
     displayName: 'Display build machine environment variables'
@@ -71,12 +71,12 @@ jobs:
 
   - task: NuGetAuthenticate@0
 
-  - template: ProjectReunion-BuildSolution-Steps.yml
+  - template: WindowsAppSDK-BuildSolution-Steps.yml
     parameters:
-      displayName: ProjectReunion.Helix.Test
-      solutionPath: test\ProjectReunion.Helix.Test\ProjectReunion.Helix.Test.sln
+      displayName: WindowsAppSDK.Helix.Test
+      solutionPath: test\WindowsAppSDK.Helix.Test\WindowsAppSDK.Helix.Test.sln
 
-  # Publish the binaries from building ProjectReunion.Helix.Test.sln
+  # Publish the binaries from building WindowsAppSDK.Helix.Test.sln
   # This is not required, but can be useful for debugging purposes.
   - task: PublishBuildArtifacts@1
     displayName: Publish BuildOutput
@@ -155,7 +155,7 @@ jobs:
       command: custom
       projects: build\Helix\RunTestsInHelix.proj
       custom: msbuild
-      arguments: '$(helixCommonArgs) /p:IsExternal=true /p:Creator=ProjectReunion /p:HelixTargetQueues=$(helixTargetQueuesOpen)'
+      arguments: '$(helixCommonArgs) /p:IsExternal=true /p:Creator=WindowsAppSDK /p:HelixTargetQueues=$(helixTargetQueuesOpen)'
 
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
