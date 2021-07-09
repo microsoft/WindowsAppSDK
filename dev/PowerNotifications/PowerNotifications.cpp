@@ -56,7 +56,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void BatteryStatus_Update()
     {
-        auto status = &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus;
+        auto status{ &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus };
         if (PowerNotifications_GetCompositeBatteryStatus(status) == S_OK)
         {
             make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(*status);
@@ -203,12 +203,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         // We check for the version supported by checking if the feature is supported
         // Using NULL as an indicator for uninitialized cache value
-        auto& version = make_self<factory_implementation::PowerManager>()->m_powerModeVersion;
+        auto& version{ make_self<factory_implementation::PowerManager>()->m_powerModeVersion };
         if (version == NULL)
         {
-            void* handle;
-            auto hr = PowerRegisterForEffectivePowerModeNotifications(
-                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, void*) {}, nullptr, &handle);
+            void* handle{};
+            auto hr{ PowerRegisterForEffectivePowerModeNotifications(
+                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, void*) {}, nullptr, &handle) };
             version = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
             THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
@@ -222,8 +222,8 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EffectivePowerMode_Register()
     {
-        ULONG version = GetEffectivePowerModeVersion();
-        auto& powerModeHandle = make_self<factory_implementation::PowerManager>()->m_powerModeHandle;
+        ULONG version{ GetEffectivePowerModeVersion() };
+        auto& powerModeHandle{ make_self<factory_implementation::PowerManager>()->m_powerModeHandle };
         THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(
             version, [](EFFECTIVE_POWER_MODE mode, void*)
             {
@@ -233,7 +233,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EffectivePowerMode_Unregister()
     {
-        auto& powerModeHandle = make_self<factory_implementation::PowerManager>()->m_powerModeHandle;
+        auto& powerModeHandle{ make_self<factory_implementation::PowerManager>()->m_powerModeHandle };
         THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(powerModeHandle));
         powerModeHandle = nullptr;
     }
@@ -248,13 +248,13 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             wil::slim_event done;
         } context;
 
-        void* handle;
-        ULONG version = GetEffectivePowerModeVersion();
-        auto handler = [](EFFECTIVE_POWER_MODE mode, void* rawContext) {
-            auto context = reinterpret_cast<notify_callback*>(rawContext);
+        void* handle{};
+        ULONG version{ GetEffectivePowerModeVersion() };
+        auto handler{ [](EFFECTIVE_POWER_MODE mode, void* rawContext) {
+            auto context{ reinterpret_cast<notify_callback*>(rawContext) };
             context->mode = mode;
             context->done.SetEvent();
-        };
+        } };
 
         THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(version, handler, &context, &handle));
         context.done.wait();
@@ -301,7 +301,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void SystemSuspendStatus_Register()
     {
-        DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS powerParams = { 0 };
+        DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS powerParams { 0 };
         powerParams.Callback = SuspendResumeCallback;
 
         check_win32(PowerRegisterSuspendResumeNotification(

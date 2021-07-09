@@ -93,7 +93,7 @@ namespace winrt::Microsoft::ProjectReunion
         struct PowerManager : PowerManagerT<PowerManager, implementation::PowerManager, static_lifetime>
         {
             std::mutex m_mutex;
-            int m_batteryChargePercent = 100;
+            int m_batteryChargePercent{ 100 };
             int m_oldBatteryChargePercent;
             DWORD m_cachedDisplayStatus;
             DWORD m_cachedUserPresenceStatus;
@@ -132,8 +132,8 @@ namespace winrt::Microsoft::ProjectReunion
             HPOWERNOTIFY m_systemSuspendHandle;
 
             // EffectivePowerMode variables
-            std::atomic<ULONG> m_powerModeVersion = NULL;
-            void* m_powerModeHandle;
+            std::atomic<ULONG> m_powerModeVersion{ NULL };
+            void* m_powerModeHandle{};
 
             PowerFunctionDetails energySaverStatusFunc{
                 &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Event,
@@ -208,7 +208,7 @@ namespace winrt::Microsoft::ProjectReunion
 
             event_token AddCallback(PowerFunctionDetails fn, const PowerEventHandle& handler)
             {
-                auto& eventObj = fn.event();
+                auto& eventObj{ fn.event() };
                 std::scoped_lock<std::mutex> lock(m_mutex);
                 if (!RegisteredForEvents(eventObj))
                 {
@@ -219,7 +219,7 @@ namespace winrt::Microsoft::ProjectReunion
 
             void RemoveCallback(PowerFunctionDetails fn, const event_token& token)
             {
-                auto& eventObj = fn.event();
+                auto& eventObj{ fn.event() };
                 eventObj.remove(token);
                 std::scoped_lock<std::mutex> lock(m_mutex);
                 if (RegisteredForEvents(eventObj))
@@ -236,7 +236,7 @@ namespace winrt::Microsoft::ProjectReunion
             // Checks if an event is already registered. If none are, then gets the status
             void CheckRegistrationAndOrUpdateValue(PowerFunctionDetails fn)
             {
-                auto& eventObj = fn.event();
+                auto& eventObj{ fn.event() };
                 if (!RegisteredForEvents(eventObj))
                 {
                     fn.updateValue();
@@ -272,8 +272,8 @@ namespace winrt::Microsoft::ProjectReunion
             {
                 // Calculate the remaining charge capacity based on the maximum charge
                 // as an integer percentage value from 0 to 100.
-                auto fullChargedCapacity = compositeBatteryStatus.Information.FullChargedCapacity;
-                auto remainingCapacity = compositeBatteryStatus.Status.Capacity;
+                auto fullChargedCapacity{ compositeBatteryStatus.Information.FullChargedCapacity };
+                auto remainingCapacity{ compositeBatteryStatus.Status.Capacity };
                 if (fullChargedCapacity == BATTERY_UNKNOWN_CAPACITY ||
                     fullChargedCapacity == 0)
                 {
@@ -292,13 +292,13 @@ namespace winrt::Microsoft::ProjectReunion
                 }
                 else
                 {
-                    auto newRemainingChargePercent = static_cast<int>((remainingCapacity * 200) / fullChargedCapacity);
+                    auto newRemainingChargePercent{ static_cast<int>((remainingCapacity * 200) / fullChargedCapacity) };
                     newRemainingChargePercent += 1;
                     newRemainingChargePercent /= 2;
                     m_batteryChargePercent = newRemainingChargePercent;
                 }
 
-                auto powerState = compositeBatteryStatus.Status.PowerState;
+                auto powerState{ compositeBatteryStatus.Status.PowerState };
 
                 // Set battery status
                 if (compositeBatteryStatus.ActiveBatteryCount == 0)
@@ -507,7 +507,7 @@ namespace winrt::Microsoft::ProjectReunion
             {
                 co_await resume_background();
                 CheckRegistrationAndOrUpdateValue(effectivePowerModeFunc);
-                auto res = static_cast<winrt::Microsoft::ProjectReunion::EffectivePowerMode>(m_cachedPowerMode);
+                auto res{ static_cast<winrt::Microsoft::ProjectReunion::EffectivePowerMode>(m_cachedPowerMode) };
                 co_return res;
             }
 
