@@ -220,8 +220,8 @@ namespace winrt::Microsoft::ProjectReunion
             void RemoveCallback(PowerFunctionDetails fn, const event_token& token)
             {
                 auto& eventObj{ fn.event() };
-                eventObj.remove(token);
                 std::scoped_lock<std::mutex> lock(m_mutex);
+                eventObj.remove(token);                
                 if (RegisteredForEvents(eventObj))
                 {
                     fn.unregisterListener();
@@ -230,6 +230,7 @@ namespace winrt::Microsoft::ProjectReunion
 
             void RaiseEvent(PowerFunctionDetails fn)
             {
+                std::scoped_lock<std::mutex> lock(m_mutex);
                 fn.event()(nullptr, nullptr);
             }
 
@@ -237,6 +238,7 @@ namespace winrt::Microsoft::ProjectReunion
             void CheckRegistrationAndOrUpdateValue(PowerFunctionDetails fn)
             {
                 auto& eventObj{ fn.event() };
+                std::scoped_lock<std::mutex> lock(m_mutex);
                 if (!RegisteredForEvents(eventObj))
                 {
                     fn.updateValue();
