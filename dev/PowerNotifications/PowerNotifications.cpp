@@ -10,7 +10,6 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-
     // EnergySaverStatus Functions
     EventType& EnergySaverStatus_Event()
     {
@@ -207,9 +206,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         auto& version = make_self<factory_implementation::PowerManager>()->m_powerModeVersion;
         if (version == NULL)
         {
-            PVOID handle;
+            void* handle;
             auto hr = PowerRegisterForEffectivePowerModeNotifications(
-                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID) {}, NULL, &handle);
+                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, void*) {}, nullptr, &handle);
             version = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
             THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
@@ -226,7 +225,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         ULONG version = GetEffectivePowerModeVersion();
         auto& powerModeHandle = make_self<factory_implementation::PowerManager>()->m_powerModeHandle;
         THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(
-            version, [](EFFECTIVE_POWER_MODE mode, PVOID)
+            version, [](EFFECTIVE_POWER_MODE mode, void*)
             {
                 PowerManager::EffectivePowerModeChanged_Callback(mode);
             }, nullptr, &powerModeHandle));
@@ -249,9 +248,9 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             wil::slim_event done;
         } context;
 
-        PVOID handle;
+        void* handle;
         ULONG version = GetEffectivePowerModeVersion();
-        auto handler = [](EFFECTIVE_POWER_MODE mode, PVOID rawContext) {
+        auto handler = [](EFFECTIVE_POWER_MODE mode, void* rawContext) {
             auto context = reinterpret_cast<notify_callback*>(rawContext);
             context->mode = mode;
             context->done.SetEvent();
@@ -294,7 +293,7 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return make_self<factory_implementation::PowerManager>()->m_systemSuspendStatusChangedEvent;
     }
 
-    ULONG SuspendResumeCallback(PVOID, ULONG powerEvent, PVOID)
+    ULONG SuspendResumeCallback(void*, ULONG powerEvent, void*)
     {
         make_self<factory_implementation::PowerManager>()->SystemSuspendStatusChanged_Callback(powerEvent);
         return S_OK;
