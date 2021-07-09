@@ -22,20 +22,20 @@ An "unpackaged" app therefore is one that is not built into an MSIX package.
 ## Background
 
 Traditional Win32 apps expect to get their arguments passed into WinMain in the form of a string. They can also call the Win32
-[GetCommandLineW](https://docs.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-getcommandlinew)
+[GetCommandLineW](https://docs.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew)
 API. Windows Forms apps expect to call
-[Environment.GetCommandLineArgs](https://docs.microsoft.com/en-us/dotnet/api/system.environment.getcommandlineargs)
+[Environment.GetCommandLineArgs](https://docs.microsoft.com/dotnet/api/system.environment.getcommandlineargs)
 for the same purpose. This is true regardless of the "activation kind" - in fact, for unpackaged
 apps, all activations are managed in the same way, only varying by the arguments passed in to
 WinMain. Win32 apps are familiar with 3 activation kinds: regular launch (whether by command-line,
 tile/shortcut or startup), file-type and protocol association.
 
 Conversely, UWP supports
-[44 different kinds of activation](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind),
+[44 different kinds of activation](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind),
 each represented by a different IActivatedEventArgs class, where the arguments are passed in to the
 app's Launched or Activated event handlers, as properties on a specific XXXActivatedEventArgs
 object. In addition, multi-instanced UWP and Desktop Bridge apps can call the
-[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
+[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
 API.
 
 Of all the rich activation kinds, some require some form of prior information registered with the
@@ -283,7 +283,7 @@ namespace Microsoft.Windows.AppLifecycle
 **GetCurrent** returns an AppInstance that represents the current app instance.
 
 **GetActivatedEventArgs** provides similar behavior as the existing platform
-[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs),
+[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs),
 except that it returns a new ActivationArguments object for the current activation instead of an
 IActivatedEventArgs.
 
@@ -299,7 +299,7 @@ namespace Microsoft.Windows.AppLifecycle
 }
 
 This enum is based off the platform
-[ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
+[ActivationKind](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
 All platform ActivationKind values are cloned to this class. We determine an "extension base" value which
 is well above the existing highest ActivationKind value (1026), to allow for new values to be added to the
 platform. Going forward, any new platform values will also be added to the new enum, plus any new values
@@ -326,7 +326,7 @@ namespace Microsoft.Windows.AppLifecycle
 ```
 
 The platform defines
-[IActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.IActivatedEventArgs),
+[IActivatedEventArgs](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.IActivatedEventArgs),
 which exposes a Kind property. Apps can get an IActivatedEventArgs reference, examine the Kind and
 then cast the reference to the specific concrete class type that implements IActivatedEventArgs.
 This enables generic functions such as GetActivatedEventArgs and the Activated event handler, which
@@ -351,10 +351,10 @@ functionality over time. These are:
 
 | API                                 | Description                                                                                                                                                        |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| class LaunchActivatedEventArgs      | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs).           |
-| class FileActivatedEventArgs        | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs).               |
-| class ProtocolActivatedEventArgs    | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs).       |
-| class StartupTaskActivatedEventArgs | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
+| class LaunchActivatedEventArgs      | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs).           |
+| class FileActivatedEventArgs        | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs).               |
+| class ProtocolActivatedEventArgs    | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs).       |
+| class StartupTaskActivatedEventArgs | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
 
 As with their in-platform versions, these `-ActivatedEventArgs` implement the in-platform
 `IActivatedEventArgs`, which provides the standard User, SplashScreen, PreviousExecutionState and
@@ -457,7 +457,7 @@ namespace Microsoft.Windows.AppLifecycle
 ```
 
 **RegisterForFileTypeActivation** registers the app for activation based on file types (extensions.)
-See the existing documentation for [Win32 filetype association registry entries](https://docs.microsoft.com/en-us/windows/win32/shell/app-registration).
+See the existing documentation for [Win32 filetype association registry entries](https://docs.microsoft.com/windows/win32/shell/app-registration).
 
 -   `supportedFileTypes` - one or more supported filetypes, specified by the file extension
     including the leading ".", eg ".docx"

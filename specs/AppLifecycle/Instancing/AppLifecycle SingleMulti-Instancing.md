@@ -31,7 +31,7 @@ activation request to an existing instance instead.
 ## Differences between Windows and Windows App SDK Instancing
 
 The Windows App SDK behavior is based on the existing
-[Windows.ApplicationModel.AppInstance](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance)
+[Windows.ApplicationModel.AppInstance](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance)
 class, but with some key differences:
 
 ### AppInstance class
@@ -429,7 +429,7 @@ activation from another instance to this app.
 **GetInstances** returns a collection of all running instances of the app.
 
 > Note: the existing
-> [AppInstance.GetInstances](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getinstances)
+> [AppInstance.GetInstances](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getinstances)
 > only returns instances that have explicitly registered for multi-instance redirection. However,
 > the new AppInstance Windows App SDK class will provide an API surface for all manner of
 > app-instance-related behaviors, not restricted to instance redirection. For this reason, Windows App SDK
@@ -439,7 +439,7 @@ activation from another instance to this app.
 **FindOrRegisterForKey** enables an app to register an app-defined key for the current instance, or
 if another instance has already registered that key, then return that other instance instead. This
 is similar to the platform
-[AppInstance.FindOrRegisterInstanceForKey](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.findorregisterinstanceforkey)
+[AppInstance.FindOrRegisterInstanceForKey](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.findorregisterinstanceforkey)
 except that that implementation is specific to instance redirection, whereas the Windows App SDK design
 allows for the app to register a key for any reason.
 
@@ -452,7 +452,7 @@ maintaining of all running instances.
 
 **RedirectActivationTo** enables an instance of the app to redirect the current activation request to another
 instance. This is very similar to the existing platform
-[AppInstance.RedirectActivationTo](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.redirectactivationto)
+[AppInstance.RedirectActivationTo](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.redirectactivationto)
 method, except that the Windows App SDK implementation allows the app to pass an ActivationArguments
 payload, thus opening the scope to allow the app to modify or replace the activation arguments that
 the target instance will receive.

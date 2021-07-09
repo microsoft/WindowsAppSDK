@@ -14,7 +14,7 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 🌟 |      Windows App SDK 0.5      |         Windows App SDK 0.8    |       Windows App SDK 1.0 (Q4 2021)     |
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
 [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported  | ✅ Supported | ✅ Supported |
-[Text rendering](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported |
+[Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported |
 [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported |
 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 [Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
@@ -31,7 +31,7 @@ As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX]
  🌟 |       Windows App SDK 0.5      |         Windows App SDK 0.8   |       Windows App SDK 1.0 (Q4 2021)    |
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
 [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
-[Text rendering](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/dwritecore) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+[Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | ❌ Not Supported| 🔄 Experimental | ✅ Supported |
 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 [Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |

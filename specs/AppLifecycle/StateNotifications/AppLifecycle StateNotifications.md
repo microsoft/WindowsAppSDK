@@ -21,12 +21,12 @@ battery/power state change scenarios that apps would care about - but there's no
 easily consumable by all app types. There's also no single API that's undocked from the OS.
 
 This spec describes new APIs that address these issues by incorporating a comprehensive set of the
-[Windows.System.Power.PowerManager](https://docs.microsoft.com/en-us/uwp/api/Windows.System.Power.PowerManager)
+[Windows.System.Power.PowerManager](https://docs.microsoft.com/uwp/api/Windows.System.Power.PowerManager)
 WinRT API in the Windows App SDK AppLifecycle component, and include additional low-level notifications
 based on the Win32
-[PowerSettingRegisterNotification](https://docs.microsoft.com/en-us/windows/win32/api/powersetting/nf-powersetting-powersettingregisternotification)
+[PowerSettingRegisterNotification](https://docs.microsoft.com/windows/win32/api/powersetting/nf-powersetting-powersettingregisternotification)
 and matching
-[PowerSettingUnregisterNotification](https://docs.microsoft.com/en-us/windows/win32/api/powersetting/nf-powersetting-powersettingunregisternotification)
+[PowerSettingUnregisterNotification](https://docs.microsoft.com/windows/win32/api/powersetting/nf-powersetting-powersettingunregisternotification)
 APIs.
 
 
@@ -36,10 +36,10 @@ Providing a Windows App SDK version of PowerManager is relatively straightforwar
 across the entire existing API in its current form. For the Win32 APIs, the situation is a little
 murkier. It boils down to a choice between 2 usage patterns:
 
--   [RegisterPowerSettingNotification](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerpowersettingnotification)
+-   [RegisterPowerSettingNotification](https://docs.microsoft.com/windows/win32/api/winuser/nf-winuser-registerpowersettingnotification)
     uses a Windows message-based model. When the app registers for notifications, the system will
     send out WM_POWERBROADCAST messages.
--   [PowerSettingRegisterNotification](https://docs.microsoft.com/en-us/windows/win32/api/powersetting/nf-powersetting-powersettingregisternotification)
+-   [PowerSettingRegisterNotification](https://docs.microsoft.com/windows/win32/api/powersetting/nf-powersetting-powersettingregisternotification)
     uses a callback model. When the app registers for notifications, it supplies a pointer to a
     callback function, and the system will call back to this function instead of sending messages.
 
@@ -236,7 +236,7 @@ system when an event is raised; PowerManager events do not have `-EventArgs` pay
 of all event payloads is `Object`.
 
 The well-known
-[power-setting GUIDs](https://docs.microsoft.com/en-us/windows/win32/power/power-setting-guids) are
+[power-setting GUIDs](https://docs.microsoft.com/windows/win32/power/power-setting-guids) are
 listed below, along with the proposed mappings to new PowerManager events and enum-based properties.
 
 | Existing GUID                     | Description                                                                                                                                                                                                            | New property                                                           |

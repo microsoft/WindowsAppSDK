@@ -6,7 +6,7 @@ This feature is a flat C API that takes a list of Package Family Names (PFNs) an
 
 Named objects (mutexes, events, waitable timers) must be ACLed during creation in order to be shared with packaged applications.
 
-Currently, [our guidance](https://docs.microsoft.com/en-us/windows/uwp/communication/sharing-named-objects) for this scenario is to write a large amount of complex, cumbersome, and largely boilerplate code. ([See here for a taste](https://docs.microsoft.com/en-us/windows/win32/api/securityappcontainer/nf-securityappcontainer-getappcontainernamedobjectpath#examples)).
+Currently, [our guidance](https://docs.microsoft.com/windows/uwp/communication/sharing-named-objects) for this scenario is to write a large amount of complex, cumbersome, and largely boilerplate code. ([See here for a taste](https://docs.microsoft.com/windows/win32/api/securityappcontainer/nf-securityappcontainer-getappcontainernamedobjectpath#examples)).
 
 If we are to meet developers where they are, we need to reduce the friction of Win32 and UWP interop, and make it as easy as possible to share named objects.
 
@@ -55,7 +55,7 @@ EventWaitHandle CreateShareableEvent(String name)
         access, "",
         (uint)(EventWaitHandleRights.Modify |
                  EventWaitHandleRights.Synchronize));
-    
+
     var security = new EventWaitHandleSecurity();
     security.SetSecurityDescriptorSddlForm(sddl);
 
@@ -86,7 +86,7 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
 
 If the **principal** parameter is null, the principal of the current thread is used.
 
-If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-localfree).
+If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/windows/desktop/api/winbase/nf-winbase-localfree).
 
 ## WinRT
 ```c#
@@ -120,7 +120,7 @@ namespace Microsoft.Security.AccessControl
 }
 ```
 
-The **principalStringSid** parameter is the [security identifier](https://docs.microsoft.com/en-us/windows/win32/secgloss/s-gly) (SID), in [string format](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-components), of the principal (See also: [ConvertSidToStringSid](https://docs.microsoft.com/en-us/windows/win32/api/sddl/nf-sddl-convertsidtostringsidw)). If this parameter is empty, the principal of the current thread is used.
+The **principalStringSid** parameter is the [security identifier](https://docs.microsoft.com/windows/win32/secgloss/s-gly) (SID), in [string format](https://docs.microsoft.com/windows/win32/secauthz/sid-components), of the principal (See also: [ConvertSidToStringSid](https://docs.microsoft.com/windows/win32/api/sddl/nf-sddl-convertsidtostringsidw)). If this parameter is empty, the principal of the current thread is used.
 
 # API Notes
 

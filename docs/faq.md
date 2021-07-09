@@ -21,14 +21,14 @@ and **[C#/WinRT](https://github.com/microsoft/cswinrt)**
 provide language-native projections of Windows, Windows App SDK,
 and your own custom types defined in metadata. Consume APIs from the Windows Kit, produce them for
 use by other supported projections, create your own new language projections.
-- **[MSIX](https://docs.microsoft.com/en-us/windows/msix/overview)** and
+- **[MSIX](https://docs.microsoft.com/windows/msix/overview)** and
 **[MSIX-Core](https://github.com/microsoft/msix-packaging)**
 let you package your application for distribution to Windows Desktop machines
 via the store or your own delivery pipeline. MSIX-Core lets you use the reuse parts of the MSIX
 packaging story on older versions of Windows.
 
   _Coming soon_
-- **[Microsoft Edge's WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2)**
+- **[Microsoft Edge's WebView2](https://docs.microsoft.com/microsoft-edge/webview2)**
 
 [Tell us what other components you'd like to see as part of the Windows App SDK Family](https://github.com/microsoft/WindowsAppSDK/issues/new/choose)
 
@@ -49,10 +49,10 @@ Use this repo's GitHub Issues to [ask questions, start a discussion or make a fe
 No.
 
 Windows App SDK is a set of libraries and content you add to your existing app
-[within its app model](https://docs.microsoft.com/en-us/windows/apps/desktop/choose-your-platform)
+[within its app model](https://docs.microsoft.com/windows/apps/desktop/choose-your-platform)
 and start coding. Some parts of the Windows App SDK work _better_ if your app is
-[a UWP app](https://docs.microsoft.com/en-us/windows/uwp/get-started/), or
-[Desktop Bridge](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-extensions),
+[a UWP app](https://docs.microsoft.com/windows/uwp/get-started/), or
+[Desktop Bridge](https://docs.microsoft.com/windows/apps/desktop/modernize/desktop-to-uwp-extensions),
 or [has identity](https://aka.ms/sparsepkgblog).
 
 Your existing app model's activation, deployment, lifecycle, and presentation
@@ -62,7 +62,7 @@ want to _change_ your app model, since the same code will just keep working!
 
 ## What Languages and Runtimes are Supported?
 
-Windows App SDK's API surface will be [defined in metadata](https://docs.microsoft.com/en-us/uwp/winrt-cref/winmd-files)
+Windows App SDK's API surface will be [defined in metadata](https://docs.microsoft.com/uwp/winrt-cref/winmd-files)
 similar to WinRT APIs already part of Windows. We'll support projections of that metadata
 through projects like C++/WinRT, C#/WinRT, and Rust/WinRT so access to Windows App SDK
 APIs is familiar to you.
@@ -113,7 +113,7 @@ We're looking to support:
 ## What's a UWP?
 
 Referenced throughout this repo, the term "UWP" references a
-[Universal Windows Platform App](https://docs.microsoft.com/en-us/windows/uwp/get-started/) -
+[Universal Windows Platform App](https://docs.microsoft.com/windows/uwp/get-started/) -
 an app running inside an app container, at a lower privilege level, with
 package identity, delivered via an MSIX. This app's lifecycle from activation
 through termination is controlled by the platform for best power and resource

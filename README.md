@@ -16,7 +16,7 @@ Plus, **create beautiful, modern apps for Windows 11 that are backwards compatib
 
 
 ### Use it now!
-[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.8 release](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/stable-channel#version-08) now!0
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.8 release](https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#version-08) now!0
 
 Some notes about 0.8...
 

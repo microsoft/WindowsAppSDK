@@ -140,7 +140,7 @@ indicating their reasoning. We use review commentary to adjust our design guidel
 ### Additional Links
 
 -   [.NET API Design](https://github.com/dotnet/runtime/blob/main/docs/project/api-review-process.md)
--   [MIDL 3 Specification](https://docs.microsoft.com/en-us/uwp/midl-3/)
+-   [MIDL 3 Specification](https://docs.microsoft.com/uwp/midl-3/)
 
 ## Specification Notes
 

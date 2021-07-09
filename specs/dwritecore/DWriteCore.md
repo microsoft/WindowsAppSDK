@@ -2,7 +2,7 @@
 
 DWriteCore is the Windows App SDK version of DirectWrite, the text rendering and layout
 component that ships in Windows. DWriteCore implements the same API as DirectWrite,
-with a few additions described in this document. See the [DirectWrite documentation](https://docs.microsoft.com/en-us/windows/win32/api/_directwrite/)
+with a few additions described in this document. See the [DirectWrite documentation](https://docs.microsoft.com/windows/win32/api/_directwrite/)
 for more information.
 
 For an application that already uses DirectWrite, switching to DWriteCore requires minimal changes:
@@ -120,7 +120,7 @@ HRESULT hr = DWriteCoreCreateFactory(
 
 ## Drawing glyphs to a system memory bitmap
 
-An application creates a bitmap render target by calling [IDWriteGdiInterop::CreateBitmapRenderTarget](https://docs.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-idwritegdiinterop-createbitmaprendertarget).
+An application creates a bitmap render target by calling [IDWriteGdiInterop::CreateBitmapRenderTarget](https://docs.microsoft.com/windows/win32/api/dwrite/nf-dwrite-idwritegdiinterop-createbitmaprendertarget).
 A bitmap render target encapsulates a bitmap in system memory, and enables rendering glyphs to the bitmap. On Windows,
 the bitmap is actually a GDI DIB selected into a memory HDC, and it is possible to get the bitmap pixels using GDI
 functions. However, DWriteCore introduces a simpler method through the new IDWriteBitmapRenderTarget2 interface.
