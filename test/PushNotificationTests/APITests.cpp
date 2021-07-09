@@ -58,6 +58,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::AddPackage_WindowsAppSDKFramework(); // Installs WASfwk
+                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
@@ -74,6 +75,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::RemovePackage_WindowsAppSDKFramework();
+                TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage(GetTestPackageFullName());
             }
             catch (...)
@@ -86,12 +88,14 @@ namespace Test::PushNotifications
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 
             m_processHandle.reset();
             return true;
