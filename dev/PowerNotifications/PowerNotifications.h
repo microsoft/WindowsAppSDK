@@ -131,6 +131,10 @@ namespace winrt::Microsoft::ProjectReunion
             UserPresenceStatusRegistration m_userPresenceStatusHandle;
             HPOWERNOTIFY m_systemSuspendHandle;
 
+            // EffectivePowerMode variables
+            std::atomic<ULONG> m_powerModeVersion = NULL;
+            void* m_powerModeHandle;
+
             PowerFunctionDetails energySaverStatusFunc{
                 &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Event,
                 &winrt::Microsoft::ProjectReunion::implementation::EnergySaverStatus_Register,
@@ -594,10 +598,6 @@ namespace winrt::Microsoft::ProjectReunion
 
     namespace implementation
     {
-        // EffectivePowerMode variables
-        static std::atomic<ULONG> g_powerModeVersion = NULL;
-        static PVOID g_powerModeHandle;
-
         struct PowerManager
         {
             PowerManager() = default;

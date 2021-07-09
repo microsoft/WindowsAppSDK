@@ -204,15 +204,16 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         // We check for the version supported by checking if the feature is supported
         // Using NULL as an indicator for uninitialized cache value
-        if (g_powerModeVersion == NULL)
+        auto& version = make_self<factory_implementation::PowerManager>()->m_powerModeVersion;
+        if (version == NULL)
         {
             PVOID handle;
             auto hr = PowerRegisterForEffectivePowerModeNotifications(
                 EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID) {}, NULL, &handle);
-            g_powerModeVersion = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+            version = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
             check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
-        return g_powerModeVersion;
+        return version;
     }
 
     EventType& EffectivePowerMode_Event()
@@ -223,17 +224,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     void EffectivePowerMode_Register()
     {
         ULONG version = GetEffectivePowerModeVersion();
+        auto& powerModeHandle = make_self<factory_implementation::PowerManager>()->m_powerModeHandle;
         check_hresult(PowerRegisterForEffectivePowerModeNotifications(
             version, [](EFFECTIVE_POWER_MODE mode, PVOID)
             {
                 PowerManager::EffectivePowerModeChanged_Callback(mode);
-            }, nullptr, &g_powerModeHandle));
+            }, nullptr, &powerModeHandle));
     }
 
     void EffectivePowerMode_Unregister()
     {
-        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(g_powerModeHandle));
-        g_powerModeHandle = NULL;
+        auto& powerModeHandle = make_self<factory_implementation::PowerManager>()->m_powerModeHandle;
+        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(powerModeHandle));
+        powerModeHandle = nullptr;
     }
 
     void EffectivePowerMode_Update()
