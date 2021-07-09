@@ -1,6 +1,6 @@
 # AppLifecycle - Single/Multi-instancing
 
-Reunion introduces a new AppLifecycle component that provides a core set of functionality related to
+Windows App SDK introduces a new AppLifecycle component that provides a core set of functionality related to
 app activation and lifecycle. Much of this functionality is directly equivalent - or very similar -
 to existing functionality within the platform. However, there is value in abstracting this
 functionality so that all app types can use it, delivering it out-of-band from the OS, and making it
@@ -28,23 +28,23 @@ apps to opt in to be multi-instanced. This also allowed for the possibility that
 has chosen to be multi-instanced, there might be some scenario where it wants to redirect a fresh
 activation request to an existing instance instead.
 
-## Differences between Windows and Reunion Instancing
+## Differences between Windows and Windows App SDK Instancing
 
-The Reunion behavior is based on the existing
+The Windows App SDK behavior is based on the existing
 [Windows.ApplicationModel.AppInstance](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance)
 class, but with some key differences:
 
 ### AppInstance class
 
 -   **Platform**: The AppInstance class is focused purely on instance redirection scenarios.
--   **Reunion**: The AppInstance class includes instance redirection scenarios, and is additionally
+-   **Windows App SDK**: The AppInstance class includes instance redirection scenarios, and is additionally
     intended to form the basis of other instance-related functionality in later releases.
 
 ### List of Instances
 
 -   **Platform**: GetInstances returns only the instances that the app explicitly registered for
     potential redirection.
--   **Reunion**: GetInstances returns all running instances of the app, including the current instance. 
+-   **Windows App SDK**: GetInstances returns all running instances of the app, including the current instance.
     There is no guaranteed ordering of instances in the list. In the scenario where the user has multiple
     versions of the same app running, separate lists are maintained for each version. In the scenario
     where there are multiple user sessions active, separate lists are maintained per user also.
@@ -59,7 +59,7 @@ return the registered instance, and the app can check whether it is the current 
 
 -   **Platform**: An instance must register a key in order to be included in the list returned from
     GetInstances.
--   **Reunion**: Registering a key is decoupled from the list of instances. An instance does not
+-   **Windows App SDK**: Registering a key is decoupled from the list of instances. An instance does not
     need to register a key in order to be included in the list.
 
 ### Instance Redirection Targets
@@ -71,31 +71,31 @@ instance's Activated callback, thus hooking into the normal activation workflow 
 expect. An app can have multiple instances available as redirection targets.
 
 -   **Platform**: Only instances that have registered a key can be a target for redirection.
--   **Reunion**: Any instance can be a redirection target, whether or not it has a registered key.
+-   **Windows App SDK**: Any instance can be a redirection target, whether or not it has a registered key.
 
 ### Post-Redirection Behavior
 
--   **Platform**: In the UWP implementation, redirection is a terminal operation: after calling the 
-    method to redirect, there is nothing the app can do - regardless of whether the redirect 
+-   **Platform**: In the UWP implementation, redirection is a terminal operation: after calling the
+    method to redirect, there is nothing the app can do - regardless of whether the redirect
     succeeded or failed. The platform therefore explicitly terminates an instance that has chosen
-    to redirect. If redirection fails, the activation request fails. The UX is the same as an 
+    to redirect. If redirection fails, the activation request fails. The UX is the same as an
     activation failure today.
 
--   **Reunion**: The Reunion implementation is more flexible: redirection is not a terminal operation. 
+-   **Windows App SDK**: The Windows App SDK implementation is more flexible: redirection is not a terminal operation.
     Partly this is because it is a lot more problematic to terminate a traditional unpackaged app than
-    a UWP app. Partly it is because the app may wish to redirect a given activation request but then 
-    to continue activating the current instance anyway. This supports the case where an activation 
-    request is redirected to an instance that was already running: that instance could already be 
-    doing work, and may choose to  redirect the new request elsewhere. Even in the case where an 
-    instance was not already running prior to receiving the activation request, it might still want 
+    a UWP app. Partly it is because the app may wish to redirect a given activation request but then
+    to continue activating the current instance anyway. This supports the case where an activation
+    request is redirected to an instance that was already running: that instance could already be
+    doing work, and may choose to  redirect the new request elsewhere. Even in the case where an
+    instance was not already running prior to receiving the activation request, it might still want
     the option to choose for itself what happens next.
 
     An activation request can be redirected multiple times - this leaves it open for the app to decide
-    what makes sense for that app. That is, instance A could redirect to instance B, which in turn 
-    could redirect to instance C, and so on. This also allows for a circular redirection - and again, 
-    it is left open for the app to resolve circular redirections in whatever way it chooses. For 
-    example, to  resolve a circular redirection, an app instance could take note of the activation 
-    payload and match it against future activation requests. Or it could modify the payload when it 
+    what makes sense for that app. That is, instance A could redirect to instance B, which in turn
+    could redirect to instance C, and so on. This also allows for a circular redirection - and again,
+    it is left open for the app to resolve circular redirections in whatever way it chooses. For
+    example, to  resolve a circular redirection, an app instance could take note of the activation
+    payload and match it against future activation requests. Or it could modify the payload when it
     redirects a request,  such that it can easily determine that this is a request it has already seen.
 
 ### Unregistering
@@ -107,7 +107,7 @@ after it has unregistered itself.
 -   **Platform**: When an instance unregisters itself, it is no longer available for activation
     redirection. An app that has unregistered itself is not included in the list of instance that is
     made available to the app.
--   **Reunion**: Unregistering a key does not prevent an instance from being a target for
+-   **Windows App SDK**: Unregistering a key does not prevent an instance from being a target for
     redirection. Nor does it exclude the instance from the list.
 
 ### Activation Events
@@ -116,7 +116,7 @@ In order to handle reactivation, the app can register for an Activated event.
 
 -   **Platform**: The event passes a `Windows.ApplicationModel.Activation.IActivatedEventArgs` to
     the app.
--   **Reunion**: The event passes a `Microsoft.Windows.AppLifecycle.AppActivationArguments` instance to
+-   **Windows App SDK**: The event passes a `Microsoft.Windows.AppLifecycle.AppActivationArguments` instance to
     the app, which contains one of the `-ActivatedEventArgs` instances.
 
 ## Examples
@@ -271,7 +271,7 @@ int APIENTRY wWinMain(
 
     // First, hook up the Activated event, to allow for this instance of the app
     // getting reactivated as a result of multi-instance redirection.
-    Microsoft::ProjectReunion::AppInstance::GetCurrent().Activated([](
+    Microsoft::WindowsAppSDK::AppInstance::GetCurrent().Activated([](
         AppActivationArguments const& args)
         { OnActivated(args); });
 
@@ -431,8 +431,8 @@ activation from another instance to this app.
 > Note: the existing
 > [AppInstance.GetInstances](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getinstances)
 > only returns instances that have explicitly registered for multi-instance redirection. However,
-> the new AppInstance Reunion class will provide an API surface for all manner of
-> app-instance-related behaviors, not restricted to instance redirection. For this reason, Reunion
+> the new AppInstance Windows App SDK class will provide an API surface for all manner of
+> app-instance-related behaviors, not restricted to instance redirection. For this reason, Windows App SDK
 > will maintain a list of all running instances and will not require explicit registration by the
 > app.
 
@@ -440,20 +440,20 @@ activation from another instance to this app.
 if another instance has already registered that key, then return that other instance instead. This
 is similar to the platform
 [AppInstance.FindOrRegisterInstanceForKey](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.findorregisterinstanceforkey)
-except that that implementation is specific to instance redirection, whereas the Reunion design
+except that that implementation is specific to instance redirection, whereas the Windows App SDK design
 allows for the app to register a key for any reason.
 
 **UnregisterKey** unregisters a given key for this instance. The existing platform behavior is
 specific to instance redirection, and unregistering the key unregisters that instance for
-redirection (and removes it from the platform's collection of registered instances). In the Reunion
+redirection (and removes it from the platform's collection of registered instances). In the Windows App SDK
 design, unregistering a key simply removes the key for this instance; it does not have any effect on
-instance redirection, nor does it remove this instance from the collection that Reunion is
+instance redirection, nor does it remove this instance from the collection that Windows App SDK is
 maintaining of all running instances.
 
 **RedirectActivationTo** enables an instance of the app to redirect the current activation request to another
 instance. This is very similar to the existing platform
 [AppInstance.RedirectActivationTo](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.redirectactivationto)
-method, except that the Reunion implementation allows the app to pass an ActivationArguments
+method, except that the Windows App SDK implementation allows the app to pass an ActivationArguments
 payload, thus opening the scope to allow the app to modify or replace the activation arguments that
 the target instance will receive.
 

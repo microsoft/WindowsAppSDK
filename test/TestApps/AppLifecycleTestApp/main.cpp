@@ -63,7 +63,7 @@ int main()
             if (argument.compare(L"RegisterProtocol") == 0)
             {
                 ActivationRegistrationManager::RegisterForProtocolActivation(c_testProtocolScheme, L"logo",
-                    L"Project Reunion Test Protocol", L"");
+                    L"Windows App SDK Test Protocol", L"");
 
                 // Signal event that protocol was registered.
                 SignalPhase(c_testProtocolPhaseEventName);
@@ -87,7 +87,7 @@ int main()
             else if (argument.compare(L"RegisterFile") == 0)
             {
                 ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension.c_str() },
-                    L"logo", L"Project Reunion Test File Type", { L"open" }, L"");
+                    L"logo", L"Windows App SDK Test File Type", { L"open" }, L"");
 
                 // Signal event that file was registered.
                 SignalPhase(c_testFilePhaseEventName);

@@ -1,6 +1,6 @@
 # AppLifecycle - State Notifications
 
-Reunion introduces a new AppLifecycle component that provides a core set of functionality related to
+Windows App SDK introduces a new AppLifecycle component that provides a core set of functionality related to
 app activation and lifecycle. Much of this functionality is directly equivalent - or very similar -
 to existing functionality within the platform. However, there is value in abstracting this
 functionality so that all app types can use it, delivering it out-of-band from the OS, and making it
@@ -22,7 +22,7 @@ easily consumable by all app types. There's also no single API that's undocked f
 
 This spec describes new APIs that address these issues by incorporating a comprehensive set of the
 [Windows.System.Power.PowerManager](https://docs.microsoft.com/en-us/uwp/api/Windows.System.Power.PowerManager)
-WinRT API in the Reunion AppLifecycle component, and include additional low-level notifications
+WinRT API in the Windows App SDK AppLifecycle component, and include additional low-level notifications
 based on the Win32
 [PowerSettingRegisterNotification](https://docs.microsoft.com/en-us/windows/win32/api/powersetting/nf-powersetting-powersettingregisternotification)
 and matching
@@ -32,7 +32,7 @@ APIs.
 
 ## Description
 
-Providing a Reunion version of PowerManager is relatively straightforward, in that we aim to bring
+Providing a Windows App SDK version of PowerManager is relatively straightforward, in that we aim to bring
 across the entire existing API in its current form. For the Win32 APIs, the situation is a little
 murkier. It boils down to a choice between 2 usage patterns:
 
@@ -47,11 +47,11 @@ Classic Win32 apps can use either the WM model and/or the callback model. The ca
 consistent with other app types - including not only modern UWP apps, but also traditional MFC,
 Winforms and WPF apps. Also, the callback model does not prescribe a windowing or threading model,
 which is better for headless/background components. Given this, since all app types can work with
-the callback model, but only classic Win32 apps use the WM model, the Reunion API will use the
+the callback model, but only classic Win32 apps use the WM model, the Windows App SDK API will use the
 callback model for Cobalt. Additional WM-based behavior can be added in a later release, if customer
 demand indicates it would provide significant benefit.
 
-The net is that the Reunion PowerManager API will be a combination of WinRT PowerManager and Win32
+The net is that the Windows App SDK PowerManager API will be a combination of WinRT PowerManager and Win32
 PowerSettingRegisterNotification. We will define new WinRT types (in
 Microsoft.ApplicationModel.PowerManager) that provide event handlers for apps to use.
 
@@ -146,7 +146,7 @@ void OnPowerSupplyStateChanged()
     PowerSupplyState powerState = PowerManager::PowerSupplyState();
     BatteryState batteryState = PowerManager::BatteryState();
     int remainingCharge = PowerManager::RemainingChargePercent();
-    
+
     // Note if the BatteryState is BatteryState::NotPresent,
     // then RemainingChargePercent is 100.
 
@@ -222,11 +222,11 @@ PowerSettingRegisterNotification API:
 -   [PowerSettingRegisterNotification](https://docs.microsoft.com/windows/win32/api/powersetting/nf-powersetting-powersettingregisternotification)
 
 The existing PowerSettingRegisterNotification API takes a number of parameters with many different
-possible behaviors and events supported. Project Reunion wraps these into a WinRT type accessible to
+possible behaviors and events supported. Windows App SDK wraps these into a WinRT type accessible to
 all languages and runtimes.
 
 -   Many of the common power registration settings will be available as WinRT events
--   Initially, Project Reunion only supports apps, so the "services or functions" flag is not
+-   Initially, Windows App SDK only supports apps, so the "services or functions" flag is not
     configurable
 -   The PowerManager implementation eliminates the need for apps to manage notification handles
     directly
@@ -254,7 +254,7 @@ listed below, along with the proposed mappings to new PowerManager events and en
 | GUID_SYSTEM_AWAYMODE              | The system is entering or exiting away mode.                                                                                                                                                                           | `SystemAwayModeStatus` |
 
 The existing PowerManager class exposes only static properties and events: all members are valid to
-be brought over to the Reunion version. Many existing enumerated values are brought over as-is as
+be brought over to the Windows App SDK version. Many existing enumerated values are brought over as-is as
 well.
 
 ```idl
@@ -363,7 +363,7 @@ namespace Microsoft.Windows.System.Power
         // gets the away/not-away status of the system away mode
         static SystemAwayModeState SystemAwayModeState;
         static event EventHandler<object> SystemAwayModeStateChanged;
-        
+
         // gets the busy/idle state of the system
         static SystemBusyState SystemBusyState;
         static event EventHandler<object> SystemBusyStateChanged;
@@ -373,7 +373,7 @@ namespace Microsoft.Windows.System.Power
 
 ## Details
 
-### Mapping platform power registration to Reunion
+### Mapping platform power registration to Windows App SDK
 
 | PowerSettingRegisterNotification parameter | Description                                                                                                                                               |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -382,14 +382,14 @@ namespace Microsoft.Windows.System.Power
 | HANDLE Recipient                           | A handle to the recipient of the notifications.                                                                                                           |
 | PHPOWERNOTIFY RegistrationHandle           | Out parameter: a handle to the registration, which the app can later use to unregister for notifications, via the PowerSettingUnregisterNotification API. |
 
-Reunion AppLifecycle will not bring this function forward in its current form. Instead, AppLifecycle
+Windows App SDK AppLifecycle will not bring this function forward in its current form. Instead, AppLifecycle
 will bring the functionality forward using the PowerManager pattern for the additional
 PowerSettingRegisterNotification notifications:
 
 -   Instead of a single register function that takes a GUID, the new API will expose multiple new
     events, mapping to each of the GUIDs that are brought forward. Not all GUIDs will be brought
     forward, as some of them are already covered by PowerManager events.
--   For Reunion v1, the target consumers of the new APIs are scoped to apps not services - this
+-   For Windows App SDK v1, the target consumers of the new APIs are scoped to apps not services - this
     eliminates the need for the Flags parameter.
 -   The new API will adopt the PowerManager pattern for registering and unregistering callbacks,
     which eliminates the need for the register/unregister handles.

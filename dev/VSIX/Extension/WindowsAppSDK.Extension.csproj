@@ -67,16 +67,16 @@
     <PackageReference Include="Microsoft.Windows.CppWinRT" Version="[$(CppWinRTVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$(ReunionVersion)]" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
@@ -257,8 +257,8 @@
     <VSIXVersion>$(OptionalVSIXVersion)</VSIXVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(VSIXVersion)' == ''">
-    <!-- Use 3-part reunion version, less any tagging suffix -->
-    <VSIXVersion>$(ReunionVersion)</VSIXVersion>
+    <!-- Use 3-part Windows App SDK version, less any tagging suffix -->
+    <VSIXVersion>$(WindowsAppSDKVersion)</VSIXVersion>
     <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-"))))</VSIXVersion>
     <!--
       Add a timestamp as part 4 of the version for uniqueness, and to ensure newer builds are newer

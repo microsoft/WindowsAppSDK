@@ -19,7 +19,7 @@ Steps:
 
 ========================================================================
 Learn more about Windows App SDK here:
-https://docs.microsoft.com/en-us/windows/apps/project-reunion/
+https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/
 Learn more about WinUI3 here:
 https://docs.microsoft.com/en-us/windows/apps/winui/winui3/
 Learn more about C++/WinRT here:
