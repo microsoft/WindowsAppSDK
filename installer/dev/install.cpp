@@ -169,8 +169,9 @@ namespace WindowsAppSDKInstaller {
             return;
         }
 
+        PCWSTR c_windowsAppSDKTempDirectoryPrefix{ L"WAS" };
         wchar_t packageFilename[MAX_PATH];
-        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, packageFilename));
+        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppSDKTempDirectoryPrefix, 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.

@@ -373,7 +373,7 @@ BuildOutput/
 .nuget/
 
 # Installer build configuration header
-installer/dev/windows_app_sdk_definitions_override.h
+installer/dev/windowsappsdk_definitions_override.h
 
 # Installer test packages
 installer/test/testpackages/

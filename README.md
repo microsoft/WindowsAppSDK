@@ -57,7 +57,7 @@ this is the exception and not the norm, and provide reasonable fallbacks when po
 
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
-* [Video on Windows App SDK](https://aka.ms/windows_app_sdk_ignite) - Learn about the Windows App SDK in a 22 minute video!
+* [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278) - Learn about the Windows App SDK in a 22 minute video!
 * [Roadmap](docs/roadmap.md) - Where we're going!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
