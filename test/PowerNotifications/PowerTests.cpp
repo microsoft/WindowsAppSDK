@@ -5,22 +5,24 @@
 #include "winrt/Microsoft.ProjectReunion.h"
 
 using PowerEventHandle =
-winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
+    winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
 
 using namespace winrt::Microsoft::ProjectReunion;
+using namespace std::chrono_literals;
 
 namespace ProjectReunionPowerTests
 {
-    constexpr auto TIMEOUT = 2000;
+    // Timeout in milliseconds
+    constexpr auto c_timeoutInMSec{ 2000 };
     class PowerTests
     {
     public:
         BEGIN_TEST_CLASS(PowerTests)
             TEST_CLASS_PROPERTY(L"ActivationContext", L"PowerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            END_TEST_CLASS()
+        END_TEST_CLASS()
 
-            TEST_METHOD(GetBatteryStatus)
+        TEST_METHOD(GetBatteryStatus)
         {
             auto stat = PowerManager::BatteryStatus();
             VERIFY_ARE_EQUAL(stat, BatteryStatus::NotPresent);
@@ -59,7 +61,7 @@ namespace ProjectReunionPowerTests
                     SetEvent(event.get());
                 });
 
-            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(batteryStat, BatteryStatus::Idle);
             VERIFY_ARE_EQUAL(powerStat, PowerSupplyStatus::Adequate);
             VERIFY_ARE_EQUAL(remainingCharge, 100);
@@ -77,13 +79,13 @@ namespace ProjectReunionPowerTests
             static wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
 
-            auto stat = winrt::Windows::Foundation::TimeSpan(std::chrono::seconds(1));
+            auto stat = winrt::Windows::Foundation::TimeSpan(1s);
             auto token = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
                     stat = PowerManager::RemainingDischargeTime();
                     SetEvent(event.get());
                 });
-            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(stat.count(), -10000000);
             PowerManager::RemainingDischargeTimeChanged(token);
         }
@@ -105,7 +107,7 @@ namespace ProjectReunionPowerTests
                     SetEvent(event.get());
                 });
 
-            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Disabled);
             PowerManager::EnergySaverStatusChanged(token);
         }
@@ -127,7 +129,7 @@ namespace ProjectReunionPowerTests
                     SetEvent(event.get());
                 });
 
-            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(stat, PowerSourceKind::AC);
             PowerManager::PowerSourceKindChanged(token);
         }
@@ -149,7 +151,7 @@ namespace ProjectReunionPowerTests
                     SetEvent(event.get());
                 });
 
-            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(stat, DisplayStatus::On);
             PowerManager::DisplayStatusChanged(token);
         }
@@ -189,7 +191,7 @@ namespace ProjectReunionPowerTests
                     SetEvent(event.get());
                 });
 
-            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), TIMEOUT) == WAIT_OBJECT_0);
+            VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
             VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Present);
             PowerManager::UserPresenceStatusChanged(token);
         }
