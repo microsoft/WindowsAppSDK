@@ -24,7 +24,7 @@
     <ClInclude Include="packages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="project_reunion_definitions.h">
+    <ClInclude Include="windowsappsdk_definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -53,7 +53,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ProjectReunionInstall.rc">
+    <ResourceCompile Include="WindowsAppSDKInstall.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

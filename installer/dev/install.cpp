@@ -8,7 +8,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace ProjectReunionInstaller {
+namespace WindowsAppSDKInstaller {
 
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
@@ -157,7 +157,7 @@ namespace ProjectReunionInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppSDKInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
@@ -218,7 +218,7 @@ namespace ProjectReunionInstaller {
 
     HRESULT DeployPackages(bool quiet) noexcept try
     {
-        for (const auto& package : ProjectReunionInstaller::c_packages)
+        for (const auto& package : WindowsAppSDKInstaller::c_packages)
         {
             DeployPackageFromResource(package, quiet);
         }

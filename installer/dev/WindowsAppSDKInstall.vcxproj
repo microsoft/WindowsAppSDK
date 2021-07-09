@@ -9,7 +9,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{e6e59b30-9f55-4550-aa73-3b3b3dc89872}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ProjectReunionInstall</RootNamespace>
+    <RootNamespace>WindowsAppSDKInstall</RootNamespace>
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.19041.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
@@ -112,7 +112,7 @@
     <ClInclude Include="install.h" />
     <ClInclude Include="packages.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="project_reunion_definitions.h" />
+    <ClInclude Include="windowsappsdk_definitions.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -127,14 +127,14 @@
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
   </ItemGroup>
-  <ItemDefinitionGroup Condition="Exists('project_reunion_definitions_override.h')">
+  <ItemDefinitionGroup Condition="Exists('windowsappsdk_definitions_override.h')">
     <ClCompile>
       <PreprocessorDefinitions>USE_DEFINITIONS_OVERRIDE_HEADER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="ProjectReunionInstall.rc">
-      <PreprocessorDefinitions Condition="Exists('project_reunion_definitions_override.h')">USE_DEFINITIONS_OVERRIDE_HEADER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    <ResourceCompile Include="WindowsAppSDKInstall.rc">
+      <PreprocessorDefinitions Condition="Exists('windowsappsdk_definitions_override.h')">USE_DEFINITIONS_OVERRIDE_HEADER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
