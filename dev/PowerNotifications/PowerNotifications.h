@@ -101,6 +101,7 @@ namespace winrt::Microsoft::ProjectReunion
             DWORD m_cachedPowerSourceKind;
             EFFECTIVE_POWER_MODE m_cachedPowerMode;
             ULONGLONG m_cachedDischargeTime;
+            std::atomic<ULONG> m_powerModeVersion{ NULL };
             winrt::Microsoft::ProjectReunion::SystemSuspendStatus m_systemSuspendStatus;
             ::EnergySaverStatus m_cachedEnergySaverStatus;
             CompositeBatteryStatus m_cachedCompositeBatteryStatus{ 0 };
@@ -122,17 +123,14 @@ namespace winrt::Microsoft::ProjectReunion
             EventType m_systemAwayModeStatusChangedEvent;
             EventType m_systemSuspendStatusChangedEvent;
 
-            EnergySaverStatusRegistration m_energySaverStatusHandle;
-            CompositeBatteryStatusRegistration m_batteryStatusHandle;
-            PowerConditionRegistration m_powerSourceKindHandle;
-            DischargeTimeRegistration m_dischargeTimeHandle;
-            DisplayStatusRegistration m_displayStatusHandle;
-            SystemIdleStatusRegistration m_systemIdleStatusHandle;
-            UserPresenceStatusRegistration m_userPresenceStatusHandle;
-            HPOWERNOTIFY m_systemSuspendHandle;
-
-            // EffectivePowerMode variables
-            std::atomic<ULONG> m_powerModeVersion{ NULL };
+            EnergySaverStatusRegistration m_energySaverStatusHandle{};
+            CompositeBatteryStatusRegistration m_batteryStatusHandle{};
+            PowerConditionRegistration m_powerSourceKindHandle{};
+            DischargeTimeRegistration m_dischargeTimeHandle{};
+            DisplayStatusRegistration m_displayStatusHandle{};
+            SystemIdleStatusRegistration m_systemIdleStatusHandle{};
+            UserPresenceStatusRegistration m_userPresenceStatusHandle{};
+            HPOWERNOTIFY m_systemSuspendHandle{};
             void* m_powerModeHandle{};
 
             PowerFunctionDetails energySaverStatusFunc{

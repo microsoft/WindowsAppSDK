@@ -248,13 +248,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             wil::slim_event done;
         } context;
 
-        void* handle{};
-        ULONG version{ GetEffectivePowerModeVersion() };
         auto handler{ [](EFFECTIVE_POWER_MODE mode, void* rawContext) {
             auto context{ reinterpret_cast<notify_callback*>(rawContext) };
             context->mode = mode;
             context->done.SetEvent();
         } };
+
+        void* handle{};
+        ULONG version{ GetEffectivePowerModeVersion() };
 
         THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(version, handler, &context, &handle));
         context.done.wait();

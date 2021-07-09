@@ -45,11 +45,13 @@ namespace Microsoft.ProjectReunion
 
     enum EffectivePowerMode
     {
+        // EFFECTIVE_POWER_MODE_V1 values
         BatterySaver,
         BetterBattery,
         Balanced,
         HighPerformance,
-        MaxPerformance, // v1 last supported
+        MaxPerformance,
+        // EFFECTIVE_POWER_MODE_V2 additional values
         GameMode,
         MixedReality
     };
