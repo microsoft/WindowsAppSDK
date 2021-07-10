@@ -51,6 +51,12 @@
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppInstance" ThreadingModel="both" />
         <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.AppLifecycle" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationChannel" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationCreateChannelResult" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationActivationInfo" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>

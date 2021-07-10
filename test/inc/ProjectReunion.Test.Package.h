@@ -81,6 +81,13 @@ namespace Test::Packages::DynamicDependencyDataStore
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
 }
 
+namespace Test::Packages::PushNotificationsLongRunningTask
+{
+    constexpr PCWSTR c_PackageDirName = L"PushNotificationsLongRunningTask";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.PushNotificationsTask_" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.PushNotificationsTask_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+}
+
 namespace Test::Packages
 {
     inline std::wstring GetPackagePath(PCWSTR packageFullName)
@@ -131,14 +138,14 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-WIN32_FILE_ATTRIBUTE_DATA data{};
-const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
-const auto lastError{ ::GetLastError() };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
+            WIN32_FILE_ATTRIBUTE_DATA data{};
+            const auto ok{ GetFileAttributesExW(msix.c_str(), GetFileExInfoStandard, &data) };
+            const auto lastError{ ::GetLastError() };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"GetFileAttributesExW(%ls):%d LastError:%u", msix.c_str(), static_cast<int>(ok), lastError));
 
-std::error_code errorcode{};
-auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
-WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
+            std::error_code errorcode{};
+            auto isregularfile{ std::filesystem::is_regular_file(msix, errorcode) };
+            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_regular_file(%ls):%ls error_code:%d %hs", msix.c_str(), isregularfile ? L"True" : L"False", errorcode.value(), errorcode.message().c_str()));
 
             //VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
@@ -240,6 +247,27 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
         return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
+    inline void AddPackage_PushNotificationsLongRunningTask()
+    {
+        AddPackage(Test::Packages::PushNotificationsLongRunningTask::c_PackageDirName, Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
+    }
+
+    inline void RemovePackage_PushNotificationsLongRunningTask()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
+    }
+
+    inline bool IsPackageRegistered_PushNotificationsLongRunningTask()
+    {
+        return IsPackageRegistered(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
+    }
+
     inline std::filesystem::path GetProjectReunionFrameworkMsixPath()
     {
         // Determine the location of ProjectReunion's Framework's msix. See GetSolutionOutDirPath() for more details.
@@ -250,4 +278,19 @@ WEX::Logging::Log::Comment(WEX::Common::String().Format(L"std::filesystem::is_re
     }
 }
 
+namespace Test::Packages::WapProj
+{
+    inline void AddPackage(std::filesystem::path packagePath, const PCWSTR& packageName, const PCWSTR& packageExtension)
+    {
+        packagePath /= packageName;
+        packagePath += packageExtension;
+        auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
+
+        // Install the package
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+        auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
+        VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packagePath.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
+    }
+}
 #endif // __PROJECTREUNION_TEST_PACKAGE_H

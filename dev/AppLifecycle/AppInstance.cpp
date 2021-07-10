@@ -11,6 +11,7 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
+#include "GetRawNotificationEventArgs.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -33,30 +34,37 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Push past the '----' commandline argument prefix.
         argsStart += 4;
 
-        // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-        auto argsEnd = commandLine.find_first_of(L":", argsStart);
+        auto argsEnd = commandLine.find_first_of(L" ", argsStart);
+
+        // Separate the argument from any behind it on the command-line.
+        std::wstring argument;
         if (argsEnd == std::wstring::npos)
         {
-            return { L"", L"" };
+            argument = commandLine.substr(argsStart);
         }
-
-        if (argsStart > argsEnd)
+        else
         {
-            throw std::overflow_error("commandLine");
+            if (argsStart > argsEnd)
+            {
+                throw std::invalid_argument("commandLine");
+            }
+
+            argument = commandLine.substr(argsStart, (argsEnd - argsStart));
         }
 
-        auto argsLength = argsEnd - argsStart;
-        auto dataStart = argsEnd + 1;
+        // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
+        auto argsDelim = argument.find_first_of(L":");
+        if (argsDelim == std::wstring::npos)
+        {
+            return { argument, L"" };
+        }
 
-        return { commandLine.substr(argsStart, argsLength), commandLine.substr(dataStart) };
+        return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
     }
 
     std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
     {
-        auto kind = ExtendedActivationKind::Protocol;
-        winrt::Windows::Foundation::IInspectable data;
-
-        std::tie(kind, data) = DecodeActivatedEventArgs(args.Uri());
+        auto [kind, data] = DecodeActivatedEventArgs(args.Uri());
 
         // Let the caller args pass through if nothing was determined here.
         if (data == nullptr)
@@ -308,49 +316,65 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
+        bool foundArgs = false;
 
+        // For packaged, try to get platform args first.
         if (HasIdentity())
         {
-            auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs();
-            if (args)
+            if (auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs())
             {
-                data = args.as<IInspectable>();
+                data = args;
                 kind = static_cast<ExtendedActivationKind>(args.Kind());
+                foundArgs = true;
             }
         }
-        else
+
+        // Handle all Reunion types next (both packaged and unpackaged).
+        std::wstring commandLine = std::wstring(GetCommandLine());
+        if (!foundArgs)
         {
-            // Generate IActivatedEventArgs for non-Packaged applications.
-            std::wstring contractId;
-            std::wstring contractData;
-            auto commandLine = std::wstring(GetCommandLine());
-            std::tie(contractId, contractData) = ParseCommandLine(commandLine);
+            auto [contractArgument, contractData] = ParseCommandLine(commandLine);
 
             // All specific launch types are encoded as a URI and transported as a
             // protocol, except the catch-all LaunchActivatedEventArgs case.
-            if (!contractId.empty() && (CompareStringOrdinal(contractId.c_str(), -1, c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL))
+            if (!contractArgument.empty())
             {
-                kind = ExtendedActivationKind::Protocol;
-                auto args = make<ProtocolActivatedEventArgs>(contractData);
-                data = args.as<IInspectable>();
-
-                // Encoded launch is a protocol launch where the argument data is
-                // encapsulated in the Uri Query data.  We handle that here and
-                // try to return the correct IActivatedEventArgs type that is
-                // encoded in the data rather than the IProtocolActivatedEventArgs
-                // itself.
-                auto protocolArgs = args.as<IProtocolActivatedEventArgs>();
-                if (IsEncodedLaunch(protocolArgs.Uri()))
+                if (contractData.empty())
                 {
-                    std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(protocolArgs);
+                    // If the contractData is empty, handle any aliased encoded launches.
+                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"ReunionPushServer", -1, TRUE) == CSTR_EQUAL)
+                    {
+                        contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                        contractArgument = c_protocolArgumentString;
+                    }
+                }
+
+                if (CompareStringOrdinal(contractArgument.c_str(), -1, c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)
+                {
+                    kind = ExtendedActivationKind::Protocol;
+                    auto args = make<ProtocolActivatedEventArgs>(contractData);
+                    data = args;
+
+                    // Encoded launch is a protocol launch where the argument data is
+                    // encapsulated in the Uri Query data.  We handle that here and
+                    // try to return the correct IActivatedEventArgs type that is
+                    // encoded in the data rather than the IProtocolActivatedEventArgs
+                    // itself.
+                    if (IsEncodedLaunch(args.Uri()))
+                    {
+                        std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(args);
+                    }
+
+                    foundArgs = true;
                 }
             }
+        }
 
-            // Haven't set the kind yet, and so let's default to Launch.
-            if (kind == ExtendedActivationKind::Launch)
-            {
-                data = make<LaunchActivatedEventArgs>(commandLine).as<IInspectable>();
-            }
+        // All scenarios should just be marked as Launch.
+        if (!foundArgs)
+        {
+            kind = ExtendedActivationKind::Launch;
+            data = make<LaunchActivatedEventArgs>(commandLine);
         }
 
         return make<AppActivationArguments>(kind, data);
