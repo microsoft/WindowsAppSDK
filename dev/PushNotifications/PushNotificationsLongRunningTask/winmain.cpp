@@ -18,7 +18,7 @@ using namespace Microsoft::WRL;
 
 struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) NotificationsReunionEndpointImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, INotificationsReunionEndpoint>
 {
-    STDMETHODIMP GetStringFromLRP(/*[out, retval]*/ PWSTR* packageFullName)
+    STDMETHODIMP GetStringFromLRP(/*[out, retval]*/ LPWSTR* packageFullName)
     {
         *packageFullName = nullptr;
 
@@ -32,6 +32,14 @@ struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) NotificationsReu
         RETURN_IF_FAILED(StringCchCopy(copy, length + 1, L"Hi from the Long Running Process UwU"));
 
         *packageFullName = copy;
+        return S_OK;
+    }
+
+    STDMETHODIMP GetStringLength(/*[in]*/ PCWSTR string, /*[out]*/ ULONG* length)
+    {
+        // working too hard
+        size_t theLength = wcslen(string);
+        *length = theLength;
         return S_OK;
     }
 };
@@ -61,6 +69,14 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     module.Terminate();
 
     ::CoUninitialize();
-
     return 0;
+}
+
+STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hinst, DWORD reason, _In_opt_ void*)
+{
+    if (reason == DLL_PROCESS_ATTACH)
+    {
+        DisableThreadLibraryCalls(hinst);
+    }
+    return TRUE;
 }

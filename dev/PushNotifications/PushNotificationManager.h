@@ -15,6 +15,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(const winrt::guid &remoteId);
 
+        static winrt::hstring GetStringFromComServer();
+
+        static uint32_t GetStringLengthFromComServer(const winrt::hstring& inputString);
+
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
     };

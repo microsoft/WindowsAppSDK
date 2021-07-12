@@ -6,6 +6,9 @@
 #include "PushNotificationManager.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
 
+// Need to fix this ref!!!
+#include <..\PushNotifications.LongRunningTask.ProxyStub\NotificationsReunionEndpoint_h.h>
+
 #include "PushNotificationCreateChannelResult.h"
 #include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -17,6 +20,9 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+
+#include <winstring.h>
+#include <wil/resource.h>
 
 using namespace std::literals;
 
@@ -243,6 +249,47 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator) && token.Cookie() && winrt::get_module_lock() == 0)
         {
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
+        }
+    }
+
+    winrt::hstring PushNotificationManager::GetStringFromComServer()
+    {
+        try
+        {
+            wil::com_ptr<INotificationsReunionEndpoint> reunionEndpoint{
+                wil::CoCreateInstance<NotificationsReunionEndpoint,
+                INotificationsReunionEndpoint>(CLSCTX_LOCAL_SERVER) };
+
+            LPWSTR stringFromComServer = nullptr;
+            THROW_IF_FAILED(reunionEndpoint->GetStringFromLRP(&stringFromComServer));
+
+            return winrt::hstring(stringFromComServer);
+        }
+        catch (...)
+        {
+            HRESULT error = wil::ResultFromCaughtException();
+            return std::to_wstring(error).c_str();
+        }
+    }
+
+    uint32_t PushNotificationManager::GetStringLengthFromComServer(const winrt::hstring& inputString)
+    {
+        try
+        {
+            wil::com_ptr<INotificationsReunionEndpoint> reunionEndpoint{
+                wil::CoCreateInstance<NotificationsReunionEndpoint,
+                INotificationsReunionEndpoint>(CLSCTX_LOCAL_SERVER) };
+
+            std::wstring hstringAsCommonString{ inputString };
+            ULONG length = 0;
+            THROW_IF_FAILED(reunionEndpoint->GetStringLength(hstringAsCommonString.c_str(), &length));
+
+            return length;
+        }
+        catch (...)
+        {
+            HRESULT error = wil::ResultFromCaughtException();
+            return error;
         }
     }
 }
