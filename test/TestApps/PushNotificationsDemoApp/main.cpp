@@ -89,6 +89,33 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
+    std::cout << "Project Reunion Push Notification Test App" << std::endl;
+    std::cout << "==== wait 5 sec ====" << std::endl;
+
+    Sleep(5000);
+
+    std::wcout << L"String from LRP:" << std::endl;
+
+    auto lrpString = PushNotificationManager::GetStringFromComServer();
+    std::wstring lrpStringAsWstring{ lrpString };
+
+    std::wcout << lrpStringAsWstring << std::endl;
+
+    std::cout << "==== wait 5 sec ====" << std::endl;
+
+    std::wstring theWstring;
+    std::wcin >> theWstring;
+
+    std::wcout << theWstring << std::endl;
+
+    winrt::hstring inputHString(theWstring.c_str());
+    ULONG stringLengthFromComServer = PushNotificationManager::GetStringLengthFromComServer(inputHString);
+
+    std::wcout << L"Length: " + std::to_wstring(stringLengthFromComServer) << std::endl;
+
+    Sleep(10000);
+
+    /*
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
@@ -131,6 +158,6 @@ int main()
 
     // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
     PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
-
+    */
     return 0;
 }

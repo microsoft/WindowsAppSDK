@@ -165,7 +165,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PushNotifications", "PushNo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\PushNotifications\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotifications.LongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

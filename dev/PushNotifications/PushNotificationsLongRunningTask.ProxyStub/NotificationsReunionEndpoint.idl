@@ -12,6 +12,8 @@ import "ocidl.idl";
 interface INotificationsReunionEndpoint : IUnknown
 {
     HRESULT GetStringFromLRP([out] LPWSTR* stringFromLRP);
+
+    HRESULT GetStringLength([in] LPCWSTR string, [out] ULONG* length);
 };
 
 [uuid(60C6A2D9-04D9-42C3-B4E9-71158389D422)] // PR_DYNDEP_LIBID_UUID
