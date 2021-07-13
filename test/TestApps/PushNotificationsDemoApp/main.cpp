@@ -90,7 +90,8 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 int main()
 {
     std::cout << "Project Reunion Push Notification Test App" << std::endl;
-    std::cout << "==== wait 5 sec ====" << std::endl;
+    std::cout << "==== (wait 5 seconds) ====" << std::endl;
+    std::cout << "== Test 1: Get String ==" << std::endl;
 
     Sleep(5000);
 
@@ -101,17 +102,18 @@ int main()
 
     std::wcout << lrpStringAsWstring << std::endl;
 
-    std::cout << "==== wait 5 sec ====" << std::endl;
+    Sleep(5000);
+    std::cout << "== Test 2: Type a word, then get its length from LRP ==" << std::endl;
 
     std::wstring theWstring;
     std::wcin >> theWstring;
 
-    std::wcout << theWstring << std::endl;
+    std::wcout << L"Input string: " + theWstring << std::endl;
 
     winrt::hstring inputHString(theWstring.c_str());
     ULONG stringLengthFromComServer = PushNotificationManager::GetStringLengthFromComServer(inputHString);
 
-    std::wcout << L"Length: " + std::to_wstring(stringLengthFromComServer) << std::endl;
+    std::wcout << L"Length (from LRP): " + std::to_wstring(stringLengthFromComServer) << std::endl;
 
     Sleep(10000);
 
