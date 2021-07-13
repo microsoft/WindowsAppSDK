@@ -7,7 +7,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
 
 #include "PushNotificationCreateChannelResult.h"
-
+#include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
 #include "PushNotificationBackgroundTask.h"
@@ -21,6 +21,7 @@
 using namespace std::literals;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
+constexpr winrt::guid PushNotificationsTask_guid{ PUSHNOTIFICATIONS_TASK_CLSID_STRING };
 
 static wil::unique_event g_waitHandleForArgs;
 
