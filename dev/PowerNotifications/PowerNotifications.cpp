@@ -10,7 +10,6 @@
 
 namespace winrt::Microsoft::ProjectReunion::implementation
 {
-
     // EnergySaverStatus Functions
     EventType& EnergySaverStatus_Event()
     {
@@ -19,20 +18,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EnergySaverStatus_Register()
     {
-        check_hresult(PowerNotifications_RegisterEnergySaverStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterEnergySaverStatusChangedListener(
             &PowerManager::EnergySaverStatusChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_energySaverStatusHandle));
     }
 
     void EnergySaverStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
             make_self<factory_implementation::PowerManager>()->m_energySaverStatusHandle));
     }
 
     void EnergySaverStatus_Update()
     {
-        check_hresult(PowerNotifications_GetEnergySaverStatus(
+        THROW_IF_FAILED(PowerNotifications_GetEnergySaverStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedEnergySaverStatus));
     }
 
@@ -44,20 +43,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void BatteryStatus_Register()
     {
-        check_hresult(PowerNotifications_RegisterCompositeBatteryStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterCompositeBatteryStatusChangedListener(
             &PowerManager::CompositeBatteryStatusChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_batteryStatusHandle));
     }
 
     void BatteryStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterCompositeBatteryStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_UnregisterCompositeBatteryStatusChangedListener(
             make_self<factory_implementation::PowerManager>()->m_batteryStatusHandle));
     }
 
     void BatteryStatus_Update()
     {
-        auto status = &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus;
+        auto status{ &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus };
         if (PowerNotifications_GetCompositeBatteryStatus(status) == S_OK)
         {
             make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(*status);
@@ -114,20 +113,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void RemainingDischargeTime_Register()
     {
-        check_hresult(PowerNotifications_RegisterDischargeTimeChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterDischargeTimeChangedListener(
             &PowerManager::RemainingDischargeTimeChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_dischargeTimeHandle));
     }
 
     void RemainingDischargeTime_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterDischargeTimeChangedListener(
+        THROW_IF_FAILED(PowerNotifications_UnregisterDischargeTimeChangedListener(
             make_self<factory_implementation::PowerManager>()->m_dischargeTimeHandle));
     }
 
     void RemainingDischargeTime_Update()
     {
-        check_hresult(PowerNotifications_GetDischargeTime(
+        THROW_IF_FAILED(PowerNotifications_GetDischargeTime(
             &make_self<factory_implementation::PowerManager>()->m_cachedDischargeTime));
     }
 
@@ -139,20 +138,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void PowerSourceKind_Register()
     {
-        check_hresult(PowerNotifications_RegisterPowerConditionChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterPowerConditionChangedListener(
             &PowerManager::PowerSourceKindChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_powerSourceKindHandle));
     }
 
     void PowerSourceKind_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterPowerConditionChangedListener(
+        THROW_IF_FAILED(PowerNotifications_UnregisterPowerConditionChangedListener(
             make_self<factory_implementation::PowerManager>()->m_powerSourceKindHandle));
     }
 
     void PowerSourceKind_Update()
     {
-        check_hresult(PowerNotifications_GetPowerCondition(
+        THROW_IF_FAILED(PowerNotifications_GetPowerCondition(
             &make_self<factory_implementation::PowerManager>()->m_cachedPowerSourceKind));
     }
 
@@ -164,20 +163,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void DisplayStatus_Register()
     {
-        check_hresult(PowerNotifications_RegisterDisplayStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterDisplayStatusChangedListener(
             &PowerManager::DisplayStatusChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_displayStatusHandle));
     }
 
     void DisplayStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterDisplayStatusChangedListener
+        THROW_IF_FAILED(PowerNotifications_UnregisterDisplayStatusChangedListener
         (make_self<factory_implementation::PowerManager>()->m_displayStatusHandle));
     }
 
     void DisplayStatus_Update()
     {
-        check_hresult(PowerNotifications_GetDisplayStatus(
+        THROW_IF_FAILED(PowerNotifications_GetDisplayStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedDisplayStatus));
     }
 
@@ -189,14 +188,14 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void SystemIdleStatus_Register()
     {
-        check_hresult(PowerNotifications_RegisterSystemIdleStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterSystemIdleStatusChangedListener(
             &PowerManager::SystemIdleStatusChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
     void SystemIdleStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterSystemIdleStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_UnregisterSystemIdleStatusChangedListener(
             make_self<factory_implementation::PowerManager>()->m_systemIdleStatusHandle));
     }
 
@@ -204,15 +203,16 @@ namespace winrt::Microsoft::ProjectReunion::implementation
     {
         // We check for the version supported by checking if the feature is supported
         // Using NULL as an indicator for uninitialized cache value
-        if (g_powerModeVersion == NULL)
+        auto& version{ make_self<factory_implementation::PowerManager>()->m_powerModeVersion };
+        if (version == NULL)
         {
-            PVOID handle;
-            auto hr = PowerRegisterForEffectivePowerModeNotifications(
-                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, PVOID) {}, NULL, &handle);
-            g_powerModeVersion = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
-            check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
+            void* handle{};
+            auto hr{ PowerRegisterForEffectivePowerModeNotifications(
+                EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, void*) {}, nullptr, &handle) };
+            version = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+            THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
-        return g_powerModeVersion;
+        return version;
     }
 
     EventType& EffectivePowerMode_Event()
@@ -222,18 +222,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void EffectivePowerMode_Register()
     {
-        ULONG version = GetEffectivePowerModeVersion();
-        check_hresult(PowerRegisterForEffectivePowerModeNotifications(
-            version, [](EFFECTIVE_POWER_MODE mode, PVOID)
+        ULONG version{ GetEffectivePowerModeVersion() };
+        auto& powerModeHandle{ make_self<factory_implementation::PowerManager>()->m_powerModeHandle };
+        THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(
+            version, [](EFFECTIVE_POWER_MODE mode, void*)
             {
                 PowerManager::EffectivePowerModeChanged_Callback(mode);
-            }, nullptr, &g_powerModeHandle));
+            }, nullptr, &powerModeHandle));
     }
 
     void EffectivePowerMode_Unregister()
     {
-        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(g_powerModeHandle));
-        g_powerModeHandle = NULL;
+        auto& powerModeHandle{ make_self<factory_implementation::PowerManager>()->m_powerModeHandle };
+        THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(powerModeHandle));
+        powerModeHandle = nullptr;
     }
 
     void EffectivePowerMode_Update()
@@ -246,18 +248,19 @@ namespace winrt::Microsoft::ProjectReunion::implementation
             wil::slim_event done;
         } context;
 
-        PVOID handle;
-        ULONG version = GetEffectivePowerModeVersion();
-        auto handler = [](EFFECTIVE_POWER_MODE mode, PVOID rawContext) {
-            auto context = reinterpret_cast<notify_callback*>(rawContext);
+        auto handler{ [](EFFECTIVE_POWER_MODE mode, void* rawContext) {
+            auto context{ reinterpret_cast<notify_callback*>(rawContext) };
             context->mode = mode;
             context->done.SetEvent();
-        };
+        } };
 
-        check_hresult(PowerRegisterForEffectivePowerModeNotifications(version, handler, &context, &handle));
+        void* handle{};
+        ULONG version{ GetEffectivePowerModeVersion() };
+
+        THROW_IF_FAILED(PowerRegisterForEffectivePowerModeNotifications(version, handler, &context, &handle));
         context.done.wait();
         make_self<factory_implementation::PowerManager>()->m_cachedPowerMode = context.mode;
-        check_hresult(PowerUnregisterFromEffectivePowerModeNotifications(handle));
+        THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(handle));
     }
 
     // UserPresenceStatus Functions
@@ -268,20 +271,20 @@ namespace winrt::Microsoft::ProjectReunion::implementation
 
     void UserPresenceStatus_Register()
     {
-        check_hresult(PowerNotifications_RegisterUserPresenceStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_RegisterUserPresenceStatusChangedListener(
             &PowerManager::UserPresenceStatusChanged_Callback,
             &make_self<factory_implementation::PowerManager>()->m_userPresenceStatusHandle));
     }
 
     void UserPresenceStatus_Unregister()
     {
-        check_hresult(PowerNotifications_UnregisterUserPresenceStatusChangedListener(
+        THROW_IF_FAILED(PowerNotifications_UnregisterUserPresenceStatusChangedListener(
             make_self<factory_implementation::PowerManager>()->m_userPresenceStatusHandle));
     }
 
     void UserPresenceStatus_Update()
     {
-        check_hresult(PowerNotifications_GetUserPresenceStatus(
+        THROW_IF_FAILED(PowerNotifications_GetUserPresenceStatus(
             &make_self<factory_implementation::PowerManager>()->m_cachedUserPresenceStatus));
     }
 
@@ -291,15 +294,17 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return make_self<factory_implementation::PowerManager>()->m_systemSuspendStatusChangedEvent;
     }
 
-    ULONG SuspendResumeCallback(PVOID, ULONG powerEvent, PVOID)
+    ULONG SuspendResumeCallback(void* context, ULONG powerEvent, void* setting)
     {
+        UNREFERENCED_PARAMETER(context);
+        UNREFERENCED_PARAMETER(setting);
         make_self<factory_implementation::PowerManager>()->SystemSuspendStatusChanged_Callback(powerEvent);
-        return S_OK;
+        return ERROR_SUCCESS;
     }
 
     void SystemSuspendStatus_Register()
     {
-        DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS powerParams = { 0 };
+        DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS powerParams { 0 };
         powerParams.Callback = SuspendResumeCallback;
 
         check_win32(PowerRegisterSuspendResumeNotification(
