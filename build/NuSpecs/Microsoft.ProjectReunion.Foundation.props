@@ -2,10 +2,10 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <!--Foundation packaging and build behavior is determined by the ProjectReunionFoundation property:
-        If true, this is the ProjectReunion (versus internal) deployment of Foundation. 
+    <!--Foundation packaging and build behavior is determined by the WindowsAppSdkFoundation property:
+        If true, this is the WindowsAppSdk deployment of Foundation, versus the internal deployment for test only.
         This property is defined by deployment-specific props imports, and should not be overridden by clients.-->
-    <ProjectReunionFoundation>true</ProjectReunionFoundation>
+    <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
   </PropertyGroup>
 
 </Project>
