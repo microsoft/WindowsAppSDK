@@ -4,11 +4,8 @@
 #include "pch.h"
 #include "winrt/Microsoft.ProjectReunion.h"
 
-using PowerEventHandle =
-    winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
-
-using namespace winrt::Microsoft::ProjectReunion;
 using namespace std::chrono_literals;
+using namespace winrt::Microsoft::ProjectReunion;
 
 namespace ProjectReunionPowerTests
 {
@@ -24,26 +21,27 @@ namespace ProjectReunionPowerTests
 
         TEST_METHOD(GetBatteryStatus)
         {
-            auto stat = PowerManager::BatteryStatus();
-            VERIFY_ARE_EQUAL(stat, BatteryStatus::NotPresent);
+            auto value = PowerManager::BatteryStatus();
+            VERIFY_ARE_EQUAL(value, BatteryStatus::NotPresent);
         }
 
         TEST_METHOD(GetPowerSupplyStatus)
         {
-            auto stat = PowerManager::PowerSupplyStatus();
-            VERIFY_ARE_EQUAL(stat, PowerSupplyStatus::Adequate);
+            auto value = PowerManager::PowerSupplyStatus();
+            VERIFY_ARE_EQUAL(value, PowerSupplyStatus::Adequate);
         }
 
         TEST_METHOD(GetRemainingChargePercent)
         {
-            auto stat = PowerManager::RemainingChargePercent();
-            VERIFY_ARE_EQUAL(stat, 100);
+            auto value = PowerManager::RemainingChargePercent();
+            VERIFY_ARE_EQUAL(value, 100);
         }
 
         TEST_METHOD(CompositeBatteryStatusCallback)
         {
             // This test can only be run on systems/VM with a battery
             // The values will need to be changed to reflect real-time values
+            // when running the test on such systems
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"Ignore", L"true")
             END_TEST_METHOD_PROPERTIES()
@@ -70,8 +68,8 @@ namespace ProjectReunionPowerTests
 
         TEST_METHOD(GetRemainingDischargeTime)
         {
-            auto stat = PowerManager::RemainingDischargeTime();
-            VERIFY_ARE_EQUAL(stat.count(), -10000000);
+            auto value = PowerManager::RemainingDischargeTime();
+            VERIFY_ARE_EQUAL(value.count(), -10000000);
         }
 
         TEST_METHOD(RemainingDischargeTimeCallback)
@@ -79,80 +77,80 @@ namespace ProjectReunionPowerTests
             static wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
 
-            auto stat = winrt::Windows::Foundation::TimeSpan(1s);
+            auto value = winrt::Windows::Foundation::TimeSpan(1s);
             auto token = PowerManager::RemainingDischargeTimeChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
-                    stat = PowerManager::RemainingDischargeTime();
+                    value = PowerManager::RemainingDischargeTime();
                     SetEvent(event.get());
                 });
             VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
-            VERIFY_ARE_EQUAL(stat.count(), -10000000);
+            VERIFY_ARE_EQUAL(value.count(), -10000000);
             PowerManager::RemainingDischargeTimeChanged(token);
         }
 
         TEST_METHOD(GetEnergySaverStatus)
         {
-            auto stat = PowerManager::EnergySaverStatus();
-            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Disabled);
+            auto value = PowerManager::EnergySaverStatus();
+            VERIFY_ARE_EQUAL(value, EnergySaverStatus::Disabled);
         }
 
         TEST_METHOD(EnergySaverStatusCallback)
         {
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
-            auto stat = EnergySaverStatus::Disabled;
+            auto value = EnergySaverStatus::Disabled;
             auto token = PowerManager::EnergySaverStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
-                    stat = PowerManager::EnergySaverStatus();
+                    value = PowerManager::EnergySaverStatus();
                     SetEvent(event.get());
                 });
 
             VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
-            VERIFY_ARE_EQUAL(stat, EnergySaverStatus::Disabled);
+            VERIFY_ARE_EQUAL(value, EnergySaverStatus::Disabled);
             PowerManager::EnergySaverStatusChanged(token);
         }
 
         TEST_METHOD(GetPowerSourceKind)
         {
-            auto stat = PowerManager::PowerSourceKind();
-            VERIFY_ARE_EQUAL(stat, PowerSourceKind::AC);
+            auto value = PowerManager::PowerSourceKind();
+            VERIFY_ARE_EQUAL(value, PowerSourceKind::AC);
         }
 
         TEST_METHOD(PowerSourceKindCallback)
         {
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
-            auto stat = PowerSourceKind::DC;
+            auto value = PowerSourceKind::DC;
             auto token = PowerManager::PowerSourceKindChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
-                    stat = PowerManager::PowerSourceKind();
+                    value = PowerManager::PowerSourceKind();
                     SetEvent(event.get());
                 });
 
             VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
-            VERIFY_ARE_EQUAL(stat, PowerSourceKind::AC);
+            VERIFY_ARE_EQUAL(value, PowerSourceKind::AC);
             PowerManager::PowerSourceKindChanged(token);
         }
 
         TEST_METHOD(GetDisplayStatus)
         {
-            auto stat = PowerManager::DisplayStatus();
-            VERIFY_ARE_EQUAL(stat, DisplayStatus::On);
+            auto value = PowerManager::DisplayStatus();
+            VERIFY_ARE_EQUAL(value, DisplayStatus::On);
         }
 
         TEST_METHOD(DisplayStatusCallback)
         {
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
-            auto stat = DisplayStatus::Off;
+            auto value = DisplayStatus::Off;
             auto token = PowerManager::DisplayStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
-                    stat = PowerManager::DisplayStatus();
+                    value = PowerManager::DisplayStatus();
                     SetEvent(event.get());
                 });
 
             VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
-            VERIFY_ARE_EQUAL(stat, DisplayStatus::On);
+            VERIFY_ARE_EQUAL(value, DisplayStatus::On);
             PowerManager::DisplayStatusChanged(token);
         }
 
@@ -162,9 +160,9 @@ namespace ProjectReunionPowerTests
             // and there is no way to know when the callback will be fired
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"Ignore", L"true")
-                END_TEST_METHOD_PROPERTIES()
+            END_TEST_METHOD_PROPERTIES()
 
-                auto callback_success = false;
+            auto callback_success = false;
             auto token = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
                     callback_success = true;
@@ -176,23 +174,23 @@ namespace ProjectReunionPowerTests
 
         TEST_METHOD(GetUserPresenceStatus)
         {
-            auto stat = PowerManager::UserPresenceStatus();
-            VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Present);
+            auto value = PowerManager::UserPresenceStatus();
+            VERIFY_ARE_EQUAL(value, UserPresenceStatus::Present);
         }
 
         TEST_METHOD(UserPresenceStatusCallback)
         {
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
             THROW_LAST_ERROR_IF_NULL(event.get());
-            auto stat = UserPresenceStatus::Absent;
+            auto value = UserPresenceStatus::Absent;
             auto token = PowerManager::UserPresenceStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
-                    stat = PowerManager::UserPresenceStatus();
+                    value = PowerManager::UserPresenceStatus();
                     SetEvent(event.get());
                 });
 
             VERIFY_IS_TRUE(WaitForSingleObject(event.get(), c_timeoutInMSec) == WAIT_OBJECT_0);
-            VERIFY_ARE_EQUAL(stat, UserPresenceStatus::Present);
+            VERIFY_ARE_EQUAL(value, UserPresenceStatus::Present);
             PowerManager::UserPresenceStatusChanged(token);
         }
 

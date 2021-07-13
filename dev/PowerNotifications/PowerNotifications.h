@@ -228,8 +228,10 @@ namespace winrt::Microsoft::ProjectReunion
 
             void RaiseEvent(PowerFunctionDetails fn)
             {
-                std::scoped_lock<std::mutex> lock(m_mutex);
-                fn.event()(nullptr, nullptr);
+                std::thread thread([fn]() {
+                    fn.event()(nullptr, nullptr);
+                });
+                thread.detach();                
             }
 
             // Checks if an event is already registered. If none are, then gets the status

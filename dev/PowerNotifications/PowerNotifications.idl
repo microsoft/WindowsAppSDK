@@ -72,12 +72,14 @@ namespace Microsoft.ProjectReunion
 
     static runtimeclass PowerManager
     {
-        // REVIEW: Properties and events duplicated from IPowerManagerStatics. That might not be the ideal API shape. We might want the BatteryStatusChanged event to
-        // be typed with BatteryStatus, and actually provide the BatteryStatus when the event is signaled. But for initial scaffolding, we have aligned with the existing
-        // IPowerManagerStatics implementation.
+        // Properties and events duplicated from IPowerManagerStatics.
         static EnergySaverStatus EnergySaverStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> EnergySaverStatusChanged;
 
+        // TODO : Review API shape. We might want the BatteryStatusChanged event to
+        // be typed with BatteryStatus, and actually provide the BatteryStatus when
+        // the event is signaled. But for initial scaffolding, we have aligned with
+        // the existing IPowerManagerStatics implementation.
         static BatteryStatus BatteryStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> BatteryStatusChanged;
 

@@ -294,10 +294,12 @@ namespace winrt::Microsoft::ProjectReunion::implementation
         return make_self<factory_implementation::PowerManager>()->m_systemSuspendStatusChangedEvent;
     }
 
-    ULONG SuspendResumeCallback(void*, ULONG powerEvent, void*)
+    ULONG SuspendResumeCallback(void* context, ULONG powerEvent, void* setting)
     {
+        UNREFERENCED_PARAMETER(context);
+        UNREFERENCED_PARAMETER(setting);
         make_self<factory_implementation::PowerManager>()->SystemSuspendStatusChanged_Callback(powerEvent);
-        return S_OK;
+        return ERROR_SUCCESS;
     }
 
     void SystemSuspendStatus_Register()
