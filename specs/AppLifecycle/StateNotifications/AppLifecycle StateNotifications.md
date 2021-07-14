@@ -239,7 +239,7 @@ listed below, along with the proposed mappings to new PowerManager events and en
 | GUID_BATTERY_PERCENTAGE_REMAINING | The remaining battery capacity has changed.                  | `RemainingChargePercent`, `RemainingChargePercentChanged` |
 | GUID_CONSOLE_DISPLAY_STATE        | The current monitor's display state has change. Apps should stop rendering graphics content when the monitor is off to reduce system power consumption. | _Not implemented_                                         |
 | GUID_GLOBAL_USER_PRESENCE         | The user status associated with any session has changed. This notification is only to services and other programs running in session 0. User-mode applications should register for GUID_SESSION_USER_PRESENCE instead. | _Not implemented_                                         |
-| GUID_IDLE_BACKGROUND_TASK         | The system is busy: now is a good time for apps to perform background or idle tasks that would otherwise prevent the computer from entering an idle state. | `SystemIdleStatus, SystemIdleStatusChanged`               |
+| GUID_IDLE_BACKGROUND_TASK         | The system is busy: now is a good time for apps to perform background or idle tasks that would otherwise prevent the computer from entering an idle state. | `SystemIdleStatusChanged` (no property)               |
 | GUID_MONITOR_POWER_ON             | The monitor has been powered on or off. From Windows 8 and Windows Server 2012, apps should use GUID_CONSOLE_DISPLAY_STATE instead. | _Not implemented_                                         |
 | GUID_POWER_SAVING_STATUS          | Battery saver has been turned on or off.                     | `EnergySaverStatus, EnergySaverStatusChanged`             |
 | GUID_POWERSCHEME_PERSONALITY      | The active power scheme personality has changed. All power schemes map to one of these personalities. | _Not implemented_                                         |
@@ -258,7 +258,7 @@ be brought over to the Reunion version. Many existing enumerated values are brou
 well.
 
 ```idl
-namespace Microsoft.ProjectReunion
+namespace Microsoft.Windows.System.Power
 {
     // Enums duplicated from the existing WinRT PowerManager API.
     enum EnergySaverStatus
@@ -300,11 +300,13 @@ namespace Microsoft.ProjectReunion
 
     enum EffectivePowerMode
     {
+        // EFFECTIVE_POWER_MODE_V1 values
         BatterySaver,
         BetterBattery,
         Balanced,
         HighPerformance,
-        MaxPerformance, // v1 last supported
+        MaxPerformance, 
+        // EFFECTIVE_POWER_MODE_V2 additional values
         GameMode,
         MixedReality
     };
