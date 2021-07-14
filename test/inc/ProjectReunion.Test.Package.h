@@ -81,6 +81,13 @@ namespace Test::Packages::DynamicDependencyDataStore
     constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
 }
 
+namespace Test::Packages::PushNotificationsLongRunningTask
+{
+    constexpr PCWSTR c_PackageDirName = L"PushNotificationsLongRunningTask";
+    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.PushNotificationsTask_" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.PushNotificationsTask_" PROJECTREUNION_TEST_PACKAGE_DDLM_VERSION L"_neutral__" PROJECTREUNION_TEST_MSIX_PUBLISHERID;
+}
+
 namespace Test::Packages
 {
     inline std::wstring GetPackagePath(PCWSTR packageFullName)
@@ -238,6 +245,27 @@ namespace Test::Packages
     inline bool IsPackageRegistered_DynamicDependencyDataStore()
     {
         return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
+    }
+
+    inline void AddPackage_PushNotificationsLongRunningTask()
+    {
+        AddPackage(Test::Packages::PushNotificationsLongRunningTask::c_PackageDirName, Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
+    }
+
+    inline void RemovePackage_PushNotificationsLongRunningTask()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
+    }
+
+    inline bool IsPackageRegistered_PushNotificationsLongRunningTask()
+    {
+        return IsPackageRegistered(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
     }
 
     inline std::filesystem::path GetProjectReunionFrameworkMsixPath()
