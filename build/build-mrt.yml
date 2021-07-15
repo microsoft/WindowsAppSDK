@@ -32,7 +32,7 @@ steps:
   displayName: 'NuGet restore of applicationmodel'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\microsoft.windows.applicationmodel.resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\mrt\Microsoft.WindowsApp.Resources\src\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\mrt\packages'
 
 # NuGetCommand@2
 - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
@@ -192,8 +192,8 @@ steps:
       mrm\mrm.dll
       mrm\mrm.lib
       mrm\mrm.pdb
-      Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.dll
-      Microsoft.Windows.ApplicationModel.Resources\Microsoft.Windows.ApplicationModel.Resources.pdb
+      Microsoft.WindowsApp.Resources\Microsoft.WindowsApp.Resources.dll
+      Microsoft.WindowsApp.Resources\Microsoft.WindowsApp.Resources.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
     flattenFolders: true
 
@@ -201,10 +201,10 @@ steps:
   displayName: 'copy projection binaries and symbols for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.Windows.ApplicationModel.Resources.Projection'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.WindowsApp.Resources.Projection'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.Projection.dll
-      Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
+      Microsoft.WindowsApp.Resources.Projection.dll
+      Microsoft.WindowsApp.Resources.Projection.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
     flattenFolders: false
 
@@ -212,9 +212,9 @@ steps:
   displayName: 'copy winmd for signing'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.Windows.ApplicationModel.Resources'
+    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.WindowsApp.Resources'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.winmd
+      Microsoft.WindowsApp.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
 
