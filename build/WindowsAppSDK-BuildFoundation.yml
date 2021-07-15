@@ -13,8 +13,7 @@ parameters:
 
 jobs:
 - job: CredScan
-  pool:
-    vmImage: 'windows-2019'
+  pool: $(ProjectReunionBuildPool)
   steps:
   # Scans the root source folder for security vulnerability
   - task: CredScan@2
@@ -44,8 +43,7 @@ jobs:
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
     eq(variables['useBuildOutputFromBuildId'],'')
-  pool:
-    vmImage: 'windows-2019'
+  pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -120,8 +118,7 @@ jobs:
 
 
 - job: BuildMRT
-  pool:
-    vmImage: 'windows-latest'
+  pool: $(ProjectReunionBuildPool)
   strategy:
     maxParallel: 10
     matrix:
@@ -167,8 +164,7 @@ jobs:
   dependsOn:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-latest'
+  pool: $(ProjectReunionBuildPool)
   steps:
   - template: publish-mrt.yml
 
@@ -365,6 +361,7 @@ jobs:
     signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     prereleaseVersionTag: nightly
+    buildPool: $(ProjectReunionBuildPool)
     ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
       publishToMaestro: True
     ${{ if ne(variables['Build.Reason'], 'Schedule') }}:

@@ -10,14 +10,18 @@ parameters:
   prereleaseVersionTag: 'prerelease'
   publishToMaestro: false
   condition: ''
+  buildPool: ''
 
 jobs:
 - job: ${{ parameters.jobName }}
   dependsOn:
     - ${{ parameters.dependsOn }}
   condition: ${{ parameters.condition }}
-  pool:
-    vmImage: 'windows-2019'
+  ${{ if eq(parameters.buildPool, '') }}:
+    pool:
+      vmImage: 'windows-2019'
+  ${{ if ne(parameters.buildPool, '') }}:
+    pool: ${{ parameters.buildPool }}
   steps:
   - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
