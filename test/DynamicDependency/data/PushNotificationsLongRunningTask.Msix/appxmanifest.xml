@@ -45,7 +45,7 @@
             <Extensions>
                 <com:Extension Category="windows.comServer">
                     <com:ComServer>
-                        <com:ExeServer Executable="PushNotificationsLongRunningTask.exe" DisplayName="Push Notifications Long Running Task">
+                        <com:ExeServer Executable="PushNotificationsLongRunningTask.exe" DisplayName="Push Notifications Long Running Task" Arguments="-SomeCmdArg">
                             <com:Class Id="330EC755-31F2-40A7-977D-B0ABB1E1E52E" DisplayName="Push Notifications Long Running Task"/>
                         </com:ExeServer>
                     </com:ComServer>
