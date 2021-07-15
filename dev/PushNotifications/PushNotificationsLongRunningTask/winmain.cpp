@@ -16,6 +16,13 @@
 
 using namespace Microsoft::WRL;
 
+wil::unique_event g_endOfTheLine;
+
+void EndOfTheLine()
+{
+    g_endOfTheLine.SetEvent();
+}
+
 struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) NotificationsReunionEndpointImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, INotificationsReunionEndpoint>
 {
     STDMETHODIMP GetStringFromLRP(/*[out, retval]*/ LPWSTR* packageFullName)
@@ -45,16 +52,14 @@ struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) NotificationsReu
 };
 CoCreatableClass(NotificationsReunionEndpointImpl);
 
-wil::unique_event g_endOfTheLine;
-
-void EndOfTheLine()
+int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR lpCmdLine, int nCmdShow)
 {
-    g_endOfTheLine.SetEvent();
-}
+    //Sleep(20000);
 
-int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
-{
-    Sleep(20000);
+    // if (lpCmdLine contains SomeCmdArg)
+    //     handle COM activation
+    // else
+    //     handle Startup activation
 
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
@@ -62,7 +67,10 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     RETURN_LAST_ERROR_IF_NULL(endOfTheLine);
     g_endOfTheLine = std::move(endOfTheLine);
 
-    auto& module = Module<OutOfProc>::Create(EndOfTheLine);
+    auto& module = Module<OutOfProc>::Create(EndOfTheLine); // Function to signal event
+
+    module.IncrementObjectCount();
+
     RETURN_IF_FAILED(module.RegisterObjects());
 
     g_endOfTheLine.wait();
@@ -71,6 +79,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     module.Terminate();
 
     ::CoUninitialize();
+
     return 0;
 }
 
