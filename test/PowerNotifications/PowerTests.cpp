@@ -5,7 +5,7 @@
 #include "winrt/Microsoft.Windows.System.Power.h"
 
 using namespace std::chrono_literals;
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Microsoft::Windows::System::Power;
 
 namespace ProjectReunionPowerTests
 {
@@ -15,9 +15,20 @@ namespace ProjectReunionPowerTests
     {
     public:
         BEGIN_TEST_CLASS(PowerTests)
-            TEST_CLASS_PROPERTY(L"ActivationContext", L"PowerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
         END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            ::Test::Bootstrap::Setup();
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            ::Test::Bootstrap::Cleanup();
+            return true;
+        }
 
         TEST_METHOD(GetBatteryStatus)
         {
