@@ -24,4 +24,7 @@
 #include <winrt\Windows.Foundation.h>
 #include <winrt\Windows.Foundation.Collections.h>
 
+#include <ProjectReunion.Test.Bootstrap.h>
+namespace TP = ::Test::Packages;
+
 #endif //PCH_H

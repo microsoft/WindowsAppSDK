@@ -16,11 +16,23 @@ namespace ProjectReunionPowerTests
     {
     public:
         BEGIN_TEST_CLASS(PowerTests)
-            TEST_CLASS_PROPERTY(L"ActivationContext", L"PowerTests.dll.manifest")
+            //TEST_CLASS_PROPERTY(L"ActivationContext", L"PowerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
             END_TEST_CLASS()
 
-            TEST_METHOD(GetBatteryStatus)
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            ::Test::Bootstrap::Setup();
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            ::Test::Bootstrap::Cleanup();
+            return true;
+        }
+        TEST_METHOD(GetBatteryStatus)
         {
             auto stat = PowerManager::BatteryStatus();
             VERIFY_ARE_EQUAL(stat, BatteryStatus::NotPresent);

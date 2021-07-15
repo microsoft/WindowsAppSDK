@@ -30,9 +30,4 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="PowerTests.dll.manifest">
-      <Filter>Source Files</Filter>
-    </Manifest>
-  </ItemGroup>
 </Project>
