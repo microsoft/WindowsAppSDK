@@ -83,7 +83,7 @@
   </Target>
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(OutputPath)\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll"
+    <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.Windows.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll"
     powershell -command "$file = gi $(OutputPath)UnpackagedTests.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
     </PostBuildEvent>
   </PropertyGroup>
