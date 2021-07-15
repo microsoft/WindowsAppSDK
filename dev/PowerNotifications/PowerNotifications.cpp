@@ -57,7 +57,7 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     void BatteryStatus_Update()
     {
         auto status{ &make_self<factory_implementation::PowerManager>()->m_cachedCompositeBatteryStatus };
-        if (PowerNotifications_GetCompositeBatteryStatus(status) == S_OK)
+        if (SUCCEEDED(PowerNotifications_GetCompositeBatteryStatus(status)))
         {
             make_self<factory_implementation::PowerManager>()->ProcessCompositeBatteryStatus(*status);
         }
@@ -204,12 +204,12 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         // We check for the version supported by checking if the feature is supported
         // Using NULL as an indicator for uninitialized cache value
         auto& version{ make_self<factory_implementation::PowerManager>()->m_powerModeVersion };
-        if (version == NULL)
+        if (!version)
         {
             void* handle{};
             auto hr{ PowerRegisterForEffectivePowerModeNotifications(
                 EFFECTIVE_POWER_MODE_V2, [](EFFECTIVE_POWER_MODE, void*) {}, nullptr, &handle) };
-            version = hr == S_OK ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
+            version = SUCCEEDED(hr) ? EFFECTIVE_POWER_MODE_V2 : EFFECTIVE_POWER_MODE_V1;
             THROW_IF_FAILED(PowerUnregisterFromEffectivePowerModeNotifications(handle));
         }
         return version;

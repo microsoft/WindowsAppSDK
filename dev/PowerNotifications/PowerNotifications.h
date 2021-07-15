@@ -101,7 +101,7 @@ namespace winrt::Microsoft::Windows::System::Power
             DWORD m_cachedPowerSourceKind;
             EFFECTIVE_POWER_MODE m_cachedPowerMode;
             ULONGLONG m_cachedDischargeTime;
-            std::atomic<ULONG> m_powerModeVersion{ NULL };
+            std::atomic<ULONG> m_powerModeVersion;
             Power::SystemSuspendStatus m_systemSuspendStatus;
             ::EnergySaverStatus m_cachedEnergySaverStatus;
             CompositeBatteryStatus m_cachedCompositeBatteryStatus{ 0 };
