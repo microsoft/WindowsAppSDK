@@ -113,7 +113,7 @@ jobs:
   - ${{if parameters.signConfigPattern }}:
     - task: EsrpCodeSigning@1
       inputs:
-        ConnectedServiceName: 'Windows App SDK ESRP Code Signing Connection'
+        ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
         FolderPath: '${{ parameters.fullnupkgdir }}'
         Pattern: |
           ${{ parameters.signConfigPattern }}
