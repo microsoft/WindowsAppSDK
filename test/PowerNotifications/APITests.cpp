@@ -18,6 +18,8 @@ namespace Test::PowerNotifications
             TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"PowerNotifications-AppxManifest.xml")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
@@ -50,30 +52,18 @@ namespace Test::PowerNotifications
 
         TEST_METHOD(GetBatteryStatus)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-            END_TEST_METHOD_PROPERTIES()
-
             auto value = PowerManager::BatteryStatus();
             VERIFY_ARE_EQUAL(value, BatteryStatus::NotPresent);
         }
 
         TEST_METHOD(GetPowerSupplyStatus)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-            END_TEST_METHOD_PROPERTIES()
-
             auto value = PowerManager::PowerSupplyStatus();
             VERIFY_ARE_EQUAL(value, PowerSupplyStatus::Adequate);
         }
 
         TEST_METHOD(GetRemainingChargePercent)
         {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-            END_TEST_METHOD_PROPERTIES()
-
             auto value = PowerManager::RemainingChargePercent();
             VERIFY_ARE_EQUAL(value, 100);
         }
@@ -84,8 +74,7 @@ namespace Test::PowerNotifications
             // The values will need to be changed to reflect real-time values
             // when running the test on such systems
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"Ignore", L"true")
-                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"Ignore", L"true")                
             END_TEST_METHOD_PROPERTIES()
 
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
@@ -201,10 +190,10 @@ namespace Test::PowerNotifications
             // Ignoring this test since there is no default value for SystemIdle
             // and there is no way to know when the callback will be fired
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"Ignore", L"true")
+                TEST_METHOD_PROPERTY(L"Ignore", L"true")                
             END_TEST_METHOD_PROPERTIES()
 
-                auto callback_success = false;
+            auto callback_success = false;
             auto token = PowerManager::SystemIdleStatusChanged([&](const auto&, winrt::Windows::Foundation::IInspectable obj)
                 {
                     callback_success = true;

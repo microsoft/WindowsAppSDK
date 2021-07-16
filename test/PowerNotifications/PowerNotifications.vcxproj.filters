@@ -33,4 +33,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="PowerNotifications-AppxManifest.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
+  </ItemGroup>
 </Project>
