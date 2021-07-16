@@ -18,7 +18,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
-TARGET_BASENAME=Microsoft.ProjectReunion.Test.InstallerFramework
+TARGET_BASENAME=Microsoft.WindowsAppSDK.Test.InstallerFramework
 
 TargetDir=$(OutDir)$(TargetName)
 MSTestPfx=$(SolutionDir)..\..\..\temp\MSTest.pfx

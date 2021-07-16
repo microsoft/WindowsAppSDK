@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "packages.h"
 
-namespace ProjectReunionInstaller {
+namespace WindowsAppSDKInstaller {
 
     struct PackageProperties
     {

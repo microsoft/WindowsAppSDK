@@ -1,7 +1,7 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
-- template: ProjectReunion-Versions.yml
-- template: ProjectReunion-CommonVariables.yml
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
 
 parameters:
   - name: "ReleaseSigning"
@@ -85,9 +85,9 @@ jobs:
 #    failOnStderr: true
 #    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
 
-  - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
 
-  - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -214,7 +214,7 @@ jobs:
   - script: cmd /c dir /s /b $(Build.ArtifactStagingDirectory)
     displayName: Dump artifact staging directory
 
-  - template: AzurePipelinesTemplates\ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
   - task: CopyFiles@2
     displayName: 'Copy symbols to artifact staging directory'
@@ -235,8 +235,8 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-    # This ADO task does not support indexing of github sources currently :-(      
-      indexSources: false 
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
@@ -248,8 +248,8 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-    # This ADO task does not support indexing of github sources currently :-(      
-      indexSources: false 
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
@@ -260,7 +260,7 @@ jobs:
 
   - task: EsrpCodeSigning@1
     inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      ConnectedServiceName: 'Windows App SDK ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
       Pattern: $(signingPattern)
       UseMinimatch: true
@@ -304,7 +304,7 @@ jobs:
 
   - task: EsrpCodeSigning@1
     inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+      ConnectedServiceName: 'Windows App SDK ESRP Code Signing Connection'
       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
       Pattern: $(signingPattern)
       UseMinimatch: true
@@ -354,12 +354,12 @@ jobs:
       artifactName: 'FullNuget'
 
 # Create Nuget Package
-- template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
   parameters:
     jobName: CreateNugetPackage
     dependsOn: SignBinariesAndPublishSymbols
-    signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
-    useReleaseTag: '$(ProjectReunionFinalRelease)'
+    signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
+    useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     prereleaseVersionTag: nightly
     buildPool: $(ProjectReunionBuildPool)
     ${{ if eq(variables['Build.Reason'], 'Schedule') }}:

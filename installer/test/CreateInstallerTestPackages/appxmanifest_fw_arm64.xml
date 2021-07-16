@@ -6,14 +6,14 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.ProjectReunion.Test.InstallerFramework"
+    Name="Microsoft.WindowsAppSDK.Test.InstallerFramework"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     ProcessorArchitecture="arm64"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Microsoft.ProjectReunion.Test.InstallerFramework for tests</DisplayName>
-    <PublisherDisplayName>Project Reunion</PublisherDisplayName>
+    <DisplayName>Microsoft.WindowsAppSDK.Test.InstallerFramework for tests</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
     <Framework>true</Framework>
   </Properties>

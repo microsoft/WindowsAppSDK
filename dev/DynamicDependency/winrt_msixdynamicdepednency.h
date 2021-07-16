@@ -5,7 +5,7 @@
 
 namespace winrt
 {
-    // Per https://docs.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/interop-winrt-abi#convert_from_abi-function
+    // Per https://docs.microsoft.com/windows/uwp/cpp-and-winrt-apis/interop-winrt-abi#convert_from_abi-function
     template <typename T>
     T convert_from_abi(::IUnknown* from)
     {

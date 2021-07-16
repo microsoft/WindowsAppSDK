@@ -373,7 +373,7 @@ BuildOutput/
 .nuget/
 
 # Installer build configuration header
-installer/dev/project_reunion_definitions_override.h
+installer/dev/windowsappsdk_definitions_override.h
 
 # Installer test packages
 installer/test/testpackages/
@@ -384,7 +384,7 @@ temp/
 # Build Pipeline override
 build/override/
 
-# Project Reunion specific files
+# WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
 dev/vsix/extension/LICENSE
 !dev/vsix/**/*.pubxml

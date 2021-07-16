@@ -118,10 +118,10 @@ STDAPI MddLifetimeManagementGC() noexcept try
                 // Build the list of DDLMs
                 std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
 
-                // Look for windows.appExtension with name="com.microsoft.reunion.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
+                // Look for windows.appExtension with name="com.microsoft.windowsappsdk.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
                 // NOTE: We don't support VersionTag (i.e. we only support 'release' versions)
                 WCHAR appExtensionName[100]{};
-                wsprintf(appExtensionName, L"com.microsoft.reunion.ddlm-%hu.%hu-%s", majorVersion, minorVersion, architecture);
+                wsprintf(appExtensionName, L"com.microsoft.windowsappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, architecture);
 
                 auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
                 auto appExtensions{ catalog.FindAllAsync().get() };
