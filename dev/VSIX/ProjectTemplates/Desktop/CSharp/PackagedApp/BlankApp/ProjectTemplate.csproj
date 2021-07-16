@@ -11,9 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion" Version="$ext_ReunionNupkgVersion$" />
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="$ext_ReunionFoundationNupkgVersion$" />
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="$ext_ReunionWinUINupkgVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$ext_WindowsAppSDKNupkgVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="$ext_WindowsAppSDKFoundationNupkgVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="$ext_WindowsAppSDKWinUINupkgVersion$" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 </Project>

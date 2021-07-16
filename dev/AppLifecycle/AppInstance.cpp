@@ -71,7 +71,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             data = args;
         }
-        
+
         return { kind, data };
     }
 
@@ -329,7 +329,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
 
-        // Handle all Reunion types next (both packaged and unpackaged).
+        // Handle all Windows App SDK types next (both packaged and unpackaged).
         std::wstring commandLine = std::wstring(GetCommandLine());
         if (!foundArgs)
         {
@@ -342,7 +342,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 if (contractData.empty())
                 {
                     // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"ReunionPushServer", -1, TRUE) == CSTR_EQUAL)
+                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppSdkPushServer", -1, TRUE) == CSTR_EQUAL)
                     {
                         contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
                         contractArgument = c_protocolArgumentString;

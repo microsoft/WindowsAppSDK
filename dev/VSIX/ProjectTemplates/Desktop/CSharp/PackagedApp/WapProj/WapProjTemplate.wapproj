@@ -78,10 +78,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion" Version="[$ext_ReunionNupkgVersion$]">
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$ext_WindowsAppSDKNupkgVersion$]">
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="[$ext_ReunionWinUINupkgVersion$]">
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$ext_WindowsAppSDKWinUINupkgVersion$]">
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
   </ItemGroup>

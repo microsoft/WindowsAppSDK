@@ -99,7 +99,7 @@ namespace WinmdHelper
                     {
                         activatableTypes.Add(type);
                         break;
-                    }   
+                    }
                 }
             }
 
@@ -157,7 +157,7 @@ function Get-WindowsNamespace
         [Parameter(Mandatory=$true)]
         [string]$Namespace
     )
-    throw "this is supposed to be unused in Project Reunion and microsoft.ui.xaml"
+    throw "this is supposed to be unused in Windows App SDK and microsoft.ui.xaml"
 }
 
 function Write-ErrorInFile
