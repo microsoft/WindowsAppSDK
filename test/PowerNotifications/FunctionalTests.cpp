@@ -7,14 +7,14 @@
 using namespace std::chrono_literals;
 using namespace winrt::Microsoft::Windows::System::Power;
 
-namespace ProjectReunionPowerTests
+namespace Test::PowerNotifications
 {
     // Timeout in milliseconds
     constexpr auto c_timeoutInMSec{ 2000 };
-    class PowerTests
+    class FunctionalTests
     {
     public:
-        BEGIN_TEST_CLASS(PowerTests)
+        BEGIN_TEST_CLASS(FunctionalTests)
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
