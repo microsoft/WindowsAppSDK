@@ -84,18 +84,25 @@ Power Management compliance.
   * It will subscribe to a In-memory Push event handler hanging off the retrieved Push Channel component.
     * The app should ideally handle the event by setting the Handled property to true to prevent Background Activation from <br/>
     launching a new process.
-
+* If the application is unpackaged, it will use the ProtocolActivator to register the activator instead. The app will also need to 
+call into the bootstrapper API to have access to the Windows App SDK. Click [here](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/tutorial-unpackaged-deployment?tabs=cpp) for information on how to build and 
+deploy unpackaged applications with Windows App SDK.
 ```cpp
 int main()
 {
-    PushNotificationRegistrationOptions pushOptions = PushNotificationManager::GetPushActivatorOptions(true);
-
-    // Register the COM Activator GUID
-    PushNotificationActivationInfo info(
-        pushOptions,
+    PushNotificationActivationInfo info = nullptr;
+    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator))
+    {
+        // Register the ComActivator guid
+        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+    }
+    else
+    {
+        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::ProtocolActivator);
+    }
 
-    // Registers a Push Trigger and sets up an inproc COM Server for Activations
+    // Registers the application to receive push notifications
     auto token = PushNotificationManager::RegisterActivator(info);
 
     // Check to see if the WinMain activation is due to a Push Activator
@@ -186,22 +193,34 @@ int main()
         }
     }
 
-    // Unregisters the inproc COM Activator before exiting
-    PushNotificationManager::UnregisterActivator(token, pushOptions);
+    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator))
+    {
+        // Unregister the ComActivator from inproc activation
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
+    }
 
     return 0;
 }
 ```
 
 ## In this scenario, the process that Registers the Push Trigger and the process specified as the COM server are different.
+This only works for packaged applications that support PushTrigger and ComActivator flags in RegisterActivator. Out-of-proc activation is
+not supported for unpackaged apps.
 Process A (Registration of the Push Trigger only):
 ```cpp
 int main()
 {
-    PushNotificationRegistrationOptions pushOptions = PushNotificationManager::GetPushActivatorKind(false);
-    PushNotificationActivationInfo info(
-        pushOptions,
+    PushNotificationActivationInfo info = nullptr;
+    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+    {
+        // Register the ComActivator guid
+        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::PushTrigger,
         winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+    }
+    else
+    {
+        winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+    }
 
     // Registers a Push Trigger with the Background Infra component
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -215,10 +234,17 @@ Process B (Register the inproc COM server and handle the background activation):
 ```cpp
 int main()
 {
-    PushNotificationRegistrationOptions pushOptions = PushNotificationManager::GetPushActivatorKind(true);
-    PushNotificationActivationInfo info(
-        pushOptions,
+    PushNotificationActivationInfo info = nullptr;
+    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
+    {
+        // Register the ComActivator guid
+        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+    }
+    else
+    {
+        winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+    }
 
     // Registers the current process as an InProc COM server
     auto token = PushNotificationManager::RegisterActivator(info);
@@ -235,7 +261,7 @@ int main()
     // Some code ....
 
     // Unregisters the inproc COM Activator
-    PushNotificationManager::UnregisterActivator(token, pushOptions);
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
 
     return 0;
 }
@@ -259,135 +285,6 @@ sealed partial class App : Application
       IBackgroundTaskInstance taskInstance = args.TaskInstance;
       DoYourBackgroundWork(taskInstance);  
   }
-}
-```
-## Registration of the Push Activator for unpackaged apps for protocol activation with PushNotificationsLongRunningTask
-The main difference here for unpackaged applications is that RegisterActivator will consume ProtocolActivator</br>
-and register with PushNotificationsLongRunningTask, a long running task that is shipped with PRmain, to handle</br>
-receiving raw notifications.
-
-**NOTE:** Packaged applications running on Windows builds earlier than 19041 will need to use ProtocolActivator</br>
-due to SetTaskEntryPointClsid() being unavailable on those builds.
-
-```cpp
-int main()
-{
-    // Take a dependency on Windows App SDK preview 
-    const UINT32 majorMinorVersion{ 0x00000008 }; 
-    PCWSTR versionTag{ L"preview" }; 
-    const PACKAGE_VERSION minVersion{};
-
-    const HRESULT hr{ MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion) }; 
-    // Check the return code. If there is a failure, display the result.
-    if (FAILED(hr)) 
-    { 
-        wprintf(L"Error 0x%X in MddBootstrapInitialize(0x%08X, %s, %hu.%hu.%hu.%hu)\n", 
-            hr, majorMinorVersion, versionTag, minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision); 
-        return hr; 
-    }
-
-    PushNotificationRegistrationOptions pushOptions = PushNotificationManager::GetPushActivatorOptions(true);
-
-    // Unpackaged applications do not need guid to register activator
-    PushNotificationActivationInfo info(
-        pushOptions,
-        nullptr);
-
-    // Registers the unpackaged applicaiton with the PushNotificationsLongRunningTask
-    auto token = PushNotificationManager::RegisterActivator(info);
-
-    // Check to see if the WinMain activation is due to a Push Activator
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto kind = args.Kind();
-
-    if (kind == ExtendedActivationKind::Push)
-    {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
-
-        // Call GetDeferral to ensure that code runs in low power
-        auto deferral = pushArgs.GetDeferral();
-
-        auto payload = pushArgs.Payload();
-
-        // Do stuff to process the raw payload
-        std::string payloadString(payload.begin(), payload.end());
-
-        // Call Complete on the deferral as good practise: Needed mainly for low power usage
-        deferral.Complete();
-    }
-    else if (kind == ExtendedActivationKind::Launch) // This indicates that the app is launching in the foreground
-    {
-        // Register the AAD RemoteIdentifier for the App to receive Push
-        auto channelOperation = PushNotificationManager::CreateChannelAsync(
-            winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
-
-        // Setup the inprogress event handler
-        channelOperation.Progress(
-            [](
-                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-                PushNotificationCreateChannelStatus const& args)
-            {
-                if (args.status == PushNotificationChannelStatus::InProgress)
-                {
-                    // This is basically a noop since it isn't really an error state
-                    printf("The first channel request is still in progress! \n");
-                }
-                else if (args.status == PushNotificationChannelStatus::InProgressRetry)
-                {
-                    LOG_HR_MSG(
-                        args.extendedError,
-                        "The channel request is in back-off retry mode because of a retryable error! Expect delays in acquiring it. RetryCount = %d",
-                        args.retryCount);
-                }
-            });
-
-        winrt::event_token pushToken;
-
-        // Setup the completed event handler
-        channelOperation.Completed(
-            [&](
-                IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& sender,
-                AsyncStatus const asyncStatus)
-            {
-                auto result = sender.GetResults();
-                if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-                {
-                    auto channelUri = result.Channel().Uri();
-                    auto channelExpiry = result.Channel().ExpirationTime();
-
-                    // Register Push Event for Foreground
-                    pushToken = result.Channel().PushReceived([&](const auto&, PushNotificationReceivedEventArgs args)
-                    {
-                        auto payload = args.Payload();
-
-                        // Do stuff to process the raw payload
-
-                        // Stop the subsequent background activation from launching process again with this payload
-                        args.Handled(true);
-                    });
-
-                        // Persist the channelUri and Expiry in the App Service for subsequent Push operations
-                }
-                else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
-                {
-                    LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
-                }
-            });
-
-        // Draw window and other foreground UI stuff here
-
-        // Unregister the Push event for Foreground before exiting
-        auto result = channelOperation.GetResults();
-        if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
-        {
-            result.Channel().PushReceived(pushToken);
-        }
-    }
-
-    // To unregister Push Notifications
-    PushNotificationManager::UnregisterActivator(nullptr, pushOptions);
-    MddBootstrapShutdown(); 
-    return 0;
 }
 ```
 # Remarks
@@ -503,13 +400,15 @@ namespace Microsoft.Windows.PushNotifications
         // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
         // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
-        // 3) If kind = ProtocolActivator is specified, the application will be registered to the PushNotificationsLongRunningTask for protocol activation
         PushNotificationActivationInfo(PushNotificationRegistrationOptions options, Guid taskClsid);
+
+        // Applications that need to use ProtocolActivator will use this constructor
+        PushNotificationActivationInfo(PushNotificationRegistrationOptions options);
 
         // The CLSID associated with the Client COM server that Project Reunion will activate
         Guid TaskClsid{ get; };
 
-        PushNotificationRegistrationKind Kind{ get; };
+        PushNotificationRegistrationOptions Options{ get; };
 
         // The conditions under which Push Triggers would execute
         Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
@@ -589,19 +488,19 @@ namespace Microsoft.Windows.PushNotifications
         // Register an activator using an ActivationInfo context and return a RegistrationToken
         static PushNotificationRegistrationToken RegisterActivator(PushNotificationActivationInfo details);
 
-        // Unregister any activator if present using a token and registrationKind
+        // Unregister any activator if present using a token and PushNotificationRegistrationOptions
         // 1) If kind = PushTrigger is specified, the trigger itself will be removed
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
-        // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the PushNotificationsLongRunningTask
         static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOptions options);
+
+        // Unregister the protocol activator registered for the calling application
+        static void UnregisterProtocolActivator();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
-
-        // Developers should call this to know with which PushNotificationRegistrationKind to call RegisterActivator. 
-        // Packaged applications should set the isInProcActivation to true if they want the current process to handle background activation. 
-        // Unpackaged applications should always set the isInProcActivation to false.
-        static PushNotificationRegistrationOptions GetPushActivatorOptions(Boolean isInProcActivation);
+ 
+        // Applications will call this to check which flags are supported for RegisterActivator
+        static Boolean IsActivatorSupported(PushNotificationRegistrationOptions options);
     };
 }
 
