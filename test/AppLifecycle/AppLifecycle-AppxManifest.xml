@@ -9,19 +9,19 @@
   IgnorableNamespaces="uap uap5 com rescap">
 
   <Identity
-    Name="ProjectReunion.Test.AppLifecycle"
+    Name="WindowsAppSDK.Test.AppLifecycle"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>ProjectReunion.Test.AppLifecycle for tests</DisplayName>
-    <PublisherDisplayName>Project Reunion</PublisherDisplayName>
+    <DisplayName>WindowsAppSDK.Test.AppLifecycle for tests</DisplayName>
+    <PublisherDisplayName>Windows App SDK</PublisherDisplayName>
     <Logo>taef.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.ProjectReunion.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -33,10 +33,10 @@
       Executable="Te.ProcessHost.uap.exe"
       EntryPoint="ProcessHostApplication">
       <uap:VisualElements
-        DisplayName="ProjectReunion.Test.AppLifecycle"
+        DisplayName="WindowsAppSDK.Test.AppLifecycle"
         Square150x150Logo="taef.png"
         Square44x44Logo="taef.png"
-        Description="ProjectReunion.Test.AppLifecyle test App"
+        Description="WindowsAppSDK.Test.AppLifecyle test App"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="taef.png"/>
         <uap:SplashScreen Image="taef.png" uap5:Optional="true"/>

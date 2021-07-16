@@ -1,23 +1,23 @@
 # Welcome to MRT Core!
 
-## Overview 
+## Overview
 
 ### What is MRT Core?
-Thanks for asking! MRT Core was born from the need for [Project Reunion](https://aka.ms/projectreunion) applications to use MRT - Modern Resource Technology. MRT was introduced to Windows in the Windows 8 timeframe and has evolved as the resource management system since that time. You can use these links to learn more about [MRT and resource management](https://docs.microsoft.com/en-us/windows/uwp/app-resources/resource-management-system) as well as the benefits of [globalization and localization](https://docs.microsoft.com/en-us/windows/uwp/design/globalizing/globalizing-portal).
+Thanks for asking! MRT Core was born from the need for [Windows App SDK](https://aka.ms/windowsappsdk) applications to use MRT - Modern Resource Technology. MRT was introduced to Windows in the Windows 8 timeframe and has evolved as the resource management system since that time. You can use these links to learn more about [MRT and resource management](https://docs.microsoft.com/windows/uwp/app-resources/resource-management-system) as well as the benefits of [globalization and localization](https://docs.microsoft.com/windows/uwp/design/globalizing/globalizing-portal).
 
 > If you're looking for Core MRT, you're in the right place! Internal project naming was Core MRT and so some of our external communication has also used that terminology - sorry for any confusion! But rest assured, Core MRT or MRT Core, you're in the right place! 😉
 
 ### So what does it do?
-At its *core* 😎 MRT Core provides support to build resource Package Resource Index (PRI) files, and load resources from PRI files. [Learn more about PRI files at this link.](https://docs.microsoft.com/en-us/windows/uwp/app-resources/resource-management-system)
+At its *core* 😎 MRT Core provides support to build resource Package Resource Index (PRI) files, and load resources from PRI files. [Learn more about PRI files at this link.](https://docs.microsoft.com/windows/uwp/app-resources/resource-management-system)
 
 ## Getting Started
 Install the NuGet package from [https://aka.ms/MRTCore](https://aka.ms/MRTCore), and you are ready to build PRI files from Visual Studio
 and use MRT Core APIs to load resources in your app.
 
-The C APIs can be found in [mrm.h](mrt/Core/src/MRM.h). The WinRT APIs can be found in [Microsoft.Windows.ApplicationModel.Resources.idl](mrt/Microsoft.Windows.ApplicationModel.Resources/src/Microsoft.Windows.ApplicationModel.Resources.idl).
+The C APIs can be found in [mrm.h](mrt/Core/src/MRM.h). The WinRT APIs can be found in [Microsoft.WindowsApp.Resources.idl](mrt/Microsoft.WindowsApp.Resources/src/Microsoft.WindowsApp.Resources.idl).
 
 ## Build and Test
-Load [MrtCore.sln](mrt/MrtCore.sln) in Visual Studion 2019, and build the solution. 
+Load [MrtCore.sln](mrt/MrtCore.sln) in Visual Studion 2019, and build the solution.
 
 Run the tests in Test Explorer.
 
@@ -63,7 +63,7 @@ may be either trademarks or registered trademarks of Microsoft in the United Sta
 The licenses for this project do not grant you rights to use any Microsoft names, logos, or trademarks.
 Microsoft's general trademark guidelines can be found at http://go.microsoft.com/fwlink/?LinkID=254653.
 
-Privacy information can be found at https://privacy.microsoft.com/en-us/
+Privacy information can be found at https://privacy.microsoft.com/
 
 Microsoft and any contributors reserve all other rights, whether under their respective copyrights, patents,
 or trademarks, whether by implication, estoppel or otherwise.
