@@ -2,7 +2,7 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
     <Name>Blank App (WinUI 3 in UWP)</Name>
-    <Description>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Project Reunion prerelease support.</Description>
+    <Description>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Windows App SDK prerelease support.</Description>
     <Icon>WinUI.UWP.CppWinRT.BlankApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.UWP.CppWinRT.BlankApp</TemplateID>
     <ProjectType>VC</ProjectType>
@@ -20,7 +20,7 @@
     <LanguageTag>cpp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Project Reunion</PlatformTag>
+    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
@@ -64,17 +64,17 @@
   </WizardExtension>
   <WizardData>
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
-    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK">
       <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion.Foundation" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+      <package id="Microsoft.WindowsAppSDK" version="1.0.0" />
+      <package id="Microsoft.WindowsAppSDK.Foundation" version="1.0.0" />
+      <package id="Microsoft.WindowsAppSDK.WinUI" version="1.0.0" />
     </packages>
     <Assets>
       <Asset Type="Microsoft.Windows.CppWinRT.nupkg" Source="File" Path="Microsoft.Windows.CppWinRT.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.ProjectReunion.nupkg" Source="File" Path="Microsoft.ProjectReunion.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.ProjectReunion.Foundation.nupkg" Source="File" Path="Microsoft.ProjectReunion.Foundation.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.ProjectReunion.WinUI.nupkg" Source="File" Path="Microsoft.ProjectReunion.WinUI.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.WindowsAppSDK.Foundation.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.Foundation.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.WindowsAppSDK.WinUI.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.WinUI.1.0.0.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>

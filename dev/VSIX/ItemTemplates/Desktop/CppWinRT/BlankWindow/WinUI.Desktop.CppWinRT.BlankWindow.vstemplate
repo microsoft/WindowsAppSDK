@@ -26,11 +26,11 @@
     <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
   </WizardExtension>
   <WizardData>
-    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK">
       <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion.Foundation" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+      <package id="Microsoft.WindowsAppSDK" version="1.0.0" />
+      <package id="Microsoft.WindowsAppSDK.Foundation" version="1.0.0" />
+      <package id="Microsoft.WindowsAppSDK.WinUI" version="1.0.0" />
     </packages>
   </WizardData>
 </VSTemplate>

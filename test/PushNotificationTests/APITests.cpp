@@ -28,7 +28,7 @@ namespace Test::PushNotifications
 
     public:
         BEGIN_TEST_CLASS(APITests)
-            TEST_CLASS_PROPERTY(L"Description", L"Project Reunion Push Notifications test")
+            TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK Push Notifications test")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
@@ -50,14 +50,14 @@ namespace Test::PushNotifications
 
         static PCWSTR GetTestPackageFullName()
         {
-            return L"PushNotificationsTestAppPackage_1.0.0.0_" PROJECTREUNION_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
+            return L"PushNotificationsTestAppPackage_1.0.0.0_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
         }
 
         TEST_CLASS_SETUP(ClassInit)
         {
             try
             {
-                TP::AddPackage_ProjectReunionFramework(); // Installs PRfwk
+                TP::AddPackage_WindowsAppSDKFramework(); // Installs WASfwk
                 TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
@@ -74,7 +74,7 @@ namespace Test::PushNotifications
         {
             try
             {
-                TP::RemovePackage_ProjectReunionFramework();
+                TP::RemovePackage_WindowsAppSDKFramework();
                 TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage(GetTestPackageFullName());
             }
@@ -87,14 +87,14 @@ namespace Test::PushNotifications
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 
             m_processHandle.reset();

@@ -143,7 +143,7 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
     // We manage the package graph as a list of nodes, where each contain contains information about 1+ package.
     //
     // Find all the packages across the package graph that match our filter criteria (see flags in
-    // https://docs.microsoft.com/en-us/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2).
+    // https://docs.microsoft.com/windows/win32/api/appmodel/nf-appmodel-getcurrentpackageinfo2).
     //
     // Then compute the size needed for all the data.
     //

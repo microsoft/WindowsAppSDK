@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "pch.h"
-#include "project_reunion_definitions.h"
+#include "windowsappsdk_definitions.h"
 
 using namespace winrt;
 using namespace Windows::System;
@@ -9,7 +9,7 @@ using namespace Windows::System;
 // More properties can be added as-needed, such as type - framework | main | appinstaller | bundle
 // For now all packages are frameworks and only the processor architecture is meaningful.
 
-namespace ProjectReunionInstaller {
+namespace WindowsAppSDKInstaller {
 
     enum class DeploymentBehavior
     {
@@ -26,32 +26,32 @@ namespace ProjectReunionInstaller {
 
     static ResourcePackageInfo c_packages[] =
     {
-    #if defined(PR_FRAMEWORK_X86_LISTENTRY)
-        PR_FRAMEWORK_X86_LISTENTRY
+    #if defined(WAS_FRAMEWORK_X86_LISTENTRY)
+        WAS_FRAMEWORK_X86_LISTENTRY
     #endif
-    #if defined(PR_FRAMEWORK_X64_LISTENTRY)
-        PR_FRAMEWORK_X64_LISTENTRY
+    #if defined(WAS_FRAMEWORK_X64_LISTENTRY)
+        WAS_FRAMEWORK_X64_LISTENTRY
     #endif
-    #if defined(PR_FRAMEWORK_ARM64_LISTENTRY)
-        PR_FRAMEWORK_ARM64_LISTENTRY
+    #if defined(WAS_FRAMEWORK_ARM64_LISTENTRY)
+        WAS_FRAMEWORK_ARM64_LISTENTRY
     #endif
-    #if defined(PR_MAIN_X86_LISTENTRY)
-        PR_MAIN_X86_LISTENTRY
+    #if defined(WAS_MAIN_X86_LISTENTRY)
+        WAS_MAIN_X86_LISTENTRY
     #endif
-    #if defined(PR_MAIN_X64_LISTENTRY)
-        PR_MAIN_X64_LISTENTRY
+    #if defined(WAS_MAIN_X64_LISTENTRY)
+        WAS_MAIN_X64_LISTENTRY
     #endif
-    #if defined(PR_MAIN_ARM64_LISTENTRY)
-        PR_MAIN_ARM64_LISTENTRY
+    #if defined(WAS_MAIN_ARM64_LISTENTRY)
+        WAS_MAIN_ARM64_LISTENTRY
     #endif
-    #if defined(PR_DDLM_X86_LISTENTRY)
-        PR_DDLM_X86_LISTENTRY
+    #if defined(WAS_DDLM_X86_LISTENTRY)
+        WAS_DDLM_X86_LISTENTRY
     #endif
-    #if defined(PR_DDLM_X64_LISTENTRY)
-        PR_DDLM_X64_LISTENTRY
+    #if defined(WAS_DDLM_X64_LISTENTRY)
+        WAS_DDLM_X64_LISTENTRY
     #endif
-    #if defined(PR_DDLM_ARM64_LISTENTRY)
-        PR_DDLM_ARM64_LISTENTRY
+    #if defined(WAS_DDLM_ARM64_LISTENTRY)
+        WAS_DDLM_ARM64_LISTENTRY
     #endif
     };
 }
