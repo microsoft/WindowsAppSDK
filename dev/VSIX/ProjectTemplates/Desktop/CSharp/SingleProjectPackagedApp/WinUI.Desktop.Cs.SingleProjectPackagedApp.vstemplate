@@ -21,15 +21,15 @@
     <LanguageTag>csharp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Project Reunion</PlatformTag>
+    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|x86">
     <CustomParameters>
-      <CustomParameter Name="$ReunionNupkgVersion$" Value="1.0.0" />
-      <CustomParameter Name="$ReunionFoundationNupkgVersion$" Value="1.0.0" />
-      <CustomParameter Name="$ReunionWinUINupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$WindowsAppSDKFoundationNupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$WindowsAppSDKWinUINupkgVersion$" Value="1.0.0" />
     </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="launchSettings.json">Properties\launchSettings.json</ProjectItem>

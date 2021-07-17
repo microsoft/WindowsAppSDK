@@ -25,7 +25,7 @@ namespace Microsoft.Windows.PushNotifications
     enum PushNotificationRegistrationOptions
     {
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
-        ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
+        ComActivator = 0x2, // Registers the Windows App SDK Background Task component as an InProc COM server
     };
 
     [experimental]
@@ -33,10 +33,10 @@ namespace Microsoft.Windows.PushNotifications
     {
         // Initialize using a RegistrationOption and optionally defined parameters like manifest defined activatorId
         // 1) If option = PushTrigger is specified, only the Push Trigger will be Registered with Background Infrastructure
-        // 2) If option = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
+        // 2) If option = ComActivator is specified, the Windows App SDK Background Task component will be Registered as an InProc COM server
         PushNotificationActivationInfo(PushNotificationRegistrationOptions options, Guid taskClsid);
 
-        // The CLSID associated with the Client COM server that Project Reunion will activate
+        // The CLSID associated with the Client COM server that Windows App SDK will activate
         Guid TaskClsid{ get; };
 
         PushNotificationRegistrationOptions Options{ get; };
@@ -127,7 +127,7 @@ namespace Microsoft.Windows.PushNotifications
 
         // Unregister any activator if present using a token and registrationOption
         // 1) If option = PushTrigger is specified, the trigger itself will be removed
-        // 2) If option = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
+        // 2) If option = ComActivator is specified, the Windows App SDK Background Task component will no longer act as an InProc COM Server
         static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOptions options);
 
         // Request a Push Channel using an encoded AAD GUID identifier from WNS.

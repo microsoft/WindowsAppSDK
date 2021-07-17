@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    Verify the environment for Project Reunion development
+    Verify the environment for Windows App SDK development
 
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
@@ -391,7 +391,7 @@ $cpu = Get-CpuArchitecture
 Write-Verbose("Processor...$cpu")
 
 $project_root = Get-ProjectRoot
-Write-Output "ProjectReunion location...$project_root"
+Write-Output "Windows App SDK location...$project_root"
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {

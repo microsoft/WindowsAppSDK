@@ -12,7 +12,7 @@
 using namespace Microsoft::WRL;
 
 // Implement the LifetimeManager as a classic COM Out-of-Proc server, via WRL
-// See https://docs.microsoft.com/en-us/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
+// See https://docs.microsoft.com/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
 
 static constexpr GUID DynamicDependencyLifetimeManager_guid { PR_DYNDEP_LIFETIMEMANAGER_CLSID_GUID };
 

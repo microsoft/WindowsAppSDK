@@ -28,15 +28,15 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
-            TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_WindowsAppSDKFramework();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();
-            TP::AddPackage_ProjectReunionFramework();
+            TP::AddPackage_WindowsAppSDKFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             // Load the DLL hooking GetCurrentPackageInfo*()
-            auto dllAbsoluteFilename{ TF::GetProjectReunionDllAbsoluteFilename() };
+            auto dllAbsoluteFilename{ TF::GetWindowsAppSDKDllAbsoluteFilename() };
             wil::unique_hmodule dll(LoadLibrary(dllAbsoluteFilename.c_str()));
             if (!dll)
             {
@@ -55,7 +55,7 @@ namespace Test::DynamicDependency
             m_dll.reset();
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_WindowsAppSDKFramework();
             TP::RemovePackage_FrameworkMathAdd();
 
             return true;

@@ -6,7 +6,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace winrt::Windows::System;
 
-namespace ProjectReunionInstallerTests
+namespace WindowsAppSDKInstallerTests
 {
 	TEST_CLASS(FunctionalTests)
 	{

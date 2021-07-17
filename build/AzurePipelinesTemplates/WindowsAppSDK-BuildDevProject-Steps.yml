@@ -1,0 +1,7 @@
+steps:
+  - template: WindowsAppSDK-BuildProject-Steps.yml
+    parameters:
+      solutionPath: WindowsAppSDK.sln
+      nugetConfigPath: nuget.config
+      buildOutputDir: $(buildOutputDir)
+      publishDir: $(publishDir)

@@ -14,30 +14,33 @@
     <GeneratedFilesDir>$(BaseIntermediateOutputPath)Generated Files\</GeneratedFilesDir>
     <GenerateProjectSpecificOutputFolder>True</GenerateProjectSpecificOutputFolder>
     <ForceImportAfterCppTargets>$(BuildRoot)AfterCpp.targets</ForceImportAfterCppTargets>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <!-- Compilation differs for the build pipeline vs local development -->
-  <PropertyGroup Condition="$(ProjectReunionBuildPipeline) != '1'">
+  <PropertyGroup Condition="$(WindowsAppSDKBuildPipeline) != '1'">
     <!-- If not set, default it to no . -->
-    <ProjectReunionBuildPipeline>0</ProjectReunionBuildPipeline>
+    <WindowsAppSDKBuildPipeline>0</WindowsAppSDKBuildPipeline>
   </PropertyGroup>
 
   <Target Name="DirectoryBuildPropsInfo">
-    <Message Condition="$(ProjectReunionBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects ProjectReunionBuildPipeline=$(ProjectReunionBuildPipeline)"/>
+    <Message Condition="$(WindowsAppSDKBuildPipeline) == '1'" Importance="High" Text="Directory.Build.props detects WindowsAppSDKBuildPipeline=$(WindowsAppSDKBuildPipeline)"/>
   </Target>
 
   <!-- Conditional behavior for build pipeline vs local development -->
-  <ItemDefinitionGroup Condition="$(ProjectReunionBuildPipeline) == '1'">
+  <ItemDefinitionGroup Condition="$(WindowsAppSDKBuildPipeline) == '1'">
     <ClCompile>
-      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWSAPPSDK_BUILD_PIPELINE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWSAPPSDK_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <PreprocessorDefinitions>PROJECTREUNION_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINDOWSAPPSDK_BUILD_PIPELINE=1;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\build\override;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </Midl>
   </ItemDefinitionGroup>
