@@ -118,7 +118,7 @@ int main()
 
         auto payload = pushArgs.Payload();
 
-        // Do stuff to process the raw payload
+        // Do stuff to process the raw payload to be used for further app processing
         std::string payloadString(payload.begin(), payload.end());
 
         // Call Complete on the deferral as good practise: Needed mainly for low power usage
