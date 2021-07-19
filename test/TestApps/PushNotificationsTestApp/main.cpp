@@ -19,6 +19,11 @@ winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated fro
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
 
 PushNotificationRegistrationToken g_appToken = nullptr;
+const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppSDK.Bootstrap.dll";
+
+typedef HRESULT(*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
+typedef HRESULT(*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);
+typedef void (*BootStrapShutdown)();
 
 constexpr auto timeout{ std::chrono::seconds(300) };
 
@@ -257,12 +262,6 @@ bool BackgroundActivationTest() // Activating application for background test.
     return true;
 }
 
-const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppSDK.Bootstrap.dll";
-
-typedef HRESULT(*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
-typedef HRESULT(*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);
-typedef void (*BootStrapShutdown)();
-
 bool NeedDynamicDependencies()
 {
     return !AppModel::Identity::IsPackagedProcess();
@@ -338,6 +337,18 @@ bool runUnitTest(std::string unitTest)
     return it->second();
 }
 
+std::string unitTestNameFromLaunchArguments(const ILaunchActivatedEventArgs& launchArgs)
+{
+    std::string unitTestName = to_string(launchArgs.Arguments());
+    auto argStart = unitTestName.rfind(" ");
+    if (argStart != std::wstring::npos)
+    {
+        unitTestName = unitTestName.substr(argStart + 1);
+    }
+
+    return unitTestName;
+}
+
 int main() try
 {
     bool testResult = false;
@@ -358,7 +369,7 @@ int main() try
         auto result = BootstrapInitialize();
         if (result != S_OK)
         {
-            std::cout << result << std::endl;
+            std::cout << "Dynamic Dependencies failed to initialize." << std::endl;
             return result;
         }
     }
@@ -374,13 +385,7 @@ int main() try
 
     if (kind == ExtendedActivationKind::Launch)
     {
-        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
-        std::string unitTest = to_string(launchArgs.Arguments());
-        auto argStart = unitTest.rfind(" ");
-        if (argStart != std::wstring::npos)
-        {
-            unitTest = unitTest.substr(argStart + 1);
-        }
+        auto unitTest = unitTestNameFromLaunchArguments(args.Data().as<ILaunchActivatedEventArgs>());
         std::cout << unitTest << std::endl;
 
         testResult = runUnitTest(unitTest);

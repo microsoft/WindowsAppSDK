@@ -58,7 +58,7 @@ namespace Test::PushNotifications
             try
             {
                 TP::AddPackage_WindowsAppSDKFramework(); // Installs WASfwk
-                TP::AddPackage_DynamicDependencyLifetimeManager(); // Bootstrap for unpackaged apps
+                TP::AddPackage_DynamicDependencyLifetimeManager(); // Required when running the test app unpackaged.
                 TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
@@ -75,6 +75,7 @@ namespace Test::PushNotifications
         {
             try
             {
+                // Remove in reverse order to avoid conflict between inter-dependent packages.
                 TP::RemovePackage(GetTestPackageFullName());
                 TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
@@ -105,8 +106,7 @@ namespace Test::PushNotifications
             return true;
         }
 
-    	wil::unique_handle Execute(const std::wstring& command, const std::wstring& args,
-        	const std::wstring& directory)
+    	wil::unique_handle RunUnpackaged(const std::wstring& command, const std::wstring& args, const std::wstring& directory)
     	{
         	SHELLEXECUTEINFO ei{};
         	ei.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -143,15 +143,15 @@ namespace Test::PushNotifications
 
         const std::wstring GetDeploymentDir()
         {
-            WEX::Common::String testDeploymentDir;
-            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
-            testDeploymentDir.Append(L"..\\PushNotificationsTestApp");
-            return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
+            WEX::Common::String deploymentDir;
+            WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", deploymentDir);
+            deploymentDir.Append(L"..\\PushNotificationsTestApp");
+            return reinterpret_cast<PCWSTR>(deploymentDir.GetBuffer());
         }
 
         void RunTestUnpackaged(const PCWSTR& testName, const int& waitTime)
         {
-            auto processHandle = Execute(L"PushNotificationsTestApp.exe", testName, GetDeploymentDir());
+            auto processHandle = RunUnpackaged(L"PushNotificationsTestApp.exe", testName, GetDeploymentDir());
             VERIFY_IS_TRUE(processHandle.is_valid());
 
             VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), channelTestWaitTime()));
