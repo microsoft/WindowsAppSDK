@@ -26,8 +26,16 @@
     <ClCompile Include="FunctionalTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="APITests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="PowerNotifications-AppxManifest.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
