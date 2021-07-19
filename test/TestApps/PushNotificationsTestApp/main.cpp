@@ -4,6 +4,7 @@
 #include <sstream>
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
+#include "../../../dev/Common/AppModel.Identity.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -256,6 +257,56 @@ bool BackgroundActivationTest() // Activating application for background test.
     return true;
 }
 
+const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppSDK.Bootstrap.dll";
+
+typedef HRESULT(*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
+typedef HRESULT(*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);
+typedef void (*BootStrapShutdown)();
+
+bool NeedDynamicDependencies()
+{
+    return !AppModel::Identity::IsPackagedProcess();
+}
+
+HRESULT BootstrapInitialize()
+{
+    wil::unique_hmodule bootStrapDll(LoadLibraryEx(g_bootStrapDllName, NULL, 0));
+    RETURN_LAST_ERROR_IF_NULL(bootStrapDll);
+
+    BootStrapTestInit mddTestInitialize = reinterpret_cast<BootStrapTestInit>(GetProcAddress(bootStrapDll.get(), "MddBootstrapTestInitialize"));
+    RETURN_LAST_ERROR_IF_NULL(mddTestInitialize);
+
+    BootStrapInit mddInitialize = reinterpret_cast<BootStrapInit>(GetProcAddress(bootStrapDll.get(), "MddBootstrapInitialize"));
+    RETURN_LAST_ERROR_IF_NULL(mddInitialize);
+
+    constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppSDK.Test.DDLM" };
+    constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
+    RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+
+    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+    const UINT32 c_Version_MajorMinor{ 0x00040001 };
+    const PACKAGE_VERSION minVersion{};
+    RETURN_IF_FAILED(mddInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+    return S_OK;
+}
+
+void BootstrapShutdown()
+{
+    wil::unique_hmodule bootStrapDll(LoadLibraryEx(g_bootStrapDllName, NULL, 0));
+    if (!bootStrapDll)
+    {
+        return;
+    }
+
+    BootStrapShutdown mddShutdown = reinterpret_cast<BootStrapShutdown>(GetProcAddress(bootStrapDll.get(), "MddBootstrapShutdown"));
+    if (!mddShutdown)
+    {
+        return;
+    }
+    mddShutdown();
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -295,7 +346,22 @@ int main() try
         {
             PushNotificationManager::UnregisterActivator(g_appToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
         }
+
+        if (NeedDynamicDependencies())
+        {
+            BootstrapShutdown();
+        }
     });
+
+    if (NeedDynamicDependencies())
+    {
+        auto result = BootstrapInitialize();
+        if (result != S_OK)
+        {
+            std::cout << result << std::endl;
+            return result;
+        }
+    }
 
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
@@ -310,6 +376,11 @@ int main() try
     {
         auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
         std::string unitTest = to_string(launchArgs.Arguments());
+        auto argStart = unitTest.rfind(" ");
+        if (argStart != std::wstring::npos)
+        {
+            unitTest = unitTest.substr(argStart + 1);
+        }
         std::cout << unitTest << std::endl;
 
         testResult = runUnitTest(unitTest);
