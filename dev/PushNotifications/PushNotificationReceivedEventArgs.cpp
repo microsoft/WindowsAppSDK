@@ -8,7 +8,7 @@
 #include <winrt/Windows.Networking.PushNotifications.h>
 
 #include "PushNotificationReceivedEventArgs.h"
-#include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
+#include "Microsoft.WindowsApp.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
 #include <externs.h>
 #include "ValueMarshaling.h"

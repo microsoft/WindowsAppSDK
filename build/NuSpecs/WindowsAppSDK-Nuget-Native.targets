@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.WindowsApp.PushNotifications.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
