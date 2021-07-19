@@ -90,7 +90,7 @@ namespace Test::PushNotifications
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
-			VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
             return true;
         }
@@ -98,7 +98,7 @@ namespace Test::PushNotifications
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
-			VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 
             m_processHandle.reset();
@@ -151,8 +151,7 @@ namespace Test::PushNotifications
 
         void RunTestUnpackaged(const PCWSTR& testName, const int& waitTime)
         {
-            // Launch the test app to register for protocol launches.
-            auto processHandle = Execute(L"PushNotificationsTestApp.exe", testName, GetDeploymentDir() /*L"D:\\WindowsAppSDK\\BuildOutput\\Debug\\x64\\PushNotificationsTestApp\\"*//*g_deploymentDir*/);
+            auto processHandle = Execute(L"PushNotificationsTestApp.exe", testName, GetDeploymentDir());
             VERIFY_IS_TRUE(processHandle.is_valid());
 
             VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), channelTestWaitTime()));
@@ -194,11 +193,6 @@ namespace Test::PushNotifications
         TEST_METHOD(ChannelRequestUsingRemoteId)
         {
             RunTest(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
-        }
-
-        TEST_METHOD(ChannelRequestUsingRemoteId_Unpackaged)
-        {
-            RunTestUnpackaged(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
         }
 
         TEST_METHOD(MultipleChannelClose)
