@@ -145,7 +145,6 @@ namespace Test::PushNotifications
         {
             WEX::Common::String deploymentDir;
             WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", deploymentDir);
-            deploymentDir.Append(L"..\\PushNotificationsTestApp");
             return reinterpret_cast<PCWSTR>(deploymentDir.GetBuffer());
         }
 

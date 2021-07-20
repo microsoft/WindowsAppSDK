@@ -4,7 +4,7 @@
 #include <sstream>
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
-#include "../../../dev/Common/AppModel.Identity.h"
+#include "WindowsAppSDK.Test.AppModel.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -264,7 +264,7 @@ bool BackgroundActivationTest() // Activating application for background test.
 
 bool NeedDynamicDependencies()
 {
-    return !AppModel::Identity::IsPackagedProcess();
+    return !Test::AppModel::IsPackagedProcess();
 }
 
 HRESULT BootstrapInitialize()
