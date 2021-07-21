@@ -57,8 +57,10 @@ namespace Test::PushNotifications
         {
             try
             {
-                TP::AddPackage_WindowsAppSDKFramework(); // Installs WASfwk
-                TP::AddPackage_DynamicDependencyLifetimeManager(); // Required when running the test app unpackaged.
+                TP::AddPackage_WindowsAppSDKFramework();           // Installs WASfwk always install WASmain, WASddlm
+                TP::AddPackage_DynamicDependencyDataStore();       // Installs WASmain
+                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WASddlm
+
                 TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
@@ -78,7 +80,9 @@ namespace Test::PushNotifications
                 // Remove in reverse order to avoid conflict between inter-dependent packages.
                 TP::RemovePackage(GetTestPackageFullName());
                 TP::RemovePackage_PushNotificationsLongRunningTask();
+
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
+                TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppSDKFramework();
             }
             catch (...)
@@ -91,6 +95,7 @@ namespace Test::PushNotifications
         TEST_METHOD_SETUP(MethodInit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
             return true;
@@ -99,6 +104,7 @@ namespace Test::PushNotifications
         TEST_METHOD_CLEANUP(MethodUninit)
         {
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 

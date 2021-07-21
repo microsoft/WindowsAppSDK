@@ -49,7 +49,7 @@
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
+    <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
   </ItemGroup>
