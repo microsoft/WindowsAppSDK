@@ -91,7 +91,8 @@ deploy unpackaged applications with Windows App SDK.
 int main()
 {
     PushNotificationActivationInfo info = nullptr;
-    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator))
+    bool isComActivationSupported = PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+    if(isComActivationSupported)
     {
         // Register the ComActivator guid
         info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
@@ -193,7 +194,7 @@ int main()
         }
     }
 
-    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator))
+    if(isComActivationSupported)
     {
         // Unregister the ComActivator from inproc activation
         PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
@@ -491,10 +492,8 @@ namespace Microsoft.Windows.PushNotifications
         // Unregister any activator if present using a token and PushNotificationRegistrationOptions
         // 1) If kind = PushTrigger is specified, the trigger itself will be removed
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
+        // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
         static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOptions options);
-
-        // Unregister the protocol activator registered for the calling application
-        static void UnregisterProtocolActivator();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
