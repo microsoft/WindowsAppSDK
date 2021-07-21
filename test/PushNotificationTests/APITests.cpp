@@ -57,7 +57,7 @@ namespace Test::PushNotifications
         {
             try
             {
-                TP::AddPackage_WindowsAppSDKFramework();           // Installs WASfwk always install WASmain, WASddlm
+                TP::AddPackage_WindowsAppSDKFramework();           // Installs WASfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WASmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WASddlm
 
@@ -77,7 +77,7 @@ namespace Test::PushNotifications
         {
             try
             {
-                // Remove in reverse order to avoid conflict between inter-dependent packages.
+                // Remove in reverse order to avoid conflicts between inter-dependent packages.
                 TP::RemovePackage(GetTestPackageFullName());
                 TP::RemovePackage_PushNotificationsLongRunningTask();
 
