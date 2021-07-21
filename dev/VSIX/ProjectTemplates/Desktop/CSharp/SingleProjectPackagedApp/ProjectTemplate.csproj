@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ProjectReunion" Version="$ReunionNupkgVersion$" />
-    <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="$ReunionFoundationNupkgVersion$" />
-    <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="$ReunionWinUINupkgVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSDKNupkgVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="$WindowsAppSDKFoundationNupkgVersion$" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="$WindowsAppSDKWinUINupkgVersion$" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 </Project>

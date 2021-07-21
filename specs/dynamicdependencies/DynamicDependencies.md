@@ -33,9 +33,9 @@ to use packaged content.
   - [5.1. API Overview](#51-api-overview)
   - [5.2. Package Dependency Resolution is Per-User](#52-package-dependency-resolution-is-per-user)
   - [5.3. LocalSystem is not Supported](#53-localsystem-is-not-supported)
-  - [5.4. Packaging - ProjectReunion.dll, ProjectReunion.Bootstrap.dll and DDLM](#54-packaging---projectreuniondll-projectreunionbootstrapdll-and-ddlm)
+  - [5.4. Packaging - Microsoft.WindowsAppSDK.dll, Microsoft.WindowsAppSDK.Bootstrap.dll and DDLM](#54-packaging---microsoftwindowsappsdkdll-microsoftwindowsappsdkbootstrapdll-and-ddlm)
     - [5.4.1. Boostrapper - Find and Load/Run the per-application 'helper' Main package](#541-boostrapper---find-and-loadrun-the-per-application-helper-main-package)
-    - [5.4.2. Boostrapper - Find and Load ProjectReunion.dll](#542-boostrapper---find-and-load-projectreuniondll)
+    - [5.4.2. Boostrapper - Find and Load Microsoft.WindowsAppSDK.dll](#542-boostrapper---find-and-load-microsoftwindowsappsdkdll)
     - [5.4.3. Dynamic Dependency Lifetime Manager (DDLM)](#543-dynamic-dependency-lifetime-manager-ddlm)
       - [5.4.3.1. DDLM - Main Package](#5431-ddlm---main-package)
       - [5.4.3.2. DDLM - Install-time 'Pinning'](#5432-ddlm---install-time-pinning)
@@ -68,7 +68,7 @@ Framework packages.
 Microsoft-internal task [23447728](https://task.ms/23447728)
 
 This is the spec for proposal [MSIX Dynamic Dependencies - allow any process to use MSIX Framework
-packages #89](https://github.com/microsoft/ProjectReunion/issues/89).
+packages #89](https://github.com/microsoft/WindowsAppSDK/issues/89).
 
 # 3. Description
 
@@ -716,8 +716,8 @@ A future version of Windows should be more savvy to Dynamic Dependencies and not
 'helper' Main package to prevent unintended premature removal of a Framework package. Until then,
 this is the recommended technique for install-time pinning.
 
-To that end, Project Reunion includes the Dynamic Dependency Lifetime Manager (DDLM) to provide this
-install-time 'pinning' for Project Reunion's Framework package.
+To that end, Windows App SDK includes the Dynamic Dependency Lifetime Manager (DDLM) to provide this
+install-time 'pinning' for Windows App SDK's Framework package.
 
 ## 3.4. Runtime 'Pinning' aka Prevent Update While In-Use
 
@@ -774,12 +774,12 @@ close the connection until after `MddRemovePackageDependency`.
 Deployment detects this process running with the 'helper' Main package's identity and will not
 remove the referenced Framework package when updating the Framework.
 
-**NOTE:** A single ProjectReunion Main package can provide the needed 'pin' support but
-blocks servicing scenarios e.g. App1 is running when App2 installs a newer ProjectReunion
+**NOTE:** A single Windows App SDK Main package can provide the needed 'pin' support but
+blocks servicing scenarios e.g. App1 is running when App2 installs a newer Windows App SDK
 Framework package. These issues can be avoided via a per-app 'helper' Main package. See
 TBD-link-to-per-app-helper-proposal for more details.
 
-Project Reunion includes the Dynamic Dependency Lifetime Manager (DDLM) integrated with the bootstrapper API
+Windows App SDK includes the Dynamic Dependency Lifetime Manager (DDLM) integrated with the bootstrapper API
 to provide this runtime 'pinning' for not-packaged applications.
 
 # 4. Examples
@@ -848,32 +848,32 @@ Two users can resolve a package dependency to different answers, depending on th
 Package dependencies can only be resolved to packages registered for a user. As packages cannot be
 registered for LocalSystem the Dynamic Dependencies feature is not available to callers running as LocalSystem.
 
-## 5.4. Packaging - ProjectReunion.dll, ProjectReunion.Bootstrap.dll and DDLM
+## 5.4. Packaging - Microsoft.WindowsAppSDK.dll, Microsoft.WindowsAppSDK.Bootstrap.dll and DDLM
 
-The Dynamic Dependencies API is provided via ProjectReunion.dll in ProjectReunion's Framework package.
+The Dynamic Dependencies API is provided via Microsoft.WindowsAppSDK.dll in Windows App SDK's Framework package.
 
-ProjectReunion.Bootstrap.dll is a redistributable for non-packaged applications.
+Microsoft.WindowsAppSDK.Bootstrap.dll is a redistributable for non-packaged applications.
 
-Packaged applications can declare `<PackageDependency Name='ProjectReunion'...>` to access Framework packages.
-Non-packaged applications need to use the 'boostrapper API' in ProjectReunion.Bootstrap.dll to get access to
-ProjectReunion's Framework package. See [3.4. Runtime 'Pinning' aka Prevent Update While In-Use] for more details.
+Packaged applications can declare `<PackageDependency Name='Microsoft.WindowsAppSDK'...>` to access Framework packages.
+Non-packaged applications need to use the 'boostrapper API' in Microsoft.WindowsAppSDK.Bootstrap.dll to get access to
+Windows App SDK's Framework package. See [3.4. Runtime 'Pinning' aka Prevent Update While In-Use] for more details.
 
 The 'bootstrapper API' provides an initialization function that performs the following actions:
 
 1. Find the per-application 'helper' Main package and create a process with its identity
-2. Find and load ProjectReunion.dll from the ProjectReunion Framework package
+2. Find and load Microsoft.WindowsAppSDK.dll from the Windows App SDK Framework package
 
 Here's an architectural diagram showing the primary actors and their flow:
-![Dynamic Dependencies Architecture](ReunionDynamicDependencies.svg)
+![Dynamic Dependencies Architecture](WindowsAppSDKDynamicDependencies.svg)
 
-1. An non-packaged app using Dynamic Dependencies calls `MddBootstrapInitialize()` exported from `ProjectReunion.Bootstrap.dll`.
+1. An non-packaged app using Dynamic Dependencies calls `MddBootstrapInitialize()` exported from `Microsoft.WindowsAppSDK.Bootstrap.dll`.
 2. `MddBootstrapInitialize()` uses [Windows.ApplicationModel.AppExtension](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.AppExtensions.AppExtension?view=winrt-19041)
-to enumerate Project Reunion's Dynamic Dependency Lifetime Mananer (DDLM) packages with matching version.major
+to enumerate Windows App SDK's Dynamic Dependency Lifetime Mananer (DDLM) packages with matching version.major
 and architecture and select the best matching package.
-3. `MddBootstrapInitialize()` calls `CoCreateInstance(clsid)` to instantiate the app's Packaged COM OOP Server from DynamicDependencyLifetimeManager.exe in the selected Project Reunion DDLM package.
-4. `MddBootstrapInitialize()` calls `LoadLibrary(GetPath(ProjectReunionFramework) + "\ProjectReunion.dll"))` to load the dll containing the Dynamic Dependencies API.
-5. `ProjectReunion.dll`'s DllMain() initializes Detours to support dynamic dependencies in the process' package graph.
-6. `MddBootstrapInitialize()` uses the Dynamic Dependencies API to create and add the ProjectReunionFramework
+3. `MddBootstrapInitialize()` calls `CoCreateInstance(clsid)` to instantiate the app's Packaged COM OOP Server from DynamicDependencyLifetimeManager.exe in the selected Windows App SDK DDLM package.
+4. `MddBootstrapInitialize()` calls `LoadLibrary(GetPath(WindowsAppSDKFramework) + "\Microsoft.WindowsAppSDK.dll"))` to load the dll containing the Dynamic Dependencies API.
+5. `Microsoft.WindowsAppSDK.dll`'s DllMain() initializes Detours to support dynamic dependencies in the process' package graph.
+6. `MddBootstrapInitialize()` uses the Dynamic Dependencies API to create and add the Windows App SDK Framework
 package to the process' package graph
 7. The application is now free to call the Dynamic Depedencies API.
 
@@ -892,42 +892,42 @@ MddDeletePackageDependency(packageDependency)
 
 The per-application 'helper' Main package defines a [COM OutOfProcess
 server](https://docs.microsoft.com/uwp/schemas/appxpackage/uapmanifestschema/element-com-comserver)
-and `<PackageDependency Name="ProjectReunionFramework"...>`.
+and `<PackageDependency Name="Microsoft.WindowsAppSDK"...>`.
 
 The bootstrapper API calls CoCreateInstance() to create a process with this package's identity.
 The Dynamic Dependencies API can be used by non-packaged processes as long as that process runs.
 The bootstrapper API holds a reference to the returned object until a 'bootstrapper shutdown' API
 is called or process termination.
 
-### 5.4.2. Boostrapper - Find and Load ProjectReunion.dll
+### 5.4.2. Boostrapper - Find and Load Microsoft.WindowsAppSDK.dll
 
-The bootstrapper API finds the ProjectReunion Framework package and calls LoadLibrary("ProjectReunion.dll")
+The bootstrapper API finds the Windows App SDK Framework package and calls LoadLibrary("Microsoft.WindowsAppSDK.dll")
 to load and initialize the Dynamic Dependencies API.
 
 ### 5.4.3. Dynamic Dependency Lifetime Manager (DDLM)
 
-Project Reunion provides a `Dynamic Dependency Lifetime Manager (DDLM)`  as a Packaged COM OutOfProcess Server
-to provide runtime 'pinning' of Project Reunion's Framework package for not-packaged applications.
+Windows App SDK provides a `Dynamic Dependency Lifetime Manager (DDLM)`  as a Packaged COM OutOfProcess Server
+to provide runtime 'pinning' of Windows App SDK's Framework package for not-packaged applications.
 
 This COM server is provided via a Main package called the Dynamic Dependency Lifetime Manager Main package,
 aka the DDLM Main package or simply 'the DDLM package'. This package also provides install-time 'pinning'
-for Project Reunion's Framework package.
+for Windows App SDK's Framework package.
 
 #### 5.4.3.1. DDLM - Main Package
 
-The DDLM is a Main package unique to its associated Project Reunion Framework package, down to its
+The DDLM is a Main package unique to its associated Windows App SDK Framework package, down to its
 version+architecture. To accomplish this a DDLM package's identity includes this information in its
 package name:
 
-`DDLM Package Name = "Microsoft.ProjectReunion-<version>-<architecture>"`
+`DDLM Package Name = "Microsoft.WindowsAppSDK-<version>-<architecture>"`
 
-For example, given a Project Reunion Framework package with the package full name of
+For example, given a Windows App SDK Framework package with the package full name of
 
-`Microsoft.ProjectReunion_4.1.1967.333_x64__1234567890abc`
+`Microsoft.WindowsAppSDK.1.1967.333_x64__1234567890abc`
 
 the associated DDLM package would have a package full name of
 
-`Microsoft.ProjectReunion.DDLM-4.1.1967.333-x64_4.1.1967.333_x64__1234567890abc`
+`Microsoft.WindowsAppSDK.DDLM-4.1.1967.333-x64_4.1.1967.333_x64__1234567890abc`
 
 Version and architecture are encoded in the DDLM's package name the same way they're formatted
 in a package full name.
@@ -944,7 +944,7 @@ Framework package. For example
 
 ```xml
 <PackageDependency
-    Name="Microsoft.ProjectReunion.Framework"
+    Name="Microsoft.WindowsAppSDK.Framework"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     MinVersion="4.1.1967.333"/>
 ```
@@ -961,10 +961,10 @@ bootstrapper API to efficiently enumerate and the CLSID of its Packaged COM OutO
 
 ```xml
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.reunion.ddlm.4.1.x64"
+          <uap3:AppExtension Name="com.microsoft.winappsdk.ddlm.4.1.x64"
                              Id="ddlm-4.1.1967.333-x64"
                              PublicFolder="public\ddlm"
-                             DisplayName="ProjectReunion DynamicDependency LifetimeManager Extension (4.1.* x64)">
+                             DisplayName="Windows App SDK DynamicDependency LifetimeManager Extension (4.1.* x64)">
             <uap3:Properties>
               <CLSID>32E7CF70-038C-429a-BD49-88850F1B4A11</CLSID>
             </uap3:Properties>
@@ -974,20 +974,20 @@ bootstrapper API to efficiently enumerate and the CLSID of its Packaged COM OutO
 
 The declared AppExtension has a name of
 
-`com.microsoft.reunion.ddlm.<version.major>.<version.minor>.<architcture>`
+`com.microsoft.winappsdk.ddlm.<version.major>.<version.minor>.<architcture>`
 
 **NOTE:** AppExtension name is limited to <=39 characters on Windows builds <10.0.18307.0
-(RS5=10.0.17763.0, 19H1=10.0.18362). The preferred name `com.microsoft.projectreunion.ddlm....`
+(RS5=10.0.17763.0, 19H1=10.0.18362). The preferred name `com.microsoft.winappsdk.ddlm....`
 has a length of 40+ characters so we use this shortened form for as long as we need to support
 older releases.
 
-The bootstrapper API uses [Windows.ApplicationModel.AppExtension](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.AppExtensions.AppExtension?view=winrt-19041) to enumerate all Project Reunion Framework packages with the specified Major version number and selects the one best matching the criteria passed to the
+The bootstrapper API uses [Windows.ApplicationModel.AppExtension](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.AppExtensions.AppExtension?view=winrt-19041) to enumerate all Windows App SDK Framework packages with the specified Major version number and selects the one best matching the criteria passed to the
 bootstrapper API.
 
 Once selected, the bootstrapper API `MddBootstrapInitialize()` creates an instance of the DDLM (COM object)
 per the CLSID specified and holds onto it until `MddBootstrapShutdown()` is called (or the process terminates).
 
-The bootstrap API then determines the specific instance of Project Reunion's Framework package in the
+The bootstrap API then determines the specific instance of Windows App SDK's Framework package in the
 DDLM process' package graph and dynamically adds that to the calling process' package graph. Thus even though
 an application calling the bootstrapper API may find v1.2.3.4 of the DDLM package it will resolve an
 equal _or greater_ version of the Framework package (whatever version Windows has resolved as the DDLM's package graph per its `<PackageDependency>`).
@@ -1008,8 +1008,8 @@ declares the DDLM:
       <Extensions>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="DynamicDependencyLifetimeManager.exe" DisplayName="ProjectReunion DynamicDependency LifetimeManager">
-              <com:Class Id="...clsid..." DisplayName="ProjectReunion DynamicDependency LifetimeManager"/>
+            <com:ExeServer Executable="DynamicDependencyLifetimeManager.exe" DisplayName="Windows App SDK DynamicDependency LifetimeManager">
+              <com:Class Id="...clsid..." DisplayName="Windows App SDK DynamicDependency LifetimeManager"/>
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
@@ -1035,7 +1035,7 @@ in applists, as it serves no purpose other than providing a means to define the 
 
 #### 5.4.3.5. DDLM - Signing
 
-Project Reunion's DDLM package is signed the same as other Project Reunion packages.
+Windows App SDK's DDLM package is signed the same as other Windows App SDK packages.
 
 ## 5.5. Dynamic Dependencies vis a vis Static Dependencies
 
@@ -1257,13 +1257,13 @@ STDAPI MddGetIdForPackageDependencyContext(
 This header contains the Bootstrap API
 
 ```c++
-/// Iniitalize the calling process to use Project Reunion's framework package.
+/// Iniitalize the calling process to use Windows App SDK's framework package.
 ///
-/// Find a Project Reunion framework package meeting the criteria and make it available
+/// Find a Windows App SDK framework package meeting the criteria and make it available
 /// for use by the current process. If multiple packages meet the criteria the best
 /// candidate is selected.
 ///
-/// @param majorMinorVersion major and minor version of Project Reunion's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+/// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
 /// @param versionTag version tag (if any), e.g. "prerelease".
 /// @param minVersion the minimum version to use
 STDAPI MddBootstrapInitialize(

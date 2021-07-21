@@ -8,51 +8,51 @@ We will update this page periodically.
 ## How do I start using the Windows App SDK in my app?
 If you have a Desktop Win32 or UWP app there are multiple components available now.
 
-These components are available for you to use now and adhere to the 'Windows App SDK Family Promise' 
+These components are available for you to use now and adhere to the 'Windows App SDK Family Promise'
 that they have a single API for use in all kinds of applications.
 
-- **[WinUI 3 for XAML](https://github.com/microsoft/microsoft-ui-xaml)** in your Win32 app helps you 
-build fluent UX with the ease of XAML. This component is part of the Windows App SDK 
+- **[WinUI 3 for XAML](https://github.com/microsoft/microsoft-ui-xaml)** in your Win32 app helps you
+build fluent UX with the ease of XAML. This component is part of the Windows App SDK
 Family of functionality, building on the identity + packaging + deployment transparent ideas that
 Windows App SDK supports for your app as well.
-- **[C++/WinRT](https://github.com/microsoft/cppwinrt)**, 
-**[RUST/WinRT](https://github.com/microsoft/winrt-rs)**, 
-and **[C#/WinRT](https://github.com/microsoft/cswinrt)** 
-provide language-native projections of Windows, Windows App SDK, 
-and your own custom types defined in metadata. Consume APIs from the Windows Kit, produce them for 
+- **[C++/WinRT](https://github.com/microsoft/cppwinrt)**,
+**[RUST/WinRT](https://github.com/microsoft/winrt-rs)**,
+and **[C#/WinRT](https://github.com/microsoft/cswinrt)**
+provide language-native projections of Windows, Windows App SDK,
+and your own custom types defined in metadata. Consume APIs from the Windows Kit, produce them for
 use by other supported projections, create your own new language projections.
-- **[MSIX](https://docs.microsoft.com/en-us/windows/msix/overview)** and 
-**[MSIX-Core](https://github.com/microsoft/msix-packaging)** 
-let you package your application for distribution to Windows Desktop machines 
-via the store or your own delivery pipeline. MSIX-Core lets you use the reuse parts of the MSIX 
+- **[MSIX](https://docs.microsoft.com/windows/msix/overview)** and
+**[MSIX-Core](https://github.com/microsoft/msix-packaging)**
+let you package your application for distribution to Windows Desktop machines
+via the store or your own delivery pipeline. MSIX-Core lets you use the reuse parts of the MSIX
 packaging story on older versions of Windows.
 
   _Coming soon_
-- **[Microsoft Edge's WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2)**
+- **[Microsoft Edge's WebView2](https://docs.microsoft.com/microsoft-edge/webview2)**
 
-[Tell us what other components you'd like to see as part of the Windows App SDK Family](https://github.com/microsoft/ProjectReunion/issues/new/choose)
+[Tell us what other components you'd like to see as part of the Windows App SDK Family](https://github.com/microsoft/WindowsAppSDK/issues/new/choose)
 
 ## Do I need to be packaged to use the Windows App SDK?
 Your app does not need to be packaged to use Windows App SDK functionality.
 
-If you are packaged using either a Universal Windows Application package or a Desktop Bridge package, 
+If you are packaged using either a Universal Windows Application package or a Desktop Bridge package,
 referencing the NuGet package is enough to start using the Windows App SDK right away.
 
-If you have your own installer, we'll have instructions to carry the Windows App SDK components with your app 
+If you have your own installer, we'll have instructions to carry the Windows App SDK components with your app
 and how to install them using some common installers.
 
 ## How do I contribute?
-Use this repo's GitHub Issues to [ask questions, start a discussion or make a feature proposal](https://github.com/microsoft/ProjectReunion/issues/new/choose).
+Use this repo's GitHub Issues to [ask questions, start a discussion or make a feature proposal](https://github.com/microsoft/WindowsAppSDK/issues/new/choose).
 
 ## Is the Windows App SDK a new App Model?
 
 No.
 
 Windows App SDK is a set of libraries and content you add to your existing app
-[within its app model](https://docs.microsoft.com/en-us/windows/apps/desktop/choose-your-platform)
+[within its app model](https://docs.microsoft.com/windows/apps/desktop/choose-your-platform)
 and start coding. Some parts of the Windows App SDK work _better_ if your app is
-[a UWP app](https://docs.microsoft.com/en-us/windows/uwp/get-started/), or
-[Desktop Bridge](https://docs.microsoft.com/en-us/windows/apps/desktop/modernize/desktop-to-uwp-extensions),
+[a UWP app](https://docs.microsoft.com/windows/uwp/get-started/), or
+[Desktop Bridge](https://docs.microsoft.com/windows/apps/desktop/modernize/desktop-to-uwp-extensions),
 or [has identity](https://aka.ms/sparsepkgblog).
 
 Your existing app model's activation, deployment, lifecycle, and presentation
@@ -62,7 +62,7 @@ want to _change_ your app model, since the same code will just keep working!
 
 ## What Languages and Runtimes are Supported?
 
-Windows App SDK's API surface will be [defined in metadata](https://docs.microsoft.com/en-us/uwp/winrt-cref/winmd-files)
+Windows App SDK's API surface will be [defined in metadata](https://docs.microsoft.com/uwp/winrt-cref/winmd-files)
 similar to WinRT APIs already part of Windows. We'll support projections of that metadata
 through projects like C++/WinRT, C#/WinRT, and Rust/WinRT so access to Windows App SDK
 APIs is familiar to you.
@@ -113,7 +113,7 @@ We're looking to support:
 ## What's a UWP?
 
 Referenced throughout this repo, the term "UWP" references a
-[Universal Windows Platform App](https://docs.microsoft.com/en-us/windows/uwp/get-started/) -
+[Universal Windows Platform App](https://docs.microsoft.com/windows/uwp/get-started/) -
 an app running inside an app container, at a lower privilege level, with
 package identity, delivered via an MSIX. This app's lifecycle from activation
 through termination is controlled by the platform for best power and resource
@@ -124,64 +124,64 @@ framework that produces XAML or Composition objects.
 
 ## How will I consume Windows App SDK components? How will they be packaged?
 
-Windows App SDK components will be available as NuGet packages and Framework packages. 
-Developers can add Nuget packages to their build environments and or reference shared code 
+Windows App SDK components will be available as NuGet packages and Framework packages.
+Developers can add Nuget packages to their build environments and or reference shared code
 that will be available as framework packages.
 
-At developer consumption time it's a Nuget package with metadata and the things your 
+At developer consumption time it's a Nuget package with metadata and the things your
 languages need to build against it. 
-At runtime, it's a set of DLLs distributed using a framework package. Your app doesn't 
-need to redistribute the DLLs directly - your app would either depend on the framework 
-package specifically (in the case of a packaged app) or would deploy our upcoming 
-WindowsAppSDK.MSIX that contains the framework package as part of your app's unpackaged 
+At runtime, it's a set of DLLs distributed using a framework package. Your app doesn't
+need to redistribute the DLLs directly - your app would either depend on the framework
+package specifically (in the case of a packaged app) or would deploy our upcoming
+WindowsAppSDK.MSIX that contains the framework package as part of your app's unpackaged
 installer (similar to how an app carried the VC Runtimes or the DirectX, etc.)
 
 ## What is a Framework Package?
 
-Framework packages are ways for apps to share code from a common source, rather than 
-carrying it with themselves. Apps just need to reference the framework package in their 
+Framework packages are ways for apps to share code from a common source, rather than
+carrying it with themselves. Apps just need to reference the framework package in their
 manifest.
-A user's device needs only to carry one Windows App SDK Framework package and many apps can 
-reference it. Framework packages are updated faster than apps are e.g. When WinUI ships a 
-new version of their framework package all three apps magically get the new version without 
-themselves having to update (or know how to update some shared copy.) 
+A user's device needs only to carry one Windows App SDK Framework package and many apps can
+reference it. Framework packages are updated faster than apps are e.g. When WinUI ships a
+new version of their framework package all three apps magically get the new version without
+themselves having to update (or know how to update some shared copy.)
 This is much better for security & reliability fixes as well.
 
 ## How will consuming Windows App SDK components impact my app size?
 
 If you are a packaged app? No. If unpackaged, it probably will.
 
-Nuget packages are build-time artifacts. Referencing more NuGets may mean additional work at build 
-time (like generating projections) but that’s all.  At runtime, apps don’t carry the Framework 
-Package content in their own directory. They share common binaries managed by the system.  
-To help alleviate any DLL hell concerns, Framework Packages will not do breaking changes like the 
+Nuget packages are build-time artifacts. Referencing more NuGets may mean additional work at build
+time (like generating projections) but that’s all.  At runtime, apps don’t carry the Framework
+Package content in their own directory. They share common binaries managed by the system. 
+To help alleviate any DLL hell concerns, Framework Packages will not do breaking changes like the
 old “DLL hell” problem – we’ll be using versioning mechanisms to prevent that. 
 
 ## How will the Windows App SDK impact an application's performance given that the pieces are further and further away from the OS?
 
 There's likely going to be a performance impact but it depends on the component.
-In some situations, like with MRT Core, there will be improved performance because we will  
+In some situations, like with MRT Core, there will be improved performance because we will
 prune some expensive but rarely used functionality.
-Runtime performance will be probably slightly better as the API interface flattening makes calling 
-complex classes cheaper (fewer interface queries.). Memory usage will be slightly better overall 
-as your apps will load code that can be improved and reduced in size over time. For performance 
+Runtime performance will be probably slightly better as the API interface flattening makes calling
+complex classes cheaper (fewer interface queries.). Memory usage will be slightly better overall
+as your apps will load code that can be improved and reduced in size over time. For performance
 at app launch, there'll probably be a net neutral effect.
 
 ## Will the Windows App SDK help with app-compat testing of new Windows versions??
 
 Yes.
-Windows App SDK components will work downlevel to at least Windows 10 version 1809 and in future 
-versions of Windows 10. We will evaluate moving the min version over time based on the needs of 
-developers - thinking of it as roughly aligned with Windows enterprise support is likely a good 
+Windows App SDK components will work downlevel to at least Windows 10 version 1809 and in future
+versions of Windows 10. We will evaluate moving the min version over time based on the needs of
+developers - thinking of it as roughly aligned with Windows enterprise support is likely a good
 starting point
 
 ## What is the deprecation strategy for in-system components?
 
 In-box components will be supported forever in the usual way. We have no plans to deprecate them
-(remove their usability) at this time. We will likely slow down or pause investment in 
+(remove their usability) at this time. We will likely slow down or pause investment in
 the in-box components while we focus on making the Windows App SDK surface complete.
 
-## I don't see my question here! 
+## I don't see my question here!
 
-[Create an issue to ask a question or start a discussion](https://github.com/microsoft/ProjectReunion/issues/new/choose).
+[Create an issue to ask a question or start a discussion](https://github.com/microsoft/WindowsAppSDK/issues/new/choose).
 

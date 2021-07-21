@@ -8,7 +8,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace ProjectReunionInstaller {
+namespace WindowsAppSDKInstaller {
 
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
@@ -157,7 +157,7 @@ namespace ProjectReunionInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppSDKInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
@@ -169,8 +169,9 @@ namespace ProjectReunionInstaller {
             return;
         }
 
+        PCWSTR c_windowsAppSDKTempDirectoryPrefix{ L"WAS" };
         wchar_t packageFilename[MAX_PATH];
-        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, packageFilename));
+        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppSDKTempDirectoryPrefix, 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
@@ -218,7 +219,7 @@ namespace ProjectReunionInstaller {
 
     HRESULT DeployPackages(bool quiet) noexcept try
     {
-        for (const auto& package : ProjectReunionInstaller::c_packages)
+        for (const auto& package : WindowsAppSDKInstaller::c_packages)
         {
             DeployPackageFromResource(package, quiet);
         }

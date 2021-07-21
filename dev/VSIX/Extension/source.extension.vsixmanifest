@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.ProjectReunion" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
-    <DisplayName>Project Reunion</DisplayName>
-    <Description xml:space="preserve">The Microsoft Project Reunion Visual Studio extension adds project and item templates to support building Windows apps and components.</Description>
-    <MoreInfo>https://github.com/microsoft/ProjectReunion/</MoreInfo>
+    <Identity Id="Microsoft.WindowsAppSDK" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+    <DisplayName>Windows App SDK</DisplayName>
+    <Description xml:space="preserve">The Microsoft Windows App SDK Visual Studio extension adds project and item templates to support building Windows apps and components.</Description>
+    <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
     <License>LICENSE</License>
-    <GettingStartedGuide>https://github.com/microsoft/ProjectReunion/</GettingStartedGuide>
-    <ReleaseNotes>https://github.com/microsoft/ProjectReunion/releases</ReleaseNotes>
-    <Icon>Reunion.png</Icon>
-    <PreviewImage>Reunion.png</PreviewImage>
-    <Tags>ProjectReunion, WinUI, XAML, C#, C++, C++/WinRT, Managed</Tags>
+    <GettingStartedGuide>https://github.com/microsoft/WindowsAppSDK/</GettingStartedGuide>
+    <ReleaseNotes>https://github.com/microsoft/WindowsAppSDK/releases</ReleaseNotes>
+    <Icon>WindowsAppSDK.png</Icon>
+    <PreviewImage>WindowsAppSDK.png</PreviewImage>
+    <Tags>WindowsAppSDK, WinUI, XAML, C#, C++, C++/WinRT, Managed</Tags>
     <Preview>false</Preview>
   </Metadata>
   <Installation AllUsers="true">
