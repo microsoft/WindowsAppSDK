@@ -9,7 +9,5 @@
 
   <ItemGroup>
       <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSDKNupkgVersion$" />
-      <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="$WindowsAppSDKFoundationNupkgVersion$" />
-      <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="$WindowsAppSDKWinUINupkgVersion$" />
   </ItemGroup>
 </Project>

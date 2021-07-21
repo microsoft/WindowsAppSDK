@@ -34,9 +34,6 @@
   <ItemGroup>
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_Foundation)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_DWrite)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_WinUI)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -70,16 +67,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-  </ItemGroup>
+   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ItemTemplates\Desktop\CSharp\BlankWindow\WinUI.Desktop.Cs.BlankWindow.csproj">
       <Project>{9DE11F03-73A8-4DCA-88B3-1623A718DFD1}</Project>

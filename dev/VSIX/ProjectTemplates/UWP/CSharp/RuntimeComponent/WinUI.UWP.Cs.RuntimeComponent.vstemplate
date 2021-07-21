@@ -50,13 +50,9 @@
     <UsePackageReferences>true</UsePackageReferences>
     <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK">
       <package id="Microsoft.WindowsAppSDK" version="1.0.0" />
-      <package id="Microsoft.WindowsAppSDK.Foundation" version="1.0.0" />
-      <package id="Microsoft.WindowsAppSDK.WinUI" version="1.0.0" />
     </packages>
     <Assets>
       <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.WindowsAppSDK.Foundation.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.Foundation.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.WindowsAppSDK.WinUI.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.WinUI.1.0.0.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>
