@@ -14,7 +14,7 @@ char* WINDOWSAPPSDK_PACKAGE_VER();
 char* WINDOWSAPPSDK_EXPERIMENTATION_LEVEL();
 
 #define _GENERIC_PARTB_FIELDS_ENABLED \
-        TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
+        TraceLoggingStruct(4, "PartB_COMMON_WINDOWSAPPSDK_PARAMS"), \
         TraceLoggingString(WINDOWSAPPSDK_PACKAGE_VER(), "SDKVersion"), \
         TraceLoggingString(WINDOWSAPPSDK_EXPERIMENTATION_LEVEL(), "SDKExperimentationLevel"), \
         TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
