@@ -493,6 +493,7 @@ namespace Microsoft.Windows.PushNotifications
         // 1) If kind = PushTrigger is specified, the trigger itself will be removed
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
         // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
+        //    and the token parameter will be unused so it should be set to nullptr
         static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOptions options);
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
