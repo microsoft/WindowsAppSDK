@@ -25,7 +25,7 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="TE.ProcessHost.Managed" Executable="TE.ProcessHost.UAP.exe" EntryPoint="ProcessHostApplication">
+    <Application Id="taef.executionengine.universal.App" Executable="$targetnametoken$.exe" EntryPoint="CoreMrtManagedTest.App">
       <uap:VisualElements
         DisplayName="CoreMRT ManagedTest"
         Square150x150Logo="Assets\Square150x150Logo.png"
