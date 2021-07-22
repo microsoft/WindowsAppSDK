@@ -25,9 +25,7 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="vstest.executionengine.universal.App"
-        Executable="$targetnametoken$.exe"
-        EntryPoint="CoreMrtManagedTest.App">
+    <Application Id="TE.ProcessHost.Managed" Executable="TE.ProcessHost.UAP.exe" EntryPoint="ProcessHostApplication">
       <uap:VisualElements
         DisplayName="CoreMRT ManagedTest"
         Square150x150Logo="Assets\Square150x150Logo.png"

@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WEX.TestExecution;
+using WEX.TestExecution.Markup;
 using Microsoft.ApplicationModel.Resources;
 
 namespace ManagedTest
@@ -15,7 +16,7 @@ namespace ManagedTest
         {
             var resourceLoader = new ResourceLoader("resources.pri.standalone");
             var resource = resourceLoader.GetString("IDS_MANIFEST_MUSIC_APP_NAME");
-            Assert.AreEqual(resource, "Groove Music");
+            Verify.AreEqual(resource, "Groove Music");
         }
 
         [TestMethod]
@@ -23,7 +24,7 @@ namespace ManagedTest
         {
             var resourceLoader = new ResourceLoader("resources.pri.standalone", "Microsoft.UI.Xaml/Resources");
             var resource = resourceLoader.GetString("HelpTextMoreButton");
-            Assert.AreEqual(resource, "Invoke to show or hide the text entry fields.");
+            Verify.AreEqual(resource, "Invoke to show or hide the text entry fields.");
         }
 
         [TestMethod]
@@ -31,7 +32,7 @@ namespace ManagedTest
         {
             var resourceLoader = new ResourceLoader("resources.pri.standalone");
             var resource = resourceLoader.GetStringForUri(new Uri("ms-resource://Microsoft.ZuneMusic/resources/IDS_MANIFEST_MUSIC_APP_NAME"));
-            Assert.AreEqual(resource, "Groove Music");
+            Verify.AreEqual(resource, "Groove Music");
         }
 
         [TestMethod]
@@ -39,14 +40,14 @@ namespace ManagedTest
         {
             var resourceLoader = new ResourceLoader("resources.pri.standalone");
             var resource = resourceLoader.GetStringForUri(new Uri("ms-resource:///resources/IDS_MANIFEST_MUSIC_APP_NAME"));
-            Assert.AreEqual(resource, "Groove Music");
+            Verify.AreEqual(resource, "Groove Music");
         }
 
         [TestMethod]
         public void GetDefaultResourceFilePathTest()
         {
             var filepath = ResourceLoader.GetDefaultResourceFilePath();
-            Assert.AreNotEqual(filepath.IndexOf("resources.pri"), -1);
+            Verify.AreNotEqual(filepath.IndexOf("resources.pri"), -1);
         }
     }
 
@@ -58,11 +59,11 @@ namespace ManagedTest
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var stringResourceCandidate = resourceManager.MainResourceMap.GetValue("resources/IDS_MANIFEST_MUSIC_APP_NAME");
-            Assert.AreEqual(stringResourceCandidate.ValueAsString, "Groove Music");
-            var ex = Assert.ThrowsException<Exception>(() => stringResourceCandidate.ValueAsBytes);
-            Assert.AreEqual((uint)ex.HResult, 0x80073b0d); // HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)
+            Verify.AreEqual(stringResourceCandidate.ValueAsString, "Groove Music");
+            var ex = Verify.Throws<Exception>(() => { var temp = stringResourceCandidate.ValueAsBytes; });
+            Verify.AreEqual((uint)ex.HResult, 0x80073b0d); // HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)
             stringResourceCandidate = resourceManager.MainResourceMap.TryGetValue("resources/IDS_MANIFEST_MUSIC_APP_NAME");
-            Assert.AreEqual(stringResourceCandidate.ValueAsString, "Groove Music");
+            Verify.AreEqual(stringResourceCandidate.ValueAsString, "Groove Music");
         }
 
         [TestMethod]
@@ -71,9 +72,9 @@ namespace ManagedTest
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var fileResourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Assets/AppList.png");
             var fileResourceString = fileResourceCandidate.ValueAsString;
-            Assert.AreNotEqual(fileResourceString.IndexOf(@"\AppList."), -1);
+            Verify.AreNotEqual(fileResourceString.IndexOf(@"\AppList."), -1);
             fileResourceString = resourceManager.MainResourceMap.TryGetValue("Files/Assets/AppList.png").ValueAsString;
-            Assert.AreNotEqual(fileResourceString.IndexOf(@"\AppList."), -1);
+            Verify.AreNotEqual(fileResourceString.IndexOf(@"\AppList."), -1);
         }
 
         [TestMethod]
@@ -82,11 +83,11 @@ namespace ManagedTest
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var resourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
             var resourceData = resourceCandidate.ValueAsBytes;
-            Assert.AreEqual(resourceData.Length, 15002);
-            var ex = Assert.ThrowsException<Exception>(() => resourceCandidate.ValueAsString);
-            Assert.AreEqual((uint)ex.HResult, 0x80073b0d); // HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)
+            Verify.AreEqual(resourceData.Length, 15002);
+            var ex = Verify.Throws<Exception>(() => { var temp = resourceCandidate.ValueAsString; });
+            Verify.AreEqual((uint)ex.HResult, 0x80073b0d); // HRESULT_FROM_WIN32(ERROR_MRM_RESOURCE_TYPE_MISMATCH)
             resourceData = resourceManager.MainResourceMap.TryGetValue("Files/Controls/AlbumBasicInfoControl.xbf").ValueAsBytes;
-            Assert.AreEqual(resourceData.Length, 15002);
+            Verify.AreEqual(resourceData.Length, 15002);
         }
 
         [TestMethod]
@@ -95,19 +96,19 @@ namespace ManagedTest
             var resourceManager = new ResourceManager("resources.pri.standalone");
 
             var stringResourceCandidate = resourceManager.MainResourceMap.GetValue("resources/IDS_MANIFEST_MUSIC_APP_NAME");
-            Assert.AreEqual(stringResourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(stringResourceCandidate.Kind, ResourceCandidateKind.String);
             stringResourceCandidate = resourceManager.MainResourceMap.TryGetValue("resources/IDS_MANIFEST_MUSIC_APP_NAME");
-            Assert.AreEqual(stringResourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(stringResourceCandidate.Kind, ResourceCandidateKind.String);
 
             var fileResourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Assets/AppList.png");
-            Assert.AreEqual(fileResourceCandidate.Kind, ResourceCandidateKind.FilePath);
+            Verify.AreEqual(fileResourceCandidate.Kind, ResourceCandidateKind.FilePath);
             fileResourceCandidate = resourceManager.MainResourceMap.TryGetValue("Files/Assets/AppList.png");
-            Assert.AreEqual(fileResourceCandidate.Kind, ResourceCandidateKind.FilePath);
+            Verify.AreEqual(fileResourceCandidate.Kind, ResourceCandidateKind.FilePath);
 
             var blobResourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Controls/AlbumBasicInfoControl.xbf");
-            Assert.AreEqual(blobResourceCandidate.Kind, ResourceCandidateKind.EmbeddedData);
+            Verify.AreEqual(blobResourceCandidate.Kind, ResourceCandidateKind.EmbeddedData);
             blobResourceCandidate = resourceManager.MainResourceMap.TryGetValue("Files/Controls/AlbumBasicInfoControl.xbf");
-            Assert.AreEqual(blobResourceCandidate.Kind, ResourceCandidateKind.EmbeddedData);
+            Verify.AreEqual(blobResourceCandidate.Kind, ResourceCandidateKind.EmbeddedData);
         }
 
         [TestMethod]
@@ -117,12 +118,12 @@ namespace ManagedTest
             var resourceMap = resourceManager.MainResourceMap.GetSubtree("resources");
             var resourceCandidate = resourceMap.GetValue("IDS_MANIFEST_MUSIC_APP_NAME");
             var resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "Groove Music");
+            Verify.AreEqual(resource, "Groove Music");
 
-            var ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("abc"));
-            Assert.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
+            var ex = Verify.Throws<Exception>(() => resourceMap.GetValue("abc"));
+            Verify.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
             resourceCandidate = resourceMap.TryGetValue("abc");
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
         }
 
         [TestMethod]
@@ -140,14 +141,14 @@ namespace ManagedTest
             var resourceMap = resourceManager.MainResourceMap.GetSubtree("resources");
             var resourceCandidate = resourceMap.GetValue("abc");
             var resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "abcValue");
+            Verify.AreEqual(resource, "abcValue");
             resource = resourceMap.TryGetValue("abc").ValueAsString;
-            Assert.AreEqual(resource, "abcValue");
+            Verify.AreEqual(resource, "abcValue");
 
-            var ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("xyz"));
-            Assert.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
+            var ex = Verify.Throws<Exception>(() => resourceMap.GetValue("xyz"));
+            Verify.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
             resourceCandidate = resourceMap.TryGetValue("xyz");
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
         }
 
         [TestMethod]
@@ -158,11 +159,11 @@ namespace ManagedTest
             var resourceChildMap = resourceMap.GetSubtree("Files");
             var resourceChildChildMap = resourceChildMap.GetSubtree("Assets");
             var resourceCandidate = resourceChildChildMap.GetValue("LockScreenLogo.png");
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.FilePath);
-            Assert.AreNotEqual(resourceCandidate.ValueAsString.IndexOf(@"Assets\LockScreenLogo.scale-200.png"), -1);
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.FilePath);
+            Verify.AreNotEqual(resourceCandidate.ValueAsString.IndexOf(@"Assets\LockScreenLogo.scale-200.png"), -1);
             resourceCandidate = resourceChildChildMap.TryGetValue("LockScreenLogo.png");
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.FilePath);
-            Assert.AreNotEqual(resourceCandidate.ValueAsString.IndexOf(@"Assets\LockScreenLogo.scale-200.png"), -1);
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.FilePath);
+            Verify.AreNotEqual(resourceCandidate.ValueAsString.IndexOf(@"Assets\LockScreenLogo.scale-200.png"), -1);
         }
 
         [TestMethod]
@@ -172,13 +173,13 @@ namespace ManagedTest
             var resourceMap = resourceManager.MainResourceMap;
             var resourceChildMap = resourceMap.GetSubtree("anyname");
             var resourceContext = resourceManager.CreateResourceContext();
-            Assert.IsTrue(resourceContext.QualifierValues.ContainsKey(KnownResourceQualifierName.Language));
+            Verify.IsTrue(resourceContext.QualifierValues.ContainsKey(KnownResourceQualifierName.Language));
 
             // No resource file, and not handled by fallback 
-            var ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("abc"));
-            Assert.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
+            var ex = Verify.Throws<Exception>(() => resourceMap.GetValue("abc"));
+            Verify.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
             var resourceCandidate = resourceMap.TryGetValue("abc");
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
 
             // add fallback handler
             resourceManager.ResourceNotFound += (sender, args) =>
@@ -191,17 +192,17 @@ namespace ManagedTest
             };
 
             resourceCandidate = resourceMap.GetValue("abc");
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(resourceCandidate.ValueAsString, "abcValue");
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(resourceCandidate.ValueAsString, "abcValue");
 
             resourceCandidate = resourceMap.TryGetValue("abc");
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(resourceCandidate.ValueAsString, "abcValue");
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(resourceCandidate.ValueAsString, "abcValue");
 
-            ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("xyz"));
-            Assert.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
+            ex = Verify.Throws<Exception>(() => resourceMap.GetValue("xyz"));
+            Verify.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
             resourceCandidate = resourceMap.TryGetValue("xyz");
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
         }
 
         [TestMethod]
@@ -212,21 +213,21 @@ namespace ManagedTest
             var resourceMapResources = resourceMapXaml.GetSubtree("Resources");
 
             var count = resourceMapResources.ResourceCount;
-            Assert.AreEqual(count, 78u);
+            Verify.AreEqual(count, 78u);
 
             // first resource under the resource map
             var value = resourceMapResources.GetValueByIndex(0);
-            Assert.AreEqual(value.Key, "AutomationNameAlphaSlider");
+            Verify.AreEqual(value.Key, "AutomationNameAlphaSlider");
             var candidate = value.Value;
-            Assert.AreEqual(candidate.ValueAsString, "Opacity");
-            Assert.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(candidate.ValueAsString, "Opacity");
+            Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
 
             // last resource under the resource map
             value = resourceMapResources.GetValueByIndex(77);
-            Assert.AreEqual(value.Key, "ValueStringValueSliderWithoutColorName");
+            Verify.AreEqual(value.Key, "ValueStringValueSliderWithoutColorName");
             candidate = value.Value;
-            Assert.AreEqual(candidate.ValueAsString, "%1!u!");
-            Assert.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(candidate.ValueAsString, "%1!u!");
+            Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
         }
     }
 
@@ -245,30 +246,30 @@ namespace ManagedTest
             if ((qualifierValues[KnownResourceQualifierName.Language].IndexOf("en-US") != -1) || (qualifierValues[KnownResourceQualifierName.Language].IndexOf("en") == -1))
             {
                 // en-US or non-en which will match default
-                Assert.AreEqual(resource, "Equalizer");
+                Verify.AreEqual(resource, "Equalizer");
             }
 
-            Assert.AreEqual(qualifierValues[KnownResourceQualifierName.Scale], "");
+            Verify.AreEqual(qualifierValues[KnownResourceQualifierName.Scale], "");
 
             qualifierValues[KnownResourceQualifierName.Language] = "en-GB";
             resourceCandidate = resourceManager.MainResourceMap.GetValue("resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "Equaliser");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
-            Assert.IsFalse(resourceCandidate.QualifierValues.ContainsKey(KnownResourceQualifierName.Scale));
+            Verify.AreEqual(resource, "Equaliser");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
+            Verify.IsFalse(resourceCandidate.QualifierValues.ContainsKey(KnownResourceQualifierName.Scale));
 
             resourceCandidate = resourceManager.MainResourceMap.TryGetValue("resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "Equaliser");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
-            Assert.IsFalse(resourceCandidate.QualifierValues.ContainsKey(KnownResourceQualifierName.Scale));
+            Verify.AreEqual(resource, "Equaliser");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
+            Verify.IsFalse(resourceCandidate.QualifierValues.ContainsKey(KnownResourceQualifierName.Scale));
 
             qualifierValues[KnownResourceQualifierName.Language] = "en-AU";
             resourceCandidate = resourceManager.MainResourceMap.GetValue("resources/IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "Equaliser");
+            Verify.AreEqual(resource, "Equaliser");
             // Candidate for en-GB is selected
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
         }
 
         [TestMethod]
@@ -276,27 +277,27 @@ namespace ManagedTest
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var resourceContext = resourceManager.CreateResourceContext();
-            Assert.AreEqual(resourceContext.QualifierValues[KnownResourceQualifierName.Contrast], "");
-            Assert.AreEqual(resourceContext.QualifierValues[KnownResourceQualifierName.TargetSize], "");
-            Assert.AreEqual(resourceContext.QualifierValues["AlternateForm"], "");
+            Verify.AreEqual(resourceContext.QualifierValues[KnownResourceQualifierName.Contrast], "");
+            Verify.AreEqual(resourceContext.QualifierValues[KnownResourceQualifierName.TargetSize], "");
+            Verify.AreEqual(resourceContext.QualifierValues["AlternateForm"], "");
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Contrast] = "White";
             resourceContext.QualifierValues[KnownResourceQualifierName.TargetSize] = "96";
             var resourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Assets/AppList.png", resourceContext);
             var resource = resourceCandidate.ValueAsString;
-            Assert.AreNotEqual(resource.IndexOf(@"Assets\contrast-white\AppList.targetsize-96_contrast-white.png"), -1);
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Contrast], "WHITE");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.TargetSize], "96");
+            Verify.AreNotEqual(resource.IndexOf(@"Assets\contrast-white\AppList.targetsize-96_contrast-white.png"), -1);
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Contrast], "WHITE");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.TargetSize], "96");
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Contrast] = "Black";
             resourceContext.QualifierValues[KnownResourceQualifierName.TargetSize] = "72";
             resourceContext.QualifierValues["AlternateForm"] = "UNPLATED";
             resourceCandidate = resourceManager.MainResourceMap.GetValue("Files/Assets/AppList.png", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreNotEqual(resource.IndexOf(@"Assets\contrast-black\AppList.targetsize-72_altform-unplated_contrast-black.png"), -1);
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Contrast], "BLACK");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.TargetSize], "72");
-            Assert.AreEqual(resourceCandidate.QualifierValues["AlternateForm"], "UNPLATED");
+            Verify.AreNotEqual(resource.IndexOf(@"Assets\contrast-black\AppList.targetsize-72_altform-unplated_contrast-black.png"), -1);
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Contrast], "BLACK");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.TargetSize], "72");
+            Verify.AreEqual(resourceCandidate.QualifierValues["AlternateForm"], "UNPLATED");
         }
 
         [TestMethod]
@@ -307,42 +308,42 @@ namespace ManagedTest
             var resourceContext = resourceManager.CreateResourceContext();
 
             var count = resourceMap.ResourceCount;
-            Assert.AreEqual(count, 1269u);
+            Verify.AreEqual(count, 1269u);
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "en-US";
 
             // first resource under the resource map
             var value = resourceMap.GetValueByIndex(0, resourceContext);
-            Assert.AreEqual(value.Key, "000D1359");
+            Verify.AreEqual(value.Key, "000D1359");
             var candidate = value.Value;
-            Assert.AreEqual(candidate.ValueAsString, "This song is available only when you buy the whole album.");
-            Assert.AreEqual(candidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(candidate.QualifierValues[KnownResourceQualifierName.Language], "EN-US");
+            Verify.AreEqual(candidate.ValueAsString, "This song is available only when you buy the whole album.");
+            Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(candidate.QualifierValues[KnownResourceQualifierName.Language], "EN-US");
 
             // second to last resource under the resource map
             value = resourceMap.GetValueByIndex(1267, resourceContext);
-            Assert.AreEqual(value.Key, "IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE");
+            Verify.AreEqual(value.Key, "IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE");
             candidate = value.Value;
-            Assert.AreEqual(candidate.ValueAsString, "Equalizer");
-            Assert.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(candidate.ValueAsString, "Equalizer");
+            Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
 
             // Change language context
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "en-GB";
 
             // first resource under the resource map
             value = resourceMap.GetValueByIndex(0, resourceContext);
-            Assert.AreEqual(value.Key, "000D1359");
+            Verify.AreEqual(value.Key, "000D1359");
             candidate = value.Value;
-            Assert.AreEqual(candidate.ValueAsString, "This song is available only when you buy the whole album.");
-            Assert.AreEqual(candidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(candidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
+            Verify.AreEqual(candidate.ValueAsString, "This song is available only when you buy the whole album.");
+            Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(candidate.QualifierValues[KnownResourceQualifierName.Language], "EN-GB");
 
             // second to last resource under the resource map
             value = resourceMap.GetValueByIndex(1267, resourceContext);
-            Assert.AreEqual(value.Key, "IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE");
+            Verify.AreEqual(value.Key, "IDS_WHATS_NEW_1710_2_EQUALIZER_TITLE");
             candidate = value.Value;
-            Assert.AreEqual(candidate.ValueAsString, "Equaliser");
-            Assert.AreEqual(candidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(candidate.ValueAsString, "Equaliser");
+            Verify.AreEqual(candidate.Kind, ResourceCandidateKind.String);
         }
 
         [TestMethod]
@@ -376,31 +377,31 @@ namespace ManagedTest
             var resourceMap = resourceManager.MainResourceMap.GetSubtree("resources");
             var resourceCandidate = resourceMap.GetValue("abc", resourceContext);
             var resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "USValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-US");
+            Verify.AreEqual(resource, "USValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-US");
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "en-GB";
             resourceCandidate = resourceMap.GetValue("abc", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "GBValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-GB");
+            Verify.AreEqual(resource, "GBValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-GB");
 
             resourceCandidate = resourceMap.TryGetValue("abc", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "GBValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-GB");
+            Verify.AreEqual(resource, "GBValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-GB");
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "fr-FR";
             resourceCandidate = resourceMap.GetValue("abc", resourceContext);
             resource = resourceCandidate.ValueAsString;
-            Assert.AreEqual(resource, "OtherValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "fr-FR");
+            Verify.AreEqual(resource, "OtherValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "fr-FR");
 
-            var ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("xyz", resourceContext));
-            Assert.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
+            var ex = Verify.Throws<Exception>(() => resourceMap.GetValue("xyz", resourceContext));
+            Verify.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
 
             resourceCandidate = resourceMap.TryGetValue("xyz", resourceContext);
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
         }
 
         [TestMethod]
@@ -410,13 +411,13 @@ namespace ManagedTest
             var resourceMap = resourceManager.MainResourceMap;
             var resourceChildMap = resourceMap.GetSubtree("anyname");
             var resourceContext = resourceManager.CreateResourceContext();
-            Assert.IsTrue(resourceContext.QualifierValues.ContainsKey(KnownResourceQualifierName.Language));
+            Verify.IsTrue(resourceContext.QualifierValues.ContainsKey(KnownResourceQualifierName.Language));
 
             // No resource file, and not handled by fallback 
-            var ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("abc"));
-            Assert.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
+            var ex = Verify.Throws<Exception>(() => resourceMap.GetValue("abc"));
+            Verify.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
             var resourceCandidate = resourceMap.TryGetValue("abc");
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
 
             // add fallback handler
             resourceManager.ResourceNotFound += (sender, args) =>
@@ -450,32 +451,32 @@ namespace ManagedTest
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "en-US";
             resourceCandidate = resourceMap.GetValue("abc", resourceContext);
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(resourceCandidate.ValueAsString, "USValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-US");
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(resourceCandidate.ValueAsString, "USValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-US");
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "en-GB";
             resourceCandidate = resourceMap.GetValue("abc", resourceContext);
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(resourceCandidate.ValueAsString, "GBValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-GB");
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(resourceCandidate.ValueAsString, "GBValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "en-GB");
 
             resourceContext.QualifierValues[KnownResourceQualifierName.Language] = "fr-FR";
             resourceCandidate = resourceMap.GetValue("abc", resourceContext);
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(resourceCandidate.ValueAsString, "OtherValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "fr-FR");
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(resourceCandidate.ValueAsString, "OtherValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "fr-FR");
 
             resourceCandidate = resourceMap.TryGetValue("abc", resourceContext);
-            Assert.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
-            Assert.AreEqual(resourceCandidate.ValueAsString, "OtherValue");
-            Assert.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "fr-FR");
+            Verify.AreEqual(resourceCandidate.Kind, ResourceCandidateKind.String);
+            Verify.AreEqual(resourceCandidate.ValueAsString, "OtherValue");
+            Verify.AreEqual(resourceCandidate.QualifierValues[KnownResourceQualifierName.Language], "fr-FR");
 
-            ex = Assert.ThrowsException<Exception>(() => resourceMap.GetValue("xyz", resourceContext));
-            Assert.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
+            ex = Verify.Throws<Exception>(() => resourceMap.GetValue("xyz", resourceContext));
+            Verify.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
 
             resourceCandidate = resourceMap.TryGetValue("xyz", resourceContext);
-            Assert.IsNull(resourceCandidate);
+            Verify.IsNull(resourceCandidate);
         }
     }
 }
