@@ -16,6 +16,14 @@ interface INotificationsReunionEndpoint : IUnknown
     HRESULT GetStringLength([in] LPCWSTR string, [out] ULONG* length);
 };
 
+[object]
+[uuid(9B29F3DF-C60B-4810-8268-A5F7F2435952)]
+[pointer_default(unique)]
+interface IWpnForegroundSink : IUnknown
+{
+
+};
+
 [uuid(60C6A2D9-04D9-42C3-B4E9-71158389D422)] // PR_DYNDEP_LIBID_UUID
 [version(1.0)]
 library NotificationsReunionEndpointLib
@@ -25,4 +33,6 @@ library NotificationsReunionEndpointLib
     {
         [default] interface INotificationsReunionEndpoint;
     };
+
+    [uuid()]
 };
