@@ -6,6 +6,7 @@
 // include notifications constants file here
 
 #include <NotificationsReunionEndpoint_h.h>
+#include "ForegroundSink.h"
 
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
@@ -60,7 +61,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR lp
     //     handle COM activation
     // else
     //     handle Startup activation
-
+    ForegroundSink sink{};
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
     wil::unique_event endOfTheLine(::CreateEventW(nullptr, TRUE, FALSE, nullptr));
