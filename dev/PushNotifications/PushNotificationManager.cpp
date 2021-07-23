@@ -252,6 +252,51 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    bool PushNotificationManager::IsBIAvailable()
+    {
+        BackgroundTaskBuilder builder = BackgroundTaskBuilder();
+        try
+        {
+            auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
+        }
+        catch (...)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
+    {
+        if (!WI_AreAllFlagsClear(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator |
+            PushNotificationRegistrationOptions::ProtocolActivator)
+        {
+            return false;
+        }
+
+        bool isBIFlagSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::PushTrigger) ||
+                                    WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator);
+        bool isProtocolActivatorSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator);
+
+        if (isBIFlagSet && isProtocolActivatorSet)
+        {
+            return false;
+        }
+
+        if (!AppModel::Identity::IsPackagedProcess())
+        {
+            return isProtocolActivatorSet;
+        }
+        else if (IsBIAvailable())
+        {
+            return isBIFlagSet;
+        }
+        else
+        {
+            return isProtocolActivatorSet;
+        }
+    }
+
     winrt::hstring PushNotificationManager::GetStringFromComServer()
     {
         try

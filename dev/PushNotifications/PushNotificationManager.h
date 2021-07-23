@@ -15,12 +15,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(const winrt::guid &remoteId);
 
+        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
+
         static winrt::hstring GetStringFromComServer();
 
         static uint32_t GetStringLengthFromComServer(const winrt::hstring& inputString);
 
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
+        static bool IsBIAvailable();
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
