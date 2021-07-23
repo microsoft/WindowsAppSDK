@@ -4,8 +4,6 @@ The roadmap for the Windows App SDK supports the primary goals of breaking down 
 
 For a general overview, see the [readme](https://github.com/microsoft/WindowsAppSDK/tree/master/docs) and [FAQ](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/faq.md).
 
-## Roadmap
-
 Here's how we intend to roll out the Windows App SDK. To subscribe to updates, subscribe to [this discussion](https://github.com/microsoft/WindowsAppSDK/discussions/507). *(all times/features/releases are tentative and subject to change)*:
 
 ### Packaged Desktop Apps
