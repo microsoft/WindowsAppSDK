@@ -14,7 +14,7 @@ At its *core* 😎 MRT Core provides support to build resource Package Resource 
 Install the NuGet package from [https://aka.ms/MRTCore](https://aka.ms/MRTCore), and you are ready to build PRI files from Visual Studio
 and use MRT Core APIs to load resources in your app.
 
-The C APIs can be found in [mrm.h](mrt/Core/src/MRM.h). The WinRT APIs can be found in [Microsoft.WindowsApp.Resources.idl](mrt/Microsoft.WindowsApp.Resources/src/Microsoft.WindowsApp.Resources.idl).
+The C APIs can be found in [mrm.h](mrt/Core/src/MRM.h). The WinRT APIs can be found in [Microsoft.ApplicationModel.Resources.idl](mrt/Microsoft.ApplicationModel.Resources/src/Microsoft.ApplicationModel.Resources.idl).
 
 ## Build and Test
 Load [MrtCore.sln](mrt/MrtCore.sln) in Visual Studion 2019, and build the solution.
