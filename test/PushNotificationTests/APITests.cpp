@@ -60,7 +60,6 @@ namespace Test::PushNotifications
                 TP::AddPackage_WindowsAppSDKFramework();           // Installs WASfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WASmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WASddlm
-
                 TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
@@ -80,7 +79,6 @@ namespace Test::PushNotifications
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
                 TP::RemovePackage(GetTestPackageFullName());
                 TP::RemovePackage_PushNotificationsLongRunningTask();
-
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppSDKFramework();

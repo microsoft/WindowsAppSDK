@@ -10,10 +10,10 @@
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
 #include <winrt/Microsoft.Windows.PushNotifications.h>
 
-#include <MddBootstrap.h>
-#include <MddBootstrapTest.h>
+#include <WindowsAppSDK.Test.Bootstrap.h>

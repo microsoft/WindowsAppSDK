@@ -51,6 +51,11 @@
       <Implementation>$(OutDir)\..\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\dev\WindowsAppSDK_BootstrapDLL\WindowsAppSDK_BootstrapDLL.vcxproj">
+      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -193,6 +198,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
