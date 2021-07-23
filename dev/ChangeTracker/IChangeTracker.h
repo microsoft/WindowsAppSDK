@@ -5,7 +5,7 @@
 #include <functional>
 #include <windows.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::implementation
 {
     class IChangeTracker {
     public:

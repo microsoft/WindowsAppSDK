@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
-#include <PathExtChangeTracker.h>
+#include "PathExtChangeTracker.h"
 
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::implementation
 {
     PathExtChangeTracker::PathExtChangeTracker(const std::wstring& pathExtPart, EnvironmentManager::Scope scope, PathOperation operation)
     {

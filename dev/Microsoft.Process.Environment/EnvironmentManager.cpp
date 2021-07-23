@@ -2,43 +2,42 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include <EnvironmentManager.h>
-#include <EnvironmentManager.g.cpp>
+#include "EnvironmentManager.h"
+#include "Microsoft.Windows.EnvironmentManager.g.cpp"
 #include <EnvironmentVariableChangeTracker.h>
 #include <PathChangeTracker.h>
 #include <PathExtChangeTracker.h>
 #include <IChangeTracker.h>
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::implementation
 {
-
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope) { }
 
-    ProjectReunion::EnvironmentManager EnvironmentManager::GetForProcess()
+    Microsoft::Windows::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        ProjectReunion::EnvironmentManager environmentManager{ nullptr };
+        Microsoft::Windows::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
     }
 
-    Microsoft::ProjectReunion::EnvironmentManager EnvironmentManager::GetForUser()
+    Microsoft::Windows::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        ProjectReunion::EnvironmentManager environmentManager{ nullptr };
+        Microsoft::Windows::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
         return environmentManager;
     }
 
-    Microsoft::ProjectReunion::EnvironmentManager EnvironmentManager::GetForMachine()
+    Microsoft::Windows::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        ProjectReunion::EnvironmentManager environmentManager{ nullptr };
+        Microsoft::Windows::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
     }
 
-    Windows::Foundation::Collections::IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
+    IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
-        Windows::Foundation::Collections::StringMap environmentVariables;
+        StringMap environmentVariables;
 
         if (m_Scope == Scope::Process)
         {

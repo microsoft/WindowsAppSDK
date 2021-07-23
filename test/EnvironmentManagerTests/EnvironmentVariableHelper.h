@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "TestCommon.h"
 
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Microsoft::Windows;
 using namespace winrt::Windows::Foundation::Collections;
 typedef IMapView<winrt::hstring, winrt::hstring> EnvironmentVariables;
 

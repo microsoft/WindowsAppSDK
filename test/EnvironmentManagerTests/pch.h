@@ -8,7 +8,7 @@
 #include "wil/cppwinrt.h"
 #include "wil/result.h"
 #include <wil/token_helpers.h>
-#include "winrt/Microsoft.ProjectReunion.h"
+#include <winrt/Microsoft.Windows.h>
 #include <windows.h>
 #include "WexTestClass.h"
 #include <winrt/Windows.Foundation.Collections.h>

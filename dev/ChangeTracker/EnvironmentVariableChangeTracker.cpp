@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
-#include <EnvironmentVariableChangeTracker.h>
+#include "EnvironmentVariableChangeTracker.h"
 
-namespace winrt::Microsoft::ProjectReunion::implementation
+namespace winrt::Microsoft::Windows::implementation
 {
     EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(const std::wstring& key, const std::wstring& valueToSet, EnvironmentManager::Scope scope)
     {

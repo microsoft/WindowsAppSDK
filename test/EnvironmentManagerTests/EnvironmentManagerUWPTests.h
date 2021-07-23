@@ -4,7 +4,7 @@
 #pragma once
 #include "TestSetupAndTeardownHelper.h"
 
-namespace ProjectReunionEnvironmentManagerTests
+namespace WindowsAppSDKEnvironmentManagerTests
 {
     class EnvironmentManagerUWPTests {
         BEGIN_TEST_CLASS(EnvironmentManagerUWPTests)

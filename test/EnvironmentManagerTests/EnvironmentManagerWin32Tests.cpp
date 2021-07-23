@@ -5,9 +5,9 @@
 #include "EnvironmentManagerWin32Tests.h"
 #include "EnvironmentVariableHelper.h"
 
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Microsoft::Windows;
 
-namespace ProjectReunionEnvironmentManagerTests
+namespace WindowsAppSDKEnvironmentManagerTests
 {
     void EnvironmentManagerWin32Tests::TestGetForProcess()
     {

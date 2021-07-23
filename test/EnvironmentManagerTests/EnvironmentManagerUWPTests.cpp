@@ -6,9 +6,9 @@
 #include "EnvironmentVariableHelper.h"
 #include "TestSetupAndTeardownHelper.h"
 
-using namespace winrt::Microsoft::ProjectReunion;
+using namespace winrt::Microsoft::Windows;
 
-namespace ProjectReunionEnvironmentManagerTests
+namespace WindowsAppSDKEnvironmentManagerTests
 {
     void EnvironmentManagerUWPTests::UWPTestGetForProcess()
     {
