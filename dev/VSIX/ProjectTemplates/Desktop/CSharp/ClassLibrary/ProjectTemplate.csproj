@@ -4,11 +4,12 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>$safeprojectname$</RootNamespace>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.ProjectReunion" Version="$ReunionNupkgVersion$" />
-      <PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="$ReunionFoundationNupkgVersion$" />
-      <PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="$ReunionWinUINupkgVersion$" />
+      <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSDKNupkgVersion$" />
+      <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="$WindowsAppSDKFoundationNupkgVersion$" />
+      <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="$WindowsAppSDKWinUINupkgVersion$" />
   </ItemGroup>
 </Project>

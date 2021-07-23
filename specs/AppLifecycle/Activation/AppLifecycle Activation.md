@@ -1,6 +1,6 @@
 # AppLifecycle - Rich Activation
 
-Reunion introduces a new AppLifecycle component that provides a core set of functionality related to
+Windows App SDK introduces a new AppLifecycle component that provides a core set of functionality related to
 app activation and lifecycle. Much of this functionality is directly equivalent - or very similar -
 to existing functionality within the platform. However, there is value in abstracting this
 functionality so that all app types can use it, delivering it out-of-band from the OS, and making it
@@ -15,27 +15,27 @@ This spec addresses the rich activation APIs in the component. The priority is t
 activation available to unpackaged apps. In the initial release, these will not be usable by
 UWP or Desktop Bridge apps.
 
-Terminology note. A "packaged" app is an app that is built into an MSIX package, including UWP 
+Terminology note. A "packaged" app is an app that is built into an MSIX package, including UWP
 and Desktop Bridge apps, but not including Sparse packages where only the manifest is packaged.
 An "unpackaged" app therefore is one that is not built into an MSIX package.
 
 ## Background
 
 Traditional Win32 apps expect to get their arguments passed into WinMain in the form of a string. They can also call the Win32
-[GetCommandLineW](https://docs.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-getcommandlinew)
+[GetCommandLineW](https://docs.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew)
 API. Windows Forms apps expect to call
-[Environment.GetCommandLineArgs](https://docs.microsoft.com/en-us/dotnet/api/system.environment.getcommandlineargs)
+[Environment.GetCommandLineArgs](https://docs.microsoft.com/dotnet/api/system.environment.getcommandlineargs)
 for the same purpose. This is true regardless of the "activation kind" - in fact, for unpackaged
 apps, all activations are managed in the same way, only varying by the arguments passed in to
 WinMain. Win32 apps are familiar with 3 activation kinds: regular launch (whether by command-line,
 tile/shortcut or startup), file-type and protocol association.
 
 Conversely, UWP supports
-[44 different kinds of activation](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind),
+[44 different kinds of activation](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind),
 each represented by a different IActivatedEventArgs class, where the arguments are passed in to the
 app's Launched or Activated event handlers, as properties on a specific XXXActivatedEventArgs
 object. In addition, multi-instanced UWP and Desktop Bridge apps can call the
-[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
+[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
 API.
 
 Of all the rich activation kinds, some require some form of prior information registered with the
@@ -49,7 +49,7 @@ For Desktop Bridge, it does require manifest declarations.
 
 ## Description
 
-This part of Reunion AppLifecycle makes rich UWP activation functionality available to
+This part of Windows App SDK AppLifecycle makes rich UWP activation functionality available to
 non-MSIX-packaged Win32 app types. There are 2 main aspects to consider:
 
 -   Which activation kinds will unpackaged apps be able to use?
@@ -202,7 +202,7 @@ and then access the properties and methods of that type.
 ```c++
 void RespondToActivation()
 {
-    ActivationArguments args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    AppActivationArguments args = AppInstance::GetCurrent().GetActivatedEventArgs();
     ExtendedActivationKind kind = args.Kind();
     if (kind == ExtendedActivationKind::Launch)
     {
@@ -234,10 +234,10 @@ secondary requirement is to be able to unregister for any or all of these.
 
 For filetype associations, the app can register for multiple filetypes. We will provide the ability
 to unregister one or more filetypes. For the initial release, we do not include an API to
-unregister all filetype registrations at once, although this could be added in a later release. 
+unregister all filetype registrations at once, although this could be added in a later release.
 For protocol registrations, the app can register for multiple protocols individually, so the
-API will also enable the app to unregister for each of these individually. For unregistering for 
-startup behavior, the app must pass the taskId that it originally passed in when registering. 
+API will also enable the app to unregister for each of these individually. For unregistering for
+startup behavior, the app must pass the taskId that it originally passed in when registering.
 
 ```c++
 void UnregisterForActivation()
@@ -264,7 +264,7 @@ void UnregisterForActivation()
 
 ### AppInstance
 
-This type represents an activation of an application in Project Reunion, providing methods to find
+This type represents an activation of an application in Windows App SDK, providing methods to find
 other instances of itself, redirect activations across instances, and handle incoming non-launch
 activations.
 
@@ -275,7 +275,7 @@ namespace Microsoft.Windows.AppLifecycle
     {
         static AppInstance GetCurrent();
 
-        ActivationArguments GetActivatedEventArgs();
+        AppActivationArguments GetActivatedEventArgs();
     }
 }
 ```
@@ -283,37 +283,37 @@ namespace Microsoft.Windows.AppLifecycle
 **GetCurrent** returns an AppInstance that represents the current app instance.
 
 **GetActivatedEventArgs** provides similar behavior as the existing platform
-[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs),
+[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs),
 except that it returns a new ActivationArguments object for the current activation instead of an
 IActivatedEventArgs.
 
 
 ### ExtendedActivationKind
 
-namespace Microsoft.Windows.AppLifecycle 
-{ 
-    enum ExtendedActivationKind 
-    { 
-        ExtensionBase = 4096 
-    } 
+namespace Microsoft.Windows.AppLifecycle
+{
+    enum ExtendedActivationKind
+    {
+        ExtensionBase = 4096
+    }
 }
 
 This enum is based off the platform
-[ActivationKind](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
-All platform ActivationKind values are cloned to this class. We determine an "extension base" value which 
+[ActivationKind](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
+All platform ActivationKind values are cloned to this class. We determine an "extension base" value which
 is well above the existing highest ActivationKind value (1026), to allow for new values to be added to the
-platform. Going forward, any new platform values will also be added to the new enum, plus any new values 
+platform. Going forward, any new platform values will also be added to the new enum, plus any new values
 that are only defined in the new enum. That is, any values < the extension base value will exist in both the
-Reunion and platform implementations, but conversely any values > the extension base value only exist in the 
-Reunion implementation and do not exist in the platform implementation.
+Windows App SDK and platform implementations, but conversely any values > the extension base value only exist in the
+Windows App SDK implementation and do not exist in the platform implementation.
 
-### ActivationArguments
+### AppActivationArguments
 
 ```idl
 namespace Microsoft.Windows.AppLifecycle
 {
     [default_interface]
-    runtimeclass ActivationArguments
+    runtimeclass AppActivationArguments
     {
         // The kind of activation these arguments represent
         ExtendedActivationKind Kind { get; };
@@ -326,18 +326,18 @@ namespace Microsoft.Windows.AppLifecycle
 ```
 
 The platform defines
-[IActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/Windows.ApplicationModel.Activation.IActivatedEventArgs),
+[IActivatedEventArgs](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.IActivatedEventArgs),
 which exposes a Kind property. Apps can get an IActivatedEventArgs reference, examine the Kind and
 then cast the reference to the specific concrete class type that implements IActivatedEventArgs.
 This enables generic functions such as GetActivatedEventArgs and the Activated event handler, which
 provide the app with an IActivatedEventArgs that the app can then convert to a specific concrete
 type. However, IActivatedEventArgs also defines other properties that are only useful in a UWP
 context. In addition, we need a mechanism that supports both platform ActivationKinds and also
-Reunion-only ExtendedActivationKinds and their corresponding concrete class types.
+Windows app SDK only ExtendedActivationKinds and their corresponding concrete class types.
 
 The new ActivationArguments type serves this purpose: the app can examine the Kind, and then cast
 the Data property to the specific concrete type (which can be either a platform IActivatedEventArgs
-concrete class, or a Reunion class).
+concrete class, or a Windows App SDK class).
 
 **Kind** is the enum value that indicates the kind of activation this object represents.
 
@@ -345,16 +345,16 @@ concrete class, or a Reunion class).
 
 ### ActivatedEventArgs Clones
 
-Project Reunion initially defines four `-ActivatedEventArgs` types that replicate the Windows
+Windows App SDK initially defines four `-ActivatedEventArgs` types that replicate the Windows
 equivalent `Windows.ApplicationModel.Activation.-ActivatedEventArgs`, but support adding new
 functionality over time. These are:
 
 | API                                 | Description                                                                                                                                                        |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| class LaunchActivatedEventArgs      | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs).           |
-| class FileActivatedEventArgs        | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs).               |
-| class ProtocolActivatedEventArgs    | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs).       |
-| class StartupTaskActivatedEventArgs | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/en-us/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
+| class LaunchActivatedEventArgs      | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs).           |
+| class FileActivatedEventArgs        | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs).               |
+| class ProtocolActivatedEventArgs    | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs).       |
+| class StartupTaskActivatedEventArgs | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
 
 As with their in-platform versions, these `-ActivatedEventArgs` implement the in-platform
 `IActivatedEventArgs`, which provides the standard User, SplashScreen, PreviousExecutionState and
@@ -457,7 +457,7 @@ namespace Microsoft.Windows.AppLifecycle
 ```
 
 **RegisterForFileTypeActivation** registers the app for activation based on file types (extensions.)
-See the existing documentation for [Win32 filetype association registry entries](https://docs.microsoft.com/en-us/windows/win32/shell/app-registration).
+See the existing documentation for [Win32 filetype association registry entries](https://docs.microsoft.com/windows/win32/shell/app-registration).
 
 -   `supportedFileTypes` - one or more supported filetypes, specified by the file extension
     including the leading ".", eg ".docx"

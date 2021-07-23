@@ -3,7 +3,7 @@
 #include <pch.h>
 #include "Association.h"
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     HKEY GetRegistrationRoot()
     {
@@ -209,7 +209,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
     std::wstring CreateApplicationKeyPath(const std::wstring& appId)
     {
-        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\WindowsAppSDKApplications\<appId>
         return std::wstring(c_applicationsKeyPath + appId + c_capabilitiesKeyPath);
     }
 
@@ -263,7 +263,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
 
     void UnregisterApplication(const std::wstring& appId)
     {
-        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>\Capabilities
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\WindowsAppSDKApplications\<appId>\Capabilities
         std::wstring capabilitiesKeyPath = c_applicationsKeyPath + appId + c_capabilitiesKeyPath;
         ::RegDeleteTree(GetRegistrationRoot(), capabilitiesKeyPath.c_str());
 
@@ -399,7 +399,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
         auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
 
-        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>\Capabilities\[URLAssociations/FileAssociations]
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\WindowsAppSDKApplications\<appId>\Capabilities\[URLAssociations/FileAssociations]
         wil::unique_hkey subKey;
         THROW_IF_WIN32_ERROR(::RegCreateKeyEx(applicationKey.get(), subKeyPath.c_str(), 0, nullptr,
             0, KEY_WRITE, nullptr, subKey.put(), nullptr));
@@ -437,7 +437,7 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             throw std::invalid_argument("association");
         }
 
-        // Example: HKEY_CURRENT_USER\Software\Microsoft\ReunionApplications\<appId>\Capabilities\[URLAssociations/FileAssociations]\<association>
+        // Example: HKEY_CURRENT_USER\Software\Microsoft\WindowsAppSDKApplications\<appId>\Capabilities\[URLAssociations/FileAssociations]\<association>
         auto subKeyPath = CreateCapabilitySubKeyPath(type);
         auto applicationKey = OpenApplicationKey(handlerAppId, KEY_READ | KEY_WRITE);
         wil::unique_hkey subKey;

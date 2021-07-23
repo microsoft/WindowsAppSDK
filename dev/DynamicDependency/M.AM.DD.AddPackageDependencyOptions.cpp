@@ -4,9 +4,9 @@
 #include "pch.h"
 
 #include "M.AM.DD.AddPackageDependencyOptions.h"
-#include "Microsoft.ApplicationModel.DynamicDependency.AddPackageDependencyOptions.g.cpp"
+#include "Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions.g.cpp"
 
-namespace winrt::Microsoft::ApplicationModel::DynamicDependency::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implementation
 {
     int32_t AddPackageDependencyOptions::Rank()
     {

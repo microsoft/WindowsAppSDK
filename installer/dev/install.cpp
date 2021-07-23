@@ -8,21 +8,44 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace ProjectReunionInstaller {
+namespace WindowsAppSDKInstaller {
 
-    winrt::hresult AddPackage(const Uri& packageUri)
+    HRESULT RegisterPackage(const std::wstring& packageFullName)
+    {
+        PackageManager packageManager;
+        const auto deploymentOperation{ packageManager.RegisterPackageByFullNameAsync(packageFullName, nullptr, DeploymentOptions::None) };
+        deploymentOperation.get();
+        if (deploymentOperation.Status() != AsyncStatus::Completed)
+        {
+            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
+        }
+
+        return S_OK;
+    }
+
+    HRESULT AddPackage(const Uri& packageUri, const std::unique_ptr<PackageProperties>& packageProperties)
     {
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.AddPackageAsync(packageUri, nullptr, DeploymentOptions::None) };
         deploymentOperation.get();
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            return deploymentOperation.ErrorCode();
+            auto hrAddPackage = static_cast<HRESULT>(deploymentOperation.ErrorCode());
+            if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
+            {
+                // Package already exists (such as via provisioning), re-register it instead.
+                RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
+                return S_OK;
+            }
+            else
+            {
+                RETURN_HR(hrAddPackage);
+            }
         }
         return S_OK;
     }
 
-    winrt::hresult ProvisionPackage(const std::wstring& packageFamilyName)
+    HRESULT ProvisionPackage(const std::wstring& packageFamilyName)
     {
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
@@ -30,31 +53,40 @@ namespace ProjectReunionInstaller {
 
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
-            return deploymentOperation.ErrorCode();
+            return static_cast<HRESULT>(deploymentOperation.ErrorCode());
         }
         return S_OK;
     }
 
-    bool IsArchitectureApplicable(const ProcessorArchitecture& arch)
+    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, DeploymentBehavior deploymentBehavior)
     {
+        // Neutral package architecture is applicable on all systems.
+        if (packageProperties->architecture == ProcessorArchitecture::Neutral)
+        {
+            return true;
+        }
+
         SYSTEM_INFO systemInfo{};
         GetNativeSystemInfo(&systemInfo);
         const auto systemArchitecture{ static_cast<ProcessorArchitecture>(systemInfo.wProcessorArchitecture) };
 
-        // Neutral package architecture is applicable on all systems.
-        if (arch == ProcessorArchitecture::Neutral)
+        // Same-arch is always applicable for any package type.
+        if (packageProperties->architecture == systemArchitecture)
         {
             return true;
         }
 
-        // Same-arch is always applicable.
-        if (arch == systemArchitecture)
+        // It is assumed that all available architectures for non-framework packages are present,
+        // so only the same-architecture or neutral will be matched for non-frameworks.
+        if (!packageProperties->isFramework && (deploymentBehavior != DeploymentBehavior::Framework))
         {
-            return true;
+            return false;
         }
+
+        // Framework packages have additional logic.
 
         // On x64 systems, x86 architecture is also applicable.
-        if (systemArchitecture == ProcessorArchitecture::X64 && arch == ProcessorArchitecture::X86)
+        if (systemArchitecture == ProcessorArchitecture::X64 && packageProperties->architecture == ProcessorArchitecture::X86)
         {
             return true;
         }
@@ -71,7 +103,7 @@ namespace ProjectReunionInstaller {
     wil::com_ptr<IStream> CreateMemoryStream(const BYTE* data, size_t size)
     {
         wil::com_ptr<IStream> retval;
-        retval.attach(::SHCreateMemStream(data, size));
+        retval.attach(::SHCreateMemStream(data, static_cast<UINT>(size)));
         return retval;
     }
 
@@ -108,6 +140,13 @@ namespace ProjectReunionInstaller {
         properties->architecture = static_cast<ProcessorArchitecture>(arch);
         THROW_IF_FAILED(id->GetVersion(&properties->version));
 
+        // Populate framework from the manifest properties.
+        wil::com_ptr<IAppxManifestProperties> manifestProperties;
+        THROW_IF_FAILED(manifest->GetProperties(wil::out_param(manifestProperties)));
+        BOOL isFramework = FALSE;
+        THROW_IF_FAILED(manifestProperties->GetBoolValue(L"Framework", &isFramework));
+        properties->isFramework = isFramework == TRUE;
+
         return properties;
     }
 
@@ -118,20 +157,21 @@ namespace ProjectReunionInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppSDKInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
-        // Skip non-applicable architectures.
-        if (!IsArchitectureApplicable(packageProperties->architecture))
+        // Skip non-applicable packages.
+        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior))
         {
             return;
         }
 
+        PCWSTR c_windowsAppSDKTempDirectoryPrefix{ L"WAS" };
         wchar_t packageFilename[MAX_PATH];
-        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, packageFilename));
+        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppSDKTempDirectoryPrefix, 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
@@ -142,8 +182,7 @@ namespace ProjectReunionInstaller {
 
         if (!quiet)
         {
-            std::wcout << "Package Full Name: " << packageProperties->fullName.get() << std::endl;
-            std::wcout << "Temp package path: " << packageFilename << std::endl;
+            std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
         // Write the package to a temp file. The PackageManager APIs require a Uri.
@@ -156,27 +195,31 @@ namespace ProjectReunionInstaller {
 
         // Add the package
         Uri packageUri{ packageFilename };
-        hresult hrAddResult = AddPackage(packageUri);
+        auto hrAddResult = AddPackage(packageUri, packageProperties);
         if (!quiet)
         {
-            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult.value << std::endl;
+            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << std::endl;
         }
-        THROW_IF_FAILED(static_cast<HRESULT>(hrAddResult));
+        THROW_IF_FAILED(hrAddResult);
 
-        // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
-        hresult hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
-        if (!quiet)
+        // Framework provisioning is not supported by the API.
+        if (!packageProperties->isFramework)
         {
-            std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult.value << std::endl;
+            // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
+            auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
+            if (!quiet)
+            {
+                std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << std::endl;
+            }
+            LOG_IF_FAILED(hrProvisionResult);
         }
-        LOG_IF_FAILED(static_cast<HRESULT>(hrProvisionResult));
 
         return;
     }
 
     HRESULT DeployPackages(bool quiet) noexcept try
     {
-        for (const auto& package : ProjectReunionInstaller::c_packages)
+        for (const auto& package : WindowsAppSDKInstaller::c_packages)
         {
             DeployPackageFromResource(package, quiet);
         }

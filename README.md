@@ -1,6 +1,8 @@
-﻿# Project Reunion - Calling all Windows apps!
+﻿# Windows App SDK - Calling all Windows developers!
 
-| Delight users with modern UI | Access new platform features | Backwards compatible | 
+*Previously known as Project Reunion*.
+
+| Delight users with modern UI | Access new platform features | Backwards compatible |
 |:--:|:--:|:--:|
 | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-get-started.svg" width=250 alt="Modern navigation"/><br>Powerful WinUI 3 UI | <img src="https://docs.microsoft.com/media/illustrations/biztalk-get-started-scenarios.svg" width=250 alt="Platform logo"/><br>Localization + power status + more<br> | <img src="https://docs.microsoft.com/media/illustrations/biztalk-host-integration-install-configure.svg" width=250 alt="Down-level logo"/><br>Down to Windows 10 1809 |
 
@@ -8,31 +10,30 @@
 
 * Use your current installer *(no requirement to use MSIX, but there are [reliability/security benefits to using MSIX](https://docs.microsoft.com/windows/msix/overview#key-features)!)*
 * 100% additive *(only add what you need, leave the rest of your app as-is)*
-* Works with Win32, WPF, WinForms, and UWP apps
+* Works with Win32, WPF, WinForms, and more apps
 
-Plus, **it's backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
+Plus, **create beautiful, modern apps for Windows 11 that are backwards compatible** to Windows 10 October 2018 Update (build 17763 / version 1809)!
 
 
 ### Use it now!
-[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.5 release](https://docs.microsoft.com/windows/apps/project-reunion/#get-started-developing-with-project-reunion) now!
+[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.8 release](https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#version-08) now!0
 
-Some notes about 0.5...
+Some notes about 0.8...
 
 * Requires using MSIX *(1.0 won't require MSIX)*
 * Only includes WinUI 3 / Text rendering / Localization
 * To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(in the future, XAML Islands will enable incrementally adopting WinUI 3)*
 
-
 ### Roadmap
 
-Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*: 
+Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*:
 
-App type |      Reunion 0.5      |         Reunion 0.8 (Q2 2021)    |       Reunion 1.0 (Q4 2021)     | 
--- | ------------------------------- | --------------------------------- | ------------------------------- |
-[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br>(WPF, Win32, WinForms, console) |                ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/ProjectReunion/issues/112)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  | 
-Unpackaged desktop apps<br>(WPF, Win32, WinForms, console) | ❌ Not supported  |                    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>🔄 [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/project-reunion/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/project-reunion/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/ProjectReunion/issues/111) | 
+App type |       Windows App SDK 0.8    |       Windows App SDK 1.0 (Q4 2021)     |
+-- | ------------------------------- | ------------------------------- |
+[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br>(WPF, Win32, WinForms, console) |      ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/WindowsAppSDK/issues/112)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)  <br>🔄 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334)  |
+Unpackaged desktop apps<br>(WPF, Win32, WinForms, console) |    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>🔄 [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) <br>🔄 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334) |
 
-✅ Supported | 🔄 Preview
+✅ Supported | 🔄 Experimental
 
 
 See our [full roadmap](docs/roadmap.md) for more details.
@@ -41,9 +42,9 @@ See our [full roadmap](docs/roadmap.md) for more details.
 
 ### Version support
 
-Project Reunion aims to work on supported versions of Windows.
+The Windows App SDK aims to work on supported versions of Windows.
 Right now we support down to build 17763 (version 1809/October 2018 Update) of Windows 10.
-Wherever possible, we'll use techniques like '_polyfills_' 
+Wherever possible, we'll use techniques like '_polyfills_'
 and custom implementations to do the
 heavy lifting for you and make sure your app works across Windows versions and devices.
 In the future, there may be a couple APIs that are dependent on new OS features
@@ -54,39 +55,39 @@ this is the exception and not the norm, and provide reasonable fallbacks when po
 
 ### Documentation
 
-* [More details about Project Reunion](https://github.com/microsoft/ProjectReunion/blob/master/docs/README.md) - 
+* [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
-* [Video on Project Reunion](https://aka.ms/project_reunion_ignite) - Learn about Project Reunion in a 22 minute video!
+* [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278) - Learn about the Windows App SDK in a 22 minute video!
 * [Roadmap](docs/roadmap.md) - Where we're going!
-* [Contributor guide](docs/contributor-guide.md) - How to contribute to Project Reunion.
-* [FAQ](docs/faq.md) - Frequently asked questions about Project Reunion.
+* [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
+* [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
 
 
 ### Contributing
 
-[![Feature Proposals](https://img.shields.io/github/issues/microsoft/projectreunion/feature%20proposal)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
-[![Bugs](https://img.shields.io/github/issues/microsoft/projectreunion/bug)](https://github.com/microsoft/ProjectReunion/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Proposals](https://img.shields.io/github/issues/microsoft/windowsappsdk/feature%20proposal)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
+[![Bugs](https://img.shields.io/github/issues/microsoft/windowsappsdk/bug)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 _We want to hear from you!_
 
-File a [new issue!](https://github.com/microsoft/ProjectReunion/issues/new/choose) Tell us what problem you're
+File a [new issue!](https://github.com/microsoft/WindowsAppSDK/issues/new/choose) Tell us what problem you're
 trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app. Bonus
 points if there's a gist or existing repo we can look at with you.
 
 
-1. **[Ask a question](https://github.com/microsoft/ProjectReunion/discussions/categories/q-a)**<br>
+1. **[Ask a question](https://github.com/microsoft/WindowsAppSDK/discussions/categories/q-a)**<br>
     Also, have a look at our [frequently asked questions](docs/faq.md) page which we will update periodically.
 
-2. **[Start a discussion](https://github.com/microsoft/ProjectReunion/discussions)**<br>
-   Discussions can be about any topics or ideas related to Project Reunion. For example,
+2. **[Start a discussion](https://github.com/microsoft/WindowsAppSDK/discussions)**<br>
+   Discussions can be about any topics or ideas related to the Windows App SDK. For example,
    you might start a Discussion issue to see if others are interested in a cool new idea
    you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
 
-3. **[Make a feature proposal](https://github.com/microsoft/ProjectReunion/issues/new?assignees=&labels=feature+proposal&template=feature-proposal.md&title=)**<br>
-   What components do you want to see in Project Reunion? For example you can propose a new API on an existing type, or an idea for a new API.
+3. **[Make a feature proposal](https://github.com/microsoft/WindowsAppSDK/issues/new?assignees=&labels=feature+proposal&template=feature-proposal.md&title=)**<br>
+   What components do you want to see in the Windows App SDK? For example you can propose a new API on an existing type, or an idea for a new API.
    It's fine if you don't have all the details: you can start with a summary and rationale.
 
-**Over time, we will add Project Reunion code and samples into this repo and provide code contribution/developer guidelines.**
+**Over time, we will add Windows App SDK code and samples into this repo and provide code contribution/developer guidelines.**
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 

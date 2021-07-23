@@ -6,7 +6,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace winrt::Windows::System;
 
-namespace ProjectReunionInstallerTests
+namespace WindowsAppSDKInstallerTests
 {
 	TEST_CLASS(FunctionalTests)
 	{
@@ -25,49 +25,63 @@ namespace ProjectReunionInstallerTests
         TEST_METHOD(VerifyInstallerRuns)
         {
             auto result = RunInstaller();
-            Assert::AreEqual(result, S_OK);
+            Assert::AreEqual(S_OK, result);
         }
 
         TEST_METHOD(VerifyArgsQuiet)
         {
             auto result = RunInstaller(L"--quiet");
-            Assert::AreEqual(result, S_OK);
+            Assert::AreEqual(S_OK, result);
         }
 
         TEST_METHOD(VerifyArgsHelp)
         {
             auto result = RunInstaller(L"--help");
-            Assert::AreEqual(result, S_OK);
+            Assert::AreEqual(S_OK, result);
         }
         TEST_METHOD(VerifyArgsInvalid)
         {
             // Installer should fail with bad arguments error code.
             auto result = RunInstaller(L"--kittens");
-            Assert::AreEqual(result, HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS));
+            Assert::AreEqual(HRESULT_FROM_WIN32(ERROR_BAD_ARGUMENTS), result);
         }
 
         TEST_METHOD(RunInstallerAndVerifyPackages)
         {
             // Run and verify installer
             auto result = RunInstaller();
-            Assert::AreEqual(result, S_OK);
+            Assert::AreEqual(S_OK, result);
 
             // Verify frameworks based on system architecture
             auto systemArch = GetSystemArchitecture();
 
-            // x86 should be registered on every platform.
-            Assert::AreEqual(true, IsPackageRegistered(c_x86FrameworkName));
-
-            // x64 should be registered on x64 and arm64.
-            if (systemArch == ProcessorArchitecture::X64 || systemArch == ProcessorArchitecture::Arm64)
+            if (systemArch == ProcessorArchitecture::X86)
             {
-                Assert::AreEqual(true, IsPackageRegistered(c_x64FrameworkName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x86FrameworkName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x86MainName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x86DDLMName));
             }
 
-            // arm64 should be registered on arm64.
+            if (systemArch == ProcessorArchitecture::X64)
+            {
+                // x86 Framework should also be present.
+                Assert::AreEqual(true, IsPackageRegistered(c_x86FrameworkName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x64FrameworkName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x64MainName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x86DDLMName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x64DDLMName));
+            }
+
             if (systemArch == ProcessorArchitecture::Arm64)
             {
+                // All frameworks are applicable on Arm64.
+                Assert::AreEqual(true, IsPackageRegistered(c_x86FrameworkName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x64FrameworkName));
                 Assert::AreEqual(true, IsPackageRegistered(c_arm64FrameworkName));
+                Assert::AreEqual(true, IsPackageRegistered(c_arm64MainName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x86DDLMName));
+                Assert::AreEqual(true, IsPackageRegistered(c_x64DDLMName));
+                Assert::AreEqual(true, IsPackageRegistered(c_arm64DDLMName));
             }
         }
 	};

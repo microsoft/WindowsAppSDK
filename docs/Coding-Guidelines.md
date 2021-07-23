@@ -1,6 +1,6 @@
 # General
 
-Project Reunion prefers using industry-standard coding styles, guidelines, and patterns for any
+The Windows App SDK prefers using industry-standard coding styles, guidelines, and patterns for any
 languages used in implementation or testing.
 
 ## Languages
@@ -34,7 +34,7 @@ catch (...)
 {
     auto e{ winrt::hresult_error(winrt::to_hresult(), winrt::take_ownership_from_abi) };
     auto hr{ e.code() };
-    auto message { winrt::to_message() };
+    auto message { e.message() };
     // hr contains the WinRT exception or best-guess conversion from a C++ exception,
     // message contains the best-guess textual format of that exception
 }

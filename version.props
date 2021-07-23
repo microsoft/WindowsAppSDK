@@ -2,31 +2,31 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectReunionVersionMajor>0</ProjectReunionVersionMajor>
-    <ProjectReunionVersionMinor>1</ProjectReunionVersionMinor>
-    <ProjectReunionVersionPatch>0</ProjectReunionVersionPatch>
-    <ProjectReunionVersionBuild Condition="$(ProjectReunionVersionBuild) == ''">0</ProjectReunionVersionBuild>
-    <ProjectReunionVersionRevision Condition="$(ProjectReunionVersionRevision) == ''">0</ProjectReunionVersionRevision>
+    <WindowsAppSDKVersionMajor>0</WindowsAppSDKVersionMajor>
+    <WindowsAppSDKVersionMinor>1</WindowsAppSDKVersionMinor>
+    <WindowsAppSDKVersionPatch>0</WindowsAppSDKVersionPatch>
+    <WindowsAppSDKVersionBuild Condition="$(WindowsAppSDKVersionBuild) == ''">0</WindowsAppSDKVersionBuild>
+    <WindowsAppSDKVersionRevision Condition="$(WindowsAppSDKVersionRevision) == ''">0</WindowsAppSDKVersionRevision>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>
         %(PreprocessorDefinitions);
-        PROJECTREUNION_VERSION_MAJOR=$(ProjectReunionVersionMajor);
-        PROJECTREUNION_VERSION_MINOR=$(ProjectReunionVersionMinor);
-        PROJECTREUNION_VERSION_PATCH=$(ProjectReunionVersionPatch);
-        PROJECTREUNION_VERSION_BUILD=$(ProjectReunionVersionBuild);
-        PROJECTREUNION_VERSION_REVISION=$(ProjectReunionVersionRevision);
+        WINDOWSAPPSDK_VERSION_MAJOR=$(WindowsAppSDKVersionMajor);
+        WINDOWSAPPSDK_VERSION_MINOR=$(WindowsAppSDKVersionMinor);
+        WINDOWSAPPSDK_VERSION_PATCH=$(WindowsAppSDKVersionPatch);
+        WINDOWSAPPSDK_VERSION_BUILD=$(WindowsAppSDKVersionBuild);
+        WINDOWSAPPSDK_VERSION_REVISION=$(WindowsAppSDKVersionRevision);
       </PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>
         %(PreprocessorDefinitions);
-        PROJECTREUNION_VERSION_MAJOR=$(ProjectReunionVersionMajor);
-        PROJECTREUNION_VERSION_MINOR=$(ProjectReunionVersionMinor);
-        PROJECTREUNION_VERSION_PATCH=$(ProjectReunionVersionPatch);
-        PROJECTREUNION_VERSION_BUILD=$(ProjectReunionVersionBuild);
-        PROJECTREUNION_VERSION_REVISION=$(ProjectReunionVersionRevision);
+        WINDOWSAPPSDK_VERSION_MAJOR=$(WindowsAppSDKVersionMajor);
+        WINDOWSAPPSDK_VERSION_MINOR=$(WindowsAppSDKVersionMinor);
+        WINDOWSAPPSDK_VERSION_PATCH=$(WindowsAppSDKVersionPatch);
+        WINDOWSAPPSDK_VERSION_BUILD=$(WindowsAppSDKVersionBuild);
+        WINDOWSAPPSDK_VERSION_REVISION=$(WindowsAppSDKVersionRevision);
       </PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>

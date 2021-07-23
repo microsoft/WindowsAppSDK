@@ -9,7 +9,6 @@
 #include "ResourceContext.h"
 #include "ResourceManager.h"
 
-using namespace winrt::Microsoft::ApplicationModel;
 using namespace winrt::Windows::Foundation::Collections;
 
 namespace winrt::Microsoft::ApplicationModel::Resources::implementation

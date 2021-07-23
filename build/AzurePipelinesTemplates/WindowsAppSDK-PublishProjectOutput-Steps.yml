@@ -1,0 +1,22 @@
+parameters:
+  artifactName: 'windowsappsdk_binaries'
+
+steps:
+  - task: powershell@2
+    displayName: 'Copy files to staging dir'
+    inputs:
+      targetType: filePath
+      filePath: build\CopyFilesToStagingDir.ps1
+      arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: ${{ parameters.artifactName }}'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}'
+      artifactName: ${{ parameters.artifactName }}
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget (Windows App SDK DLLs)'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
+      artifactName: FullNuget

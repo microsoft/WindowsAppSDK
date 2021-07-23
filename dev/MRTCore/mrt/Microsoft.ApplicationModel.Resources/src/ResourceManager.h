@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -30,7 +30,7 @@ private:
     MrmManagerHandle m_resourceManagerHandle = nullptr;
     slim_mutex m_lock;
 
-    winrt::event<Windows::Foundation::TypedEventHandler<
+    winrt::event<winrt::Windows::Foundation::TypedEventHandler<
         Microsoft::ApplicationModel::Resources::ResourceManager,
         Microsoft::ApplicationModel::Resources::ResourceNotFoundEventArgs>>
         m_resourceNotFound;

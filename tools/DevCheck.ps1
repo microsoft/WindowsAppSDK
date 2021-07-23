@@ -2,7 +2,7 @@
 
 <#
 .SYNOPSIS
-    Verify the environment for Project Reunion development
+    Verify the environment for Windows App SDK development
 
 .DESCRIPTION
     Review the current environment and fix or warn if anything is amiss. This includes...
@@ -255,14 +255,15 @@ function Test-DevTestCert
     $pfx = Get-PfxCertificate -FilePath $path
     $thumbprint = $pfx.Thumbprint
 
-    $cert = Get-ChildItem -Path "cert:\LocalMachine\TrustedPeople\$thumbprint"
-    if ([string]::IsNullOrEmpty($cert))
+    $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
+    if (-not(Test-Path -Path $cert_path))
     {
         Write-Host 'Test certificate...Not Found'
         $global:issues += 1
     }
     else
     {
+        $cert = Get-ChildItem -Path $cert_path
         $expiration = $cert.NotAfter
         $now = Get-Date
         if ($expiration -lt $now)
@@ -390,7 +391,7 @@ $cpu = Get-CpuArchitecture
 Write-Verbose("Processor...$cpu")
 
 $project_root = Get-ProjectRoot
-Write-Output "ProjectReunion location...$project_root"
+Write-Output "Windows App SDK location...$project_root"
 
 if (($CheckAll -ne $false) -Or ($CheckVisualStudio -ne $false))
 {
