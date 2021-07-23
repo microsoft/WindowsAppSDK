@@ -136,5 +136,7 @@ namespace Microsoft.Windows.PushNotifications
         static String GetStringFromComServer();
 
         static UInt32 GetStringLengthFromComServer(String inputString);
+
+        static Boolean GetForegroundSink();
     };
 }

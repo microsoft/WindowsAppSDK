@@ -292,4 +292,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return error;
         }
     }
+
+    bool PushNotificationManager::GetForegroundSink()
+    {
+        try
+        {
+            wil::com_ptr<IWpnForegroundSink> reunionEndpoint{
+                wil::CoCreateInstance<WpnForegroundSink,
+                IWpnForegroundSink>(CLSCTX_LOCAL_SERVER) };
+
+        }
+        catch (...)
+        {
+            return false;
+        }
+        return true;
+    }
 }

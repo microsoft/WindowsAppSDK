@@ -6,7 +6,6 @@
 // include notifications constants file here
 
 #include <NotificationsReunionEndpoint_h.h>
-#include "ForegroundSink.h"
 
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
@@ -14,6 +13,7 @@
 #pragma warning(disable:4324)
 #include <wrl.h>
 #pragma warning(pop)
+#include <winrt/Windows.Networking.PushNotifications.h>
 
 using namespace Microsoft::WRL;
 
@@ -23,6 +23,32 @@ void EndOfTheLine()
 {
     g_endOfTheLine.SetEvent();
 }
+
+struct __declspec(uuid("A15FBAC0-8D22-472A-A036-78A8BE334FDE")) WpnForegroundSinkImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IWpnForegroundSink>
+{
+    typedef winrt::Windows::Foundation::TypedEventHandler<winrt::Windows::Networking::PushNotifications::PushNotificationChannel*, winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs*> IPushNotificationReceivedEventHandler;
+
+    private:
+        Microsoft::WRL::EventSource<IPushNotificationReceivedEventHandler> m_event;
+        mutable Microsoft::WRL::Wrappers::SRWLock m_lock;
+
+    public:
+        STDMETHODIMP Invoke()
+        {
+            return S_OK;
+        }
+
+        STDMETHODIMP AddEvent()
+        {
+            return S_OK;
+        }
+
+        STDMETHODIMP RemoveEvent()
+        {
+            return S_OK;
+        }
+};
+CoCreatableClass(WpnForegroundSinkImpl);
 
 struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) NotificationsReunionEndpointImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, INotificationsReunionEndpoint>
 {
@@ -61,7 +87,6 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR lp
     //     handle COM activation
     // else
     //     handle Startup activation
-    ForegroundSink sink{};
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
     wil::unique_event endOfTheLine(::CreateEventW(nullptr, TRUE, FALSE, nullptr));

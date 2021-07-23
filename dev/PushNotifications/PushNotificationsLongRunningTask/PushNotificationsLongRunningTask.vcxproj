@@ -215,12 +215,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ForegroundSink.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ForegroundSink.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

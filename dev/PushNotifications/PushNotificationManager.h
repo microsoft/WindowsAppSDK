@@ -19,6 +19,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         static uint32_t GetStringLengthFromComServer(const winrt::hstring& inputString);
 
+        static bool GetForegroundSink();
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
     };
