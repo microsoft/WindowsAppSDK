@@ -4,42 +4,42 @@ The roadmap for the Windows App SDK supports the primary goals of breaking down 
 
 For a general overview, see the [readme](https://github.com/microsoft/WindowsAppSDK/tree/master/docs) and [FAQ](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/faq.md).
 
-## 2021 Roadmap
-
 Here's how we intend to roll out the Windows App SDK. To subscribe to updates, subscribe to [this discussion](https://github.com/microsoft/WindowsAppSDK/discussions/507). *(all times/features/releases are tentative and subject to change)*:
 
 ### Packaged Desktop Apps
-As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from the Windows App SDK!
+As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WinUI 3, WPF, WinForms, Win32, console), here's what you (tentatively) can expect from the Windows App SDK!
 
-🌟 |      Windows App SDK 0.5      |         Windows App SDK 0.8    |       Windows App SDK 1.0 (Q4 2021)     |
+🌟 |    0.8    |       1.0 (Q4 2021)     |   Future release
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
-[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported  | ✅ Supported | ✅ Supported |
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ✅ Supported<br>(WinUI 3 apps only) | ✅ Supported<br>(WinUI 3 apps only) | ✅ Supported |
+XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Supported | ✅ Supported
 [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported |
-[Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported |
-[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
-[Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supported | 🔄 Experimental |
+[Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported |
+[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 Deploy Options: |
 • In-app | ✅ Supported | ✅ Supported | ✅ Supported |
 • Fx Package | ✅ Supported | ✅ Supported | ✅ Supported |
 
 ### Unpackaged Desktop Apps
 
-As an unpackaged desktop app (WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what and when you (tentatively) can expect from the Windows App SDK!
+As an [unpackaged](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) desktop app (WinUI 3, WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what you (tentatively) can expect from the Windows App SDK!
 
- 🌟 |       Windows App SDK 0.5      |         Windows App SDK 0.8   |       Windows App SDK 1.0 (Q4 2021)    |
+🌟 |    0.8    |       1.0 (Q4 2021)     |   Future release
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
-[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
-[Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-[Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | ❌ Not Supported| 🔄 Experimental | ✅ Supported |
-[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-Windowing | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
-[Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | ❌ Not Supported | 🔄 Experimental |
+[WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ✅ Supported<br>(WinUI 3 apps only) | ✅ Supported |
+XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Supported | ✅ Supported
+[Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 Deploy Options:  |
-• In-app | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-• Fx Package | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+• In-app | 🔄 Experimental | ✅ Supported | ✅ Supported |
+• Fx Package | 🔄 Experimental | ✅ Supported | ✅ Supported |
 
 ## 2021 Focus Areas
 
@@ -87,4 +87,4 @@ This isn't an exhaustive list: it's a sampling of some of the key infrastructure
 
 ## 2022 and Beyond
 
-In the future, you can expect multiple releases per year from the Windows App SDK team. We will continue to improve app compatibility and deliver new capabilities.
+In the future, you can expect multiple releases per year from the Windows App SDK team. We will continue to improve app compatibility and deliver new capabilities. One of our top features for a future release is XAML Islands, which will allow you to use WinUI 3 controls in an existing WPF/WinForms/etc app. We'll share more details when we have a more concrete schedule, but that's one of our top requests!
