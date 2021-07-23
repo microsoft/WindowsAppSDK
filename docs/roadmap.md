@@ -7,7 +7,7 @@ For a general overview, see the [readme](https://github.com/microsoft/WindowsApp
 Here's how we intend to roll out the Windows App SDK. To subscribe to updates, subscribe to [this discussion](https://github.com/microsoft/WindowsAppSDK/discussions/507). *(all times/features/releases are tentative and subject to change)*:
 
 ### Packaged Desktop Apps
-As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WinUI 3, WPF, WinForms, Win32, console), here's what and when you (tentatively) can expect from the Windows App SDK!
+As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overview) (WinUI 3, WPF, WinForms, Win32, console), here's what you (tentatively) can expect from the Windows App SDK!
 
 🌟 |    0.8    |       1.0 (Q4 2021)     |   Future release
 -- | ------------------------------- | --------------------------------- | ------------------------------- |
@@ -25,7 +25,7 @@ Deploy Options: |
 
 ### Unpackaged Desktop Apps
 
-As an [unpackaged](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) desktop app (WinUI 3, WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what and when you (tentatively) can expect from the Windows App SDK!
+As an [unpackaged](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) desktop app (WinUI 3, WPF, WinForms, Win32, or console, not using [MSIX](https://docs.microsoft.com/windows/msix/overview)), here's what you (tentatively) can expect from the Windows App SDK!
 
 🌟 |    0.8    |       1.0 (Q4 2021)     |   Future release
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
