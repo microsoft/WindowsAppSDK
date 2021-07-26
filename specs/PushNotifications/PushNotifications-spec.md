@@ -220,7 +220,7 @@ int main()
     }
     else
     {
-        winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+        return ERROR_NOT_SUPPORTED;
     }
 
     // Registers a Push Trigger with the Background Infra component
@@ -244,7 +244,7 @@ int main()
     }
     else
     {
-        winrt::throw_hresult(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+        return ERROR_NOT_SUPPORTED;
     }
 
     // Registers the current process as an InProc COM server
@@ -392,7 +392,7 @@ namespace Microsoft.Windows.PushNotifications
     {
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server 
-        ProtocolActivator = 0x3, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol 
+        ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol 
     };
 
     // An abstraction over the activation Registration flow
