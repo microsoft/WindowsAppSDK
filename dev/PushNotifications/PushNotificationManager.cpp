@@ -254,9 +254,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsBIAvailable()
     {
-        BackgroundTaskBuilder builder = BackgroundTaskBuilder();
         try
         {
+            BackgroundTaskBuilder builder = BackgroundTaskBuilder();
             auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
         }
         catch (...)
@@ -268,8 +268,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
     {
-        if (!WI_AreAllFlagsClear(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator |
-            PushNotificationRegistrationOptions::ProtocolActivator)
+        if (!WI_IsSingleFlagSet(options))
         {
             return false;
         }
@@ -283,11 +282,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return false;
         }
 
-        if (!AppModel::Identity::IsPackagedProcess())
-        {
-            return isProtocolActivatorSet;
-        }
-        else if (IsBIAvailable())
+        if (AppModel::Identity::IsPackagedProcess() && IsBIAvailable())
         {
             return isBIFlagSet;
         }
