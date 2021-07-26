@@ -245,4 +245,44 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
         }
     }
+
+    bool PushNotificationManager::IsBIAvailable()
+    {
+        try
+        {
+            BackgroundTaskBuilder builder = BackgroundTaskBuilder();
+            auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
+        }
+        catch (...)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
+    {
+        if (!WI_IsSingleFlagSet(options))
+        {
+            return false;
+        }
+
+        bool isBIFlagSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::PushTrigger) ||
+            WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator);
+        bool isProtocolActivatorSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator);
+
+        if (isBIFlagSet && isProtocolActivatorSet)
+        {
+            return false;
+        }
+
+        if (AppModel::Identity::IsPackagedProcess() && IsBIAvailable())
+        {
+            return isBIFlagSet;
+        }
+        else
+        {
+            return isProtocolActivatorSet;
+        }
+    }
 }

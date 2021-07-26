@@ -257,6 +257,26 @@ bool BackgroundActivationTest() // Activating application for background test.
     return true;
 }
 
+bool VerifyComActivatorSupported()
+{
+    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator);
+}
+
+bool VerifyComActivatorNotSupported()
+{
+    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator);
+}
+
+bool VerifyProtocolActivatorSupported()
+{
+    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ProtocolActivator);
+}
+
+bool VerifyProtocolActivatorNotSupported()
+{
+    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ProtocolActivator);
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -271,7 +291,11 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "UnregisterActivatorNullBackgroundRegistration", &UnregisterActivatorNullBackgroundRegistration},
         { "ActivatorTest", &ActivatorTest},
         { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
-        { "BackgroundActivationTest", &BackgroundActivationTest}
+        { "BackgroundActivationTest", &BackgroundActivationTest},
+        { "VerifyComActivatorSupported", &VerifyComActivatorSupported},
+        { "VerifyComActivatorNotSupported", &VerifyComActivatorNotSupported },
+        { "VerifyProtocolActivatorSupported", &VerifyProtocolActivatorSupported},
+        { "VerifyProtocolActivatorNotSupported", &VerifyProtocolActivatorNotSupported }
     };
     return switchMapping;
 }
@@ -312,14 +336,16 @@ int main() try
         ::Test::Bootstrap::CleanupBootstrap();
     });
 
-
     ::Test::Bootstrap::SetupBootstrap();
 
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid(c_comServerId)); // same clsid as app manifest
 
-    g_appToken = PushNotificationManager::RegisterActivator(info);
+    if (Test::AppModel::IsPackagedProcess())
+    {
+        g_appToken = PushNotificationManager::RegisterActivator(info);
+    }
     
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();

@@ -203,15 +203,15 @@ namespace Test::PushNotifications
             RunTest(L"MultipleChannelClose", channelTestWaitTime());
         }
 
-        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
-        {
-            RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
-        }
+        //TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
+        //{
+        //    RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
+        //}
 
-        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
-        {
-            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
-        }
+        //TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
+        //{
+        //    RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
+        //}
 
         TEST_METHOD(ActivatorTest)
         {
@@ -243,5 +243,24 @@ namespace Test::PushNotifications
             RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
         }
 
+        TEST_METHOD(VerifyComActivatorSupported)
+        {
+            RunTest(L"VerifyComActivatorSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyComActivatorNotSupported)
+        {
+            RunTestUnpackaged(L"VerifyComActivatorNotSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyProtocolActivatorSupported)
+        {
+            RunTestUnpackaged(L"VerifyProtocolActivatorSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyProtocolActivatorNotSupported)
+        {
+            RunTest(L"VerifyProtocolActivatorNotSupported", testWaitTime());
+        }
     };
 }
