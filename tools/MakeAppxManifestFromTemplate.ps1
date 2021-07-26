@@ -62,6 +62,22 @@ if (-not ([string]::IsNullOrEmpty($VersionMinor)))
     $manifest = "$manifest" -replace "###version.minor###", "$Version_Minor"
 }
 $manifest = "$manifest" -replace "###architecture###", "$Architecture"
+if ($Architecture -eq "x64")
+{
+    $ShortArchitecture = "x6"
+}
+elseif ($Architecture -eq "x86")
+{
+    $ShortArchitecture = "x8"
+}
+elseif ($Architecture -eq "arm64")
+{
+    $ShortArchitecture = "a6"
+}
+if (-not ([string]::IsNullOrEmpty($ShortArchitecture)))
+{
+    $manifest = "$manifest" -replace "###shortarchitecture###", "$ShortArchitecture"
+}
 
 if ($manifest -ne $original)
 {
