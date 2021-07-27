@@ -13,7 +13,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy WindowsAppSDKTelemetry.h into output folder'
   inputs:
-    SourceFolder: '$CommonHeadersDirectory'
+    SourceFolder: '${{ parameters.CommonHeadersDirectory }}'
     Contents: |
       WindowsAppSDKTelemetry.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
