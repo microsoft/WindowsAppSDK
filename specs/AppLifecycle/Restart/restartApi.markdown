@@ -163,9 +163,6 @@ There are 2 related Win32 APIs that focus on recovery prior to restart:
 <p>Apps can restart on-command asynchronously when healthy/active but do not have the ability to ensure restart in app crash/hang scenarios </p>
 </li>
 </ul>
-<ul>
-<li><p> </p></li>
-</ul></td>
 </tr>
 <tr class="even">
 <td>WinUI (UWP)</td>
@@ -182,9 +179,7 @@ There are 2 related Win32 APIs that focus on recovery prior to restart:
 <p>Apps can restart on-command asynchronously when healthy/active but do not have the ability to ensure restart in app crash/hang scenarios </p>
 </li>
 </ul>
-<ul>
-<li><p> </p></li>
-</ul></td>
+</td>
 </tr>
 <tr class="odd">
 <td>WinUI (Centennial)</td>
@@ -401,65 +396,68 @@ string launchArguments);</td>
 ### API Sample Code
 
 #### RegisterForRestart Sample
+```c#
+public class App {
 
-    public class App {
+        // App was just launched
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            // If the application was terminated for example and has now been restarted
+            if (args != NULL)
+            {
+                if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                {
+                    Telemetry::WriteLine("Restart activated: " + args.Arguments);
+                }
+            }
+        }
 
-            // App was just launched
-            protected override void OnLaunched(LaunchActivatedEventArgs args)
-            {
-                // If the application was terminated for example and has now been restarted
-                if (args != NULL)
-                {
-                    if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                    {
-                        Telemetry::WriteLine("Restart activated: " + args.Arguments);
-                    }
-                }
-            }
+        // We want to register the app for restart if termination happens only after crash
+        protected bool restartOnUpdate(){
+            bool result = AppLifecycle::RegisterForRestart("args for new instance", RestartContext::Crash);
+            Telemetry::WriteLine("RegisterForRestart: Restart Context: " + RestartContext::Crash.ToString() 
+            + ". Result: " + result ? "success" : "fail");
 
-            // We want to register the app for restart if termination happens only after crash
-            protected bool restartOnUpdate(){
-                bool result = AppLifecycle::RegisterForRestart("args for new instance", RestartContext::Crash);
-                Telemetry::WriteLine("RegisterForRestart: Restart Context: " + RestartContext::Crash.ToString() 
-                + ". Result: " + result ? "success" : "fail");
+            // Do normal app behavior
+        }
 
-                // Do normal app behavior
-            }
-
-            // We want to unregister for post-crash restarts
-            protected bool removeRestartOnUpdate(){
-                bool result = AppLifecycle::UnregisterForRestart();
-                Telemetry::WriteLine("UnregisterForRestart: Result: " + result ? "success" : "fail");
-            }
-    }
+        // We want to unregister for post-crash restarts
+        protected bool removeRestartOnUpdate(){
+            bool result = AppLifecycle::UnregisterForRestart();
+            Telemetry::WriteLine("UnregisterForRestart: Result: " + result ? "success" : "fail");
+        }
+}
+```
 
 ### RequestRestartNow Sample
 
-    public class App {
-           // Let's assume this method is run when an app updates assets.
-           // The new assets have downloaded and installed, and now the app has to restart immediately
-           protected void updateInstallComplete(){
-               // code here that checks the app update has installed
+```c#
+public class App {
+       // Let's assume this method is run when an app updates assets.
+       // The new assets have downloaded and installed, and now the app has to restart immediately
+       protected void updateInstallComplete(){
+           // code here that checks the app update has installed
 
-               WCHAR buffer\[1024\]; 
-               AppRestartFailureReason result = AppLifecycle::RequestRestartNow("args for new instance");
+           WCHAR buffer\[1024\]; 
+           AppRestartFailureReason result = AppLifecycle::RequestRestartNow("args for new instance");
 
-               switch (result){
-                    case AppRestartFailureReason::RestartPending:
-                        Telemetry::WriteLine("Restart request successful.");
-                        break;
-                    case AppRestartFailureReason::NotInForeground:
-                        wcscpy_s(buffer, L"App must be in the foreground to request restart.");
-                        break;
-                    case AppRestartFailureReason::InvalidUser:
-                        wcscpy_s(buffer, L"Cannot restart for this user.");
-                        break;
-                    case AppRestartFailureReason::Other:
-                        wcscpy_s(buffer, L"Unknown failure.");
-                        break;
-               }
-           }               
-    }  
+           switch (result){
+                case AppRestartFailureReason::RestartPending:
+                    Telemetry::WriteLine("Restart request successful.");
+                    break;
+                case AppRestartFailureReason::NotInForeground:
+                    wcscpy_s(buffer, L"App must be in the foreground to request restart.");
+                    break;
+                case AppRestartFailureReason::InvalidUser:
+                    wcscpy_s(buffer, L"Cannot restart for this user.");
+                    break;
+                case AppRestartFailureReason::Other:
+                    wcscpy_s(buffer, L"Unknown failure.");
+                    break;
+           }
+       }               
+}
+```
 
 ## Telemetry 
 
