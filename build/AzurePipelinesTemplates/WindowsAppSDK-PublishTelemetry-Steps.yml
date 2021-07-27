@@ -50,6 +50,7 @@ steps:
 
 - task: CopyFiles@2
   displayName: 'copy import lib x86'
+  condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x86'
     Contents: |
@@ -59,6 +60,7 @@ steps:
 
 - task: CopyFiles@2
   displayName: 'copy import lib x64'
+  condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'))
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x64'
     Contents: |
@@ -68,6 +70,7 @@ steps:
 
 - task: CopyFiles@2
   displayName: 'copy import lib ARM64'
+  condition: and(succeeded(), eq(variables['buildPlatform'], 'ARM64'))
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\ARM64'
     Contents: |
