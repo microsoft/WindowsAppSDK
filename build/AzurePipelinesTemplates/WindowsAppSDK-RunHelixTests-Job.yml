@@ -59,15 +59,6 @@ jobs:
     inputs:
       filename: 'set'
 
-  # This is installed on the Helix VM by TestPass-OneTimeMachineSetup.ps1
-  - task: powershell@2
-    displayName: 'Download .NET Runtime Windows installer'
-    inputs:
-      targetType: filePath
-      workingDirectory: $(Build.SourcesDirectory)\build
-      filePath: $(Build.SourcesDirectory)\build\DownloadDotNetRuntimeInstaller.ps1
-      arguments: -Platform $(buildPlatform) -OutputDirectory $(testPayloadDir)
-
   - task: NuGetToolInstaller@0
 
   - task: NuGetAuthenticate@0

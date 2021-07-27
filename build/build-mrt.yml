@@ -90,15 +90,6 @@ steps:
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
-# TODO: Is this actually used? (It gets downloaded, but nothing installs it...)
-- task: powershell@2
-  displayName: 'Download .NET Runtime Windows installer'
-  inputs:
-    targetType: filePath
-    workingDirectory: $(Build.SourcesDirectory)\build
-    filePath: $(Build.SourcesDirectory)\build\DownloadDotNetRuntimeInstaller.ps1
-    arguments: -Platform $(buildPlatform) -OutputDirectory $(Build.SourcesDirectory)\BuildOutput\$(buildPlatform)\$(buildConfiguration)\TestDependencies
-
 #  - task: BatchScript@1
 #    displayName: 'Debug'
 #    inputs:
