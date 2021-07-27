@@ -29,7 +29,7 @@ jobs:
     winUIHelixPipelineScripts: build\Helix\packages\Microsoft.Internal.WinUI.Helix.$(winUIHelixVer)\scripts\pipeline
 
     # The target queues to run the tests on.
-    # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by ProjectReunion in the future.
+    # Currently runs on queues owned by the WinUI/XAML team. This should run on queues hosted by WindowsAppSDK in the future.
     # Note: %3b is the escape sequence for ';' which is used as the delimiter
     helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.Xaml%3bWindows.10.Amd64.Client19h1.Open.Xaml'
     helixTargetQueuesClosed: 'Windows.10.Amd64.ClientRS5.Xaml%3bWindows.10.Amd64.Client19h1.Xaml'
@@ -101,7 +101,7 @@ jobs:
     condition: always()
     inputs:
       PathtoPublish: $(testPayloadDir)
-      artifactName: HelixTestPayloadDir
+      artifactName: HelixTestPayloadDir_$(buildPlatform)_$(buildConfiguration)
 
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
   # Note: There are 3 test suites for MRT Core. We currently run 2 of them in Helix.
@@ -133,7 +133,7 @@ jobs:
     displayName: 'Publish generated test work items'
     inputs:
       PathtoPublish: $(helixWorkItemsDir)
-      artifactName: 'HelixWorkItems'
+      artifactName: HelixWorkItems_$(buildPlatform)_$(buildConfiguration)
 
   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
     displayName: 'NuGet restore Helix/RunTestsInHelix.proj'
@@ -206,4 +206,4 @@ jobs:
     displayName: 'Publish Helix files'
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
-      artifactName: HelixTestOutput
+      artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)

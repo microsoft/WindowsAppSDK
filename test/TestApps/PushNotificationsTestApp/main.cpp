@@ -4,6 +4,7 @@
 #include <sstream>
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
+#include "WindowsAppSDK.Test.AppModel.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -287,6 +288,18 @@ bool runUnitTest(std::string unitTest)
     return it->second();
 }
 
+std::string unitTestNameFromLaunchArguments(const ILaunchActivatedEventArgs& launchArgs)
+{
+    std::string unitTestName = to_string(launchArgs.Arguments());
+    auto argStart = unitTestName.rfind(" ");
+    if (argStart != std::wstring::npos)
+    {
+        unitTestName = unitTestName.substr(argStart + 1);
+    }
+
+    return unitTestName;
+}
+
 int main() try
 {
     bool testResult = false;
@@ -295,7 +308,12 @@ int main() try
         {
             PushNotificationManager::UnregisterActivator(g_appToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
         }
+
+        ::Test::Bootstrap::CleanupBootstrap();
     });
+
+
+    ::Test::Bootstrap::SetupBootstrap();
 
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
@@ -308,8 +326,7 @@ int main() try
 
     if (kind == ExtendedActivationKind::Launch)
     {
-        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
-        std::string unitTest = to_string(launchArgs.Arguments());
+        auto unitTest = unitTestNameFromLaunchArguments(args.Data().as<ILaunchActivatedEventArgs>());
         std::cout << unitTest << std::endl;
 
         testResult = runUnitTest(unitTest);
