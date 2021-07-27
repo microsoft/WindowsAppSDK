@@ -131,7 +131,7 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: publish-WindowsAppSDKTelemetry.yml
+  - template: WindowsAppSDK-PublishTelemetry-Steps.yml
     parameters:
       buildJobName: 'PublishWindowsAppSDKTelemetryHeader'
 
