@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
+#include <..\PushNotifications.LongRunningTask.ProxyStub\NotificationsReunionEndpoint_h.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -18,7 +19,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-
+        const wil::com_ptr<IWpnForegroundSink> m_foregroundSink;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

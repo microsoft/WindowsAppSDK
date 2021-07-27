@@ -22,8 +22,9 @@ interface INotificationsReunionEndpoint : IUnknown
 interface IWpnForegroundSink : IUnknown
 {
     HRESULT Invoke();
-    HRESULT AddEvent();
+    HRESULT AddEvent([in] IUnknown* handler);
     HRESULT RemoveEvent();
+
 };
 
 [uuid(60C6A2D9-04D9-42C3-B4E9-71158389D422)] // PR_DYNDEP_LIBID_UUID

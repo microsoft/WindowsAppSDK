@@ -2,6 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
+#include <Windows.h>
+#include <assert.h>
+#include <ShObjIdl_core.h>
+#include <shlguid.h>
+#include <shlwapi.h>
+#include <shellapi.h>
+#include <appmodel.h>
+#include <xmllite.h>
 
 #include <unknwn.h>
 #include <appmodel.h>

@@ -6,7 +6,7 @@
 // include notifications constants file here
 
 #include <NotificationsReunionEndpoint_h.h>
-
+#include <EventToken.h>
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
 #pragma warning(push)
@@ -14,9 +14,11 @@
 #include <wrl.h>
 #pragma warning(pop)
 #include <winrt/Windows.Networking.PushNotifications.h>
+#include <winrt/Windows.Foundation.h>
+#include <Windows.Foundation.h>
 
 using namespace Microsoft::WRL;
-
+using namespace winrt::Windows::Networking::PushNotifications;
 wil::unique_event g_endOfTheLine;
 
 void EndOfTheLine()
@@ -28,24 +30,29 @@ struct __declspec(uuid("A15FBAC0-8D22-472A-A036-78A8BE334FDE")) WpnForegroundSin
 {
     typedef winrt::Windows::Foundation::TypedEventHandler<winrt::Windows::Networking::PushNotifications::PushNotificationChannel*, winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs*> IPushNotificationReceivedEventHandler;
 
-    private:
-        Microsoft::WRL::EventSource<IPushNotificationReceivedEventHandler> m_event;
+private:
+        Microsoft::WRL::AgileEventSource<IUnknown> m_event; // watch for RPC errors
         mutable Microsoft::WRL::Wrappers::SRWLock m_lock;
-
+        Microsoft::WRL::ComPtr<EventRegistrationToken> token{};
+        //EventRegistrationToken token;
     public:
         STDMETHODIMP Invoke()
         {
+            auto lock = m_lock.LockExclusive();
+            m_event.InvokeAll();
             return S_OK;
         }
 
-        STDMETHODIMP AddEvent()
+        STDMETHODIMP AddEvent(/*[in]*/ IPushNotificationReceivedEventHandler* handler)
         {
-            return S_OK;
+            auto lock = m_lock.LockExclusive();
+            return m_event.Add(handler->as<IUnknown*>(), token.Get());
         }
 
         STDMETHODIMP RemoveEvent()
         {
-            return S_OK;
+            auto lock = m_lock.LockExclusive();
+            return m_event.Remove(*token.Get());
         }
 };
 CoCreatableClass(WpnForegroundSinkImpl);

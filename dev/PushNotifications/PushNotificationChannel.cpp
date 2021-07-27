@@ -7,6 +7,7 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
+// Need to fix this ref!!!
 
 namespace winrt::Windows
 {
@@ -48,6 +49,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
+        winrt::Windows::Foundation::TypedEventHandler
         return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
         {
             auto strong = weak_self.get();
