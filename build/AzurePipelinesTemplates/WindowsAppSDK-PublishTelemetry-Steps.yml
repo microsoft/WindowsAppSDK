@@ -1,5 +1,6 @@
 parameters:
   CommonHeadersDirectory: $(Build.SourcesDirectory)\dev\Common
+  WindowsAppSDKTelemetrySourceDirectory: $(Build.SourcesDirectory)\dev\WindowsAppSDKTelemetryResource
 
 steps:
 - task: NuGetToolInstaller@1
@@ -7,6 +8,26 @@ steps:
   inputs:
     versionSpec: 5.6
   continueOnError: true
+
+- task: MSBuild@1
+  displayName: 'build WindowsAppSDKTelemetry lib'
+  inputs:
+#      msbuildLocationMethod: 'location'
+#      msbuildLocation: ${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\.buildtools\MSBuild\Current\Bin\MSBuild.exe
+    platform: '$(buildPlatform)'
+    solution: '${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.vcxproj'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/WindowsAppSDKTelemetry.$(buildPlatform).$(buildConfiguration).binlog'
+
+- task: CopyFiles@2
+  displayName: 'copy binaries for signing'
+  inputs:
+    SourceFolder: '${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\Release\$(buildPlatform)'
+    Contents: |
+      WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.lib
+      WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.pdb
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\$(buildPlatform)'
+    flattenFolders: true
 
 # START of copying files into their final package location.
 
@@ -17,6 +38,33 @@ steps:
     Contents: |
       WindowsAppSDKTelemetry.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy import lib x86'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x86'
+    Contents: |
+      WindowsAppSDKTelemetryResourceLib.lib
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x86'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy import lib x64'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x64'
+    Contents: |
+      WindowsAppSDKTelemetryResourceLib.lib
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x64'
+    flattenFolders: true
+
+- task: CopyFiles@2
+  displayName: 'copy import lib ARM64'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\ARM64'
+    Contents: |
+      WindowsAppSDKTelemetryResourceLib.lib
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-arm64'
     flattenFolders: true
 
 - task: PublishBuildArtifacts@1
