@@ -21,19 +21,6 @@
 
 [4. Resources](#resources)
 
-## Contacts
-
-### Program Managers                
-
-Hamza Usmani (mousma)\
-Andrew Whitechapel (andreww)
-
-### Developers
-Scott Darnell (scodar)
-
-### Data                            
-TBD
-
 ## Overview 
 
 We are creating a new AppLifecycle component that provides a core set of
