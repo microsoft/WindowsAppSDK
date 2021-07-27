@@ -1,6 +1,7 @@
 parameters:
   CommonHeadersDirectory: $(Build.SourcesDirectory)\dev\Common
   WindowsAppSDKTelemetrySourceDirectory: $(Build.SourcesDirectory)\dev\WindowsAppSDKTelemetryResource
+  WindowsAppSDKTelemetryBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
 steps:
 - task: NuGetToolInstaller@1
@@ -29,7 +30,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'copy binaries for signing'
   inputs:
-    SourceFolder: '${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\Release\$(buildPlatform)'
+    SourceFolder: '${{ parameters.WindowsAppSDKTelemetryBinariesDirectory }}\Release\$(buildPlatform)'
     Contents: |
       WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.lib
       WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.pdb
