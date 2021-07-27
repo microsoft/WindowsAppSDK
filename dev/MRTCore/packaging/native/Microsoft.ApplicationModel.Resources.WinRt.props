@@ -1,0 +1,24 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
+  </PropertyGroup>
+
+  <!--
+    Some of the manual reference adding below may not be necessary due to the files in question being in default locations, but there's no harm in it.
+  -->
+
+  <!-- OutputType Exe corresponds to C++. -->
+  <ItemGroup Condition="'$(OutputType)' == 'Exe'">
+    <Reference Include="Microsoft.ApplicationModel.Resources.winmd">
+      <HintPath>$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.Resources.winmd</HintPath>
+      <Implementation Condition="'$(WindowsAppSDKFrameworkPackage)' != 'true'">$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\Microsoft.ApplicationModel.Resources.dll</Implementation>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+</Project>

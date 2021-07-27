@@ -17,11 +17,11 @@
   <Extensions>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Microsoft.WindowsApp.Resources.dll</Path>
-          <ActivatableClass ActivatableClassId="Microsoft.WindowsApp.Resources.KnownResourceQualifierName" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.WindowsApp.Resources.ResourceCandidate" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.WindowsApp.Resources.ResourceLoader" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.WindowsApp.Resources.ResourceManager" ThreadingModel="both" />
+        <Path>Microsoft.ApplicationModel.Resources.dll</Path>
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.KnownResourceQualifierName" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceCandidate" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceLoader" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
