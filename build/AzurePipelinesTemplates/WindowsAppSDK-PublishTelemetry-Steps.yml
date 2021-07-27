@@ -13,7 +13,7 @@ steps:
   displayName: 'NuGet restore of WIL'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourceWindowsAppSDKTelemetrySourceDirectory }}\WindowsAppSDKTelemetryResourceLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\packages'
+    arguments: 'restore ${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\WindowsAppSDKTelemetryResourceLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKTelemetrySourceDirectory }}\packages'
 
 
 - task: MSBuild@1
