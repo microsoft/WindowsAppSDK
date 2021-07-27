@@ -15,6 +15,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_METHOD_SETUP(CentennialWriteEVs)
         {
+            ::Test::Bootstrap::Setup();
             UserSetup();
             MachineSetup();
             return true;
@@ -22,6 +23,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_METHOD_CLEANUP(CentennialRemoveEVs)
         {
+            ::Test::Bootstrap::Cleanup();
             UserCleanup();
             MachineCleanup();
             return true;

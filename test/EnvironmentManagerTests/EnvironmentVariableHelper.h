@@ -165,7 +165,7 @@ inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variable
     return environmentVariableValue;
 }
 
-inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& const pathPart, int index)
+inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& pathPart, int index)
 {
     std::wstring existingPath{};
 
@@ -241,7 +241,7 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& cons
 
 }
 
-inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& const pathExtPart, int index)
+inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& pathExtPart, int index)
 {
     std::wstring existingPathExt{};
 
