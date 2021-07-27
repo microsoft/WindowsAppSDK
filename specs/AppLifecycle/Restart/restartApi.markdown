@@ -23,20 +23,7 @@
 
 ## Overview 
 
-We are creating a new AppLifecycle component that provides a core set of
-functionality related to app activation and lifecycle. The 3 key goals
-of this component are:
-
--   it is undocked from the OS; that is, it will release out-of-band
-    from the OS;
-
--   it provides a centralized place for core app lifecycle functionality
-    that *all* apps can easily consume, whether traditional unpackaged
-    Win32, Winforms, WPF, packaged (Centennial) Win32, or UWP.
-
--   it will be made available as open-source.
-
-This spec addresses the **Restart APIs** in the component. The main
+This spec addresses the **Restart APIs** in the AppLifecycle component. The main
 goals of this specific API are the following:
 
 Addressing the gaps that exist today: at a high-level, Win32 apps can
