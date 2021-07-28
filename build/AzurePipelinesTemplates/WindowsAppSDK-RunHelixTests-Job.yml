@@ -164,8 +164,10 @@ jobs:
   # This script updates the test results based on the retry logic. It updates the test results in the Pipeline to show 'sub results' in cases where a test was re-run.
   - task: powershell@2
     displayName: 'UpdateUnreliableTests.ps1'
+    condition: succeededOrFailed()
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      HelixAccessToken: $(HelixApiAccessToken)
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\UpdateUnreliableTests.ps1
@@ -174,8 +176,10 @@ jobs:
   # This outputs any failed test to the build log. It is not required, but it makes it easier to see at a glance what failed.
   - task: powershell@2
     displayName: 'OutputTestResults.ps1'
+    condition: succeededOrFailed()
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      HelixAccessToken: $(HelixApiAccessToken)
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\OutputTestResults.ps1
@@ -185,16 +189,21 @@ jobs:
   # full logs and any supporting files can be downloaded from the Pipeline.
   - task: powershell@2
     displayName: 'ProcessHelixFiles.ps1'
+    condition: succeededOrFailed()
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      HelixAccessToken: $(HelixApiAccessToken)
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\ProcessHelixFiles.ps1
       # Remove -ProcessAllJobs to only download the files from work items with failing tests
       arguments: -OutputFolder '$(helixTestOutputDir)' -ProcessAllJobs -HelixTypeJobFilter $(helixType)
+      errorActionPreference: continue
+      failOnStderr: false
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Helix files'
+    condition: succeededOrFailed()
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
       artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)
