@@ -33,6 +33,7 @@
     <ProjectGuid>{4243b8da-bdb5-4d65-b1d5-eeed375fad13}</ProjectGuid>
     <RootNamespace>WindowsAppSDKTelemetryResourceLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Microsoft.WindowsAppSDKTelemetry</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
