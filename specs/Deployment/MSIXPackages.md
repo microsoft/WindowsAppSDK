@@ -1,12 +1,22 @@
-Windows App SDK: MSIX Packages
-===
+- [1. Background](#1-background)
+- [2. MSIX Packages](#2-msix-packages)
+  - [2.1. Roles](#21-roles)
+    - [2.1.1. Role - Framework](#211-role---framework)
+    - [2.1.2. Role - Main](#212-role---main)
+    - [2.1.3. Role - Singleton](#213-role---singleton)
+    - [2.1.4. Dynamic Dependency Lifetime Manager (DDLM)](#214-dynamic-dependency-lifetime-manager-ddlm)
+- [3. Package Naming](#3-package-naming)
+  - [3.1. Package Naming - SubName](#31-package-naming---subname)
+  - [3.2. Package Naming - Singleton](#32-package-naming---singleton)
+  - [3.3. Package Naming - DDLM](#33-package-naming---ddlm)
+- [4. Package Versioning](#4-package-versioning)
 
-# Background
+# 1. Background
 
 Windows App SDK supports deployment as a set of MSIX packages for use at runtime.
-This spec outlines the list of packages and their rules and roles.
+This document outlines the list of packages and their rules and roles.
 
-# MSIX Packages
+# 2. MSIX Packages
 
 Windows App SDK is distributed as multiple MSIX packages:
 
@@ -15,9 +25,9 @@ Windows App SDK is distributed as multiple MSIX packages:
 3. Singleton
 4. Dynamic Dependency Lifetime Manager (DDLM)
 
-## Roles
+## 2.1. Roles
 
-### Role - Framework
+### 2.1.1. Role - Framework
 
 The Framework package is the API delivery vehicle for Windows App SDK. The vast majority of code in
 the project is found here.
@@ -29,7 +39,7 @@ Framework packages non-disruptively (e.g. when an app's not running), colaescing
 versions over time (not necessarily instaneously). This provides for a very flexible servicing
 model.
 
-### Role - Main
+### 2.1.2. Role - Main
 
 The Main package supplements the Framework package, for when functionality is needed but can't be
 delivered via the Framework package. Mechanisms include [Packaged COM](https://blogs.windows.com/windowsdeveloper/2017/04/13/com-server-ole-document-support-desktop-bridge/),
@@ -82,12 +92,36 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine,
 and export `MyFeatureWinMain` from a DLL in the Framework package to get the implementation's
 other 99%.
 
-### Role - Singleton
+### 2.1.3. Role - Singleton
 
 The Singleton package supplements the Main package, for when functionality is needed by a single
 process spanning all versions of Windows App SDK.
 
-### Dynamic Dependency Lifetime Manager (DDLM)
+The Singleton package is a main package so the same guidance applies to the Singleton as to the Main
+package -- developers are strongly encouraged to only rely on the Singleton package when necessary.
+See (2.1.2. Role- Main) for more details.
+
+The Singleton package's content is used by ALL versions of Windows App SDK registered to the user so
+additional caution is advised.
+
+Only the highest version of the Singleton package will be installed for a user, e.g. if Windows App
+SDK 1.0, 1.1 and 2.0 (Stable) are installed on an x86 system, the user will have registered...
+
+* Microsoft.WindowsAppRuntime.1.0
+* Microsoft.WindowsAppRuntime.1.1
+* Microsoft.WindowsAppRuntime.2.0
+* Microsoft.WindowsAppRuntime.Main.1.0
+* Microsoft.WindowsAppRuntime.Main.1.1
+* Microsoft.WindowsAppRuntime.Main.2.0
+* Microsoft.WindowsAppRuntime.Singleton (version 2.0)
+* Microsoft.WinAppRuntime.DDLM.0.146.711.0-x8
+* Microsoft.WinAppRuntime.DDLM.1000.328.1510.0-x8
+* Microsoft.WinAppRuntime.DDLM.0.510.333.0-x8
+
+Singleton package content MUST be backwards compatible across all releases due to the Singleton
+package's singular <g> nature
+
+### 2.1.4. Dynamic Dependency Lifetime Manager (DDLM)
 
 The [Dynamic Dependency API](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/dynamicdependencies/DynamicDependencies.md)
 resolves a package dependency to a specific framework package and make it available for a process,
@@ -104,11 +138,11 @@ out-of-process (OOP) server in a DDLM package, selected and managed via the Boot
 [Dynamic Dependency spec](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/dynamicdependencies/DynamicDependencies.md)
 for more details.
 
-## Naming
+# 3. Package Naming
 
 Windows App SDK's MSIX packages use the following naming rules for package identity:
 
-* Name = Microsoft.WindowsAppRuntime[.SubName].<Major>.<Minor>[-VersionTag]
+* Name = Microsoft.WindowsAppRuntime[.SubName].\<Major\>.\<Minor\>[-VersionTag]
 * Publisher = "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 
 where
@@ -116,9 +150,9 @@ where
 * SubName -- optional package sub-name. Use to distinguish amongst the different packages
 * Major -- major version of the release, e.g. "1" for Windows App SDK 1.0
 * Minor -- minor version of the release, e.g. "0" for Windows App SDK 1.0
-* VersionTag -- optional version tag to distinguish amongst channels and revs of a channel, e.g. "-preview2" for Windows App SDK 1.0 Preview 2
+* VersionTag -- optional version tag to distinguish amongst channels and releases of a channel, e.g. "-preview2" for Windows App SDK 1.0 Preview 2
 
-### Naming - SubName
+## 3.1. Package Naming - SubName
 
 The following SubName values are used:
 
@@ -129,43 +163,32 @@ The following SubName values are used:
 | Singleton | Singleton | Microsoft.WindowsAppRuntime.Singleton.1.0-experimental1 |
 | DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WindowsAppRuntime.DDLM.1.0-experimental1 |
 
-### Naming - Singleton
+## 3.2. Package Naming - Singleton
 
 The Singleton package follows a different naming scheme
 
-* Name = Microsoft.WindowsAppRuntime.Singleton
+* Name = Microsoft.WindowsAppRuntime.Singleton[-versiontag]
 
 The package family is the same across all versions of Windows App SDK. As a main package, only one
-Singleton package can be registered at a time for a user. This will be the highest version of all
-installed, e.g. if Windows App SDK 1.0, 1.1 and 2.0 (Stable) are installed on an x86 system, the user will
-have registered...
+Singleton package can be registered at a time for a user and by its nature it's meant to be used
+with all versions of Windows App SDK registered for a user. Thus its package Name is rather simple
+compared to other package Names, lacking any version information.
 
-* Microsoft.WindowsAppRuntime.1.0
-* Microsoft.WindowsAppRuntime.1.1
-* Microsoft.WindowsAppRuntime.2.0
-* Microsoft.WindowsAppRuntime.Main.1.0
-* Microsoft.WindowsAppRuntime.Main.1.1
-* Microsoft.WindowsAppRuntime.Main.2.0
-* Microsoft.WindowsAppRuntime.Singleton (version 2.0)
-* Microsoft.WindowsAppRuntime.DDLM.1.0-x8
-* Microsoft.WindowsAppRuntime.DDLM.1.1-x8
-* Microsoft.WindowsAppRuntime.DDLM.2.0-x8
+See [2.1.3. Role - Singleton](#213-role---singleton) for more information.
 
-Singleton package content MUST be backwards compatible across all releases due to the Singleton
-package's singular <g> nature
-
-### Naming - DDLM
+## 3.3. Package Naming - DDLM
 
 DDLM packages follow a different naming scheme
 
-* Name = Microsoft.WindowsAppRuntime.DDLM.<Major>.<Minor>-<ShortArchitecture>[-ShortVersionTag]
+* Name = Microsoft.WinAppRuntime.DDLM.\<Version\>-\<ShortArchitecture\>[-ShortVersionTag]
 
 where
 
+* Version = MSIX version number (not the project release version). See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
 * ShortArchitecture = short form of the Architecture (x6=x64, x8=x86, a6=arm64)
 * ShortVersionTag = short form of the VersionTag
 
-ShortVersionTag is derived from a VersionTag:
+ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
 
 ```C#
 string ToShortVersionTag(string versionTag)
@@ -187,3 +210,8 @@ string ToShortVersionTag(string versionTag)
     return prefix;
 }
 ```
+
+# 4. Package Versioning
+
+See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md)
+decision document for more details.
