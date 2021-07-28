@@ -116,7 +116,7 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishWindowsAppSDKTelemetry
+- job: PublishWindowsAppSDKInsights
   pool: $(ProjectReunionBuildPool)
   strategy:
     maxParallel: 10
@@ -131,9 +131,9 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-PublishTelemetry-Steps.yml
+  - template: AzurePipelinesTemplates/WindowsAppSDK-BuildAndPublishInsights-Steps.yml
     parameters:
-      buildJobName: 'PublishWindowsAppSDKTelemetryHeader'
+      buildJobName: 'BuildAndPublishWindowsAppSDKInsights'
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)

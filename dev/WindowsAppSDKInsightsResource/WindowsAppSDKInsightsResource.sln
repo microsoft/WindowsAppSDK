@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDKTelemetryResource", "WindowsAppSDKTelemetryResource\WindowsAppSDKTelemetryResource.vcxproj", "{D69DC3ED-C753-455D-A3D1-D0B1329E76CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDKInsightsResource", "WindowsAppSDKInsightsResource\WindowsAppSDKInsightsResource.vcxproj", "{D69DC3ED-C753-455D-A3D1-D0B1329E76CE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDKTelemetryResourceLib", "WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.vcxproj", "{4243B8DA-BDB5-4D65-B1D5-EEED375FAD13}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDKInsightsResourceLib", "WindowsAppSDKInsightsResourceLib\WindowsAppSDKInsightsResourceLib.vcxproj", "{4243B8DA-BDB5-4D65-B1D5-EEED375FAD13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
