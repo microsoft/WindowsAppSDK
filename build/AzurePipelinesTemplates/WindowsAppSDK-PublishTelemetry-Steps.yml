@@ -32,9 +32,9 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.WindowsAppSDKTelemetryBinariesDirectory }}\Release\$(buildPlatform)'
     Contents: |
-      WindowsAppSDKTelemetryResourceLib\Microsoft.WindowsAppSDKTelemetry.lib
-      WindowsAppSDKTelemetryResourceLib\Microsoft.WindowsAppSDKTelemetry.pdb
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\$(buildPlatform)'
+      Microsoft.WindowsAppSDKTelemetry\Microsoft.WindowsAppSDKTelemetry.lib
+      Microsoft.WindowsAppSDKTelemetry\Microsoft.WindowsAppSDKTelemetry.pdb
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Microsoft.WindowsAppSDKTelemetry\lib\$(buildPlatform)'
     flattenFolders: true
 
 # START of copying files into their final package location.
@@ -52,7 +52,7 @@ steps:
   displayName: 'copy import lib x86'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
   inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x86'
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\Microsoft.WindowsAppSDKTelemetry\lib\x86'
     Contents: |
       Microsoft.WindowsAppSDKTelemetry.lib
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x86'
@@ -62,7 +62,7 @@ steps:
   displayName: 'copy import lib x64'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'x64'))
   inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x64'
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\Microsoft.WindowsAppSDKTelemetry\lib\x64'
     Contents: |
       Microsoft.WindowsAppSDKTelemetry.lib
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x64'
@@ -72,7 +72,7 @@ steps:
   displayName: 'copy import lib ARM64'
   condition: and(succeeded(), eq(variables['buildPlatform'], 'ARM64'))
   inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\ARM64'
+    SourceFolder: '$(Build.ArtifactStagingDirectory)\Microsoft.WindowsAppSDKTelemetry\lib\ARM64'
     Contents: |
       Microsoft.WindowsAppSDKTelemetry.lib
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-arm64'
