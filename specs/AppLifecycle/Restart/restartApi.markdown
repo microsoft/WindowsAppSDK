@@ -444,15 +444,3 @@ Event Name: **AppRestart**
 | AppRestartFailureReason | Reason an app restart failed. This will be collected when an app requests a restart now but fails | Enum      |
 | AppName                 | Name of the app which restarted                                                                   | String    |
 | AppType                 | UWP App or Centennial App or Win32 app                                                            | String    |
-
-## Resources
-
-| Resource                                                                                                                                                                                       | Description                                                                                   |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| [API Design Process](http://osgwiki.com/wiki/API_Design)                                                                                                                                       | API design process overview with FAQs and links to useful resources.                          |
-| [API Design Representatives](http://osgwiki.com/wiki/API_Design_Representatives)                                                                                                               | API design representatives and their areas of expertise.                                      |
-| [API Design Guidelines](http://osgwiki.com/wiki/WinRT_API_Design_Guidelines)                                                                                                                   | API design guidelines for various frameworks.                                                 |
-| [Sample Requirements](https://osgwiki.com/wiki/API_Design#Sample_Requirements)                                                                                                                 | Requirements for the samples above including when samples in specific languages are required. |
-| [Interface Definition Guidelines](https://microsoft.sharepoint.com/teams/osg_core_dep/devtools/Shared%20Documents/API%20Design/Educational%20Content/Interface%20Definition%20Guidelines.docx) | Guidelines for providing interface definitions.                                               |
-| [Code Analysis Guidelines](https://osgwiki.com/wiki/API_Design#Design_Analysis_Guidelines)                                                                                                     | Guidelines for running code analysis tools.                                                   |
-| [RtCop Bug Template](http://aka.ms/rtcopbug)                                                                                                                                                   | The bug template to use when filing RtCop bugs.                                               |
