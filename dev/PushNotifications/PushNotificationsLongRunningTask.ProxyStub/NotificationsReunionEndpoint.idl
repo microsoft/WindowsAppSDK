@@ -3,7 +3,7 @@
 
 import "oaidl.idl";
 import "ocidl.idl";
-
+import "Windows.Foundation.idl";
 //#include "..\DynamicDependencyDataStore-Constants.h"
 
 [object]
@@ -22,7 +22,7 @@ interface INotificationsReunionEndpoint : IUnknown
 interface IWpnForegroundSink : IUnknown
 {
     HRESULT Invoke();
-    HRESULT AddEvent([in] IUnknown* handler);
+    HRESULT AddEvent(// TypedEventHandler );
     HRESULT RemoveEvent();
 
 };
