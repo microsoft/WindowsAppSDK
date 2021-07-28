@@ -1,11 +1,11 @@
-- [1. Decision Background](#1-decision-background)
+- [1. Background](#1-background)
   - [1.1. Scope](#11-scope)
   - [1.2. Terminology](#12-terminology)
     - [1.2.1. Project Reunion vs Windows App SDK](#121-project-reunion-vs-windows-app-sdk)
-    - [1.2.1. Version Number = MSIX](#121-version-number--msix)
-    - [1.2.2. Windows App SDK's MSIX Packages](#122-windows-app-sdks-msix-packages)
-    - [1.2.3. Binary Compatibility](#123-binary-compatibility)
-    - [1.2.4. Source Compatibility](#124-source-compatibility)
+    - [1.2.2. Version Number = MSIX](#122-version-number--msix)
+    - [1.2.3. Windows App SDK's MSIX Packages](#123-windows-app-sdks-msix-packages)
+    - [1.2.4. Binary Compatibility](#124-binary-compatibility)
+    - [1.2.5. Source Compatibility](#125-source-compatibility)
   - [1.3. Impacted Components](#13-impacted-components)
   - [1.4. MSIX and SemVer](#14-msix-and-semver)
   - [1.5. Dynamic Dependencies](#15-dynamic-dependencies)
@@ -21,7 +21,7 @@
   - [2.5. Decision 5: Package Names](#25-decision-5-package-names)
 - [3. Decision Conclusion](#3-decision-conclusion)
 
-# 1. Decision Background
+# 1. Background
 
 This document answers the question: "How are MSIX and Dynamic Dependencies defined and implemented
 to meet versioning requirements for Windows App SDK 0.8 through 1.x?"
@@ -55,7 +55,7 @@ when referring to earlier versions.
 
 Similarly, examples may cite ProjectReunion but the same logic applies to 1.x despite name changes.
 
-### 1.2.1. Version Number = MSIX
+### 1.2.2. Version Number = MSIX
 
 SemVer defines a version number as `MAJOR.MINOR.PATCH[-prerelease][+build]`.
 
@@ -63,7 +63,7 @@ MSIX defines a version number as `Major.Minor.Build.Revision`.
 
 To avoid ambiguity this document uses MSIX's definition and terms unless stated otherwise.
 
-### 1.2.2. Windows App SDK's MSIX Packages
+### 1.2.3. Windows App SDK's MSIX Packages
 
 Windows App SDK 0.5 has 1 MSIX package: `Microsoft.ProjectReunion.0.5` aka WASfwk.
 This contains the vast majority of Windows App SDK.
@@ -90,7 +90,7 @@ WASsingleton supplements WASmain to provide a mechanism for features needing sin
 behavior across all versions of Windows App SDK. See [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackage.md)
 for more details.
 
-### 1.2.3. Binary Compatibility
+### 1.2.4. Binary Compatibility
 
 **"Binary Compatibility"**: Existing, compiled code can rely on new version of compiled library code
 without change, and expect to run without issue. Binary compatibility relies on a strong contract
@@ -100,7 +100,7 @@ If an application relies on unspecified behavior, intentionally or otherwise, bi
 can be hard to maintain. Nonetheless, Windows has demonstrated that it is possible, with effort, to
 maintain a high degree of binary compatibility over an extended period of time.
 
-### 1.2.4. Source Compatibility
+### 1.2.5. Source Compatibility
 
 **"Source Compatibility"**: The version of the library can be changed, and the code will build
 without issue.
