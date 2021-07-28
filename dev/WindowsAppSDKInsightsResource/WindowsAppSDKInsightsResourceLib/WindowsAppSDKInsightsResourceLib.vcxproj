@@ -39,7 +39,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{4243b8da-bdb5-4d65-b1d5-eeed375fad13}</ProjectGuid>
-    <RootNamespace>WindowsAppSDKTelemetryResourceLib</RootNamespace>
+    <RootNamespace>WindowsAppSDKInsightsResourceLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Microsoft.WindowsAppSDK.Insights</ProjectName>
   </PropertyGroup>
