@@ -3,7 +3,7 @@
   <TemplateData>
     <Hidden>true</Hidden>
     <Name>Windows Application Packaging Project for WinUI 3</Name>
-    <Description>A project that creates MSIX packages containing WinUI 3 in Desktop applications for side-loading or distribution via the Microsoft Store</Description>
+    <Description>A project that creates MSIX packages containing WinUI 3 in Desktop applications for side-loading or distribution via the Microsoft Store.</Description>
     <Icon>WapProjTemplate.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Desktop.Cs.WapProj</TemplateID>
