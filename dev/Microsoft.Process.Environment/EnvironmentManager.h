@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
-#include "Microsoft.Windows.EnvironmentManager.g.h"
+#include "Microsoft.Windows.System.EnvironmentManager.g.h"
 
 using namespace winrt::Windows::Foundation::Collections;
 
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     struct EnvironmentManager : EnvironmentManagerT<EnvironmentManager>
     {
@@ -19,9 +19,9 @@ namespace winrt::Microsoft::Windows::implementation
 
         EnvironmentManager(Scope const& scope);
 
-        static Microsoft::Windows::EnvironmentManager GetForProcess();
-        static Microsoft::Windows::EnvironmentManager GetForUser();
-        static Microsoft::Windows::EnvironmentManager GetForMachine();
+        static Microsoft::Windows::System::EnvironmentManager GetForProcess();
+        static Microsoft::Windows::System::EnvironmentManager GetForUser();
+        static Microsoft::Windows::System::EnvironmentManager GetForMachine();
         IMapView<hstring, hstring> GetEnvironmentVariables();
         hstring GetEnvironmentVariable(hstring const& variableName);
         void SetEnvironmentVariable(hstring const& name, hstring const& value);
@@ -52,7 +52,7 @@ namespace winrt::Microsoft::Windows::implementation
         void DeleteEnvironmentVariableIfExists(const HKEY hkey, const std::wstring name) const;
     };
 }
-namespace winrt::Microsoft::Windows::factory_implementation
+namespace winrt::Microsoft::Windows::System::factory_implementation
 {
     struct EnvironmentManager : EnvironmentManagerT<EnvironmentManager, implementation::EnvironmentManager>
     {

@@ -4,7 +4,7 @@
 #include "PathExtChangeTracker.h"
 
 
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     PathExtChangeTracker::PathExtChangeTracker(const std::wstring& pathExtPart, EnvironmentManager::Scope scope, PathOperation operation)
     {

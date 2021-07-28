@@ -4,7 +4,7 @@
 #include "PathChangeTracker.h"
 
 
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     PathChangeTracker::PathChangeTracker(const std::wstring& pathPart, EnvironmentManager::Scope scope, PathOperation operation)
     {

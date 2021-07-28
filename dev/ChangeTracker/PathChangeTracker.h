@@ -5,7 +5,7 @@
 #include <EnvironmentManager.h>
 #include <wil/registry.h>
 
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     struct PathChangeTracker : public IChangeTracker
     {

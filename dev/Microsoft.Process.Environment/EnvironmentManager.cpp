@@ -3,34 +3,34 @@
 
 #include "pch.h"
 #include "EnvironmentManager.h"
-#include "Microsoft.Windows.EnvironmentManager.g.cpp"
+#include "Microsoft.Windows.System.EnvironmentManager.g.cpp"
 #include <EnvironmentVariableChangeTracker.h>
 #include <PathChangeTracker.h>
 #include <PathExtChangeTracker.h>
 #include <IChangeTracker.h>
 
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope) { }
 
-    Microsoft::Windows::EnvironmentManager EnvironmentManager::GetForProcess()
+    Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        Microsoft::Windows::EnvironmentManager environmentManager{ nullptr };
+        Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
     }
 
-    Microsoft::Windows::EnvironmentManager EnvironmentManager::GetForUser()
+    Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        Microsoft::Windows::EnvironmentManager environmentManager{ nullptr };
+        Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
         return environmentManager;
     }
 
-    Microsoft::Windows::EnvironmentManager EnvironmentManager::GetForMachine()
+    Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        Microsoft::Windows::EnvironmentManager environmentManager{ nullptr };
+        Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
     }

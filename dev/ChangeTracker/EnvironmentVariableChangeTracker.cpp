@@ -3,7 +3,7 @@
 #include <pch.h>
 #include "EnvironmentVariableChangeTracker.h"
 
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(const std::wstring& key, const std::wstring& valueToSet, EnvironmentManager::Scope scope)
     {

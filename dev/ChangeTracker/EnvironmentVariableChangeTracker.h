@@ -6,7 +6,7 @@
 #include <wil/registry.h>
 
 using namespace winrt::Windows::Foundation::Collections;
-namespace winrt::Microsoft::Windows::implementation
+namespace winrt::Microsoft::Windows::System::implementation
 {
     struct EnvironmentVariableChangeTracker : public IChangeTracker
     {

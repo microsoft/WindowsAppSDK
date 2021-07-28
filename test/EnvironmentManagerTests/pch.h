@@ -14,7 +14,7 @@
 #include "wil/cppwinrt.h"
 #include "wil/result.h"
 #include <wil/token_helpers.h>
-#include <winrt/Microsoft.Windows.h>
+#include <winrt/Microsoft.Windows.System.h>
 #include <windows.h>
 #include "WexTestClass.h"
 #include "Wex.Common.h"

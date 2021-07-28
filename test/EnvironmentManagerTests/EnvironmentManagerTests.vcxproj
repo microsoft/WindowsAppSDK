@@ -188,8 +188,8 @@
     <Xml Include="CentennialAppxManifest.pkg.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.EnvironmentManager">
-      <HintPath>$(OutDir)\..\WindowsAppSDK_DLL\Microsoft.Windows.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.System.EnvironmentManager">
+      <HintPath>$(OutDir)\..\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
