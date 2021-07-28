@@ -32,8 +32,8 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.WindowsAppSDKTelemetryBinariesDirectory }}\Release\$(buildPlatform)'
     Contents: |
-      WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.lib
-      WindowsAppSDKTelemetryResourceLib\WindowsAppSDKTelemetryResourceLib.pdb
+      WindowsAppSDKTelemetryResourceLib\Microsoft.WindowsAppSDKTelemetry.lib
+      WindowsAppSDKTelemetryResourceLib\Microsoft.WindowsAppSDKTelemetry.pdb
     TargetFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\$(buildPlatform)'
     flattenFolders: true
 
@@ -54,7 +54,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x86'
     Contents: |
-      WindowsAppSDKTelemetryResourceLib.lib
+      Microsoft.WindowsAppSDKTelemetry.lib
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x86'
     flattenFolders: true
 
@@ -64,7 +64,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\x64'
     Contents: |
-      WindowsAppSDKTelemetryResourceLib.lib
+      Microsoft.WindowsAppSDKTelemetry.lib
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-x64'
     flattenFolders: true
 
@@ -74,7 +74,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)\WindowsAppSDKTelemetryResourceLib\lib\ARM64'
     Contents: |
-      WindowsAppSDKTelemetryResourceLib.lib
+      Microsoft.WindowsAppSDKTelemetry.lib
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\win10-arm64'
     flattenFolders: true
 
