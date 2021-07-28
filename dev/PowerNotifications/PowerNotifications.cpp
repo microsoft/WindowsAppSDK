@@ -294,7 +294,8 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         return make_self<factory_implementation::PowerManager>()->m_systemSuspendStatusChangedEvent;
     }
 
-    ULONG SuspendResumeCallback(void* context, ULONG powerEvent, void* setting)
+    // Using PVOID as per the actual typedef
+    ULONG CALLBACK SuspendResumeCallback(PVOID context, ULONG powerEvent, PVOID setting)
     {
         UNREFERENCED_PARAMETER(context);
         UNREFERENCED_PARAMETER(setting);

@@ -10,7 +10,7 @@ using namespace winrt::Microsoft::Windows::System::Power;
 namespace Test::PowerNotifications
 {
     // Timeout in milliseconds
-    constexpr auto c_timeoutInMSec{ 2000 };
+    constexpr auto c_timeoutInMSec{ 5000 };
     class APITests
     {
     public:
