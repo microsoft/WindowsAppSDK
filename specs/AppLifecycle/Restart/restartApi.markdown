@@ -35,20 +35,14 @@ scenarios. These are the gaps we need to address.
 
 ### Reunion Restart API components 
 
-1.  Expose a new function: **RegisterForRestart**, which allows any app
+1.  Expose a new function: **RegisterForRestart**, which allows any app (win32/packaged win32, UWP, WinUI apps)
     to register itself for restart if it was running when a system
     update occurs or if an app hangs/crashes unexpectedly.
 
-    a.  This is an existing Win32 API (RegisterApplicationRestart) which
-        we want UWP parity with
-
 2.  Expose a new function: **RequestRestartNow** function to enable any
-    app to terminate and restart itself on command, and to provide an
+    app (win32/packaged win32, UWP, WinUI apps) to terminate and restart itself on command, and to provide an
     arbitrary command-line string for the restarted instance.
 
-    a.  Mirror the functionality of an existing WinRT API
-        (RequestRestartAsync) which we want to work with Win32, UWP
-        applications + WinUI
 
 ## API
 
