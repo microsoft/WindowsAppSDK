@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef __WINDOWSAPPSDKTELEMETRY_INCLUDED
-#define __WINDOWSAPPSDKTELEMETRY_INCLUDED
+#ifndef __WINDOWSAPPSDKINSIGHTS_INCLUDED
+#define __WINDOWSAPPSDKINSIGHTS_INCLUDED
 
 #ifdef __WIL_TRACELOGGING_H_INCLUDED
 #error "WIL Tracelogging.h must not be explicitly included when including this file"
@@ -21,4 +21,4 @@ char* WINDOWSAPPSDK_EXPERIMENTATION_LEVEL();
         TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
 #include <wil/tracelogging.h>
-#endif // __WINDOWSAPPSDKTELEMETRY_INCLUDED
+#endif // __WINDOWSAPPSDKINSIGHTS_INCLUDED
