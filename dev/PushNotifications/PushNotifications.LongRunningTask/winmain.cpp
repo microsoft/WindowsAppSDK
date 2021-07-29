@@ -6,6 +6,7 @@
 // include notifications constants file here
 
 #include <NotificationsEndpoint_h.h>
+#include <../PushNotifications-Constants.h>
 
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
