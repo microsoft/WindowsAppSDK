@@ -123,17 +123,17 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
-- task: VSTest@2
-  displayName: 'test MRT (Managed)'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\ManagedTest.build.appxrecipe
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    testRunTitle: 'test MRT $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+#- task: VSTest@2
+#  displayName: 'test MRT (Managed)'
+#  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+#  inputs:
+#    testSelector: 'testAssemblies'
+#    testAssemblyVer2: |
+#      **\ManagedTest.build.appxrecipe
+#    searchFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+#    testRunTitle: 'test MRT $(buildPlatform)'
+#    platform: '$(buildPlatform)'
+#    configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
   displayName: 'test MRT'
