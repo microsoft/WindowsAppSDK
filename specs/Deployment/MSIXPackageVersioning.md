@@ -65,28 +65,28 @@ To avoid ambiguity this document uses MSIX's definition and terms unless stated 
 
 ### 1.2.3. Windows App SDK's MSIX Packages
 
-Windows App SDK 0.5 has 1 MSIX package: `Microsoft.ProjectReunion.0.5` aka WASfwk.
+Windows App SDK 0.5 has 1 MSIX package: `Microsoft.ProjectReunion.0.5` aka WARfwk (formerly PRfwk).
 This contains the vast majority of Windows App SDK.
 
 Windows App SDK 0.8 has 3 MSIX packages
 
-* `Microsoft.WindowsAppRuntime` aka **WASfwk**
-* `Microsoft.WindowsAppRuntime.Main` aka **WASmain**
-* `Microsoft.WindowsAppRuntime.DDLM` aka **WASddlm**
+* `Microsoft.WindowsAppRuntime` aka **WARfwk**
+* `Microsoft.WindowsAppRuntime.Main` aka **WARmain**
+* `Microsoft.WindowsAppRuntime.DDLM` aka **WARddlm**
 
-WASmain and WASddlm supplement WASfwk to do things a Framework packge can't (e.g. Packaged COM).
+WARmain and WARddlm supplement WARfwk to do things a Framework packge can't (e.g. Packaged COM).
 See the [Dynamic Dependencies spec](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/dynamicdependencies/DynamicDependencies.md)
 and [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackage.md)
 for more details.
 
 Windows App SDK 1.0 has 4 MSIX packages
 
-* `Microsoft.WindowsAppRuntime` aka **WASfwk**
-* `Microsoft.WindowsAppRuntime.Main` aka **WASmain**
-* `Microsoft.WindowsAppRuntime.Singleton` aka **WASsingleton**
-* `Microsoft.WindowsAppRuntime.DDLM` aka **WASddlm**
+* `Microsoft.WindowsAppRuntime` aka **WARfwk**
+* `Microsoft.WindowsAppRuntime.Main` aka **WARmain**
+* `Microsoft.WindowsAppRuntime.Singleton` aka **WARsingleton**
+* `Microsoft.WindowsAppRuntime.DDLM` aka **WARddlm**
 
-WASsingleton supplements WASmain to provide a mechanism for features needing singular global
+WARsingleton supplements WARmain to provide a mechanism for features needing singular global
 behavior across all versions of Windows App SDK. See [Windows App SDK: MSIX Packages](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackage.md)
 for more details.
 
@@ -128,7 +128,7 @@ MSIX's versioning model overlaps with SemVer but isn't fully compatible. See [he
 Windows App SDK's DynamicDependencies (DynDep) relies on an elegant dance with Windows' inbox
 behavior to provide the expected outcome (without servicing Windows). This requires a deep
 understanding of MSIX's behavior and Windows App SDK's versioning model to correctly identify and
-select the appropriate Windows App SDK framework package (aka WASfwk) at runtime. More details are
+select the appropriate Windows App SDK framework package (aka WARfwk) at runtime. More details are
 available [here](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/dynamicdependencies/DynamicDependencies.md).
 
 Dynamic Dependencies support is being added to Windows, aka OS DynDep. Care has been taken to keep
@@ -310,7 +310,7 @@ version of the project.
 All tags have a long name (Option A) and a short (1-2 characters) name (Option C).
 
 Option C is used when Option A doesn't work due to package Name length restrictions.
-Currently WASddlm is the only instance using Option C.
+Currently WARddlm is the only instance using Option C.
 
 ## 2.4. Decision 4: Version Encoding
 
@@ -397,9 +397,9 @@ Windows App SDK 0.8+ has 3 MSIX packages. We have choices for package Name patte
 Assuming Breaking Change Boundary for v0.x and v1+'s decision are `Major.Minor` version we have the
 following naming patterns...
 
-* WASfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
-* WASmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
-* WASddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
+* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
+* WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 where
 
@@ -420,7 +420,7 @@ but an MSIX package version of 8000.146.628.0).
 
 Version's fields have values 0-65535.
 
-WASddlm requires architecture in its package Name to support concurrent use of different
+WARddlm requires architecture in its package Name to support concurrent use of different
 architectures of a framework. See the [Dynamic Dependencies spec](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/dynamicdependencies/DynamicDependencies.md)
 for more details.
 
@@ -428,24 +428,24 @@ This leads to package Name length issues even for common cases:
 
 |Package|Average|AverageLength|
 | --- | :--- | :---: |
-|WASfwk |Microsoft.WindowsAppRuntime.1.15-preview1|41|
-|WASmain|Microsoft.WindowsAppRuntime.Main.1.15-preview1|46|
-|WASmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
-|WASddlm|Microsoft.WindowsAppRuntime.DDLM.1.15.12345.24680-arm64-preview1|**<span style="color:red">64</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.1.15-preview1|41|
+|WARmain|Microsoft.WindowsAppRuntime.Main.1.15-preview1|46|
+|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WindowsAppRuntime.DDLM.1.15.12345.24680-arm64-preview1|**<span style="color:red">64</span>**|
 
 |Package|Min|MinLength|
 | --- | :--- | :---: |
-|WASfwk |Microsoft.WindowsAppRuntime.1.0-preview1|40|
-|WASmain|Microsoft.WindowsAppRuntime.Main.1.0-preview1|45|
-|WASmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
-|WASddlm|Microsoft.WindowsAppRuntime.DDLM.1.0.0.0-arm64-preview1|**<span style="color:red">52</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.1.0-preview1|40|
+|WARmain|Microsoft.WindowsAppRuntime.Main.1.0-preview1|45|
+|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WindowsAppRuntime.DDLM.1.0.0.0-arm64-preview1|**<span style="color:red">52</span>**|
 
 |Package|Max|MaxLength|
 | --- | :--- | :---: |
-|WASfwk |Microsoft.WindowsAppRuntime.65535.65535-preview1|48|
-|WASmain|Microsoft.WindowsAppRuntime.Main.65535.65535-preview1|**<span style="color:red">60</span>**|
-|WASmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
-|WASddlm|Microsoft.WindowsAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview1|**<span style="color:red">71</span>**|
+|WARfwk |Microsoft.WindowsAppRuntime.65535.65535-preview1|48|
+|WARmain|Microsoft.WindowsAppRuntime.Main.65535.65535-preview1|**<span style="color:red">60</span>**|
+|WARmain|Microsoft.WindowsAppRuntime.Singleton-preview1|46|
+|WARddlm|Microsoft.WindowsAppRuntime.DDLM.65535.65535.65535.65535-arm64-preview1|**<span style="color:red">71</span>**|
 
 Possible options we can use to shorten package Name:
 
@@ -455,25 +455,25 @@ Possible options we can use to shorten package Name:
 * Replace -channel with a shorter string e.g. replace "-preview" with "-pre", "-p", "p"
 * Encode the channel name in the delimiter between name+version e.g. Microsoft.WindowsAppRuntime.DDLM<span style="color:red; font-size:xx-large"><b>.preview1</b></span>.1.0.0.0-arm64
 * Encode tag in the delimiter between version+architecture e.g. Microsoft.WindowsAppRuntime.DDLM.1.0.0.0<span style="color:red"><b>p1</b></span>arm64 using P1 for Preview1, E1=Experimental1, ...
-* Name WASddlm differently from WASfwk and WASmain e.g. use "-p1" for WASddlm regardless if WASfwk and WASmain use "-preview1"
+* Name WARddlm differently from WARfwk and WARmain e.g. use "-p1" for WARddlm regardless if WARfwk and WARmain use "-preview1"
 * ???
 
-WASddlm is needed until Dynamic Dependencies is 100% based on OS DynDep.
+WARddlm is needed until Dynamic Dependencies is 100% based on OS DynDep.
 
-Best case (!) WASddlm exists until the minimum supported Windows release is Cobalt.
+Best case (!) WARddlm exists until the minimum supported Windows release is Cobalt.
 
 ***Recommendation:*** The general package naming syntax is
-`Microsoft.ProjectReunion[.SubName]-<rmajor>.<rminor>[-tag]`. WASddlm and WASsingleton are
+`Microsoft.ProjectReunion[.SubName]-<rmajor>.<rminor>[-tag]`. WARddlm and WARsingleton are
 exceptions to the rule (see below).
 
 Windows App SDK 0.8 will use package Names of...
 
-* WASfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
-* WASmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
-* WASsingleton: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
-* WASddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
+* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
+* WARsingleton: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
+* WARddlm: `Microsoft.WindowsAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
-Using Decision 5: Version Encoding = Option D (NPPP.E.B.0) WASddlm's maximum package Name length is
+Using Decision 5: Version Encoding = Option D (NPPP.E.B.0) WARddlm's maximum package Name length is
 `Microsoft.WindowsAppRuntime.DDLM.1714.3944.123.24680-arm64-p3` = 58 characters. This can be reduced
 with the following rules:
 
@@ -483,7 +483,7 @@ with the following rules:
 * Revision (security update) <= 99
 * Architecture = 2 characters (x8=x86, x6=x64, a6=arm64)
 
-This produces a worst case for WASddlm in Windows App SDK 99.888.7777.66 ARM64 Preview 3 to the following identifiers:
+This produces a worst case for WARddlm in Windows App SDK 99.888.7777.66 ARM64 Preview 3 to the following identifiers:
 
 * Package Name = `Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3` = 49 characters
 * PackageFullName = `"Microsoft.WinAppRuntime.DDLM.99.888.7777.66-a6-p3_99.888.7777.66_arm64__8wekyb3d8bbwe"`
@@ -506,12 +506,12 @@ i.e. format encoding `NPPP.E.B.0`. See
 [2.4. Decision 4: Version Encoding](#24-decision-4-version-encoding) for more details.
 
 **Decision 5:** MSIX package Names use the format
-`Microsoft.WindowsAppRuntime[.SubName]-<rmajor>.<rminor>[-tag]`. WASddlm is an exception due to Name
+`Microsoft.WindowsAppRuntime[.SubName]-<rmajor>.<rminor>[-tag]`. WARddlm is an exception due to Name
 length constraints. The specific packages Names in Windows App SDK 1.0:
 
-* WASfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
-* WASmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
-* WASmain: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
-* WASddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
+* WARfwk: `Microsoft.WindowsAppRuntime.<rmajor>.<rminor>[-tag]`
+* WARmain: `Microsoft.WindowsAppRuntime.Main.<rmajor>.<rminor>[-tag]`
+* WARmain: `Microsoft.WindowsAppRuntime.Singleton[-tag]`
+* WARddlm: `Microsoft.WinAppRuntime.DDLM.<major>.<minor>.<build>.<revision>-<shortarchitecture>[-shorttag]`
 
 See [2.5. Decision 5: Package Names](#25-decision-5-package-names) for more details.
