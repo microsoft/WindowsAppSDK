@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="PropertySheet.props" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EnvironmentManagerCentennialTests.cpp">
@@ -61,8 +60,5 @@
   <ItemGroup>
     <Xml Include="AppxManifest.pkg.xml" />
     <Xml Include="CentennialAppxManifest.pkg.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Manifest Include="EnvironmentManagerTests.dll.manifest" />
   </ItemGroup>
 </Project>
