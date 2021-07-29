@@ -403,6 +403,8 @@ following naming patterns...
 
 where
 
+* rmajor = Major version number of the project release, base-10, no leading zeros (e.g. "1" for WindowsAppSDK 1.2)
+* rminor  = Minor version number of the project release, base-10, no leading zeros (e.g. "2" for WindowsAppSDK 1.2)
 * major = Major version number of the release, base-10, no leading zeros
 * minor  = Minor version number of the release, base-10, no leading zeros
 * build = Build version number, base-10, no leading zeros
@@ -411,6 +413,10 @@ where
 * shortarchitecture = Allowed values: "x8", "x6", "a6"
 * tag = Allowed values: "", "preview[#]", "experimental[#]"
 * shorttag = Allowed values: "", "p[#]", "e[#]"
+
+**NOTE:** rmajor/rminor are the release version, major/minor/build/revision are the MSIX package
+version (Microsoft.ProjectReunion.0.8-preview had a release version of 0.8
+but an MSIX package version of 8000.146.628.0).
 
 Version's fields have values 0-65535.
 
