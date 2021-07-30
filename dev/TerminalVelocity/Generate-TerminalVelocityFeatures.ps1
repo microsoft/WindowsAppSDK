@@ -26,7 +26,7 @@
     e.g. "-Namespace Foo.Bar" and "-Namespace Foo::Bar" produce the same end result in all languages.
 
 .EXAMPLE
-    Generate-FeatureStaging Kittens.xml -Channel Preview -Output Kittens.h
+    Generate-TerminalVelocityFeatures Kittens.xml -Channel Preview -Output Kittens.h
 #>
 
 [CmdletBinding()]
@@ -46,45 +46,47 @@ Param(
     [string]$Namespace
 )
 
-Enum Stage
+Enum State
 {
     AlwaysDisabled;
     AlwaysEnabled;
 }
 
-Function ConvertTo-FeatureStage([string]$stage)
+Function ConvertTo-FeatureState([string]$state)
 {
-    Switch($stage)
+    Switch($state)
     {
-        "AlwaysEnabled" { [Stage]::AlwaysEnabled; return }
-        "AlwaysDisabled" { [Stage]::AlwaysDisabled; return }
+        "AlwaysEnabled" { [State]::AlwaysEnabled; return }
+        "AlwaysDisabled" { [State]::AlwaysDisabled; return }
     }
-    Throw "Invalid feature stage $stage"
+    Throw "Invalid feature state $state"
 }
 
 Class Feature
 {
     [string]$Name
-    [Stage]$Stage
-    [System.Collections.Generic.Dictionary[string, Stage]]$ChannelTokenStages
+    [State]$State
+    [int]$Id
+    [System.Collections.Generic.Dictionary[string, State]]$ChannelTokenStates
     [bool]$DisabledReleaseToken
 
     Feature([System.Xml.XmlElement]$entry)
     {
         $this.Name = $entry.name
-        $this.Stage = ConvertTo-FeatureStage $entry.stage
-        $this.ChannelTokenStages = [System.Collections.Generic.Dictionary[string, Stage]]::new()
+        $this.State = ConvertTo-FeatureState $entry.state
+        $this.Id = $entry.id
+        $this.ChannelTokenStates = [System.Collections.Generic.Dictionary[string, State]]::new()
         $this.DisabledReleaseToken = $Null -Ne $entry.alwaysDisabledReleaseTokens
 
         ForEach ($b in $entry.alwaysDisabledChannelTokens.channelToken)
         {
-            $this.ChannelTokenStages[$b] = [Stage]::AlwaysDisabled
+            $this.ChannelTokenStates[$b] = [State]::AlwaysDisabled
         }
 
         # AlwaysEnabled channels win over AlwaysDisabled channels
         ForEach ($b in $entry.alwaysEnabledChannelTokens.channelToken)
         {
-            $this.ChannelTokenStages[$b] = [Stage]::AlwaysEnabled
+            $this.ChannelTokenStates[$b] = [State]::AlwaysEnabled
         }
     }
 
@@ -113,7 +115,7 @@ class FeatureComparer : System.Collections.Generic.IComparer[Feature]
     }
 }
 
-Function Resolve-FinalFeatureStage
+Function Resolve-FinalFeatureState
 {
     Param(
         [Feature]$Feature,
@@ -125,40 +127,40 @@ Function Resolve-FinalFeatureStage
 
     if ($Channel -Eq "Stable" -And $Feature.DisabledReleaseToken)
     {
-        [Stage]::AlwaysDisabled
+        [State]::AlwaysDisabled
         return
     }
 
-    $ChannelStage = $Feature.ChannelTokenStages[$Channel]
-    if ($Null -Ne $ChannelStage)
+    $ChannelState = $Feature.ChannelTokenStates[$Channel]
+    if ($Null -Ne $ChannelState)
     {
-        $ChannelStage
+        $ChannelState
         return
     }
 
-    $Feature.Stage
+    $Feature.State
 }
 
 $ErrorActionPreference = "Stop"
-$x = [xml](Get-Content $Path -EA:Stop)
-$x.Schemas.Add('http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd', (Resolve-Path (Join-Path $PSScriptRoot "TerminalVelocityFeatures.xsd")).Path) | Out-Null
-$x.Validate($null)
+$xml = [xml](Get-Content $Path -EA:Stop)
+$xml.Schemas.Add('http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd', (Resolve-Path (Join-Path $PSScriptRoot "TerminalVelocityFeatures.xsd")).Path) | Out-Null
+$xml.Validate($null)
 
 $featureComparer = [FeatureComparer]::new()
 $features = [System.Collections.Generic.List[Feature]]::new(16)
 
-ForEach ($entry in $x.featureStaging.feature)
+ForEach ($entry in $xml.features.feature)
 {
     $features.Add([Feature]::new($entry))
 }
 
 $features.Sort($featureComparer)
 
-$featureFinalStages = [System.Collections.Generic.Dictionary[string, Stage]]::new(16)
+$featureFinalStates = [System.Collections.Generic.Dictionary[string, State]]::new(16)
 
 ForEach ($feature in $features)
 {
-    $featureFinalStages[$feature.Name] = Resolve-FinalFeatureStage -Feature $feature -Channel $Channel
+    $featureFinalStates[$feature.Name] = Resolve-FinalFeatureState -Feature $feature -Channel $Channel
 }
 
 ### CODE GENERATION
@@ -184,10 +186,10 @@ function Generate_CPP()
     $content += "// Feature constants`r`n"
     ForEach ($feature in $features)
     {
-        $stage = $featureFinalStages[$feature.Name]
+        $state = $featureFinalStates[$feature.Name]
 
         $content += @"
-#define $($feature.PreprocessorName()) $(if ($stage -eq [Stage]::AlwaysEnabled) { "1" } else { "0" })
+#define $($feature.PreprocessorName()) $(if ($state -eq [State]::AlwaysEnabled) { "1" } else { "0" })
 
 "@
     }
@@ -212,7 +214,7 @@ namespace $($Namespace.replace(".", "::"))
     {
         $content += @"
 
-__pragma(detect_mismatch("ODR_violation_$($feature.PreprocessorName())_mismatch", "$($feature.Stage)"))
+__pragma(detect_mismatch("ODR_violation_$($feature.PreprocessorName())_mismatch", "$($feature.State)"))
 struct $($feature.Name)
 {
     static constexpr bool IsEnabled() { return $($feature.PreprocessorName()) == 1; }
@@ -247,9 +249,9 @@ function Generate_CS()
     $content += "// Feature constants`r`n"
     ForEach ($feature in $features)
     {
-        $stage = $featureFinalStages[$feature.Name]
+        $state = $featureFinalStates[$feature.Name]
 
-        if ($stage -eq [Stage]::AlwaysEnabled)
+        if ($state -eq [State]::AlwaysEnabled)
         {
             $content += "#Define $($feature.PreprocessorName())`r`n"
         }

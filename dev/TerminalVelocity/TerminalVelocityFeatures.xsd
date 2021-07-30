@@ -6,7 +6,7 @@
     xmlns:tvf="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd"
     version="1.0"
 >
-    <xs:element name="featureStaging">
+    <xs:element name="features">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="feature" minOccurs="0" maxOccurs="unbounded">
@@ -15,7 +15,7 @@
                             <!-- Required -->
                             <xs:element name="name" type="tvf:featureNameType" />
                             <xs:element name="description" type="tvf:stringNoEmpty" />
-                            <xs:element name="stage" type="tvf:stageType" />
+                            <xs:element name="state" type="tvf:stateType" />
 
                             <!-- Optional -->
                             <xs:element name="id" type="xs:positiveInteger" minOccurs="0" />
@@ -47,14 +47,14 @@
             <xs:pattern value="^Feature_[a-zA-Z0-9_]+" />
         </xs:restriction>
     </xs:simpleType>
-    <xs:simpleType name="stageType">
+    <xs:simpleType name="stateType">
         <xs:restriction base="tvf:stringNoEmpty">
             <xs:pattern value="AlwaysDisabled|AlwaysEnabled" />
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="channelType">
         <xs:restriction base="tvf:stringNoEmpty">
-            <xs:pattern value="Dev|Preview|Stable|WindowsInbox" />
+            <xs:pattern value="Experimental|Preview|Stable|WindowsInbox" />
         </xs:restriction>
     </xs:simpleType>
     <xs:complexType name="channelTokenListType">

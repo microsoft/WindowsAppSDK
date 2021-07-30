@@ -1,80 +1,241 @@
 <?xml version="1.0"?>
-<featureStaging xmlns="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd">
+<features xmlns="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd">
 
 <!-- Copyright (c) Microsoft Corporation. All rights reserved.
      Licensed under the MIT License. See LICENSE in the project root for license information.
 -->
 
-    <!-- See doc/feature_flags.md for more info.  -->
+    <!-- See docs/TerminalVelocity.md for more info.  -->
+
+    <!-- Enabled variants -->
     <feature>
-        <name>Feature_ReceiveIncomingHandoff</name>
-        <description>OpenConsole should be able to receive incoming connections</description>
-        <stage>AlwaysEnabled</stage>
+        <name>Feature_AlwaysEnabled</name>
+        <description>AlwaysEnabled</description>
+        <state>AlwaysEnabled</state>
+    </feature>
+
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_Experimental</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_Preview</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Preview</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_Stable</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Stable</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_WindowsInbox</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=WindowsInbox</description>
+        <state>AlwaysEnabled</state>
         <alwaysDisabledChannelTokens>
             <channelToken>WindowsInbox</channelToken>
         </alwaysDisabledChannelTokens>
     </feature>
 
     <feature>
-        <name>Feature_EditableActionsPage</name>
-        <description>The Actions page in the settings UI should allow users to edit actions.</description>
-        <stage>AlwaysEnabled</stage>
-        <alwaysDisabledReleaseTokens/>
-    </feature>
-
-    <feature>
-        <name>Feature_EditableUnfocusedAppearance</name>
-        <description>The unfocused appearance section in profiles in the SUI that allows users to create and edit unfocused appearances.</description>
-        <stage>AlwaysEnabled</stage>
-        <alwaysDisabledReleaseTokens/>
-    </feature>
-
-    <feature>
-        <name>Feature_AttemptHandoff</name>
-        <description>conhost should try to hand connections over to OpenConsole</description>
-        <stage>AlwaysDisabled</stage>
-        <alwaysEnabledChannelTokens>
-            <channelToken>WindowsInbox</channelToken>
-        </alwaysEnabledChannelTokens>
-    </feature>
-
-    <feature>
-        <name>Feature_ConhostDxEngine</name>
-        <description>Controls whether conhost supports the DX engine and the UseDx registry key</description>
-        <stage>AlwaysEnabled</stage>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_ExperimentalPreview</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental,Preview</description>
+        <state>AlwaysEnabled</state>
         <alwaysDisabledChannelTokens>
-            <channelToken>WindowsInbox</channelToken>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Preview</channelToken>
         </alwaysDisabledChannelTokens>
     </feature>
     <feature>
-        <name>Feature_DxEngineShaderSupport</name>
-        <description>Controls whether the DX engine is built with shader support.</description>
-        <stage>AlwaysEnabled</stage>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_ExperimentalStable</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental,Stable</description>
+        <state>AlwaysEnabled</state>
         <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_ExperimentalWindowsInbox</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental,WindowsInbox</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
             <channelToken>WindowsInbox</channelToken>
         </alwaysDisabledChannelTokens>
     </feature>
 
     <feature>
-        <name>Feature_UseNumpadEventsForClipboardInput</name>
-        <description>Controls whether the clipboard converter (and ConPTY InputStateMachine) uses Numpad events instead of UChar</description>
-        <stage>AlwaysDisabled</stage>
-        <alwaysEnabledChannelTokens>
-            <!--
-                To reduce the risk of compatibility issues inside Windows, we're going to continue using the old
-                version of GetQuickCharWidth to determine whether a character should be synthesized into numpad
-                events.
-            -->
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_ExperimentalPreviewStable</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental,Preview,Stable</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_ExperimentalPreviewWindowsInbox</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental,Preview,WindowsInbox</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Preview</channelToken>
             <channelToken>WindowsInbox</channelToken>
-        </alwaysEnabledChannelTokens>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_ExperimentalStableWindowsInbox</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Experimental,Stable,WindowsInbox</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Stable</channelToken>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysEnabled_AlwaysDisabledChannels_PreviewStableWindowsInbox</name>
+        <description>AlwaysEnabled AlwaysDisabledChannels=Preview,Stable,WindowsInbox</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
     </feature>
 
     <feature>
-        <name>Feature_ShowProfileDefaultsInSettings</name>
-        <description>Whether to show the "defaults" page in the Terminal settings UI</description>
-        <id>10430</id>
-        <stage>AlwaysEnabled</stage>
-        <!-- This feature will not ship to Stable until it is complete. -->
-        <alwaysDisabledReleaseTokens />
+        <name>Feature_AlwaysEnabled_Id</name>
+        <description>AlwaysEnabled Id=n</description>
+        <state>AlwaysEnabled</state>
+        <id>12345</id>
     </feature>
-</featureStaging>
+
+    <!-- Enabled variants -->
+    <feature>
+        <name>Feature_AlwaysDisabled</name>
+        <description>AlwaysDisabled</description>
+        <state>AlwaysDisabled</state>
+    </feature>
+
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_Experimental</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_Preview</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Preview</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_Stable</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Stable</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_WindowsInbox</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=WindowsInbox</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_ExperimentalPreview</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental,Preview</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Preview</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_ExperimentalStable</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental,Stable</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_ExperimentalWindowsInbox</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental,WindowsInbox</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_ExperimentalPreviewStable</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental,Preview,Stable</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_ExperimentalPreviewWindowsInbox</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental,Preview,WindowsInbox</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Preview</channelToken>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_ExperimentalStableWindowsInbox</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Experimental,Stable,WindowsInbox</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Experimental</channelToken>
+            <channelToken>Stable</channelToken>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+    <feature>
+        <name>Feature_AlwaysDisabled_AlwaysEnabledChannels_PreviewStableWindowsInbox</name>
+        <description>AlwaysDisabled AlwaysEnabledChannels=Preview,Stable,WindowsInbox</description>
+        <state>AlwaysDisabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+
+    <feature>
+        <name>Feature_AlwaysDisabled_Id</name>
+        <description>AlwaysDisabled Id=n</description>
+        <state>AlwaysDisabled</state>
+        <id>12345</id>
+    </feature>
+</features>
