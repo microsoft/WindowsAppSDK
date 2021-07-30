@@ -7,7 +7,7 @@
 #define _WINDOWSAPPSDK_PACKAGE_VER_RESOURCEID             10000
 #define _WINDOWSAPPSDK_EXPERIMENTATION_FLAG_RESOURCEID    10001
 
-#define TELEMETRYRESOURCEDLL "WindowsAppSDKTelemetryResource.dll"
+#define INSIGHTSRESOURCEDLL "Microsoft.WindowsAppSDK.Insights.Resource.dll"
 
 inline std::string load_resource_string(const char* dllName, uint32_t id)
 {
@@ -36,12 +36,12 @@ inline std::string load_resource_string(const char* dllName, uint32_t id)
 
 __declspec(dllexport) char* WINDOWSAPPSDK_PACKAGE_VER()
 {
-    static std::string packageVer = load_resource_string(TELEMETRYRESOURCEDLL, _WINDOWSAPPSDK_PACKAGE_VER_RESOURCEID);
+    static std::string packageVer = load_resource_string(INSIGHTSRESOURCEDLL, _WINDOWSAPPSDK_PACKAGE_VER_RESOURCEID);
     return const_cast<char*>(packageVer.c_str());
 }
 
 __declspec(dllexport) char* WINDOWSAPPSDK_EXPERIMENTATION_LEVEL()
 {
-    static std::string experimentationLevel = load_resource_string(TELEMETRYRESOURCEDLL, _WINDOWSAPPSDK_EXPERIMENTATION_FLAG_RESOURCEID);
+    static std::string experimentationLevel = load_resource_string(INSIGHTSRESOURCEDLL, _WINDOWSAPPSDK_EXPERIMENTATION_FLAG_RESOURCEID);
     return const_cast<char*>(experimentationLevel.c_str());
 }

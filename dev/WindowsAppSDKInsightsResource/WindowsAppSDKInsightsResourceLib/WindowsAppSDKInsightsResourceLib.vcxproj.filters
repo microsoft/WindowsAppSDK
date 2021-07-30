@@ -15,12 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Common\WindowsAppSDKTelemetry.h">
+    <ClInclude Include="..\..\Common\WindowsAppSDKInsights.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WindowsAppSDKTelemetry.cpp">
+    <ClCompile Include="WindowsAppSDKInsights.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
