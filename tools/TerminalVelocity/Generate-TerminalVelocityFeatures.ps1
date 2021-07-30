@@ -12,13 +12,13 @@
     Source file containing feature definitions per TerminalVelocityFeatures.xsd.
 
 .PARAMETER Channel
-    The target channel for Feature checks.
+    The target channel for Feature checks (default=Experimental).
 
 .PARAMETER Output
     File to create (default=stdout).
 
 .PARAMETER Language
-    Programming language to generate.
+    Programming language to generate (default=C++).
 
 .PARAMETER Namespace
     Namespace for language symbols (Optional if -Language=C++). Multiple namespaces
@@ -305,11 +305,11 @@ public static class $($feature.Name)
 
 ### CODE GENERATION - Language Selection
 $generate = $Null
-if ($Language -eq "C++")
+if ($Language -ieq "C++")
 {
     $generate = Generate_CPP
 }
-elseif ($Language -eq "C#")
+elseif ($Language -ieq "C#")
 {
     $generate = Generate_CS
 }
