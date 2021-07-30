@@ -29,20 +29,20 @@
     <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_i.c">
+    <ClCompile Include="x64\Debug\PushNotificationsLRP_i.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_p.c">
+    <ClCompile Include="x64\Debug\PushNotificationsLRP_p.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="NotificationsReunionEndpoint.idl">
+    <Midl Include="PushNotificationsLRP.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <None Include="NotificationsReunionEndpoint.def">
+    <None Include="PushNotificationsLRP.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

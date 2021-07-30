@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include <NotificationsReunionEndpoint_h.h>
+#include <PushNotificationsLRP_h.h>
 
 #include "platform.h"
 
