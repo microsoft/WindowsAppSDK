@@ -129,8 +129,14 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
+    <ProjectReference Include="..\..\..\dev\PushNotifications\PushNotifications.LongRunningTask.ProxyStub\PushNotifications.LongRunningTask.ProxyStub.vcxproj">
+      <Project>{70a7d0ba-f90e-49ad-8590-9a6c8d148397}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\dev\PushNotifications\PushNotifications.LongRunningTask.StartupTask\PushNotifications.LongRunningTask.StartupTask.vcxproj">
       <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\dev\PushNotifications\PushNotifications.LongRunningTask\PushNotifications.LongRunningTask.vcxproj">
+      <Project>{b378f9c8-89ea-4012-81ab-f513b12a88c9}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

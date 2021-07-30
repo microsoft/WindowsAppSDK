@@ -10,8 +10,6 @@
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    wil::com_ptr<INotificationsReunionEndpoint> reunionEndpoint{
-        wil::CoCreateInstance<NotificationsReunionEndpoint,
-        INotificationsReunionEndpoint>(CLSCTX_LOCAL_SERVER) };
+    CoCreateInstance();
     return 0;
 }
