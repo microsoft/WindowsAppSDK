@@ -46,6 +46,15 @@ Param(
     [string]$Namespace
 )
 
+if ([String]::IsNullOrEmpty($Namespace))
+{
+    if ($Language -ne "C++")
+    {
+        Write-Output "Invalid parameter -Namespace is rquired, aborting..."
+        Exit 1
+    }
+}
+
 Enum State
 {
     AlwaysDisabled;
@@ -235,7 +244,6 @@ struct $($feature.Name)
     $content += @"
 
 #endif // defined(__cplusplus)
-
 "@
 
     return $content
@@ -261,15 +269,12 @@ function Generate_CS()
         }
     }
 
-    if (-not [String]::IsNullOrEmpty($Namespace))
-    {
-        $content += @"
+    $content += @"
 
 namespace $($Namespace.replace("::", "."))
 {
 
 "@
-    }
 
     ForEach ($feature in $features)
     {
@@ -292,7 +297,6 @@ public static class $($feature.Name)
         $content += @"
 
 } // namespace $Namespace
-
 "@
     }
 
@@ -309,7 +313,6 @@ elseif ($Language -eq "C#")
 {
     $generate = Generate_CS
 }
-$generate
 if ([String]::IsNullOrEmpty($Output))
 {
     $generate
