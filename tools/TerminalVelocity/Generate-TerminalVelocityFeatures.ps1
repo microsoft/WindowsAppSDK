@@ -109,9 +109,17 @@ Class Feature
         }
     }
 
-    [string] PreprocessorName()
+    [string] PreprocessorName([string]$namespace)
     {
-        return "WINDOWSAPPSDK_$($this.Name.ToUpper())_ENABLED"
+        if ([String]::IsNullOrEmpty($namespace))
+        {
+            return "WINDOWSAPPSDK_$($this.Name.ToUpper())_ENABLED"
+        }
+        else
+        {
+            $ns = $namespace.replace(".", "_").replace("::", "_")
+            return "WINDOWSAPPSDK_$($ns.ToUpper())_$($this.Name.ToUpper())_ENABLED"
+        }
     }
 }
 
@@ -209,7 +217,7 @@ function Generate_CPP()
         $state = $featureFinalStates[$feature.Name]
 
         $content += @"
-#define $($feature.PreprocessorName()) $(if ($state -eq [State]::AlwaysEnabled) { "1" } else { "0" })
+#define $($feature.PreprocessorName($Namespace)) $(if ($state -eq [State]::AlwaysEnabled) { "1" } else { "0" })
 
 "@
     }
@@ -234,10 +242,10 @@ namespace $($Namespace.replace(".", "::"))
     {
         $content += @"
 
-__pragma(detect_mismatch("ODR_violation_$($feature.PreprocessorName())_mismatch", "$($feature.State)"))
+__pragma(detect_mismatch("ODR_violation_$($feature.PreprocessorName($Namespace))_mismatch", "$($feature.State)"))
 struct $($feature.Name)
 {
-    static constexpr bool IsEnabled() { return $($feature.PreprocessorName()) == 1; }
+    static constexpr bool IsEnabled() { return $($feature.PreprocessorName($Namespace)) == 1; }
 };
 
 "@
@@ -272,11 +280,11 @@ function Generate_CS()
 
         if ($state -eq [State]::AlwaysEnabled)
         {
-            $content += "#Define $($feature.PreprocessorName())`r`n"
+            $content += "#Define $($feature.PreprocessorName($Namespace))`r`n"
         }
         else
         {
-            $content += "//DISABLED: $($feature.PreprocessorName())`r`n"
+            $content += "//DISABLED: $($feature.PreprocessorName($Namespace))`r`n"
         }
     }
 
@@ -293,7 +301,7 @@ namespace $($Namespace.replace("::", "."))
 
 public static class $($feature.Name)
 {
-#if $($feature.PreprocessorName())
+#if $($feature.PreprocessorName($Namespace))
     public const bool IsEnabled = true;
 #else
     public const bool IsEnabled = false;

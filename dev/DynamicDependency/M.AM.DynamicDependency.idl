@@ -270,6 +270,10 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// Calls to Add() can be balanced by a PackageDependencyContext.Remove() (or object destruction)
         /// to remove the entry from the package graph.
         PackageDependencyContext Add(AddPackageDependencyOptions options);
+
+        /// Return the package graph's current generation id.
+        [experimental]
+        static UInt32 GenerationId { get; }
     };
 
     /// A unique identifier for a resolved package dependency

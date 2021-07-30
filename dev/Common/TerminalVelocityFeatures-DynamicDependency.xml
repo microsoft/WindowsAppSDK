@@ -9,8 +9,8 @@
 
     <!-- Enabled variants -->
     <feature>
-        <name>Feature_GetGenerationId</name>
-        <description>DynamicDependency APIs to get the package graph's current Generation Id</description>
+        <name>Feature_GenerationId</name>
+        <description>DynamicDependency APIs to access the package graph's current Generation Id</description>
         <state>AlwaysEnabled</state>
         <alwaysDisabledChannelTokens>
             <channelToken>Preview</channelToken>
