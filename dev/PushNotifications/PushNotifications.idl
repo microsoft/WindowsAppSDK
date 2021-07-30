@@ -133,8 +133,8 @@ namespace Microsoft.Windows.PushNotifications
         // Request a Push Channel using an encoded AAD GUID identifier from WNS.
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
 
-        static String GetStringFromComServer();
-
         static UInt32 GetStringLengthFromComServer(String inputString);
+
+        static UInt32 ShutdownPlatformManually();
     };
 }

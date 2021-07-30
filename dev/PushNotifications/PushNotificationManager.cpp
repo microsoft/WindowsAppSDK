@@ -252,39 +252,37 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    winrt::hstring PushNotificationManager::GetStringFromComServer()
-    {
-        try
-        {
-            wil::com_ptr<INotificationsReunionEndpoint> reunionEndpoint{
-                wil::CoCreateInstance<NotificationsReunionEndpoint,
-                INotificationsReunionEndpoint>(CLSCTX_LOCAL_SERVER) };
-
-            LPWSTR stringFromComServer = nullptr;
-            THROW_IF_FAILED(reunionEndpoint->GetStringFromLRP(&stringFromComServer));
-
-            return winrt::hstring(stringFromComServer);
-        }
-        catch (...)
-        {
-            HRESULT error = wil::ResultFromCaughtException();
-            return std::to_wstring(error).c_str();
-        }
-    }
-
     uint32_t PushNotificationManager::GetStringLengthFromComServer(const winrt::hstring& inputString)
     {
         try
         {
-            wil::com_ptr<INotificationsReunionEndpoint> reunionEndpoint{
-                wil::CoCreateInstance<NotificationsReunionEndpoint,
-                INotificationsReunionEndpoint>(CLSCTX_LOCAL_SERVER) };
+            wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+                wil::CoCreateInstance<WpnLrpPlatform,
+                IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
             std::wstring hstringAsCommonString{ inputString };
             ULONG length = 0;
             THROW_IF_FAILED(reunionEndpoint->GetStringLength(hstringAsCommonString.c_str(), &length));
 
             return length;
+        }
+        catch (...)
+        {
+            HRESULT error = wil::ResultFromCaughtException();
+            return error;
+        }
+    }
+
+    uint32_t PushNotificationManager::ShutdownPlatformManually()
+    {
+        try
+        {
+            wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+                wil::CoCreateInstance<WpnLrpPlatform,
+                IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
+
+            THROW_IF_FAILED(reunionEndpoint->ManualShutdown());
+            return 0;
         }
         catch (...)
         {
