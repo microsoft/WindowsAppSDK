@@ -9,20 +9,31 @@ import "ocidl.idl";
 [object]
 [uuid(60FC21B2-B396-4D49-94F0-7555869FB93C)]
 [pointer_default(unique)]
-interface INotificationsReunionEndpoint : IUnknown
+interface IWpnLrpPlatform : IUnknown
 {
-    HRESULT GetStringFromLRP([out] LPWSTR* stringFromLRP);
+    HRESULT RegisterActivator([in] LPCWSTR processName);
 
+    HRESULT UnregisterActivator([in] LPCWSTR processName);
+
+    HRESULT RegisterForegroundActivator([in] LPCWSTR processName);
+
+    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
+
+    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [out] GUID* appId);
+
+    // Just a Foo function for testing COM server connection. It should be deleted.
     HRESULT GetStringLength([in] LPCWSTR string, [out] ULONG* length);
+    // Let's eventually delete this too.
+    HRESULT ManualShutdown();
 };
 
 [uuid(60C6A2D9-04D9-42C3-B4E9-71158389D422)] // PR_DYNDEP_LIBID_UUID
 [version(1.0)]
-library NotificationsReunionEndpointLib
+library WpnLrpPlatformLib
 {
     [uuid(330EC755-31F2-40A7-977D-B0ABB1E1E52E)] // PR_DYNDEP_DATASTORE_CLSID_UUID
-    coclass NotificationsReunionEndpoint
+    coclass WpnLrpPlatform
     {
-        [default] interface INotificationsReunionEndpoint;
+        [default] interface IWpnLrpPlatform;
     };
 };

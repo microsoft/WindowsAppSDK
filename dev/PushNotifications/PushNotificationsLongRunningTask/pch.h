@@ -25,3 +25,5 @@
 #include <winrt/Windows.Foundation.Collections.h>
 
 #include <winrt/Windows.Storage.h>
+
+#include <wil/com.h>

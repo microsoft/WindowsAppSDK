@@ -91,19 +91,11 @@ int main()
 {
     std::cout << "Project Reunion Push Notification Test App" << std::endl;
     std::cout << "==== (wait 5 seconds) ====" << std::endl;
-    std::cout << "== Test 1: Get String ==" << std::endl;
+    std::cout << "== Test 1: Get String Length ==" << std::endl;
 
     Sleep(5000);
 
-    std::wcout << L"String from LRP:" << std::endl;
-
-    auto lrpString = PushNotificationManager::GetStringFromComServer();
-    std::wstring lrpStringAsWstring{ lrpString };
-
-    std::wcout << lrpStringAsWstring << std::endl;
-
-    Sleep(5000);
-    std::cout << "== Test 2: Type a word, then get its length from LRP ==" << std::endl;
+    std::cout << "== Type a word, then get its length from LRP ==" << std::endl;
 
     std::wstring theWstring;
     std::wcin >> theWstring;
@@ -116,6 +108,11 @@ int main()
     std::wcout << L"Length (from LRP): " + std::to_wstring(stringLengthFromComServer) << std::endl;
 
     Sleep(10000);
+
+    std::cout << L"Attempt to Shutdown platform" << std::endl;
+    ULONG shutdownRes = PushNotificationManager::ShutdownPlatformManually();
+
+    std::wcout << L"Shutdown result: " + std::to_wstring(stringLengthFromComServer) << std::endl;
 
     /*
     PushNotificationActivationInfo info(
