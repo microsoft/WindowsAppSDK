@@ -65,7 +65,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\DynamicDependency\TerminalVelocityFeatures-DynamicDependency.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\DynamicDependency\MddTerminalVelocityFeatures.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: VSBuild@1
