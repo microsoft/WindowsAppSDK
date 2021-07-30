@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tvf="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd"
+    version="1.0"
+>
+    <xs:element name="featureStaging">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="feature" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:all>
+                            <!-- Required -->
+                            <xs:element name="name" type="tvf:featureNameType" />
+                            <xs:element name="description" type="tvf:stringNoEmpty" />
+                            <xs:element name="stage" type="tvf:stageType" />
+
+                            <!-- Optional -->
+                            <xs:element name="id" type="xs:positiveInteger" minOccurs="0" />
+
+                            <xs:element name="alwaysDisabledReleaseTokens" type="tvf:releaseTokenListType" minOccurs="0" />
+
+                            <xs:element name="alwaysEnabledChannelTokens" type="tvf:channelTokenListType" minOccurs="0" />
+                            <xs:element name="alwaysDisabledChannelTokens" type="tvf:channelTokenListType" minOccurs="0" />
+                        </xs:all>
+                    </xs:complexType>
+
+                    <xs:key name="featureChannelOverridesKey">
+                        <xs:selector xpath="*/tvf:channelToken"/>
+                        <xs:field xpath="."/>
+                    </xs:key>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Definitions -->
+    <xs:simpleType name="stringNoEmpty">
+        <xs:restriction base="xs:string">
+            <xs:pattern value=".+" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="featureNameType">
+        <xs:restriction base="tvf:stringNoEmpty">
+            <xs:pattern value="^Feature_[a-zA-Z0-9_]+" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="stageType">
+        <xs:restriction base="tvf:stringNoEmpty">
+            <xs:pattern value="AlwaysDisabled|AlwaysEnabled" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="channelType">
+        <xs:restriction base="tvf:stringNoEmpty">
+            <xs:pattern value="Dev|Preview|Stable|WindowsInbox" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="channelTokenListType">
+        <xs:sequence>
+            <xs:element name="channelToken" type="tvf:channelType" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="releaseTokenListType">
+        <xs:sequence>
+            <xs:element name="exceptToken" type="tvf:stringNoEmpty" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

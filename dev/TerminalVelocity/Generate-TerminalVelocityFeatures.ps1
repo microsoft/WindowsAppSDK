@@ -9,13 +9,10 @@
     Create Feature-check functions to enable select code disablement based on build criteria.
 
 .PARAMETER Path
-    Source file containing feature definitions per FeatureStagingSchema.xsd.
+    Source file containing feature definitions per TerminalVelocityFeatures.xsd.
 
-.PARAMETER Branding
-    The target Channel for Feature checks.
-
-.PARAMETER BranchOverride
-    TBD do we need this???
+.PARAMETER Channel
+    The target channel for Feature checks.
 
 .PARAMETER Output
     File to create (default=stdout).
@@ -29,7 +26,7 @@
     e.g. "-Namespace Foo.Bar" and "-Namespace Foo::Bar" produce the same end result in all languages.
 
 .EXAMPLE
-    Generate-FeatureStaging Kittens.xml -Branding Preview -Output Kittens.h
+    Generate-FeatureStaging Kittens.xml -Channel Preview -Output Kittens.h
 #>
 
 [CmdletBinding()]
@@ -38,10 +35,8 @@ Param(
     [ValidateScript({ Test-Path $_ })]
     [string]$Path,
 
-    [ValidateSet("Experimental", "Preview", "Release", "WindowsInbox")]
-    [string]$Branding = "Experimental",
-
-    [string]$BranchOverride = $Null,
+    [ValidateSet("Experimental", "Preview", "Stable", "WindowsInbox")]
+    [string]$Channel = "Experimental",
 
     [string]$Output,
 
@@ -71,38 +66,25 @@ Class Feature
 {
     [string]$Name
     [Stage]$Stage
-    [System.Collections.Generic.Dictionary[string, Stage]]$BranchTokenStages
-    [System.Collections.Generic.Dictionary[string, Stage]]$BrandingTokenStages
+    [System.Collections.Generic.Dictionary[string, Stage]]$ChannelTokenStages
     [bool]$DisabledReleaseToken
 
     Feature([System.Xml.XmlElement]$entry)
     {
         $this.Name = $entry.name
         $this.Stage = ConvertTo-FeatureStage $entry.stage
-        $this.BranchTokenStages = [System.Collections.Generic.Dictionary[string, Stage]]::new()
-        $this.BrandingTokenStages = [System.Collections.Generic.Dictionary[string, Stage]]::new()
+        $this.ChannelTokenStages = [System.Collections.Generic.Dictionary[string, Stage]]::new()
         $this.DisabledReleaseToken = $Null -Ne $entry.alwaysDisabledReleaseTokens
 
-        ForEach ($b in $entry.alwaysDisabledBranchTokens.branchToken)
+        ForEach ($b in $entry.alwaysDisabledChannelTokens.channelToken)
         {
-            $this.BranchTokenStages[$b] = [Stage]::AlwaysDisabled
+            $this.ChannelTokenStages[$b] = [Stage]::AlwaysDisabled
         }
 
-        # AlwaysEnabled branches win over AlwaysDisabled branches
-        ForEach ($b in $entry.alwaysEnabledBranchTokens.branchToken)
+        # AlwaysEnabled channels win over AlwaysDisabled channels
+        ForEach ($b in $entry.alwaysEnabledChannelTokens.channelToken)
         {
-            $this.BranchTokenStages[$b] = [Stage]::AlwaysEnabled
-        }
-
-        ForEach ($b in $entry.alwaysDisabledBrandingTokens.brandingToken)
-        {
-            $this.BrandingTokenStages[$b] = [Stage]::AlwaysDisabled
-        }
-
-        # AlwaysEnabled brandings win over AlwaysDisabled brandings
-        ForEach ($b in $entry.alwaysEnabledBrandingTokens.brandingToken)
-        {
-            $this.BrandingTokenStages[$b] = [Stage]::AlwaysEnabled
+            $this.ChannelTokenStages[$b] = [Stage]::AlwaysEnabled
         }
     }
 
@@ -135,44 +117,22 @@ Function Resolve-FinalFeatureStage
 {
     Param(
         [Feature]$Feature,
-        [string]$Branch,
-        [string]$Branding
+        [string]$Channel
     )
 
     # RELEASE=DISABLED wins all checks
-    # Then, branch match by most-specific branch
-    # Then, branding type (if no overriding branch match)
+    # Then, channel type
 
-    if ($Branding -Eq "Release" -And $Feature.DisabledReleaseToken)
+    if ($Channel -Eq "Stable" -And $Feature.DisabledReleaseToken)
     {
         [Stage]::AlwaysDisabled
         return
     }
 
-    if (-Not [String]::IsNullOrEmpty($Branch))
+    $ChannelStage = $Feature.ChannelTokenStages[$Channel]
+    if ($Null -Ne $ChannelStage)
     {
-        $lastMatchLen = 0
-        $branchStage = $Null
-        ForEach ($branchToken in $Feature.BranchTokenStages.Keys)
-        {
-            # Match the longest branch token -- it should be the most specific
-            if ($Branch -Like $branchToken -And $branchToken.Length -Gt $lastMatchLen)
-            {
-                $lastMatchLen = $branchToken.Length
-                $branchStage = $Feature.BranchTokenStages[$branchToken]
-            }
-        }
-        if ($Null -Ne $branchStage)
-        {
-            $branchStage
-            return
-        }
-    }
-
-    $BrandingStage = $Feature.BrandingTokenStages[$Branding]
-    if ($Null -Ne $BrandingStage)
-    {
-        $BrandingStage
+        $ChannelStage
         return
     }
 
@@ -181,7 +141,7 @@ Function Resolve-FinalFeatureStage
 
 $ErrorActionPreference = "Stop"
 $x = [xml](Get-Content $Path -EA:Stop)
-$x.Schemas.Add('http://microsoft.com/TilFeatureStaging-Schema.xsd', (Resolve-Path (Join-Path $PSScriptRoot "FeatureStagingSchema.xsd")).Path) | Out-Null
+$x.Schemas.Add('http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd', (Resolve-Path (Join-Path $PSScriptRoot "TerminalVelocityFeatures.xsd")).Path) | Out-Null
 $x.Validate($null)
 
 $featureComparer = [FeatureComparer]::new()
@@ -196,29 +156,9 @@ $features.Sort($featureComparer)
 
 $featureFinalStages = [System.Collections.Generic.Dictionary[string, Stage]]::new(16)
 
-$branch = $BranchOverride
-if ([String]::IsNullOrEmpty($branch))
-{
-    try
-    {
-        $branch = & git branch --show-current 2>$Null
-    }
-    catch
-    {
-        try
-        {
-            $branch = & git rev-parse --abbrev-ref HEAD 2>$Null
-        }
-        catch
-        {
-            Write-Host "Cannot determine current Git branch; skipping branch validation"
-        }
-    }
-}
-
 ForEach ($feature in $features)
 {
-    $featureFinalStages[$feature.Name] = Resolve-FinalFeatureStage -Feature $feature -Branch $branch -Branding $Branding
+    $featureFinalStages[$feature.Name] = Resolve-FinalFeatureStage -Feature $feature -Channel $Channel
 }
 
 ### CODE GENERATION

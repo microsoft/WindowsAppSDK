@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<featureStaging xmlns="http://microsoft.com/WindowsAppSDK/FeatureStagingSchema.xsd">
+<featureStaging xmlns="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd">
 
 <!-- Copyright (c) Microsoft Corporation. All rights reserved.
      Licensed under the MIT License. See LICENSE in the project root for license information.
@@ -10,9 +10,9 @@
         <name>Feature_ReceiveIncomingHandoff</name>
         <description>OpenConsole should be able to receive incoming connections</description>
         <stage>AlwaysEnabled</stage>
-        <alwaysDisabledBrandingTokens>
-            <brandingToken>WindowsInbox</brandingToken>
-        </alwaysDisabledBrandingTokens>
+        <alwaysDisabledChannelTokens>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
     </feature>
 
     <feature>
@@ -33,40 +33,40 @@
         <name>Feature_AttemptHandoff</name>
         <description>conhost should try to hand connections over to OpenConsole</description>
         <stage>AlwaysDisabled</stage>
-        <alwaysEnabledBrandingTokens>
-            <brandingToken>WindowsInbox</brandingToken>
-        </alwaysEnabledBrandingTokens>
+        <alwaysEnabledChannelTokens>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysEnabledChannelTokens>
     </feature>
 
     <feature>
         <name>Feature_ConhostDxEngine</name>
         <description>Controls whether conhost supports the DX engine and the UseDx registry key</description>
         <stage>AlwaysEnabled</stage>
-        <alwaysDisabledBrandingTokens>
-            <brandingToken>WindowsInbox</brandingToken>
-        </alwaysDisabledBrandingTokens>
+        <alwaysDisabledChannelTokens>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
     </feature>
     <feature>
         <name>Feature_DxEngineShaderSupport</name>
         <description>Controls whether the DX engine is built with shader support.</description>
         <stage>AlwaysEnabled</stage>
-        <alwaysDisabledBrandingTokens>
-            <brandingToken>WindowsInbox</brandingToken>
-        </alwaysDisabledBrandingTokens>
+        <alwaysDisabledChannelTokens>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysDisabledChannelTokens>
     </feature>
 
     <feature>
         <name>Feature_UseNumpadEventsForClipboardInput</name>
         <description>Controls whether the clipboard converter (and ConPTY InputStateMachine) uses Numpad events instead of UChar</description>
         <stage>AlwaysDisabled</stage>
-        <alwaysEnabledBrandingTokens>
+        <alwaysEnabledChannelTokens>
             <!--
                 To reduce the risk of compatibility issues inside Windows, we're going to continue using the old
                 version of GetQuickCharWidth to determine whether a character should be synthesized into numpad
                 events.
             -->
-            <brandingToken>WindowsInbox</brandingToken>
-        </alwaysEnabledBrandingTokens>
+            <channelToken>WindowsInbox</channelToken>
+        </alwaysEnabledChannelTokens>
     </feature>
 
     <feature>
