@@ -127,7 +127,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
@@ -162,7 +161,6 @@
     <LinkIncremental>false</LinkIncremental>
     <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <!-- We use MultiThreadedDebug, rather than MultiThreadedDebugDLL, to avoid DLL dependencies on VCRUNTIME140d.dll and MSVCP140d.dll. -->
@@ -191,7 +189,6 @@
       <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -207,7 +204,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -230,7 +227,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -257,7 +254,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -280,7 +277,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -307,7 +304,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -334,7 +331,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -359,7 +356,7 @@
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -386,7 +383,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>NotificationsReunionEndpoint.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>PushNotificationsLRP.def</ModuleDefinitionFile>
     </Link>
     <Midl>
       <DllDataFileName>dlldata.c</DllDataFileName>
@@ -394,13 +391,12 @@
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
     </Midl>
   </ItemDefinitionGroup>
-
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-      <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\dlldata.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -410,7 +406,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_i.c">
+    <ClCompile Include="x64\Debug\PushNotificationsLRP_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -420,7 +416,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_p.c">
+    <ClCompile Include="x64\Debug\PushNotificationsLRP_p.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -442,18 +438,17 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="NotificationsReunionEndpoint.idl" />
+    <Midl Include="PushNotificationsLRP.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NotificationsReunionEndpoint.def" />
+    <None Include="PushNotificationsLRP.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\NotificationsReunionEndpoint_h.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)NotificationsReunionEndpoint.idl" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\PushNotificationsLRP_h.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)PushNotificationsLRP.idl" />
   </ItemGroup>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
