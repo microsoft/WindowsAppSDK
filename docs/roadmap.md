@@ -42,7 +42,7 @@ XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Support
 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 Execution Level: |
 • User | ✅ Supported | ✅ Supported | ✅ Supported |
-• Elevated (admin) | ❌ Not Supported | ?? | ?? |
+• Elevated (admin) | ❌ Not Supported | ?? (#567) | ?? (#567) |
 Deploy Options:  |
 • In-app | 🔄 Experimental | ✅ Supported | ✅ Supported |
 • Fx Package | 🔄 Experimental | ✅ Supported | ✅ Supported |
