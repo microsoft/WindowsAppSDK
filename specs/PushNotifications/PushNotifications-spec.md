@@ -87,6 +87,7 @@ Power Management compliance.
 * If the application is unpackaged, it will use the ProtocolActivator to register the activator instead. The app will also need to 
 call into the bootstrapper API to have access to the Windows App SDK. Click [here](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/tutorial-unpackaged-deployment?tabs=cpp) for information on how to build and 
 deploy unpackaged applications with Windows App SDK.
+
 ```cpp
 int main()
 {
@@ -112,7 +113,7 @@ int main()
 
     if (kind == ExtendedActivationKind::Push)
     {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
+        auto pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
 
         // Call GetDeferral to ensure that code runs in low power
         auto deferral = pushArgs.GetDeferral();
@@ -207,6 +208,7 @@ int main()
 ## In this scenario, the process that Registers the Push Trigger and the process specified as the COM server are different.
 This only works for packaged applications that support PushTrigger and ComActivator flags in RegisterActivator. Out-of-proc activation is
 not supported for unpackaged apps.
+
 Process A (Registration of the Push Trigger only):
 ```cpp
 int main()
@@ -216,7 +218,7 @@ int main()
     {
         // Register the ComActivator guid
         info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::PushTrigger,
-        winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+            winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
     }
     else
     {
@@ -240,7 +242,7 @@ int main()
     {
         // Register the ComActivator guid
         info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::ComActivator,
-        winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+            winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
     }
     else
     {
