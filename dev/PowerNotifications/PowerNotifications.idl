@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-// REVIEW: We're not doing doing any versioning within IDL/WinMDs, right?
-
 namespace Microsoft.Windows.System.Power
 {
     // Enums duplicated from IPowerManagerStatics
@@ -76,10 +74,6 @@ namespace Microsoft.Windows.System.Power
         static EnergySaverStatus EnergySaverStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> EnergySaverStatusChanged;
 
-        // TODO : Review API shape. We might want the BatteryStatusChanged event to
-        // be typed with BatteryStatus, and actually provide the BatteryStatus when
-        // the event is signaled. But for initial scaffolding, we have aligned with
-        // the existing IPowerManagerStatics implementation.
         static BatteryStatus BatteryStatus{ get; };
         static event Windows.Foundation.EventHandler<Object> BatteryStatusChanged;
 

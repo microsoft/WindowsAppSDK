@@ -104,7 +104,7 @@ namespace winrt::Microsoft::Windows::System::Power
             std::atomic<ULONG> m_powerModeVersion;
             Power::SystemSuspendStatus m_systemSuspendStatus;
             ::EnergySaverStatus m_cachedEnergySaverStatus;
-            CompositeBatteryStatus m_cachedCompositeBatteryStatus{ 0 };
+            CompositeBatteryStatus m_cachedCompositeBatteryStatus{};
             Power::BatteryStatus m_batteryStatus{ Power::BatteryStatus::NotPresent };
             Power::BatteryStatus m_oldBatteryStatus;
             Power::PowerSupplyStatus m_powerSupplyStatus{ Power::PowerSupplyStatus::Adequate };
@@ -235,7 +235,7 @@ namespace winrt::Microsoft::Windows::System::Power
             }
 
             // Checks if an event is already registered. If none are, then gets the status
-            void CheckRegistrationAndOrUpdateValue(PowerFunctionDetails fn)
+            void UpdateValuesIfNecessary(PowerFunctionDetails fn)
             {
                 auto& eventObj{ fn.event() };
                 std::scoped_lock<std::mutex> lock(m_mutex);
@@ -249,7 +249,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // EnergySaverStatus Functions
             Power::EnergySaverStatus EnergySaverStatus()
             {
-                CheckRegistrationAndOrUpdateValue(energySaverStatusFunc);
+                UpdateValuesIfNecessary(energySaverStatusFunc);
                 return static_cast<Power::EnergySaverStatus>(m_cachedEnergySaverStatus);
             }
 
@@ -285,7 +285,8 @@ namespace winrt::Microsoft::Windows::System::Power
                 {
                     LOG_HR_MSG(E_FAIL, "Unknown charge ratio: RemainingCapacity Unknown");
                 }
-                else if (remainingCapacity > fullChargedCapacity) {
+                else if (remainingCapacity > fullChargedCapacity)
+                {
                     LOG_HR_MSG(E_FAIL, "High charge ratio: %d/%d", remainingCapacity, fullChargedCapacity);
                 }
                 else if (remainingCapacity > (INT_MAX / 200))
@@ -358,7 +359,7 @@ namespace winrt::Microsoft::Windows::System::Power
 
             Power::BatteryStatus BatteryStatus()
             {
-                CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
+                UpdateValuesIfNecessary(compositeBatteryStatusFunc);
                 return m_batteryStatus;
             }
 
@@ -382,7 +383,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // PowerSupplyStatus Functions
             Power::PowerSupplyStatus PowerSupplyStatus()
             {
-                CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
+                UpdateValuesIfNecessary(compositeBatteryStatusFunc);
                 return m_powerSupplyStatus;
             }
 
@@ -400,7 +401,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // RemainingChargePercent Functions
             int RemainingChargePercent()
             {
-                CheckRegistrationAndOrUpdateValue(compositeBatteryStatusFunc);
+                UpdateValuesIfNecessary(compositeBatteryStatusFunc);
                 return m_batteryChargePercent;
             }
 
@@ -418,7 +419,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // RemainingDischargeTime Functions
             winrt::Windows::Foundation::TimeSpan RemainingDischargeTime()
             {
-                CheckRegistrationAndOrUpdateValue(remainingDischargeTimeFunc);
+                UpdateValuesIfNecessary(remainingDischargeTimeFunc);
                 return winrt::Windows::Foundation::TimeSpan(std::chrono::seconds(m_cachedDischargeTime));
             }
 
@@ -442,7 +443,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // PowerSourceKind Functions
             Power::PowerSourceKind PowerSourceKind()
             {
-                CheckRegistrationAndOrUpdateValue(powerSourceKindFunc);
+                UpdateValuesIfNecessary(powerSourceKindFunc);
                 return static_cast<Power::PowerSourceKind>(m_cachedPowerSourceKind);
             }
 
@@ -466,7 +467,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // DisplayStatus Functions
             Power::DisplayStatus DisplayStatus()
             {
-                CheckRegistrationAndOrUpdateValue(displayStatusFunc);
+                UpdateValuesIfNecessary(displayStatusFunc);
                 return static_cast<Power::DisplayStatus>(m_cachedDisplayStatus);
             }
 
@@ -508,7 +509,7 @@ namespace winrt::Microsoft::Windows::System::Power
             winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
             {
                 co_await resume_background();
-                CheckRegistrationAndOrUpdateValue(effectivePowerModeFunc);
+                UpdateValuesIfNecessary(effectivePowerModeFunc);
                 auto res{ static_cast<Power::EffectivePowerMode>(m_cachedPowerMode) };
                 co_return res;
             }
@@ -532,7 +533,7 @@ namespace winrt::Microsoft::Windows::System::Power
             // UserPresenceStatus Functions
             Power::UserPresenceStatus UserPresenceStatus()
             {
-                CheckRegistrationAndOrUpdateValue(userPresenceStatusFunc);
+                UpdateValuesIfNecessary(userPresenceStatusFunc);
                 return static_cast<Power::UserPresenceStatus>(m_cachedUserPresenceStatus);
             }
 
@@ -555,7 +556,6 @@ namespace winrt::Microsoft::Windows::System::Power
             //SystemSuspend Functions
             Power::SystemSuspendStatus SystemSuspendStatus()
             {
-                // Review: Agree with this "only callable after subscription callback" enforcement?
                 if (m_systemSuspendStatus == SystemSuspendStatus::Uninitialized)
                 {
                     throw winrt::hresult_error(E_FAIL, L"API only callable after a SystemSuspendStatusChanged callback");
@@ -602,98 +602,103 @@ namespace winrt::Microsoft::Windows::System::Power
     {
         struct PowerManager
         {
-            PowerManager() = default;
+            PowerManager() = delete;
+
+            static auto Factory()
+            {
+                return make_self<factory_implementation::PowerManager>();
+            }
 
             //Get function forwards
             static Power::EnergySaverStatus EnergySaverStatus()
             {
-                return make_self<factory_implementation::PowerManager>()->EnergySaverStatus();
+                return Factory()->EnergySaverStatus();
             }
 
             static Power::BatteryStatus BatteryStatus()
             {
-                return make_self<factory_implementation::PowerManager>()->BatteryStatus();
+                return Factory()->BatteryStatus();
             }
 
             static Power::PowerSupplyStatus PowerSupplyStatus()
             {
-                return make_self<factory_implementation::PowerManager>()->PowerSupplyStatus();
+                return Factory()->PowerSupplyStatus();
             }
 
             static int RemainingChargePercent()
             {
-                return make_self<factory_implementation::PowerManager>()->RemainingChargePercent();
+                return Factory()->RemainingChargePercent();
             }
 
             static winrt::Windows::Foundation::TimeSpan RemainingDischargeTime()
             {
-                return make_self<factory_implementation::PowerManager>()->RemainingDischargeTime();
+                return Factory()->RemainingDischargeTime();
             }
 
             static Power::PowerSourceKind PowerSourceKind()
             {
-                return make_self<factory_implementation::PowerManager>()->PowerSourceKind();
+                return Factory()->PowerSourceKind();
             }
 
             static Power::DisplayStatus DisplayStatus()
             {
-                return make_self<factory_implementation::PowerManager>()->DisplayStatus();
+                return Factory()->DisplayStatus();
             }
 
             static winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
             {
-                return make_self<factory_implementation::PowerManager>()->EffectivePowerMode();
+                return Factory()->EffectivePowerMode();
             }
 
             static Power::UserPresenceStatus UserPresenceStatus()
             {
-                return make_self<factory_implementation::PowerManager>()->UserPresenceStatus();
+                return Factory()->UserPresenceStatus();
             }
 
             static Power::SystemSuspendStatus SystemSuspendStatus()
             {
-                return make_self<factory_implementation::PowerManager>()->SystemSuspendStatus();
+                return Factory()->SystemSuspendStatus();
             }
 
             //Callback forwards
             static void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
             {
-                return make_self<factory_implementation::PowerManager>()->EnergySaverStatusChanged_Callback(energySaverStatus);
+                return Factory()->EnergySaverStatusChanged_Callback(energySaverStatus);
             }
 
             static void CompositeBatteryStatusChanged_Callback(CompositeBatteryStatus compositeBatteryStatus)
             {
-                return make_self<factory_implementation::PowerManager>()->CompositeBatteryStatusChanged_Callback(compositeBatteryStatus);
+                return Factory()->CompositeBatteryStatusChanged_Callback(compositeBatteryStatus);
             }
 
             static void RemainingDischargeTimeChanged_Callback(ULONGLONG remainingDischargeTime)
             {
-                return make_self<factory_implementation::PowerManager>()->RemainingDischargeTimeChanged_Callback(remainingDischargeTime);
+                return Factory()->RemainingDischargeTimeChanged_Callback(remainingDischargeTime);
             }
 
             static void PowerSourceKindChanged_Callback(DWORD powerCondition)
             {
-                return make_self<factory_implementation::PowerManager>()->PowerSourceKindChanged_Callback(powerCondition);
+                return Factory()->PowerSourceKindChanged_Callback(powerCondition);
             }
 
             static void DisplayStatusChanged_Callback(DWORD displayStatus)
             {
-                return make_self<factory_implementation::PowerManager>()->DisplayStatusChanged_Callback(displayStatus);
+                return Factory()->DisplayStatusChanged_Callback(displayStatus);
             }
 
             static void SystemIdleStatusChanged_Callback()
             {
-                return make_self<factory_implementation::PowerManager>()->SystemIdleStatusChanged_Callback();
+                return Factory()->SystemIdleStatusChanged_Callback();
             }
 
             static void EffectivePowerModeChanged_Callback(EFFECTIVE_POWER_MODE mode)
             {
-                return make_self<factory_implementation::PowerManager>()->EffectivePowerModeChanged_Callback(mode);
+                return Factory()->EffectivePowerModeChanged_Callback(mode);
             }
 
             static void UserPresenceStatusChanged_Callback(DWORD userPresenceStatus)
             {
-                return make_self<factory_implementation::PowerManager>()->UserPresenceStatusChanged_Callback(userPresenceStatus);
+                return Factory()->UserPresenceStatusChanged_Callback(userPresenceStatus);
             }
 
         };
