@@ -252,7 +252,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x86'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UnpackagedTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

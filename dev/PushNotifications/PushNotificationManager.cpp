@@ -262,19 +262,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
     {
-        if (!WI_IsSingleFlagSet(options))
-        {
-            return false;
-        }
-
-        bool isBIFlagSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::PushTrigger) ||
-            WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator);
+        bool isBIFlagSet = WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
         bool isProtocolActivatorSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator);
 
-        if (isBIFlagSet && isProtocolActivatorSet)
-        {
-            return false;
-        }
+        THROW_HR_IF(E_INVALIDARG, isBIFlagSet && isProtocolActivatorSet); // Invalid flag combination
+        THROW_HR_IF(E_INVALIDARG, !(isBIFlagSet || isProtocolActivatorSet)); // null flags
 
         if (AppModel::Identity::IsPackagedProcess() && IsBIAvailable())
         {
