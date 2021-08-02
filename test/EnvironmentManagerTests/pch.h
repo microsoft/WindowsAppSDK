@@ -20,6 +20,6 @@
 
 #include <winrt/Microsoft.Windows.System.h>
 #include <winrt/Windows.Foundation.Collections.h>
-//namespace TP = ::Test::Packages;
+namespace TP = ::Test::Packages;
 
 #endif
