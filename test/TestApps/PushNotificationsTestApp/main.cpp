@@ -292,7 +292,7 @@ bool VerifyComAndProtocolActivatorNotSupported()
 
 bool VerifyNullActivatorNotSupported()
 {
-    PushNotificationRegistrationOptions option = static_cast<PushNotificationRegistrationOptions>(0);
+    PushNotificationRegistrationOptions option;
     try
     {
         PushNotificationManager::IsActivatorSupported(option);
@@ -323,7 +323,8 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyComActivatorNotSupported", &VerifyComActivatorNotSupported },
         { "VerifyProtocolActivatorSupported", &VerifyProtocolActivatorSupported},
         { "VerifyProtocolActivatorNotSupported", &VerifyProtocolActivatorNotSupported },
-        { "VerifyComAndProtocolActivatorNotSupported", &VerifyComAndProtocolActivatorNotSupported }
+        { "VerifyComAndProtocolActivatorNotSupported", &VerifyComAndProtocolActivatorNotSupported },
+        { "VerifyNullActivatorNotSupported", &VerifyNullActivatorNotSupported }
     };
     return switchMapping;
 }
