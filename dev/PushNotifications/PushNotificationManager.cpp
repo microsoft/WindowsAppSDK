@@ -7,7 +7,8 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
 
 // Need to fix this ref!!!
-#include <..\PushNotifications.LongRunningTask.ProxyStub\NotificationsReunionEndpoint_h.h>
+//#include <..\PushNotifications.LongRunningTask.ProxyStub\PushNotificationsLRP_h.h>
+#include <PushNotificationsLRP_h.h>
 
 #include "PushNotificationCreateChannelResult.h"
 #include "PushNotifications-Constants.h"

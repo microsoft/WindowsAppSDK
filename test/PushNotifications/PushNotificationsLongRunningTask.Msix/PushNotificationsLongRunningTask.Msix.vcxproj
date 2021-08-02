@@ -129,6 +129,9 @@
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
+      <Project>{13ccd7f4-66d3-4a4a-9b88-997097fccca9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\dev\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
       <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
     </ProjectReference>
