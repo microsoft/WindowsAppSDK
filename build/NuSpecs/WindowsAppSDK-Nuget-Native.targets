@@ -30,4 +30,11 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.Resources.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.ApplicationModel.Resources.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
 </Project>
