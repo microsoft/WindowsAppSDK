@@ -272,8 +272,8 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         PackageDependencyContext Add(AddPackageDependencyOptions options);
 
         /// Return the package graph's current generation id.
-        [experimental]
-        static UInt32 GenerationId { get; }
+        /*[experimental]*/
+        static UInt32 GenerationId{ get; };
     };
 
     /// A unique identifier for a resolved package dependency

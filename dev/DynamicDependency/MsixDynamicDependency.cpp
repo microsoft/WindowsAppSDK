@@ -136,11 +136,11 @@ STDAPI MddGetIdForPackageDependencyContext(
 }
 CATCH_RETURN();
 
-UINT32 MddGetGenerationId()
+UINT32 MddGetGenerationId() noexcept
 {
-    if (!Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled())
+    if (!::Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled())
     {
-        LOG_HR_MSG(E_NOTSUPPORTED, "Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled() = false");
+        LOG_HR_MSG(E_NOTIMPL, "Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled() = false");
         return static_cast<UINT32>(~0);
     }
 
