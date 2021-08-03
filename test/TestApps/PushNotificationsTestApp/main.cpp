@@ -366,6 +366,7 @@ int main() try
 
     ::Test::Bootstrap::SetupBootstrap();
 
+    // TODO: Register activators only when the unit test requires it
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
     {
         PushNotificationActivationInfo info(
@@ -374,7 +375,13 @@ int main() try
 
         g_appToken = PushNotificationManager::RegisterActivator(info);
     }
-    
+    /* TODO: Register ProtocolActivator for unpackaged applications
+    else
+    {
+        PushNotificationActivationInfo info(PushNotificationRegistrationOptions::ProtocolActivator, nullptr);
+        PushNotificationManager::RegisterActivator(info);
+    }
+    */
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
