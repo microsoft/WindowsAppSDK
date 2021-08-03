@@ -217,12 +217,16 @@
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="platformfactory.cpp" />
     <ClCompile Include="winmain.cpp" />
+    <ClCompile Include="WpnForegroundSink.cpp" />
+    <ClCompile Include="WpnForegroundSinkFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externs.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="platformfactory.h" />
+    <ClInclude Include="WpnForegroundSink.h" />
+    <ClInclude Include="WpnForegroundSinkFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">

@@ -27,3 +27,6 @@
 #include <winrt/Windows.Storage.h>
 
 #include <wil/com.h>
+
+#include "winrt/Windows.Foundation.h"
+#include "winrt/Windows.Networking.PushNotifications.h"
