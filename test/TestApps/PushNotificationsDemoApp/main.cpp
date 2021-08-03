@@ -90,10 +90,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 int main()
 {
     std::cout << "Project Reunion Push Notification Test App" << std::endl;
-    std::cout << "==== (wait 5 seconds) ====" << std::endl;
     std::cout << "== Test 1: Get String Length ==" << std::endl;
-
-    Sleep(5000);
 
     std::cout << "== Type a word, then get its length from LRP ==" << std::endl;
 
@@ -107,13 +104,14 @@ int main()
 
     std::wcout << L"Length (from LRP): " + std::to_wstring(stringLengthFromComServer) << std::endl;
 
-    Sleep(10000);
+    Sleep(5000);
 
-    std::cout << L"Attempt to Shutdown platform" << std::endl;
+    std::wcout << L"Attempt to Shutdown platform (in 5 sec)" << std::endl;
+    Sleep(5000);
     ULONG shutdownRes = PushNotificationManager::ShutdownPlatformManually();
 
-    std::wcout << L"Shutdown result: " + std::to_wstring(stringLengthFromComServer) << std::endl;
-
+    std::wcout << L"Shutdown result: " + std::to_wstring(shutdownRes) << std::endl;
+    Sleep(10000);
     /*
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
