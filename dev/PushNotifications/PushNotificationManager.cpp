@@ -246,12 +246,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    bool PushNotificationManager::IsBIAvailable()
+    bool PushNotificationManager::IsBackgroundTaskBuilderAvailable()
     {
         try
         {
-            BackgroundTaskBuilder builder = BackgroundTaskBuilder();
-            auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
+            auto builder{ BackgroundTaskBuilder() };
+            auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
         }
         catch (...)
         {
@@ -262,13 +262,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
     {
-        bool isBIFlagSet = WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
-        bool isProtocolActivatorSet = WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator);
+        bool isBIFlagSet{ WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
+        bool isProtocolActivatorSet{ WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator) };
 
         THROW_HR_IF(E_INVALIDARG, isBIFlagSet && isProtocolActivatorSet); // Invalid flag combination
         THROW_HR_IF(E_INVALIDARG, !(isBIFlagSet || isProtocolActivatorSet)); // null flags
 
-        if (AppModel::Identity::IsPackagedProcess() && IsBIAvailable())
+        if (AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable())
         {
             return isBIFlagSet;
         }

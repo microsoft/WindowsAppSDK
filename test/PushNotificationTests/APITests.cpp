@@ -203,15 +203,15 @@ namespace Test::PushNotifications
             RunTest(L"MultipleChannelClose", channelTestWaitTime());
         }
 
-        //TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
-        //{
-        //    RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
-        //}
+        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
+        {
+            RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
+        }
 
-        //TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
-        //{
-        //    RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
-        //}
+        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
+        {
+            RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
+        }
 
         TEST_METHOD(ActivatorTest)
         {

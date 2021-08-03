@@ -292,10 +292,9 @@ bool VerifyComAndProtocolActivatorNotSupported()
 
 bool VerifyNullActivatorNotSupported()
 {
-    PushNotificationRegistrationOptions option;
     try
     {
-        PushNotificationManager::IsActivatorSupported(option);
+        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::Undefined);
     }
     catch (...)
     {

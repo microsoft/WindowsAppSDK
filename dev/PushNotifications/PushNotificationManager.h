@@ -19,7 +19,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
-        static bool IsBIAvailable();
+        static bool IsBackgroundTaskBuilderAvailable();
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
