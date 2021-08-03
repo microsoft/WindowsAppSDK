@@ -263,7 +263,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && isProtocolActivatorSet); // Invalid flag combination
         if (AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable())
         {
-            if (isProtocolActivatorSet)
+            if (isProtocolActivatorSet) // ProtocolActivator unsupported if COM activation is available
             {
                 return false;
             }
