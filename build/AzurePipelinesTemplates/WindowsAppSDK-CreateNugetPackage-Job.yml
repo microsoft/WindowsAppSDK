@@ -47,7 +47,7 @@ jobs:
         LICENSE
       TargetFolder: '${{ parameters.fullnupkgdir }}'
 
-  # Copy the Windows App SDK full package specific target files and AppxManifest into the full package folder
+  # Copy the Windows App SDK full package specific target files, AppxManifest, and fusion manifests into the full package folder
   - task: PowerShell@2
     displayName: 'Copy Windows App SDK full package assets'
     inputs:
@@ -64,9 +64,11 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
+        $manifestPath = $fullpackagePath+'\manifests';
+        New-Item -ItemType Directory -Force -Path $manifestPath;
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
         $xslt.Load('build\TransformAppxManifest.xslt');
-        $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $fullpackagePath+'\manifests\WindowsAppSDK.manifest');
+        $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $manifestPath+'\WindowsAppSDK.manifest');
 
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
