@@ -366,12 +366,12 @@ int main() try
 
     ::Test::Bootstrap::SetupBootstrap();
 
-    PushNotificationActivationInfo info(
-        PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
-        winrt::guid(c_comServerId)); // same clsid as app manifest
-
-    if (Test::AppModel::IsPackagedProcess())
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
     {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
+            winrt::guid(c_comServerId)); // same clsid as app manifest
+
         g_appToken = PushNotificationManager::RegisterActivator(info);
     }
     

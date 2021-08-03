@@ -257,14 +257,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         THROW_HR_IF(E_INVALIDARG, options == PushNotificationRegistrationOptions::Undefined); // WI_IsFlagSet does not allow 0 as flag.
 
-        bool isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
-        bool isProtocolActivatorSet{ WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator) };
+        auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
+        auto isProtocolActivatorSet{ WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator) };
 
-        THROW_HR_IF(E_INVALIDARG, IsBackgroundTaskBuilderAvailable && isProtocolActivatorSet); // Invalid flag combination
-
+        THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && isProtocolActivatorSet); // Invalid flag combination
         if (AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable())
         {
-            THROW_HR_IF(E_INVALIDARG, isProtocolActivatorSet); // Don't allow packaged apps to call with protocol if background task available
+            if (isProtocolActivatorSet)
+            {
+                return false;
+            }
             return isBackgroundTaskFlagSet;
         }
         else
