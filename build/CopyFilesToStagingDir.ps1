@@ -38,6 +38,7 @@ PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
@@ -119,12 +120,14 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # WinMD for UWP apps
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 #
 # Native (not managed, no MSIX)
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\native
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\native
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\native
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\native
