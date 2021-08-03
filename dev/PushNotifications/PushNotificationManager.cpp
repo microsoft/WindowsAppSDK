@@ -248,30 +248,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsBackgroundTaskBuilderAvailable()
     {
-        try
-        {
-            auto builder{ BackgroundTaskBuilder() };
-            auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
-        }
-        catch (...)
-        {
-            return false;
-        }
-        return true;
+        auto builder{ BackgroundTaskBuilder() };
+        auto builder5{ builder.try_as<winrt::IBackgroundTaskBuilder5>() };
+        return builder5 != nullptr;
     }
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
     {
         THROW_HR_IF(E_INVALIDARG, options == PushNotificationRegistrationOptions::Undefined); // WI_IsFlagSet does not allow 0 as flag.
 
-        bool isBIFlagSet{ WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
+        bool isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
         bool isProtocolActivatorSet{ WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator) };
 
-        THROW_HR_IF(E_INVALIDARG, isBIFlagSet && isProtocolActivatorSet); // Invalid flag combination
+        THROW_HR_IF(E_INVALIDARG, IsBackgroundTaskBuilderAvailable && isProtocolActivatorSet); // Invalid flag combination
 
         if (AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable())
         {
-            return isBIFlagSet;
+            THROW_HR_IF(E_INVALIDARG, isProtocolActivatorSet); // Don't allow packaged apps to call with protocol if background task available
+            return isBackgroundTaskFlagSet;
         }
         else
         {
