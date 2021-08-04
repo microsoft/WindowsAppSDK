@@ -46,9 +46,15 @@
                 <com:Extension Category="windows.comServer">
                     <com:ComServer>
                         <com:ExeServer Executable="PushNotificationsLongRunningTask.exe" DisplayName="Push Notifications Long Running Task">
-                            <com:Class Id="8FCFB82B-DB93-4E1D-9008-76D768CEB9EA" DisplayName="Push Notifications Long Running Task"/>
+                            <com:Class Id="330EC755-31F2-40A7-977D-B0ABB1E1E52E" DisplayName="Push Notifications Long Running Task"/>
                         </com:ExeServer>
                     </com:ComServer>
+                </com:Extension>
+                <com:Extension Category="windows.comInterface">
+                    <com:ComInterface>
+                        <com:ProxyStub Id="60FC21B2-B396-4D49-94F0-7555869FB93C" DisplayName="PushNotificationsLongRunningTask ProxyStub" Path="PushNotificationsLongRunningTask.ProxyStub.dll"/>
+                        <com:Interface Id="60FC21B2-B396-4D49-94F0-7555869FB93C" ProxyStubClsid="60FC21B2-B396-4D49-94F0-7555869FB93C"/> <!-- IID_IWpnLrpPlatform -->
+                    </com:ComInterface>
                 </com:Extension>
                 <uap5:Extension
                       Category="windows.startupTask"

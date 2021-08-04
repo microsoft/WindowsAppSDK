@@ -18,7 +18,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE ProjectDir                  =$(ProjectDir)
 !MESSAGE OutDir                      =$(OutDir)
 !MESSAGE TargetName                  =$(TargetName)
-!MESSAGE WindowsAppSDKBuildPipeline =$(WindowsAppSDKBuildPipeline)
+!MESSAGE WindowsAppSDKBuildPipeline  =$(WindowsAppSDKBuildPipeline)
 !ENDIF
 
 TARGET_BASENAME=PushNotificationsLongRunningTask
@@ -26,6 +26,13 @@ TARGET_BASENAME=PushNotificationsLongRunningTask
 TARGET_EXE=$(TARGET_BASENAME)
 TARGET_EXE_DIR=$(OutDir)$(TARGET_EXE)
 TARGET_EXE_FILE=$(TARGET_EXE_DIR)\$(TARGET_EXE).exe
+
+TARGET_PROXYSTUB=PushNotificationsLongRunningTask.ProxyStub
+TARGET_PROXYSTUB_DIR=$(OutDir)$(TARGET_PROXYSTUB)
+TARGET_PROXYSTUB_FILE=$(TARGET_PROXYSTUB_DIR)\$(TARGET_PROXYSTUB).dll
+!IFDEF VERBOSE
+!MESSAGE $(TARGET_PROXYSTUB_FILE)
+!ENDIF
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
@@ -44,6 +51,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir)\Assets md $(WorkDir)\Assets >NUL
     @copy /Y $(ProjectDir)Assets\* $(WorkDir)\Assets\* >NUL
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL
+    @copy /Y $(TARGET_PROXYSTUB_FILE) $(WorkDir) >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS) /o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
