@@ -19,7 +19,7 @@
     - [2.4.1. Windows App SDK 0.5 Notation](#241-windows-app-sdk-05-notation)
     - [2.4.2. WinUI 2.x Notation](#242-winui-2x-notation)
   - [2.5. Decision 5: Package Names](#25-decision-5-package-names)
-- [3. Decision Conclusion](#3-decision-conclusion)
+- [3. Conclusions](#3-conclusions)
 
 # 1. Background
 
@@ -38,7 +38,7 @@ Development- and build-time issues are out-of-scope for this decision. Windows A
 requirements for dev- and build-time and how NuGet, VISX and other tech are handled do not
 impact this decision.
 
-As this decision is focused on install- and run-time it results in a stance on binary compatibility.
+As this spec is focused on install- and run-time it results in a stance on binary compatibility.
 Source compatibility is only significant at development- and build-time so a decision on source
 compatibility is out-of-scope for this decision.
 
@@ -140,14 +140,10 @@ downlevel support is no longer relevant.
 
 ## 1.6. Windows App SDK Versioning Requirements
 
-Windows App SDK's versioning model has no crisply defined requirements but there has been
-(a lot of) past discussion. Windows App SDK's versioning requirements for install- and
-run-time are extrapolated from past documents (e.g. `TODO: insert link here to March 0.5 information`)
-as well as conversations, meetings, email and design efforts (especially DynamicDependencies and
-PlatformIntegrationPackage (PIP)) involving Howard Kapustein, Adam Stritzel, Alex Lam, David
-Bennett, Adam Braden, Jon Wiswall, EHO, Mike Hillberg, Jevan Saks, Ben Kuhn and more.
+Windows App SDK's versioning model has been discussed in detail but not documented in one place.
+This spec pulls together that disparate information into a unified whole.
 
-The meta-requirements are briefly summarized here:
+The versioning meta-requirements are briefly summarized here:
 
 * Require no Windows servicing
 * Support [Semantic Versioning (SemVer)](https://semver.org/)
@@ -159,31 +155,28 @@ The meta-requirements are briefly summarized here:
 * Be implementable across our key technologies including Dynamic Dependencies, NuGet, MSIX, MS Store and VSIX
 * Support WinAppSDK DynDep leveraging OS DynDep (in future Windows versions) via polyfill (initially where available, eventually 100%)
 
-Some requirements pose incomplete or contradictory constraints. Others can be met in multiple ways.
-Windows App SDK requires crisp answers to implement and ship 0.8+.
+These requirements need careful balance and multiple mechanisms to meet them all. This spec focuses
+on install- and run-time needs, specifically MSIX and Dynamic Dependencies (DynDep) for unpackaged
+apps.
 
-This decision focuses on install- and run-time needs, specifically MSIX and Dynamic Dependencies
-(DynDep) for unpackaged apps. These are also areas with significant gaps needing clarity (and work)
-to ship unpackaged support in 0.8 and 1.x.
-
-Other impacted areas are equally addressed by the decision for MSIX and DynDep, or otherwise have
-clear solutions given the decision. Thus this decision doc focuses on MSIX and DynDep.
-
-The versioning solution used in 0.5 is insufficient for Windows App SDK's upcoming support for
+The versioning solution used in 0.5 is insufficient for Windows App SDK's support for
 unpackaged apps (e.g. MSIX naming patterns don't work for the DynamicDependency Lifetime Manager
-(DDLM) package). See section 2. Decisions for more details. Past decisions are incorproated to the
+(DDLM) package). See section 2. Decisions for more details. Past decisions are incorporated to the
 extent possible but additions and changes are needed.
 
 Packaged apps bring a subset of requirements vs unpackaged apps so this decision is expected to
-work equally well for packaged apps. If open issues remain a separate decision doc should be
-written.
+work equally well for packaged apps.
 
 MS Store brings similar needs and constraints as MSIX so this decision is expected to work equally
-well for MS Store distribution. If open issues remain a separate decision doc should be written.
+well for MS Store distribution.
 
 # 2. Decisions
 
-There are several areas of ambiguity or conflict in the requirements or in their application to MSIX and/or DynDep.
+Current versioning design and practice has some areas of ambiguity or gaps for new scenarios (e.g.
+unpackaged apps). These issues are noted with solutions and the recommended path forward.
+
+Jump ahead to [3. Conclusions](#3-conclusions) to skip the alternatives considered,
+detailed explanations and why the recommended solutions are chosen.
 
 ## 2.1. Decision 1: Breaking Change Boundary for Version 0.*
 
@@ -268,10 +261,12 @@ version 89 and 92+ are under development.
 Option B provides a stronger degree of compatibility and risk management than Option A (Major
 version) while still affording a reasonable way for developers to adopt updates.
 
-Windows App SDK aspires to adopt Option A (Major version) but there are reservations given the
-project's relative youth. Option A can (and will) be adopted in a future release (no sooner than
-2.0) once processes, infrastructure and practices are ready to embrace it. A future Decision will be
-made <del>if</del> when this changes.
+Windows App SDK aspires to adopt Option A (Major version) but more tooling and infrastructure is
+desired before making that level of guarantee. Option B provides a good balance of rapid
+development and compatibility assurance.
+
+Option A can (and will) be adopted in a future release (no sooner than 2.0) once tooling and
+infrastructure are ready to embrace it.
 
 ### 2.2.1. Current practices in Microsoft-authored Framework packges.
 
@@ -302,8 +297,8 @@ Windows App SDK 1.x adds a -channel# tag (e.g. "-preview1") to the package name.
 **Option B: `-pre`**
 **Option C: `-p`**
 
-These all may optionally include a trailing digit indicating the Nth release of a channel for a
-version of the project.
+These may optionally include a trailing digit indicating the Nth release of a channel for a version
+of the project.
 
 ***Recommendation:*** Option A and C (when necessary).
 
@@ -491,7 +486,7 @@ This produces a worst case for WARddlm in Windows App SDK 99.888.7777.66 ARM64 P
 * PACKAGE_VERSION struct = `99.888.7777.66`
 * PACKAGE_VERSION uint64 = `0x006303781E610042`
 
-# 3. Decision Conclusion
+# 3. Conclusions
 
 **Decision 1:** Windows App SDK version 0.* encodes `Major.Minor` into MSIX package Names starting with version 0.8.0.0.
 
