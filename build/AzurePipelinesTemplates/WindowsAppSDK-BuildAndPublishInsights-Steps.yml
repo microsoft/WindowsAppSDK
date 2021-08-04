@@ -17,13 +17,13 @@ steps:
     arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsResourceLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
 
 - task: DownloadPackage@1
-    displayName: 'Download Microsoft.Telemetry.Inbox.Native'
-    inputs:
-      feed: '/3415933f-ac0d-4766-8c0a-3f4c247c25f5'                         # 0
-      view: 'ef61a1c1-003b-4a27-bde5-beec8301021b'                          # Release
-      definition: '2fe60c09-c66f-4275-ae2d-f015c7170c72'                    # Microsoft.Telemetry.Inbox.Native
-      version: '10.0.18362.1-190318-1202.19h1-release.amd64fre'             # latest version
-      downloadPath: '$(System.DefaultWorkingDirectory)'                     # download and extract to repo root
+  displayName: 'Download Microsoft.Telemetry.Inbox.Native'
+  inputs:
+    feed: '/3415933f-ac0d-4766-8c0a-3f4c247c25f5'                         # 0
+    view: 'ef61a1c1-003b-4a27-bde5-beec8301021b'                          # Release
+    definition: '2fe60c09-c66f-4275-ae2d-f015c7170c72'                    # Microsoft.Telemetry.Inbox.Native
+    version: '10.0.18362.1-190318-1202.19h1-release.amd64fre'             # latest version
+    downloadPath: '$(System.DefaultWorkingDirectory)'                     # download and extract to repo root
 
 - task: powershell@2
   name: UpdateTraceloggingConfig
