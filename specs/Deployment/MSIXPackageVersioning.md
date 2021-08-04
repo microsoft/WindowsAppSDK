@@ -379,11 +379,15 @@ All fields are fixed-size with leading zeroes as needed. For example, Windows Ap
 * Day = 25
 * Patch = 000 (if we have a 0.5.1 release this would be `001`)
 
-This doesn't scale going forward e.g. MSIX version is a DotQuadNumber aka `uint16[4]`. If 0.8 was released on May'31, 2021 MSIX version would be `0.82105.31000.0`
+This doesn't scale going forward e.g. MSIX version is a DotQuadNumber aka `uint16[4]`. If 0.8 was
+released on May'31, 2021 MSIX version would be `0.82105.31000.0`
 
 ### 2.4.2. WinUI 2.x Notation
 
-WinUI 2.x encodes MSIX versions as `M.NYYMM.DDPPP.0` (same as Windows App SDK 0.5). This runs into issues starting with WinUI 2.7, as identified by [WinUI version schema sometime can't applied to MinVersion #4008](https://github.com/microsoft/microsoft-ui-xaml/issues/4008#issuecomment-765633788).
+WinUI 2.x encodes MSIX versions as `M.NYYMM.DDPPP.0` (same as Windows App SDK 0.5). This runs into
+issues starting with WinUI 2.7, as identified by [WinUI version schema sometime can't applied to
+MinVersion
+#4008](https://github.com/microsoft/microsoft-ui-xaml/issues/4008#issuecomment-765633788).
 
 ## 2.5. Decision 5: Package Names
 

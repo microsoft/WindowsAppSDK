@@ -67,7 +67,7 @@ packages in a package family registered at a time. Thus if a user has v1.0.0.0 r
 v1.0.0.0. This poses servicing challenges, as updating the Main package requires any running
 processes from the existing Main package to be terminated.
 
-For these reasons developers are strongly encouraged to only rely on the Main package when
+For these reasons Windows App SDK developers are strongly encouraged to only rely on the Main package when
 necessary.
 
 If a process from the Main package is necessary, it should be short-lived or support a save/restore
@@ -77,7 +77,7 @@ running processes can be terminated (e.g. via [DeploymentOptions.ForceTargetAppl
 to allow the servicing event to occur and restarted upon its completion, with only a transient (and
 possibly unnoticed) interruption of service.
 
-Further, if/when the Main package is necessary, developers are encouraged to put as
+Further, if/when the Main package is necessary, Windows App SDK developers are encouraged to put as
 little as practical in the Main package and use the Framework package as much as possible. For
 example, if a StartupTask is needed you can declare the StartupTask in the Main package's
 `appxmanifest.xml` and provide an executable with a trivial 1% implementation e.g.
@@ -98,8 +98,8 @@ The Singleton package supplements the Main package, for when functionality is ne
 process spanning all versions of Windows App SDK.
 
 The Singleton package is a main package so the same guidance applies to the Singleton as to the Main
-package -- developers are strongly encouraged to only rely on the Singleton package when necessary.
-See (2.1.2. Role- Main) for more details.
+package -- Windows App SDK developers are strongly encouraged to only rely on the Singleton package
+when necessary. See (2.1.2. Role- Main) for more details.
 
 The Singleton package's content is used by ALL versions of Windows App SDK registered to the user so
 additional caution is advised.
