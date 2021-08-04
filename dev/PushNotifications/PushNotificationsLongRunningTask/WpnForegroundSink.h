@@ -1,18 +1,51 @@
-﻿#pragma once
-#include "pch.h"
-#include "Windows.Foundation.h"
+﻿#include "pch.h"
 
-typedef winrt::Windows::Foundation::TypedEventHandler<winrt::Windows::Networking::PushNotifications::PushNotificationChannel, winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationHandler;
+inline IID IID_IWpnForegroundSink = winrt::guid("A25F1E10-0EF6-4503-BEA5-F2EB82A956D0");
 
-struct __declspec(uuid("FC6CF6F3-C308-4C4D-B157-8B56E0E94505")) WpnForegroundSinkImpl WrlFinal :
-    Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IWpnForegroundSink, Microsoft::WRL::FtmBase>
+struct __declspec(uuid("A25F1E10-0EF6-4503-BEA5-F2EB82A956D0")) IWpnForegroundSink : IUnknown
 {
-    WpnForegroundSinkImpl();
+    virtual bool AddEvent() = 0;
+};
 
-    HRESULT AddEvent(winrt::Windows::Foundation::IUnknown handler);
+class WpnForegroundSink : IWpnForegroundSink
+{
+    private:
+        mutable Microsoft::WRL::Wrappers::SRWLock m_lock;
+        ULONG* m_ref = 0;
 
-private:
-    mutable Microsoft::WRL::Wrappers::SRWLock m_lock;
-    Microsoft::WRL::EventSource<PushNotificationHandler> m_event;
-    // Here we also define the Platform components i.e. the map wrappings
+    public:
+        WpnForegroundSink() = default;
+        HRESULT IUnknown::QueryInterface(const IID& iid, void** ptr)
+        {
+            if (!ptr)
+            {
+                return E_INVALIDARG;
+            }
+            *ptr = nullptr;
+            if (iid == IID_IUnknown || iid == IID_IWpnForegroundSink)
+            {
+                *ptr = (void*) this;
+                AddRef();
+                return NOERROR;
+            }
+            return E_NOINTERFACE;
+        }
+
+        ULONG IUnknown::AddRef()
+        {
+            InterlockedIncrement(m_ref);
+            return *m_ref;
+        }
+
+        ULONG IUnknown::Release()
+        {
+            ULONG ulRefCount = InterlockedDecrement(m_ref);
+            if (0 == *m_ref)
+            {
+                delete this;
+            }
+            return ulRefCount;
+        }
+
+        bool AddEvent();
 };

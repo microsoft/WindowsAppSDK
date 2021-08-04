@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-struct WpnForegroundSinkFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
+struct WpnForegroundSinkWrapperFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
 {
     IFACEMETHODIMP CreateInstance(
         _In_opt_ IUnknown* outer,

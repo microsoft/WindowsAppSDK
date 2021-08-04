@@ -30,6 +30,9 @@
     <ClInclude Include="WpnForegroundSinkFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WpnForegroundSinkWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="WpnForegroundSink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -47,10 +50,13 @@
     <ClCompile Include="platformfactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WpnForegroundSinkWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="WpnForegroundSinkFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WpnForegroundSink.cpp">
+    <ClCompile Include="WnpForegroundSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

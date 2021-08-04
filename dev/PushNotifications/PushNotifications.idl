@@ -135,6 +135,8 @@ namespace Microsoft.Windows.PushNotifications
 
         static UInt32 GetStringLengthFromComServer(String inputString);
 
+        static UInt32 TestForegroundSink();
+
         static UInt32 ShutdownPlatformManually();
     };
 }

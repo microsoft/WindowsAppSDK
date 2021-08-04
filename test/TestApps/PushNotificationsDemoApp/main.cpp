@@ -107,12 +107,16 @@ int main()
 
     std::wcout << L"Length (from LRP): " + std::to_wstring(stringLengthFromComServer) << std::endl;
 
+    bool lol = PushNotificationManager::TestForegroundSink();
+    std::wcout << lol << std::endl;
+
     Sleep(10000);
 
     std::cout << L"Attempt to Shutdown platform" << std::endl;
     ULONG shutdownRes = PushNotificationManager::ShutdownPlatformManually();
 
     std::wcout << L"Shutdown result: " + std::to_wstring(stringLengthFromComServer) << std::endl;
+
 
     /*
     PushNotificationActivationInfo info(

@@ -17,6 +17,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         static uint32_t GetStringLengthFromComServer(const winrt::hstring& inputString);
 
+        static uint32_t TestForegroundSink();
+
         static uint32_t ShutdownPlatformManually();
 
     private:

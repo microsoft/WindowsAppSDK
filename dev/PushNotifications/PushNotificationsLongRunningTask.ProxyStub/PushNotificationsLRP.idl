@@ -30,9 +30,9 @@ interface IWpnLrpPlatform : IUnknown
 [object]
 [uuid(25604D55-9B17-426F-9D67-2B11B3A65598)]
 [pointer_default(unique)]
-interface IWpnForegroundSink : IUnknown
+interface IWpnForegroundSinkWrapper : IUnknown
 {
-    HRESULT AddEvent([in] IUnknown* handler);
+    HRESULT GetForegroundSink([out] IUnknown** sink);
 
 };
 
@@ -47,8 +47,8 @@ library WpnLrpPlatformLib
     };
 
     [uuid(FC6CF6F3-C308-4C4D-B157-8B56E0E94505)] // PR_DYNDEP_DATASTORE_CLSID_UUID
-    coclass WpnForegroundSink
+    coclass WpnForegroundSinkWrapper
     {
-        [default] interface IWpnForegroundSink;
+        [default] interface IWpnForegroundSinkWrapper;
     };
 };

@@ -9,7 +9,7 @@
 // Need to fix this ref!!!
 //#include <..\PushNotifications.LongRunningTask.ProxyStub\PushNotificationsLRP_h.h>
 #include <PushNotificationsLRP_h.h>
-
+#include "PushNotificationsLongRunningTask/WpnForegroundSink.h"
 #include "PushNotificationCreateChannelResult.h"
 #include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -21,9 +21,10 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
-
+#include <unknwnbase.h>
 #include <winstring.h>
 #include <wil/resource.h>
+#include <windows.foundation.h>
 
 using namespace std::literals;
 
@@ -31,7 +32,7 @@ constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 constexpr winrt::guid PushNotificationsTask_guid{ PUSHNOTIFICATIONS_TASK_CLSID_STRING };
 
 static wil::unique_event g_waitHandleForArgs;
-
+constexpr IUnknown** varx = nullptr;
 wil::unique_event& GetWaitHandleForArgs()
 {
     return g_waitHandleForArgs;
@@ -41,7 +42,6 @@ namespace winrt
 {
     using namespace Windows::ApplicationModel::Background;
     using namespace Windows::Networking::PushNotifications;
-    using namespace Windows::Foundation;
 }
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -70,7 +70,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
@@ -250,6 +250,34 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator) && token.Cookie() && winrt::get_module_lock() == 0)
         {
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
+        }
+    }
+
+    uint32_t PushNotificationManager::TestForegroundSink()
+    {
+        try
+        {
+            wil::com_ptr<IWpnForegroundSinkWrapper> foregroundSinkWrapper{
+                wil::CoCreateInstance<WpnForegroundSinkWrapper,
+                IWpnForegroundSinkWrapper>(CLSCTX_LOCAL_SERVER) };
+
+            wil::com_ptr<IUnknown> sinkPtr;
+            foregroundSinkWrapper->GetForegroundSink(&sinkPtr);
+
+            wil::com_ptr<WpnForegroundSink> sink;
+            HRESULT hr = sink.get()->QueryInterface(IID_PPV_ARGS(&sinkPtr));
+
+            sink->AddEvent();
+            // sinkPtr.get()->QueryInterface(IID_PPV_ARGS(&sinkPtr)
+            // sink.get()->QueryInterface(IID_IWpnForegroundSink, &sinkPtr);
+            // HRESULT hr = sinkPtr.get()->QueryInterface(IID_IWpnForegroundSink, &sink);
+
+            return 0;
+        }
+        catch (...)
+        {
+            HRESULT error = wil::ResultFromCaughtException();
+            return error;
         }
     }
 
