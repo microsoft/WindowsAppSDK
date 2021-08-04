@@ -26,8 +26,7 @@
 This document answers the question: "How are MSIX and Dynamic Dependencies defined and implemented
 to meet versioning requirements for Windows App SDK 0.8 through 1.x?"
 
-Windows App SDK's versioning requirements beyond 0.5 are defined in (insert link here).
-This document defines how Windows App SDK packages are named and versioned to meet these requirements.
+This document defines how Windows App SDK packages are named and versioned.
 
 ## 1.1. Scope
 
