@@ -30,9 +30,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{d69dc3ed-c753-455d-a3d1-d0b1329e76ce}</ProjectGuid>
-    <RootNamespace>ProjectReunionTelemetryResource</RootNamespace>
+    <RootNamespace>WindowsAppSDKInsightsResource</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>WindowsAppSDKTelemetryResource</ProjectName>
+    <ProjectName>Microsoft.WindowsAppSDK.Insights.Resource</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
