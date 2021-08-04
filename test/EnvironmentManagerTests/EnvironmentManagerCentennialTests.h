@@ -12,24 +12,28 @@ namespace WindowsAppSDKEnvironmentManagerTests
     class EnvironmentManagerCentennialTests {
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
-            TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"{PackagedCwaFullTrust, PackagedCwaPartialTrust}")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Method", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"CentennialAppxManifest.pkg.xml")
+            TEST_CLASS_PROPERTY(L"UAP:Host",  L"PackagedCWA")
             END_TEST_CLASS()
 
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            ::Test::Bootstrap::SetupPackages();
+            ::Test::Bootstrap::Setup();
 
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            ::Test::Bootstrap::Cleanup();
             return true;
         }
 
         TEST_METHOD_SETUP(CentennialWriteEVs)
         {
-            // Deploy packaged app to register handler through the manifest.
-            //InstallPackage(c_testVCLibsPackageFile);
-            //InstallPackage(c_testPackageFile);
-
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());

@@ -23,7 +23,7 @@
         <Resource Language="en-us" />
     </Resources>
     <Applications>
-        <Application Id="TE.ProcessHost" Executable="TE.ProcessHost.exe" EntryPoint="Windows.FullTrustApplication">
+        <Application Id="TE.ProcessHost.UAP.exe" Executable="TE.ProcessHost.exe" EntryPoint="Windows.FullTrustApplication">
             <uap:VisualElements DisplayName="TAEF Tailored Application Host Process" Square150x150Logo="taef.png" Square44x44Logo="taef.png" Description="TAEF Tailored Application Host Process" BackgroundColor="#222222">
                 <uap:SplashScreen Image="taef.png" />
             </uap:VisualElements>

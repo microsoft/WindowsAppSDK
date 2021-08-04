@@ -220,7 +220,9 @@
     <Xml Include="AppxManifest.pkg.xml">
       <DeploymentContent>true</DeploymentContent>
     </Xml>
-    <Xml Include="CentennialAppxManifest.pkg.xml" />
+    <Xml Include="CentennialAppxManifest.pkg.xml">
+      <DeploymentContent>true</DeploymentContent>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Windows.System.EnvironmentManager">
