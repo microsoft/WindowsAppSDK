@@ -28,7 +28,7 @@ As a result, non-store provisioned apps cannot use this feature.
 
 **Client Registration**: Unpackaged 3rd party applications cannot register themselves as a Push
 target. The only way to get an implicit client side registration is to package the app as an MSIX
-Desktop Bridge or SSP which may not satisfy 3rd party requirements.
+Desktop Bridge or sparse signed packages which may not satisfy 3rd party requirements.
 
 **Push Channels**: All the channel APIs are dependent on the caller app having a Microsoft store
 provisioned identity. This means that Win32 and unpackaged apps that are not store distributed
@@ -109,17 +109,17 @@ The code in Main would follow the pattern below:
 int main()
 {
     PushNotificationActivationInfo info {};
-    bool isComActivationSupported { PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger |
-                                        PushNotificationRegistrationOptions::ComActivator)};
+    bool isComActivationSupported { PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger |
+                                        PushNotificationRegistrationActivators::ComActivator)};
     if (isComActivationSupported)
     {
         // Register the ComActivator guid
-        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
+        info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
         winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
     }
     else
     {
-        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::ProtocolActivator);
+        info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::ProtocolActivator);
     }
 
     // Registers the application to receive push notifications
@@ -216,7 +216,7 @@ int main()
     if(isComActivationSupported)
     {
         // Unregister the ComActivator from inproc activation
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
+        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationActivators::ComActivator);
     }
 
     return 0;
@@ -234,10 +234,10 @@ Process A (Registration of the Push Trigger only):
 int main()
 {
     PushNotificationActivationInfo info = nullptr;
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger))
     {
         // Register the ComActivator guid
-        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::PushTrigger,
+        info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::PushTrigger,
             winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
     }
     else
@@ -260,10 +260,10 @@ Process B (Register the inproc COM server and handle the background activation):
 int main()
 {
     PushNotificationActivationInfo info = nullptr;
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         // Register the ComActivator guid
-        info = PushNotificationActivationInfo(PushNotificationRegistrationOptions::ComActivator,
+        info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::ComActivator,
             winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
     }
     else
@@ -286,7 +286,7 @@ int main()
     // Some code ....
 
     // Unregisters the inproc COM Activator
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationActivators::ComActivator);
 
     return 0;
 }
@@ -434,8 +434,9 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     [flags]
-    enum PushNotificationRegistrationOptions
+    enum PushNotificationRegistrationActivators
     {
+        Undefined = 0, // Default enum to catch nullptr case when no flag is defined
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Background Task component as an in-process COM server
         ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
@@ -447,15 +448,15 @@ namespace Microsoft.Windows.PushNotifications
         // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
         // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
         // 2) If kind = ComActivator is specified, the Background Task component will be Registered as an in-process COM server
-        PushNotificationActivationInfo(PushNotificationRegistrationOptions options, Guid taskClsid);
+        PushNotificationActivationInfo(PushNotificationRegistrationActivators activators, Guid taskClsid);
 
         // Applications that need to use ProtocolActivator will use this constructor
-        PushNotificationActivationInfo(PushNotificationRegistrationOptions options);
+        PushNotificationActivationInfo(PushNotificationRegistrationActivators activators);
 
         // The CLSID associated with the Client COM server that Windows App SDK will activate
         Guid TaskClsid{ get; };
 
-        PushNotificationRegistrationOptions Options{ get; };
+        PushNotificationRegistrationActivators Activators{ get; };
 
         // The conditions under which Push Triggers would execute
         Windows.ApplicationModel.Background.IBackgroundCondition[] GetConditions();
@@ -540,13 +541,16 @@ namespace Microsoft.Windows.PushNotifications
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
         // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
         //    and the token parameter will be unused so it should be set to nullptr
-        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationOptions options);
+        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationActivators activators);
+
+        // Unregister all activators registered for the application
+        static void UnregisterAllActivators();
 
         // Request a Push Channel with an encoded RemoteId from WNS. RemoteId is an AAD identifier GUID
         static Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
 
         // Applications will call this to check which flags are supported for RegisterActivator
-        static Boolean IsActivatorSupported(PushNotificationRegistrationOptions options);
+        static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
     };
 }
 
