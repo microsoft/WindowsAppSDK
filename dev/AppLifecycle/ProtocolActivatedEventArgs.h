@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         IInternalValueMarshalable>
     {
     public:
-        ProtocolActivatedEventArgs(const std::wstring& uri) : m_uri(winrt::Windows::Foundation::Uri(std::move(uri)))
+        ProtocolActivatedEventArgs(const winrt::hstring uri) : m_uri(winrt::Windows::Foundation::Uri(uri))
         {
             m_kind = ActivationKind::Protocol;
         }
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            auto args = std::wstring(query.GetFirstValueByName(L"Uri"));
+            auto args = query.GetFirstValueByName(L"Uri");
             return make<ProtocolActivatedEventArgs>(args);
         }
 

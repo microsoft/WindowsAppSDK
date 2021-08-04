@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         ActivatedEventArgsBase, IInternalValueMarshalable>
     {
     public:
-        StartupActivatedEventArgs(const std::wstring& taskId) : m_taskId(taskId)
+        StartupActivatedEventArgs(const winrt::hstring taskId) : m_taskId(taskId)
         {
             m_kind = ActivationKind::StartupTask;
         }
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            auto taskId = std::wstring(query.GetFirstValueByName(L"TaskId"));
+            auto taskId = query.GetFirstValueByName(L"TaskId");
             return make<StartupActivatedEventArgs>(taskId);
         }
 
@@ -41,7 +41,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
     private:
-        std::wstring m_taskId;
+        winrt::hstring m_taskId;
     };
 }
 

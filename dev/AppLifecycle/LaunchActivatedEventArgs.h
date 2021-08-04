@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         ActivatedEventArgsBase, IInternalValueMarshalable>
     {
     public:
-        LaunchActivatedEventArgs(const std::wstring& args) : m_args(std::move(args))
+        LaunchActivatedEventArgs(const winrt::hstring args) : m_args(args)
         {
             m_kind = ActivationKind::Launch;
         }
@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            auto args = std::wstring(query.GetFirstValueByName(L"Arguments"));
+            auto args = query.GetFirstValueByName(L"Arguments");
             return make<LaunchActivatedEventArgs>(args);
         }
 
@@ -47,6 +47,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
     private:
-        std::wstring m_args;
+        winrt::hstring m_args;
     };
 }
