@@ -68,7 +68,7 @@ jobs:
         New-Item -ItemType Directory -Force -Path $manifestPath;
         $xslt = New-Object System.Xml.Xsl.XslCompiledTransform;
         $xslt.Load('build\TransformAppxManifest.xslt');
-        $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $manifestPath+'\WindowsAppSDK.manifest');
+        $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $manifestPath+'\Microsoft.WindowsAppSdk.Foundation.manifest');
 
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
