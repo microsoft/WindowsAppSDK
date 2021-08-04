@@ -217,7 +217,9 @@
     <ClCompile Include="EnvironmentManagerWin32Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="AppxManifest.pkg.xml" />
+    <Xml Include="AppxManifest.pkg.xml">
+      <DeploymentContent>true</DeploymentContent>
+    </Xml>
     <Xml Include="CentennialAppxManifest.pkg.xml" />
   </ItemGroup>
   <ItemGroup>
