@@ -53,10 +53,10 @@ more.
 
 The primary scenarios include:
 
-* Brokered Access -- processes running in an [AppContainer](https://docs.microsoft.com/windows/win32/secauthz/appcontainer-isolation) requiring
-                     access to resources that cannot be access from within the AppContainer can use
-                     a 'helper process' running at MediumIL and doing work on the API's behalf.
-                     cannot do for itself (i.e. brokered access to a resource).
+* Brokered Access -- processes running in an [AppContainer](https://docs.microsoft.com/windows/win32/secauthz/appcontainer-isolation)
+                     requiring access to resources that cannot be access from within the
+                     AppContainer can use a 'helper process' running at MediumIL and doing work on
+                     the API's behalf. cannot do for itself (i.e. brokered access to a resource).
 * Long-Running Process (aka user service) -- functionality requiring a long-running process
                                              (especially if its lifetime isn't directly coupled to
                                              an app's lifetime).
