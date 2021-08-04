@@ -20,6 +20,19 @@
 
 #include <winrt/Microsoft.Windows.System.h>
 #include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Management.Deployment.h>
+#include "WindowsAppSDK.Test.Package.h"
+#include "WindowsAppSDK.Test.Bootstrap.h"
+#include "WindowsAppSDK.Test.TAEF.h"
+
+inline const std::wstring GetDeploymentDir()
+{
+    WEX::Common::String testDeploymentDir;
+    WEX::TestExecution::RuntimeParameters::TryGetValue(L"TestDeploymentDir", testDeploymentDir);
+    return reinterpret_cast<PCWSTR>(testDeploymentDir.GetBuffer());
+}
+
+const std::wstring g_deploymentDir = GetDeploymentDir();
 namespace TP = ::Test::Packages;
 
 #endif

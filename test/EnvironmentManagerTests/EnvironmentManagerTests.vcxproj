@@ -85,7 +85,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-    <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <!-- We use MultiThreadedDebug, rather than MultiThreadedDebugDLL, to avoid DLL dependencies on VCRUNTIME140d.dll and MSVCP140d.dll. -->
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -127,8 +127,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,8 +150,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -167,8 +169,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -189,8 +192,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;wex.common.lib;wex.logger.lib;te.common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -225,6 +229,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\dev\WindowsAppSDK_BootstrapDLL\WindowsAppSDK_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DynamicDependency\data\DynamicDependency.DataStore.Msix\DynamicDependencies.DataStore.Msix.vcxproj">
+      <Project>{b71e818a-882e-456a-87e5-4de4a6602b99}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DynamicDependency\data\DynamicDependencyLifetimeManager.Msix\DynamicDependencyLifetimeManager.Msix.vcxproj">
+      <Project>{a7391725-4ef5-438f-8de1-645423e46955}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\DynamicDependency\data\Microsoft.WindowsAppSDK.Framework\Microsoft.WindowsAppSDK.Framework.vcxproj">
+      <Project>{9c1a6c58-52d6-4514-9120-5c339c5df4be}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

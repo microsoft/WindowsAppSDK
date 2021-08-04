@@ -6,6 +6,9 @@
 
 namespace WindowsAppSDKEnvironmentManagerTests
 {
+    const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msix";
+    const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
+
     class EnvironmentManagerCentennialTests {
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
@@ -13,9 +16,24 @@ namespace WindowsAppSDKEnvironmentManagerTests
             TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"{PackagedCwaFullTrust, PackagedCwaPartialTrust}")
             END_TEST_CLASS()
 
+
+        TEST_CLASS_SETUP(ClassInit)
+        {
+            ::Test::Bootstrap::SetupPackages();
+
+            return true;
+        }
+
         TEST_METHOD_SETUP(CentennialWriteEVs)
         {
-            ::Test::Bootstrap::Setup();
+            // Deploy packaged app to register handler through the manifest.
+            //InstallPackage(c_testVCLibsPackageFile);
+            //InstallPackage(c_testPackageFile);
+
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+
             UserSetup();
             MachineSetup();
             return true;
@@ -23,7 +41,6 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_METHOD_CLEANUP(CentennialRemoveEVs)
         {
-            ::Test::Bootstrap::Cleanup();
             UserCleanup();
             MachineCleanup();
             return true;

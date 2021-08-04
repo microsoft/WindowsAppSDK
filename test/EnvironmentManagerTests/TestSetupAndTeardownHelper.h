@@ -12,6 +12,18 @@ inline std::wstring userPathExt{};
 inline std::wstring machinePath{};
 inline std::wstring machinePathExt{};
 
+inline void InstallPackage(const std::wstring& packagePath)
+{
+    // Deploy packaged app to register handler through the manifest.
+    winrt::Windows::Management::Deployment::PackageManager manager;
+    IVector<winrt::Windows::Foundation::Uri> depPackagePaths;
+    auto result = manager.AddPackageAsync(winrt::Windows::Foundation::Uri(packagePath), depPackagePaths,
+        winrt::Windows::Management::Deployment::DeploymentOptions::ForceApplicationShutdown).get();
+    auto errorText = result.ErrorText();
+    auto errorCode = result.ExtendedErrorCode();
+    VERIFY_SUCCEEDED(errorCode, errorText.c_str());
+}
+
 inline void RestoreUserPath(std::wstring originalPath)
 {
     wil::unique_hkey userEnvironmentVariablesHKey{};

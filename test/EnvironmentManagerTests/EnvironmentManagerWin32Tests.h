@@ -8,14 +8,30 @@ namespace WindowsAppSDKEnvironmentManagerTests
 {
     class EnvironmentManagerWin32Tests {
         BEGIN_TEST_CLASS(EnvironmentManagerWin32Tests)
-            //TEST_CLASS_PROPERTY(L"ActivationContext", L"EnvironmentManagerTests.dll.manifest")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs", L"ElevatedUser")
-            TEST_CLASS_PROPERTY(L"RunAs", L"{ElevatedUser,RestrictedUser,LowIL}")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Method", L"ElevatedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"RestrictedUser")
         END_TEST_CLASS()
 
-            TEST_METHOD_SETUP(WriteEVs)
+
+        TEST_CLASS_SETUP(ClassInit)
         {
+            ::Test::Bootstrap::Setup();
+            return true;
+        }
+
+        TEST_CLASS_CLEANUP(ClassUninit)
+        {
+            ::Test::Bootstrap::Cleanup();
+            return true;
+        }
+
+        TEST_METHOD_SETUP(WriteEVs)
+        {
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+
             UserSetup();
             MachineSetup();
             return true;
