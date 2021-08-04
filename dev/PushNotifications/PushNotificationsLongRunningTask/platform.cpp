@@ -1,8 +1,6 @@
 ﻿#include "pch.h"
 
-// FIX REF!!!
-#include "..\..\PushNotificationsLongRunningTask.ProxyStub\x64\Debug\PushNotificationsLRP_h.h"
-//#include <PushNotificationsLRP_h.h>
+#include <PushNotificationsLRP_h.h>
 
 #include "platform.h"
 
@@ -10,7 +8,7 @@ wil::unique_event g_winmainEvent(wil::EventOptions::None);
 
 Microsoft::WRL::ComPtr<WpnLrpPlatformImpl> g_platform;
 
-WpnLrpPlatformImpl* GetPlatform()
+WpnLrpPlatformImpl* RetrievePlatform()
 {
     if (!g_platform)
     {
@@ -20,8 +18,6 @@ WpnLrpPlatformImpl* GetPlatform()
     g_platform->AddRef();
     return g_platform.Get();
 }
-
-// create void function for copying com ptr to iinspectable
 
 void CleanPlatform()
 {
@@ -35,6 +31,16 @@ HRESULT InitializePlatform()
         g_platform = Microsoft::WRL::Make<WpnLrpPlatformImpl>();
     }
     g_platform->InitializePlatform();
+    return S_OK;
+}
+
+HRESULT ShutdownPlatform()
+{
+    if (g_platform)
+    {
+        g_platform->ShutdownPlatform();
+    }
+
     return S_OK;
 }
 
@@ -86,34 +92,29 @@ bool WpnLrpPlatformImpl::IsPlatformInitialized()
 STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterActivator(/*[in]*/ PCWSTR /*processName*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    auto lock = m_lock.acquire();
-    return S_OK;
+    return E_NOTIMPL;
 }
 
 STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterActivator(/*[in]*/ PCWSTR /*processName*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    auto lock = m_lock.acquire();
-    return S_OK;
+    return E_NOTIMPL;
 }
 
 STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    auto lock = m_lock.acquire();
-    return S_OK;
+    return E_NOTIMPL;
 }
 
 STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    auto lock = m_lock.acquire();
-    return S_OK;
+    return E_NOTIMPL;
 }
 
 STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[out]*/ GUID* /*appId*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    auto lock = m_lock.acquire();
-    return S_OK;
+    return E_NOTIMPL;
 }

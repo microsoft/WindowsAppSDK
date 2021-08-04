@@ -5,9 +5,7 @@
 
 // include notifications constants file here
 
-// FIX REF!!!
-#include "..\..\PushNotificationsLongRunningTask.ProxyStub\x64\Debug\PushNotificationsLRP_h.h"
-//#include <PushNotificationsLRP_h.h>
+#include <PushNotificationsLRP_h.h>
 
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
@@ -34,7 +32,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
 
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
-    // Callback to be signaled by COM if it considers that the event should exit.
+    // Callback to be signaled by COM if it considers that the process should exit.
     auto& module = Module<OutOfProc>::Create(SignalEvent);
 
     unsigned long count = module.IncrementObjectCount();
@@ -50,14 +48,13 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
         &clsid,
         platformFactory.GetAddressOf(),
         &cookie,
-        1
-    ));
+        1));
 
     InitializePlatform();
 
     GetWinMainEvent().wait();
 
-    GetPlatform()->ShutdownPlatform();
+    ShutdownPlatform();
     CleanPlatform();
 
     count = module.DecrementObjectCount();

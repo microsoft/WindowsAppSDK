@@ -4,8 +4,10 @@
 
 wil::unique_event& GetWinMainEvent();
 
-WpnLrpPlatformImpl* GetPlatform();
+WpnLrpPlatformImpl* RetrievePlatform();
 
 HRESULT InitializePlatform();
+
+HRESULT ShutdownPlatform();
 
 void CleanPlatform();

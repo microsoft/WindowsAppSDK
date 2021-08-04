@@ -1,8 +1,6 @@
 ﻿#include "pch.h"
 
-// FIX REF!!!
-#include "..\..\PushNotificationsLongRunningTask.ProxyStub\x64\Debug\PushNotificationsLRP_h.h"
-//#include <PushNotificationsLRP_h.h>
+#include <PushNotificationsLRP_h.h>
 
 #include "externs.h"
 #include "platform.h"
@@ -18,9 +16,9 @@ IFACEMETHODIMP WpnLrpPlatformFactory::CreateInstance(
     _COM_Outptr_ void** obj) noexcept
 {
     *obj = nullptr;
-    *obj = GetPlatform();
+    *obj = RetrievePlatform();
 
-    if (!GetPlatform()->IsPlatformInitialized())
+    if (!RetrievePlatform()->IsPlatformInitialized())
     {
         THROW_IF_FAILED(InitializePlatform());
     }
