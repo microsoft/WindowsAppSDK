@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WindowsAppSDK.Extension</RootNamespace>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">WindowsAppSDK.Extension</AssemblyName>
-    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">WindowsAppSDK.Extension.Preview</AssemblyName>
+    <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">WindowsAppSDK.Extension.Experimental</AssemblyName>
     <TargetFramework>net472</TargetFramework>
     <!-- This project may not have any C# source files, so suppress that compiler warning. -->
     <NoWarn>2008</NoWarn>
@@ -263,7 +263,7 @@
     <!--
       Add a timestamp as part 4 of the version for uniqueness, and to ensure newer builds are newer
       versions. Note that the timestamp is also included in release builds. This avoids version
-      sequencing issues between public previews and release versions that might otherwise have the same
+      sequencing issues between experimental and stable/preview versions that might otherwise have the same
       version number, since VSIX does not support preview tags or other mechanisms to distinguish.
     -->
     <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
@@ -292,8 +292,14 @@
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
       <Output TaskParameter="Result" PropertyName="_OriginalVsixTags" />
     </XmlPeek>
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview/text()"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixPreview" />
+    </XmlPeek>
 
-    <!-- Update the .vsixmanifest to reflect preview status if necessary -->
+    <!-- Update the .vsixmanifest to reflect experimental status if necessary -->
 
     <!-- The value set here for the Id needs to match that set for 'ExperimentalNugetRepositoryId' in
     ..\Directory.Build.targets -->
@@ -301,19 +307,25 @@
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
-      Value="$(_OriginalVsixId).Preview"
+      Value="$(_OriginalVsixId).Experimental"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:DisplayName"
-      Value="$(_OriginalVsixName) (Preview)"
+      Value="$(_OriginalVsixName) (Experimental)"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
       Value="$(_OriginalVsixTags), UWP"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
+      Value="true"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
   </Target>
   <Target Name="AfterBuild">
@@ -338,6 +350,11 @@
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
       Value="$(_OriginalVsixTags)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
+      Value="$(_OriginalVsixPreview)"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
   </Target>
 </Project>
