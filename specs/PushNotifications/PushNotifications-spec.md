@@ -4,14 +4,16 @@
 
 The Windows Push Notification Service (WNS) enables third-party developers to send toast, tile,
 badge, and raw updates from their own cloud service. This provides a mechanism to deliver new
-updates to your users in a power-efficient and dependable way. For example, the skype app service
-can triggering an incoming call toast by Pushing a Payload to the WNS service. Push is generally
-used for time critical events that require immediate user/developer action.
+updates to your users in a power-efficient and dependable way. For example, the Skype app service
+can trigger an incoming call toast by Pushing a Payload to the WNS service. Push is generally used
+for time critical events that require immediate user/developer action.
+
+For more details see:
 
 -   [The Push notification WinRT Public APIs](https://docs.microsoft.com/uwp/api/windows.networking.pushnotifications?view=winrt-19041)
     Defines the classes that encapsulate Push notifications. (UWP and Win32)
 -   [The Windows Push Notification Services (WNS) Overview](https://docs.microsoft.com/windows/uwp/design/shell/tiles-and-notifications/windows-push-notification-services--wns--overview)
-    Defines how an app today can subscribe to Push Notifications and send a payload down to the
+    Defines how an app can subscribe to Push Notifications and send a payload down to the
     corresponding client.
 
 The below diagram is an illustration of the overall Push Flow that we have today:
@@ -21,51 +23,51 @@ The below diagram is an illustration of the overall Push Flow that we have today
 
 **Portal Registration**: The entire Registration flow for Push is dependent on registering an app in
 the partner center portal by
-[associating an app with the Windows Store](https://docs.microsoft.com/azure/notification-hubs/notification-hubs-windows-store-dotnet-get-started-wns-push-notification).
+[associating an app with the Microsoft Store](https://docs.microsoft.com/azure/notification-hubs/notification-hubs-windows-store-dotnet-get-started-wns-push-notification).
 As a result, non-store provisioned apps cannot use this feature.
 
 **Client Registration**: Unpackaged 3rd party applications cannot register themselves as a Push
 target. The only way to get an implicit client side registration is to package the app as an MSIX
 Desktop Bridge or SSP which may not satisfy 3rd party requirements.
 
-**Push Channels**: All the channel APIs are dependent on the caller app having a store provisioned
-identity. This means that Win32 and unpackaged apps that are not store distributed cannot use our
-Public APIs. Sideloaded UWPs have exactly the same problem.
+**Push Channels**: All the channel APIs are dependent on the caller app having a Microsoft store
+provisioned identity. This means that Win32 and unpackaged apps that are not store distributed
+cannot use our Public APIs. Sideloaded UWP apps have exactly the same problem.
 
 **Activation**: When the OS receives a Push over the WNS socket, it signals the Background
 Infrastructure to trigger a task and run some code on the app's behalf. This flow is undefined for
 Win32 apps that need to use Push today due to the limitations described above.
 
 **Channel Request Error Handling**: The channel APIs exposed today can throw exceptions via their
-Projections Some errors can be critical errors while others are retryable errors. The msdn guidance
-for retrying isn't very clear and has been the root cause of multiple app bugs in the past. We want
-to abstract away the details of channel retry operations for developers in Windows App SDK.
+Projections. Some errors can be critical errors while others are retryable errors. Published
+guidance for retrying isn't very clear and has been the root cause of multiple app bugs in the past.
+We want to abstract away the details of channel retry operations for developers in Windows App SDK.
 
 # Description
 
 At a high level, we need to provide a way for all Win32 applications to subscribe to and receive
 Push notifications irrespective of their app type. This includes unpackaged apps and packaged win32
-(MSIX Desktop Bridge, Sparse Signed Packages). Moreover, all Push scenarios should adhere to OS
-resource management policies like Power Saver, Network Attribution, Enterprise group policies etc.
-The Windows App SDK Push component will abstract away the complexities of dealing with WNS channel
-registrations and Push related activations as much as possible freeing the developer to focus on
-other app related challenges.
+(MSIX Desktop Bridge, MSIX Win32App, Sparse Signed Packages). Moreover, all Push scenarios should
+adhere to OS resource management policies like Power Saver, Network Attribution, enterprise group
+policies, etc. The Windows App SDK Push component will abstract away the complexities of dealing
+with WNS channel registrations and Push related activations as much as possible freeing the
+developer to focus on other app related challenges.
 
 We will prioritize the following feature set for Windows App SDK:
 
--   Supporting raw push for Packaged Win32(MSIX Desktop Bridge)
--   Supporting raw push for Unpackaged Win32.
--   Supporting Visual Cloud Toasts for packaged Win32 apps.
--   Supporting Visual Cloud Toasts for unpackaged Win32 apps.
+-   Raw push for Packaged Win32 (MSIX Desktop Bridge)
+-   Raw push for Unpackaged Win32
+-   Visual Cloud Toasts for packaged Win32 apps
+-   Visual Cloud Toasts for unpackaged Win32 apps
 
 A Portal Registration flow through
 [AAD (Azure Active Directory)](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app)
 will also be defined that removes the dependency of the Push Flow with the Partner Center Portal.
-The RemoteIdentifier GUID in this spec maps to the ApplicationId(ClientId) in the AAD App
-Registration process. Below is an illustration of the proposed flow through AAD:
+The RemoteIdentifier GUID in this spec maps to the ApplicationId in the AAD App Registration
+process. Below is an illustration of the proposed flow through AAD:
 ![Push Flow For Windows App SDK](Push.png)
 
-Phase 1 (Windows App SDK Preview): WNS Push APIs will only support WIN32 Packaged app (MSIX Desktop
+Phase 1 (Windows App SDK Preview): WNS Push APIs will only support Win32 Packaged app (MSIX Desktop
 Bridge).
 
 Phase 2 (Windows App SDK V1): WNS Push APIs will support unpackaged Win32 scenarios.
@@ -80,10 +82,9 @@ Link to the official Windows App SDK timeline can be found
 The code in Main would follow the pattern below:
 
 -   The Registration will take in a CLSID of the COM server as part of the Activator setup. The
-    registration API will simply be a thin wrapper around the BackgroundInfra WinRT APIs and
-    abstract away the COM details from the developer including registration of the inproc Windows
-    App SDK component.
--   The app will query ApplifeCycle APIs to retrieve an ActivationKind. (Note: This is covered in a
+    registration API will simply abstract away the COM details from the developer including
+    registration of the in-process Windows App SDK component.
+-   The app will query AppLifeCycle APIs to retrieve an ActivationKind. (Note: This is covered in a
     seperate AppLifeCycle API spec.)
 -   If the Activation is Push, the app will QI the Arguments property to retrieve an instance of
     PushActivatedEventArgs and get the Push payload from it. Care needs to be taken to Get a
@@ -107,9 +108,9 @@ The code in Main would follow the pattern below:
 ```cpp
 int main()
 {
-    PushNotificationActivationInfo info = nullptr;
-    bool isComActivationSupported = PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger |
-                                        PushNotificationRegistrationOptions::ComActivator);
+    PushNotificationActivationInfo info {};
+    bool isComActivationSupported { PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger |
+                                        PushNotificationRegistrationOptions::ComActivator)};
     if (isComActivationSupported)
     {
         // Register the ComActivator guid
@@ -126,7 +127,7 @@ int main()
 
     // Check to see if the WinMain activation is due to a Push Activator
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto kind = args.Kind();
+    auto kind { args.Kind() };
 
     if (kind == ExtendedActivationKind::Push)
     {
@@ -225,7 +226,7 @@ int main()
 ## In this scenario, the process that Registers the Push Trigger and the process specified as the COM server are different.
 
 This only works for packaged applications that support PushTrigger and ComActivator flags in
-RegisterActivator. Out-of-proc activation is not supported for unpackaged apps.
+RegisterActivator. Out-of-process activation is not supported for unpackaged apps.
 
 Process A (Registration of the Push Trigger only):
 
@@ -241,7 +242,7 @@ int main()
     }
     else
     {
-        return ERROR_NOT_SUPPORTED;
+        return E_NOTIMPL;
     }
 
     // Registers a Push Trigger with the Background Infra component
@@ -267,7 +268,7 @@ int main()
     }
     else
     {
-        return ERROR_NOT_SUPPORTED;
+        return E_NOTIMPL;
     }
 
     // Registers the current process as an InProc COM server
@@ -389,14 +390,14 @@ else if (result.Status() == ChannelStatus::CompletedFailure)
 
 ## Manifest Registration
 
-For MSIX, the COM activator GUID and the exe path need to be registered in the manifest. The launch
-args would need to be pre set to a well-known string that defines Push Triggers.
+For MSIX, the COM activator GUID and the exe need to be registered in the manifest. The launch args
+would need to be pre-set to a well-known string that defines Push Triggers.
 
 ```xml
 <Extensions>
   <com:Extension Category="windows.comServer">
     <com:ComServer>
-      <com:ExeServer Executable="SampleBackgroundApp\SampleBackgroundApp.exe" DisplayName="SampleBackgroundApp" Arguments="-PushServer">
+      <com:ExeServer Executable="SampleBackgroundApp\SampleBackgroundApp.exe" DisplayName="SampleBackgroundApp" Arguments="----PushServer">
         <com:Class Id="{GUIDEntryPoint}" />
       </com:ExeServer>
     </com:ComServer>
@@ -406,7 +407,7 @@ args would need to be pre set to a well-known string that defines Push Triggers.
 
 # API Details
 
-```c# (but really MIDL3)
+```c#
 
 namespace Microsoft.Windows.PushNotifications
 {
@@ -436,7 +437,7 @@ namespace Microsoft.Windows.PushNotifications
     enum PushNotificationRegistrationOptions
     {
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
-        ComActivator = 0x2, // Registers the Project Reunion Background Task component as an InProc COM server
+        ComActivator = 0x2, // Registers the Background Task component as an in-process COM server
         ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
     };
 
@@ -445,7 +446,7 @@ namespace Microsoft.Windows.PushNotifications
     {
         // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
         // 1) If kind = PushTrigger is specified, only the Push Trigger will be Registered with Background Infra
-        // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will be Registered as an InProc COM server
+        // 2) If kind = ComActivator is specified, the Background Task component will be Registered as an in-process COM server
         PushNotificationActivationInfo(PushNotificationRegistrationOptions options, Guid taskClsid);
 
         // Applications that need to use ProtocolActivator will use this constructor
@@ -555,12 +556,12 @@ namespace Microsoft.Windows.PushNotifications
 
 # Appendix
 
--   For all OS images before 21H1 (19043), the RemoteId will be a noop and the native platform will
-    send the PFN (PackageFamilyName) in the channel request protocol. The WNS server will maintain
-    an internal mapping of PFN -> RemoteId and will return a channelUri with the encoded RemoteId
-    after querying the map.
--   For OS images 21H1(19043) and beyond, the Windows App SDK component will call into newly added
-    Closed source APIs in the OS to actually pass a RemoteId in the Channel Request operation.
+-   For all versions of Windows 10 prior to Version 21H1 (build 19043), the RemoteId is unused and
+    the native platform will send the Package Family Name in the channel request protocol. The WNS
+    server will maintain an internal mapping of PFN -> RemoteId and will return a channelUri with
+    the encoded RemoteId after querying the map.
+-   For Windows 10 version 21H1(build 19043) and beyond, the Windows App SDK component will call
+    into newly added APIs in the OS pass a RemoteId in the Channel Request operation.
 -   For unpackaged Win32 apps, the Windows App SDK component will call into Closed source APIs to
     register the unpackaged Win32 process with the RemoteId.
 -   A long running Windows App SDK component will be needed to intercept Push payloads from the
@@ -568,10 +569,10 @@ namespace Microsoft.Windows.PushNotifications
     Activation via WinMain to launch the unpackaged Win32 process from the long running service. The
     requirement is mainly because the native client today does not have support to launch Win32 apps
     directly in response to a Push payload unless they are already running in which case we simply
-    marshall the payload back to the process via a registered callback sink.
--   For packaged applications like MSIX Desktop Bridge, we buid a thin wrapper around existing
-    Background Manager APIs rather than re-inventing new Background Triggers. This is mainly because
-    Background Infrastructure native client stack is built with Power Management and resourcing
-    concerns already addressed. Building a new stack that addresses similar concerns is likely not
-    the best use of our time or resources. Instead we should invest in Windows App SDK-izing the
-    Background Infra stack itself.
+    marshal the payload back to the process via a registered callback sink.
+-   For packaged applications, we build a thin wrapper around existing Background Manager APIs
+    rather than re-inventing new Background Triggers. This is mainly because Background
+    Infrastructure native client stack is built with Power Management and resourcing concerns
+    already addressed. Building a new stack that addresses similar concerns is likely not the best
+    use of our time or resources. Instead we should invest in Windows App SDK-izing the Background
+    Infra stack itself.
