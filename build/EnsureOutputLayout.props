@@ -19,6 +19,10 @@
     <!-- Use PlatformTarget instead of Platform to keep things more consistent (avoid 'Win32' as a build output) -->
     <BaseOutputPath>$(RepoRoot)\BuildOutput\$(Configuration)\$(PlatformTarget)\</BaseOutputPath>
 
+    <!-- Intermediate files under obj folder. Some intermediate file paths are really long, thus no unnecessary folder added -->
+    <BaseIntermediateOutputPath>$(RepoRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+
     <!-- This is later fixed up to contain the project name, but if we specify it here then it ends up being included twice. -->
     <OutDir>$(BaseOutputPath)</OutDir>
     <OutputPath>$(OutDir)\$(MSBuildProjectName)\</OutputPath>
