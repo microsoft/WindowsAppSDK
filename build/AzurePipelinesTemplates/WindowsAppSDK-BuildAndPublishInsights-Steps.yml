@@ -34,9 +34,10 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $path = get-childitem -path 'dev\WindowsAppSDKInsightsResource\WindowsAppSDKInsightsResourceLib\packages' -File 'Traceloggingconfig.h' -Recurse
-      echo $path
-      move-item '$(System.DefaultWorkingDirectory)\build\native\inc\MicrosoftTelemetry.h' $path
+      $srcPath = get-childitem -path 'dev\WindowsAppSDKInsightsResource\packages' -File 'MicrosoftTelemetry.h' -Recurse
+      $destinationPath = get-childitem -path 'dev\WindowsAppSDKInsightsResource\packages' -File 'Traceloggingconfig.h' -Recurse
+      echo $srcPath, $destinationPath
+      move-item $srcPath $destinationPath
 
 - task: MSBuild@1
   displayName: 'build WindowsAppSDKInsights lib'
