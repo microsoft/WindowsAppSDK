@@ -12,4 +12,7 @@ HRESULT ShutdownPlatform();
 
 void CleanPlatform();
 
-wil::unique_threadpool_timer SetTimerForEvent();
+bool IsPlatformShutdown();
+
+void SetTimerForEvent();
+void CancelTimerForEvent();

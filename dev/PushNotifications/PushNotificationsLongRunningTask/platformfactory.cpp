@@ -13,14 +13,13 @@ using namespace Microsoft::WRL;
 IFACEMETHODIMP WpnLrpPlatformFactory::CreateInstance(
     _In_opt_ IUnknown* /*outer*/,
     _In_ REFIID /*riid*/,
-    _COM_Outptr_ void** obj) noexcept
+    _COM_Outptr_ void** obj)
 {
     *obj = nullptr;
 
     THROW_IF_FAILED(InitializePlatform());
 
     *obj = GetPlatform();
-    reinterpret_cast<IUnknown*>(obj)->AddRef();
 
     return S_OK;
 }

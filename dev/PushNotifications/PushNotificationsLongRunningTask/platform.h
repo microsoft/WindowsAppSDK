@@ -11,6 +11,8 @@ Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::C
 
     void ShutdownPlatform();
 
+    bool IsPlatformShutdown();
+
     /* IWpnLrpPlatform functions */
 
     STDMETHOD(RegisterActivator)(/*[in]*/ PCWSTR processName);

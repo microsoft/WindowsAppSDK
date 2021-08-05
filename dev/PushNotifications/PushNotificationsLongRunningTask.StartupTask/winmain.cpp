@@ -8,8 +8,14 @@
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
-        wil::CoCreateInstance<WpnLrpPlatform, IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
+    RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+
+    {
+        wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+            wil::CoCreateInstance<WpnLrpPlatform, IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
+    }
+
+    ::CoUninitialize();
 
     return 0;
 }
