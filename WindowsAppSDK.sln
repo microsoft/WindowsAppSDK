@@ -165,6 +165,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PushNotifications", "PushNo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\PushNotifications\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerNotifications", "PowerNotifications", "{E9117D76-63AC-4289-A628-AB39EF6E5D19}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\PowerNotifications\PowerNotifications.vcxitems", "{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "test\PowerNotifications\PowerNotifications.vcxproj", "{A9D7357B-FA9A-4548-B21E-F305DD63BC68}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -176,7 +182,9 @@ Global
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
 		dev\DynamicDependency\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
@@ -587,6 +595,18 @@ Global
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x64.Build.0 = Release|x64
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x86.ActiveCfg = Release|Win32
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x86.Build.0 = Release|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|x64.ActiveCfg = Debug|x64
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|x64.Build.0 = Debug|x64
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|x86.ActiveCfg = Debug|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|x86.Build.0 = Debug|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Release|Any CPU.ActiveCfg = Release|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Release|ARM64.ActiveCfg = Release|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Release|x64.ActiveCfg = Release|x64
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Release|x64.Build.0 = Release|x64
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Release|x86.ActiveCfg = Release|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -636,6 +656,9 @@ Global
 		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
 		{A1B25DCF-6A54-414D-8E24-F4D24EE9299D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{C422B090-F501-4204-8068-1084B0799405} = {A1B25DCF-6A54-414D-8E24-F4D24EE9299D}
+		{E9117D76-63AC-4289-A628-AB39EF6E5D19} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D} = {E9117D76-63AC-4289-A628-AB39EF6E5D19}
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

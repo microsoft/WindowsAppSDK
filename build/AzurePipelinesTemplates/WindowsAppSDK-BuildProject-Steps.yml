@@ -3,6 +3,7 @@ parameters:
   nugetConfigPath: ''
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
   artifactName: 'drop'
+  channel: 'experimental'
 
 steps:
   - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
@@ -65,6 +66,14 @@ steps:
       targetType: filePath
       filePath: tools\GeneratePushNotificationsOverrides.ps1
       arguments: -Path $(Build.SourcesDirectory)\build\override
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create DynamicDependencies TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: VSBuild@1
