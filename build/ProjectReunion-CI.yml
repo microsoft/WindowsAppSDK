@@ -135,7 +135,7 @@ jobs:
   pool:
     vmImage: 'windows-latest'
   steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishInsights-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishInsights-Steps.xml
 
 - job: PublishMRT
   dependsOn:
