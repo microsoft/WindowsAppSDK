@@ -17,7 +17,7 @@ steps:
     arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsResourceLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
 
 - task: NuGetAuthenticate@0
-  input:
+  inputs:
     nuGetServiceConnections: 'WindowsES'
 
 - task: DownloadPackage@1
