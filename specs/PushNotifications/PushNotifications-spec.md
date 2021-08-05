@@ -48,10 +48,10 @@ We want to abstract away the details of channel retry operations for developers 
 At a high level, we need to provide a way for all Win32 applications to subscribe to and receive
 Push notifications irrespective of their app type. This includes unpackaged apps and packaged win32
 (MSIX Desktop Bridge, MSIX Win32App, Sparse Signed Packages). Moreover, all Push scenarios should
-adhere to OS resource management policies like Power Saver, Network Attribution (amount of data an app uses), enterprise group
-policies, etc. The Windows App SDK Push component will abstract away the complexities of dealing
-with WNS channel registrations and Push related activations as much as possible freeing the
-developer to focus on other app related challenges.
+adhere to OS resource management policies like Power Saver, Network Attribution (amount of data an
+app uses), enterprise group policies, etc. The Windows App SDK Push component will abstract away the
+complexities of dealing with WNS channel registrations and Push related activations as much as
+possible freeing the developer to focus on other app related challenges.
 
 We will prioritize the following feature set for Windows App SDK:
 
