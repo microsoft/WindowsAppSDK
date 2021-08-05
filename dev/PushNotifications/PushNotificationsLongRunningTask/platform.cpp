@@ -8,14 +8,10 @@ wil::unique_event g_winmainEvent(wil::EventOptions::None);
 
 Microsoft::WRL::ComPtr<WpnLrpPlatformImpl> g_platform;
 
-WpnLrpPlatformImpl* RetrievePlatform()
-{
-    if (!g_platform)
-    {
-        g_platform = Microsoft::WRL::Make<WpnLrpPlatformImpl>();
-    }
+std::once_flag m_isPlatformCreated;
 
-    g_platform->AddRef();
+WpnLrpPlatformImpl* GetPlatform()
+{
     return g_platform.Get();
 }
 
@@ -26,11 +22,12 @@ void CleanPlatform()
 
 HRESULT InitializePlatform()
 {
-    if (!g_platform)
-    {
-        g_platform = Microsoft::WRL::Make<WpnLrpPlatformImpl>();
-    }
-    g_platform->InitializePlatform();
+    std::call_once(m_isPlatformCreated,
+        [&] {
+            g_platform = Microsoft::WRL::Make<WpnLrpPlatformImpl>();
+            g_platform->InitializePlatform();
+        });
+
     return S_OK;
 }
 
@@ -82,11 +79,6 @@ void WpnLrpPlatformImpl::ShutdownPlatform()
     /* Shut down your components */
 
     m_shutdown = true;
-}
-
-bool WpnLrpPlatformImpl::IsPlatformInitialized()
-{
-    return m_initialized;
 }
 
 STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterActivator(/*[in]*/ PCWSTR /*processName*/)

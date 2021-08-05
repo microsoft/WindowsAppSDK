@@ -16,12 +16,11 @@ IFACEMETHODIMP WpnLrpPlatformFactory::CreateInstance(
     _COM_Outptr_ void** obj) noexcept
 {
     *obj = nullptr;
-    *obj = RetrievePlatform();
 
-    if (!RetrievePlatform()->IsPlatformInitialized())
-    {
-        THROW_IF_FAILED(InitializePlatform());
-    }
+    THROW_IF_FAILED(InitializePlatform());
+
+    *obj = GetPlatform();
+    reinterpret_cast<IUnknown*>(obj)->AddRef();
 
     return S_OK;
 }

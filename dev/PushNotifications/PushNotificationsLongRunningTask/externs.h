@@ -4,10 +4,12 @@
 
 wil::unique_event& GetWinMainEvent();
 
-WpnLrpPlatformImpl* RetrievePlatform();
+WpnLrpPlatformImpl* GetPlatform();
 
 HRESULT InitializePlatform();
 
 HRESULT ShutdownPlatform();
 
 void CleanPlatform();
+
+wil::unique_threadpool_timer SetTimerForEvent();

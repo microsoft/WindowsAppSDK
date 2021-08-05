@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) WpnLrpPlatformImpl WrlFinal :
+#include "../PushNotifications-Constants.h"
+
+struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) WpnLrpPlatformImpl WrlFinal :
 Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IWpnLrpPlatform, Microsoft::WRL::FtmBase>
 {
     WpnLrpPlatformImpl();
@@ -8,8 +10,6 @@ Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::C
     void InitializePlatform();
 
     void ShutdownPlatform();
-
-    bool IsPlatformInitialized();
 
     /* IWpnLrpPlatform functions */
 
