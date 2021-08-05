@@ -58,7 +58,7 @@
                 </com:Extension>
                 <uap5:Extension
                       Category="windows.startupTask"
-                      Executable="PushNotificationsLongRunningTask.exe"
+                      Executable="PushNotificationsLongRunningTask.StartupTask.exe"
                       EntryPoint="Windows.FullTrustApplication">
                     <uap5:StartupTask
                         TaskId="PushNotificationsId"

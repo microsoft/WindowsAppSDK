@@ -173,6 +173,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "test\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.StartupTask", "dev\PushNotifications\PushNotificationsLongRunningTask.StartupTask\PushNotificationsLongRunningTask.StartupTask.vcxproj", "{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -597,7 +599,7 @@ Global
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x64.Build.0 = Release|x64
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x86.ActiveCfg = Release|Win32
 		{C422B090-F501-4204-8068-1084B0799405}.Release|x86.Build.0 = Release|Win32
-        {A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|ARM64.ActiveCfg = Debug|Win32
 		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|x64.ActiveCfg = Debug|x64
 		{A9D7357B-FA9A-4548-B21E-F305DD63BC68}.Debug|x64.Build.0 = Debug|x64
@@ -621,6 +623,18 @@ Global
 		{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}.Release|x64.Build.0 = Release|x64
 		{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}.Release|x86.ActiveCfg = Release|Win32
 		{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0}.Release|x86.Build.0 = Release|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Debug|x64.ActiveCfg = Debug|x64
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Debug|x64.Build.0 = Debug|x64
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Debug|x86.ActiveCfg = Debug|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Debug|x86.Build.0 = Debug|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Release|ARM64.ActiveCfg = Release|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Release|x64.ActiveCfg = Release|x64
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Release|x64.Build.0 = Release|x64
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Release|x86.ActiveCfg = Release|Win32
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -674,6 +688,7 @@ Global
 		{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D} = {E9117D76-63AC-4289-A628-AB39EF6E5D19}
 		{A9D7357B-FA9A-4548-B21E-F305DD63BC68} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{BF3FCED0-CADB-490A-93A7-4D90E1F45AB0} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
+		{1DEBBFF6-EE6E-4944-9DE2-35B7A686AF42} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
