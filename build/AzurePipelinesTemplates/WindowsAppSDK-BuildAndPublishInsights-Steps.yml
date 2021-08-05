@@ -17,6 +17,8 @@ steps:
     arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsResourceLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
 
 - task: NuGetAuthenticate@0
+  input:
+    nuGetServiceConnections: 'WindowsES'
 
 - task: DownloadPackage@1
   displayName: 'Download Microsoft.Telemetry.Inbox.Native'
