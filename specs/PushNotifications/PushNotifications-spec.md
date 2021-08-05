@@ -48,7 +48,7 @@ We want to abstract away the details of channel retry operations for developers 
 At a high level, we need to provide a way for all Win32 applications to subscribe to and receive
 Push notifications irrespective of their app type. This includes unpackaged apps and packaged win32
 (MSIX Desktop Bridge, MSIX Win32App, Sparse Signed Packages). Moreover, all Push scenarios should
-adhere to OS resource management policies like Power Saver, Network Attribution, enterprise group
+adhere to OS resource management policies like Power Saver, Network Attribution (amount of data an app uses), enterprise group
 policies, etc. The Windows App SDK Push component will abstract away the complexities of dealing
 with WNS channel registrations and Push related activations as much as possible freeing the
 developer to focus on other app related challenges.
@@ -123,7 +123,7 @@ int main()
     }
 
     // Registers the application to receive push notifications
-    auto token = PushNotificationManager::RegisterActivator(info);
+    PushNotificationManager::RegisterActivator(info);
 
     // Check to see if the WinMain activation is due to a Push Activator
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -216,7 +216,7 @@ int main()
     if(isComActivationSupported)
     {
         // Unregister the ComActivator from inproc activation
-        PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationActivators::ComActivator);
+        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
     return 0;
@@ -246,7 +246,7 @@ int main()
     }
 
     // Registers a Push Trigger with the Background Infra component
-    auto token = PushNotificationManager::RegisterActivator(info);
+    PushNotificationManager::RegisterActivator(info);
 
     // Some app code ....
 
@@ -272,7 +272,7 @@ int main()
     }
 
     // Registers the current process as an InProc COM server
-    auto token = PushNotificationManager::RegisterActivator(info);
+    PushNotificationManager::RegisterActivator(info);
 
     // Check to see if the WinMain activation is due to a Push Activator
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -286,7 +286,7 @@ int main()
     // Some code ....
 
     // Unregisters the inproc COM Activator
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationActivators::ComActivator);
+    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
 
     return 0;
 }
@@ -299,7 +299,7 @@ Registration Flow instead of the CLSID overload.
 
 ```cpp
 PushNotificationActivationInfo info();
-auto token = PushNotificationChannelManager::RegisterPushNotificationActivator(info);
+PushNotificationChannelManager::RegisterPushNotificationActivator(info);
 ```
 
 To intercept the payload, OnBackgroundActivated will have to be implemented by the app.
@@ -534,14 +534,14 @@ namespace Microsoft.Windows.PushNotifications
     static runtimeclass PushNotificationManager
     {
         // Register an activator using an ActivationInfo context and return a RegistrationToken
-        static PushNotificationRegistrationToken RegisterActivator(PushNotificationActivationInfo details);
+        static void RegisterActivator(PushNotificationActivationInfo details);
 
         // Unregister any activator if present using a token and PushNotificationRegistrationOptions
         // 1) If kind = PushTrigger is specified, the trigger itself will be removed
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
         // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
         //    and the token parameter will be unused so it should be set to nullptr
-        static void UnregisterActivator(PushNotificationRegistrationToken token, PushNotificationRegistrationActivators activators);
+        static void UnregisterActivator(PushNotificationRegistrationActivators activators);
 
         // Unregister all activators registered for the application
         static void UnregisterAllActivators();
