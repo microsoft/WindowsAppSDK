@@ -72,12 +72,12 @@
                 <ExperimentalDisplayName>[Experimental] $(_tempVsTemplateDisplayName)</ExperimentalDisplayName>
 
                 <OriginalTemplateId>$(_tempVsTemplateId)</OriginalTemplateId>
-                <ExperimentalTemplateId>$(_tempVsTemplateId).Preview</ExperimentalTemplateId>
+                <ExperimentalTemplateId>$(_tempVsTemplateId).Experimental</ExperimentalTemplateId>
 
                 <OriginalNugetRepositoryId>$(_tempVsTemplateNugetRepositoryId)</OriginalNugetRepositoryId>
                 <!-- 'ExperimentalNugetRepositoryId' needs to match the value set by the XmlPoke query for
                 "/ns:PackageManifest/ns:Metadata/ns:Identity/@Id" in Extension\WindowsAppSDK.Extension.csproj -->
-                <ExperimentalNugetRepositoryId>$(_tempVsTemplateNugetRepositoryId).Preview</ExperimentalNugetRepositoryId>
+                <ExperimentalNugetRepositoryId>$(_tempVsTemplateNugetRepositoryId).Experimental</ExperimentalNugetRepositoryId>
             </AllVSTemplates>
         </ItemGroup>
 
