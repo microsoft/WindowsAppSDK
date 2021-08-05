@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // IInternalValueMarshalable
         winrt::Windows::Foundation::Uri Serialize()
         {
-            auto uri = GenerateEncodedLaunchUri(L"App", c_launchContractId) + L"&Arguments=" + m_args;
+            auto uri = GenerateEncodedLaunchUri(L"App", c_launchContractId) + L"&Arguments=" + winrt::Windows::Foundation::Uri::EscapeComponent(m_args.c_str());
             return winrt::Windows::Foundation::Uri(uri);
         }
 

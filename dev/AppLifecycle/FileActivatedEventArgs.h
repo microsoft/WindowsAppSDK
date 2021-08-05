@@ -56,7 +56,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         winrt::Windows::Foundation::Uri Serialize()
         {
             auto uri = GenerateEncodedLaunchUri(L"App", c_fileContractId);
-            uri += L"&Verb=" + std::wstring(m_verb.c_str()) + std::wstring(L"&File=") + std::wstring(m_path.c_str());
+            uri += L"&Verb=" + winrt::Windows::Foundation::Uri::EscapeComponent(m_verb.c_str());
+            uri += L"&File=" + winrt::Windows::Foundation::Uri::EscapeComponent(m_path.c_str());
             return winrt::Windows::Foundation::Uri(uri);
         }
 
