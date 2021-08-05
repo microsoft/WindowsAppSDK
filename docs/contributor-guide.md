@@ -20,8 +20,9 @@ points if there's a gist or existing repo we can look at with you.
    It's fine if you don't have all the details: you can start with a summary and rationale.
 
 
-**Over time, we will add Windows App SDK code and samples into this repo and provide code contribution/developer guidelines.**
+**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
 
+Discover samples in the [WindowsAppSDK-Samples](https://github.com/microsoft/WindowsAppSDK-Samples) repository to assist in learning how to use the latest features!
 
 Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
