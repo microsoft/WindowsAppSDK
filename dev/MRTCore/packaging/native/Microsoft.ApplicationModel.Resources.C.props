@@ -6,6 +6,9 @@
   <PropertyGroup>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
     <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
+
+    <!-- Set DefaultLanguage so that Multilingual Application Toolkit can be enabled when applicable -->
+    <DefaultLanguage Condition="'$(DefaultLanguage)' == ''">en-US</DefaultLanguage>
   </PropertyGroup>
 
   <!--
