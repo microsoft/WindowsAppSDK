@@ -18,7 +18,7 @@ steps:
 
 - task: NuGetAuthenticate@0
   inputs:
-    nuGetServiceConnections: 'WindowsES'
+    nuGetServiceConnections: '0'
 
 - task: DownloadPackage@1
   displayName: 'Download Microsoft.Telemetry.Inbox.Native'
