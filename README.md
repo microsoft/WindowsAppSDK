@@ -54,7 +54,7 @@ however we will do our best to ensure
 this is the exception and not the norm, and provide reasonable fallbacks when possible.
 
 
-### Documentation
+### Helpful links
 
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
@@ -63,7 +63,7 @@ More on what the project is and how we're approaching the work.
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
 * [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
-
+* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples) - Discover Windows App SDK samples to assist in learning how to use the latest features!
 
 ### Contributing
 
@@ -93,7 +93,6 @@ points if there's a gist or existing repo we can look at with you.
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 
-Discover samples in the [WindowsAppSDK-Samples](https://github.com/microsoft/WindowsAppSDK-Samples) repository to assist in learning how to use the latest features!
 
 ## Data collection
 
