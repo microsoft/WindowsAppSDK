@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 {
                     if (CompareStringOrdinal(contractId, -1, extension.contractId, -1, TRUE) == CSTR_EQUAL)
                     {
-                        return { extension.kind, extension.factory(uri).as<winrt::Windows::Foundation::IInspectable>() };
+                        return { extension.kind, extension.factory(uri) };
                     }
                 }
             }
