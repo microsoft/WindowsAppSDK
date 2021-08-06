@@ -48,9 +48,9 @@
     <Content Include="LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
+<!--    <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    </Content> -->
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
