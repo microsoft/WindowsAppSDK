@@ -77,7 +77,7 @@
                 <OriginalNugetRepositoryId>$(_tempVsTemplateNugetRepositoryId)</OriginalNugetRepositoryId>
                 <!-- 'ExperimentalNugetRepositoryId' needs to match the value set by the XmlPoke query for
                 "/ns:PackageManifest/ns:Metadata/ns:Identity/@Id" in Extension\WindowsAppSDK.Extension.csproj -->
-                <ExperimentalNugetRepositoryId>$(_tempVsTemplateNugetRepositoryId).Experimental</ExperimentalNugetRepositoryId>
+                <ExperimentalNugetRepositoryId>$(_tempVsTemplateNugetRepositoryId).Preview</ExperimentalNugetRepositoryId>
             </AllVSTemplates>
         </ItemGroup>
 
@@ -131,16 +131,16 @@
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value"
             Value="$(CppWinRTVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkNupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKNupkgVersion$']/@Value"
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkFoundationNupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKFoundationNupkgVersion$']/@Value"
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkDWriteNupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKDWriteNupkgVersion$']/@Value"
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkWinUINupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKWinUINupkgVersion$']/@Value"
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <!-- Update .vstemplate with Experimental display name if necessary -->
