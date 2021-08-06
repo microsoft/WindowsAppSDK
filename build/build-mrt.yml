@@ -104,10 +104,11 @@ steps:
     targetType: 'inline'
     script: |
       $srcPath = get-childitem -path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-      $destinationPath = get-childitem -path 'dev\WindowsAppSDK_Insights\packages' -File 'Traceloggingconfig.h' -Recurse
+      $destinationPath = get-childitem -path '${{ parameters.MRTSourcesDirectory }}\mrt\packages' -File 'Traceloggingconfig.h' -Recurse
 
       if(($srcPath -ne $null) -and ($destinationPath -ne $null))
       {
+        echo $srcPath.FullName, $destinationPath.FullName
         copy-item -Force $srcPath.FullName $destinationPath.FullName
       }
 
