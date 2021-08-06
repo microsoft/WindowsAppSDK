@@ -62,7 +62,7 @@ More on what the project is and how we're approaching the work.
 * [Roadmap](docs/roadmap.md) - Where we're going!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
-* [Developer Docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
+* [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
 
 
 ### Contributing
