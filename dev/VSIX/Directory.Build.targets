@@ -215,16 +215,16 @@
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkNupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKNupkgVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkFoundationNupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKFoundationNupkgVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkDWriteNupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKDWriteNupkgVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
-            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSdkWinUINupkgVersion$']/@Value"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKWinUINupkgVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <XmlPoke
