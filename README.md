@@ -93,7 +93,6 @@ points if there's a gist or existing repo we can look at with you.
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 
-
 ## Data collection
 
 The software may collect information about you and your use of the software and send it
