@@ -246,6 +246,17 @@ namespace Test::DynamicDependency
             OutputDebugStringW(message.get());
             VERIFY_ARE_EQUAL(expectedHR, hr);
             VERIFY_ARE_EQUAL(expectedGenerationId, generationId);
+
+            const auto actualGenerationId{ MddGetGenerationId() };
+            if (!::Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled())
+            {
+                const auto expectedGeneratedIdIfDisabled{ static_cast<UINT32>(~0) };
+                VERIFY_ARE_EQUAL(expectedGeneratedIdIfDisabled, actualGenerationId);
+            }
+            else
+            {
+                VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
+            }
         }
 
         void PrintGetCurrentPackageInfoHeader()
