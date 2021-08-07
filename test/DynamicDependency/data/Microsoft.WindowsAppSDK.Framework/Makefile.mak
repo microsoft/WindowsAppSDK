@@ -39,6 +39,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(ProjectDir)logo.png $(WorkDir)\logo.png >NUL
     @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $(WorkDir)\Microsoft.WindowsAppSDK.dll
     @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $(WorkDir)\Microsoft.WindowsAppSDK.pdb
+    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
