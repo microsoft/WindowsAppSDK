@@ -10,7 +10,9 @@ parameters:
   - name: "PublishToMaestro"
     type: boolean
     default: False
-  WindowsAppSDKInsightsSourceDirectory: $(Build.SourcesDirectory)\dev\WindowsAppSDK_Insights
+  - name: "WindowsAppSDKInsightsSourceDirectory"
+    type: string
+    default: $(Build.SourcesDirectory)\dev\WindowsAppSDK_Insights
 
 jobs:
 - job: CredScan
