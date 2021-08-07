@@ -17,7 +17,7 @@ steps:
   displayName: 'NuGet restore of packages'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
+    arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsLib\packages.config -ConfigFile ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
 
 - task: powershell@2
   name: UpdateTraceloggingConfig
