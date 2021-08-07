@@ -5,7 +5,7 @@
 
 // include notifications constants file here
 
-#include <PushNotificationsLRP_h.h>
+#include <NotificationsLongRunningProcess_h.h>
 
 // Temporarily disable C4324 because WRL generates a false (well, irrelevant) warning
 //   'Microsoft::WRL::Details::StaticStorage<Microsoft::WRL::Details::OutOfProcModuleBase<ModuleT>::GenericReleaseNotifier<T>,Microsoft::WRL::Details::StorageInstance::OutOfProcCallbackBuffer1,ModuleT>': structure was padded due to alignment specifier
@@ -60,9 +60,11 @@ void CancelTimerForEvent()
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
+    Sleep(20000);
+
     // Schedule event signaling after 30 seconds. This is in case we don't have any apps to track in the LRP.
     // If we realize that we need to persist the LRP, timer will be canceled.
-    SetTimerForEvent();
+    //SetTimerForEvent();
 
     RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
@@ -75,7 +77,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     ComPtr<IClassFactory> platformFactory;
     THROW_IF_FAILED(MakeAndInitialize<WpnLrpPlatformFactory>(&platformFactory));
 
-    CLSID clsid = __uuidof(WpnLrpPlatform);
+    CLSID clsid = __uuidof(NotificationsLongRunningPlatformImpl);
 
     THROW_IF_FAILED(module.RegisterCOMObject(
         nullptr,
@@ -84,7 +86,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
         &cookie,
         1));
 
-    InitializePlatform();
+    //InitializePlatform();
 
     GetWinMainEvent().wait();
 

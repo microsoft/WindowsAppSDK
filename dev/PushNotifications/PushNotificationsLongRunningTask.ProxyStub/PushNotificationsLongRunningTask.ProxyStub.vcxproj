@@ -406,7 +406,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\PushNotificationsLRP_i.c">
+    <ClCompile Include="x64\Debug\NotificationsLongRunningProcess_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -416,7 +416,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\PushNotificationsLRP_p.c">
+    <ClCompile Include="x64\Debug\NotificationsLongRunningProcess_p.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -438,7 +438,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="PushNotificationsLRP.idl" />
+    <Midl Include="NotificationsLongRunningProcess.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PushNotificationsLongRunningTask.ProxyStub.def" />
@@ -447,8 +447,8 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\PushNotificationsLRP_h.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)PushNotificationsLRP.idl" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\NotificationsLongRunningProcess_h.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)NotificationsLongRunningProcess.idl" />
   </ItemGroup>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">

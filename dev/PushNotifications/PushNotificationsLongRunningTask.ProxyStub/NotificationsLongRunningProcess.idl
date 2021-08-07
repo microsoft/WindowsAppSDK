@@ -9,7 +9,7 @@ import "ocidl.idl";
 [object]
 [uuid(60FC21B2-B396-4D49-94F0-7555869FB93C)]
 [pointer_default(unique)]
-interface IWpnLrpPlatform : IUnknown
+interface INotificationsLongRunningPlatform : IUnknown
 {
     HRESULT RegisterActivator([in] LPCWSTR processName);
 
@@ -24,11 +24,11 @@ interface IWpnLrpPlatform : IUnknown
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
 [version(1.0)]
-library WpnLrpPlatformLib
+library NotificationsLongRunningPlatformLibrary
 {
     [uuid(PUSHNOTIFICATIONS_IMPL_CLSID_UUID)]
-    coclass WpnLrpPlatform
+    coclass NotificationsLongRunningPlatform
     {
-        [default] interface IWpnLrpPlatform;
+        [default] interface INotificationsLongRunningPlatform;
     };
 };

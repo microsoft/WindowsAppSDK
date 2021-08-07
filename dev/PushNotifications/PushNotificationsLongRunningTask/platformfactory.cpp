@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include <PushNotificationsLRP_h.h>
+#include <NotificationsLongRunningProcess_h.h>
 
 #include "externs.h"
 #include "platform.h"

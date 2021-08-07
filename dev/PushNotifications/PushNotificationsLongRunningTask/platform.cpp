@@ -1,16 +1,16 @@
 ﻿#include "pch.h"
 
-#include <PushNotificationsLRP_h.h>
+#include <NotificationsLongRunningProcess_h.h>
 
 #include "platform.h"
 
 wil::unique_event g_winmainEvent(wil::EventOptions::None);
 
-Microsoft::WRL::ComPtr<WpnLrpPlatformImpl> g_platform;
+Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> g_platform;
 
 std::once_flag m_isPlatformInitialized;
 
-WpnLrpPlatformImpl* GetPlatform()
+NotificationsLongRunningPlatformImpl* GetPlatform()
 {
     // We have to call InitializePlatform() before retrieving the platform on the factory.
     // Throw if Platform is already reset or was shut down.
@@ -27,7 +27,7 @@ HRESULT InitializePlatform()
 {
     std::call_once(m_isPlatformInitialized,
         [&] {
-            g_platform = Microsoft::WRL::Make<WpnLrpPlatformImpl>();
+            g_platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
             g_platform->InitializePlatform();
 
             // Prevent scenario where if the first client goes out of scope,
@@ -58,16 +58,10 @@ wil::unique_event& GetWinMainEvent()
     return g_winmainEvent;
 }
 
-WpnLrpPlatformImpl::WpnLrpPlatformImpl()
+void NotificationsLongRunningPlatformImpl::InitializePlatform()
 {
-    m_lock.create();
-}
-
-void WpnLrpPlatformImpl::InitializePlatform()
-{
+    auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-
-    auto lock = m_lock.acquire();
 
     if (m_initialized)
     {
@@ -79,52 +73,56 @@ void WpnLrpPlatformImpl::InitializePlatform()
     m_initialized = true;
 }
 
-void WpnLrpPlatformImpl::ShutdownPlatform()
+void NotificationsLongRunningPlatformImpl::ShutdownPlatform()
 {
+    auto lock = m_lock.lock_exclusive();
     if (m_shutdown)
     {
         return;
     }
-
-    auto lock = m_lock.acquire();
 
     /* Shut down your components */
 
     m_shutdown = true;
 }
 
-bool WpnLrpPlatformImpl::IsPlatformShutdown()
+bool NotificationsLongRunningPlatformImpl::IsPlatformShutdown()
 {
-    auto lock = m_lock.acquire();
+    auto lock = m_lock.lock_shared();
     return m_shutdown;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(/*[in]*/ PCWSTR /*processName*/)
 {
+    auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(/*[in]*/ PCWSTR /*processName*/)
 {
+    auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
 {
+    auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
 {
+    auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[out]*/ GUID* /*appId*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[out]*/ GUID* /*appId*/)
 {
+    auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     return E_NOTIMPL;
 }

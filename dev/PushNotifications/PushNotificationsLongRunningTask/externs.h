@@ -4,7 +4,7 @@
 
 wil::unique_event& GetWinMainEvent();
 
-WpnLrpPlatformImpl* GetPlatform();
+NotificationsLongRunningPlatformImpl* GetPlatform();
 
 HRESULT InitializePlatform();
 

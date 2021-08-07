@@ -2,11 +2,12 @@
 
 #include "../PushNotifications-Constants.h"
 
-struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) WpnLrpPlatformImpl WrlFinal :
-Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IWpnLrpPlatform, Microsoft::WRL::FtmBase>
+struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRunningPlatformImpl WrlFinal :
+Microsoft::WRL::RuntimeClass<
+    Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+    INotificationsLongRunningPlatform,
+    Microsoft::WRL::FtmBase>
 {
-    WpnLrpPlatformImpl();
-
     void InitializePlatform();
 
     void ShutdownPlatform();
@@ -29,7 +30,7 @@ Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::C
 
 private:
 
-    wil::unique_mutex m_lock;
+    wil::srwlock m_lock;
 
     bool m_initialized = false;
     bool m_shutdown = false;
