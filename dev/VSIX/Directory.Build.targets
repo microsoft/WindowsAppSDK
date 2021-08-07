@@ -108,6 +108,9 @@
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.WindowsAppSDK.WinUI']/@version"
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.WindowsAppSDK.InteractiveExperiences']/@version"
+            Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <!-- Update Assets manifest with actual Nuget package filenames -->
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
@@ -125,6 +128,9 @@
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.WindowsAppSDK.WinUI.nupkg']/@Path"
             Value="Microsoft.WindowsAppSDK.WinUI.$(WindowsAppSDKVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.WindowsAppSDK.InteractiveExperiences.nupkg']/@Path"
+            Value="Microsoft.WindowsAppSDK.InteractiveExperiences.$(WindowsAppSDKVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <!-- Update custom parameters passed into subtemplates -->
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
@@ -141,6 +147,9 @@
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKWinUINupkgVersion$']/@Value"
+            Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKInteractiveExperiencesNupkgVersion$']/@Value"
             Value="$(WindowsAppSDKVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <!-- Update .vstemplate with Experimental display name if necessary -->
@@ -176,7 +185,7 @@
         DependsOnTargets="PrepareForVsTemplateUpdates"
         Condition="'@(AllVSTemplates)' != ''">
         <PropertyGroup>
-            <DefaultVersion>1.0.0</DefaultVersion>
+            <DefaultVersion>FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries</DefaultVersion>
         </PropertyGroup>
 
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
@@ -194,6 +203,9 @@
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.WindowsAppSDK.WinUI']/@version"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.WindowsAppSDK.InteractiveExperiences']/@version"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CppWinRT.nupkg']/@Path"
@@ -210,6 +222,9 @@
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.WindowsAppSDK.WinUI.nupkg']/@Path"
             Value="Microsoft.WindowsAppSDK.WinUI.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.WindowsAppSDK.InteractiveExperiences.nupkg']/@Path"
+            Value="Microsoft.WindowsAppSDK.InteractiveExperiences.$(DefaultVersion).nupkg" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value"
@@ -225,6 +240,9 @@
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
         <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
             Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKWinUINupkgVersion$']/@Value"
+            Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
+        <XmlPoke XmlInputPath="%(AllVSTemplates.Identity)"
+            Query="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsAppSDKInteractiveExperiencesNupkgVersion$']/@Value"
             Value="$(DefaultVersion)" Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vstemplate/2005' /&gt;" />
 
         <XmlPoke

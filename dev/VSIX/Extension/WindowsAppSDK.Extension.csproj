@@ -37,6 +37,7 @@
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_Foundation)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_DWrite)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_WinUI)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_InteractiveExperiences)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -48,9 +49,9 @@
     <Content Include="LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
+<!--     <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    </Content> -->
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -77,6 +78,9 @@
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
