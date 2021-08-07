@@ -131,12 +131,6 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishInsights
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishInsights-Steps.yml
-
 - job: PublishMRT
   dependsOn:
     - BuildMRT
