@@ -10,6 +10,9 @@ parameters:
   - name: "PublishToMaestro"
     type: boolean
     default: False
+  - name: "WindowsAppSDKInsightsSourceDirectory"
+    type: string
+    default: $(Build.SourcesDirectory)\dev\WindowsAppSDK_Insights
 
 jobs:
 - job: CredScan
@@ -66,7 +69,18 @@ jobs:
   variables:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
+
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsLib\packages.config -ConfigFile ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
+
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
 #  - task: DownloadPackage@1
 #    displayName: 'Download Microsoft.Telemetry.Inbox.Native'
