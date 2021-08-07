@@ -94,6 +94,19 @@ steps:
 #    displayName: 'Debug'
 #    inputs:
 #      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
+- task: powershell@2
+  name: UpdateTraceloggingConfig
+  inputs:
+    targetType: 'inline'
+    script: |
+      $srcPath = get-childitem -path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+      $destinationPath = get-childitem -path '${{ parameters.MRTSourcesDirectory }}\mrt\packages' -File 'Traceloggingconfig.h' -Recurse
+
+      if(($srcPath -ne $null) -and ($destinationPath -ne $null))
+      {
+        echo $srcPath.FullName, $destinationPath.FullName
+        copy-item -Force $srcPath.FullName $destinationPath.FullName
+      }
 
 - task: MSBuild@1
   displayName: 'build MrtCore'
