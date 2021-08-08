@@ -11,6 +11,8 @@
 #include "mrm/platform/WindowsCore.h"
 #include "mrm/readers/MrmManagers.h"
 
+#include "mrm/common/MrmTraceLogging.h"
+
 #include "MRM.h"
 
 #include <memory>
@@ -492,7 +494,7 @@ STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle*
 
     RETURN_HR_IF(E_INVALIDARG, (priFileName == nullptr) || (*priFileName == L'\0'));
 
-    WRITE_MRMMIN_INIT_TRACE_INFO_CHECK(priFileName, S_OK);
+    MrtRuntimeProvider::TelemetryGenericEventParam1(L"MrmCreateResourceManager", priFileName, S_OK);
 
     std::unique_ptr<MrmObjects, decltype(&DestroyResourceManager)> resourceManagerObjects(
         new (std::nothrow) MrmObjects(), &DestroyResourceManager);

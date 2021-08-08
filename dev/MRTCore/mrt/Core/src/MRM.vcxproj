@@ -86,7 +86,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;STANDALONEDLL_EXPORTS;UNICODE;_UNICODE;DOWNLEVEL_PRIOR_TO_WIN8;WIL_SUPPRESS_PRIVATE_API_USE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\mrm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\Common;..\..\mrm\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <!-- MRT Core doesn't use RTTI. -->
