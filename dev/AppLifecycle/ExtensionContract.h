@@ -39,12 +39,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             if (CompareStringOrdinal(pair.Name().c_str(), -1, c_contractIdKeyName, -1, TRUE) == CSTR_EQUAL)
             {
+                auto contractId = pair.Value().c_str();
                 for (const auto& extension : c_extensionMap)
                 {
-                    std::wstring contractId = pair.Value().c_str();
-                    if (CompareStringOrdinal(contractId.c_str(), -1, extension.contractId, -1, TRUE) == CSTR_EQUAL)
+                    if (CompareStringOrdinal(contractId, -1, extension.contractId, -1, TRUE) == CSTR_EQUAL)
                     {
-                        return { extension.kind, extension.factory(uri).as<winrt::Windows::Foundation::IInspectable>() };
+                        return { extension.kind, extension.factory(uri) };
                     }
                 }
             }
