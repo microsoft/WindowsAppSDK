@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.ApplicationModel.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrtCoreUnpackagedTests", "Microsoft.ApplicationModel.Resources\UnpackagedTests\MrtCoreUnpackagedTests.csproj", "{3C618444-4B80-492E-8972-BFAEF8700A52}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppSDK.Insights", "..\..\WindowsAppSDKInsightsResource\WindowsAppSDKInsightsResourceLib\WindowsAppSDKInsightsResourceLib.vcxproj", "{4243B8DA-BDB5-4D65-B1D5-EEED375FAD13}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppSDK.Insights", "..\..\WindowsAppSDK_Insights\WindowsAppSDKInsightsLib\WindowsAppSDKInsightsLib.vcxproj", "{4243B8DA-BDB5-4D65-B1D5-EEED375FAD13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

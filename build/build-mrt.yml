@@ -60,7 +60,7 @@ steps:
   displayName: 'NuGet restore of WindowsAppSDKInsightsResource'
   inputs:
     command: 'custom'
-    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\..\WindowsAppSDKInsightsResource\WindowsAppSDKInsightsResourceLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\..\WindowsAppSDKInsightsResource\packages'
+    arguments: 'restore ${{ parameters.MRTSourcesDirectory }}\..\WindowsAppSDK_Insights\WindowsAppSDKInsightsLib\packages.config -ConfigFile nuget.config -PackagesDirectory ${{ parameters.MRTSourcesDirectory }}\..\WindowsAppSDK_Insights\packages'
 
 #  - task: powershell@2
 #    displayName: 'Install the VS build tools'

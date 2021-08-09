@@ -241,7 +241,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\Common;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppSDK_Insights;..\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -367,7 +367,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\WindowsAppSDKInsightsResource\WindowsAppSDKInsightsResourceLib\WindowsAppSDKInsightsResourceLib.vcxproj">
+    <ProjectReference Include="..\..\..\..\WindowsAppSDK_Insights\WindowsAppSDKInsightsLib\WindowsAppSDKInsightsLib.vcxproj">
       <Project>{4243b8da-bdb5-4d65-b1d5-eeed375fad13}</Project>
     </ProjectReference>
   </ItemGroup>
