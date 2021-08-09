@@ -105,7 +105,6 @@ STDAPI MddLifetimeManagementGC() noexcept try
         { 0, 8, 9 },
         { 1, 0, 2 }
     };
-    PCWSTR c_architectures[]{ L"x86", L"x64", L"arm64" };
     for (auto majorMinorVersion : c_majorMinorVersions)
     {
         const UINT16 majorVersion{ static_cast<UINT16>(majorMinorVersion[0]) };
@@ -113,15 +112,16 @@ STDAPI MddLifetimeManagementGC() noexcept try
         const UINT16 maxMinorVersion{ static_cast<UINT16>(majorMinorVersion[2]) };
         for (UINT32 minorVersion=minMinorVersion; minorVersion <= maxMinorVersion; ++minorVersion)
         {
-            for (auto architecture : c_architectures)
+            PCWSTR c_shortArchitectures[]{ L"x6", L"x8", L"a6" };
+            for (auto shortArchitecture : c_shortArchitectures)
             {
                 // Build the list of DDLMs
                 std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
 
-                // Look for windows.appExtension with name="com.microsoft.windowsappsdk.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
-                // NOTE: We don't support VersionTag (i.e. we only support 'release' versions)
+                // Look for windows.appExtension with name="microsoft.windowsappsdk.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
+                // NOTE: We don't support VersionTag (i.e. we only support 'Stable' versions)
                 WCHAR appExtensionName[100]{};
-                wsprintf(appExtensionName, L"com.microsoft.windowsappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, architecture);
+                wsprintf(appExtensionName, L"microsoft.windowsappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, shortArchitecture);
 
                 auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
                 auto appExtensions{ catalog.FindAllAsync().get() };

@@ -260,18 +260,20 @@ CLSID FindDDLM(
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
-    // Look for windows.appExtension with name="com.microsoft.winappsdk.ddlm-<majorversion>.<minorversion>-<architecture>[-shorttag]"
+    // Look for windows.appExtension with name="microsoft.winappsdk.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
+    // NOTE: <majorversion>.<minorversion> MUST have a string length <= 8 characters ("12.34567", "12345.67", etc) to fit within
+    //       the maximum allowed length of a windows.appExtension's Name (39 chars) on Windows versions <= RS5 (10.0.17763.0).
     WCHAR appExtensionName[100]{};
     const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
     const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
     const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
-    if (versionShortTag != L'\0')
+    if (!versionShortTag.empty())
     {
-        wsprintf(appExtensionName, L"com.microsoft.winappsdk.ddlm-%hu.%hu-%s-%c", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString(), versionShortTag);
+        wsprintf(appExtensionName, L"microsoft.winappsdk.ddlm-%hu.%hu-%s-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag.c_str());
     }
     else
     {
-        wsprintf(appExtensionName, L"com.microsoft.winappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsString());
+        wsprintf(appExtensionName, L"microsoft.winappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
     }
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };

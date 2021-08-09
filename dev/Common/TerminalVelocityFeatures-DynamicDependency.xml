@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<features xmlns="http://microsoft.com/windowsappsdk/TerminalVelocity/20210729/TerminalVelocityFeatures.xsd">
+
+<!-- Copyright (c) Microsoft Corporation. All rights reserved.
+     Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+
+    <!-- See docs/TerminalVelocity.md for more info.  -->
+
+    <!-- Enabled variants -->
+    <feature>
+        <name>Feature_GenerationId</name>
+        <description>DynamicDependency APIs to access the package graph's current Generation Id</description>
+        <state>AlwaysEnabled</state>
+        <alwaysDisabledChannelTokens>
+            <channelToken>Preview</channelToken>
+            <channelToken>Stable</channelToken>
+        </alwaysDisabledChannelTokens>
+    </feature>
+</features>
