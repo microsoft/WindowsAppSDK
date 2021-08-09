@@ -20,7 +20,7 @@ namespace winrt::Microsoft
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
+    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel), m_platform(wil::CoCreateInstance<WpnLrpPlatform, IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER)){}
 
     winrt::Windows::Uri PushNotificationChannel::Uri()
     {
@@ -48,12 +48,26 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
+        return m_channel.PushNotificationReceived([weak_self = get_weak(), handler, m_sink = &m_sink, m_platform = &m_platform](auto&&, auto&& args)
         {
             auto strong = weak_self.get();
             if (strong)
             {
-                handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+                if (AppModel::Identity::IsPackagedProcess())
+                {
+                    handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+                }
+                else
+                {
+                    if (!m_sink)
+                    {
+                        
+                    }
+                    else
+                    {
+
+                    }
+                }
             };
         });
     }

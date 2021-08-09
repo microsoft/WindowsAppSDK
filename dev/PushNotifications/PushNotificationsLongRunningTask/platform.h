@@ -17,7 +17,7 @@ struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) WpnLrpPlatformIm
 
     STDMETHOD(UnregisterActivator)(/*[in]*/ PCWSTR processName);
 
-    STDMETHOD(RegisterForegroundActivator)(/*[in]*/ PCWSTR processName);
+    STDMETHOD(RegisterForegroundActivator)(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ PCWSTR processName);
 
     STDMETHOD(UnregisterForegroundActivator)(/*[in]*/ PCWSTR processName);
 

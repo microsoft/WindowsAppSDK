@@ -94,7 +94,7 @@ STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterActivator(/*[in]*
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator(/*[in]*/ IWpnForegroundSink*, /*[in]*/ PCWSTR /*processName*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();

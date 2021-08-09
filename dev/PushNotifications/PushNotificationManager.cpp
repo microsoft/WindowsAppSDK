@@ -9,7 +9,6 @@
 // Need to fix this ref!!!
 //#include <..\PushNotifications.LongRunningTask.ProxyStub\PushNotificationsLRP_h.h>
 #include <PushNotificationsLRP_h.h>
-#include "PushNotificationsLongRunningTask/WpnForegroundSink.h"
 #include "PushNotificationCreateChannelResult.h"
 #include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -32,7 +31,7 @@ constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 constexpr winrt::guid PushNotificationsTask_guid{ PUSHNOTIFICATIONS_TASK_CLSID_STRING };
 
 static wil::unique_event g_waitHandleForArgs;
-constexpr IUnknown** varx = nullptr;
+
 wil::unique_event& GetWaitHandleForArgs()
 {
     return g_waitHandleForArgs;
@@ -257,21 +256,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         try
         {
-            wil::com_ptr<IWpnForegroundSinkWrapper> foregroundSinkWrapper{
-                wil::CoCreateInstance<WpnForegroundSinkWrapper,
-                IWpnForegroundSinkWrapper>(CLSCTX_LOCAL_SERVER) };
+            wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+                wil::CoCreateInstance<WpnLrpPlatform,
+                IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
-            wil::com_ptr<IUnknown> sinkPtr;
-            foregroundSinkWrapper->GetForegroundSink(&sinkPtr);
-
-            wil::com_ptr<WpnForegroundSink> sink;
-            HRESULT hr = sink.get()->QueryInterface(IID_PPV_ARGS(&sinkPtr));
-
-            sink->AddEvent();
-            // sinkPtr.get()->QueryInterface(IID_PPV_ARGS(&sinkPtr)
-            // sink.get()->QueryInterface(IID_IWpnForegroundSink, &sinkPtr);
-            // HRESULT hr = sinkPtr.get()->QueryInterface(IID_IWpnForegroundSink, &sink);
-
+            
             return 0;
         }
         catch (...)

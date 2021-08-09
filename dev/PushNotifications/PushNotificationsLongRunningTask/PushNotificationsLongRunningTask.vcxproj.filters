@@ -27,15 +27,6 @@
     <ClInclude Include="externs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WpnForegroundSinkFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WpnForegroundSinkWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WpnForegroundSink.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -48,15 +39,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="platformfactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WpnForegroundSinkWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WpnForegroundSinkFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WnpForegroundSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

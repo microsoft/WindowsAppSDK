@@ -7,6 +7,14 @@ import "inspectable.idl";
 //#include "..\DynamicDependencyDataStore-Constants.h"
 
 [object]
+[uuid(25604D55-9B17-426F-9D67-2B11B3A65598)]
+[pointer_default(unique)]
+interface IWpnForegroundSink : IUnknown
+{
+    HRESULT InvokeAll();
+};
+
+[object]
 [uuid(60FC21B2-B396-4D49-94F0-7555869FB93C)]
 [pointer_default(unique)]
 interface IWpnLrpPlatform : IUnknown
@@ -15,7 +23,7 @@ interface IWpnLrpPlatform : IUnknown
 
     HRESULT UnregisterActivator([in] LPCWSTR processName);
 
-    HRESULT RegisterForegroundActivator([in] LPCWSTR processName);
+    HRESULT RegisterForegroundActivator([in] IWpnForegroundSink*, [in] LPCWSTR processName);
 
     HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
 
@@ -27,15 +35,6 @@ interface IWpnLrpPlatform : IUnknown
     HRESULT ManualShutdown();
 };
 
-[object]
-[uuid(25604D55-9B17-426F-9D67-2B11B3A65598)]
-[pointer_default(unique)]
-interface IWpnForegroundSinkWrapper : IUnknown
-{
-    HRESULT GetForegroundSink([out] IUnknown** sink);
-
-};
-
 [uuid(60C6A2D9-04D9-42C3-B4E9-71158389D422)] // PR_DYNDEP_LIBID_UUID
 [version(1.0)]
 library WpnLrpPlatformLib
@@ -44,11 +43,5 @@ library WpnLrpPlatformLib
     coclass WpnLrpPlatform
     {
         [default] interface IWpnLrpPlatform;
-    };
-
-    [uuid(FC6CF6F3-C308-4C4D-B157-8B56E0E94505)] // PR_DYNDEP_DATASTORE_CLSID_UUID
-    coclass WpnForegroundSinkWrapper
-    {
-        [default] interface IWpnForegroundSinkWrapper;
     };
 };
