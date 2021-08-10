@@ -34,7 +34,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Push past the '----' commandline argument prefix.
         argsStart += 4;
 
-        auto argsEnd = commandLine.find_first_of(L" ", argsStart);
+        auto argsEnd = commandLine.find_first_of(L' ', argsStart);
 
         // Separate the argument from any behind it on the command-line.
         std::wstring argument;
@@ -53,7 +53,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-        auto argsDelim = argument.find_first_of(L":");
+        auto argsDelim = argument.find_first_of(L':');
         if (argsDelim == std::wstring::npos)
         {
             return { argument, L"" };
@@ -316,7 +316,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
-        bool foundArgs = false;
 
         // For packaged, try to get platform args first.
         if (HasIdentity())
@@ -325,13 +324,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             {
                 data = args;
                 kind = static_cast<ExtendedActivationKind>(args.Kind());
-                foundArgs = true;
             }
         }
 
         // Handle all Windows App SDK types next (both packaged and unpackaged).
-        std::wstring commandLine = std::wstring(GetCommandLine());
-        if (!foundArgs)
+        std::wstring commandLine{ GetCommandLine() };
+        if (data == nullptr)
         {
             auto [contractArgument, contractData] = ParseCommandLine(commandLine);
 
@@ -349,10 +347,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     }
                 }
 
-                if (CompareStringOrdinal(contractArgument.c_str(), -1, c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)
+                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)
                 {
                     kind = ExtendedActivationKind::Protocol;
-                    auto args = make<ProtocolActivatedEventArgs>(contractData);
+                    auto args = make<ProtocolActivatedEventArgs>(contractData.c_str());
                     data = args;
 
                     // Encoded launch is a protocol launch where the argument data is
@@ -364,17 +362,15 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     {
                         std::tie(kind, data) = GetEncodedLaunchActivatedEventArgs(args);
                     }
-
-                    foundArgs = true;
                 }
             }
         }
 
         // All scenarios should just be marked as Launch.
-        if (!foundArgs)
+        if (data == nullptr)
         {
             kind = ExtendedActivationKind::Launch;
-            data = make<LaunchActivatedEventArgs>(commandLine);
+            data = make<LaunchActivatedEventArgs>(commandLine.c_str());
         }
 
         return make<AppActivationArguments>(kind, data);
