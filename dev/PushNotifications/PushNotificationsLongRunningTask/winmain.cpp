@@ -16,7 +16,6 @@
 
 #include "platform.h"
 #include "platformfactory.h"
-#include "externs.h"
 
 using namespace Microsoft::WRL;
 
@@ -51,13 +50,12 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
         1));    
 
     ComPtr<NotificationsLongRunningPlatformImpl> platform;
+    // Get an initialized instance of the LRP platform
     THROW_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
-
-    platform->InitializePlatform();
 
     platformFactory->WaitForEvent();
 
-    platform->ShutdownPlatform();
+    platform->Shutdown();
     platform = nullptr; // May check again CoUninitialize behavior
 
     count = module.DecrementObjectCount();

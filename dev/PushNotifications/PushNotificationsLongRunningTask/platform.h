@@ -8,11 +8,9 @@ Microsoft::WRL::RuntimeClass<
     INotificationsLongRunningPlatform,
     Microsoft::WRL::FtmBase>
 {
-    void InitializePlatform();
+    void Initialize();
 
-    void ShutdownPlatform();
-
-    bool IsPlatformShutdown();
+    void Shutdown();
 
     /* IWpnLrpPlatform functions */
 

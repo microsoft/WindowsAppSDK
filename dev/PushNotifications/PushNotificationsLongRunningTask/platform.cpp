@@ -3,56 +3,9 @@
 #include <NotificationsLongRunningProcess_h.h>
 
 #include "platform.h"
-//#include "platformfactory.h"
+#include "platformfactory.h"
 
-Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> g_platform;
-
-std::once_flag m_isPlatformInitialized;
-
-NotificationsLongRunningPlatformImpl* GetPlatform()
-{
-    // We have to call InitializePlatform() before retrieving the platform on the factory.
-    // Throw if Platform is already reset or was shut down.
-    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, !g_platform || g_platform->IsPlatformShutdown());
-    return g_platform.Get();
-}
-
-void CleanPlatform()
-{
-    g_platform = nullptr;
-}
-
-HRESULT InitializePlatform()
-{
-    std::call_once(m_isPlatformInitialized,
-        [&] {
-            g_platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
-            g_platform->InitializePlatform();
-
-            // Prevent scenario where if the first client goes out of scope,
-            // then triggers WpnLrpPlatformImpl dtor.
-            g_platform->AddRef();
-        });
-
-    return S_OK;
-}
-
-HRESULT ShutdownPlatform()
-{
-    if (g_platform)
-    {
-        g_platform->ShutdownPlatform();
-    }
-
-    return S_OK;
-}
-
-bool IsPlatformShutdown()
-{
-    return g_platform->IsPlatformShutdown();
-}
-
-void NotificationsLongRunningPlatformImpl::InitializePlatform()
+void NotificationsLongRunningPlatformImpl::Initialize()
 {
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
@@ -67,7 +20,7 @@ void NotificationsLongRunningPlatformImpl::InitializePlatform()
     m_initialized = true;
 }
 
-void NotificationsLongRunningPlatformImpl::ShutdownPlatform()
+void NotificationsLongRunningPlatformImpl::Shutdown()
 {
     auto lock = m_lock.lock_exclusive();
     if (m_shutdown)
@@ -78,12 +31,6 @@ void NotificationsLongRunningPlatformImpl::ShutdownPlatform()
     /* Shut down your components */
 
     m_shutdown = true;
-}
-
-bool NotificationsLongRunningPlatformImpl::IsPlatformShutdown()
-{
-    auto lock = m_lock.lock_shared();
-    return m_shutdown;
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(/*[in]*/ PCWSTR /*processName*/)

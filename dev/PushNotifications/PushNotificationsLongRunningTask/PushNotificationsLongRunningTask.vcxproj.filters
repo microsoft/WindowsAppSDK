@@ -21,9 +21,6 @@
     <ClInclude Include="platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="externs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="platformfactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>

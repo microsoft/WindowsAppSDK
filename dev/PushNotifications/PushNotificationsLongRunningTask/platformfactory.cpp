@@ -2,7 +2,6 @@
 
 #include <NotificationsLongRunningProcess_h.h>
 
-#include "externs.h"
 #include "platform.h"
 #include <wrl/implements.h>
 #include <wrl/module.h>
@@ -26,29 +25,17 @@ IFACEMETHODIMP WpnLrpPlatformFactory::CreateInstance(
 {
     *obj = nullptr;
 
-    if (m_isPlatformInitialized)
-    {
-        *obj = m_platform.Get();
-    }
-    else
-    {
-        std::call_once(m_platformInitializedFlag,
-            [&] {
-                ComPtr<NotificationsLongRunningPlatformImpl> platform;
+    std::call_once(m_platformInitializedFlag,
+        [&] {
+            m_platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
+            m_platform->Initialize();
 
-                platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
-                platform->InitializePlatform();
+            // Prevent scenario where if the first client goes out of scope,
+            // then triggers WpnLrpPlatformImpl dtor. // NEED TO CHECK THIS
+            m_platform->AddRef();
+        });
 
-                // Prevent scenario where if the first client goes out of scope,
-                // then triggers WpnLrpPlatformImpl dtor. // NEED TO CHECK THIS
-                platform->AddRef();
-
-                AsWeak(platform.Get(), &m_platform);
-                *obj = platform.Detach();
-
-                m_isPlatformInitialized = true;
-            });
-    }
+    *obj = m_platform.Get();
 
     return S_OK;
 }
