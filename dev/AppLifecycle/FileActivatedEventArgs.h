@@ -10,13 +10,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Storage;
 
-    constexpr PCWSTR c_fileContractId = L"Windows.File";
+    constexpr inline PCWSTR c_fileContractId = L"Windows.File";
 
     class FileActivatedEventArgs : public winrt::implements<FileActivatedEventArgs, IFileActivatedEventArgs, ActivatedEventArgsBase,
         IInternalValueMarshalable>
     {
     public:
-        FileActivatedEventArgs(const std::wstring verb, const std::wstring file, const bool delayVerification = false)
+        FileActivatedEventArgs(const winrt::hstring verb, const winrt::hstring file, const bool delayVerification = false)
         {
             if (verb.empty())
             {
@@ -47,8 +47,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
             auto query = uri.QueryParsed();
-            auto verb = std::wstring(query.GetFirstValueByName(L"Verb"));
-            auto file = std::wstring(query.GetFirstValueByName(L"File"));
+            auto verb = query.GetFirstValueByName(L"Verb");
+            auto file = query.GetFirstValueByName(L"File");
             return make<FileActivatedEventArgs>(verb, file);
         }
 
@@ -56,7 +56,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         winrt::Windows::Foundation::Uri Serialize()
         {
             auto uri = GenerateEncodedLaunchUri(L"App", c_fileContractId);
-            uri += L"&Verb=" + m_verb + std::wstring(L"&File=") + m_path;
+            uri += L"&Verb=" + winrt::Windows::Foundation::Uri::EscapeComponent(m_verb.c_str());
+            uri += L"&File=" + winrt::Windows::Foundation::Uri::EscapeComponent(m_path.c_str());
             return winrt::Windows::Foundation::Uri(uri);
         }
 
@@ -72,8 +73,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
     private:
-        std::wstring m_verb;
-        std::wstring m_path;
+        winrt::hstring m_verb;
+        winrt::hstring m_path;
         IVector<IStorageItem> m_files;
     };
 }
