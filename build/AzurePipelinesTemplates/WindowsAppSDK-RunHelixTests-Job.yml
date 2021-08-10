@@ -116,18 +116,10 @@ jobs:
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
       arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnpackagedTests.proj' -WorkItemPrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download MRTCore test binaries'
-    inputs:
-      buildType: 'current'
-      downloadType: 'single'
-      artifactName: mrtcore_test_binaries_$(buildPlatform)
-      downloadPath: '$(Build.ArtifactStagingDirectory)\mrtcore_test_binaries_$(buildPlatform)'
-    
   - task: CopyFiles@2
     displayName: 'Copy Microsoft.ApplicationModel.Resources.winmd to test root'
     inputs:
-      sourceFolder: $(Build.ArtifactStagingDirectory)\mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests
+      sourceFolder: $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests
       contents: |
         Microsoft.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
