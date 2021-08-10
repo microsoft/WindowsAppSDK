@@ -107,6 +107,7 @@ namespace MrtCoreUnpackagedTests
     {
         private ActivationContext m_context = new ActivationContext();
         private static string m_assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static bool m_rs5 = false;
 
         [AssemblyInitialize]
         public static void ModuleSetup(TestContext testContext)
@@ -114,6 +115,7 @@ namespace MrtCoreUnpackagedTests
             // Clean up any left over files just in case
             File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
             File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            m_rs5 = (System.Environment.OSVersion.Version.Build < 18362);
         }
 
         [TestCleanup]
@@ -128,11 +130,10 @@ namespace MrtCoreUnpackagedTests
             if (File.Exists(Path.Combine(m_assemblyFolder, "te.processhost.pri")))
             {
                 File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
-            }            
+            }
         }
 
-        [TestMethod]
-        public void DefaultResourceManager()
+        private void DefaultResourceManagerImpl()
         {
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
@@ -140,12 +141,23 @@ namespace MrtCoreUnpackagedTests
 
             // No resource file is loaded
             Verify.AreEqual(map.ResourceCount, 0u);
-            var ex = Verify.Throws<Exception>(()  => map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME"));
+            var ex = Verify.Throws<Exception>(() => map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME"));
             Verify.AreEqual((uint)ex.HResult, 0x80070490); // HRESULT_FROM_WIN32(ERROR_NOT_FOUND)
         }
 
         [TestMethod]
-        public void DefaultResourceManagerWithResourcePri()
+        public void DefaultResourceManager()
+        {
+            if (m_rs5)
+            {
+                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                return;
+            }
+
+            DefaultResourceManagerImpl();
+        }
+
+        private void DefaultResourceManagerWithResourcePriImpl()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "resources.pri"));
 
@@ -158,7 +170,18 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        public void DefaultResourceManagerWithExePri()
+        public void DefaultResourceManagerWithResourcePri()
+        {
+            if (m_rs5)
+            {
+                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                return;
+            }
+
+            DefaultResourceManagerWithResourcePriImpl();
+        }
+
+        private void DefaultResourceManagerWithExePriImpl()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "te.processhost.pri"));
 
@@ -171,7 +194,18 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        public void ResourceManagerWithFile()
+        public void DefaultResourceManagerWithExePri()
+        {
+            if (m_rs5)
+            {
+                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                return;
+            }
+
+            DefaultResourceManagerWithExePriImpl();
+        }
+
+        private void ResourceManagerWithFileImpl()
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var resourceMap = resourceManager.MainResourceMap;
@@ -179,6 +213,18 @@ namespace MrtCoreUnpackagedTests
             Verify.AreNotEqual(map.ResourceCount, 0u);
             var resource = map.GetValue("IDS_MANIFEST_MUSIC_APP_NAME").ValueAsString;
             Verify.AreEqual(resource, "Groove Music");
+        }
+
+        [TestMethod]
+        public void ResourceManagerWithFile()
+        {
+            if (m_rs5)
+            {
+                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                return;
+            }
+
+            ResourceManagerWithFileImpl();
         }
     }
 }
