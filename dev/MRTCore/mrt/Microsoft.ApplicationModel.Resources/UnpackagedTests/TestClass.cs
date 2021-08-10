@@ -107,6 +107,7 @@ namespace MrtCoreUnpackagedTests
     {
         private ActivationContext m_context = new ActivationContext();
         private static string m_assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static string m_exeFolder = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
         private static bool m_rs5 = false;
 
         [AssemblyInitialize]
@@ -115,6 +116,12 @@ namespace MrtCoreUnpackagedTests
             // Clean up any left over files just in case
             File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
             File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
+            File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
             m_rs5 = (System.Environment.OSVersion.Version.Build < 18362);
         }
 
@@ -131,10 +138,27 @@ namespace MrtCoreUnpackagedTests
             {
                 File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
             }
+            if (File.Exists(Path.Combine(m_exeFolder, "resources.pri")))
+            {
+                File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
+            }
+            if (File.Exists(Path.Combine(m_exeFolder, "te.processhost.pri")))
+            {
+                File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
+            }
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                if (File.Exists(Path.Combine(m_exeFolder, "resources.pri.standalone")))
+                {
+                    File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
+                }
+            }
         }
 
         private void DefaultResourceManagerImpl()
         {
+            Log.Comment("assembly path is {0}", m_assemblyFolder);
+            Log.Comment("exe path is {0}", m_exeFolder);
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
             var map = resourceMap.GetSubtree("resources");
@@ -160,6 +184,10 @@ namespace MrtCoreUnpackagedTests
         private void DefaultResourceManagerWithResourcePriImpl()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "resources.pri"));
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri"));
+            }
 
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
@@ -184,6 +212,10 @@ namespace MrtCoreUnpackagedTests
         private void DefaultResourceManagerWithExePriImpl()
         {
             File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "te.processhost.pri"));
+            }
 
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
@@ -207,6 +239,11 @@ namespace MrtCoreUnpackagedTests
 
         private void ResourceManagerWithFileImpl()
         {
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
+
             var resourceManager = new ResourceManager("resources.pri.standalone");
             var resourceMap = resourceManager.MainResourceMap;
             var map = resourceMap.GetSubtree("resources");

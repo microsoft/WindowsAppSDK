@@ -116,6 +116,14 @@ jobs:
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
       arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnpackagedTests.proj' -WorkItemPrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
+  - task: CopyFiles@2
+    displayName: 'Copy Microsoft.ApplicationModel.Resources.winmd to test root'
+    inputs:
+      sourceFolder: $(Build.ArtifactStagingDirectory)\mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests
+      contents: |
+        Microsoft.ApplicationModel.Resources.winmd
+      targetFolder: $(testPayloadDir)
+      
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
