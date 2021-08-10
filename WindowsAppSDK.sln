@@ -179,6 +179,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.Applicati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppLifecycle.Projection", "dev\Projections\CS\Microsoft.Windows.AppLifecycle\Microsoft.Windows.AppLifecycle.Projection.csproj", "{D417EDBE-D783-484F-83F3-710DEC7CB585}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDK.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppSDK.Test.Singleton.Msix\WindowsAppSDK.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -639,6 +641,18 @@ Global
 		{D417EDBE-D783-484F-83F3-710DEC7CB585}.Release|x64.Build.0 = Release|x64
 		{D417EDBE-D783-484F-83F3-710DEC7CB585}.Release|x86.ActiveCfg = Release|x86
 		{D417EDBE-D783-484F-83F3-710DEC7CB585}.Release|x86.Build.0 = Release|x86
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x64.ActiveCfg = Debug|x64
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x64.Build.0 = Debug|x64
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x86.ActiveCfg = Debug|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x86.Build.0 = Debug|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|ARM64.ActiveCfg = Release|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|x64.ActiveCfg = Release|x64
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|x64.Build.0 = Release|x64
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|x86.ActiveCfg = Release|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -695,6 +709,7 @@ Global
 		{716C26A0-E6B0-4981-8412-D14A4D410531} = {6CD616F9-173E-42CD-89A1-8FDFD86283AA}
 		{47D8D21D-F022-4D58-8DB2-8B467756E08C} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{D417EDBE-D783-484F-83F3-710DEC7CB585} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
