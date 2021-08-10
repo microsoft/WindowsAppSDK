@@ -20,78 +20,45 @@
 
 using namespace Microsoft::WRL;
 
-void SignalEvent()
-{
-    GetWinMainEvent().SetEvent();
-}
-
-wil::unique_threadpool_timer g_timer;
-
-void SetTimerForEvent()
-{
-    try
-    {
-        g_timer.reset(CreateThreadpoolTimer(
-            [](PTP_CALLBACK_INSTANCE, _Inout_ PVOID, _Inout_ PTP_TIMER)
-            {
-                SignalEvent();
-            },
-            reinterpret_cast<PVOID>(GetCurrentThreadId()),
-            nullptr));
-
-        THROW_LAST_ERROR_IF_NULL(g_timer);
-
-        // Negative times in SetThreadpoolTimer are relative. Allow 30 seconds to fire.
-        FILETIME dueTime{};
-        *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(30000 * 10000);
-        SetThreadpoolTimer(g_timer.get(), &dueTime, 0, 0);
-    }
-    catch (...)
-    {
-        LOG_IF_FAILED(wil::ResultFromCaughtException());
-    }
-}
-
-// This function has to be called after we realized that we want to persist the LRP.
-void CancelTimerForEvent()
-{
-    g_timer.reset();
-}
-
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
     Sleep(20000);
 
-    // Schedule event signaling after 30 seconds. This is in case we don't have any apps to track in the LRP.
-    // If we realize that we need to persist the LRP, timer will be canceled.
-    //SetTimerForEvent();
+    THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
-    RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
-
-    // Callback to be signaled by COM if it considers that the process should exit.
-    auto& module = Module<OutOfProc>::Create(SignalEvent);
-
-    unsigned long count = module.IncrementObjectCount();
-
-    DWORD cookie = 0;
-    ComPtr<IClassFactory> platformFactory;
+    ComPtr<WpnLrpPlatformFactory> platformFactory;
     THROW_IF_FAILED(MakeAndInitialize<WpnLrpPlatformFactory>(&platformFactory));
 
-    CLSID clsid = __uuidof(NotificationsLongRunningPlatformImpl);
+    ComPtr<IClassFactory> platformFactoryAsClassFactory;
+    THROW_IF_FAILED(platformFactory.As<IClassFactory>(&platformFactoryAsClassFactory));
 
+    // Schedule event signaling after 30 seconds. This is in case we don't have any apps to track in the LRP.
+    // If we realize that we need to persist the LRP, timer will be canceled.
+    platformFactory->SetupTimer();
+
+    // Callback to be signaled by COM if it considers that the process should exit.
+    auto& module = Module<OutOfProc>::Create(WpnLrpPlatformFactory::SignalEvent);
+
+    unsigned long count = module.IncrementObjectCount(); // May remove
+
+    CLSID clsid = __uuidof(NotificationsLongRunningPlatformImpl);
+    DWORD cookie = 0;
     THROW_IF_FAILED(module.RegisterCOMObject(
         nullptr,
         &clsid,
-        platformFactory.GetAddressOf(),
+        platformFactoryAsClassFactory.GetAddressOf(),
         &cookie,
-        1));
+        1));    
 
-    //InitializePlatform();
+    ComPtr<NotificationsLongRunningPlatformImpl> platform;
+    THROW_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
 
-    GetWinMainEvent().wait();
+    platform->InitializePlatform();
 
-    ShutdownPlatform();
-    CleanPlatform();
+    platformFactory->WaitForEvent();
+
+    platform->ShutdownPlatform();
+    platform = nullptr; // May check again CoUninitialize behavior
 
     count = module.DecrementObjectCount();
 

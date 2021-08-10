@@ -3,8 +3,7 @@
 #include <NotificationsLongRunningProcess_h.h>
 
 #include "platform.h"
-
-wil::unique_event g_winmainEvent(wil::EventOptions::None);
+//#include "platformfactory.h"
 
 Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> g_platform;
 
@@ -51,11 +50,6 @@ HRESULT ShutdownPlatform()
 bool IsPlatformShutdown()
 {
     return g_platform->IsPlatformShutdown();
-}
-
-wil::unique_event& GetWinMainEvent()
-{
-    return g_winmainEvent;
 }
 
 void NotificationsLongRunningPlatformImpl::InitializePlatform()
@@ -120,7 +114,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[out]*/ GUID* /*appId*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[in]*/ GUID /*remoteId*/, /*[out]*/ GUID* /*appId*/)
 {
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);

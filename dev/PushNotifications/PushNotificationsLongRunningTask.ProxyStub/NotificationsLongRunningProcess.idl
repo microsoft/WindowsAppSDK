@@ -19,7 +19,7 @@ interface INotificationsLongRunningPlatform : IUnknown
 
     HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
 
-    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [out] GUID* appId);
+    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] GUID* appId);
 };
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
