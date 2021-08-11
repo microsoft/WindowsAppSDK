@@ -173,6 +173,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "test\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDK.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppSDK.Test.Singleton.Msix\WindowsAppSDK.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Process.Environment", "Microsoft.Process.Environment", "{92801D0D-B76F-4EAA-914F-31F54241536F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environment", "dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems", "{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -675,6 +679,8 @@ Global
 		{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D} = {E9117D76-63AC-4289-A628-AB39EF6E5D19}
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
+		{92801D0D-B76F-4EAA-914F-31F54241536F} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638} = {92801D0D-B76F-4EAA-914F-31F54241536F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
