@@ -204,6 +204,10 @@ namespace Test::DynamicDependency
         static MddPackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
 
     private:
+        static void VerifyGenerationId(
+            const UINT32 expectedGenerationId);
+
+    private:
         static wil::unique_hmodule m_bootstrapDll;
     };
 }
