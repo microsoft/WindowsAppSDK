@@ -63,7 +63,7 @@
     <None Include="resources.pri.standalone">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="UnpackagedTests.runsettings">
+    <None Include="MrtCoreUnpackagedTests.runsettings">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -84,11 +84,11 @@
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll"
-    powershell -command "$file = gi $(OutputPath)UnpackagedTests.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
+    powershell -command "$file = gi $(OutputPath)MrtCoreUnpackagedTests.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <RunSettingsFilePath>$(OutputPath)UnpackagedTests.runsettings</RunSettingsFilePath>
+    <RunSettingsFilePath>$(OutputPath)MrtCoreUnpackagedTests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

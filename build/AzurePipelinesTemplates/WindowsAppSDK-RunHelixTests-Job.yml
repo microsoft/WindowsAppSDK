@@ -100,28 +100,28 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnitTests.proj' -WorkItemPrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\MrmUnitTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnitTests.proj' -WorkItemPrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover MRT Core BaseUnitTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\BaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-BaseUnitTests.proj' -WorkItemPrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\MrmBaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-BaseUnitTests.proj' -WorkItemPrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover MRT Core UnpackagedTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnpackagedTests.proj' -WorkItemPrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\MrtCoreUnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnpackagedTests.proj' -WorkItemPrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
   # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
   # under same folder as the executable.
   - task: CopyFiles@2
     displayName: 'Copy Microsoft.ApplicationModel.Resources.winmd to test root'
     inputs:
-      sourceFolder: $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests
+      sourceFolder: $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\MrtCoreUnpackagedTests
       contents: |
         Microsoft.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
@@ -132,7 +132,7 @@ jobs:
   #   inputs:
   #     targetType: filePath
   #     filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-  #     arguments: -TestFilePattern 'mrtcore_test_binaries_x64\ManagedTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-ManagedTest.proj' -WorkItemPrefix 'MrtCore-ManagedTest-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.ManagedTest.$(buildPlatform).$(buildConfiguration)'
+  #     arguments: -TestFilePattern 'mrtcore_test_binaries_x64\MrtCoreManagedTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-ManagedTest.proj' -WorkItemPrefix 'MrtCore-ManagedTest-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.ManagedTest.$(buildPlatform).$(buildConfiguration)'
 
   # Publish the generated test work items (*.proj file) as Pipeline artifact(s).
   # This is not required, but it is useful for debugging purposes to see what tests were discovered.
