@@ -65,16 +65,10 @@
     <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
       <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK.Foundation" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK.WinUI" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK.InteractiveExperiences" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
     <Assets>
       <Asset Type="Microsoft.Windows.CppWinRT.nupkg" Source="File" Path="Microsoft.Windows.CppWinRT.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
       <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.WindowsAppSDK.Foundation.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.Foundation.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.WindowsAppSDK.WinUI.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.WinUI.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.WindowsAppSDK.InteractiveExperiences.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.InteractiveExperiences.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>
