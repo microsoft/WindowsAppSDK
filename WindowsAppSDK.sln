@@ -165,10 +165,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PushNotifications", "PushNo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\PushNotifications\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Process.Environment", "Microsoft.Process.Environment", "{7B0057C5-D2BE-4E0A-9C5F-F0ACAF108AD5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environment", "dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems", "{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
 		dev\PushNotifications\PushNotifications.vcxitems*{103c0c23-7ba8-4d44-a63c-83488e2e3a81}*SharedItemsImports = 9
+		dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
@@ -636,6 +641,8 @@ Global
 		{1307DD1B-BBE8-4CD0-B1A0-0DB6D61EEAA0} = {91D03B95-1B0C-4BEB-8441-30DA7D615538}
 		{A1B25DCF-6A54-414D-8E24-F4D24EE9299D} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{C422B090-F501-4204-8068-1084B0799405} = {A1B25DCF-6A54-414D-8E24-F4D24EE9299D}
+		{7B0057C5-D2BE-4E0A-9C5F-F0ACAF108AD5} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638} = {7B0057C5-D2BE-4E0A-9C5F-F0ACAF108AD5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
