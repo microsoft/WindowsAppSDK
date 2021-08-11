@@ -184,7 +184,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
+        //[TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManager()
         {
             if (m_rs5)
@@ -213,7 +213,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
+        //[TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithResourcePri()
         {
             if (m_rs5)
@@ -242,7 +242,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
+        //[TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithExePri()
         {
             if (m_rs5)
@@ -270,7 +270,7 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        [TestProperty("IsolationLevel", "Method")]
+        //[TestProperty("IsolationLevel", "Method")]
         public void ResourceManagerWithFile()
         {
             if (m_rs5)
