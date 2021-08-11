@@ -94,7 +94,7 @@ jobs:
       artifactName: HelixTestPayloadDir_$(buildPlatform)_$(buildConfiguration)
 
   # Discover the TAEF test binaries to run and generate the Helix Work Items for them.
-  # Note: There are 3 test suites for MRT Core. We currently run 2 of them in Helix.
+  # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
   - task: powershell@2
     displayName: 'Discover MRT Core UnitTests'
     inputs:
@@ -109,6 +109,23 @@ jobs:
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
       arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\BaseUnitTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-BaseUnitTests.proj' -WorkItemPrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.BaseUnitTests.$(buildPlatform).$(buildConfiguration)'
 
+  - task: powershell@2
+    displayName: 'Discover MRT Core UnpackagedTests'
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnpackagedTests.proj' -WorkItemPrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)'
+
+  # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
+  # under same folder as the executable.
+  - task: CopyFiles@2
+    displayName: 'Copy Microsoft.ApplicationModel.Resources.winmd to test root'
+    inputs:
+      sourceFolder: $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests
+      contents: |
+        Microsoft.ApplicationModel.Resources.winmd
+      targetFolder: $(testPayloadDir)
+      
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'

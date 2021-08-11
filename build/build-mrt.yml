@@ -159,7 +159,16 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-# Note: The MRT Unpackaged tests currently do not work in the CI pipeline. (They rely on changes not present in Server2019).
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
 # Copy and Publish the test binaries so we can run them in Helix later.
 - task: CopyFiles@2
