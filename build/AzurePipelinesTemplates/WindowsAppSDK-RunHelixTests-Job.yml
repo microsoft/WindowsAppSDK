@@ -116,6 +116,8 @@ jobs:
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
       arguments: -TestFilePattern 'mrtcore_test_binaries_$(buildPlatform)\UnpackagedTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-UnpackagedTests.proj' -WorkItemPrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'MrtCore.UnpackagedTests.$(buildPlatform).$(buildConfiguration)'
 
+  # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
+  # under same folder as the executable.
   - task: CopyFiles@2
     displayName: 'Copy Microsoft.ApplicationModel.Resources.winmd to test root'
     inputs:

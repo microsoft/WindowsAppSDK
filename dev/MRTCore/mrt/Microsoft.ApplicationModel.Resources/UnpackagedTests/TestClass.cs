@@ -114,14 +114,6 @@ namespace MrtCoreUnpackagedTests
         {
             GC.Collect(); // Force any ResourceManager objects to be cleaned up.
 
-            if (File.Exists(Path.Combine(m_assemblyFolder, "resources.pri")))
-            {
-                File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
-            }
-            if (File.Exists(Path.Combine(m_assemblyFolder, "te.processhost.pri")))
-            {
-                File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
-            }
             if (File.Exists(Path.Combine(m_exeFolder, "resources.pri")))
             {
                 File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
@@ -143,8 +135,6 @@ namespace MrtCoreUnpackagedTests
         public static void ModuleSetup(TestContext testContext)
         {
             // Clean up any left over files just in case
-            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
-            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
             File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
             File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
             if (m_exeFolder != m_assemblyFolder)
@@ -169,6 +159,8 @@ namespace MrtCoreUnpackagedTests
         [TestCleanup]
         public static void TestCleanup()
         { 
+            // There is random ACCESS_DENIED error during cleanup running in Helix.
+            // Move cleanup to TestSetup and ModuleCleanup.
         }
 
         private void DefaultResourceManagerImpl()
@@ -184,7 +176,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        //[TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManager()
         {
             if (m_rs5)
@@ -198,11 +189,7 @@ namespace MrtCoreUnpackagedTests
 
         private void DefaultResourceManagerWithResourcePriImpl()
         {
-            File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "resources.pri"));
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri"));
-            }
+            File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri"));
 
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
@@ -213,7 +200,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        //[TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithResourcePri()
         {
             if (m_rs5)
@@ -227,11 +213,7 @@ namespace MrtCoreUnpackagedTests
 
         private void DefaultResourceManagerWithExePriImpl()
         {
-            File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_assemblyFolder, "te.processhost.pri"));
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "te.processhost.pri"));
-            }
+            File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "te.processhost.pri"));
 
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
@@ -242,7 +224,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        //[TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithExePri()
         {
             if (m_rs5)
@@ -270,7 +251,6 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
-        //[TestProperty("IsolationLevel", "Method")]
         public void ResourceManagerWithFile()
         {
             if (m_rs5)
