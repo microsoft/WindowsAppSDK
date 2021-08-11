@@ -27,11 +27,11 @@
     <FullClassName>NuGet.VisualStudio.TemplateWizard</FullClassName>
   </WizardExtension>
   <WizardData>
-    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK">
-      <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
-      <package id="Microsoft.WindowsAppSDK" version="1.0.0" />
-      <package id="Microsoft.WindowsAppSDK.Foundation" version="1.0.0" />
-      <package id="Microsoft.WindowsAppSDK.WinUI" version="1.0.0" />
+    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+      <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.WindowsAppSDK.Foundation" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.WindowsAppSDK.WinUI" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
   </WizardData>
 </VSTemplate>

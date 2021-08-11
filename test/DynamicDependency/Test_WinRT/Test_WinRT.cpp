@@ -77,11 +77,16 @@ bool Test::DynamicDependency::Test_WinRT::Cleanup()
 
 void Test::DynamicDependency::Test_WinRT::Create_Delete()
 {
+    // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
+    VerifyGenerationId(1);
+
     const winrt::hstring packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
     const winrt::Windows::ApplicationModel::PackageVersion minVersion{};
     auto packageDependency{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::Create(packageFamilyName, minVersion) };
 
     packageDependency.Delete();
+
+    VerifyGenerationId(1);
 }
 
 void Test::DynamicDependency::Test_WinRT::GetFromId_Empty()
@@ -100,6 +105,9 @@ void Test::DynamicDependency::Test_WinRT::GetFromId_NotFound()
 
 void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framework_WindowsAppSDK()
 {
+    // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
+    VerifyGenerationId(1);
+
     // Setup our dynamic dependencies
 
     winrt::hstring expectedPackageFullName_WindowsAppSDKFramework{ TP::WindowsAppSDKFramework::c_PackageFullName };
@@ -110,6 +118,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusWindowsAppSDKFramework() };
     auto packagePath_WindowsAppSDKFramework{ TP::GetPackagePath(expectedPackageFullName_WindowsAppSDKFramework) };
     VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
+    VerifyGenerationId(1);
 
     // -- Create
 
@@ -122,6 +131,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependency_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyGenerationId(1);
 
     // -- Add
 
@@ -134,6 +144,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     auto packagePath_FrameworkMathAdd{ TP::GetPackagePath(expectedPackageFullName_FrameworkMathAdd) };
     VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependency_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyGenerationId(2);
 
     // -- Use it
 
@@ -155,6 +166,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     winrt::hstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
     const auto& expectedResolvedPackageFullName{ expectedPackageFullName_FrameworkMathAdd };
     VERIFY_ARE_EQUAL(expectedResolvedPackageFullName, actualResolvedPackageFullName);
+    VerifyGenerationId(2);
 
     // Tear down our dynamic dependencies
 
@@ -166,6 +178,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyGenerationId(3);
 
     // -- Delete
 
@@ -175,6 +188,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    VerifyGenerationId(3);
 }
 
 void Test::DynamicDependency::Test_WinRT::WinRT_RoGetActivationFactory_1()
@@ -662,4 +676,22 @@ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependenc
 #else
 #   error "Unknown processor architecture"
 #endif
+}
+
+void Test::DynamicDependency::Test_WinRT::VerifyGenerationId(
+    const UINT32 expectedGenerationId)
+{
+    const auto actualGenerationId{ winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency::GenerationId() };
+    if (!::Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled())
+    {
+        const auto expectedGeneratedIdIfDisabled{ static_cast<UINT32>(~0) };
+        VERIFY_ARE_EQUAL(expectedGeneratedIdIfDisabled, actualGenerationId);
+    }
+    else
+    {
+        VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
+    }
+
+    const auto mddGenerationId{ MddGetGenerationId() };
+    VERIFY_ARE_EQUAL(mddGenerationId, actualGenerationId);
 }
