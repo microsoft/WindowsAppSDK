@@ -110,23 +110,7 @@ namespace MrtCoreUnpackagedTests
         private static string m_exeFolder = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
         private static bool m_rs5 = false;
 
-        [AssemblyInitialize]
-        public static void ModuleSetup(TestContext testContext)
-        {
-            // Clean up any left over files just in case
-            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
-            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
-            File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
-            File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
-            if (m_exeFolder != m_assemblyFolder)
-            {
-                File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
-            }
-            m_rs5 = (System.Environment.OSVersion.Version.Build < 18362);
-        }
-
-        [TestCleanup]
-        public static void TestCleanup()
+        private static void Cleanup()
         {
             GC.Collect(); // Force any ResourceManager objects to be cleaned up.
 
@@ -153,6 +137,38 @@ namespace MrtCoreUnpackagedTests
                     File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
                 }
             }
+        }
+
+        [AssemblyInitialize]
+        public static void ModuleSetup(TestContext testContext)
+        {
+            // Clean up any left over files just in case
+            File.Delete(Path.Combine(m_assemblyFolder, "resources.pri"));
+            File.Delete(Path.Combine(m_assemblyFolder, "te.processhost.pri"));
+            File.Delete(Path.Combine(m_exeFolder, "resources.pri"));
+            File.Delete(Path.Combine(m_exeFolder, "te.processhost.pri"));
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Delete(Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
+            m_rs5 = (System.Environment.OSVersion.Version.Build < 18362);
+        }
+
+        [AssemblyCleanup]
+        public static void ModuleCleanup()
+        {
+            Cleanup();
+        }
+
+        [TestInitialize]
+        public static void TestSetup()
+        {
+            Cleanup();
+        }
+
+        [TestCleanup]
+        public static void TestCleanup()
+        { 
         }
 
         private void DefaultResourceManagerImpl()
