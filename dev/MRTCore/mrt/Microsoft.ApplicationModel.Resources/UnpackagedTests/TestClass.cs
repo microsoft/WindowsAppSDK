@@ -157,8 +157,6 @@ namespace MrtCoreUnpackagedTests
 
         private void DefaultResourceManagerImpl()
         {
-            Log.Comment("assembly path is {0}", m_assemblyFolder);
-            Log.Comment("exe path is {0}", m_exeFolder);
             var resourceManager = new ResourceManager();
             var resourceMap = resourceManager.MainResourceMap;
             var map = resourceMap.GetSubtree("resources");
@@ -170,11 +168,12 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManager()
         {
             if (m_rs5)
             {
-                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
             }
 
@@ -198,11 +197,12 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithResourcePri()
         {
             if (m_rs5)
             {
-                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
             }
 
@@ -226,11 +226,12 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void DefaultResourceManagerWithExePri()
         {
             if (m_rs5)
             {
-                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
             }
 
@@ -253,11 +254,12 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        [TestProperty("IsolationLevel", "Method")]
         public void ResourceManagerWithFile()
         {
             if (m_rs5)
             {
-                Log.Result(TestResult.Skipped, "Test doesn't run before 19H1");
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
                 return;
             }
 
