@@ -150,7 +150,8 @@ jobs:
       buildJobName: 'BuildAndPublishWindowsAppSDKInsights'
 
 - job: BuildMRT
-  pool: $(ProjectReunionBuildPool)
+  pool:
+    vmImage: 'windows-latest'
   strategy:
     maxParallel: 10
     matrix:
