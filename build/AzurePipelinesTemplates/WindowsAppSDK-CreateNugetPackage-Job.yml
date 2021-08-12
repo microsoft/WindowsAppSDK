@@ -72,6 +72,7 @@ jobs:
 
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.System.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.System.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.PushNotifications.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.PushNotifications.xml"
 
   # - script: |

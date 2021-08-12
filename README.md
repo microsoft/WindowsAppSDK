@@ -54,7 +54,7 @@ however we will do our best to ensure
 this is the exception and not the norm, and provide reasonable fallbacks when possible.
 
 
-### Documentation
+### Helpful links
 
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
@@ -62,7 +62,8 @@ More on what the project is and how we're approaching the work.
 * [Roadmap](docs/roadmap.md) - Where we're going!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
-
+* [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
+* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples) - Discover Windows App SDK samples to assist in learning how to use the latest features!
 
 ### Contributing
 
@@ -88,7 +89,7 @@ points if there's a gist or existing repo we can look at with you.
    What components do you want to see in the Windows App SDK? For example you can propose a new API on an existing type, or an idea for a new API.
    It's fine if you don't have all the details: you can start with a summary and rationale.
 
-**Over time, we will add Windows App SDK code and samples into this repo and provide code contribution/developer guidelines.**
+**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 
