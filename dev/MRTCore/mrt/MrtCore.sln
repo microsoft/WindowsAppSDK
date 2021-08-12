@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29318.209
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MRM", "Core\src\MRM.vcxproj", "{CF03CC8D-FFF1-4CDC-B773-D219AD4E6F76}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "Core\UnitTests\UnitTest.vcxproj", "{8CCB01A9-5C32-4000-86C3-3DFF5FFABEF1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MrmUnitTest", "Core\UnitTests\MrmUnitTest.vcxproj", "{8CCB01A9-5C32-4000-86C3-3DFF5FFABEF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagedTest", "Microsoft.ApplicationModel.Resources\unittests\ManagedTest.csproj", "{ED418091-1095-4873-80E5-2F36C9E763DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrtCoreManagedTest", "Microsoft.ApplicationModel.Resources\unittests\MrtCoreManagedTest.csproj", "{ED418091-1095-4873-80E5-2F36C9E763DC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.ApplicationModel.Resources", "Microsoft.ApplicationModel.Resources\src\Microsoft.ApplicationModel.Resources.vcxproj", "{9B3B03BC-1BC0-43EA-B3FF-D5214F3CF5CF}"
 EndProject
@@ -15,11 +15,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mrmmin", "mrm\mrmmin\mrmmin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mrmex", "mrm\mrmex\mrmex.vcxproj", "{C3DBE42D-246E-45F1-8B66-8A8556C0784B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseUnitTests", "mrm\UnitTests\BaseUnitTests.vcxproj", "{81A9F38A-2982-444B-9A57-3D56A5BD756E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MrmBaseUnitTests", "mrm\UnitTests\MrmBaseUnitTests.vcxproj", "{81A9F38A-2982-444B-9A57-3D56A5BD756E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.ApplicationModel.Resources.Projection", "Microsoft.ApplicationModel.Resources\projection\Microsoft.ApplicationModel.Resources.Projection.csproj", "{42876BA9-25BB-46E7-9EE1-CA5FDF703C72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnpackagedTests", "Microsoft.ApplicationModel.Resources\UnpackagedTests\UnpackagedTests.csproj", "{3C618444-4B80-492E-8972-BFAEF8700A52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MrtCoreUnpackagedTests", "Microsoft.ApplicationModel.Resources\UnpackagedTests\MrtCoreUnpackagedTests.csproj", "{3C618444-4B80-492E-8972-BFAEF8700A52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

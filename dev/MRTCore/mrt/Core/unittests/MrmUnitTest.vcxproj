@@ -38,10 +38,10 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{8CCB01A9-5C32-4000-86C3-3DFF5FFABEF1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>UnitTest</RootNamespace>
+    <RootNamespace>MrmUnitTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
-    <ProjectName>UnitTest</ProjectName>
+    <ProjectName>MrmUnitTest</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
