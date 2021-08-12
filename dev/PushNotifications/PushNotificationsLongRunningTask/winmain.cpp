@@ -35,10 +35,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     // If we realize that we need to persist the LRP, timer will be canceled.
     platformFactory->SetupTimer();
 
-    // Callback to be signaled by COM if it considers that the process should exit.
-    auto& module = Module<OutOfProc>::Create(WpnLrpPlatformFactory::SignalEvent);
-
-    unsigned long count = module.IncrementObjectCount(); // May remove
+    auto& module = Module<OutOfProc>::Create();
 
     CLSID clsid = __uuidof(NotificationsLongRunningPlatformImpl);
     DWORD cookie = 0;
@@ -53,14 +50,10 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     // Get an initialized instance of the LRP platform
     THROW_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
 
-    platformFactory->WaitForEvent();
-
-    platform->Shutdown();
-    platform = nullptr; // May check again CoUninitialize behavior
-
-    count = module.DecrementObjectCount();
+    WpnLrpPlatformFactory::WaitForEvent();
 
     (void)LOG_IF_FAILED(module.UnregisterCOMObject(nullptr, &cookie, 1));
+
     module.Terminate();
 
     ::CoUninitialize();

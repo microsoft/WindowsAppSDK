@@ -19,8 +19,6 @@ struct WpnLrpPlatformFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
 
 private:
 
-    // WinMain is the owner of the platform reference
     Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> m_platform;
     std::once_flag m_platformInitializedFlag;
-    bool m_isPlatformInitialized = false;
 };
