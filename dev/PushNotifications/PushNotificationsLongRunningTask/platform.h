@@ -12,6 +12,10 @@ Microsoft::WRL::RuntimeClass<
 
     void Shutdown();
 
+    static void SignalEvent();
+
+    void WaitForEvent();
+
     /* IWpnLrpPlatform functions */
 
     STDMETHOD(RegisterActivator)(/*[in]*/ PCWSTR processName);
@@ -27,6 +31,10 @@ Microsoft::WRL::RuntimeClass<
     /* Add your functions to retrieve the platform components */
 
 private:
+
+    void SetupTimer();
+
+    void CancelTimer();
 
     wil::srwlock m_lock;
 

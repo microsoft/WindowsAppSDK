@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-struct WpnLrpPlatformFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
+struct NotificationsLongRunningProcessFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
 {
     HRESULT MakeAndInitialize();
 
@@ -8,14 +8,6 @@ struct WpnLrpPlatformFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
         _In_opt_ IUnknown* outer,
         _In_ REFIID riid,
         _COM_Outptr_ void** ppvObject) override;
-
-    static void SignalEvent();
-
-    static void WaitForEvent();
-
-    static void SetupTimer();
-
-    static void CancelTimer();
 
 private:
 

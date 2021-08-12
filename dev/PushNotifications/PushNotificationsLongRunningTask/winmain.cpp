@@ -21,21 +21,19 @@ using namespace Microsoft::WRL;
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    Sleep(20000);
-
     THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
-    ComPtr<WpnLrpPlatformFactory> platformFactory;
-    THROW_IF_FAILED(MakeAndInitialize<WpnLrpPlatformFactory>(&platformFactory));
+    ComPtr<NotificationsLongRunningProcessFactory> platformFactory;
+    THROW_IF_FAILED(MakeAndInitialize<NotificationsLongRunningProcessFactory>(&platformFactory));
+
+    ComPtr<NotificationsLongRunningPlatformImpl> platform;
+    // Get an initialized instance of the LRP platform
+    THROW_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
+
+    auto& module = Module<OutOfProc>::Create();
 
     ComPtr<IClassFactory> platformFactoryAsClassFactory;
     THROW_IF_FAILED(platformFactory.As<IClassFactory>(&platformFactoryAsClassFactory));
-
-    // Schedule event signaling after 30 seconds. This is in case we don't have any apps to track in the LRP.
-    // If we realize that we need to persist the LRP, timer will be canceled.
-    platformFactory->SetupTimer();
-
-    auto& module = Module<OutOfProc>::Create();
 
     CLSID clsid = __uuidof(NotificationsLongRunningPlatformImpl);
     DWORD cookie = 0;
@@ -44,13 +42,9 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
         &clsid,
         platformFactoryAsClassFactory.GetAddressOf(),
         &cookie,
-        1));    
+        1));
 
-    ComPtr<NotificationsLongRunningPlatformImpl> platform;
-    // Get an initialized instance of the LRP platform
-    THROW_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
-
-    WpnLrpPlatformFactory::WaitForEvent();
+    platform->WaitForEvent();
 
     (void)LOG_IF_FAILED(module.UnregisterCOMObject(nullptr, &cookie, 1));
 
