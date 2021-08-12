@@ -14,12 +14,12 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)EnvironmentManager.idl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.idl" />
   </ItemGroup>
 </Project>

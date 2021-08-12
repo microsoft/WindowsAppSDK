@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 #include "IChangeTracker.h"
-#include <EnvironmentManager.h>
+#include <Microsoft.Windows.System.EnvironmentManager.h>
 #include <wil/registry.h>
 
 namespace winrt::Microsoft::Windows::System::implementation
