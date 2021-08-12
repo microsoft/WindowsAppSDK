@@ -90,19 +90,23 @@ steps:
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
-# TODO: Is this actually used? (It gets downloaded, but nothing installs it...)
-- task: powershell@2
-  displayName: 'Download .NET Runtime Windows installer'
-  inputs:
-    targetType: filePath
-    workingDirectory: $(Build.SourcesDirectory)\build
-    filePath: $(Build.SourcesDirectory)\build\DownloadDotNetRuntimeInstaller.ps1
-    arguments: -Platform $(buildPlatform) -OutputDirectory $(Build.SourcesDirectory)\BuildOutput\$(buildPlatform)\$(buildConfiguration)\TestDependencies
-
 #  - task: BatchScript@1
 #    displayName: 'Debug'
 #    inputs:
 #      filename: '$(Build.SourcesDirectory)\build\debug-pipeline.cmd'
+- task: powershell@2
+  name: UpdateTraceloggingConfig
+  inputs:
+    targetType: 'inline'
+    script: |
+      $srcPath = get-childitem -path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+      $destinationPath = get-childitem -path '${{ parameters.MRTSourcesDirectory }}\mrt\packages' -File 'Traceloggingconfig.h' -Recurse
+
+      if(($srcPath -ne $null) -and ($destinationPath -ne $null))
+      {
+        echo $srcPath.FullName, $destinationPath.FullName
+        copy-item -Force $srcPath.FullName $destinationPath.FullName
+      }
 
 - task: MSBuild@1
   displayName: 'build MrtCore'
@@ -155,7 +159,16 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-# Note: The MRT Unpackaged tests currently do not work in the CI pipeline. (They rely on changes not present in Server2019).
+- task: VSTest@2
+  displayName: 'test MRT: UnpackagedTests'
+  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
 # Copy and Publish the test binaries so we can run them in Helix later.
 - task: CopyFiles@2

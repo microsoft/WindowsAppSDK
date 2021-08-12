@@ -111,8 +111,8 @@
     <Import Project="..\DynamicDependency\DynamicDependency.vcxitems" Label="Shared" />
     <Import Project="..\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems" Label="Shared" />
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
-    <Import Project="..\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
-    <Import Project="..\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
+    <Import Project="..\PowerNotifications\PowerNotifications.vcxitems" Label="Shared" />
+    <Import Project="..\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -215,6 +215,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -233,6 +234,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -251,6 +253,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -269,6 +272,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -291,6 +295,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -313,6 +318,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -335,6 +341,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -357,6 +364,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>WindowsAppSDK.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -396,6 +404,9 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -404,6 +415,9 @@
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets'))" />
   </Target>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">

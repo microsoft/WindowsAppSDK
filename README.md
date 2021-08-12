@@ -16,25 +16,26 @@ Plus, **create beautiful, modern apps for Windows 11 that are backwards compatib
 
 
 ### Use it now!
-[Packaged MSIX desktop apps](https://docs.microsoft.com/windows/msix/overview) can [use the 0.8 release](https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#version-08) now!0
+Desktop apps can [use the 0.8 release](https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#version-08) now!
 
 Some notes about 0.8...
 
-* Requires using MSIX *(1.0 won't require MSIX)*
-* Only includes WinUI 3 / Text rendering / Localization
-* To use WinUI 3, it's best to start a new app project and, if useful, copy any existing code/business logic from past projects into the new project *(in the future, XAML Islands will enable incrementally adopting WinUI 3)*
+* 0.8 Stable requires using [MSIX](https://docs.microsoft.com/windows/msix/overview), but unpackaged apps can [try the 0.8 Experimental release](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps)!
+* 0.8 Stable only includes WinUI 3 / Text rendering / Resource management
+* WinUI 3 currently cannot be added to existing WPF/WinForms/etc apps *(we'll enable that in a future release via XAML Islands).*
 
 ### Roadmap
 
-Here's a snippet of what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*:
+Here's a snippet of what's currently available and what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*:
 
-App type |       Windows App SDK 0.8    |       Windows App SDK 1.0 (Q4 2021)     |
--- | ------------------------------- | ------------------------------- |
-[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) desktop apps<br>(WPF, Win32, WinForms, console) |      ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)  | ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/WindowsAppSDK/issues/112)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)  <br>🔄 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334)  |
-Unpackaged desktop apps<br>(WPF, Win32, WinForms, console) |    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>🔄 [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Localization](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) <br>🔄 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334) |
+App type |       0.8    |       1.0 (Q4 2021)     |  Future  |
+-- | ------------------------------- | ------------------------------- |-----|
+[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) apps<br>(WinUI 3, WPF, etc) |      ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)<br>🔄 [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://github.com/microsoft/WindowsAppSDK/issues/112)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔄 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/WindowsAppSDK/issues/112)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334)  |
+[Unpackaged](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) apps<br>(WinUI 3, WPF, etc) |    🔄 [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>🔄 [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>🔄 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)<br>🔄 [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔄 [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://github.com/microsoft/WindowsAppSDK/issues/112)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://github.com/microsoft/WindowsAppSDK/issues/334)  |
 
 ✅ Supported | 🔄 Experimental
 
+*\*\* - WinUI 3 in 0.8 and 1.0 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
 
 See our [full roadmap](docs/roadmap.md) for more details.
 
@@ -53,7 +54,7 @@ however we will do our best to ensure
 this is the exception and not the norm, and provide reasonable fallbacks when possible.
 
 
-### Documentation
+### Helpful links
 
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
@@ -61,7 +62,8 @@ More on what the project is and how we're approaching the work.
 * [Roadmap](docs/roadmap.md) - Where we're going!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
-
+* [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
+* [Samples](https://github.com/microsoft/WindowsAppSDK-Samples) - Discover Windows App SDK samples to assist in learning how to use the latest features!
 
 ### Contributing
 
@@ -87,7 +89,7 @@ points if there's a gist or existing repo we can look at with you.
    What components do you want to see in the Windows App SDK? For example you can propose a new API on an existing type, or an idea for a new API.
    It's fine if you don't have all the details: you can start with a summary and rationale.
 
-**Over time, we will add Windows App SDK code and samples into this repo and provide code contribution/developer guidelines.**
+**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
 
 Read more about the [contribution guide here](docs/contributor-guide.md).
 

@@ -9,6 +9,8 @@ namespace Microsoft.Windows.System
         static EnvironmentManager GetForUser();
         static EnvironmentManager GetForMachine();
 
+        static Boolean IsSupported{ get; };
+
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);
         void SetEnvironmentVariable(String name, String value);
