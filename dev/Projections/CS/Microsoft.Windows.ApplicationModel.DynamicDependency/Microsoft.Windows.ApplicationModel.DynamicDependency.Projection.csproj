@@ -12,9 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\WindowsAppSDK_DLL\WindowsAppSDK_DLL.vcxproj" >
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ProjectReference Include="..\..\..\WindowsAppSDK_DLL\WindowsAppSDK_DLL.vcxproj" />
   </ItemGroup>
 
   <PropertyGroup>
