@@ -173,10 +173,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "test\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDK.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppSDK.Test.Singleton.Msix\WindowsAppSDK.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Process.Environment", "Microsoft.Process.Environment", "{92801D0D-B76F-4EAA-914F-31F54241536F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.Process.Environment", "dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems", "{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
 		dev\PushNotifications\PushNotifications.vcxitems*{103c0c23-7ba8-4d44-a63c-83488e2e3a81}*SharedItemsImports = 9
+		dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems*{2f3fad1b-d3df-4866-a3a3-c2c777d55638}*SharedItemsImports = 9
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{56371ca6-144b-4989-a4e9-391ad4fa7651}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
@@ -184,6 +189,7 @@ Global
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
@@ -674,6 +680,8 @@ Global
 		{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D} = {E9117D76-63AC-4289-A628-AB39EF6E5D19}
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
+		{92801D0D-B76F-4EAA-914F-31F54241536F} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{2F3FAD1B-D3DF-4866-A3A3-C2C777D55638} = {92801D0D-B76F-4EAA-914F-31F54241536F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
