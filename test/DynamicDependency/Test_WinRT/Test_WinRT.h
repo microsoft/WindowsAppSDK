@@ -216,6 +216,10 @@ namespace Test::DynamicDependency
         static winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
 
     private:
+        static void VerifyGenerationId(
+            const UINT32 expectedGenerationId);
+
+    private:
         static wil::unique_hmodule m_bootstrapDll;
     };
 }

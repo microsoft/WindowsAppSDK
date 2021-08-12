@@ -36,7 +36,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{81A9F38A-2982-444B-9A57-3D56A5BD756E}</ProjectGuid>
-    <RootNamespace>BaseUnitTests</RootNamespace>
+    <RootNamespace>MrmBaseUnitTests</RootNamespace>
     <UseUnicrt>true</UseUnicrt>
     <UseStl>true</UseStl>
     <StlVersion>StlVerCurrent</StlVersion>

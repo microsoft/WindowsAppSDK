@@ -22,6 +22,7 @@
 #define WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Framework"
 #define WINDOWSAPPSDK_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.DDLM"
 #define WINDOWSAPPSDK_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.Main"
+#define WINDOWSAPPSDK_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Singleton"
 
 #define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppSDK.Test.DDLM"
 #define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING
@@ -79,6 +80,13 @@ namespace Test::Packages::DynamicDependencyDataStore
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
     constexpr PCWSTR c_PackageFamilyName = L"WindowsAppSDK.Test.DynDep.DataStore_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
     constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.DynDep.DataStore_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+}
+
+namespace Test::Packages::WindowsAppSDKSingleton
+{
+    constexpr PCWSTR c_PackageDirName = L"WindowsAppSDK.Test.Singleton";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppSDK.Test.Singleton_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.Singleton_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages::PushNotificationsLongRunningTask
@@ -245,6 +253,27 @@ namespace Test::Packages
     inline bool IsPackageRegistered_DynamicDependencyDataStore()
     {
         return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
+    }
+
+    inline void AddPackage_WindowsAppSDKSingleton()
+    {
+        AddPackage(Test::Packages::WindowsAppSDKSingleton::c_PackageDirName, Test::Packages::WindowsAppSDKSingleton::c_PackageFullName);
+    }
+
+    inline void RemovePackage_WindowsAppSDKSingleton()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::WindowsAppSDKSingleton::c_PackageFullName);
+    }
+
+    inline bool IsPackageRegistered_WindowsAppSDKSingleton()
+    {
+        return IsPackageRegistered(Test::Packages::WindowsAppSDKSingleton::c_PackageFullName);
     }
 
     inline void AddPackage_PushNotificationsLongRunningTask()
