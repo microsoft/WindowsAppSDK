@@ -6,9 +6,6 @@
 
 namespace WindowsAppSDKEnvironmentManagerTests
 {
-    const std::wstring c_testPackageFile = g_deploymentDir + L"AppLifecycleTestPackage.msix";
-    const std::wstring c_testVCLibsPackageFile = g_deploymentDir + L"VCLibs.appx";
-
     class EnvironmentManagerCentennialTests {
         BEGIN_TEST_CLASS(EnvironmentManagerCentennialTests)
             TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
