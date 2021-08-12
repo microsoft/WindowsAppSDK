@@ -20,7 +20,7 @@ points if there's a gist or existing repo we can look at with you.
    It's fine if you don't have all the details: you can start with a summary and rationale.
 
 
-**Over time, we will add Windows App SDK code and samples into this repo and provide code contribution/developer guidelines.**
+**Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
 
 
 Most contributions require you to agree to a
