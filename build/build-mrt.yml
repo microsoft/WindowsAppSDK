@@ -136,6 +136,7 @@ steps:
     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    failOnMinTestsNotRun: true
 
 - task: VSTest@2
   displayName: 'test MRT: UnitTests'
@@ -147,6 +148,7 @@ steps:
     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    failOnMinTestsNotRun: true
 
 - task: VSTest@2
   displayName: 'test MRT: BaseUnitTests'
@@ -158,6 +160,7 @@ steps:
     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    failOnMinTestsNotRun: true
 
 - task: VSTest@2
   displayName: 'test MRT: UnpackagedTests'
@@ -169,6 +172,7 @@ steps:
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    failOnMinTestsNotRun: true
 
 # Copy and Publish the test binaries so we can run them in Helix later.
 - task: CopyFiles@2
