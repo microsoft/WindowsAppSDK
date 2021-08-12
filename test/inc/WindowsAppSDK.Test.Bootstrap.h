@@ -14,6 +14,21 @@
 
 namespace Test::Bootstrap
 {
+    enum class Packages
+    {
+        None = 0,
+        Framework = 0x0001,
+        Main = 0x0002,
+        DDLM = 0x0004,
+        Singleton = 0x0008,
+
+        Default = Framework | Main | DDLM,
+    };
+}
+DEFINE_ENUM_FLAG_OPERATORS(Test::Bootstrap::Packages)
+
+namespace Test::Bootstrap
+{
     namespace TA = ::Test::AppModel;
     namespace TF = ::Test::FileSystem;
     namespace TP = ::Test::Packages;
@@ -25,25 +40,64 @@ namespace Test::Bootstrap
         return !TA::IsPackagedProcess();
     }
 
-    inline void SetupPackages()
+    inline void SetupPackages(Test::Bootstrap::Packages packagesToSetup = Test::Bootstrap::Packages::Default)
     {
         // Remove our packages in case they were previously installed and incompletely removed
-        TP::RemovePackage_DynamicDependencyLifetimeManager();
-        TP::RemovePackage_DynamicDependencyDataStore();
-        TP::RemovePackage_WindowsAppSDKFramework();
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Singleton))
+        {
+            TP::RemovePackage_WindowsAppSDKSingleton();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM))
+        {
+            TP::RemovePackage_DynamicDependencyLifetimeManager();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main))
+        {
+            TP::RemovePackage_DynamicDependencyDataStore();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
+        {
+            TP::RemovePackage_WindowsAppSDKFramework();
+        }
 
         // Install our needed packages
-        TP::AddPackage_WindowsAppSDKFramework();
-        TP::AddPackage_DynamicDependencyDataStore();
-        TP::AddPackage_DynamicDependencyLifetimeManager();
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
+        {
+            TP::AddPackage_WindowsAppSDKFramework();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main))
+        {
+            TP::AddPackage_DynamicDependencyDataStore();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM))
+        {
+            TP::AddPackage_DynamicDependencyLifetimeManager();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Singleton))
+        {
+            TP::AddPackage_WindowsAppSDKSingleton();
+        }
     }
 
-    inline void CleanupPackages()
+    inline void CleanupPackages(Test::Bootstrap::Packages packagesToSetup = Test::Bootstrap::Packages::Default)
     {
-        // Uninstall the packages we installed via SetupPackages()
-        TP::RemovePackage_DynamicDependencyLifetimeManager();
-        TP::RemovePackage_DynamicDependencyDataStore();
-        TP::RemovePackage_WindowsAppSDKFramework();
+        // Remove our packages in case they were previously installed and incompletely removed
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Singleton))
+        {
+            TP::RemovePackage_WindowsAppSDKSingleton();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM))
+        {
+            TP::RemovePackage_DynamicDependencyLifetimeManager();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main))
+        {
+            TP::RemovePackage_DynamicDependencyDataStore();
+        }
+        if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
+        {
+            TP::RemovePackage_WindowsAppSDKFramework();
+        }
     }
 
     inline void SetupBootstrap()
