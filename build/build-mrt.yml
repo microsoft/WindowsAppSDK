@@ -131,8 +131,8 @@ steps:
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\ManagedTest.build.appxrecipe'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\ManagedTest'
+    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
     testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -142,8 +142,8 @@ steps:
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\UnitTest.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnitTest'
+    testAssemblyVer2: '**\MrmUnitTest.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
     testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -153,8 +153,8 @@ steps:
   condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\BaseUnitTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\BaseUnitTests'
+    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
     testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -165,7 +165,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\UnpackagedTests'
+    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
     testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
@@ -177,10 +177,10 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
     Contents: |
-      BaseUnitTests\**
-      ManagedTest\**
-      UnitTest\**
-      UnpackagedTests\**
+      MrmBaseUnitTests\**
+      MrmUnitTest\**
+      MrtCoreManagedTest\**
+      MrtCoreUnpackagedTests\**
     TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
 
 - task: PublishBuildArtifacts@1

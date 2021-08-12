@@ -7,8 +7,8 @@
     <ProjectGuid>{ED418091-1095-4873-80E5-2F36C9E763DC}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ManagedTest</RootNamespace>
-    <AssemblyName>CoreMrtManagedTest</AssemblyName>
+    <RootNamespace>MrtCoreManagedTest</RootNamespace>
+    <AssemblyName>MrtCoreManagedTest</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
