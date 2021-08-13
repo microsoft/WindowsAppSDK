@@ -17,11 +17,13 @@ void LogErrorInMemory(HRESULT hr, ULONG line, _In_ PCSTR filename, _In_ PCWSTR m
 #define LOG_ERROR_IN_MEMORY(hr, line, filename, message) __noop
 #endif
 
-class MrtRuntimeProvider : public wil::TraceLoggingProvider
+class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
 {
-    IMPLEMENT_TRACELOGGING_CLASS(MrtRuntimeProvider, "Microsoft.Windows.Mrt.Runtime",
+    IMPLEMENT_TRACELOGGING_CLASS(MrtRuntimeTraceLoggingProvider, "Microsoft.Windows.Mrt.Runtime",
         // {706f5ec1-0c6b-54ee-4b6f-4cd329da9067}
         (0x706f5ec1, 0x0c6b, 0x54ee, 0x4b, 0x6f, 0x4c, 0xd3, 0x29, 0xda, 0x90, 0x67));
+
+    DEFINE_COMPLIANT_MEASURES_EVENT(MrmCreateResourceManager, PDT_ProductAndServicePerformance);
 
     DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(TelemetryGenericEventParam1, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
     DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM4(TelemetryGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);

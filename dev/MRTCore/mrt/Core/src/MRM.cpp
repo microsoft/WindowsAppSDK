@@ -494,7 +494,7 @@ STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle*
 
     RETURN_HR_IF(E_INVALIDARG, (priFileName == nullptr) || (*priFileName == L'\0'));
 
-    MrtRuntimeProvider::TelemetryGenericEventParam1(L"MrmCreateResourceManager", priFileName, S_OK);
+    MrtRuntimeTraceLoggingProvider::MrmCreateResourceManager();
 
     std::unique_ptr<MrmObjects, decltype(&DestroyResourceManager)> resourceManagerObjects(
         new (std::nothrow) MrmObjects(), &DestroyResourceManager);
