@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.31409.214
+VisualStudioVersion = 16.0.31410.223
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppSDK.Insights", "WindowsAppSDKInsightsLib\WindowsAppSDKInsightsLib.vcxproj", "{4243B8DA-BDB5-4D65-B1D5-EEED375FAD13}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppSDK.Insights", "WindowsAppSDKInsightsLib.vcxproj", "{4243B8DA-BDB5-4D65-B1D5-EEED375FAD13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +32,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0D5ACB58-C616-4193-946A-33C71AA55B3A}
+		SolutionGuid = {83B6D0C8-DC02-4583-A046-9AE9C4252359}
 	EndGlobalSection
 EndGlobal
