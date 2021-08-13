@@ -26,3 +26,5 @@
 #include <winrt/Windows.Storage.h>
 
 #include <wil/com.h>
+
+#define MIDL_NS_PREFIX

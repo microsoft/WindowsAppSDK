@@ -4,6 +4,10 @@
 
 #include "platform.h"
 
+#include <..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\include\FrameworkUdk\PushNotifications.h>
+
+#include <winrt/Windows.System.h>
+
 wil::unique_event g_winmainEvent(wil::EventOptions::None);
 
 Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> g_platform;
@@ -120,9 +124,19 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[out]*/ GUID* /*appId*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
+    _In_ PCSTR processName, GUID remoteId, _Out_ LPWSTR* appId)
 {
     auto lock = m_lock.lock_shared();
-    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    return E_NOTIMPL;
+
+    UNREFERENCED_PARAMETER(processName);
+
+    GUID guidReference;
+    HRESULT hr = CoCreateGuid(&guidReference);
+    
+    StringFromCLSID(guidReference, appId);
+
+    hr = PushNotifications_RegisterFullTrustApplication(*appId, remoteId);
+
+    return hr;
 }

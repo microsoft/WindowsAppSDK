@@ -17,11 +17,13 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include "..\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\x64\Debug\NotificationsLongRunningProcess_h.h"
+#include <iostream>
 
 using namespace std::literals;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
-constexpr winrt::guid PushNotificationsTask_guid{ PUSHNOTIFICATIONS_TASK_CLSID_STRING };
+constexpr winrt::guid PushNotificationsTask_guid{ PUSHNOTIFICATIONS_IMPL_CLSID_STRING };
 
 static wil::unique_event g_waitHandleForArgs;
 
@@ -63,12 +65,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    static bool IsActivatorSupported(PushNotificationRegistrationOptions options)
+    {
+        UNREFERENCED_PARAMETER(options);
+        return false;
+    }
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
-        THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
+      //  THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
 
@@ -88,6 +95,30 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         progress(channelStatus);
 
+        wil::unique_cotaskmem_string appUserModelId;
+
+        if (!IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+        {
+            // Trigger the long running process
+
+            THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+
+            {
+                wil::com_ptr<INotificationsLongRunningPlatform> reunionEndpoint{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                char processName[1024];
+                GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+                
+                printf("Processname: %s\n", processName);
+
+                HRESULT hr = reunionEndpoint->RegisterFullTrustApplication(processName, remoteId, &appUserModelId);
+                std::cout << "registerapplication completed with status: " << hr << std::endl;
+            }
+
+            ::CoUninitialize();
+        }
+
         for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
         {
             try
@@ -95,7 +126,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 PushNotificationChannelManager channelManager{};
                 winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
-                pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
+                pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync(appUserModelId.get());
 
                 co_return winrt::make<PushNotificationCreateChannelResult>(
                     winrt::make<PushNotificationChannel>(pushChannelReceived),

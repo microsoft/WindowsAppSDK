@@ -142,4 +142,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemGroup>
+	<Content Include="..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\runtimes\win10-amd64\native\Microsoft.Internal.FrameworkUdk.dll">
+	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
+  </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ Microsoft::WRL::RuntimeClass<
 
     STDMETHOD(UnregisterForegroundActivator)(/*[in]*/ PCWSTR processName);
 
-    STDMETHOD(RegisterFullTrustApplication)(/*[in]*/ PCWSTR processName, /*[out]*/ GUID* appId);
+    STDMETHOD(RegisterFullTrustApplication)(_In_ PCSTR processName, GUID remoteId, _Out_ LPWSTR* appId);
 
     /* Add your functions to retrieve the platform components */
 
