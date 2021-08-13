@@ -118,121 +118,122 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore binlog'
-  condition: succeededOrFailed()
-  inputs:
-    PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-    artifactName: binlogs
+- ${{ if eq(variables.buildOnly, 'true') }}:
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish mrtcore binlog'
+    condition: succeededOrFailed()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+      artifactName: binlogs
 
-# Run the test locally on the Azure VM.
-- task: VSTest@2
-  displayName: 'test MRT: ManagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
-    testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  # Run the test locally on the Azure VM.
+  - task: VSTest@2
+    displayName: 'test MRT: ManagedTests'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: '**\MrtCoreManagedTest.build.appxrecipe'
+      searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreManagedTest'
+      testRunTitle: 'test MRT: ManagedTests - $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmUnitTest.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
-    testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: VSTest@2
+    displayName: 'test MRT: UnitTests'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: '**\MrmUnitTest.dll'
+      searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmUnitTest'
+      testRunTitle: 'test MRT: UnitTests - $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: BaseUnitTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MrmBaseUnitTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
-    testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: VSTest@2
+    displayName: 'test MRT: BaseUnitTests'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: '**\MrmBaseUnitTests.dll'
+      searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrmBaseUnitTests'
+      testRunTitle: 'test MRT: BaseUnitTests - $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'test MRT: UnpackagedTests'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
-    searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
-    testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: VSTest@2
+    displayName: 'test MRT: UnpackagedTests'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      testSelector: 'testAssemblies'
+      testAssemblyVer2: '**\MRTCoreUnpackagedTests.dll'
+      searchFolder: '${{ parameters.MRTBinariesDirectory }}\$(buildConfiguration)\$(buildPlatform)\MrtCoreUnpackagedTests'
+      testRunTitle: 'test MRT: UnpackagedTests - $(buildPlatform)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-# Copy and Publish the test binaries so we can run them in Helix later.
-- task: CopyFiles@2
-  displayName: 'copy mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    Contents: |
-      MrmBaseUnitTests\**
-      MrmUnitTest\**
-      MrtCoreManagedTest\**
-      MrtCoreUnpackagedTests\**
-    TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
+  # Copy and Publish the test binaries so we can run them in Helix later.
+  - task: CopyFiles@2
+    displayName: 'copy mrtcore test binaries'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+      Contents: |
+        MrmBaseUnitTests\**
+        MrmUnitTest\**
+        MrtCoreManagedTest\**
+        MrtCoreUnpackagedTests\**
+      TargetFolder: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish mrtcore test binaries'
-  condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
-  inputs:
-    PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
-    artifactName: mrtcore_test_binaries_$(buildPlatform)
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish mrtcore test binaries'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      PathtoPublish: '$(Agent.TempDirectory)\mrt_testbin\$(buildPlatform)'
+      artifactName: mrtcore_test_binaries_$(buildPlatform)
 
-- task: ComponentGovernanceComponentDetection@0
-  inputs:
-    scanType: 'Register'
-    verbosity: 'Verbose'
-    alertWarningLevel: 'Medium'
-    failOnAlert: true
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'Medium'
+      failOnAlert: true
 
-- task: CopyFiles@2
-  displayName: 'copy binaries for signing'
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
-    Contents: |
-      mrm\mrm.dll
-      mrm\mrm.lib
-      mrm\mrm.pdb
-      Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
-      Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
-    flattenFolders: true
+  - task: CopyFiles@2
+    displayName: 'copy binaries for signing'
+    inputs:
+      SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)'
+      Contents: |
+        mrm\mrm.dll
+        mrm\mrm.lib
+        mrm\mrm.pdb
+        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.dll
+        Microsoft.ApplicationModel.Resources\Microsoft.ApplicationModel.Resources.pdb
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
+      flattenFolders: true
 
-- task: CopyFiles@2
-  displayName: 'copy projection binaries and symbols for signing'
-  condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
-    Contents: |
-      Microsoft.ApplicationModel.Resources.Projection.dll
-      Microsoft.ApplicationModel.Resources.Projection.pdb
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
-    flattenFolders: false
+  - task: CopyFiles@2
+    displayName: 'copy projection binaries and symbols for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
+    inputs:
+      SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources.Projection'
+      Contents: |
+        Microsoft.ApplicationModel.Resources.Projection.dll
+        Microsoft.ApplicationModel.Resources.Projection.pdb
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu\net5.0'
+      flattenFolders: false
 
-- task: CopyFiles@2
-  displayName: 'copy winmd for signing'
-  condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
-  inputs:
-    SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
-    Contents: |
-      Microsoft.ApplicationModel.Resources.winmd
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
-    flattenFolders: true
+  - task: CopyFiles@2
+    displayName: 'copy winmd for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
+    inputs:
+      SourceFolder: '${{ parameters.MRTBinariesDirectory }}\Release\$(buildPlatform)\Microsoft.ApplicationModel.Resources'
+      Contents: |
+        Microsoft.ApplicationModel.Resources.winmd
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
+      flattenFolders: true
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: Binaries'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
-    ArtifactName: 'mrtcore_binaries'
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: Binaries'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\mrt_raw'
+      ArtifactName: 'mrtcore_binaries'

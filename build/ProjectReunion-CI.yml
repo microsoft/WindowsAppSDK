@@ -42,30 +42,37 @@ jobs:
       Debug_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Debug'
+        publishBuild: false
       Debug_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Debug'
+        publishBuild: false
       Debug_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Debug'
+        publishBuild: false
       Release_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Release'
         PGOBuildMode: 'Optimize'
+        publishBuild: true
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
         PGOBuildMode: 'Optimize'
+        publishBuild: true
       Release_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Release'
+        publishBuild: true
 
   variables:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
+  - ${{ if eq(variables.publishBuild, 'true') }}:
+    - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
   - task: BinSkim@3
     inputs:
@@ -102,21 +109,27 @@ jobs:
       Debug_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Debug'
+        buildOnly: false
       Debug_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Debug'
+        buildOnly: false
       Debug_Arm64:
         buildPlatform: 'arm64'
         buildConfiguration: 'Debug'
+        buildOnly: false
       Release_x86:
         buildPlatform: 'x86'
         buildConfiguration: 'Release'
+        buildOnly: true
       Release_x64:
         buildPlatform: 'x64'
         buildConfiguration: 'Release'
+        buildOnly: true
       Release_Arm64:
-        buildPlatform: 'ARM64'
+        buildPlatform: 'arm64'
         buildConfiguration: 'Release'
+        buildOnly: true
   steps:
   - template: build-mrt.yml
     parameters:
