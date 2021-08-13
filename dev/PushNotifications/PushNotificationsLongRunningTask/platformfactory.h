@@ -2,7 +2,7 @@
 
 struct NotificationsLongRunningProcessFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
 {
-    HRESULT MakeAndInitialize();
+    HRESULT RuntimeClassInitialize();
 
     IFACEMETHODIMP CreateInstance(
         _In_opt_ IUnknown* outer,
@@ -10,7 +10,5 @@ struct NotificationsLongRunningProcessFactory WrlFinal : public Microsoft::WRL::
         _COM_Outptr_ void** ppvObject) override;
 
 private:
-
     Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> m_platform;
-    std::once_flag m_platformInitializedFlag;
 };

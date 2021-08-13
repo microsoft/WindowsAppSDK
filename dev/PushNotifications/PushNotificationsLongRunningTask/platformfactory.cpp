@@ -9,9 +9,12 @@
 
 using namespace Microsoft::WRL;
 
-HRESULT NotificationsLongRunningProcessFactory::MakeAndInitialize()
+HRESULT NotificationsLongRunningProcessFactory::RuntimeClassInitialize()
 {
-     return S_OK;
+    m_platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
+    m_platform->Initialize();
+
+    return S_OK;
 }
 
 IFACEMETHODIMP NotificationsLongRunningProcessFactory::CreateInstance(
@@ -20,12 +23,6 @@ IFACEMETHODIMP NotificationsLongRunningProcessFactory::CreateInstance(
     _COM_Outptr_ void** obj)
 {
     *obj = nullptr;
-
-    std::call_once(m_platformInitializedFlag,
-        [&] {
-            m_platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
-            m_platform->Initialize();            
-        });
 
     *obj = m_platform.Get();
     // Add one ref per platform instance request. Deref occurs automatically.

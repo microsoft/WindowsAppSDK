@@ -12,21 +12,13 @@ Microsoft::WRL::RuntimeClass<
 
     void Shutdown();
 
-    static void SignalEvent();
+    void SignalEvent();
 
     void WaitForEvent();
 
     /* IWpnLrpPlatform functions */
 
-    STDMETHOD(RegisterActivator)(/*[in]*/ PCWSTR processName);
-
-    STDMETHOD(UnregisterActivator)(/*[in]*/ PCWSTR processName);
-
-    STDMETHOD(RegisterForegroundActivator)(/*[in]*/ PCWSTR processName);
-
-    STDMETHOD(UnregisterForegroundActivator)(/*[in]*/ PCWSTR processName);
-
-    STDMETHOD(RegisterFullTrustApplication)(/*[in]*/ PCWSTR processName, /*[in]*/ GUID remoteId, /*[out]*/ GUID* appId);
+    STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
 
     /* Add your functions to retrieve the platform components */
 
@@ -40,6 +32,9 @@ private:
 
     bool m_initialized = false;
     bool m_shutdown = false;
+
+    wil::unique_event m_event{ wil::EventOptions::None };
+    wil::unique_threadpool_timer m_timer;
 
     // Here we will define the Platform components i.e. the map wrappings
 };

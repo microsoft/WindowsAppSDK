@@ -11,14 +11,6 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
 {
-    HRESULT RegisterActivator([in] LPCWSTR processName);
-
-    HRESULT UnregisterActivator([in] LPCWSTR processName);
-
-    HRESULT RegisterForegroundActivator([in] LPCWSTR processName);
-
-    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
-
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] GUID* appId);
 };
 

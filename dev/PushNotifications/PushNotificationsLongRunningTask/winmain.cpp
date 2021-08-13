@@ -21,32 +21,34 @@ using namespace Microsoft::WRL;
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+    RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
     ComPtr<NotificationsLongRunningProcessFactory> platformFactory;
-    THROW_IF_FAILED(MakeAndInitialize<NotificationsLongRunningProcessFactory>(&platformFactory));
+    RETURN_IF_FAILED(MakeAndInitialize<NotificationsLongRunningProcessFactory>(&platformFactory));
 
     ComPtr<NotificationsLongRunningPlatformImpl> platform;
     // Get an initialized instance of the LRP platform
-    THROW_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
+    RETURN_IF_FAILED(platformFactory->CreateInstance(nullptr, __uuidof(INotificationsLongRunningPlatform), &platform));
 
     auto& module = Module<OutOfProc>::Create();
 
     ComPtr<IClassFactory> platformFactoryAsClassFactory;
-    THROW_IF_FAILED(platformFactory.As<IClassFactory>(&platformFactoryAsClassFactory));
+    RETURN_IF_FAILED(platformFactory.As<IClassFactory>(&platformFactoryAsClassFactory));
 
     CLSID clsid = __uuidof(NotificationsLongRunningPlatformImpl);
     DWORD cookie = 0;
-    THROW_IF_FAILED(module.RegisterCOMObject(
+    RETURN_IF_FAILED(module.RegisterCOMObject(
         nullptr,
         &clsid,
         platformFactoryAsClassFactory.GetAddressOf(),
         &cookie,
         1));
 
+    // Wait returns if the platform realizes there are no more apps to be tracked.
+    // It also returns if the timer initialized at the process start fires (see NotificationsLongRunningPlatformImpl::Initialize).
     platform->WaitForEvent();
 
-    (void)LOG_IF_FAILED(module.UnregisterCOMObject(nullptr, &cookie, 1));
+    RETURN_IF_FAILED(module.UnregisterCOMObject(nullptr, &cookie, 1));
 
     module.Terminate();
 

@@ -5,9 +5,6 @@
 #include "platform.h"
 #include "platformfactory.h"
 
-wil::unique_event s_event(wil::EventOptions::None);
-wil::unique_threadpool_timer s_timer;
-
 void NotificationsLongRunningPlatformImpl::Initialize()
 {
     auto lock = m_lock.lock_exclusive();
@@ -44,76 +41,50 @@ void NotificationsLongRunningPlatformImpl::Shutdown()
 
 void NotificationsLongRunningPlatformImpl::SignalEvent()
 {
-    s_event.SetEvent();
+    m_event.SetEvent();
 }
 
 void NotificationsLongRunningPlatformImpl::WaitForEvent()
 {
-    s_event.wait();
+    m_event.wait();
 }
 
 void NotificationsLongRunningPlatformImpl::SetupTimer()
 {
-    try
-    {
-        s_timer.reset(CreateThreadpoolTimer(
-            [](PTP_CALLBACK_INSTANCE, _Inout_ PVOID, _Inout_ PTP_TIMER)
+    // Already guarded by the lock in Initialize()
+    m_timer.reset(CreateThreadpoolTimer(
+        [](PTP_CALLBACK_INSTANCE, _Inout_ PVOID platform, _Inout_ PTP_TIMER)
+        {
+            NotificationsLongRunningPlatformImpl* platformImpl = reinterpret_cast<NotificationsLongRunningPlatformImpl*>(platform);
+
+            if (platformImpl != nullptr)
             {
-                SignalEvent();
-            },
-            reinterpret_cast<PVOID>(GetCurrentThreadId()),
-                nullptr));
+                platformImpl->SignalEvent();
+            }
+        },
+        this,
+        nullptr));
 
-        THROW_LAST_ERROR_IF_NULL(s_timer);
+    THROW_LAST_ERROR_IF_NULL(m_timer);
 
-        // Negative times in SetThreadpoolTimer are relative. Allow 30 seconds to fire.
-        FILETIME dueTime{};
-        *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(30000 * 10000);
-        SetThreadpoolTimer(s_timer.get(), &dueTime, 0, 0);
-    }
-    catch (...)
-    {
-        LOG_IF_FAILED(wil::ResultFromCaughtException());
-    }
+    // Negative times in SetThreadpoolTimer are relative. Allow 30 seconds to fire.
+    FILETIME dueTime{};
+    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(30000 * 10000);
+
+    SetThreadpoolTimer(m_timer.get(), &dueTime, 0, 0);
 }
 
-void CancelTimer()
+void NotificationsLongRunningPlatformImpl::CancelTimer()
 {
-    s_timer.reset();
+    auto lock = m_lock.lock_exclusive();
+    m_timer.reset();
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(_In_ PCWSTR /*processName*/, _In_ GUID /*remoteId*/, _Out_ GUID* /*appId*/) noexcept
 {
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    return E_NOTIMPL;
-}
-
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(/*[in]*/ PCWSTR /*processName*/)
-{
-    auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    return E_NOTIMPL;
-}
-
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
-{
-    auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    return E_NOTIMPL;
-}
-
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
-{
-    auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    return E_NOTIMPL;
-}
-
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(/*[in]*/ PCWSTR /*processName*/, /*[in]*/ GUID /*remoteId*/, /*[out]*/ GUID* /*appId*/)
-{
-    auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    // Will implement this function once I synced up with Sharath regarding this
     return E_NOTIMPL;
 }
 
