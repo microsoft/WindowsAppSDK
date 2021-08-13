@@ -118,7 +118,7 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-- ${{ if eq(variables.buildOnly, 'true') }}:
+- ${{ if eq(variables.buildOnly, 'false') }}:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish mrtcore binlog'
     condition: succeededOrFailed()
