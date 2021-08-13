@@ -7,6 +7,16 @@ import "ocidl.idl";
 #include "../PushNotifications-Constants.h"
 
 [object]
+[uuid(431A6AD4-7594-438C-96C1-6A32C2A71433)]
+[pointer_default(unique)]
+interface IWpnForegroundSink : IUnknown
+{
+    HRESULT AddEvent([in] IUnknown* pointer);
+    HRESULT RemoveEvent([in] IUnknown* pointer);
+    HRESULT InvokeAll([in] IUnknown* pointer);
+};
+
+[object]
 [uuid(60FC21B2-B396-4D49-94F0-7555869FB93C)]
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
@@ -22,5 +32,11 @@ library NotificationsLongRunningPlatformLibrary
     coclass NotificationsLongRunningPlatform
     {
         [default] interface INotificationsLongRunningPlatform;
+    };
+
+    [uuid(PUSHNOTIFICATIONS_FGSINK_CLSID_UUID)]
+    coclass WpnForegroundSink
+    {
+        [default] interface IWpnForegroundSink;
     };
 };

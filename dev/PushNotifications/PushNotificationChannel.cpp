@@ -7,7 +7,8 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
-
+#include "PushNotifications-Constants.h"
+#include "PushNotificationsLongRunningTask.ProxyStub\x64\Debug\NotificationsLongRunningProcess_h.h"
 namespace winrt::Windows
 {
     using namespace winrt::Windows::Networking::PushNotifications;
@@ -48,6 +49,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
+        if (!m_sink)
+        {
+            m_sink = wil::CoCreateInstance<WpnForegroundSink, IWpnForegroundSink>(CLSCTX_LOCAL_SERVER);
+        }
+
         return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
         {
             auto strong = weak_self.get();

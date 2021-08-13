@@ -17,6 +17,7 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include <wil/resource.h>
 
 using namespace std::literals;
 

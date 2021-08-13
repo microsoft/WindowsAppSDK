@@ -24,6 +24,12 @@
     <ClInclude Include="platformfactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="wpnforegroundsink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wpnforegroundsinkfactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -36,6 +42,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="platformfactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wpnforegroundsink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wpnforegroundsinkfactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

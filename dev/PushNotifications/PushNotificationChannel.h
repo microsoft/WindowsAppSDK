@@ -3,7 +3,9 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
-
+#include "PushNotifications-Constants.h"
+#include "PushNotificationsLongRunningTask.ProxyStub\x64\Debug\NotificationsLongRunningProcess_h.h"
+#include <wil/resource.h>
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
@@ -18,7 +20,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-
+        wil::com_ptr<IWpnForegroundSink> m_sink;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
