@@ -6,6 +6,7 @@
 wil::unique_event g_winmainEvent(wil::EventOptions::None);
 
 Microsoft::WRL::ComPtr<WpnLrpPlatformImpl> g_platform;
+IWpnForegroundSink* g_sink;
 
 WpnLrpPlatformImpl* GetPlatform()
 {
@@ -98,13 +99,15 @@ STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();
+    g_sink = sink;
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivator(/*[in]*/ PCWSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivator(/*[out]*/ IWpnForegroundSink* sink, /*[in]*/ PCWSTR /*processName*/)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();
+    sink->InvokeAll();
     return S_OK;
 }
 

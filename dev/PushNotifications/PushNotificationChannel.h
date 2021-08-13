@@ -3,6 +3,8 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
+#include <PushNotificationsLRP_h.h>
+#include <WpnForegroundSink.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -15,10 +17,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         winrt::event_token PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationChannel, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler);
         void PushReceived(winrt::event_token const& token) noexcept;
-
+        void TriggerForeground();
     private:
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-
+        WpnForegroundSink m_sink;
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

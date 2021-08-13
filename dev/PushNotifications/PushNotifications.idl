@@ -83,6 +83,7 @@ namespace Microsoft.Windows.PushNotifications
         // Unsubscribes the channel
         void Close();
 
+        void TriggerForeground();
         // Event handler for Push Notifications
         event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
     }

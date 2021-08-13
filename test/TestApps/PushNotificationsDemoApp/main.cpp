@@ -51,13 +51,17 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         // Register Push Event for Foreground
         result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
-                auto payload = args.Payload();
+                std::cout << "Foreground Activation working!" << std::endl;
+                //auto payload = args.Payload();
 
-                // Do stuff to process the raw payload
-                std::string payloadString(payload.begin(), payload.end());
-                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                args.Handled(true);
+                //// Do stuff to process the raw payload
+                //std::string payloadString(payload.begin(), payload.end());
+                //std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
+                
+                //args.Handled(true);
             });
+
+        result.Channel().TriggerForeground();
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -105,7 +109,10 @@ int main()
     std::wcout << L"Length (from LRP): " + std::to_wstring(stringLengthFromComServer) << std::endl;
 
     Sleep(5000);
-
+    
+    PushNotificationChannel channel = RequestChannel();
+    // Dies here?
+    
     std::wcout << L"Attempt to Shutdown platform (in 5 sec)" << std::endl;
     Sleep(5000);
     ULONG shutdownRes = PushNotificationManager::ShutdownPlatformManually();

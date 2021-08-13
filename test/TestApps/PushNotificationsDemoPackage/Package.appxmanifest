@@ -10,8 +10,8 @@
 
 	<Identity
 	  Name="PushNotificationsWin32App"
-	  Publisher="CN=joayalag"
-	  Version="1.0.15.0" />
+	  Publisher="CN=WNP_Reunion"
+	  Version="1.0.0.0" />
 
 	<Properties>
 		<DisplayName>Push Notifications Win32 Demo App</DisplayName>

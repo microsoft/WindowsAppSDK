@@ -9,7 +9,7 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include <PushNotificationsLRP_h.h>
 #include "WpnForegroundSink.h"
-
+#include <iostream>
 namespace winrt::Windows
 {
     using namespace winrt::Windows::Networking::PushNotifications;
@@ -22,7 +22,7 @@ namespace winrt::Microsoft
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
+    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel), m_sink() {}
 
     winrt::Windows::Uri PushNotificationChannel::Uri()
     {
@@ -47,26 +47,45 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
         }
     }
+    void PushNotificationChannel::TriggerForeground()
+    {
+        wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+            wil::CoCreateInstance<WpnLrpPlatform,
+            IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
+        std::cout << "Calling TriggerForeground" << std::endl;
+        m_sink.InvokeAll();
+        reunionEndpoint->UnregisterForegroundActivator(&m_sink, L"TestName");
+
+    }
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        if (!AppModel::Identity::IsPackagedProcess())
-        {
-            WpnForegroundSink sink(this);
-            sink.AddEvent(handler);
-        }
+        wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+            wil::CoCreateInstance<WpnLrpPlatform,
+            IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
+                
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel selfRef = *this;
+        m_sink.SetChannel(selfRef);
+        winrt::event_token token = m_sink.AddEvent(handler);
+
+        reunionEndpoint->RegisterForegroundActivator(&m_sink, L"TestName");
+
+        
+
         return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
-        {
-            auto strong = weak_self.get();
-            if (strong)
             {
-                handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
-            };
-        });
+                auto strong = weak_self.get();
+                if (strong)
+                {
+                    handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+                };
+            });
+        
     }
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
+        // if protocol registered, call WpnForegorundSink.Remove(token);
         m_channel.PushNotificationReceived(token);
     }
 }

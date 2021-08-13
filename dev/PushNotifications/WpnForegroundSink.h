@@ -7,12 +7,13 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
+#include <objidl.h>
 
 const IID WpnForegroundSinkId = winrt::guid("25604D55-9B17-426F-9D67-2B11B3A65598");
 
 using namespace winrt::Microsoft::Windows::PushNotifications;
 
-struct WpnForegroundSink : IWpnForegroundSink
+struct WpnForegroundSink : IWpnForegroundSink, IAgileObject
 {
 
     typedef winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationHandler;
@@ -20,38 +21,45 @@ struct WpnForegroundSink : IWpnForegroundSink
     private:
         wil::unique_mutex m_lock;
         ULONG* m_ref = 0;
-        PushNotificationHandler m_handlers;
-        winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel* m_channel;
-        
+        winrt::event<PushNotificationHandler> m_event;
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel * m_channel;
+
     public:
 
-
-    	// m_pButton->onClick = delegate(&DlgFatal::onExit);
-
-        WpnForegroundSink() = default;
-
-        WpnForegroundSink(winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel* channel): m_channel(channel){}
-
-        void AddEvent(PushNotificationHandler handler)
+        WpnForegroundSink() {};
+        ~WpnForegroundSink() {};
+        winrt::event_token AddEvent(PushNotificationHandler handler)
         {
-            m_handlers = handler;
+            return m_event.add(handler);
         }
+
+        void SetChannel(winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel& channel)
+        {
+            m_channel = &channel;
+        }
+
+        bool IsChannelSet()
+        {
+            return m_channel != nullptr;
+        }
+
+        //void SetChannel
 
         HRESULT InvokeAll()
         {
             winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args = nullptr;
-            m_handlers(*m_channel, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+            m_event(*m_channel, nullptr);
             return S_OK;
         }
 
-        HRESULT IUnknown::QueryInterface(const IID& iid, void** ptr)
+        HRESULT QueryInterface(const IID& iid, void** ptr)
         {
             if (!ptr)
             {
                 return E_INVALIDARG;
             }
             *ptr = nullptr;
-            if (iid == IID_IUnknown || iid == WpnForegroundSinkId)
+            if (iid == IID_IUnknown || iid == WpnForegroundSinkId || iid == IID_IAgileObject)
             {
                 *ptr = (void*)this;
                 AddRef();
@@ -60,19 +68,21 @@ struct WpnForegroundSink : IWpnForegroundSink
             return E_NOINTERFACE;
         }
 
-        ULONG IUnknown::AddRef()
+        ULONG AddRef()
         {
-            InterlockedIncrement(m_ref);
-            return *m_ref;
+            //InterlockedIncrement(m_ref);
+            //return *m_ref;
+            return 1;
         }
 
-        ULONG IUnknown::Release()
+        ULONG Release()
         {
-            ULONG ulRefCount = InterlockedDecrement(m_ref);
+            /*ULONG ulRefCount = InterlockedDecrement(m_ref);
             if (0 == *m_ref)
             {
-                delete this;
+                this->~WpnForegroundSink();
             }
-            return ulRefCount;
+            */
+            return 1;
         }
 };

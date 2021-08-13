@@ -25,7 +25,7 @@ interface IWpnLrpPlatform : IUnknown
 
     HRESULT RegisterForegroundActivator([in] IWpnForegroundSink*, [in] LPCWSTR processName);
 
-    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
+    HRESULT UnregisterForegroundActivator([in] IWpnForegroundSink*, [in] LPCWSTR processName);
 
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [out] GUID* appId);
 
