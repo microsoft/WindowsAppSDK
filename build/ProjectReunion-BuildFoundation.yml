@@ -79,7 +79,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\WindowsAppSDKInsightsLib\packages.config -ConfigFile ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
+      arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
 
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
 #  - task: DownloadPackage@1
