@@ -44,10 +44,4 @@ library WpnLrpPlatformLib
     {
         [default] interface IWpnLrpPlatform;
     };
-
-    [uuid(5286BC91-261B-4340-9B43-C00F2E87234A)]
-    coclass WpnForegroundSink
-    {
-        [default] interface IWpnForegroundSink;
-    };
 };

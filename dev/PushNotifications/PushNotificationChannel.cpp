@@ -66,8 +66,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     void PushNotificationChannel::WpnForegroundInvoke()
     {
         // This gets called by the system channel invoke
-        winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args{ nullptr };
-        m_foregroundHandlers(*this, make<implementation::PushNotificationReceivedEventArgs>(args));
+        //winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs args{};
+        winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args = nullptr;
+        //m_handlers(*m_channel, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+        m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
     }
 
     //void PushNotificationChannel::WpnForegroundInvoke()

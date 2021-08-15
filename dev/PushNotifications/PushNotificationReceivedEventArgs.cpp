@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes()) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(args.RawNotification().ContentBytes()) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(nullptr/*args.RawNotification().ContentBytes()*/) {}
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
