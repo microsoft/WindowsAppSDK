@@ -291,4 +291,5 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             return error;
         }
     }
+
 }

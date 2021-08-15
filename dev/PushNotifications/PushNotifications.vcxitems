@@ -35,6 +35,5 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WpnForegroundSink.h" />
   </ItemGroup>
 </Project>

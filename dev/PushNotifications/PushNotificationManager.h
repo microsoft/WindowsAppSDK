@@ -19,6 +19,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         static uint32_t ShutdownPlatformManually();
 
+        static uint32_t TriggerForeground();
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
     };
