@@ -19,9 +19,9 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     // If we realize that we need to persist the LRP, timer should be canceled.
     SetupTimer();
 
-    /* Verify registry and UDK list and make sure we have apps to be tracked */
+    /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
 
-    /* Load your components */
+    /* TODO: Load platform components */
 
     m_initialized = true;
 }
@@ -34,7 +34,7 @@ void NotificationsLongRunningPlatformImpl::Shutdown()
         return;
     }
 
-    /* Shut down your components */
+    /* TODO: Shut down your components */
 
     m_shutdown = true;
 }
@@ -80,11 +80,12 @@ void NotificationsLongRunningPlatformImpl::CancelTimer()
     m_timer.reset();
 }
 
+// Example of one function. We will add more as we need them.
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(_In_ PCWSTR /*processName*/, _In_ GUID /*remoteId*/, _Out_ GUID* /*appId*/) noexcept
 {
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    // Will implement this function once I synced up with Sharath regarding this
+    
     return E_NOTIMPL;
 }
 
