@@ -96,7 +96,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
         embedded_resoure_ptr resourceContainer(resourceData.data);
         return winrt::make<ResourceCandidate>(
             m_resourceManagerHandle,
-            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            resourceContext,
             m_resourceMapHandle,
             static_cast<uint32_t>(-1),
             resource,
@@ -107,7 +107,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
         string_resoure_ptr resourceContainer(resourceString);
         return winrt::make<ResourceCandidate>(
             m_resourceManagerHandle,
-            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            resourceContext,
             m_resourceMapHandle,
             static_cast<uint32_t>(-1),
             resource,
@@ -119,7 +119,7 @@ Resources::ResourceCandidate ResourceMap::GetValueImpl(const Resources::Resource
         string_resoure_ptr resourceContainer(resourceString);
         return winrt::make<ResourceCandidate>(
             m_resourceManagerHandle,
-            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            resourceContext,
             m_resourceMapHandle,
             static_cast<uint32_t>(-1),
             resource,
@@ -185,7 +185,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
         embedded_resoure_ptr resourceContainer(resourceData.data);
         Resources::ResourceCandidate candidate = winrt::make<ResourceCandidate>(
             m_resourceManagerHandle,
-            resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+            resourceContext,
             m_resourceMapHandle,
             index,
             hstring(),
@@ -199,7 +199,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
         Resources::ResourceCandidate candidate =
             winrt::make<ResourceCandidate>(
                 m_resourceManagerHandle,
-                resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+                resourceContext,
                 m_resourceMapHandle,
                 index,
                 hstring(),
@@ -214,7 +214,7 @@ IKeyValuePair<hstring, Resources::ResourceCandidate> ResourceMap::GetValueByInde
         Resources::ResourceCandidate candidate =
             winrt::make<ResourceCandidate>(
                 m_resourceManagerHandle,
-                resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
+                resourceContext,
                 m_resourceMapHandle,
                 index,
                 hstring(),

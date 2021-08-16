@@ -40,6 +40,7 @@ PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $Full
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
 #

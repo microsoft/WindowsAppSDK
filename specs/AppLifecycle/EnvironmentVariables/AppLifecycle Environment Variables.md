@@ -530,24 +530,24 @@ private void AppendToUserPathExt()
 
 The new types are defined as follows:
 
-//
-https://github.com/microsoft/ProjectReunion/blob/EVAndPATH/dev/Microsoft.Process.Environment/EnvironmentManager.idl
-
 ```idl
-runtimeclass EnvironmentManager
+namespace Microsoft.Windows.System
 {
-    static EnvironmentManager GetForProcess();
-    static EnvironmentManager GetForCurrentUser();
-    static EnvironmentManager GetForMachine();
-    static bool IsSupported { get; }
-
-    IMapView<String, String> GetEnvironmentVariables();
-    String GetEnvironmentVariable(String name);
-
-    void SetEnvironmentVariable(String name, String value);
-    void AppendToPath(String path);
-    void RemoveFromPath(String path);
-    void AddExecutableFileExtension(String pathExt);
-    void RemoveExecutableFileExtension(String pathExt);
+    runtimeclass EnvironmentManager
+    {
+        static EnvironmentManager GetForProcess();
+        static EnvironmentManager GetForCurrentUser();
+        static EnvironmentManager GetForMachine();
+        static bool IsSupported { get; }
+    
+        IMapView<String, String> GetEnvironmentVariables();
+        String GetEnvironmentVariable(String name);
+    
+        void SetEnvironmentVariable(String name, String value);
+        void AppendToPath(String path);
+        void RemoveFromPath(String path);
+        void AddExecutableFileExtension(String pathExt);
+        void RemoveExecutableFileExtension(String pathExt);
+    }
 }
 ```

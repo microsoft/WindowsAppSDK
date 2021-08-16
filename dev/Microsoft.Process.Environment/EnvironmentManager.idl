@@ -1,0 +1,26 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Windows.System
+{
+    runtimeclass EnvironmentManager
+    {
+        static EnvironmentManager GetForProcess();
+        static EnvironmentManager GetForUser();
+        static EnvironmentManager GetForMachine();
+
+        static Boolean IsSupported{ get; };
+
+        IMapView<String, String> GetEnvironmentVariables();
+        String GetEnvironmentVariable(String name);
+        void SetEnvironmentVariable(String name, String value);
+
+        // Path manipulation
+        void AppendToPath(String path);
+        void RemoveFromPath(String path);
+
+        // PathExt Manipulation
+        void AddExecutableFileExtension(String pathExt);
+        void RemoveExecutableFileExtension(String pathExt);
+    }
+}
