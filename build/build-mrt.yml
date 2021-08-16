@@ -118,14 +118,14 @@ steps:
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/restore /binaryLogger:$(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog'
 
-- ${{ if eq(variables.buildOnly, 'false') }}:
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish mrtcore binlog'
-    condition: succeededOrFailed()
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
-      artifactName: binlogs
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish mrtcore binlog'
+  condition: succeededOrFailed()
+  inputs:
+    PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
+    artifactName: binlogs
 
+- ${{ if eq(variables.buildOnly, 'false') }}:
   # Run the test locally on the Azure VM.
   - task: VSTest@2
     displayName: 'test MRT: ManagedTests'

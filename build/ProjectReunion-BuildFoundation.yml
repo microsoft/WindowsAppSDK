@@ -48,6 +48,8 @@ jobs:
     eq(variables['useBuildOutputFromBuildId'],'')
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
+  variables:
+    publishBuild: true
   strategy:
     maxParallel: 10
     matrix:
@@ -151,6 +153,8 @@ jobs:
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
+  variables:
+    buildOnly: false
   strategy:
     maxParallel: 10
     matrix:
