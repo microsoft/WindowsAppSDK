@@ -108,6 +108,10 @@ namespace ManagedTest
             Assert.AreEqual(blobResourceCandidate.Kind, ResourceCandidateKind.EmbeddedData);
             blobResourceCandidate = resourceManager.MainResourceMap.TryGetValue("Files/Controls/AlbumBasicInfoControl.xbf");
             Assert.AreEqual(blobResourceCandidate.Kind, ResourceCandidateKind.EmbeddedData);
+
+            var qualifierValues = blobResourceCandidate.QualifierValues;
+            Assert.IsTrue(!qualifierValues.ContainsKey("Language"));
+            Assert.IsTrue(!qualifierValues.ContainsKey("Scale"));
         }
 
         [TestMethod]
