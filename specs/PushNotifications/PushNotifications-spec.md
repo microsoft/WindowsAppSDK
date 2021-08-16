@@ -518,29 +518,15 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
-    runtimeclass PushNotificationRegistrationToken
-    {
-        PushNotificationRegistrationToken(
-            UInt64 cookie,
-            Windows.ApplicationModel.Background.BackgroundTaskRegistration taskRegistration);
-
-        // The cookie from CoRegisterClassObject
-        UInt64 Cookie{ get; };
-
-        // The Registration token for the Push Trigger
-        Windows.ApplicationModel.Background.BackgroundTaskRegistration TaskRegistration { get; };
-    };
-
     static runtimeclass PushNotificationManager
     {
-        // Register an activator using an ActivationInfo context and return a RegistrationToken
+        // Register an activator using an ActivationInfo context and cache the flag for unregister
         static void RegisterActivator(PushNotificationActivationInfo details);
 
-        // Unregister any activator if present using a token and PushNotificationRegistrationOptions
+        // Unregister any activator given PushNotificationRegistrationActivators
         // 1) If kind = PushTrigger is specified, the trigger itself will be removed
         // 2) If kind = ComActivator is specified, the Project Reunion Background Task component will no longer act as an InProc COM Server
         // 3) If kind = ProtocolActivator is specified, the application will be unregistered from the long running process that handles activation
-        //    and the token parameter will be unused so it should be set to nullptr
         static void UnregisterActivator(PushNotificationRegistrationActivators activators);
 
         // Unregister all activators registered for the application
