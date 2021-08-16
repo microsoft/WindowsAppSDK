@@ -125,8 +125,7 @@ steps:
     PathtoPublish: $(Build.SourcesDirectory)/mrtcore.$(buildPlatform).$(buildConfiguration).binlog
     artifactName: binlogs
 
-- ${{ if eq(variables.buildOnly, 'false') }}:
-  # Run the test locally on the Azure VM.
+- ${{ if eq(variables['buildOnly'], 'false') }}:  # Run the test locally on the Azure VM.
   - task: VSTest@2
     displayName: 'test MRT: ManagedTests'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
