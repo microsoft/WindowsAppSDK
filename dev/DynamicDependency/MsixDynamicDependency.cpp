@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+#include <VersionHelpers.h>
+
 #include "msixdynamicdependency.h"
 
 #include "MddDetourPackageGraph.h"
@@ -11,11 +13,48 @@
 
 namespace MddCore
 {
-// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-void FailFastIfElevated()
+static bool IsWindowsVersionOrGreaterEx(WORD majorVersion, WORD minorVersion, WORD servicePackMajor, WORD buildNumber)
 {
-    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                        "DynamicDependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
+    const DWORDLONG c_conditionMask{
+        VerSetConditionMask(
+            VerSetConditionMask(
+                VerSetConditionMask(
+                    VerSetConditionMask(
+                        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+                    VER_MINORVERSION, VER_GREATER_EQUAL),
+                VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL),
+            VER_BUILDNUMBER, VER_GREATER_EQUAL)
+    };
+
+    OSVERSIONINFOEXW osvi{ sizeof(osvi) };
+    osvi.dwMajorVersion = majorVersion;
+    osvi.dwMinorVersion = minorVersion;
+    osvi.wServicePackMajor = servicePackMajor;
+    osvi.dwBuildNumber = buildNumber;
+
+    return !!VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_BUILDNUMBER, c_conditionMask);
+}
+
+static bool IsWindows_10_0_22000_0_OrGreater()
+{
+    const WORD c_buildNumber{ 22000 };
+    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_buildNumber);
+}
+
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
+void FailFastIfElevatedNotSupported()
+{
+    // We require Windows support for PackagedCOM/WinRT activation but that wasn't supported for elevated callers until Windows 10.0.22000.0
+    static bool isWindows_10_0_22000_0_OrGreater{ IsWindows_10_0_22000_0_OrGreater() };
+    if (isWindows_10_0_22000_0_OrGreater)
+    {
+        return;
+    }
+
+    // We won't work correctly if we're elevated
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),
+                        Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+                        "DynamicDependencies doesn't support elevation on Windows < 10.0.22000.0. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
 }
 }
 
@@ -30,7 +69,7 @@ STDAPI MddTryCreatePackageDependency(
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     *packageDependencyId = nullptr;
 
@@ -46,7 +85,7 @@ STDAPI_(void) MddDeletePackageDependency(
     _In_ PCWSTR packageDependencyId) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     // Dynamic Dependencies requires a non-packaged process
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
@@ -63,7 +102,7 @@ STDAPI MddAddPackageDependency(
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     *packageDependencyContext = nullptr;
     if (packageFullName)
@@ -83,7 +122,7 @@ STDAPI_(void) MddRemovePackageDependency(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     // Dynamic Dependencies requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
@@ -97,7 +136,7 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
     _Outptr_result_maybenull_ PWSTR* packageFullName) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     *packageFullName = nullptr;
 
@@ -119,7 +158,7 @@ STDAPI MddGetIdForPackageDependencyContext(
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     *packageDependencyId = nullptr;
 
