@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+#include <VersionHelpers.h>
+
 #include "MddBootstrap.h"
 #include "MddBootstrapTest.h"
 
@@ -29,11 +31,40 @@ static std::wstring g_test_ddlmPackagePublisherId;
 
 namespace MddCore
 {
-// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSdk/issues/567
-void FailFastIfElevated()
+static bool IsWindowsVersionOrGreaterEx(WORD majorVersion, WORD minorVersion, WORD servicePackMajor, WORD buildNumber)
 {
-    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
+    const DWORDLONG c_conditionMask{
+        VerSetConditionMask(
+            VerSetConditionMask(
+                VerSetConditionMask(
+                    VerSetConditionMask(
+                        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+                    VER_MINORVERSION, VER_GREATER_EQUAL),
+                VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL),
+            VER_BUILDNUMBER, VER_GREATER_EQUAL)
+    };
+
+    OSVERSIONINFOEXW osvi{ sizeof(osvi) };
+    osvi.dwMajorVersion = majorVersion;
+    osvi.dwMinorVersion = minorVersion;
+    osvi.wServicePackMajor = servicePackMajor;
+    osvi.dwBuildNumber = buildNumber;
+
+    return !!VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_BUILDNUMBER, c_conditionMask);
+}
+
+static bool IsWindows_10_0_22000_0_OrGreater()
+{
+    const WORD c_buildNumber{ 22000 };
+    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_buildNumber);
+}
+
+// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSdk/issues/567
+void FailFastIfElevatedNotSupported()
+{
+    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED),
+                        Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+                        "DynamicDependencies doesn't support elevation on Windows < 10.0.22000.0. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
 }
 }
 
@@ -43,7 +74,7 @@ STDAPI MddBootstrapInitialize(
     PACKAGE_VERSION minVersion) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    MddCore::FailFastIfElevatedNotSupported();
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
