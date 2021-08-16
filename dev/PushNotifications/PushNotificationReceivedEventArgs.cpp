@@ -23,14 +23,21 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes()) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(GetByteArrayFromBuffer(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(nullptr/*args.RawNotification().ContentBytes()*/) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(GetByteArrayFromBuffer(args.RawNotification().ContentBytes())) {}
 
-    winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload) : m_rawNotification(payload) { }
+
+    byte* PushNotificationReceivedEventArgs::GetByteArrayFromBuffer(winrt::Windows::Storage::Streams::IBuffer buffer)
     {
-        auto rawNotificationData = m_rawNotification.data();
-        return { rawNotificationData, rawNotificationData + (m_rawNotification.Length() * sizeof(uint8_t)) };
+        auto rawNotificationData = buffer.data();
+        return rawNotificationData;
+    }
+
+    com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
+    {
+        return { *m_rawNotification };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()

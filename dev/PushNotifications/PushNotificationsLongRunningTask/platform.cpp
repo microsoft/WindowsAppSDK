@@ -107,7 +107,17 @@ STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivat
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();
-    sink->InvokeAll();
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::InvokeForegroundHandlers(/*[in]*/ IWpnForegroundSink* sink)
+{
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    auto lock = m_lock.acquire();
+
+    std::string payloadString = "Payload from the LRP!";
+    sink->InvokeAll((byte*) payloadString.c_str());
+
     return S_OK;
 }
 

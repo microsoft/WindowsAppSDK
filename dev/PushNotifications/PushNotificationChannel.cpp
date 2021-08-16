@@ -51,25 +51,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::TriggerForeground()
     {
-        THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
-
         wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
             wil::CoCreateInstance<WpnLrpPlatform,
             IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
-        reunionEndpoint->UnregisterForegroundActivator(this, L"TestName");
-
-        ::CoUninitialize();
+        reunionEndpoint->InvokeForegroundHandlers(this);
 
     }
 
-    void PushNotificationChannel::WpnForegroundInvoke()
+    void PushNotificationChannel::WpnForegroundInvoke(byte* payload)
     {
-        // This gets called by the system channel invoke
-        //winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs args{};
-        winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs args = nullptr;
-        //m_handlers(*m_channel, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
-        m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+        m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload));
     }
 
     //void PushNotificationChannel::WpnForegroundInvoke()
@@ -87,6 +79,22 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
         m_foregroundHandlers.add(handler);
+
+        char processName[1024];
+        GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+
+        HRESULT hr = reunionEndpoint->RegisterForegroundActivator(this, processName);
+
+        /*
+        char processName[1024];
+        GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+
+        printf("Processname: %s\n", processName);
+
+        HRESULT hr = reunionEndpoint->RegisterFullTrustApplication(processName, remoteId, &appUserModelId);
+        std::cout << "registerapplication completed with status: " << hr << std::endl;
+        */
+
         //winrt::com_ptr<WpnForegroundSink> sink_ptr{ m_sink.as<WpnForegroundSink>() };
         ///m_sink.try_as<WpnForegroundSink>(&sink_ptr);
         //m_sink.as<WpnForegroundSink>().get()->AddEvent(handler);

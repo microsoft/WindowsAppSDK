@@ -5,7 +5,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
 #include <PushNotificationsLRP_h.h>
 #include "pch.h"
-
+#include <iostream>
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     typedef winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationHandler;
@@ -22,14 +22,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::event_token PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationChannel, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler);
         void PushReceived(winrt::event_token const& token) noexcept; 
 
-        void WpnForegroundInvoke();
+        void WpnForegroundInvoke(byte* payload);
 
         void TriggerForeground();
 
         // From IWpnForegroundSink
-        HRESULT __stdcall InvokeAll() noexcept final try
+        HRESULT __stdcall InvokeAll(byte* payload) noexcept final try
         {
-            this->WpnForegroundInvoke();
+            this->WpnForegroundInvoke(payload);
             return S_OK;
         }
         CATCH_RETURN();

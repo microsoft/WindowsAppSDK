@@ -23,6 +23,8 @@ struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) WpnLrpPlatformIm
 
     STDMETHOD(RegisterFullTrustApplication)(/*[in]*/ PCWSTR processName, /*[out]*/ GUID* appId);
 
+    STDMETHOD(InvokeForegroundHandlers)(/*[in]*/ IWpnForegroundSink* sink);
+
     // Foo function, remove it along with its PushNotificationManager Foo API
     STDMETHOD(GetStringLength)(/*[in]*/ PCWSTR string, /*[out]*/ ULONG* length);
 

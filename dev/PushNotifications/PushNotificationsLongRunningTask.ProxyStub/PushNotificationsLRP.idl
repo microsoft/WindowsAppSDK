@@ -11,7 +11,8 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface IWpnForegroundSink : IUnknown
 {
-    HRESULT InvokeAll();
+    //    HRESULT WriteData([in] UINT32 size, [in, size_is(size)] const BYTE* data);
+    HRESULT InvokeAll([in] byte* payload);
 };
 
 [object]
@@ -28,6 +29,8 @@ interface IWpnLrpPlatform : IUnknown
     HRESULT UnregisterForegroundActivator([in] IWpnForegroundSink*, [in] LPCWSTR processName);
 
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [out] GUID* appId);
+
+    HRESULT InvokeForegroundHandlers([in] IWpnForegroundSink*);
 
     // Just a Foo function for testing COM server connection. It should be deleted.
     HRESULT GetStringLength([in] LPCWSTR string, [out] ULONG* length);
