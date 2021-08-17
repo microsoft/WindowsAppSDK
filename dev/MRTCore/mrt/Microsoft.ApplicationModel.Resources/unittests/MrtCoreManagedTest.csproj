@@ -171,11 +171,14 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <ItemGroup>
+    <ReferenceCopyLocalPaths Include="$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll" />
+    <ReferenceCopyLocalPaths Include="$(OutputPath)..\MRM\MRM.dll" />
+  </ItemGroup>
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll"
-    copy /Y "$(OutputPath)..\MRM\MRM.dll"  "$(OutputPath)MRM.dll"
-    powershell -command "$file = gi $(OutputPath)MrtCoreManagedTests.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
+    <PostBuildEvent>
+      powershell -command "$file = gi $(OutputPath)MrtCoreManagedTests.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
