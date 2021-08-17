@@ -30,6 +30,13 @@
     </Reference>
   </ItemGroup>
 
+    <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.System.Power.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
       <Private>false</Private>
