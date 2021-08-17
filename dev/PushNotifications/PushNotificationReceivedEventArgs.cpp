@@ -27,17 +27,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(GetByteArrayFromBuffer(args.RawNotification().ContentBytes())) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload) : m_rawNotification(payload) { }
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload, ULONG length) : m_rawNotification(payload), m_length(length) { }
 
     byte* PushNotificationReceivedEventArgs::GetByteArrayFromBuffer(winrt::Windows::Storage::Streams::IBuffer buffer)
     {
         auto rawNotificationData = buffer.data();
+        m_length = buffer.Length();
         return rawNotificationData;
     }
 
     com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        return { *m_rawNotification };
+        return { m_rawNotification, m_rawNotification + (m_length * sizeof(uint8_t)) };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
@@ -71,7 +72,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
         THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
-
+        // if(!IsActivatorSupported(comactivator) && value) {
+        //  platform->ActivateBackground(m_rawNotification);
+        //}
+        // else
+        // {
+        //   m_args.Cancel(value);
+        // }
         m_args.Cancel(value);
     }
 }

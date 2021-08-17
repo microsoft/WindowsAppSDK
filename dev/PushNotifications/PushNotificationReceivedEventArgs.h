@@ -9,7 +9,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
         PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
-        PushNotificationReceivedEventArgs(byte* payload);
+        PushNotificationReceivedEventArgs(byte* payload, ULONG length);
 
         com_array<uint8_t> Payload();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
@@ -21,6 +21,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         byte* m_rawNotification = nullptr;
+        ULONG m_length;
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
     };

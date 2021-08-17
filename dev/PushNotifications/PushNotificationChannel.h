@@ -14,6 +14,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
         PushNotificationChannel(winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel const& channel);
+        ~PushNotificationChannel() noexcept;
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
@@ -22,14 +23,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::event_token PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationChannel, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler);
         void PushReceived(winrt::event_token const& token) noexcept; 
 
-        void WpnForegroundInvoke(byte* payload);
+        void WpnForegroundInvoke(byte* payload, ULONG length);
 
         void TriggerForeground();
 
         // From IWpnForegroundSink
-        HRESULT __stdcall InvokeAll(byte* payload) noexcept final try
+        HRESULT __stdcall InvokeAll(byte* start, ULONG length) noexcept final try
         {
-            this->WpnForegroundInvoke(payload);
+            std::vector<uint8_t> vec;
+            for (int i = 0; (ULONG) i < length; i++)
+            {
+                vec.push_back(start[i]);
+            }
+            com_array<uint8_t> arr{ start, start + (length * sizeof(uint8_t)) };
+            this->WpnForegroundInvoke(start, length);
             return S_OK;
         }
         CATCH_RETURN();
