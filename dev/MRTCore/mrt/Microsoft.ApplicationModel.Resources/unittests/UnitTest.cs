@@ -5,11 +5,63 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.ApplicationModel.Resources;
 
+using System.Diagnostics;
+using System.IO;
+
 namespace ManagedTest
 {
     [TestClass]
     public class ResourceLoaderTest
     {
+        [AssemblyInitialize]
+        public static void AssemblyInit(TestContext context)
+        {
+            // Executes once before the test run. (Optional)
+            var curdir = Directory.GetCurrentDirectory();
+            var mrmDll = Path.Combine(curdir, "MRM.dll");
+            if (!File.Exists(mrmDll))
+            {
+                var sourcedll = Path.Combine(curdir, "..", "MRM.dll");
+                if (File.Exists(sourcedll))
+                {
+                    File.Copy(sourcedll, mrmDll);
+                }
+            }
+            var frameworkUdkDll = Path.Combine(curdir, "Microsoft.Internal.FrameworkUdk.dll");
+            if (!File.Exists(frameworkUdkDll))
+            {
+                var sourcedll = Path.Combine(curdir, "..", "Microsoft.Internal.FrameworkUdk.dll");
+                var ca = File.Exists(sourcedll);
+                var cb = Directory.Exists(sourcedll);
+                var cc = Directory.GetFiles(curdir);
+                
+                var pardir = Directory.GetParent(curdir);
+                var pa = File.Exists(sourcedll);
+                var pb = Directory.Exists(sourcedll);
+                var pc = pardir.GetFiles();
+
+                if (File.Exists(sourcedll))
+                {
+                    File.Copy(sourcedll, frameworkUdkDll);
+                }
+            }
+
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = "cmd.exe";
+            startInfo.UseShellExecute = false;
+            try
+            {
+                using (Process exe = Process.Start(startInfo))
+                {
+                    exe.WaitForExit();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         [TestMethod]
         public void GetStringTest()
         {
