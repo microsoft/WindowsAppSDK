@@ -24,8 +24,10 @@ namespace Microsoft.Windows.PushNotifications
     [flags]
     enum PushNotificationRegistrationOptions
     {
+        Undefined = 0x0, // Used to check if 0 was passed as a flag
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Windows App SDK Background Task component as an InProc COM server
+        ProtocolActivator = 0x4 // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
     };
 
     [experimental]
@@ -137,5 +139,7 @@ namespace Microsoft.Windows.PushNotifications
         static UInt32 GetStringLengthFromComServer(String inputString);
 
         static UInt32 ShutdownPlatformManually();
+        // Applications will call this to check which flags are supported for RegisterActivator
+        static Boolean IsActivatorSupported(PushNotificationRegistrationOptions options);
     };
 }

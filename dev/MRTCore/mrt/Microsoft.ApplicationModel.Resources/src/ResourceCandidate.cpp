@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "ResourceCandidate.h"
 #include "ResourceCandidate.g.cpp"
+#include "ResourceContext.h"
 
 namespace winrt::Microsoft::ApplicationModel::Resources::implementation
 {
@@ -21,8 +22,8 @@ ResourceCandidate::ResourceCandidate(array_view<uint8_t const> data)
     m_kind = ResourceCandidateKind::EmbeddedData;
 }
 
-ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, MrmContextHandle context, MrmMapHandle map, uint32_t index, const hstring& id, ResourceCandidateKind kind, hstring data)
-    : m_resourceManagerHandle(manager), m_resourceContextHandle(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_stringData(std::move(data)), m_kind(kind)
+ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, ResourceCandidateKind kind, hstring data)
+    : m_resourceManagerHandle(manager), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id), m_stringData(std::move(data)), m_kind(kind)
 {
     if ((kind != ResourceCandidateKind::String) && (kind != ResourceCandidateKind::FilePath))
     {
@@ -30,8 +31,8 @@ ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, MrmContextHandle 
     }
 }
 
-ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, MrmContextHandle context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data)
-    : m_resourceManagerHandle(manager), m_resourceContextHandle(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id)
+ResourceCandidate::ResourceCandidate(MrmManagerHandle manager, Microsoft::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data)
+    : m_resourceManagerHandle(manager), m_resourceContext(context), m_resourceMapHandle(map), m_resourceIndex(index), m_resourceId(id)
 {
     m_blobData = winrt::com_array<uint8_t>(data.begin(), data.end());
     m_kind = ResourceCandidateKind::EmbeddedData;
@@ -73,7 +74,7 @@ Windows::Foundation::Collections::IMapView<hstring, hstring> ResourceCandidate::
         {
             winrt::check_hresult(MrmLoadStringOrEmbeddedResourceWithQualifierValues(
                 m_resourceManagerHandle,
-                m_resourceContextHandle,
+                m_resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
                 m_resourceMapHandle,
                 m_resourceId.c_str(),
                 &resourceType,
@@ -87,7 +88,7 @@ Windows::Foundation::Collections::IMapView<hstring, hstring> ResourceCandidate::
         {
             winrt::check_hresult(MrmLoadStringOrEmbeddedResourceByIndexWithQualifierValues(
                 m_resourceManagerHandle,
-                m_resourceContextHandle,
+                m_resourceContext.as<Resources::implementation::ResourceContext>()->GetContextHandle(),
                 m_resourceMapHandle,
                 m_resourceIndex,
                 &resourceType,

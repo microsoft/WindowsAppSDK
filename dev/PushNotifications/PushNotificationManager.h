@@ -20,8 +20,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static uint32_t ShutdownPlatformManually();
 
         static uint32_t TriggerForeground();
+        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
+
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
+        static bool IsBackgroundTaskBuilderAvailable();
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
