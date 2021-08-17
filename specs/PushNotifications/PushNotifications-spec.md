@@ -115,7 +115,7 @@ int main()
     {
         // Register the ComActivator guid
         info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-        winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+        winrt::guid("BACCFA91-F1DE-4CA2-xxxx-90BE66934EC6"));
     }
     else
     {
@@ -148,7 +148,7 @@ int main()
     {
         // Register the AAD RemoteIdentifier for the App to receive Push
         auto channelOperation = PushNotificationManager::CreateChannelAsync(
-            winrt::guid("F80E541E-3606-48FB-935E-118A3C5F41F4"));
+            winrt::guid("F80E541E-3606-48FB-xxxx-118A3C5F41F4"));
 
         // Setup the inprogress event handler
         channelOperation.Progress(
@@ -238,7 +238,7 @@ int main()
     {
         // Register the ComActivator guid
         info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::PushTrigger,
-            winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+            winrt::guid("BACCFA91-F1DE-4CA2-xxxx-90BE66934EC6"));
     }
     else
     {
@@ -264,7 +264,7 @@ int main()
     {
         // Register the ComActivator guid
         info = PushNotificationActivationInfo(PushNotificationRegistrationActivators::ComActivator,
-            winrt::guid("BACCFA91-F1DE-4CA2-B80E-90BE66934EC6"));
+            winrt::guid("BACCFA91-F1DE-4CA2-xxxx-90BE66934EC6"));
     }
     else
     {
