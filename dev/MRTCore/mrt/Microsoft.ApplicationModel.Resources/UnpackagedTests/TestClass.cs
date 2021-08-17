@@ -261,5 +261,221 @@ namespace MrtCoreUnpackagedTests
 
             ResourceManagerWithFileImpl();
         }
+
+        [TestMethod]
+        public void ResourceLoader_GetStringTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceLoaderTest.GetStringTest();
+        }
+
+        [TestMethod]
+        public void ResourceLoader_GetStringTest_NonDefaultNamespace()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceLoaderTest.GetStringTest_NonDefaultNamespace();
+        }
+
+        [TestMethod]
+        public void ResourceLoader_GetStringForUriTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceLoaderTest.GetStringForUriTest();
+        }
+
+        [TestMethod]
+        public void ResourceLoader_GetStringForUriTest_ImplicitRootNamespace()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceLoaderTest.GetStringForUriTest_ImplicitRootNamespace();
+        }
+
+        [TestMethod]
+        public void ResourceLoader_GetDefaultResourceFilePathTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceLoaderTest.GetDefaultResourceFilePathTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsStringTest_StringResource_Succeeds()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsStringTest_StringResource_Succeeds();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsStringTest_FileResource_Succeeds()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsStringTest_FileResource_Succeeds();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ValueAsBlobTest_Succeeds()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ValueAsBlobTest_Succeeds();
+        }
+
+        [TestMethod]
+        public void ResourceManager_GetKindTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.GetKindTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_GetSubtreeTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.GetSubtreeTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ResourceNotFoundTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ResourceNotFoundTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_NoResourceFileTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.NoResourceFileTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_ResourceEnumTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceManagerTest.ResourceEnumTest();
+        }
+
+        [TestMethod]
+        public void ResourceContext_LanguageContextTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceContextTest.LanguageContextTest();
+        }
+
+        [TestMethod]
+        public void ResourceContext_NonLanguageContextTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceContextTest.NonLanguageContextTest();
+        }
+
+        [TestMethod]
+        public void ResourceContext_ResourceEnumWithContextTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceContextTest.ResourceEnumWithContextTest();
+        }
+
+        [TestMethod]
+        public void ResourceContext_ResourceNotFoundWithContextTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceContextTest.ResourceNotFoundWithContextTest();
+        }
+
+        [TestMethod]
+        public void ResourceContext_NoResourceFileWithContextTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            CommonTestCode.ResourceContextTest.NoResourceFileWithContextTest();
+        }
     }
 }
