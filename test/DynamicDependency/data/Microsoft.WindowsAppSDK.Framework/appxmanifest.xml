@@ -70,5 +70,11 @@
               <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
           </InProcessServer>
       </Extension>
+      <Extension Category="windows.activatableClass.inProcessServer">
+          <InProcessServer>
+              <Path>Microsoft.WindowsAppSDK.dll</Path>
+              <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
+          </InProcessServer>
+      </Extension>
   </Extensions>
 </Package>
