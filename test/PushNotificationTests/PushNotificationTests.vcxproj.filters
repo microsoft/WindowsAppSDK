@@ -41,6 +41,9 @@
     <ClCompile Include="MockRawNotification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UnpackagedTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -52,5 +55,6 @@
     <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>
