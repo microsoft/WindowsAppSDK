@@ -27,9 +27,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Common\WindowsAppSDKInsights.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="WindowsAppSDKInsights.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -176,13 +173,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="..\packages\Microsoft.Telemetry.Inbox.Native.10.0.19041.1-191206-1406.vb-release.x86fre\build\native\Microsoft.Telemetry.Inbox.Native.targets" Condition="Exists('..\packages\Microsoft.Telemetry.Inbox.Native.10.0.19041.1-191206-1406.vb-release.x86fre\build\native\Microsoft.Telemetry.Inbox.Native.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.Telemetry.Inbox.Native.10.0.19041.1-191206-1406.vb-release.x86fre\build\native\Microsoft.Telemetry.Inbox.Native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Telemetry.Inbox.Native.10.0.19041.1-191206-1406.vb-release.x86fre\build\native\Microsoft.Telemetry.Inbox.Native.targets'))" />
   </Target>
 </Project>
