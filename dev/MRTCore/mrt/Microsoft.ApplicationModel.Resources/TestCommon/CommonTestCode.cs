@@ -25,8 +25,6 @@ namespace CommonTestCode
 #if USE_VSTEST
     public class Verify
     {
-        public delegate void VerifyOperation();
-
         public static bool AreEqual<T>(T expected, T actual, string message = null)
         {
             Assert.AreEqual(expected, actual, message);
