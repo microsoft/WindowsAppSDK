@@ -366,7 +366,7 @@ int main() try
 
     ::Test::Bootstrap::SetupBootstrap();
 
-    // TODO: Register activators only when the unit test requires it
+    // TODO: Register ProtocolActivator for unpackaged applications or Packaged Applications when COM activation is unsupported
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
     {
         PushNotificationActivationInfo info(

@@ -11,7 +11,7 @@
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
 #include "PushNotificationBackgroundTask.h"
-
+#include <winrt/Windows.Foundation.Metadata.h>
 #include <winerror.h>
 #include <algorithm>
 #include "PushNotificationChannel.h"
@@ -246,16 +246,19 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    static bool HasBackgroundTaskEntryPointClsid() {
+        return Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
+    }
+
     bool PushNotificationManager::IsBackgroundTaskBuilderAvailable()
     {
-        auto builder{ BackgroundTaskBuilder() };
-        auto builder5{ builder.try_as<winrt::IBackgroundTaskBuilder5>() };
-        return builder5 != nullptr;
+        static bool hasSetTaskEntrypoint = HasBackgroundTaskEntryPointClsid();
+        return hasSetTaskEntrypoint;
     }
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions const& options)
     {
-        THROW_HR_IF(E_INVALIDARG, options == PushNotificationRegistrationOptions::Undefined); // WI_IsFlagSet does not allow 0 as flag.
+        THROW_HR_IF(E_INVALIDARG, options == PushNotificationRegistrationOptions::Undefined);
 
         auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(options, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
         auto isProtocolActivatorSet{ WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator) };
