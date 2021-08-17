@@ -294,6 +294,9 @@
     <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\include\mrm\build\AIDict.h" />
     <ClInclude Include="..\include\mrm\build\Atoms.h" />
     <ClInclude Include="..\include\mrm\build\Base.h" />
@@ -307,9 +310,6 @@
     <ClInclude Include="..\include\mrm\build\SectionCopiers.h" />
     <ClInclude Include="..\include\mrm\build\WriteableStringPool.h" />
     <ClInclude Include="StdAfx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

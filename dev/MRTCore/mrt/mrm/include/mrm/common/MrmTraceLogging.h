@@ -4,7 +4,7 @@
 #pragma once
 
 #include <guiddef.h>
-#include <WindowsAppSDKInsights.h>
+#include <WindowsAppRuntimeInsights.h>
 
 #include <windows.h>
 
@@ -31,10 +31,6 @@ class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(MeasureGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
 
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(MeasureUnableToOpenOverlayFile, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, overlayFileName, int, hresult);
-
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(PriMergeInfo, PDT_ProductAndServicePerformance, DWORD, mergeState, PCWSTR, mergeInfo, int, hresult);
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(PriMergeError, PDT_ProductAndServicePerformance, DWORD, mergeState, PCWSTR, mergeInfo, int, hresult);
-
 };
 
 // case insensitive prefix match of "*:\users"

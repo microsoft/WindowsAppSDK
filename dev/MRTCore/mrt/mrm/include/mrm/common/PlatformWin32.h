@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -160,9 +160,6 @@ extern "C"
         LOG_ERROR_IN_MEMORY(hr, 2, nullptr, msg2); \
         MrtRuntimeTraceLoggingProvider::MeasureGenericEventParam2(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
     }
-
-#define WRITE_MRMMIN_PRI_MERGE_INFO(mergeState, mergeInfo, result) MrtRuntimeTraceLoggingProvider::PriMergeInfo(mergeState, mergeInfo, result)
-#define WRITE_MRMMIN_PRI_MERGE_ERROR(mergeState, mergeInfo, result) MrtRuntimeTraceLoggingProvider::PriMergeError(mergeState, mergeInfo, result)
 
 #define WRITE_MRMMIN_UNABLE_TO_OPEN_OVERLAY_FILE(overlayFileName, result) \
     { \
