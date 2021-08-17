@@ -19,9 +19,9 @@ void LogErrorInMemory(HRESULT hr, ULONG line, _In_ PCSTR filename, _In_ PCWSTR m
 
 class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
 {
-    IMPLEMENT_TRACELOGGING_CLASS(MrtRuntimeTraceLoggingProvider, "Microsoft.Windows.Mrt.Runtime",
-        // {706f5ec1-0c6b-54ee-4b6f-4cd329da9067}
-        (0x706f5ec1, 0x0c6b, 0x54ee, 0x4b, 0x6f, 0x4c, 0xd3, 0x29, 0xda, 0x90, 0x67));
+    IMPLEMENT_TRACELOGGING_CLASS(MrtRuntimeTraceLoggingProvider, "Microsoft.WindowsAppSdk.MrtCore.Runtime",
+        // {297d729d-7733-5616-aafc-9a3c8b0d5f22}
+        (0x297d729d, 0x7733, 0x5616, 0xaa, 0xfc, 0x9a, 0x3c, 0x8b, 0x0d, 0x5f, 0x22));
 
     DEFINE_COMPLIANT_MEASURES_EVENT(MrmCreateResourceManager, PDT_ProductAndServicePerformance);
 
