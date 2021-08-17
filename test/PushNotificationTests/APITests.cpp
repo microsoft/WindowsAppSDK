@@ -243,5 +243,34 @@ namespace Test::PushNotifications
             RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
         }
 
+        TEST_METHOD(VerifyComActivatorSupported)
+        {
+            RunTest(L"VerifyComActivatorSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyComActivatorNotSupported)
+        {
+            RunTestUnpackaged(L"VerifyComActivatorNotSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyProtocolActivatorSupported)
+        {
+            RunTestUnpackaged(L"VerifyProtocolActivatorSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyProtocolActivatorNotSupported)
+        {
+            RunTest(L"VerifyProtocolActivatorNotSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyComAndProtocolActivatorNotSupported)
+        {
+            RunTest(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyNullActivatorNotSupported)
+        {
+            RunTest(L"VerifyNullActivatorNotSupported", testWaitTime());
+        }
     };
 }

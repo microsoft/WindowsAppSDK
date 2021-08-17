@@ -32,9 +32,12 @@
 #include <winrt/Windows.System.h>
 #include <WindowsAppSDK.Test.Package.h>
 #include <WindowsAppSDK.Test.TAEF.h>
+#include <WindowsAppSDK.Test.Bootstrap.h>
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
+
+#include <winrt/Microsoft.Windows.PushNotifications.h>
 
 namespace TP = ::Test::Packages;
 namespace TAEF = ::Test::TAEF;

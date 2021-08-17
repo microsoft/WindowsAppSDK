@@ -162,6 +162,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -182,6 +183,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -219,6 +221,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -235,6 +238,7 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -255,6 +259,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppSDK_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>Microsoft.WindowsAppSDK.Bootstrap.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
