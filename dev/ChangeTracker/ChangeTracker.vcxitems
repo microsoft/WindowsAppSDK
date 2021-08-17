@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{2f3fad1b-d3df-4866-a3a3-c2c777d55638}</ItemsProjectGuid>
+    <ItemsProjectGuid>{e15c3465-9d45-495d-92ce-b91ef45e8623}</ItemsProjectGuid>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -14,12 +14,14 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentVariableChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PathChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PathExtChangeTracker.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.idl" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentVariableChangeTracker.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PathChangeTracker.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PathExtChangeTracker.cpp" />
   </ItemGroup>
 </Project>
