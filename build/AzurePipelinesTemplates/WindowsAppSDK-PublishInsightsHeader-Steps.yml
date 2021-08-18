@@ -1,16 +1,8 @@
 parameters:
   WindowsAppSDKInsightsSourceDirectory: $(Build.SourcesDirectory)\dev\WindowsAppSDK_Insights
-  WindowsAppSDKInsightsBinariesDirectory: $(Build.SourcesDirectory)\BuildOutput
 
 steps:
-- task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.6'
-  inputs:
-    versionSpec: 5.6
-  continueOnError: true
-
 # START of copying files into their final package location.
-
 - task: CopyFiles@2
   displayName: 'copy WindowsAppSDKInsights.h into output folder'
   inputs:
@@ -19,8 +11,3 @@ steps:
       WindowsAppSDKInsights.h
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\include'
     flattenFolders: true
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
-    ArtifactName: 'FullNuget'
