@@ -12,9 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="$ext_WindowsAppSDKNupkgVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="$ext_WindowsAppSDKFoundationNupkgVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="$ext_WindowsAppSDKWinUINupkgVersion$" />
-    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="$ext_WindowsAppSDKInteractiveExperiencesNupkgVersion$" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 </Project>
