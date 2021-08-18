@@ -257,6 +257,52 @@ bool BackgroundActivationTest() // Activating application for background test.
     return true;
 }
 
+bool VerifyComActivatorSupported()
+{
+    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator);
+}
+
+bool VerifyComActivatorNotSupported()
+{
+    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator);
+}
+
+bool VerifyProtocolActivatorSupported()
+{
+    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ProtocolActivator);
+}
+
+bool VerifyProtocolActivatorNotSupported()
+{
+    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ProtocolActivator);
+}
+
+bool VerifyComAndProtocolActivatorNotSupported()
+{
+    try
+    {
+        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator | PushNotificationRegistrationOptions::ProtocolActivator);
+    }
+    catch (...)
+    {
+        return to_hresult() == E_INVALIDARG;
+    }
+    return false;
+}
+
+bool VerifyNullActivatorNotSupported()
+{
+    try
+    {
+        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::Undefined);
+    }
+    catch (...)
+    {
+        return to_hresult() == E_INVALIDARG;
+    }
+    return false;
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -271,7 +317,13 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "UnregisterActivatorNullBackgroundRegistration", &UnregisterActivatorNullBackgroundRegistration},
         { "ActivatorTest", &ActivatorTest},
         { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
-        { "BackgroundActivationTest", &BackgroundActivationTest}
+        { "BackgroundActivationTest", &BackgroundActivationTest},
+        { "VerifyComActivatorSupported", &VerifyComActivatorSupported},
+        { "VerifyComActivatorNotSupported", &VerifyComActivatorNotSupported },
+        { "VerifyProtocolActivatorSupported", &VerifyProtocolActivatorSupported},
+        { "VerifyProtocolActivatorNotSupported", &VerifyProtocolActivatorNotSupported },
+        { "VerifyComAndProtocolActivatorNotSupported", &VerifyComAndProtocolActivatorNotSupported },
+        { "VerifyNullActivatorNotSupported", &VerifyNullActivatorNotSupported }
     };
     return switchMapping;
 }
@@ -312,15 +364,24 @@ int main() try
         ::Test::Bootstrap::CleanupBootstrap();
     });
 
-
     ::Test::Bootstrap::SetupBootstrap();
 
-    PushNotificationActivationInfo info(
-        PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
-        winrt::guid(c_comServerId)); // same clsid as app manifest
+    // TODO: Register ProtocolActivator for unpackaged applications or Packaged Applications when COM activation is unsupported
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
+            winrt::guid(c_comServerId)); // same clsid as app manifest
 
-    g_appToken = PushNotificationManager::RegisterActivator(info);
-    
+        g_appToken = PushNotificationManager::RegisterActivator(info);
+    }
+    /* TODO: Register ProtocolActivator for unpackaged applications
+    else
+    {
+        PushNotificationActivationInfo info(PushNotificationRegistrationOptions::ProtocolActivator, nullptr);
+        PushNotificationManager::RegisterActivator(info);
+    }
+    */
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 

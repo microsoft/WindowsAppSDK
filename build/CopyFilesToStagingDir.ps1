@@ -40,6 +40,8 @@ PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $Full
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
 #
@@ -122,11 +124,12 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
 #
 # Native (not managed, no MSIX)
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
-
 #
 # C#/WinRT Projections
 #

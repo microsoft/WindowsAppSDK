@@ -33,6 +33,9 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+          
+          <!-- Environment Manager -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 
           <!-- AppLifecycle -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
