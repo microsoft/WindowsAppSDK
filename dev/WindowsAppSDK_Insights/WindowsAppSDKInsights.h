@@ -33,7 +33,6 @@ inline std::string load_resource_string(const char* dllName, uint32_t id)
         {
             LOG_LAST_ERROR_MSG("Unable to load resource string, id: %d", id);
         }
-        
     }
     else
     {
