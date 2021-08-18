@@ -13,12 +13,8 @@
 #include <wil/resource.h>
 #include <string>
 
-namespace Microsoft
+namespace Microsoft::WindowsAppSDK::Insights
 { 
-namespace WindowsAppSDK
-{ 
-namespace Insights
-{
 class RuntimeInformation
 {
 public:
@@ -56,9 +52,7 @@ private:
     }
 };
 
-} // namespace Insights
-} // namespace WindowsAppSDK
-} // namespace Microsoft
+} // namespace Microsoft::WindowsAppSDK::Insights
 
 
 #define _GENERIC_PARTB_FIELDS_ENABLED \

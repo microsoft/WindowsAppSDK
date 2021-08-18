@@ -98,7 +98,7 @@ PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\WindowsAppSDKInsights.h $NugetDir\include\
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\WindowsAppRuntimeInsights.h $NugetDir\include\
 #
 # Libraries (*.lib)
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $NugetDir\lib\win10-$Platform
