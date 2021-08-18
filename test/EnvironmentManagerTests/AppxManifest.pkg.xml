@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+    IgnorableNamespaces="uap mp">
+    <Identity
+      Name="Microsoft.Process.Environment.UWPTests"
+      Publisher="CN=Microsoft"
+      Version="1.0.0.0" />
+    <Properties>
+        <DisplayName>UWPTests</DisplayName>
+        <PublisherDisplayName>Microsoft</PublisherDisplayName>
+        <Logo>Assets\StoreLogo.png</Logo>
+    </Properties>
+    <Dependencies>
+        <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+        <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    </Dependencies>
+    <Resources>
+        <Resource Language="en-us" />
+    </Resources>
+    <Applications>
+        <Application Id="UWPTests" Executable="TE.ProcessHost.UAP.exe" EntryPoint="ProcessHostApplication">
+            <uap:VisualElements DisplayName="TAEF Packaged Cwa Application Host Process" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\AppList.png" Description="TAEF Packaged Cwa Application Host Process" BackgroundColor="#222222">
+                <uap:SplashScreen Image="taef.png" />
+            </uap:VisualElements>
+        </Application>
+    </Applications>
+
+    <Capabilities>
+        <rescap:Capability Name="packageManagement" />
+        <rescap:Capability Name="packageQuery" />
+    </Capabilities>
+</Package>
