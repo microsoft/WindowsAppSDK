@@ -81,9 +81,6 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$ext_WindowsAppSDKNupkgVersion$]">
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$ext_WindowsAppSDKWinUINupkgVersion$]">
-      <IncludeAssets>build</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />

@@ -27,9 +27,6 @@
   <TemplateContent>
     <CustomParameters>
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsAppSDKFoundationNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsAppSDKWinUINupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsAppSDKInteractiveExperiencesNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </CustomParameters>
     <Project File="WapProjTemplate.wapproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-managed.appxmanifest</ProjectItem>
