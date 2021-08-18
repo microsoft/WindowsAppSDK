@@ -34,10 +34,6 @@
   <ItemGroup>
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_Foundation)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_DWrite)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_WinUI)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK_InteractiveExperiences)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -69,18 +65,6 @@
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.Foundation" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
-      <ExcludeAssets>All</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.InteractiveExperiences" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
   </ItemGroup>

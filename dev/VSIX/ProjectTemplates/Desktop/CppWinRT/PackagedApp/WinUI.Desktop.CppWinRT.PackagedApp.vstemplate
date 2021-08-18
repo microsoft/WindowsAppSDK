@@ -27,9 +27,6 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|x86">
     <CustomParameters>
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsAppSDKFoundationNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsAppSDKWinUINupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$WindowsAppSDKInteractiveExperiencesNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$VCRTForwardersVersion$" Value="1.0.0" />
       <CustomParameter Name="$CppWinRTVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </CustomParameters>
