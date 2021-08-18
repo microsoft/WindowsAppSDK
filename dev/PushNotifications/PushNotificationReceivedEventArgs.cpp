@@ -23,11 +23,11 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(GetByteArrayFromBuffer(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(GetByteArrayFromBuffer(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())), m_isBIAvailable(true) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(GetByteArrayFromBuffer(args.RawNotification().ContentBytes())) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(GetByteArrayFromBuffer(args.RawNotification().ContentBytes())), m_isBIAvailable(true) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload, ULONG length) : m_rawNotification(payload), m_length(length) { }
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload, ULONG length) : m_rawNotification(payload), m_length(length), m_isBIAvailable(false) { }
 
     byte* PushNotificationReceivedEventArgs::GetByteArrayFromBuffer(winrt::Windows::Storage::Streams::IBuffer buffer)
     {
@@ -72,14 +72,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
         THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
-        // if(!IsActivatorSupported(comactivator) && value) {
-        //  platform->ActivateBackground(m_rawNotification);
-        //}
-        // else
-        // {
-        //   m_args.Cancel(value);
-        // }
-        m_args.Cancel(value);
+        if (!m_isBIAvailable && value) {
+            //  platform->ActivateBackground(m_rawNotification, m_channel);
+            //}
+            // else
+            // {
+            //   m_args.Cancel(value);
+            // }
+        }
+        else
+        {
+            m_args.Cancel(value);
+        }
     }
 }
 

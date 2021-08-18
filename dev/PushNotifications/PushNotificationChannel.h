@@ -43,8 +43,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel self_channel{ nullptr };
-
+        bool m_isBIAvailable;
         winrt::event<PushNotificationHandler> m_foregroundHandlers;
 
 

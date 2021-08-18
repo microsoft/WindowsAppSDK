@@ -27,6 +27,9 @@
     <ClInclude Include="externs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ForegroundSinkManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -41,8 +44,8 @@
     <ClCompile Include="platformfactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ClCompile Include="ForegroundSinkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

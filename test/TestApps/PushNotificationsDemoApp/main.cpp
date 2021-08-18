@@ -112,7 +112,11 @@ int main()
     
     PushNotificationChannel channel = RequestChannel();
     // Dies here?
-    
+
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+    {
+        std::cout << "Hello" << std::endl;
+    }
     std::wcout << L"Attempt to Shutdown platform (in 5 sec)" << std::endl;
     Sleep(5000);
     ULONG shutdownRes = PushNotificationManager::ShutdownPlatformManually();

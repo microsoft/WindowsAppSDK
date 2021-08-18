@@ -166,6 +166,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsLongRunningTask.Msix", "test\PushNotifications\PushNotificationsLongRunningTask.Msix\PushNotificationsLongRunningTask.Msix.vcxproj", "{C422B090-F501-4204-8068-1084B0799405}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotifications.LongRunningTask.ProxyStub", "dev\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj", "{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerNotifications", "PowerNotifications", "{E9117D76-63AC-4289-A628-AB39EF6E5D19}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PowerNotifications", "dev\PowerNotifications\PowerNotifications.vcxitems", "{B75C1B22-553C-40E4-B38E-6AB4D01FDB9D}"
@@ -707,24 +708,28 @@ Global
 		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|x86.ActiveCfg = Release|Win32
 		{13CCD7F4-66D3-4A4A-9B88-997097FCCCA9}.Release|x86.Build.0 = Release|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|ARM.ActiveCfg = Debug|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|ARM64.ActiveCfg = Debug|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x64.ActiveCfg = Debug|x64
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x64.Build.0 = Debug|x64
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x86.ActiveCfg = Debug|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Debug|x86.Build.0 = Debug|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|Any CPU.ActiveCfg = Release|Win32
+		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|ARM.ActiveCfg = Release|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|ARM64.ActiveCfg = Release|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x64.ActiveCfg = Release|x64
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x64.Build.0 = Release|x64
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x86.ActiveCfg = Release|Win32
 		{CBD95746-61CE-4F31-B6CC-C5ABF1766180}.Release|x86.Build.0 = Release|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|ARM.ActiveCfg = Debug|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|ARM64.ActiveCfg = Debug|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x64.ActiveCfg = Debug|x64
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x64.Build.0 = Debug|x64
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x86.ActiveCfg = Debug|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Debug|x86.Build.0 = Debug|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|Any CPU.ActiveCfg = Release|Win32
+		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|ARM.ActiveCfg = Release|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|ARM64.ActiveCfg = Release|Win32
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|x64.ActiveCfg = Release|x64
 		{8F2C21F1-47AB-428C-A110-EE33FD7D9493}.Release|x64.Build.0 = Release|x64

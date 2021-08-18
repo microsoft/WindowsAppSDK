@@ -1,10 +1,6 @@
 ﻿#include "pch.h"
 #include <PushNotificationsLRP_h.h>
-
 #include "platform.h"
-#include <unordered_map>
-#include <unordered_set>
-#include <algorithm>
 
 wil::unique_event g_winmainEvent(wil::EventOptions::None);
 
@@ -98,37 +94,35 @@ STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterActivator(/*[in]*
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::RegisterForegroundActivator(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();
-    // std::unordered_map<processName, std::unordered_set<IWpnForegroundSink*>> map;
-    // if(map.contains(processName)) { map[processName].insert(std::unordered_set<IWpnForegroundSink*>()); }
-    // map[processName].insert(sink);
+
+    m_foregroundSinkManager.AddSink(processName, sink);
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivator(/*[out]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR /*processName*/)
+STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::UnregisterForegroundActivator(/*[out]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();
-    // std::unordered_set<IWpnForegroundSink*> sinks = map[processName];
-    // if(sinks == nullptr) { return error };
-    // sinks.erase(sink);
-    // if(sink.empty()) { map.erase(processName) };
+
+    m_foregroundSinkManager.Remove(processName, sink);
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::InvokeForegroundHandlers(/*[in]*/ IWpnForegroundSink* sink)
+STDMETHODIMP_(HRESULT __stdcall) WpnLrpPlatformImpl::InvokeForegroundHandlers(/*[in]*/ LPCSTR processName)
 {
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.acquire();
 
-    byte payload[] = { 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x20,
+    byte samplePayload[] = { 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x20,
                         0x66, 0x72, 0x6f, 0x6d, 0x20, 0x74, 0x68, 0x65,
                             0x20, 0x4c, 0x52, 0x50, 0x21}; // Payload from the LRP!
-    sink->InvokeAll(payload, sizeof(payload));
 
+    bool foregroundActivated = m_foregroundSinkManager.InvokeForegroundHandlers(processName, samplePayload, sizeof(samplePayload));
+    //sink->InvokeAll(payload, sizeof(payload));
     return S_OK;
 }
 

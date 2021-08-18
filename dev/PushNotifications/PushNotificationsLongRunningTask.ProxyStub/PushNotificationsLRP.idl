@@ -29,7 +29,7 @@ interface IWpnLrpPlatform : IUnknown
 
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [out] GUID* appId);
 
-    HRESULT InvokeForegroundHandlers([in] IWpnForegroundSink*);
+    HRESULT InvokeForegroundHandlers([in] LPCSTR processName);
 
     // Just a Foo function for testing COM server connection. It should be deleted.
     HRESULT GetStringLength([in] LPCWSTR string, [out] ULONG* length);

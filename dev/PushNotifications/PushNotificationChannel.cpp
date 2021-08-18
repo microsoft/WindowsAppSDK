@@ -9,6 +9,8 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include <PushNotificationsLRP_h.h>
 #include <iostream>
+#include <PushNotificationManager.h>
+
 namespace winrt::Windows
 {
     using namespace winrt::Windows::Networking::PushNotifications;
@@ -21,7 +23,7 @@ namespace winrt::Microsoft
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel) : m_channel(channel) {}
+    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel) : m_channel(channel), m_isBIAvailable(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger)) {}
 
     winrt::Windows::Uri PushNotificationChannel::Uri()
     {
@@ -53,7 +55,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             wil::CoCreateInstance<WpnLrpPlatform,
             IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
-        reunionEndpoint->InvokeForegroundHandlers(this);
+        char processName[1024];
+        GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+
+        reunionEndpoint->InvokeForegroundHandlers(processName);
 
     }
 
@@ -64,46 +69,57 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        // if !IsActivatorSupported(ComActivator)
-        wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
-            wil::CoCreateInstance<WpnLrpPlatform,
-            IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
-
-        m_foregroundHandlers.add(handler);
-
-        char processName[1024];
-        GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
-
-        HRESULT hr = reunionEndpoint->RegisterForegroundActivator(this, processName);
-
-        return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
+        if (m_isBIAvailable) // Should be !m_isBIAvailable <- just for testing
         {
-            auto strong = weak_self.get();
-            if (strong)
-            {
-                handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
-            };
-        });
+            wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+                wil::CoCreateInstance<WpnLrpPlatform,
+                IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
+            winrt::event_token token = m_foregroundHandlers.add(handler);
+
+            char processName[1024];
+            GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+
+            THROW_IF_FAILED(reunionEndpoint->RegisterForegroundActivator(this, processName));
+            return token;
+        }
+        else
+        {
+            return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
+            {
+                auto strong = weak_self.get();
+                if (strong)
+                {
+                    handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
+                };
+            });
+        }
     }
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        // if !IsActivatorSupported(ComActivator) { m_event.remove(token); }
-
-        m_channel.PushNotificationReceived(token);
+        if (!m_isBIAvailable)
+        {
+            m_foregroundHandlers.remove(token);
+        }
+        else
+        {
+            m_channel.PushNotificationReceived(token);
+        }
     }
 
-    /*
-    ~PushNotificationChannel::PushNotificationChannel() noexcept
+    PushNotificationChannel::~PushNotificationChannel() noexcept
     {
-        // if !IsActivatorSupported(ComActivator)
-        /*wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
+        if (m_isBIAvailable)
+        {
+            wil::com_ptr<IWpnLrpPlatform> reunionEndpoint{
             wil::CoCreateInstance<WpnLrpPlatform,
-            IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };*/
-            //char processName[1024];
-            //GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+            IWpnLrpPlatform>(CLSCTX_LOCAL_SERVER) };
 
-            // reunionEndpoint->UnregisterForegroundActivator(this, processName);
-    //}
+            char processName[1024];
+            GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+
+            reunionEndpoint->UnregisterForegroundActivator(this, processName);
+        }
+    }
 }

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ForegroundSinkManager.h"
 
 struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) WpnLrpPlatformImpl WrlFinal :
     Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, IWpnLrpPlatform, Microsoft::WRL::FtmBase>
@@ -23,7 +24,8 @@ struct __declspec(uuid("330EC755-31F2-40A7-977D-B0ABB1E1E52E")) WpnLrpPlatformIm
 
     STDMETHOD(RegisterFullTrustApplication)(/*[in]*/ PCWSTR processName, /*[out]*/ GUID* appId);
 
-    STDMETHOD(InvokeForegroundHandlers)(/*[in]*/ IWpnForegroundSink* sink);
+    // Function to trigger foreground handlers from WindowsAppSDK, remove it before product code
+    STDMETHOD(InvokeForegroundHandlers)(/*[in]*/ LPCSTR processName);
 
     // Foo function, remove it along with its PushNotificationManager Foo API
     STDMETHOD(GetStringLength)(/*[in]*/ PCWSTR string, /*[out]*/ ULONG* length);
@@ -40,4 +42,6 @@ private:
     bool m_shutdown = false;
 
     // Here we also define the Platform components i.e. the map wrappings
+    ForegroundSinkManager m_foregroundSinkManager;
+
 };
