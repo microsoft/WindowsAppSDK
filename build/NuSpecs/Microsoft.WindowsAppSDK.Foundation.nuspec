@@ -11,5 +11,9 @@
          <projectUrl>https://aka.ms/windowsappsdk</projectUrl>
          <copyright>© Microsoft Corporation. All rights reserved.</copyright>
          <tags>Microsoft Resources Native Windows WindowsAppSDK</tags>
+
+         <dependencies>
+             <dependency id="Microsoft.Windows.ImplementationLibrary" version="[1.0.210803,)" />
+         </dependencies>
      </metadata>
 </package>
