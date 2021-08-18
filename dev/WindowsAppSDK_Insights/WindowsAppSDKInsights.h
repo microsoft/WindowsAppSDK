@@ -13,53 +13,61 @@
 #include <wil/resource.h>
 #include <string>
 
-#define _WINDOWSAPPSDK_PACKAGE_VER_RESOURCEID             10000
-#define _WINDOWSAPPSDK_EXPERIMENTATION_FLAG_RESOURCEID    10001
-
-#define INSIGHTSRESOURCEDLL "Microsoft.WindowsAppSDK.Insights.Resource.dll"
-
-inline std::string load_resource_string(const char* dllName, uint32_t id)
+namespace Microsoft
+{ 
+namespace WindowsAppSDK
+{ 
+namespace Insights
 {
-    wil::unique_hmodule module(::LoadLibraryA(dllName));
-
-    if (module)
+class RuntimeInformation
+{
+public:
+    static std::string WindowsAppSDKPackageVersion()
     {
-        char buffer[256];
-        if (0 < LoadStringA(module.get(), id, buffer, ARRAYSIZE(buffer)))
-        {
-            return buffer;
-        }
-        else
-        {
-            LOG_LAST_ERROR_MSG("Unable to load resource string, id: %d", id);
-        }
-    }
-    else
-    {
-        LOG_LAST_ERROR_MSG("Unable to load dll: %s", dllName);
+        const uint32_t c_PackageVersionResourceId{ 10000 };
+        static std::string version{ LoadStringFromResource(c_PackageVersionResourceId) };
+        return version;
     }
 
-    return {};
-}
+    static std::string WindowsAppSDKExperimentationLevel()
+    {
+        const uint32_t c_ExperimentationLevelResourceId{ 10001 };
+        static std::string experimentationLevel{ LoadStringFromResource(c_ExperimentationLevelResourceId) };
+        return experimentationLevel;
+    }
 
-static char* WINDOWSAPPSDK_PACKAGE_VER()
-{
-    static std::string packageVer = load_resource_string(INSIGHTSRESOURCEDLL, _WINDOWSAPPSDK_PACKAGE_VER_RESOURCEID);
-    return const_cast<char*>(packageVer.c_str());
-}
+private:
+    static inline std::string LoadStringFromResource(uint32_t id)
+    {
+        static wil::unique_hmodule module = std::move(LoadResourceModule());
+        const uint32_t c_ResourceMaxLength{ 100 };
+        char resourceValue[c_ResourceMaxLength]{};
 
-static char* WINDOWSAPPSDK_EXPERIMENTATION_LEVEL()
-{
-    static std::string experimentationLevel = load_resource_string(INSIGHTSRESOURCEDLL, _WINDOWSAPPSDK_EXPERIMENTATION_FLAG_RESOURCEID);
-    return const_cast<char*>(experimentationLevel.c_str());
-}
+        THROW_IF_WIN32_BOOL_FALSE_MSG(::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)), "Failed to load resource string. id: %d", id);
+        return resourceValue;
+    }
+
+    static wil::unique_hmodule LoadResourceModule()
+    {
+        const PCWSTR c_ResourceDllName{ L"Microsoft.WindowsAppSDK.Insights.Resource.dll" };
+        wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_ResourceDllName));
+        THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(GetLastError()), resourceDllHandle, "Unable to load resource dll. %ws", c_ResourceDllName);
+        return resourceDllHandle;
+    }
+};
+
+} // namespace Insights
+} // namespace WindowsAppSDK
+} // namespace Microsoft
+
 
 #define _GENERIC_PARTB_FIELDS_ENABLED \
         TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
-        TraceLoggingString(WINDOWSAPPSDK_PACKAGE_VER(), "SDKVersion"), \
-        TraceLoggingString(WINDOWSAPPSDK_EXPERIMENTATION_LEVEL(), "SDKExperimentationLevel"), \
+        TraceLoggingString(Microsoft::WindowsAppSDK::Insights::RuntimeInformation::WindowsAppSDKPackageVersion().c_str(), "Version"), \
+        TraceLoggingString(Microsoft::WindowsAppSDK::Insights::RuntimeInformation::WindowsAppSDKExperimentationLevel().c_str(), "WindowsAppSDKChannel"), \
         TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
         TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
 #include <wil/tracelogging.h>
+
 #endif // __WINDOWSAPPSDKINSIGHTS_INCLUDED

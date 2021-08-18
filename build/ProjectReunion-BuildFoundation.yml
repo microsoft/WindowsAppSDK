@@ -130,11 +130,6 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishWindowsAppSDKInsights
-  pool: $(ProjectReunionBuildPool)
-  steps:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-PublishInsightsHeader-Steps.yml
-
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
   strategy:
