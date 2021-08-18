@@ -145,9 +145,9 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-BuildAndPublishInsights-Steps.yml
+  - template: AzurePipelinesTemplates/WindowsAppSDK-PublishInsightsHeader-Steps.yml
     parameters:
-      buildJobName: 'BuildAndPublishWindowsAppSDKInsights'
+      buildJobName: 'PublishWindowsAppSDKInsights'
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
