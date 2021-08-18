@@ -6,7 +6,7 @@
         <RestoreSources Condition="'$(RestoreSources)'==''">
             https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
         </RestoreSources>
-        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210211.2</CppWinRTVersion>
+        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210806.1</CppWinRTVersion>
         <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">0.5.7</WindowsAppSdkVersion>
     </PropertyGroup>
 

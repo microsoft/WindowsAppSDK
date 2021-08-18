@@ -23,7 +23,7 @@
     <DotNetCoreSdkVersion>5.0.302</DotNetCoreSdkVersion>
     <DotNetCoreRuntimeVersion>5.0.8</DotNetCoreRuntimeVersion>
     <DetoursVersion>4.0.1</DetoursVersion>
-    <CppWinRTVersion>2.0.191217.1</CppWinRTVersion>
+    <CppWinRTVersion>2.0.210806.1</CppWinRTVersion>
     <MicrosoftSourceLinkAzureReposVersion>1.0.0</MicrosoftSourceLinkAzureReposVersion>
     <VCRTForwardersVersion>1.0.6</VCRTForwardersVersion>
     <WebView2Version>0.9.573-internal</WebView2Version>
