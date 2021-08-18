@@ -4,6 +4,7 @@
 #include "pch.h"
 #include <TestDef.h>
 #include "MockBackgroundTaskInstance.h"
+#include <TlHelp32.h>
 
 #include <NotificationsLongRunningProcess_h.h>
 
@@ -87,6 +88,90 @@ namespace Test::PushNotifications
                 [&]() { VERIFY_NO_THROW(CoUninitialize()); });
 
             VERIFY_NO_THROW(winrt::create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL));
+
+            VerifyLRP_IsRunning(true);
+
+            // LRP should be up for 30 seconds. We don't expect any app to be tracked at this point.
+            Sleep(30000);
+
+            // Verify the LRP is not running.
+            VerifyLRP_IsRunning(false);
+        }
+
+        TEST_METHOD(LaunchLRP_FromStartupTask)
+        {
+            STARTUPINFO startupInfo = { 0 };
+            wil::unique_process_information processInfo;
+
+            ZeroMemory(&startupInfo, sizeof(startupInfo));
+            startupInfo.cb = sizeof(startupInfo);
+
+            // Build the Solution OutDir path where the Startup Task exe is.
+            auto startupTaskExePath = Test::FileSystem::GetSolutionOutDirPath();
+            startupTaskExePath /= Test::Packages::PushNotificationsLongRunningTask::c_PackageDirName;
+            startupTaskExePath += L".Msix";
+            startupTaskExePath /= L"msix";
+            startupTaskExePath /= L"PushNotificationsLongRunningTask.StartupTask.exe";
+
+            BOOL wasProcessCreated = CreateProcess(
+                startupTaskExePath.c_str(),
+                nullptr, // command line options
+                nullptr, // process attributes
+                nullptr, // thread attributes
+                FALSE,   // inherit handles
+                NORMAL_PRIORITY_CLASS, // creation flags
+                nullptr, // lpEnvironment
+                nullptr, // current directory for the process
+                &startupInfo,
+                &processInfo
+            );
+
+            if (wasProcessCreated == FALSE)
+            {
+                VERIFY_SUCCEEDED(GetLastError());
+            }
+
+            // Wait for the process to come up and be captured in the snapshot from verification step.
+            Sleep(1000);
+            VerifyLRP_IsRunning(true);
+
+            // LRP should be up for 30 seconds. We don't expect any app to be tracked at this point.
+            Sleep(30000);
+
+            // Verify the LRP is not running.
+            VerifyLRP_IsRunning(false);
+        }
+
+        void VerifyLRP_IsRunning(bool isRunning)
+        {
+            wil::unique_handle processesSnapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
+            VERIFY_IS_NOT_NULL(processesSnapshot.get());
+
+            PROCESSENTRY32 processEntry = { 0 };
+            processEntry.dwSize = sizeof(processEntry);
+
+            BOOL result = Process32First(processesSnapshot.get(), &processEntry);
+            while (result != FALSE)
+            {
+                if (wcscmp(L"PushNotificationsLongRunningTask.exe", processEntry.szExeFile) == 0)
+                {
+                    VERIFY_IS_TRUE(isRunning);
+                    DWORD processId = processEntry.th32ProcessID;
+
+                    wil::unique_handle longRunningProcessHandle(OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processId));
+                    DWORD exitCode = 0;
+                    BOOL exitCodeProcess = GetExitCodeProcess(longRunningProcessHandle.get(), &exitCode);
+
+                    VERIFY_SUCCEEDED(exitCodeProcess == FALSE ? GetLastError() : S_OK);
+                    VERIFY_ARE_EQUAL(exitCode, STILL_ACTIVE);
+
+                    return;
+                }
+
+                result = Process32Next(processesSnapshot.get(), &processEntry);
+            }
+
+            VERIFY_IS_FALSE(isRunning);
         }
 
     };
