@@ -44,6 +44,7 @@ PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $F
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
+
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
 PublishFile $FullBuildOutput\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.dll $FullPublishDir\DynamicDependency.DataStore\
@@ -97,6 +98,7 @@ PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $NugetDir\include
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppSDK_DLL\WindowsAppRuntimeInsights.h $NugetDir\include\
 #
 # Libraries (*.lib)
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $NugetDir\lib\win10-$Platform
