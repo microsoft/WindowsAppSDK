@@ -655,6 +655,6 @@ namespace winrt::Microsoft::Windows::System::implementation
     {
         const auto deleteResult{ RegDeleteValue(hkey, name.c_str()) };
 
-        THROW_IF_WIN32_ERROR(deleteResult, (deleteResult != ERROR_SUCCESS) && (deleteResult != ERROR_FILE_NOT_FOUND));
+        THROW_HR_IF(HRESULT_FROM_WIN32(deleteResult), (deleteResult != ERROR_SUCCESS) && (deleteResult != ERROR_FILE_NOT_FOUND));
     }
 }
