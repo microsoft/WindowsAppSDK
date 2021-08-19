@@ -52,6 +52,7 @@ all: build
 $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir) md $(WorkDir)
     @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml
+    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
     @if not exist $(WorkDir)\Assets md $(WorkDir)\Assets >NUL
     @copy /Y $(ProjectDir)Assets\* $(WorkDir)\Assets\* >NUL
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL

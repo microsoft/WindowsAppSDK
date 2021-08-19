@@ -128,6 +128,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+	  <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -147,6 +148,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+	  <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -161,6 +163,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+	  <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -180,6 +183,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+	  <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -194,6 +198,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+	  <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -213,6 +218,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+	  <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -238,6 +244,9 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" />
+    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" />
+    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -246,5 +255,8 @@
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets'))" />
   </Target>
 </Project>
