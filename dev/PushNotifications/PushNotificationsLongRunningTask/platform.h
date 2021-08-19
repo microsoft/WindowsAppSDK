@@ -1,6 +1,13 @@
 ﻿#pragma once
 
 #include "../PushNotifications-Constants.h"
+#include <winrt/base.h>
+
+struct AppInfo
+{
+    winrt::guid guid;
+    std::wstring processName;
+};
 
 struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRunningPlatformImpl WrlFinal :
 Microsoft::WRL::RuntimeClass<
@@ -24,11 +31,15 @@ Microsoft::WRL::RuntimeClass<
 
 private:
 
+    void PopulateAppList();
+
     void SetupTimer();
 
     void CancelTimer();
 
     wil::srwlock m_lock;
+
+    std::vector<AppInfo> m_appList;
 
     bool m_initialized = false;
     bool m_shutdown = false;

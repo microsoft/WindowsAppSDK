@@ -19,11 +19,78 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     // If we realize that we need to persist the LRP, timer should be canceled.
     SetupTimer();
 
-    /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
+    PopulateAppList();
+    if (m_appList.size() > 0)
+    {
+        CancelTimer();
 
-    /* TODO: Load platform components */
+        /* TODO: Load platform components */
+    }
 
     m_initialized = true;
+}
+
+// TODO: Verify UDK list and make sure we have apps to be tracked
+void NotificationsLongRunningPlatformImpl::PopulateAppList()
+{
+    /* TODO: Call the UDK to retrieve the list of valid apps from Notifications platform */
+
+    wil::unique_hkey appListRootKey;
+
+    THROW_IF_WIN32_ERROR(RegOpenKeyEx(
+        HKEY_CURRENT_USER,
+        L"",
+        0,
+        KEY_READ,
+        &appListRootKey));
+
+    DWORD appCount = 0;
+    DWORD maximumSubkeyLength = 0;
+    THROW_IF_WIN32_ERROR(RegQueryInfoKeyW(
+        appListRootKey.get(), nullptr, nullptr, nullptr,
+        &appCount, &maximumSubkeyLength, nullptr, nullptr,
+        nullptr, nullptr, nullptr, nullptr));
+
+    if (appCount > 0)
+    {
+        for (ULONG index = 0; index < appCount; index++)
+        {
+            WCHAR appId[1024] = {};
+
+            THROW_IF_WIN32_ERROR(RegEnumKeyExW(
+                appListRootKey.get(),
+                index,
+                appId,
+                &maximumSubkeyLength,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr));
+
+            wil::unique_hkey appIdKey;
+
+            THROW_IF_WIN32_ERROR(RegOpenKeyEx(
+                HKEY_CURRENT_USER,
+                L"" /* + appId */,
+                0,
+                KEY_READ,
+                &appIdKey));
+
+            DWORD valueType = REG_SZ;
+
+            THROW_IF_WIN32_ERROR(RegQueryValueExW(
+                appIdKey.get(),
+                L"ProcessName",
+                nullptr,
+                &valueType,
+                nullptr, // byte ptr
+                0)); // byte ptr size
+
+            // Convert appIdKey into guid
+            winrt::guid appIdAsGuid = winrt::guid(std::wstring_view(L""));
+            AppInfo appInfo = { appIdAsGuid, nullptr };
+        }
+    }
 }
 
 void NotificationsLongRunningPlatformImpl::Shutdown()
@@ -76,7 +143,7 @@ void NotificationsLongRunningPlatformImpl::SetupTimer()
 
 void NotificationsLongRunningPlatformImpl::CancelTimer()
 {
-    auto lock = m_lock.lock_exclusive();
+    // Already guarded by the lock in Initialize()
     m_timer.reset();
 }
 
