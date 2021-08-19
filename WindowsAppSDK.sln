@@ -34,7 +34,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycleTestApp", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{6CD01EF6-D4A4-4801-ADCF-344CF87FF942}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency", "dev\DynamicDependency\DynamicDependency.vcxitems", "{BF055A59-0919-4E34-9B76-DD055495CC5A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{6F6B0096-819C-4C12-885F-A20A742F516F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency", "dev\DynamicDependency\API\DynamicDependency.vcxitems", "{BF055A59-0919-4E34-9B76-DD055495CC5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}"
 EndProject
@@ -209,7 +211,7 @@ Global
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
-		dev\DynamicDependency\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
+		dev\DynamicDependency\API\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
@@ -696,7 +698,8 @@ Global
 		{B567FE2E-3A03-48D0-B2B5-760CDEC35891} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{7C502995-59C3-483B-86BA-815985353633} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{6CD01EF6-D4A4-4801-ADCF-344CF87FF942} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
-		{BF055A59-0919-4E34-9B76-DD055495CC5A} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
+		{6F6B0096-819C-4C12-885F-A20A742F516F} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
+		{BF055A59-0919-4E34-9B76-DD055495CC5A} = {6F6B0096-819C-4C12-885F-A20A742F516F}
 		{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{6BAC3B29-3A6B-4B3F-A9AB-A316AA4E48ED} = {17B1F036-8FC3-49E6-9464-0C1F96CEAEB9}
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
