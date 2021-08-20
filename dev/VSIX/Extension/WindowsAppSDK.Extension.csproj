@@ -22,7 +22,7 @@
     <StartAction>Program</StartAction>
     <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
-    <VsixManifestSource>source.extension.vsixmanifest</VsixManifestSource>
+    <VsixManifestSource>$(Deployment)\All\source.extension.vsixmanifest</VsixManifestSource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />

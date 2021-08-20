@@ -8,7 +8,7 @@
     <ProjectGuid>{EBCE08A8-372E-47B8-88C4-24EEA650C44A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WindowsAppSDK.Extension</RootNamespace>
+    <RootNamespace>WindowsAppSDK.Cs.Extension</RootNamespace>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'!='true'">WindowsAppSDK.Cs.Extension</AssemblyName>
     <AssemblyName Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">WindowsAppSDK.Cs.Extension.Experimental</AssemblyName>
     <TargetFramework>net472</TargetFramework>
@@ -22,7 +22,7 @@
     <StartAction>Program</StartAction>
     <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
-    <VsixManifestSource>source.extension.vsixmanifest</VsixManifestSource>
+    <VsixManifestSource>$(Deployment)\Cs\source.extension.vsixmanifest</VsixManifestSource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
