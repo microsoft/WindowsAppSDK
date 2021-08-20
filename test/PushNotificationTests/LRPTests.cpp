@@ -89,10 +89,12 @@ namespace Test::PushNotifications
 
             VERIFY_NO_THROW(winrt::create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL));
 
-            VerifyLRP_IsRunning(true);
-
-            // LRP should be up for 30 seconds. We don't expect any app to be tracked at this point.
-            Sleep(30000);
+            // Poll the app status every second. It should be alive for 5 seconds.
+            for (int i = 0; i < 5; i++)
+            {
+                VerifyLRP_IsRunning(true);
+                Sleep(1000);
+            }
 
             // Verify the LRP is not running.
             VerifyLRP_IsRunning(false);
@@ -133,10 +135,13 @@ namespace Test::PushNotifications
 
             // Wait for the process to come up and be captured in the snapshot from verification step.
             Sleep(1000);
-            VerifyLRP_IsRunning(true);
 
-            // LRP should be up for 30 seconds. We don't expect any app to be tracked at this point.
-            Sleep(30000);
+            // Poll the app status every second. It should be alive for 5 seconds.
+            for (int i = 0; i < 5; i++)
+            {
+                VerifyLRP_IsRunning(true);
+                Sleep(1000);
+            }
 
             // Verify the LRP is not running.
             VerifyLRP_IsRunning(false);

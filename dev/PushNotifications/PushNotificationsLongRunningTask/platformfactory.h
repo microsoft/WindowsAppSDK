@@ -2,7 +2,7 @@
 
 struct NotificationsLongRunningProcessFactory WrlFinal : public Microsoft::WRL::ClassFactory<>
 {
-    HRESULT RuntimeClassInitialize();
+    HRESULT RuntimeClassInitialize() noexcept;
 
     IFACEMETHODIMP CreateInstance(
         _In_opt_ IUnknown* outer,

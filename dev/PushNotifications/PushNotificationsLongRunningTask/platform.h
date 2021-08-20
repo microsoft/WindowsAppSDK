@@ -10,11 +10,11 @@ Microsoft::WRL::RuntimeClass<
 {
     void Initialize();
 
-    void Shutdown();
+    void Shutdown() noexcept;
 
-    void SignalEvent();
+    void SignalWinMainEvent();
 
-    void WaitForEvent();
+    void WaitForWinMainEvent();
 
     /* IWpnLrpPlatform functions */
 
@@ -24,9 +24,9 @@ Microsoft::WRL::RuntimeClass<
 
 private:
 
-    void SetupTimer();
+    void SetupShutdownTimer();
 
-    void CancelTimer();
+    void CancelShutdownTimer();
 
     wil::srwlock m_lock;
 

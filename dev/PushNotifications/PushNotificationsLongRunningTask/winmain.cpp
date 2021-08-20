@@ -46,7 +46,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
 
     // Wait returns if the platform realizes there are no more apps to be tracked.
     // It also returns if the timer initialized at the process start fires (see NotificationsLongRunningPlatformImpl::Initialize).
-    platform->WaitForEvent();
+    platform->WaitForWinMainEvent();
 
     RETURN_IF_FAILED(module.UnregisterCOMObject(nullptr, &cookie, 1));
 

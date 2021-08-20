@@ -15,9 +15,9 @@ void NotificationsLongRunningPlatformImpl::Initialize()
         return;
     }
 
-    // Schedule event signaling after 30 seconds. This is in case we don't have any apps to track in the LRP.
+    // Schedule event signaling after 5 seconds. This is in case we don't have any apps to track in the LRP.
     // If we realize that we need to persist the LRP, timer should be canceled.
-    SetupTimer();
+    SetupShutdownTimer();
 
     /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
 
@@ -26,7 +26,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     m_initialized = true;
 }
 
-void NotificationsLongRunningPlatformImpl::Shutdown()
+void NotificationsLongRunningPlatformImpl::Shutdown() noexcept
 {
     auto lock = m_lock.lock_exclusive();
     if (m_shutdown)
@@ -39,17 +39,17 @@ void NotificationsLongRunningPlatformImpl::Shutdown()
     m_shutdown = true;
 }
 
-void NotificationsLongRunningPlatformImpl::SignalEvent()
+void NotificationsLongRunningPlatformImpl::SignalWinMainEvent()
 {
     m_event.SetEvent();
 }
 
-void NotificationsLongRunningPlatformImpl::WaitForEvent()
+void NotificationsLongRunningPlatformImpl::WaitForWinMainEvent()
 {
     m_event.wait();
 }
 
-void NotificationsLongRunningPlatformImpl::SetupTimer()
+void NotificationsLongRunningPlatformImpl::SetupShutdownTimer()
 {
     // Already guarded by the lock in Initialize()
     m_timer.reset(CreateThreadpoolTimer(
@@ -59,7 +59,7 @@ void NotificationsLongRunningPlatformImpl::SetupTimer()
 
             if (platformImpl != nullptr)
             {
-                platformImpl->SignalEvent();
+                platformImpl->SignalWinMainEvent();
             }
         },
         this,
@@ -67,16 +67,15 @@ void NotificationsLongRunningPlatformImpl::SetupTimer()
 
     THROW_LAST_ERROR_IF_NULL(m_timer);
 
-    // Negative times in SetThreadpoolTimer are relative. Allow 30 seconds to fire.
+    // Negative times in SetThreadpoolTimer are relative. Allow 5 seconds to fire.
     FILETIME dueTime{};
-    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(30000 * 10000);
+    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(5000 * 10000);
 
     SetThreadpoolTimer(m_timer.get(), &dueTime, 0, 0);
 }
 
-void NotificationsLongRunningPlatformImpl::CancelTimer()
+void NotificationsLongRunningPlatformImpl::CancelShutdownTimer()
 {
-    auto lock = m_lock.lock_exclusive();
     m_timer.reset();
 }
 
