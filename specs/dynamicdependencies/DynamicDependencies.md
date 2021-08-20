@@ -51,6 +51,7 @@ to use packaged content.
     - [6.1.1. MsixDynamicDependency.h](#611-msixdynamicdependencyh)
     - [6.1.2. MddBootstrap.h](#612-mddbootstraph)
     - [6.1.3. MddLifetimeManagement.h](#613-mddlifetimemanagementh)
+    - [6.1.4. Microsoft.Windows.ApplicationModel.DynamicDependency (C#)](#614-microsoftwindowsapplicationmodeldynamicdependency-c)
   - [6.2. WinRT API](#62-winrt-api)
 - [7. Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
   - [7.1. Frequently Asked Questions (FAQ)](#71-frequently-asked-questions-faq)
@@ -794,6 +795,7 @@ Samples illustrating the DynamicDependency APIs
 - [Sample 6](sample-6.md) - LolzKitten Installer / Uninstaller defining a 32bit PackageDependency [\[Win32\]](sample-6.md#win32) [\[WinRT\]](sample-6.md#winrt)
 - [Sample 7](sample-7.md) - LolzKitten app ordering Packages in PackageGraph [\[Win32\]](sample-7.md#win32) [\[WinRT\]](sample-7.md#winrt)
 - [Sample 8](sample-8.md) - LolzKitten app ordering Packages in PackageGraph with prepend [\[Win32\]](sample-8.md#win32) [\[WinRT\]](sample-8.md#winrt)
+- [Sample B.1](sample-b.1.md) - HelloWorld console app using the Boostrap API [\[Win32\]](sample-b.1.md#win32) [\[C#\]](sample-b.1.md#cs) [\[C# (no throw)\]](sample-b.1.md#cs_nothrow)
 
 # 5. Remarks
 
@@ -1250,6 +1252,9 @@ STDAPI MddGetResolvedPackageFullNameForPackageDependency(
 STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId);
+
+/// Return the package graph's current generation id.
+STDAPI_(UINT32) MddGetGenerationId() noexcept;
 ```
 
 ### 6.1.2. MddBootstrap.h
@@ -1257,7 +1262,7 @@ STDAPI MddGetIdForPackageDependencyContext(
 This header contains the Bootstrap API
 
 ```c++
-/// Iniitalize the calling process to use Windows App SDK's framework package.
+/// Initialize the calling process to use Windows App SDK's framework package.
 ///
 /// Find a Windows App SDK framework package meeting the criteria and make it available
 /// for use by the current process. If multiple packages meet the criteria the best
@@ -1287,6 +1292,231 @@ This header contains the Lifetime Management API
 ///
 /// A DDLM package can be removed if it's not in-use and a newer version is available.
 STDAPI MddLifetimeManagementGC() noexcept;
+```
+
+### 6.1.4. Microsoft.Windows.ApplicationModel.DynamicDependency (C#)
+
+This C# assembly contains the Bootstrap API for C#
+
+```c#
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Runtime.InteropServices;
+
+namespace Microsoft.Windows.ApplicationModel.DynamicDependency
+{
+    // The version of an MSIX package. This is logically `Major.Minor.Build.Revision` and can be expressed as...
+    // * individual `ushort` values (uint16)
+    // * an unsigned `ulong` value (uint64)
+    // * a dot-string notation ("major.minor.build.revision")
+    public struct PackageVersion
+    {
+        public ushort Major;
+        public ushort Minor;
+        public ushort Build;
+        public ushort Revision;
+
+        // Create an instance with the value `major.0.0.0`.
+        public PackageVersion(ushort major) :
+            this(major, 0, 0, 0)
+        {
+        }
+
+        // Create an instance with the value `major.minor.0.0`.
+        public PackageVersion(ushort major, ushort minor) :
+            this(major, minor, 0, 0)
+        {
+        }
+
+        // Create an instance with the value `major.minor.build.0`.
+        public PackageVersion(ushort major, ushort minor, ushort build) :
+            this(major, minor, build, 0)
+        {
+        }
+
+        // Create an instance with the value `major.minor.build.revision`.
+        public PackageVersion(ushort major, ushort minor, ushort build, ushort revision)
+        {
+            Major = major;
+            Minor = minor;
+            Build = build;
+            Revision = revision;
+        }
+
+        // Create an instance from a version as a uint64.
+        public PackageVersion(ulong version) :
+            this((ushort)(version >> 48), (ushort)(version >> 32), (ushort)(version >> 16), (ushort)version)
+        {
+        }
+
+        // Return the version as a uint64.
+        public ulong ToVersion()
+        {
+            return (((ulong)Major) << 48) | (((ulong)Minor) << 32) | (((ulong)Build) << 16) | ((ulong)Revision);
+        }
+
+        // Return the string as a formatted value "major.minor.build.revision".
+        public override string ToString()
+        {
+            return $"{Major}.{Minor}.{Build}.{Revision}";
+        }
+    };
+
+    internal static class NativeMethods
+    {
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", EntryPoint = "MddBootstralInitialize", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
+        internal static extern void MddBootstrapInitialize_Throw(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
+
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        internal static extern int MddBootstrapInitialize(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
+
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", ExactSpelling = true)]
+        internal static extern void MddBootstrapShutdown();
+    }
+
+    // The Windows App SDK bootstrap initialization API. This class throws exceptions on error.
+    //
+    // @see Bootstrap_NoThrow
+    public class Bootstrap
+    {
+        /// Initialize the calling process to use Windows App SDK's framework package.
+        ///
+        /// Find a Windows App SDK framework package meeting the criteria and make it available
+        /// for use by the current process. If multiple packages meet the criteria the best
+        /// candidate is selected.
+        ///
+        /// This is equivalent to `Initialize(majorMinorVersion, null, new PackageVersion())`.
+        ///
+        /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+        /// @see Initialize(uint, string)
+        /// @see Initialize(uint, string, PackageVersion)
+        /// @see Shutdown()
+        public static void Initialize(uint majorMinorVersion)
+        {
+            Initialize(majorMinorVersion, null);
+        }
+
+        /// Initialize the calling process to use Windows App SDK's framework package.
+        ///
+        /// Find a Windows App SDK framework package meeting the criteria and make it available
+        /// for use by the current process. If multiple packages meet the criteria the best
+        /// candidate is selected.
+        ///
+        /// This is equivalent to `Initialize(majorMinorVersion, versionTag, new PackageVersion())`.
+        ///
+        /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+        /// @param versionTag version tag (if any), e.g. "preview1".
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string, PackageVersion)
+        /// @see Shutdown()
+        public static void Initialize(uint majorMinorVersion, string versionTag)
+        {
+            Initialize(majorMinorVersion, versionTag, new PackageVersion());
+        }
+
+        /// Initialize the calling process to use Windows App SDK's framework package.
+        ///
+        /// Find a Windows App SDK framework package meeting the criteria and make it available
+        /// for use by the current process. If multiple packages meet the criteria the best
+        /// candidate is selected.
+        ///
+        /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+        /// @param versionTag version tag (if any), e.g. "preview1".
+        /// @param minVersion the minimum version to use
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string)
+        /// @see Shutdown()
+        public static void Initialize(uint majorMinorVersion, string versionTag, PackageVersion minVersion)
+        {
+            NativeMethods.MddBootstrapInitialize_Throw(majorMinorVersion, versionTag, minVersion);
+        }
+
+        /// Undo the changes made by Initialize().
+        ///
+        /// @warning Packages made available via `Initialize()` and
+        ///          the Dynamic Dependencies API should not be used after this call.
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string)
+        /// @see Initialize(uint, string, PackageVersion)
+        public static void Shutdown()
+        {
+            NativeMethods.MddBootstrapShutdown();
+        }
+    }
+
+    // The Windows App SDK bootstrap initialization API. This class returns error as an HRESULT
+    // (>=0 on success, <0 on error).
+    //
+    // @see Bootstrap
+    public class Bootstrap_NoThrow
+    {
+        /// Initialize the calling process to use Windows App SDK's framework package.
+        ///
+        /// Find a Windows App SDK framework package meeting the criteria and make it available
+        /// for use by the current process. If multiple packages meet the criteria the best
+        /// candidate is selected.
+        ///
+        /// This is equivalent to `Initialize(majorMinorVersion, null, new PackageVersion())`.
+        ///
+        /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+        /// @see Initialize(uint, string)
+        /// @see Initialize(uint, string, PackageVersion)
+        /// @see Shutdown()
+        public static int Initialize(uint majorMinorVersion)
+        {
+            return Initialize(majorMinorVersion, null);
+        }
+
+        /// Initialize the calling process to use Windows App SDK's framework package.
+        ///
+        /// Find a Windows App SDK framework package meeting the criteria and make it available
+        /// for use by the current process. If multiple packages meet the criteria the best
+        /// candidate is selected.
+        ///
+        /// This is equivalent to `Initialize(majorMinorVersion, versionTag, new PackageVersion())`.
+        ///
+        /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+        /// @param versionTag version tag (if any), e.g. "preview1".
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string, PackageVersion)
+        /// @see Shutdown()
+        public static int Initialize(uint majorMinorVersion, string versionTag)
+        {
+            var minVersion = new PackageVersion();
+            return Initialize(majorMinorVersion, versionTag, minVersion);
+        }
+
+        /// Initialize the calling process to use Windows App SDK's framework package.
+        ///
+        /// Find a Windows App SDK framework package meeting the criteria and make it available
+        /// for use by the current process. If multiple packages meet the criteria the best
+        /// candidate is selected.
+        ///
+        /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
+        /// @param versionTag version tag (if any), e.g. "preview1".
+        /// @param minVersion the minimum version to use
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string)
+        /// @see Shutdown()
+        public static int Initialize(uint majorMinorVersion, string versionTag, PackageVersion minVersion)
+        {
+            return NativeMethods.MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+        }
+
+        /// Undo the changes made by Initialize().
+        ///
+        /// @warning Packages made available via `Initialize()` and
+        ///          the Dynamic Dependencies API should not be used after this call.
+        /// @see Initialize(uint)
+        /// @see Initialize(uint, string)
+        /// @see Initialize(uint, string, PackageVersion)
+        public static void Shutdown()
+        {
+            NativeMethods.MddBootstrapShutdown();
+        }
+    }
+}
 ```
 
 ## 6.2. WinRT API
@@ -1511,6 +1741,10 @@ runtimeclass PackageDependency
     ///
     /// Calls to Add() can be balanced by a PackageDependencyContext.Remove()
     /// to remove the entry from the package graph.
+    ///
+    /// Successful calls change the package graph's current generation id.
+    ///
+    /// @see GenerationId
     PackageDependencyContext Add();
 
     /// Resolve a previously pinned PackageDependency to a specific package and
@@ -1546,7 +1780,14 @@ runtimeclass PackageDependency
     ///
     /// Calls to Add() can be balanced by a PackageDependencyContext.Remove() (or object destruction)
     /// to remove the entry from the package graph.
+    ///
+    /// Successful calls change the package graph's current generation id.
+    ///
+    /// @see GenerationId
     PackageDependencyContext Add(AddPackageDependencyOptions options);
+
+    /// Return the package graph's current generation id.
+    static UInt32 GenerationId{ get; };
 }
 
 /// A unique identifier for a resolved package dependency
@@ -1576,6 +1817,11 @@ runtimeclass PackageDependencyContext
     /// Returns the package full name of the resolved package for this context
     String PackageFullName { get; }
 
+    /// Remove from the package graph a package dependency previously added via PackageDependency.Add().
+    ///
+    /// Successful calls change the package graph's current generation id.
+    ///
+    /// @see PackageDependency.GenerationId
     void Remove();
 }
 }
