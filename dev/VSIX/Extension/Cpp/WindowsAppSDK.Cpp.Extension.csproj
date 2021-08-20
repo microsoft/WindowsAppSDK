@@ -22,7 +22,7 @@
     <StartAction>Program</StartAction>
     <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
-    <VsixManifestSource>source.extension.vsixmanifest</VsixManifestSource>
+    <VsixManifestSource>$(Deployment)\source.extension.vsixmanifest</VsixManifestSource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -45,7 +45,7 @@
 <!--     <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content> -->
-    <None Include="$(Deployment)\Cpp\source.extension.vsixmanifest">
+    <None Include="$(VsixManifestSource)">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
