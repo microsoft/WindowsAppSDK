@@ -4,16 +4,15 @@
 #pragma once
 
 #if __has_include(<wil/tracelogging.h>)
-    #ifndef __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
-    #define __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
+#ifndef __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
+#define __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
 
-    #ifdef __WIL_TRACELOGGING_H_INCLUDED
-    #error "WIL Tracelogging.h must not be explicitly included when including this file"
-    #endif
+#ifdef __WIL_TRACELOGGING_H_INCLUDED
+#error "WIL Tracelogging.h must not be explicitly included when including this file"
+#endif
 
-    #include <wil/resource.h>
-    #include <string>
-
+#include <wil/resource.h>
+#include <string>
     namespace Microsoft::WindowsAppSDK::Insights
     { 
     class RuntimeInformation
@@ -65,7 +64,7 @@
 
     #include <wil/tracelogging.h>
 
-    #endif // __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
+#endif // __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
 #else
 #error "WIL package must be referenced before including this header"
 #endif
