@@ -56,6 +56,8 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
 PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.Net.dll $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.Net.pdb $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
 
 #PublishFile -IfExists $FullBuildOutput\WindowsAppSDK_DLL\Generic.xaml $FullPublishDir\Microsoft.WindowsAppSDK\
 #PublishFile -IfExists $FullBuildOutput\Microsoft.WindowsAppSDK.Design\Microsoft.WindowsAppSDK.Design.dll $FullPublishDir\Microsoft.WindowsAppSDK.Design\
