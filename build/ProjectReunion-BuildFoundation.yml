@@ -130,25 +130,6 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishWindowsAppSDKInsights
-  pool: $(ProjectReunionBuildPool)
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-      Release_Arm64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
-  steps:
-  - template: AzurePipelinesTemplates/WindowsAppSDK-BuildAndPublishInsights-Steps.yml
-    parameters:
-      buildJobName: 'BuildAndPublishWindowsAppSDKInsights'
-
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
   strategy:
@@ -215,8 +196,7 @@ jobs:
       in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
       in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     )
-  pool:
-    name: Package ES Lab E
+  pool: $(ProjectReunionBuildPool)
 
   steps:
   - task: DownloadBuildArtifacts@0
@@ -288,7 +268,7 @@ jobs:
     env:
       LIB: $(Build.SourcesDirectory)
       ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-      ArtifactServices_Symbol_UseAAD: true
+      ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
 
   - task: EsrpCodeSigning@1
     inputs:
