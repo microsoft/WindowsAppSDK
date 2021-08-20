@@ -51,6 +51,7 @@ to use packaged content.
     - [6.1.1. MsixDynamicDependency.h](#611-msixdynamicdependencyh)
     - [6.1.2. MddBootstrap.h](#612-mddbootstraph)
     - [6.1.3. MddLifetimeManagement.h](#613-mddlifetimemanagementh)
+    - [6.1.4. Microsoft.Windows.ApplicationModel.DynamicDependency (C#)](#614-microsoftwindowsapplicationmodeldynamicdependency-c)
   - [6.2. WinRT API](#62-winrt-api)
 - [7. Static Package Dependency Resolution Algorithm](#7-static-package-dependency-resolution-algorithm)
   - [7.1. Frequently Asked Questions (FAQ)](#71-frequently-asked-questions-faq)
@@ -794,6 +795,7 @@ Samples illustrating the DynamicDependency APIs
 - [Sample 6](sample-6.md) - LolzKitten Installer / Uninstaller defining a 32bit PackageDependency [\[Win32\]](sample-6.md#win32) [\[WinRT\]](sample-6.md#winrt)
 - [Sample 7](sample-7.md) - LolzKitten app ordering Packages in PackageGraph [\[Win32\]](sample-7.md#win32) [\[WinRT\]](sample-7.md#winrt)
 - [Sample 8](sample-8.md) - LolzKitten app ordering Packages in PackageGraph with prepend [\[Win32\]](sample-8.md#win32) [\[WinRT\]](sample-8.md#winrt)
+- [Sample B.1](sample-b.1.md) - HelloWorld console app using the Boostrap API [\[Win32\]](sample-b.1.md#win32) [\[C#\]](sample-b.1.md#cs) [\[C# (no throw)\]](sample-b.1.md#cs_nothrow)
 
 # 5. Remarks
 
