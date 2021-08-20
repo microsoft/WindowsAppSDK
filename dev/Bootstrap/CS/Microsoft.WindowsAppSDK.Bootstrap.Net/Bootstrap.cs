@@ -134,7 +134,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             MddBootstrapShutdown();
         }
 
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll")]
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll"), ExactSpelling = true]
         private static extern void MddBootstrapShutdown();
     }
 
@@ -212,7 +212,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             MddBootstrapShutdown();
         }
 
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll")]
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll"), ExactSpelling = true]
         private static extern void MddBootstrapShutdown();
     }
 }

@@ -18,7 +18,7 @@ int main()
     wprintf(L"MddBootstrapInitialize(0x%08X, \"%s\", %hu.%hu.%hu.%hu)...\n",
             c_majorMinorVersion, c_versionTag, c_minVersion.Major, c_minVersion.Minor, c_minVersion.Build, c_minVersion.Revision);
     HRESULT hr{ MddBootstrapInitialize(c_majorMinorVersion, c_versionTag, c_minVersion) };
-     if (FAILED(hr))
+    if (FAILED(hr))
     {
         wprintf(L"Error 0x%X in MddBootstrapInitialize(0x%08X, \"%s\", %hu.%hu.%hu.%hu)\n",
                 hr, c_majorMinorVersion, c_versionTag,
