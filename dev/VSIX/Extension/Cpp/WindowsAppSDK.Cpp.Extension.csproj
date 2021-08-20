@@ -22,14 +22,11 @@
     <StartAction>Program</StartAction>
     <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
-    <VsixManifestSource>$(Deployment)\Cpp\source.extension.vsixmanifest</VsixManifestSource>
+    <VsixManifestSource>source.extension.vsixmanifest</VsixManifestSource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
-    <None Include="$(VsixManifestSource)">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
@@ -38,7 +35,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
     </Content>
-    <Content Include="WindowsAppSDK.png">
+    <Content Include="..\WindowsAppSDK.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -48,6 +45,9 @@
 <!--     <Content Condition="'$(EnableExperimentalVSIXFeatures)'=='true'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content> -->
+    <None Include="$(Deployment)\Cpp\source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -69,56 +69,56 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\BlankPage\WinUI.Neutral.CppWinRT.BlankPage.csproj">
+    <ProjectReference Include="..\..\ItemTemplates\Neutral\CppWinRT\BlankPage\WinUI.Neutral.CppWinRT.BlankPage.csproj">
       <Project>{1E071372-7CB7-47BC-9BA2-8235F9BB09C8}</Project>
       <Name>WinUI.Neutral.CppWinRT.BlankPage</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ItemTemplates\Desktop\CppWinRT\BlankWindow\WinUI.Desktop.CppWinRT.BlankWindow.csproj">
+    <ProjectReference Include="..\..\ItemTemplates\Desktop\CppWinRT\BlankWindow\WinUI.Desktop.CppWinRT.BlankWindow.csproj">
       <Project>{81221BE8-00A2-4841-B62C-9E751C298066}</Project>
       <Name>WinUI.Desktop.CppWinRT.BlankWindow</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\ResourceDictionary\WinUI.Neutral.CppWinRT.ResourceDictionary.csproj">
+    <ProjectReference Include="..\..\ItemTemplates\Neutral\CppWinRT\ResourceDictionary\WinUI.Neutral.CppWinRT.ResourceDictionary.csproj">
       <Project>{3F3F0E7F-594F-4006-A3EF-5E5624EF147C}</Project>
       <Name>WinUI.Neutral.CppWinRT.ResourceDictionary</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\Resw\WinUI.Neutral.CppWinRT.Resw.csproj">
+    <ProjectReference Include="..\..\ItemTemplates\Neutral\CppWinRT\Resw\WinUI.Neutral.CppWinRT.Resw.csproj">
       <Project>{30AB0000-148D-48BE-85DB-70D9F7BDFEC5}</Project>
       <Name>WinUI.Neutral.CppWinRT.Resw</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\TemplatedControl\WinUI.Neutral.CppWinRT.TemplatedControl.csproj">
+    <ProjectReference Include="..\..\ItemTemplates\Neutral\CppWinRT\TemplatedControl\WinUI.Neutral.CppWinRT.TemplatedControl.csproj">
       <Project>{761212D7-B5D2-4629-98C8-88F6A24982BB}</Project>
       <Name>WinUI.Neutral.CppWinRT.TemplatedControl</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ItemTemplates\Neutral\CppWinRT\UserControl\WinUI.Neutral.CppWinRT.UserControl.csproj">
+    <ProjectReference Include="..\..\ItemTemplates\Neutral\CppWinRT\UserControl\WinUI.Neutral.CppWinRT.UserControl.csproj">
       <Project>{99C19C7C-6472-44F6-89E2-389AB6534F42}</Project>
       <Name>WinUI.Neutral.CppWinRT.UserControl</Name>
       <VSIXSubPath>ItemTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj">
+    <ProjectReference Include="..\..\ProjectTemplates\Desktop\CppWinRT\PackagedApp\WinUI.Desktop.CppWinRT.PackagedApp.csproj">
       <Project>{80195619-D4CF-4287-BA59-08077486BE1C}</Project>
       <Name>WinUI.Desktop.CppWinRT.PackagedApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\ProjectTemplates\Neutral\CppWinRT\RuntimeComponent\WinUI.Neutral.CppWinRT.RuntimeComponent.csproj">
+    <ProjectReference Include="..\..\ProjectTemplates\Neutral\CppWinRT\RuntimeComponent\WinUI.Neutral.CppWinRT.RuntimeComponent.csproj">
       <Project>{FD33E535-127D-48AC-8788-0F61FA2A251C}</Project>
       <Name>WinUI.Neutral.CppWinRT.RuntimeComponent</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
@@ -127,14 +127,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
-    <ProjectReference Include="..\ProjectTemplates\UWP\CppWinRT\BlankApp\WinUI.UWP.CppWinRT.BlankApp.csproj">
+    <ProjectReference Include="..\..\ProjectTemplates\UWP\CppWinRT\BlankApp\WinUI.UWP.CppWinRT.BlankApp.csproj">
       <Project>{627B2125-97B1-4620-97AA-AD46B37AC9D1}</Project>
       <Name>WinUI.UWP.CppWinRT.BlankApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-<!--     <ProjectReference Include="..\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
+<!--     <ProjectReference Include="..\..\ProjectTemplates\Desktop\CppWinRT\SingleProjectPackagedApp\WinUI.Desktop.CppWinRT.SingleProjectPackagedApp.csproj">
       <Project>{E54D1AD4-E935-479D-8A69-FC073E4DB33D}</Project>
       <Name>WinUI.Desktop.CppWinRT.SingleProjectPackagedApp</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
@@ -175,7 +175,7 @@
   </PropertyGroup>
   <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />
   <Target Name="BeforeBuild">
-    <Copy SourceFiles="..\..\..\LICENSE" DestinationFolder="$(MSBuildProjectDirectory)" />
+    <Copy SourceFiles="..\..\..\..\LICENSE" DestinationFolder="$(MSBuildProjectDirectory)" />
 
     <!-- Save original values so they can be restored later -->
     <XmlPeek
