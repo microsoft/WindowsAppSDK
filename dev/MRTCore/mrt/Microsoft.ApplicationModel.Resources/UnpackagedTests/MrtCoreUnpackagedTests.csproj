@@ -50,8 +50,14 @@
     <Reference Include="Wex.Logger.Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Taef.10.58.210222006-develop\lib\net45\Wex.Logger.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="Windows.Foundation.FoundationContract">
+      <HintPath>C:\Program Files (x86)\Windows Kits\10\References\10.0.19041.0\Windows.Foundation.FoundationContract\4.0.0.0\Windows.Foundation.FoundationContract.winmd</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\TestCommon\CommonTestCode.cs">
+      <Link>CommonTestCode.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestClass.cs" />
   </ItemGroup>
@@ -84,13 +90,14 @@
   <!-- The powershell command below updates the TestAdaptersPaths path in the runsettings file, in order to allow the test to run in VS Test Explorer. -->
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(OutputPath)..\Microsoft.ApplicationModel.Resources\Microsoft.Internal.FrameworkUdk.dll"  "$(OutputPath)Microsoft.Internal.FrameworkUdk.dll"
+    copy /Y "$(OutputPath)..\MRM\MRM.dll"  "$(OutputPath)MRM.dll"
     powershell -command "$file = gi $(OutputPath)MrtCoreUnpackagedTests.runsettings; $x = [xml](gc $file); $x.RunSettings.RunConfiguration.TestAdaptersPaths = '$(OutputPath)'; $x.Save($file.Fullname)"
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <RunSettingsFilePath>$(OutputPath)MrtCoreUnpackagedTests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

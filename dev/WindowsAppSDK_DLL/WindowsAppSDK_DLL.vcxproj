@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <Import Project="..\WindowsAppSDK.Build.Cpp.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
@@ -113,6 +113,7 @@
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
     <Import Project="..\PowerNotifications\PowerNotifications.vcxitems" Label="Shared" />
     <Import Project="..\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems" Label="Shared" />
+    <Import Project="..\ChangeTracker\ChangeTracker.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -171,34 +172,6 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetName>Microsoft.WindowsAppSDK</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
-    <ClCompile>
-      <!-- We use MultiThreadedDebug, rather than MultiThreadedDebugDLL, to avoid DLL dependencies on VCRUNTIME140d.dll and MSVCP140d.dll. -->
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-    </ClCompile>
-    <Link>
-      <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
-           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
-           supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
-           than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrtd.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrtd.lib</AdditionalOptions>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
-    <ClCompile>
-      <!-- We use MultiThreaded, rather than MultiThreadedDLL, to avoid DLL dependencies on VCRUNTIME140.dll and MSVCP140.dll. -->
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-    </ClCompile>
-    <Link>
-      <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
-           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
-           supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
-           than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(SolutionDir)appmodel\identity;$(SolutionDir)common</AdditionalIncludeDirectories>
@@ -405,25 +378,26 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
-    <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210204.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.props'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210403.2\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22426.1000-210723-1202.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
   </Target>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>

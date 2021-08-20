@@ -10,35 +10,42 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
   
     <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.System.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+    <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.Power.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.Resources.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.ApplicationModel.Resources.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.ApplicationModel.Resources.dll</Implementation>
     </Reference>
