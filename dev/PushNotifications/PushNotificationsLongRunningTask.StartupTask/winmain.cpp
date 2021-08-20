@@ -23,7 +23,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
         [&]() { CoUninitialize(); });
 
     unsigned int retries = 0;
-    bool isRpcRetriableError = false;
+    bool isRpcRetriableError = true;
     HRESULT hr = S_OK;
 
     while (retries < 3 && isRpcRetriableError)

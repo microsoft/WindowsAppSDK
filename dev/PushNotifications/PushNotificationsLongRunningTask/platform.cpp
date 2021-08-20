@@ -17,7 +17,8 @@ void NotificationsLongRunningPlatformImpl::Initialize()
 
     // Schedule event signaling after 5 seconds. This is in case we don't have any apps to track in the LRP.
     // If we realize that we need to persist the LRP, timer should be canceled.
-    SetupShutdownTimer();
+    m_shutdownTimerManager = std::make_unique<PlatformLifetimeTimerManager>();
+    m_shutdownTimerManager->Setup();
 
     /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
 
@@ -39,44 +40,10 @@ void NotificationsLongRunningPlatformImpl::Shutdown() noexcept
     m_shutdown = true;
 }
 
-void NotificationsLongRunningPlatformImpl::SignalWinMainEvent()
-{
-    m_event.SetEvent();
-}
-
 void NotificationsLongRunningPlatformImpl::WaitForWinMainEvent()
 {
-    m_event.wait();
-}
-
-void NotificationsLongRunningPlatformImpl::SetupShutdownTimer()
-{
-    // Already guarded by the lock in Initialize()
-    m_timer.reset(CreateThreadpoolTimer(
-        [](PTP_CALLBACK_INSTANCE, _Inout_ PVOID platform, _Inout_ PTP_TIMER)
-        {
-            NotificationsLongRunningPlatformImpl* platformImpl = reinterpret_cast<NotificationsLongRunningPlatformImpl*>(platform);
-
-            if (platformImpl != nullptr)
-            {
-                platformImpl->SignalWinMainEvent();
-            }
-        },
-        this,
-        nullptr));
-
-    THROW_LAST_ERROR_IF_NULL(m_timer);
-
-    // Negative times in SetThreadpoolTimer are relative. Allow 5 seconds to fire.
-    FILETIME dueTime{};
-    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(5000 * 10000);
-
-    SetThreadpoolTimer(m_timer.get(), &dueTime, 0, 0);
-}
-
-void NotificationsLongRunningPlatformImpl::CancelShutdownTimer()
-{
-    m_timer.reset();
+    THROW_HR_IF_NULL(E_UNEXPECTED, m_shutdownTimerManager.get());
+    m_shutdownTimerManager->Wait();
 }
 
 // Example of one function. We will add more as we need them.

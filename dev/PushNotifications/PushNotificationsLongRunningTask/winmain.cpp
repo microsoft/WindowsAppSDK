@@ -63,5 +63,6 @@ STDAPI_(BOOL) DllMain(_In_opt_ HINSTANCE hinst, DWORD reason, _In_opt_ void*)
     {
         DisableThreadLibraryCalls(hinst);
     }
+
     return TRUE;
 }
