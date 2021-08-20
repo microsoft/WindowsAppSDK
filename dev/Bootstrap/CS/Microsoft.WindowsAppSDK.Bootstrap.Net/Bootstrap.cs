@@ -62,6 +62,18 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         }
     };
 
+    internal static class NativeMethods
+    {
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", EntryPoint = "MddBootstralInitialize", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
+        internal static extern void MddBootstrapInitialize_Throw(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
+
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        internal static extern int MddBootstrapInitialize(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
+
+        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", ExactSpelling = true)]
+        internal static extern void MddBootstrapShutdown();
+    }
+
     // The Windows App SDK bootstrap initialization API. This class throws exceptions on error.
     //
     // @see Bootstrap_NoThrow
@@ -116,11 +128,8 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @see Shutdown()
         public static void Initialize(uint majorMinorVersion, string versionTag, PackageVersion minVersion)
         {
-            MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+            NativeMethods.MddBootstrapInitialize_Throw(majorMinorVersion, versionTag, minVersion);
         }
-
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
-        private static extern void MddBootstrapInitialize(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
 
         /// Undo the changes made by Initialize().
         ///
@@ -131,11 +140,8 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @see Initialize(uint, string, PackageVersion)
         public static void Shutdown()
         {
-            MddBootstrapShutdown();
+            NativeMethods.MddBootstrapShutdown();
         }
-
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll"), ExactSpelling = true]
-        private static extern void MddBootstrapShutdown();
     }
 
     // The Windows App SDK bootstrap initialization API. This class returns error as an HRESULT
@@ -194,11 +200,8 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @see Shutdown()
         public static int Initialize(uint majorMinorVersion, string versionTag, PackageVersion minVersion)
         {
-            return MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+            return NativeMethods.MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
         }
-
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
-        private static extern int MddBootstrapInitialize(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
 
         /// Undo the changes made by Initialize().
         ///
@@ -209,10 +212,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @see Initialize(uint, string, PackageVersion)
         public static void Shutdown()
         {
-            MddBootstrapShutdown();
+            NativeMethods.MddBootstrapShutdown();
         }
-
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll"), ExactSpelling = true]
-        private static extern void MddBootstrapShutdown();
     }
 }
