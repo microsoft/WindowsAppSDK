@@ -130,8 +130,8 @@ PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $N
 PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
 #
 # Native (not managed, AppLocal / no MSIX)
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $NugetDir\runtimes\win-$Platform\native
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $NugetDir\runtimes\win-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # C#/WinRT Projections
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0
