@@ -191,6 +191,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChangeTracker", "dev\Change
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentManagerTests", "test\EnvironmentManagerTests\EnvironmentManagerTests.vcxproj", "{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Power.Projection", "dev\Projections\CS\Microsoft.Windows.System.Power\Microsoft.Windows.System.Power.Projection.csproj", "{63ACBA4F-385A-4D04-98AD-263FED501A19}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -684,6 +686,20 @@ Global
 		{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0}.Release|x64.Build.0 = Release|x64
 		{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0}.Release|x86.ActiveCfg = Release|Win32
 		{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0}.Release|x86.Build.0 = Release|Win32
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|ARM64.Build.0 = Debug|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x64.ActiveCfg = Debug|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x64.Build.0 = Debug|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x86.ActiveCfg = Debug|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x86.Build.0 = Debug|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|Any CPU.ActiveCfg = Release|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|ARM64.ActiveCfg = Release|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|ARM64.Build.0 = Release|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x64.ActiveCfg = Release|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x64.Build.0 = Release|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x86.ActiveCfg = Release|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -746,6 +762,7 @@ Global
 		{034E840E-2165-4167-B560-50AF6B4A52DC} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{E15C3465-9D45-495D-92CE-B91EF45E8623} = {034E840E-2165-4167-B560-50AF6B4A52DC}
 		{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
+		{63ACBA4F-385A-4D04-98AD-263FED501A19} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
