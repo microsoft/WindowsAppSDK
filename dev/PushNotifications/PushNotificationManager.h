@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.h"
+#include <windows.foundation.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -20,6 +21,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
         static bool IsBackgroundTaskBuilderAvailable();
+        static void RegisterApplicationHelper(wil::unique_cotaskmem_string& unpackagedAppUserModelId, winrt::guid remoteId);
+        static winrt::hresult CreateChannelWithRemoteIdHelper(
+            wil::unique_cotaskmem_string& channelUri,
+            winrt::Windows::Foundation::DateTime& channelexpirytime,
+            winrt::guid remoteId);
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

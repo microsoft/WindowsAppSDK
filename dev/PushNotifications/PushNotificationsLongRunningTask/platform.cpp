@@ -4,6 +4,7 @@
 
 #include "platform.h"
 #include "platformfactory.h"
+#include <FrameworkUdk/PushNotifications.h>
 
 void NotificationsLongRunningPlatformImpl::Initialize()
 {
@@ -46,12 +47,20 @@ void NotificationsLongRunningPlatformImpl::WaitForWinMainEvent()
     m_shutdownTimerManager->Wait();
 }
 
-// Example of one function. We will add more as we need them.
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(_In_ PCWSTR /*processName*/, _In_ GUID /*remoteId*/, _Out_ GUID* /*appId*/) noexcept
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
+    _In_ PCSTR processName, GUID remoteId, _Out_ LPWSTR* appId) noexcept
 {
     auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    
-    return E_NOTIMPL;
-}
 
+    UNREFERENCED_PARAMETER(processName);
+
+    GUID guidReference;
+    HRESULT hr = CoCreateGuid(&guidReference);
+
+    StringFromCLSID(guidReference, appId);
+
+    hr = PushNotifications_RegisterFullTrustApplication(*appId, remoteId);
+
+    return hr;
+}

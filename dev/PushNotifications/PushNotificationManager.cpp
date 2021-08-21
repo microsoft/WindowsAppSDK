@@ -17,6 +17,9 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include <frameworkudk/pushnotifications.h>
+#include "..\..\BuildOutput\Debug\x64\PushNotificationsLongRunningTask.ProxyStub\NotificationsLongRunningProcess_h.h"
+#include <iostream>
 
 using namespace std::literals;
 
@@ -62,12 +65,67 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    // RegisterUnpackagedapplication
+    void PushNotificationManager::RegisterApplicationHelper(wil::unique_cotaskmem_string &unpackagedAppUserModelId, winrt::guid remoteId)
+    {
+            THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+
+            auto scopeExit = wil::scope_exit(
+                [&]() { CoUninitialize(); });
+
+            {
+                wil::com_ptr<INotificationsLongRunningPlatform> reunionEndpoint{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                char processName[1024];
+                GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
+
+                winrt::throw_hresult(reunionEndpoint->RegisterFullTrustApplication(processName, remoteId, &unpackagedAppUserModelId));
+            }
+
+        return;
+    }
+
+    winrt::hresult PushNotificationManager::CreateChannelWithRemoteIdHelper(
+        wil::unique_cotaskmem_string& channelUri,
+        winrt::Windows::Foundation::DateTime& channelExpiryTime,
+        winrt::guid remoteId)
+    {
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH + 1] = {};
+        UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
+
+        THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+
+        /* channel request result */
+        HRESULT operationalCode;
+        wil::unique_cotaskmem_string channelId;
+        ABI::Windows::Foundation::DateTime channelexpirytime{};
+
+        HRESULT hr = PushNotifications_CreateChannelWithRemoteIdentifier(
+            appUserModelId,
+            remoteId,
+            &operationalCode,
+            &channelId,
+            &channelUri,
+            &channelexpirytime);
+
+        wprintf(L"appIdentifier: %s\n", appUserModelId);
+
+        THROW_HR_IF(hr, (hr != E_NOTIMPL) && (hr != S_OK));
+
+        if (hr == S_OK)
+        {
+            THROW_HR_IF(operationalCode, operationalCode != S_OK);
+        }
+
+        winrt::copy_from_abi(channelExpiryTime, &channelexpirytime);
+
+        return hr;
+    }
+
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
-
-        // API supports channel requests only for packaged applications for v0.8 version
-        THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
         auto cancellation{ co_await winrt::get_cancellation_token() };
 
@@ -91,16 +149,48 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             try
             {
-                PushNotificationChannelManager channelManager{};
-                winrt::PushNotificationChannel pushChannelReceived{ nullptr };
+                if (IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+                {
+                    wil::unique_cotaskmem_string channelUri;
+                    winrt::Windows::Foundation::DateTime channelExpiryTime;
 
-                pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
+                    hresult hr = CreateChannelWithRemoteIdHelper(channelUri, channelExpiryTime, remoteId);
 
-                co_return winrt::make<PushNotificationCreateChannelResult>(
-                    winrt::make<PushNotificationChannel>(pushChannelReceived),
-                    S_OK,
-                    PushNotificationChannelStatus::CompletedSuccess);
+                    if (hr == S_OK)
+                    {
+                        co_return winrt::make<PushNotificationCreateChannelResult>(
+                            winrt::make<PushNotificationChannel>(channelUri.get(), channelExpiryTime),
+                            hr,
+                            PushNotificationChannelStatus::CompletedSuccess);
+                    }
+                    else if (hr == E_NOTIMPL)
+                    {
+                        PushNotificationChannelManager channelManager{};
+                        winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
+                        pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
+
+                        co_return winrt::make<PushNotificationCreateChannelResult>(
+                            winrt::make<PushNotificationChannel>(pushChannelReceived),
+                            S_OK,
+                            PushNotificationChannelStatus::CompletedSuccess);
+                    }
+                }
+                else
+                {
+                    wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                    RegisterApplicationHelper(unpackagedAppUserModelId, remoteId);
+
+                    PushNotificationChannelManager channelManager{};
+                    winrt::PushNotificationChannel pushChannelReceived{ nullptr };
+
+                    pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get());
+
+                    co_return winrt::make<PushNotificationCreateChannelResult>(
+                        winrt::make<PushNotificationChannel>(pushChannelReceived),
+                        S_OK,
+                        PushNotificationChannelStatus::CompletedSuccess);
+                }
             }
             catch (...)
             {

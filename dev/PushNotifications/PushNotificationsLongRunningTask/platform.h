@@ -18,7 +18,7 @@ Microsoft::WRL::RuntimeClass<
 
     /* IWpnLrpPlatform functions */
 
-    STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
+    STDMETHOD(RegisterFullTrustApplication)(_In_ PCSTR processName, GUID remoteId, _Out_ LPWSTR* appId) noexcept;
 
     /* Add your functions to retrieve the platform components */
 

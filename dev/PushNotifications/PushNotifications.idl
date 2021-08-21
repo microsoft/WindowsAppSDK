@@ -76,6 +76,8 @@ namespace Microsoft.Windows.PushNotifications
     {
         PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
 
+        PushNotificationChannel(String channelUri, Windows.Foundation.DateTime extime);
+
         // The Channel Uri for app to Post a notification to.
         Windows.Foundation.Uri Uri { get; };
 

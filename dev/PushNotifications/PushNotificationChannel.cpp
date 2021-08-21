@@ -22,13 +22,34 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
 
+    PushNotificationChannel::PushNotificationChannel(hstring const& channelUri, winrt::Windows::Foundation::DateTime const& extime)
+    {
+        winrt::Windows::Uri uriLocal{ channelUri };
+        m_Uri = uriLocal;
+        m_Extime = extime;
+    }
+
     winrt::Windows::Uri PushNotificationChannel::Uri()
     {
-        return winrt::Windows::Uri{ m_channel.Uri() };
+        if (m_channel)
+        {
+            return winrt::Windows::Uri{ m_channel.Uri() };
+        }
+        else
+        {
+            return m_Uri;
+        }
     }
     winrt::Windows::DateTime PushNotificationChannel::ExpirationTime()
     {
-        return m_channel.ExpirationTime();
+        if (m_channel)
+        {
+            return m_channel.ExpirationTime();
+        }
+        else
+        {
+            return m_Extime;
+        }
     }
     void PushNotificationChannel::Close()
     {
