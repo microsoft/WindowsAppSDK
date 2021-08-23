@@ -19,8 +19,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-        winrt::Windows::Foundation::DateTime m_Extime{};
-        winrt::Windows::Foundation::Uri m_Uri{ nullptr };
+        winrt::Windows::Foundation::DateTime m_channelExpirationTime{};
+        winrt::Windows::Foundation::Uri m_channelUri{ nullptr };
 
     };
 }

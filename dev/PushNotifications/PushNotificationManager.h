@@ -21,11 +21,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
         static bool IsBackgroundTaskBuilderAvailable();
-        static void RegisterApplicationHelper(wil::unique_cotaskmem_string& unpackagedAppUserModelId, winrt::guid remoteId);
+        static void RegisterUnpackagedApplicationHelper(winrt::guid remoteId, wil::unique_cotaskmem_string& unpackagedAppUserModelId);
         static winrt::hresult CreateChannelWithRemoteIdHelper(
+            winrt::guid remoteId,
             wil::unique_cotaskmem_string& channelUri,
-            winrt::Windows::Foundation::DateTime& channelexpirytime,
-            winrt::guid remoteId);
+            winrt::Windows::Foundation::DateTime& channelExpiryTime);
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

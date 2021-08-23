@@ -49,18 +49,19 @@ void NotificationsLongRunningPlatformImpl::WaitForWinMainEvent()
 
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
-    _In_ PCSTR processName, GUID remoteId, _Out_ LPWSTR* appId) noexcept
+    _In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept try
 {
     auto lock = m_lock.lock_shared();
 
     UNREFERENCED_PARAMETER(processName);
 
     GUID guidReference;
-    HRESULT hr = CoCreateGuid(&guidReference);
+    THROW_IF_FAILED(CoCreateGuid(&guidReference));
 
-    StringFromCLSID(guidReference, appId);
+    THROW_IF_FAILED(StringFromCLSID(guidReference, appId));
 
-    hr = PushNotifications_RegisterFullTrustApplication(*appId, remoteId);
+    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(*appId, remoteId));
 
-    return hr;
+    return S_OK;
 }
+CATCH_RETURN()

@@ -11,7 +11,7 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
 {
-    HRESULT RegisterFullTrustApplication([in] LPCSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
+    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
 };
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
