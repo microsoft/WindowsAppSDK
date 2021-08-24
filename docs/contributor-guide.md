@@ -20,7 +20,7 @@ points if there's a gist or existing repo we can look at with you.
    It's fine if you don't have all the details: you can start with a summary and rationale.
    
 4. **[WinUI topics](https://github.com/microsoft/microsoft-ui-xaml)**<br>
-   Check out the WinUI repo's amazing guide to [general contributing](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING.md) as well as [contributing feedback and requests](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING_feedback_and_requests.md)!
+   Please file WinUI issues and feedback in the [WinUI repository](https://github.com/microsoft/microsoft-ui-xaml). Check out the their amazing guide to [general contributing](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING.md) as well as [contributing feedback and requests](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING_feedback_and_requests.md)!
 
 
 **Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
