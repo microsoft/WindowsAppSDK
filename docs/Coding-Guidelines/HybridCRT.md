@@ -12,7 +12,7 @@ The 'Hybrid CRT' is a technique using the
 AND the static CRT to get functional coverage without the overhead of the static CRT or the external
 dependency of the dynamic CRT.
 
-Visual Studio offers the CRT in 2: DLLs needed at runtime (dynamic) and static
+Visual Studio offers the CRT in 2 forms: DLLs needed at runtime (dynamic) and static
 libraries linked into PE files (static). These are controlled via
 [compiler options](https://docs.microsoft.com/en-us/cpp/build/reference/md-mt-ld-use-run-time-library?view=msvc-160)
 
