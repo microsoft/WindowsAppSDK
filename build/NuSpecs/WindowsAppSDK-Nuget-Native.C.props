@@ -16,7 +16,6 @@
     <Link>
       <AdditionalDependencies>
         $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppSDK.lib;
-        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppSDK.Insights.lib;
         %(AdditionalDependencies);
       </AdditionalDependencies>
     </Link>
