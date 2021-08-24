@@ -47,18 +47,63 @@ void NotificationsLongRunningPlatformImpl::WaitForWinMainEvent()
     m_shutdownTimerManager->Wait();
 }
 
+void NotificationsLongRunningPlatformImpl::GetAppIdentifier(PCWSTR processName, PWSTR* appId)
+{
+    wil::unique_hkey hKeyResult;
+
+    auto result = RegOpenKeyEx(
+        HKEY_CURRENT_USER,
+        processName,
+        0,
+        KEY_ALL_ACCESS,
+        &hKeyResult);
+
+    if (result == ERROR_SUCCESS)
+    {
+        // return the value for the key
+        DWORD appUserModelIdSize = APPLICATION_USER_MODEL_ID_MAX_LENGTH;
+        auto regStatus = RegGetValue(hKeyResult.get(), NULL, processName, RRF_RT_REG_SZ, nullptr, *appId, &appUserModelIdSize);
+        THROW_IF_WIN32_ERROR(regStatus);
+    }
+    else if (result == ERROR_FILE_NOT_FOUND)
+    {
+        // create a new entry and set its value
+        THROW_IF_WIN32_ERROR(RegCreateKeyEx(
+            HKEY_CURRENT_USER,
+            processName,
+            0,
+            nullptr,
+            REG_OPTION_NON_VOLATILE,
+            KEY_ALL_ACCESS,
+            nullptr,
+            &hKeyResult,
+            nullptr));
+
+        GUID guidReference;
+        THROW_IF_FAILED(CoCreateGuid(&guidReference));
+
+        THROW_IF_FAILED(StringFromCLSID(guidReference, appId));
+
+        THROW_IF_WIN32_ERROR(RegSetValueExW(
+            hKeyResult.get(),
+            *appId,
+            0,
+            REG_SZ,
+            reinterpret_cast<const BYTE*>(*appId),
+            sizeof(*appId)));
+    }
+    else
+    {
+        THROW_IF_WIN32_ERROR(result);
+    }
+}
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
     _In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept try
 {
     auto lock = m_lock.lock_shared();
 
-    UNREFERENCED_PARAMETER(processName);
-
-    GUID guidReference;
-    THROW_IF_FAILED(CoCreateGuid(&guidReference));
-
-    THROW_IF_FAILED(StringFromCLSID(guidReference, appId));
+    GetAppIdentifier(processName, appId);
 
     THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(*appId, remoteId));
 

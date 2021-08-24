@@ -32,4 +32,6 @@ private:
     std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
     // Here we will define the Platform components i.e. the map wrappings
+
+    void GetAppIdentifier(PCWSTR processName, PWSTR* appId);
 };
