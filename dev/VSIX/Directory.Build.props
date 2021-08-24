@@ -12,6 +12,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
         <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
         <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
         <VSIXBuild>true</VSIXBuild>
