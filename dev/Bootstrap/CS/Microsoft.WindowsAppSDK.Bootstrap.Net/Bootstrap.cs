@@ -74,9 +74,7 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         internal static extern void MddBootstrapShutdown();
     }
 
-    // The Windows App SDK bootstrap initialization API. This class throws exceptions on error.
-    //
-    // @see Bootstrap_NoThrow
+    // The Windows App SDK bootstrap initialization API.
     public class Bootstrap
     {
         /// Initialize the calling process to use Windows App SDK's framework package.
@@ -131,62 +129,48 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
             NativeMethods.MddBootstrapInitialize_Throw(majorMinorVersion, versionTag, minVersion);
         }
 
-        /// Undo the changes made by Initialize().
-        ///
-        /// @warning Packages made available via `Initialize()` and
-        ///          the Dynamic Dependencies API should not be used after this call.
-        /// @see Initialize(uint)
-        /// @see Initialize(uint, string)
-        /// @see Initialize(uint, string, PackageVersion)
-        public static void Shutdown()
-        {
-            NativeMethods.MddBootstrapShutdown();
-        }
-    }
-
-    // The Windows App SDK bootstrap initialization API. This class returns error as an HRESULT
-    // (>=0 on success, <0 on error).
-    //
-    // @see Bootstrap
-    public class Bootstrap_NoThrow
-    {
         /// Initialize the calling process to use Windows App SDK's framework package.
+        /// Failure returns false with the failure HRESULT in the hresult parameter.
         ///
         /// Find a Windows App SDK framework package meeting the criteria and make it available
         /// for use by the current process. If multiple packages meet the criteria the best
         /// candidate is selected.
         ///
-        /// This is equivalent to `Initialize(majorMinorVersion, null, new PackageVersion())`.
+        /// This is equivalent to `TryInitialize(majorMinorVersion, null, new PackageVersion(), hresult)`.
         ///
         /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
-        /// @see Initialize(uint, string)
-        /// @see Initialize(uint, string, PackageVersion)
+        /// @retval true if successful, otherwise false is returned.
+        /// @see TryInitialize(uint, string, out int)
+        /// @see TryInitialize(uint, string, PackageVersion, out int)
         /// @see Shutdown()
-        public static int Initialize(uint majorMinorVersion)
+        public static bool TryInitialize(uint majorMinorVersion, out int hresult)
         {
-            return Initialize(majorMinorVersion, null);
+            return TryInitialize(majorMinorVersion, null, out hresult);
         }
 
         /// Initialize the calling process to use Windows App SDK's framework package.
+        /// Failure returns false with the failure HRESULT in the hresult parameter.
         ///
         /// Find a Windows App SDK framework package meeting the criteria and make it available
         /// for use by the current process. If multiple packages meet the criteria the best
         /// candidate is selected.
         ///
-        /// This is equivalent to `Initialize(majorMinorVersion, versionTag, new PackageVersion())`.
+        /// This is equivalent to `TryInitialize(majorMinorVersion, versionTag, new PackageVersion(), hresult)`.
         ///
         /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
         /// @param versionTag version tag (if any), e.g. "preview1".
-        /// @see Initialize(uint)
-        /// @see Initialize(uint, string, PackageVersion)
+        /// @retval true if successful, otherwise false is returned.
+        /// @see TryInitialize(uint, out int)
+        /// @see TryInitialize(uint, string, PackageVersion, out int)
         /// @see Shutdown()
-        public static int Initialize(uint majorMinorVersion, string versionTag)
+        public static bool TryInitialize(uint majorMinorVersion, string versionTag, out int hresult)
         {
             var minVersion = new PackageVersion();
-            return Initialize(majorMinorVersion, versionTag, minVersion);
+            return TryInitialize(majorMinorVersion, versionTag, minVersion, out hresult);
         }
 
         /// Initialize the calling process to use Windows App SDK's framework package.
+        /// Failure returns false with the failure HRESULT in the hresult parameter.
         ///
         /// Find a Windows App SDK framework package meeting the criteria and make it available
         /// for use by the current process. If multiple packages meet the criteria the best
@@ -194,13 +178,16 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         ///
         /// @param majorMinorVersion major and minor version of Windows App SDK's framework package, encoded as `0xMMMMNNNN` where M=Major, N=Minor (e.g. 1.2 == 0x00010002).
         /// @param versionTag version tag (if any), e.g. "preview1".
-        /// @param minVersion the minimum version to use
-        /// @see Initialize(uint)
-        /// @see Initialize(uint, string)
+        /// @param minVersion the minimum version to use.
+        /// @param hresult the error code if an error occurred.
+        /// @retval true if successful, otherwise false is returned.
+        /// @see TryInitialize(uint, out int)
+        /// @see TryInitialize(uint, string, out int)
         /// @see Shutdown()
-        public static int Initialize(uint majorMinorVersion, string versionTag, PackageVersion minVersion)
+        public static bool TryInitialize(uint majorMinorVersion, string versionTag, PackageVersion minVersion, out int hresult)
         {
-            return NativeMethods.MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+            hresult = NativeMethods.MddBootstrapInitialize(majorMinorVersion, versionTag, minVersion);
+            return hresult >= 0;
         }
 
         /// Undo the changes made by Initialize().
@@ -210,6 +197,9 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
         /// @see Initialize(uint)
         /// @see Initialize(uint, string)
         /// @see Initialize(uint, string, PackageVersion)
+        /// @see TryInitialize(uint, out int)
+        /// @see TryInitialize(uint, string, out int)
+        /// @see TryInitialize(uint, string, PackageVersion, out int)
         public static void Shutdown()
         {
             NativeMethods.MddBootstrapShutdown();
