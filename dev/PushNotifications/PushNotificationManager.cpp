@@ -18,7 +18,7 @@
 #include "externs.h"
 #include <string_view>
 #include <frameworkudk/pushnotifications.h>
-#include "../../BuildOutput/Debug/x64/PushNotificationsLongRunningTask.ProxyStub/NotificationsLongRunningProcess_h.h"
+#include "NotificationsLongRunningProcess_h.h"
 
 using namespace std::literals;
 
