@@ -18,7 +18,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     // Schedule event signaling after 5 seconds. This is in case we don't have any apps to track in the LRP.
     // If we realize that we need to persist the LRP, timer should be canceled.
     m_shutdownTimerManager = std::make_unique<PlatformLifetimeTimerManager>();
-    m_shutdownTimerManager->Setup();
+    //m_shutdownTimerManager->Setup();
 
     /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
 
@@ -55,3 +55,20 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return E_NOTIMPL;
 }
 
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName)
+{
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    auto lock = m_lock.lock_exclusive();
+
+    m_foregroundSinkManager.AddSink(processName, sink);
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(/*[out]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName)
+{
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    auto lock = m_lock.lock_exclusive();
+
+    m_foregroundSinkManager.Remove(processName, sink);
+    return S_OK;
+}

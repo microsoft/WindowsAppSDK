@@ -23,14 +23,31 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask): m_backgroundTaskInstance(backgroundTask), m_rawNotification(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes()) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask):
+        m_backgroundTaskInstance(backgroundTask),
+        m_rawNotification(GetByteArrayFromBuffer(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())),
+        m_isBIAvailable(true) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args): m_args(args), m_rawNotification(args.RawNotification().ContentBytes()) {}
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
+        m_args(args),
+        m_rawNotification(GetByteArrayFromBuffer(args.RawNotification().ContentBytes())),
+        m_isBIAvailable(true) {}
+
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload, ULONG length):
+        m_rawNotification(payload),
+        m_length(length),
+        m_isBIAvailable(false) {}
+
+    byte* PushNotificationReceivedEventArgs::GetByteArrayFromBuffer(winrt::Windows::Storage::Streams::IBuffer buffer)
+    {
+        auto rawNotificationData = buffer.data();
+        m_length = buffer.Length();
+        return rawNotificationData;
+    }
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        auto rawNotificationData = m_rawNotification.data();
-        return { rawNotificationData, rawNotificationData + (m_rawNotification.Length() * sizeof(uint8_t)) };
+        return { m_rawNotification, m_rawNotification + (m_length * sizeof(uint8_t)) };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
@@ -58,6 +75,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
 
+        // Also, we need to handle scenario for notifications coming from the LRP
         return m_args.Cancel();
     }
 
