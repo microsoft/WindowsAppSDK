@@ -66,7 +66,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::RegisterUnpackagedApplicationHelper(
         winrt::guid remoteId,
-        wil::unique_cotaskmem_string &unpackagedAppUserModelId)
+        _Out_ wil::unique_cotaskmem_string &unpackagedAppUserModelId)
     {
             THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
@@ -88,10 +88,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::hresult PushNotificationManager::CreateChannelWithRemoteIdHelper(
         winrt::guid remoteId,
-        wil::unique_cotaskmem_string& channelUri,
+        _Out_ wil::unique_cotaskmem_string& channelUri,
         winrt::Windows::Foundation::DateTime& channelExpiryTime)
     {
-        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH + 1] = {};
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
         UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
 
         THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
