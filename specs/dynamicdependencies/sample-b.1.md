@@ -12,7 +12,7 @@ At runtime, HelloWorld wants to use the Windows App SDK Framework 1.0-preview1 p
 int main()
 {
     // Initialize access to Windows App SDK
-    const UINT32 c_majorMinorVersion{ 0x00010000 };
+    const uint32_t c_majorMinorVersion{ 0x00010000 };
     PCWSTR c_versionTag{ L"preview1" };
     const PACKAGE_VERSION c_minVersion{};
     wprintf(L"MddBootstrapInitialize(0x%08X, \"%s\", %hu.%hu.%hu.%hu)...\n",
