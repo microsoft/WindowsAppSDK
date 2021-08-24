@@ -1,29 +1,29 @@
 Windows App SDK Coding Guidelines
 
 - [1. General](#1-general)
-  - [1.1. Languages](#11-languages)
-    - [1.1.1. C++](#111-c)
-        - [1.1.1.0.1. Catching C++/WinRT Exceptions and HRESULT](#11101-catching-cwinrt-exceptions-and-hresult)
-    - [1.1.2. Markdown](#112-markdown)
-  - [1.2. Git Checkin-to-main Policy](#12-git-checkin-to-main-policy)
-    - [1.2.1. Policy: Preview and Stable (aka non-Experimental)](#121-policy-preview-and-stable-aka-non-experimental)
-    - [1.2.2. Policy: Experimental](#122-policy-experimental)
-- [2. Hybrid CRT](#2-hybrid-crt)
-  - [2.1. What is the 'Hybrid CRT'?](#21-what-is-the-hybrid-crt)
-  - [2.2. How to use the 'Hybrid CRT'](#22-how-to-use-the-hybrid-crt)
-    - [2.2.1. HybridCRT.props](#221-hybridcrtprops)
-    - [Directory.Build.props](#directorybuildprops)
+- [2. Languages](#2-languages)
+  - [2.1. C++](#21-c)
+    - [2.1.1. Catching C++/WinRT Exceptions and HRESULT](#211-catching-cwinrt-exceptions-and-hresult)
+  - [2.2. Markdown](#22-markdown)
+- [3. Git Checkin-to-main Policy](#3-git-checkin-to-main-policy)
+  - [3.1. Policy: Preview and Stable (aka non-Experimental)](#31-policy-preview-and-stable-aka-non-experimental)
+  - [3.2. Policy: Experimental](#32-policy-experimental)
+- [4. Hybrid CRT](#4-hybrid-crt)
+  - [4.1. What is the 'Hybrid CRT'?](#41-what-is-the-hybrid-crt)
+  - [4.2. How to use the 'Hybrid CRT'](#42-how-to-use-the-hybrid-crt)
+    - [4.2.1. HybridCRT.props](#421-hybridcrtprops)
+    - [4.2.2. Directory.Build.props](#422-directorybuildprops)
 
 # 1. General
 
 The Windows App SDK prefers using industry-standard coding styles, guidelines, and patterns for any
 languages used in implementation or testing.
 
-## 1.1. Languages
+# 2. Languages
 
 This list is non-exhaustive; new guidelines for languages will be added over time.
 
-### 1.1.1. C++
+## 2.1. C++
 
 **DO** implement types using C++ and [C++/WinRT](https://github.com/microsoft/cppwinrt)
 
@@ -36,7 +36,7 @@ Windows-specific helpers rather than creating your own.
 
 **DO** use 4-space indentation instead of tab characters.
 
-##### 1.1.1.0.1. Catching C++/WinRT Exceptions and HRESULT
+### 2.1.1. Catching C++/WinRT Exceptions and HRESULT
 
 Exceptions should not be used for standard flow control.
 
@@ -67,14 +67,14 @@ C++/WinRT's ABI layer automatically catches and converts exceptions generated du
 and uses a similar mechanism to map a C++ exception to an `HRESULT` that can be delivered across the
 ABI.
 
-### 1.1.2. Markdown
+## 2.2. Markdown
 
 **DO** wrap lines at ~100 characters. GitHub formats lines regardless of individual length but
 GitHub diff is line oriented. Keeping lines within the preferred limit makes changes easier to
 review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers." If new
 languages become common, we will describe the coding guidelines for such languages here.
 
-## 1.2. Git Checkin-to-main Policy
+# 3. Git Checkin-to-main Policy
 
 The main branch needs to be kept 'healthy' and ready to ship near daily (daily, or within a day or
 two). An unhealthy main branch negatively impacts day-to-day development and jeopardizes release
@@ -84,7 +84,7 @@ code change is Experimental vs Preview or Stable.
 See [Final Decision: Release channels and cadences #637](https://github.com/microsoft/WindowsAppSDK/discussions/637)
 for the expectations of the various release channels.
 
-### 1.2.1. Policy: Preview and Stable (aka non-Experimental)
+## 3.1. Policy: Preview and Stable (aka non-Experimental)
 
 The following requirements must be met to checkin non-Experimental changes to main:
 
@@ -94,7 +94,7 @@ The following requirements must be met to checkin non-Experimental changes to ma
 
 Changes of a non-Experimental nature must meet these policies to be committed to the main branch.
 
-### 1.2.2. Policy: Experimental
+## 3.2. Policy: Experimental
 
 The policies for Experimental content differ from non-Experimental content because of the reasons for Experimental content:
 
@@ -137,14 +137,14 @@ Experimental content must be tagged to indicate it's Experimental. The mechanism
 (WinRT APIs, Flat-C APIs, non-API content (e.g. data files), etc) but the policy is the same -
 Experimental content must be marked to indicate it's Experimental.
 
-# 2. Hybrid CRT
+# 4. Hybrid CRT
 
 Windows App SDK runs in diverse environments and contexts (i.e. all of them ;-) Much of the runtime
 is implemented in C++ and thus dependent on the Standard C/C++ Runtime aka the CRT. To ensure a
 highly reliable and friction-less experience (for developers as well as users) all DLLs and EXEs
 containing C/C++ code are built using the 'hybrid CRT' technique.
 
-## 2.1. What is the 'Hybrid CRT'?
+## 4.1. What is the 'Hybrid CRT'?
 
 The 'Hybrid CRT' is a technique using the
 [Universal CRT](https://docs.microsoft.com/en-us/cpp/windows/universal-crt-deployment?view=msvc-160)
@@ -189,7 +189,7 @@ details.
 
 Windows App SDK uses the hybrid CRT for all PE files.
 
-## 2.2. How to use the 'Hybrid CRT'
+## 4.2. How to use the 'Hybrid CRT'
 
 TL;DR Do nothing and all projects use it. If you create a new *.vcxproj delete any `<RuntimeLibrary>` tags.
 
@@ -204,7 +204,7 @@ potentially contradictory with proper use of the hybrid CRT. Delete any `<Runtim
 *.vcxproj and the right values will be inherited from
 [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
 
-### 2.2.1. HybridCRT.props
+### 4.2.1. HybridCRT.props
 
 [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props) defines the
 rules for Visual Studio to build projects with the Hybrid CRT.
@@ -257,7 +257,7 @@ The steps involved:
 </Project>
 ```
 
-### Directory.Build.props
+### 4.2.2. Directory.Build.props
 
 [Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/Directory.Build.props) in the
 repository root imports
@@ -270,6 +270,3 @@ all projects in the repository via this statement:
 ```
 
 This applies to all projects in the repository (product, test, ...).
-
-
-
