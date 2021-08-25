@@ -7,7 +7,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 {
     EnvironmentVariableChangeTracker::EnvironmentVariableChangeTracker(const std::wstring& key, const std::wstring& valueToSet, EnvironmentManager::Scope scope)
     {
-        MessageBoxEx(NULL, L"In tracking constructor", L"In tracking constructor", 0, 0);
+        __debugbreak();
         THROW_HR_IF(E_INVALIDARG, key.empty());
 
         // Check if we need to track the changes.
@@ -43,7 +43,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     HRESULT EnvironmentVariableChangeTracker::TrackChange(std::function<HRESULT(void)> callback)
     {
-        MessageBoxEx(NULL, L"In tracking", L"In tracking", 0, 0);
+        __debugbreak();
         if (m_ShouldTrackChange)
         {
             wil::unique_hkey regLocationToWriteChange{ GetKeyForTrackingChange(nullptr) };
