@@ -23,6 +23,8 @@ struct ResourceMap : ResourceMapT<ResourceMap>
     uint32_t ResourceCount();
 
     Microsoft::ApplicationModel::Resources::ResourceMap GetSubtree(hstring const& reference);
+    Microsoft::ApplicationModel::Resources::ResourceMap TryGetSubtree(hstring const& reference);
+
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValue(hstring const& resource);
 
     Microsoft::ApplicationModel::Resources::ResourceCandidate GetValue(
@@ -44,6 +46,8 @@ private:
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,
         hstring const& resource,
         bool treatNotFoundAsOk);
+
+    Microsoft::ApplicationModel::Resources::ResourceMap GetSubtreeImpl(hstring const& reference, bool treatNotFoundAsOk);
 
     Windows::Foundation::Collections::IKeyValuePair<hstring, Microsoft::ApplicationModel::Resources::ResourceCandidate> GetValueByIndexImpl(
         const Microsoft::ApplicationModel::Resources::ResourceContext* context,
