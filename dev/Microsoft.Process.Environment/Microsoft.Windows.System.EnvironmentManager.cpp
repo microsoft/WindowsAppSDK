@@ -72,6 +72,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
+        MessageBoxEx(NULL, L"In setting", L"In setting", 0, 0);
         auto setEV = [&, name, value, this]()
         {
             if (m_Scope == Scope::Process)
