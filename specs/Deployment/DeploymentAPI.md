@@ -105,11 +105,11 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     runtimeclass DeploymentStatus
     {
         /// Returns True if WindowsAppRuntime has all required packages at equal or greater version
-	    /// than the current framework requires.
+        /// than the current framework requires.
         Boolean IsOK{ get; };
 
         /// Returns True if a Package install is required the WindowsAppRuntime to be in a good
-	    /// state.
+        /// state.
         Boolean PackageInstallRequired{ get; };
 
         /// Returns the first encountered error if there was an error initializing or getting the status,
@@ -124,7 +124,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         static DeploymentStatus GetStatus();
 
         /// Checks the status of the WindowsAppRuntime and attempts to register any packages
-	    /// that can be registered. 
+        /// that can be registered. 
         static DeploymentStatus Initialize();
     }
 }
