@@ -25,6 +25,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static winrt::hresult CreateChannelWithRemoteIdHelper(
             winrt::guid remoteId,
             _Out_ wil::unique_cotaskmem_string& channelUri,
+            _Out_ wil::unique_cotaskmem_string& channelId,
+            _Out_ wil::unique_cotaskmem_string& appUserModelId,
             winrt::Windows::Foundation::DateTime& channelExpiryTime);
     };
 }

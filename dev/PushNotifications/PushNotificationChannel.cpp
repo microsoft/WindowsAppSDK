@@ -7,6 +7,7 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
+#include <FrameworkUdk/PushNotifications.h>
 
 namespace winrt::Windows
 {
@@ -22,10 +23,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
 
-    PushNotificationChannel::PushNotificationChannel(hstring const& channelUri, winrt::Windows::Foundation::DateTime const& channelExpirationTime)
+    PushNotificationChannel::PushNotificationChannel(hstring const& channelUri,
+        hstring const& channelId,
+        hstring const& appUserModelId,
+        winrt::Windows::Foundation::DateTime const& channelExpirationTime)
     {
         m_channelUri = winrt::Windows::Uri{ channelUri };
         m_channelExpirationTime = channelExpirationTime;
+        m_channelId = channelId;
+        m_appUserModelId = appUserModelId;
     }
 
     winrt::Windows::Uri PushNotificationChannel::Uri()
@@ -54,7 +60,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         try
         {
-            m_channel.Close();
+            if (m_channel)
+            {
+                m_channel.Close();
+            }
+            else
+            {
+               PushNotifications_CloseChannel(m_appUserModelId.c_str(), m_channelId.c_str());
+            }
         }
         catch (...)
         {

@@ -89,16 +89,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     winrt::hresult PushNotificationManager::CreateChannelWithRemoteIdHelper(
         winrt::guid remoteId,
         _Out_ wil::unique_cotaskmem_string& channelUri,
-        winrt::Windows::Foundation::DateTime& channelExpiryTime)
+        _Out_ wil::unique_cotaskmem_string& channelId,
+        _Out_ wil::unique_cotaskmem_string& appUserModelIdString,
+        winrt::Windows::Foundation::DateTime& channelExpiryTime
+        )
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
         UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
 
         THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
 
+        THROW_HR_IF(E_INVALIDARG, (appUserModelIdSize > APPLICATION_USER_MODEL_ID_MAX_LENGTH) || (appUserModelIdSize == 0));
+
         /* channel request result */
         HRESULT operationalCode;
-        wil::unique_cotaskmem_string channelId;
         ABI::Windows::Foundation::DateTime channelexpirytime{};
 
         HRESULT hr = PushNotifications_CreateChannelWithRemoteIdentifier(
@@ -120,6 +124,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(operationalCode, (hr == S_OK) && (operationalCode != S_OK));
 
         winrt::copy_from_abi(channelExpiryTime, &channelexpirytime);
+        appUserModelIdString = wil::make_cotaskmem_string(appUserModelId);
 
         return hr;
     }
@@ -154,13 +159,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     wil::unique_cotaskmem_string channelUri;
                     winrt::Windows::Foundation::DateTime channelExpiryTime;
+                    wil::unique_cotaskmem_string channelId;
+                    wil::unique_cotaskmem_string appUserModelId;
 
-                    hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelUri, channelExpiryTime);
+                    hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelUri, channelId, appUserModelId, channelExpiryTime);
 
                     if (hr == S_OK)
                     {
                         co_return winrt::make<PushNotificationCreateChannelResult>(
-                            winrt::make<PushNotificationChannel>(channelUri.get(), channelExpiryTime),
+                            winrt::make<PushNotificationChannel>(channelUri.get(), channelId.get(),  appUserModelId.get(), channelExpiryTime),
                             hr,
                             PushNotificationChannelStatus::CompletedSuccess);
                     }
