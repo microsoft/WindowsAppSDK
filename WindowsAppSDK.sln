@@ -32,6 +32,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AppLifecycleTestApp", "test
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{E378857C-D22A-4E5E-A6DA-A59C445CF22E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Deployment", "dev\Deployment\Deployment.vcxitems", "{DB38FB4D-D04F-4C1D-93E0-F8AE259C5FD6}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependency", "DynamicDependency", "{6CD01EF6-D4A4-4801-ADCF-344CF87FF942}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependency", "dev\DynamicDependency\DynamicDependency.vcxitems", "{BF055A59-0919-4E34-9B76-DD055495CC5A}"
@@ -188,6 +192,7 @@ Global
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\Deployment\Deployment.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
@@ -195,6 +200,7 @@ Global
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
 		dev\DynamicDependency\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
+		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{f76b776e-86f5-48c5-8fc7-d2795ecc9746}*SharedItemsImports = 4
 	EndGlobalSection
@@ -638,6 +644,8 @@ Global
 		{AC5FFC80-92FE-4933-BED2-EC5519AC4440} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{B567FE2E-3A03-48D0-B2B5-760CDEC35891} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{7C502995-59C3-483B-86BA-815985353633} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
+		{E378857C-D22A-4E5E-A6DA-A59C445CF22E} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{DB38FB4D-D04F-4C1D-93E0-F8AE259C5FD6} = {E378857C-D22A-4E5E-A6DA-A59C445CF22E}
 		{6CD01EF6-D4A4-4801-ADCF-344CF87FF942} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{BF055A59-0919-4E34-9B76-DD055495CC5A} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
 		{17B1F036-8FC3-49E6-9464-0C1F96CEAEB9} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}

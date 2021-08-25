@@ -1,0 +1,39 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK
+{
+    /// Represents the current Deployment status of the WindowsAppRuntime
+    [experimental]
+    runtimeclass DeploymentStatus
+    {
+        DeploymentStatus(
+            Boolean isOK,
+            Boolean packageInstallRequired,
+            HRESULT extendedError);
+
+        /// Returns True if WindowsAppRuntime has all required packages at equal or greater version
+        /// than the current framework requires.
+        Boolean IsOK{ get; };
+
+        /// Returns True if a Package install is required the WindowsAppRuntime to be in a good
+        /// state.
+        Boolean PackageInstallRequired{ get; };
+ 
+        /// Returns the first encountered error if there was an error initializing or getting the status,
+        /// or S_OK if no error.
+        HRESULT ExtendedError{ get; };
+    }
+
+    /// Used to query deployment information for WindowsAppRuntime
+    [experimental]
+    static runtimeclass DeploymentManager
+    {
+        /// Returns the current deployment status of Windows App Runtime.
+        static DeploymentStatus GetStatus();
+
+        /// Checks the status of the WindowsAppRuntime and attempts to register any packages
+        /// that can be registered. 
+        static DeploymentStatus Initialize();
+    }
+}
