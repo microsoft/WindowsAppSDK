@@ -10,13 +10,15 @@ class ForegroundSinkManager
 public:
     ForegroundSinkManager() = default;
 
-    void AddSink(LPCSTR processName, IWpnForegroundSink* sink);
+    void AddSink(std::string processName, IWpnForegroundSink* sink);
 
-    void Remove(LPCSTR processName, IWpnForegroundSink* sink);
+    void Remove(std::string processName, IWpnForegroundSink* sink);
 
-    bool InvokeForegroundHandlers(LPCSTR processName, byte* payload, ULONG payloadSize);
+    void InvokeAllHandlers(byte* payload, ULONG payloadSize); // for testing
+
+    bool InvokeForegroundHandlers(std::string processName, byte* payload, ULONG payloadSize);
 
 private:
-    std::unordered_map<LPCSTR, std::unordered_set<IWpnForegroundSink*>> m_foregroundMap = {};
+    std::unordered_map<std::string, std::unordered_set<IWpnForegroundSink*>> m_foregroundMap = {};
 
 };

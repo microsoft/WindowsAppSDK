@@ -3,22 +3,19 @@
 #include "pch.h"
 
 #include <NotificationsLongRunningProcess_h.h>
-
-
-
 #include <ForegroundSinkManager.h>
 
-void ForegroundSinkManager::AddSink(LPCSTR processName, IWpnForegroundSink* sink)
+void ForegroundSinkManager::AddSink(std::string processName, IWpnForegroundSink* sink)
 {
-    if (!m_foregroundMap.contains(processName))
+    /*if (!m_foregroundMap.contains(processName))
     {
         m_foregroundMap[processName] = std::unordered_set<IWpnForegroundSink*>();
-    }
-
+    }*/
+    m_foregroundMap[processName] = std::unordered_set<IWpnForegroundSink*>(); // for testing
     m_foregroundMap[processName].insert(sink);
 }
 
-void ForegroundSinkManager::Remove(LPCSTR processName, IWpnForegroundSink* sink)
+void ForegroundSinkManager::Remove(std::string processName, IWpnForegroundSink* sink)
 {
     THROW_HR_IF(E_INVALIDARG, !m_foregroundMap.contains(processName));
 
@@ -30,15 +27,25 @@ void ForegroundSinkManager::Remove(LPCSTR processName, IWpnForegroundSink* sink)
     }
 }
 
-bool ForegroundSinkManager::InvokeForegroundHandlers(LPCSTR processName, byte* payload, ULONG payloadSize)
+void ForegroundSinkManager::InvokeAllHandlers(byte* payload, ULONG payloadSize)
 {
-    std::unordered_set<IWpnForegroundSink*> sinks = m_foregroundMap[processName];
+    for (std::pair<std::string, std::unordered_set<IWpnForegroundSink*>> pair : m_foregroundMap)
+    {
+        for (IWpnForegroundSink* sink : pair.second)
+        {
+            sink->InvokeAll(payload, payloadSize);
+        }
+    }
+}
+
+bool ForegroundSinkManager::InvokeForegroundHandlers(std::string processName, byte* payload, ULONG payloadSize)
+{
     if (!m_foregroundMap.contains(processName))
     {
         return false;
     }
 
-    std::unordered_set<IWpnForegroundSink*> sinks2 = m_foregroundMap[processName];
+    std::unordered_set<IWpnForegroundSink*> sinks = m_foregroundMap[processName];
     std::for_each(sinks.begin(), sinks.end(), [&](IWpnForegroundSink* sink) { sink->InvokeAll(payload, payloadSize); });
     return true;
 }

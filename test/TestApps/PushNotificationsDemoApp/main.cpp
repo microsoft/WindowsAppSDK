@@ -89,7 +89,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    Sleep(20000); // Attach to debugger
+    Sleep(10000); // Attach to debugger
 
     PushNotificationChannel channel = RequestChannel();
 
