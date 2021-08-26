@@ -8,7 +8,7 @@
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <wil\resource.h>
-#include <..\WindowsAppRuntimeInsights.h>
+#include <..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h>
 
 class PowerNotifications : public wil::TraceLoggingProvider
 {
@@ -18,12 +18,13 @@ class PowerNotifications : public wil::TraceLoggingProvider
 
     public:
 
+    // Sample Event; remove later
     // Event that contains a single bool value as payload
     DEFINE_COMPLIANT_TELEMETRY_EVENT_BOOL(BooleanTelemetryEvent, // Event name
         PDT_ProductAndServiceUsage, // Privacy data for events. Check wil/traceloggingconfig.h for a full list
         value/* value to be logged*/);
 
-
+    // Sample Event; remove later
     // Event that contains a string as payload
     DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(TextPayloadEvent, // Event name
         PDT_ProductAndServiceUsage, // Privacy data data for events. Check wil/traceloggingconfig.h for a full list
