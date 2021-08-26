@@ -17,6 +17,7 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include "PushNotificationTelemetry.h"
 
 using namespace std::literals;
 
@@ -65,6 +66,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
+        std::string cv("correlationVector");
+        PushNotificationTelemetry::ToastActivationStart(L"appUserModelId", L"activationType", cv);
+
+        PushNotificationTelemetry::ToastActivationStop(L"appUserModelId", L"activationType", hstring(L"argument"), 0, S_OK, cv);
+
+        PushNotificationTelemetry::ChannelRequestedByApi(S_OK, true /*appIdProvided*/, L"pkgFullName", L"appUserModelId", L"remoteId");
+
+        PushNotificationTelemetry::ChannelClosedbyApi(S_OK, L"appUserModelId", L"channelId");
+
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
