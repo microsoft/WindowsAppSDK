@@ -199,6 +199,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CS", "CS", "{536FA8DA-51E2-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.WindowsAppSDK.Bootstrap.Net", "dev\Bootstrap\CS\Microsoft.WindowsAppSDK.Bootstrap.Net\Microsoft.WindowsAppSDK.Bootstrap.Net.csproj", "{D6574FD6-8D13-4412-9FCB-308D44063CDA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Power.Projection", "dev\Projections\CS\Microsoft.Windows.System.Power\Microsoft.Windows.System.Power.Projection.csproj", "{63ACBA4F-385A-4D04-98AD-263FED501A19}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -708,6 +710,20 @@ Global
 		{D6574FD6-8D13-4412-9FCB-308D44063CDA}.Release|x64.Build.0 = Release|x64
 		{D6574FD6-8D13-4412-9FCB-308D44063CDA}.Release|x86.ActiveCfg = Release|x86
 		{D6574FD6-8D13-4412-9FCB-308D44063CDA}.Release|x86.Build.0 = Release|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|ARM64.ActiveCfg = Debug|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|ARM64.Build.0 = Debug|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x64.ActiveCfg = Debug|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x64.Build.0 = Debug|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x86.ActiveCfg = Debug|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Debug|x86.Build.0 = Debug|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|Any CPU.ActiveCfg = Release|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|ARM64.ActiveCfg = Release|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|ARM64.Build.0 = Release|arm64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x64.ActiveCfg = Release|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x64.Build.0 = Release|x64
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x86.ActiveCfg = Release|x86
+		{63ACBA4F-385A-4D04-98AD-263FED501A19}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -774,6 +790,7 @@ Global
 		{8746775A-899E-49DD-A46C-2FE0899FFFEA} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{536FA8DA-51E2-40A3-8A97-A90FFA75AA18} = {8746775A-899E-49DD-A46C-2FE0899FFFEA}
 		{D6574FD6-8D13-4412-9FCB-308D44063CDA} = {536FA8DA-51E2-40A3-8A97-A90FFA75AA18}
+		{63ACBA4F-385A-4D04-98AD-263FED501A19} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}

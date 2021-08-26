@@ -8,15 +8,17 @@
         </RestoreSources>
         <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210806.1</CppWinRTVersion>
         <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">0.5.7</WindowsAppSdkVersion>
+        <Deployment Condition="'$(Deployment)' == '' ">Standalone</Deployment>
     </PropertyGroup>
 
     <PropertyGroup>
+        <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
         <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
         <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
         <VSIXBuild>true</VSIXBuild>
         <RuntimeIdentifiers>win</RuntimeIdentifiers>
         <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
-        <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\</BuildOutputRoot>
+        <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\$(Deployment)\</BuildOutputRoot>
         <BaseIntermediateOutputPath>$(BuildOutputRoot)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <OutputPath>$(IntermediateOutputPath)</OutputPath>
