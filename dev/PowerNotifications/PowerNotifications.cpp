@@ -24,6 +24,7 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
     void EnergySaverStatus_Register()
     {
         auto activity = PowerNotifications::EnergySaverStatusRegisterActivity::Start();
+        PowerNotifications::BooleanTelemetryEvent(true);
         THROW_IF_FAILED(PowerNotifications_RegisterEnergySaverStatusChangedListener(
             &PowerManager::EnergySaverStatusChanged_Callback,
             &Factory()->m_energySaverStatusHandle));
@@ -35,6 +36,7 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
         auto activity = PowerNotifications::EnergySaverStatusUnregisterActivity::Start();
         THROW_IF_FAILED(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
             Factory()->m_energySaverStatusHandle));
+        PowerNotifications::BooleanTelemetryEvent(false);
         activity.Stop();
     }
 
