@@ -44,6 +44,15 @@ namespace WindowsAppSDKInstaller {
     #if defined(WAS_MAIN_ARM64_LISTENTRY)
         WAS_MAIN_ARM64_LISTENTRY
     #endif
+    #if defined(WAS_SINGLETON_X86_LISTENTRY)
+        WAS_SINGLETON_X86_LISTENTRY
+    #endif
+    #if defined(WAS_SINGLETON_X64_LISTENTRY)
+        WAS_SINGLETON_X64_LISTENTRY
+    #endif
+    #if defined(WAS_SINGLETON_ARM64_LISTENTRY)
+        WAS_SINGLETON_ARM64_LISTENTRY
+    #endif
     #if defined(WAS_DDLM_X86_LISTENTRY)
         WAS_DDLM_X86_LISTENTRY
     #endif
