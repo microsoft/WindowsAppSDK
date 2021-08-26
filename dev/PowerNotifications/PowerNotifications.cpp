@@ -23,29 +23,21 @@ namespace winrt::Microsoft::Windows::System::Power::implementation
 
     void EnergySaverStatus_Register()
     {
-        auto activity = PowerNotifications::EnergySaverStatusRegisterActivity::Start();
-        PowerNotifications::BooleanTelemetryEvent(true);
         THROW_IF_FAILED(PowerNotifications_RegisterEnergySaverStatusChangedListener(
             &PowerManager::EnergySaverStatusChanged_Callback,
             &Factory()->m_energySaverStatusHandle));
-        activity.Stop();
     }
 
     void EnergySaverStatus_Unregister()
     {
-        auto activity = PowerNotifications::EnergySaverStatusUnregisterActivity::Start();
         THROW_IF_FAILED(PowerNotifications_UnregisterEnergySaverStatusChangedListener(
             Factory()->m_energySaverStatusHandle));
-        PowerNotifications::BooleanTelemetryEvent(false);
-        activity.Stop();
     }
 
     void EnergySaverStatus_Update()
     {
-        auto activity = PowerNotifications::EnergySaverStatusUpdateActivity::Start();
         THROW_IF_FAILED(PowerNotifications_GetEnergySaverStatus(
             &Factory()->m_cachedEnergySaverStatus));
-        activity.Stop();
     }
 
     // BatteryStatus Functions
