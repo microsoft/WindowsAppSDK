@@ -8,7 +8,32 @@
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <wil\resource.h>
-#include <wil\result_macros.h>
+#include <..\WindowsAppRuntimeInsights.h>
+
+class PowerNotifications : public wil::TraceLoggingProvider
+{
+    IMPLEMENT_TRACELOGGING_CLASS(PowerNotifications, "Microsoft.WindowsAppSDK.System.PowerNotifications",
+        // {a1b12e2c-12d9-564e-2ea1-2894ffcc7cc5}
+        (0xa1b12e2c, 0x12d9, 0x564e, 0x2e, 0xa1, 0x28, 0x94, 0xff, 0xcc, 0x7c, 0xc5));
+
+    public:
+
+    // Event that contains a single bool value as payload
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_BOOL(BooleanTelemetryEvent, // Event name
+        PDT_ProductAndServiceUsage, // Privacy data for events. Check wil/traceloggingconfig.h for a full list
+        value/* value to be logged*/);
+
+
+    // Event that contains a string as payload
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(TextPayloadEvent, // Event name
+        PDT_ProductAndServiceUsage, // Privacy data data for events. Check wil/traceloggingconfig.h for a full list
+        value/* value to be logged*/);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusEventActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUpdateActivity, PDT_ProductAndServicePerformance);
+};
 
 namespace winrt::Microsoft::Windows::System::Power
 {
