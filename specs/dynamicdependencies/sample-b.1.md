@@ -89,8 +89,8 @@ namespace HelloWorldCS_NoThrow
             string versionTag = "preview1";
             var minVersion = new PackageVersion();
             Console.WriteLine($"Bootstrap_NoThrow.Initialize({majorMinorVersion:X08}, \"{versionTag}\", {minVersion.Major}.{minVersion.Minor}.{minVersion.Build}.{minVersion.Revision})...");
-            int hr = Bootstrap_NoThrow.Initialize(majorMinorVersion, versionTag, minVersion);
-            if (hr < 0)
+            int hr = 0;
+            if (!Bootstrap.TryInitialize(majorMinorVersion, versionTag, minVersion,  out hr))
             {
                 Console.WriteLine($"Error 0x{hr:X08} in Bootstrap_NoThrow.Initialize(0x{majorMinorVersion:X08}, \"{versionTag}\", {minVersion.Major}.{minVersion.Minor}.{minVersion.Build}.{minVersion.Revision})");
                 Environment.Exit(hr);
@@ -100,7 +100,7 @@ namespace HelloWorldCS_NoThrow
             Console.WriteLine("Hello World!");
 
             // Cleanup
-            Bootstrap_NoThrow.Shutdown();
+            Bootstrap.Shutdown();
         }
     }
 }
