@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "WindowsAppSDKInsights.h"
+#include "..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h"
 #include <wrl\wrappers\corewrappers.h>
 
 DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider, "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry", (0x7c1b07ef, 0xa7c0, 0x56d1, 0x54, 0x56, 0x38, 0x5e, 0xbd, 0x44, 0x12, 0xb2));
