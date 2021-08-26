@@ -29,6 +29,11 @@ Microsoft::WRL::RuntimeClass<
 
 private:
 
+    // Extra stuff for testing
+    void SendForegroundNotification();
+    void SetForegroundTimer();
+    wil::unique_threadpool_timer m_foregroundTimer;
+
     wil::srwlock m_lock;
 
     bool m_initialized = false;

@@ -61,6 +61,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
 
     m_foregroundSinkManager.AddSink(processName, sink);
+    SetForegroundTimer();
     return S_OK;
 }
 
@@ -71,4 +72,39 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
 
     m_foregroundSinkManager.Remove(processName, sink);
     return S_OK;
+}
+
+void NotificationsLongRunningPlatformImpl::SetForegroundTimer()
+{
+    m_foregroundTimer.reset(CreateThreadpoolTimer(
+        [](PTP_CALLBACK_INSTANCE, _Inout_ PVOID platformPtr, _Inout_ PTP_TIMER)
+        {
+            NotificationsLongRunningPlatformImpl* platform = reinterpret_cast<NotificationsLongRunningPlatformImpl*>(platformPtr);
+
+            if (platform != nullptr)
+            {
+                platform->SendForegroundNotification();
+            }
+        },
+        this,
+        nullptr));
+
+    THROW_LAST_ERROR_IF_NULL(m_foregroundTimer);
+
+    // Negative times in SetThreadpoolTimer are relative. Allow 5 seconds to fire.
+    FILETIME dueTime{};
+    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(5000 * 10000);
+
+    SetThreadpoolTimer(m_foregroundTimer.get(), &dueTime, 0, 0);
+}
+
+void NotificationsLongRunningPlatformImpl::SendForegroundNotification()
+{
+    auto lock = m_lock.lock_shared();
+
+    byte samplePayload[] = { 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x20,
+                        0x66, 0x72, 0x6f, 0x6d, 0x20, 0x74, 0x68, 0x65,
+                            0x20, 0x4c, 0x52, 0x50, 0x21 }; // Payload from the LRP!
+
+    m_foregroundSinkManager.InvokeForegroundHandlers("PushNotificationsDemoApp.exe", samplePayload, sizeof(samplePayload));
 }

@@ -27,7 +27,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         try
         {
-            if (!IsPackagedApp())
+            if (IsPackagedApp())
             {
                 char processName[1024];
                 GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
@@ -69,7 +69,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        if (IsPackagedApp()) // Should be !m_isBIAvailable <- just for testing
+        if (!IsPackagedApp()) // Should be !m_isBIAvailable <- just for testing
         {
             return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
             {
@@ -96,7 +96,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        if (IsPackagedApp())
+        if (!IsPackagedApp())
         {
             m_channel.PushNotificationReceived(token);
         }
