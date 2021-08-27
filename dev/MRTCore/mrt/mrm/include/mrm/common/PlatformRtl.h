@@ -106,6 +106,4 @@ typedef BOOLEAN __BOOL;
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE(msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE_CHECK(msg, msg2, hr)
 
-#define WRITE_MRMMIN_UNABLE_TO_OPEN_OVERLAY_FILE(overlayFileName, result)
-
 #define WRITE_ETW(etw)

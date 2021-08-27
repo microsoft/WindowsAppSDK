@@ -161,13 +161,6 @@ extern "C"
         MrtRuntimeTraceLoggingProvider::MeasureGenericEventParam2(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
     }
 
-#define WRITE_MRMMIN_UNABLE_TO_OPEN_OVERLAY_FILE(overlayFileName, result) \
-    { \
-        MrtRuntimeTraceLoggingProvider::MeasureUnableToOpenOverlayFile(TOWIDE(__FUNCTION__), overlayFileName, result); \
-        /* Auto bug will be created with telemetry ASSERT. The bug will be assigned to overlay owner. */ \
-        MICROSOFT_TELEMETRY_ASSERT(FALSE); \
-    }
-
 #define WRITE_ETW(etw) etw
 
 #endif

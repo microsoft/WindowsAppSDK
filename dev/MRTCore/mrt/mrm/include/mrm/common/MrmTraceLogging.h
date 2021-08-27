@@ -29,8 +29,6 @@ class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
     DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM4(TelemetryGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(MeasureGenericEventParam1, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(MeasureGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
-
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(MeasureUnableToOpenOverlayFile, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, overlayFileName, int, hresult);
 };
 
 // case insensitive prefix match of "*:\users"
