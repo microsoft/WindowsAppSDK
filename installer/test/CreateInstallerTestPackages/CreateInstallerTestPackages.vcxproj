@@ -157,6 +157,9 @@
     <Xml Include="appxmanifest_main_arm64.xml" />
     <Xml Include="appxmanifest_main_x64.xml" />
     <Xml Include="appxmanifest_main_x86.xml" />
+    <Xml Include="appxmanifest_singleton_arm64.xml" />
+    <Xml Include="appxmanifest_singleton_x64.xml" />
+    <Xml Include="appxmanifest_singleton_x86.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\NonFunctioning.exe" />

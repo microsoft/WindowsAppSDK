@@ -677,7 +677,7 @@ STDAPI MrmGetChildResourceMap(
     }
 
     const ResourceMapSubtree* childSubTree;
-    RETURN_IF_FAILED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree));
+    RETURN_IF_FAILED_WITH_EXPECTED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree), HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND));
 
     *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(childSubTree));
     return S_OK;
