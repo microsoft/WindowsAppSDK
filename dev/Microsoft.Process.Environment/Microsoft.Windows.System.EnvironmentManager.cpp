@@ -88,8 +88,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
-        if (variableName.empty() ||
-            variableName.size() == 0 ||
+        if (variableName.size() == 0 ||
             std::wstring_view(variableName)._Starts_with(L"0x00") ||
             variableName[0] == L'=' ||
             variableName.size() >= 32767)
