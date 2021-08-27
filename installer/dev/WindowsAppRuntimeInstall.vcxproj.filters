@@ -24,7 +24,7 @@
     <ClInclude Include="packages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="windowsappsdk_definitions.h">
+    <ClInclude Include="windowsappruntime_definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

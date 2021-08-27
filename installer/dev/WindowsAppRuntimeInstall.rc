@@ -6,7 +6,7 @@
 //
 // PACKAGE
 //
-#include "windowsappsdk_definitions.h"
+#include "windowsappruntime_definitions.h"
 #if defined(WAR_FRAMEWORK_X86_RCENTRY)
 WAR_FRAMEWORK_X86_RCENTRY
 #endif
@@ -53,7 +53,7 @@ WAR_DDLM_ARM64_RCENTRY
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "winres.h"
-#include "windowsappsdk_definitions.h"
+#include "windowsappruntime_definitions.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 

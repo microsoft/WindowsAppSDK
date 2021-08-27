@@ -3,7 +3,7 @@
 // This header defines the packages included in the installer.
 // By default, the project will use test packages built for verification of this installer.
 
-// For building the installer with non-test packages, include a "windowsappsdk_definitions_override.h" file.
+// For building the installer with non-test packages, include a "windowsappruntime_definitions_override.h" file.
 // If present, the override header will be loaded to change the package definitions such as the path.
 // Preprocessor definitions used in the override header must be supported by the resource compiler.
 
@@ -182,5 +182,5 @@
 // This is defined in the vcxproj based on existence of the header in the same directory.
 // It is defined in both the c compiler preprocessor definitions and the resource compiler preprocessor definitions.
 #ifdef USE_DEFINITIONS_OVERRIDE_HEADER
-    #include "windowsappsdk_definitions_override.h"
+    #include "windowsappruntime_definitions_override.h"
 #endif

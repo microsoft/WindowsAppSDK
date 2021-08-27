@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "pch.h"
-#include "windowsappsdk_definitions.h"
+#include "windowsappruntime_definitions.h"
 
 using namespace winrt;
 using namespace Windows::System;
