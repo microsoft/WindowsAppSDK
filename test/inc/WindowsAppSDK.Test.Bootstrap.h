@@ -108,7 +108,7 @@ namespace Test::Bootstrap
             return;
         }
 
-        // We need to find Microsoft.WindowsAppSDK.Bootstrap.dll.
+        // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
         // Normally it's colocated with the application (i.e. same dir as the exe)
         // but that's not true of our test project (a dll) in our build environment
         // (different directories). So we'll explicitly find and load it so the

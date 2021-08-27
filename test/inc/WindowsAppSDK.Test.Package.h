@@ -19,10 +19,10 @@
 
 #define WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Framework"
-#define WINDOWSAPPSDK_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.DDLM"
-#define WINDOWSAPPSDK_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.Main"
-#define WINDOWSAPPSDK_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Singleton"
+#define WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework"
+#define WINDOWSAPPSDK_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.DDLM"
+#define WINDOWSAPPSDK_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main"
+#define WINDOWSAPPSDK_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton"
 
 #define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppSDK.Test.DDLM"
 #define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING
@@ -69,8 +69,8 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
 
 namespace Test::Packages::WindowsAppSDKFramework
 {
-    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppSDK.Framework";
-    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppSDK.Framework.msix";
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
+    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppRuntime.Framework.msix";
     constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
     constexpr PCWSTR c_PackageFullName = WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
 }

@@ -12,7 +12,7 @@ parameters:
     default: False
   - name: "WindowsAppSDKInsightsSourceDirectory"
     type: string
-    default: $(Build.SourcesDirectory)\dev\WindowsAppSDK_Insights
+    default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
 
 jobs:
 - job: CredScan

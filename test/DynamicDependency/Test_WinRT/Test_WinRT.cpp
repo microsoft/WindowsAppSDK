@@ -33,7 +33,7 @@ bool Test::DynamicDependency::Test_WinRT::Setup()
     TP::AddPackage_DynamicDependencyDataStore();
     TP::AddPackage_DynamicDependencyLifetimeManager();
 
-    // We need to find Microsoft.WindowsAppSDK.Bootstrap.dll.
+    // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
     // Normally it's colocated with the application (i.e. same dir as the exe)
     // but that's not true of our test project (a dll) in our build environment
     // (different directories). So we'll explicitly find and load it so the
@@ -149,7 +149,7 @@ void Test::DynamicDependency::Test_WinRT::FullLifecycle_ProcessLifetime_Framewor
     // -- Use it
 
     // Let's use resources from the dynamically added package
-    auto mathAddDllFilename{ L"Microsoft.WindowsAppSDK.dll" };
+    auto mathAddDllFilename{ L"Microsoft.WindowsAppRuntime.dll" };
     wil::unique_hmodule mathAddDll(LoadLibrary(mathAddDllFilename));
     {
         const auto lastError{ GetLastError() };

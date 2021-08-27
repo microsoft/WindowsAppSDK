@@ -68,12 +68,12 @@ STDAPI MddBootstrapInitialize(
     // Temporarily add the framework's package directory to PATH so LoadLibrary can find it and any colocated imports
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
-    auto windowsAppSdkDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppSDK.dll" };
-    wil::unique_hmodule windowsAppSdkDll(LoadLibraryEx(windowsAppSdkDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
+    auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
+    wil::unique_hmodule windowsAppSdkDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
     if (!windowsAppSdkDll)
     {
         const auto lastError{ GetLastError() };
-        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppSdkDllFilename.c_str());
+        THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
     }
 
     const MddPackageDependencyProcessorArchitectures architectureFilter{};
@@ -171,7 +171,7 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     //
     // NOTE: The Windows App SDK DDLM package...
     //          * ...has 1 framework package dependency
-    //          * ...its framework package dependency's name starts with "Microsoft.WindowsAppSDK"
+    //          * ...its framework package dependency's name starts with "Microsoft.WindowsAppRuntime"
     //          * ...its publisher id is "8wekyb3d8bbwe"
     // Any failure to find the DDLM's package graph but not find the expected framework dependency
     // implies the DDLM is improperly built and cannot be used. Of course ThisShouldNeverHappen
@@ -181,7 +181,7 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     THROW_HR_IF_MSG(E_UNEXPECTED, packageInfoCount != 1, "PRddlm:%ls PackageGraph.Count:%u", packageFullName, packageInfoCount);
     //
     const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
-    const WCHAR c_expectedNamePrefix[]{ L"Microsoft.WindowsAppSDK" };
+    const WCHAR c_expectedNamePrefix[]{ L"Microsoft.WindowsAppRuntime" };
     const int c_expectedNamePrefixLength{ ARRAYSIZE(c_expectedNamePrefix) - 1 };
     THROW_HR_IF_MSG(E_UNEXPECTED, CompareStringOrdinal(packageInfo->packageId.name, c_expectedNamePrefixLength, c_expectedNamePrefix, c_expectedNamePrefixLength, TRUE) != CSTR_EQUAL,
                     "PRddlm:%ls Expected.Name:%ls PackageGraph[0].PackageFullName:%ls", packageFullName, c_expectedNamePrefix, packageInfo->packageFullName);

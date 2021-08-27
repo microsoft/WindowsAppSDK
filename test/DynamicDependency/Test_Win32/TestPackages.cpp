@@ -223,8 +223,8 @@ namespace Test::Packages
     {
         // Determine the location of Windows App SDK's Framework's msix. See GetSolutionOutDirPath() for more details.
         auto path = TF::GetSolutionOutDirPath();
-        path /= L"Microsoft.WindowsAppSDK.Framework";
-        path /= L"Microsoft.WindowsAppSDK.Framework.msix";
+        path /= L"Microsoft.WindowsAppRuntime.Framework";
+        path /= L"Microsoft.WindowsAppRuntime.Framework.msix";
         return path;
     }
 }

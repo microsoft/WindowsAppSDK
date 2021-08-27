@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F3659DFF-2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8630F7AA-2969-4DC9-8700-9B468C1DC21D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppSDK_DLL", "dev\WindowsAppSDK_DLL\WindowsAppSDK_DLL.vcxproj", "{B73AD907-6164-4294-88FB-F3C9C10DA1F1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_DLL", "dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj", "{B73AD907-6164-4294-88FB-F3C9C10DA1F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppLifecycle", "AppLifecycle", "{3DE93B2F-F887-437D-B512-6B1024ABA290}"
 EndProject
@@ -59,7 +59,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Add", "test\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Multiply", "test\DynamicDependency\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj", "{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppSDK.Framework", "test\DynamicDependency\data\Microsoft.WindowsAppSDK.Framework\Microsoft.WindowsAppSDK.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppRuntime.Framework", "test\DynamicDependency\data\Microsoft.WindowsAppRuntime.Framework\Microsoft.WindowsAppRuntime.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyDataStore", "DynamicDependencyDataStore", "{441A3BB0-7FD2-4902-AEDB-A1C57B528C77}"
 EndProject

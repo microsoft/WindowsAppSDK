@@ -46,7 +46,7 @@ namespace Test::FileSystem
         //    \<project>.Msix
         //        <project>.Msix
         //    \WindowsAppSDK_BootstrapDLL
-        //        Microsoft.WindowsAppSDK.Bootstrap.dll
+        //        Microsoft.WindowsAppRuntime.Bootstrap.dll
 
         // Find the test dll's directory
         auto testPath = GetTestAbsoluteFilename();
@@ -61,7 +61,7 @@ namespace Test::FileSystem
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
         path /= L"WindowsAppSDK_BootstrapDLL";
-        path /= L"Microsoft.WindowsAppSDK.Bootstrap.dll";
+        path /= L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
         return path;
     }
 
@@ -69,8 +69,8 @@ namespace Test::FileSystem
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"WindowsAppSDK_DLL";
-        path /= L"Microsoft.WindowsAppSDK.dll";
+        path /= L"WindowsAppRuntime_DLL";
+        path /= L"Microsoft.WindowsAppRuntime.dll";
         return path;
     }
 }

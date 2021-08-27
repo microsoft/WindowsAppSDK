@@ -40,7 +40,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{B73AD907-6164-4294-88FB-F3C9C10DA1F1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Microsoft.WindowsAppSDK</RootNamespace>
+    <RootNamespace>Microsoft.WindowsAppRuntime</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <UseUnicrt>true</UseUnicrt>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
@@ -142,35 +142,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>Microsoft.WindowsAppSDK</TargetName>
+    <TargetName>Microsoft.WindowsAppRuntime</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

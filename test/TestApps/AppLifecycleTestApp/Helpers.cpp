@@ -4,7 +4,7 @@
 #include "Helpers.h"
 #include <TestDef.h>
 
-const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppSDK.Bootstrap.dll";
+const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
 
 typedef HRESULT (*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
 typedef HRESULT (*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);

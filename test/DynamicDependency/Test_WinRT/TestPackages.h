@@ -118,9 +118,9 @@ namespace Test::Packages::DynamicDependencyLifetimeManagerGC1010
 
 namespace Test::Packages::WindowsAppSDKFramework
 {
-    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppSDK.Framework";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppSDK.Framework_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppSDK.Framework_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.Framework_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages::DynamicDependencyDataStore

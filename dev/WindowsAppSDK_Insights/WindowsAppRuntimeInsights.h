@@ -14,7 +14,7 @@
 #include <wil/resource.h>
 #include <string>
     namespace Microsoft::WindowsAppSDK::Insights
-    { 
+    {
     class RuntimeInformation
     {
     public:
@@ -52,9 +52,9 @@
 
         static wil::unique_hmodule LoadResourceModule()
         {
-            const PCWSTR c_ResourceDllName{ L"Microsoft.WindowsAppSDK.Insights.Resource.dll" };
-            wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_ResourceDllName));
-            LOG_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(GetLastError()), resourceDllHandle, "Unable to load resource dll. %ws", c_ResourceDllName);
+            const PCWSTR c_resourceDllName{ L"Microsoft.WindowsAppRuntime.Insights.Resource.dll" };
+            wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_resourceDllName));
+            LOG_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(GetLastError()), resourceDllHandle, "Unable to load resource dll. %ws", c_resourceDllName);
             return resourceDllHandle;
         }
     };

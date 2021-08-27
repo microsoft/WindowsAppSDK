@@ -27,7 +27,7 @@ if "%TFS_BUILDCONFIGURATION%" EQU "" (
 	exit /b 1
 )
 
-set BasePackageName=Microsoft.WindowsAppSDK
+set BasePackageName=Microsoft.WindowsAppRuntime
 
 if "%BUILDOUTPUT_OVERRIDE%" EQU "" (
 	echo Expecting BUILDOUTPUT_OVERRIDE to be set
