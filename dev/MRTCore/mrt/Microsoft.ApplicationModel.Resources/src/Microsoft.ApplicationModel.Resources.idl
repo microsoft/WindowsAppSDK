@@ -46,6 +46,7 @@ namespace Microsoft.ApplicationModel.Resources
         UInt32 ResourceCount { get; }; 
 
         ResourceMap GetSubtree(String reference);
+        ResourceMap TryGetSubtree(String reference);
 
         ResourceCandidate GetValue(String resource);
         [method_name("GetValueWithContext")]

@@ -560,6 +560,50 @@ template<typename VALUE, typename CallBackCompareFunc = VoidComparerFunc, typena
 class DefPointerList : public DefList<VALUE*, CallBackCompareFunc, CallbackHashFunc>
 {
 public:
+    static HRESULT CreateInstance(_Outptr_ DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>** result)
+    {
+        return CreateInstance(10, &CompareGenericType<VALUE>, NULL, result);
+    }
+
+    static HRESULT CreateInstance(UINT32 size, _Outptr_ DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>** result)
+    {
+        return CreateInstance(size, &CompareGenericType<VALUE>, NULL, result);
+    }
+
+    static HRESULT CreateInstance(UINT32 size, __in CallBackCompareFunc pFnCallBack, _Outptr_ DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>** result)
+    {
+        return CreateInstance(size, pFnCallBack, NULL, result);
+    }
+
+    static HRESULT CreateInstance(UINT32 size, __in CallbackHashFunc pCallBackHash, _Outptr_ DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>** result)
+    {
+        return CreateInstance(size, &CompareGenericType<VALUE>, pCallBackHash, result);
+    }
+
+    static HRESULT CreateInstance(
+        UINT32 size,
+        _In_ CallBackCompareFunc pFnComparer,
+        _In_ CallbackHashFunc pFunHash,
+        _Outptr_ DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>** result)
+    {
+        *result = NULL;
+        DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>* list = new DefPointerList<VALUE, CallBackCompareFunc, CallbackHashFunc>();
+        if (list == NULL)
+        {
+            return E_OUTOFMEMORY;
+        }
+
+        HRESULT hr = list->Init(size, pFnComparer, pFunHash);
+        if (FAILED(hr))
+        {
+            delete list;
+            return hr;
+        }
+
+        *result = list;
+        return S_OK;
+    }
+
     virtual ~DefPointerList()
     {
         for (int i = 0; i < DefList::Count(); i++)
