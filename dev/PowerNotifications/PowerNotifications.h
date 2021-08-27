@@ -7,7 +7,6 @@
 #include <powersetting.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
 #include <frameworkudk\PowerNotificationsPal.h>
-#include <wil\resource.h>
 #include <..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h>
 
 class PowerNotifications : public wil::TraceLoggingProvider
@@ -448,6 +447,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 FireCorrespondingCompositeBatteryEvent();
             }
 
+
             // PowerSupplyStatus Functions
             Power::PowerSupplyStatus PowerSupplyStatus()
             {
@@ -468,6 +468,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 RemoveCallback(powerSupplyStatusFunc, token);
             }
 
+
             // RemainingChargePercent Functions
             int RemainingChargePercent()
             {
@@ -487,7 +488,6 @@ namespace winrt::Microsoft::Windows::System::Power
                 auto activity = PowerNotifications::RemainingChargePercentUnregisterActivity::Start();
                 RemoveCallback(remainingChargePercentFunc, token);
             }
-
 
 
             // RemainingDischargeTime Functions
@@ -545,6 +545,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 RaiseEvent(powerSourceKindFunc);
             }
 
+
             // DisplayStatus Functions
             Power::DisplayStatus DisplayStatus()
             {
@@ -592,6 +593,8 @@ namespace winrt::Microsoft::Windows::System::Power
                 auto activity = PowerNotifications::SystemIdleStatusCallbackActivity::Start();
                 RaiseEvent(systemIdleStatusFunc);
             }
+
+
             // EffectivePowerMode Functions
             winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
             {
@@ -620,6 +623,8 @@ namespace winrt::Microsoft::Windows::System::Power
                 m_cachedPowerMode = mode;
                 RaiseEvent(effectivePowerModeFunc);
             }
+
+
             // UserPresenceStatus Functions
             Power::UserPresenceStatus UserPresenceStatus()
             {
@@ -646,6 +651,8 @@ namespace winrt::Microsoft::Windows::System::Power
                 m_cachedUserPresenceStatus = userPresenceStatus;
                 RaiseEvent(userPresenceStatusFunc);
             }
+
+
             //SystemSuspend Functions
             Power::SystemSuspendStatus SystemSuspendStatus()
             {
