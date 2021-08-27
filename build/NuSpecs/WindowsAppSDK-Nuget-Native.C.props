@@ -29,7 +29,7 @@
       </AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(MSBuildThisFileDirectory)..\..\runtimes\win-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppSDK.Bootstrap.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppSDK.Bootstrap.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
