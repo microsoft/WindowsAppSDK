@@ -8,8 +8,8 @@
 
 namespace winrt::Microsoft::Windows::System::implementation
 {
-    bool EnvironmentManager::s_HasCheckedIsSupported = false;
-    bool EnvironmentManager::s_IsSupported = false;
+    bool EnvironmentManager::s_HasCheckedIsSupported{};
+    bool EnvironmentManager::s_IsSupported{};
 
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope) { }
