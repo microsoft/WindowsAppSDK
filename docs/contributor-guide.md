@@ -4,7 +4,7 @@ _We want to hear from you!_
 
 File a [new issue!](https://github.com/microsoft/WindowsAppSDK/issues/new/choose) Tell us what problem you're
 trying to solve, how you've tried to solve it so far, and what would be the ideal solution for your app.  Bonus
-points if there's a gist or existing repo we can look at with you.
+points if there's a gist or existing repo we can look at with you. 
 
 
 1. **[Ask a question](https://github.com/microsoft/WindowsAppSDK/issues/new?assignees=&labels=question&template=question.md&title=Question%3A+%5Byour+question+here%5D)**<br>
@@ -18,6 +18,9 @@ points if there's a gist or existing repo we can look at with you.
 3. **[Make a feature proposal](https://github.com/microsoft/WindowsAppSDK/issues/new?assignees=&labels=feature+proposal&template=feature-proposal.md&title=)**<br>
    What components do you want to see in the Windows App SDK? For example you can propose a new API on an existing type, or an idea for a new API.
    It's fine if you don't have all the details: you can start with a summary and rationale.
+   
+4. **[WinUI topics](https://github.com/microsoft/microsoft-ui-xaml)**<br>
+   Please file WinUI issues and feedback in the [WinUI repository](https://github.com/microsoft/microsoft-ui-xaml). Check out their amazing guide to [general contributing](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING.md) as well as [contributing feedback and requests](https://github.com/microsoft/microsoft-ui-xaml/blob/main/CONTRIBUTING_feedback_and_requests.md)!
 
 
 **Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**

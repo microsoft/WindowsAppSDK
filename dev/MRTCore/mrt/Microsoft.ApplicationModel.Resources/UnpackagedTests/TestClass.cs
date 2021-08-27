@@ -433,6 +433,40 @@ namespace MrtCoreUnpackagedTests
         }
 
         [TestMethod]
+        public void ResourceManager_TryGetSubtreeTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
+
+            CommonTestCode.ResourceManagerTest.TryGetSubtreeTest();
+        }
+
+        [TestMethod]
+        public void ResourceManager_SubtreeNotFoundTest()
+        {
+            if (m_rs5)
+            {
+                // Test doesn't run before 19H1. Make it pass as skipped is treated as failure in Helix.
+                return;
+            }
+
+            if (m_exeFolder != m_assemblyFolder)
+            {
+                File.Copy(Path.Combine(m_assemblyFolder, "resources.pri.standalone"), Path.Combine(m_exeFolder, "resources.pri.standalone"));
+            }
+
+            CommonTestCode.ResourceManagerTest.SubtreeNotFoundTest();
+        }
+
+        [TestMethod]
         public void ResourceManager_ResourceNotFoundTest()
         {
             if (m_rs5)

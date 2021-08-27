@@ -39,7 +39,14 @@
             const uint32_t c_ResourceMaxLength{ 100 };
             char resourceValue[c_ResourceMaxLength]{};
 
-            THROW_IF_WIN32_BOOL_FALSE_MSG(::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)), "Failed to load resource string. id: %d", id);
+            if(module)
+            {
+                if(0 == ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)))
+                {
+                    DWORD error{ GetLastError() };
+                    LOG_HR_IF_MSG(HRESULT_FROM_WIN32(error), ERROR_SUCCESS != error, "Failed to load resource string. id: %d", id);
+                }
+            }
             return resourceValue;
         }
 
@@ -47,7 +54,7 @@
         {
             const PCWSTR c_ResourceDllName{ L"Microsoft.WindowsAppSDK.Insights.Resource.dll" };
             wil::unique_hmodule resourceDllHandle(::LoadLibraryW(c_ResourceDllName));
-            THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(GetLastError()), resourceDllHandle, "Unable to load resource dll. %ws", c_ResourceDllName);
+            LOG_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(GetLastError()), resourceDllHandle, "Unable to load resource dll. %ws", c_ResourceDllName);
             return resourceDllHandle;
         }
     };
