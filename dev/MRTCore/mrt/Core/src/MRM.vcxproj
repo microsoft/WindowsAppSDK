@@ -125,6 +125,8 @@
       <LinkIncremental>false</LinkIncremental>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <!-- EnableCOMDATFolding and OptimizeReferences are set to true below for all build configurations. -->
+      <!-- /PROFILE implies /OPT:REF /OPT:NOICF /INCREMENTAL:NO /FIXED:NO -->
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">

@@ -154,6 +154,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <LinkIncremental>false</LinkIncremental>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <!-- /PROFILE implies /OPT:REF /OPT:NOICF /INCREMENTAL:NO /FIXED:NO -->
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
