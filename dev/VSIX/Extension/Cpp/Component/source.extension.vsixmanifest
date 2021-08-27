@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="Microsoft.WindowsAppSDK.Cpp" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+    <DisplayName>Windows App SDK (C++)</DisplayName>
+    <Description xml:space="preserve">The Microsoft Windows App SDK Visual Studio extension adds C++ project and item templates to support building Windows apps and components.</Description>
+    <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
+    <License>LICENSE</License>
+    <GettingStartedGuide>https://github.com/microsoft/WindowsAppSDK/</GettingStartedGuide>
+    <ReleaseNotes>https://github.com/microsoft/WindowsAppSDK/releases</ReleaseNotes>
+    <Icon>WindowsAppSDK.png</Icon>
+    <PreviewImage>WindowsAppSDK.png</PreviewImage>
+    <Tags>WindowsAppSDK, WinUI, XAML, C++, C++/WinRT</Tags>
+    <Preview>false</Preview>
+  </Metadata>
+  <Installation AllUsers="true">
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.9, 17.0)">
+      <ProductArchitecture>x86</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.9, 17.0)">
+      <ProductArchitecture>x86</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 18.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.9, 17.0)">
+      <ProductArchitecture>x86</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.VC.CoreBuildTools" Version="[17.0,18.0)" DisplayName="C++ Build Tools core features" />
+  </Prerequisites>
+  <Reference Id="NuPackToolsVsix.Microsoft.67e54e40-0ae3-42c5-a949-fddf5739e7a5" MinVersion="1.7.30402.9028">
+    <Name>NuGet Package Manager</Name>
+    <MoreInfoUrl>http://docs.microsoft.com/nuget/</MoreInfoUrl>
+  </Reference>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.CppWinRT.BlankWindow" d:TargetPath="|WinUI.Desktop.CppWinRT.BlankWindow;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.BlankPage" d:TargetPath="|WinUI.Neutral.CppWinRT.BlankPage;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.Resw" d:TargetPath="|WinUI.Neutral.CppWinRT.Resw;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.TemplatedControl" d:TargetPath="|WinUI.Neutral.CppWinRT.TemplatedControl;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.UserControl" d:TargetPath="|WinUI.Neutral.CppWinRT.UserControl;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.CppWinRT.PackagedApp" d:TargetPath="|WinUI.Desktop.CppWinRT.PackagedApp;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.ResourceDictionary" d:TargetPath="|WinUI.Neutral.CppWinRT.ResourceDictionary;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.RuntimeComponent" d:TargetPath="|WinUI.Neutral.CppWinRT.RuntimeComponent;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+  </Assets>
+</PackageManifest>

@@ -35,6 +35,9 @@ Framework_arm64=$(InstallerPackagesDir)\framework_arm64.msix
 Main_x86=$(InstallerPackagesDir)\main_x86.msix
 Main_x64=$(InstallerPackagesDir)\main_x64.msix
 Main_arm64=$(InstallerPackagesDir)\main_arm64.msix
+Singleton_x86=$(InstallerPackagesDir)\singleton_x86.msix
+Singleton_x64=$(InstallerPackagesDir)\singleton_x64.msix
+Singleton_arm64=$(InstallerPackagesDir)\singleton_arm64.msix
 DDLM_x86=$(InstallerPackagesDir)\ddlm_x86.msix
 DDLM_x64=$(InstallerPackagesDir)\ddlm_x64.msix
 DDLM_arm64=$(InstallerPackagesDir)\ddlm_arm64.msix
@@ -57,6 +60,10 @@ $(OutMsix_x86): $(ProjectDir)appxmanifest_fw_x86.xml
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x86) /p $(OutMsix_x86)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x86)
     @copy /Y $(OutMsix_x86) $(Main_x86) >NUL
+    @copy /Y $(ProjectDir)appxmanifest_singleton_x86.xml $(WorkDir_x86)\appxmanifest.xml >NUL
+    @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x86) /p $(OutMsix_x86)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x86)
+    @copy /Y $(OutMsix_x86) $(Singleton_x86) >NUL
     @copy /Y $(ProjectDir)appxmanifest_ddlm_x86.xml $(WorkDir_x86)\appxmanifest.xml >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x86) /p $(OutMsix_x86)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x86)
@@ -75,6 +82,10 @@ $(OutMsix_x64): $(ProjectDir)appxmanifest_fw_x64.xml
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x64) /p $(OutMsix_x64)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x64)
     @copy /Y $(OutMsix_x64) $(Main_x64) >NUL
+    @copy /Y $(ProjectDir)appxmanifest_singleton_x64.xml $(WorkDir_x64)\appxmanifest.xml >NUL
+    @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x64) /p $(OutMsix_x64)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x64)
+    @copy /Y $(OutMsix_x64) $(Singleton_x64) >NUL
     @copy /Y $(ProjectDir)appxmanifest_ddlm_x64.xml $(WorkDir_x64)\appxmanifest.xml >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_x64) /p $(OutMsix_x64)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_x64)
@@ -93,6 +104,10 @@ $(OutMsix_arm64): $(ProjectDir)appxmanifest_fw_arm64.xml
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_arm64) /p $(OutMsix_arm64)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_arm64)
     @copy /Y $(OutMsix_arm64) $(Main_arm64) >NUL
+    @copy /Y $(ProjectDir)appxmanifest_singleton_arm64.xml $(WorkDir_arm64)\appxmanifest.xml >NUL
+    @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_arm64) /p $(OutMsix_arm64)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_arm64)
+    @copy /Y $(OutMsix_arm64) $(Singleton_arm64) >NUL
     @copy /Y $(ProjectDir)appxmanifest_ddlm_arm64.xml $(WorkDir_arm64)\appxmanifest.xml >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir_arm64) /p $(OutMsix_arm64)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(MSTestPfx) $(OutMsix_arm64)

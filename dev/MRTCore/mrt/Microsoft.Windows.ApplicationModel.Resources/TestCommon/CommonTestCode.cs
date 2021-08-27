@@ -55,6 +55,12 @@ namespace CommonTestCode
             return true;
         }
 
+        public static bool IsNotNull(object variable, string message = null)
+        {
+            Assert.IsNotNull(variable, message);
+            return true;
+        }
+
         public static T Throws<T>(Func<object> action) where T : Exception
         {
             return Assert.ThrowsException<T>(action);
@@ -174,6 +180,29 @@ namespace CommonTestCode
             Verify.IsNull(resourceCandidate);
         }
 
+        public static void TryGetSubtreeTest()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var resourceMap = resourceManager.MainResourceMap.TryGetSubtree("resources");
+            var resourceCandidate = resourceMap.GetValue("IDS_MANIFEST_MUSIC_APP_NAME");
+            var resource = resourceCandidate.ValueAsString;
+            Verify.AreEqual(resource, "Groove Music");
+
+            var ex = Verify.Throws<Exception>(() => resourceMap.GetValue("abc"));
+            Verify.AreEqual((uint)ex.HResult, 0x80073b17); // HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND)
+            resourceCandidate = resourceMap.TryGetValue("abc");
+            Verify.IsNull(resourceCandidate);
+        }
+
+        public static void SubtreeNotFoundTest()
+        {
+            var resourceManager = new ResourceManager("resources.pri.standalone");
+            var ex = Verify.Throws<Exception>(() => resourceManager.MainResourceMap.GetSubtree("DoesNotExist"));
+            Verify.AreEqual((uint)ex.HResult, 0x80073b1f); // HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND)
+
+            Verify.IsNull(resourceManager.MainResourceMap.TryGetSubtree("DoesNotExist"));
+        }
+
         public static void ResourceNotFoundTest()
         {
             var resourceManager = new ResourceManager("resources.pri.standalone");
@@ -217,6 +246,9 @@ namespace CommonTestCode
             var resourceManager = new ResourceManager("NoSuchFile.pri");
             var resourceMap = resourceManager.MainResourceMap;
             var resourceChildMap = resourceMap.GetSubtree("anyname");
+            Verify.IsNotNull(resourceChildMap);
+            var resourceChildMap2 = resourceMap.TryGetSubtree("anyname");
+            Verify.IsNotNull(resourceChildMap2);
             var resourceContext = resourceManager.CreateResourceContext();
             Verify.IsTrue(resourceContext.QualifierValues.ContainsKey(KnownResourceQualifierName.Language));
 
