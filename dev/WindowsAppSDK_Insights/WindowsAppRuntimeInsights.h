@@ -39,11 +39,6 @@
             const uint32_t c_ResourceMaxLength{ 100 };
             char resourceValue[c_ResourceMaxLength]{};
 
-<<<<<<< HEAD
-            if (module)
-            {
-                LOG_IF_WIN32_BOOL_FALSE_MSG(::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)), "Failed to load resource string. id: %d", id);
-=======
             if(module)
             {
                 if(0 == ::LoadStringA(module.get(), id, resourceValue, ARRAYSIZE(resourceValue)))
@@ -51,7 +46,6 @@
                     DWORD error{ GetLastError() };
                     LOG_HR_IF_MSG(HRESULT_FROM_WIN32(error), ERROR_SUCCESS != error, "Failed to load resource string. id: %d", id);
                 }
->>>>>>> main
             }
             return resourceValue;
         }
