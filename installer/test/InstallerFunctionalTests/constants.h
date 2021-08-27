@@ -17,11 +17,11 @@
 #endif
 
 #define BASE_PATH L"..\\..\\..\\"
-#define INSTALLER_DIR L"WindowsAppSDKInstall"
-#define INSTALLER_FILENAME L"WindowsAppSDKInstall.exe"
+#define INSTALLER_DIR L"WindowsAppRuntimeInstall"
+#define INSTALLER_FILENAME L"WindowsAppRuntimeInstall.exe"
 #define INSTALLER_EXE_PATH BASE_PATH CONFIGURATION L"\\" ARCH L"\\" INSTALLER_DIR L"\\" INSTALLER_FILENAME
 
-namespace WindowsAppSDKInstallerTests
+namespace WindowsAppRuntimeInstallerTests
 {
     static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 

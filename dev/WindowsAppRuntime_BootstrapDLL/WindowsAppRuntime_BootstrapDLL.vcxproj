@@ -171,7 +171,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -182,7 +182,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -199,7 +199,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -210,7 +210,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -227,7 +227,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -238,7 +238,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -255,7 +255,7 @@
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -266,7 +266,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -285,7 +285,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -298,7 +298,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -317,7 +317,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -330,7 +330,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -349,7 +349,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -362,7 +362,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -381,7 +381,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)\..\IDynamicDependencyLifetimeManager;$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration);$(SolutionDir)common</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPSDKBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WINDOWSAPPRUNTIMEBOOTSTRAPDLL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -394,7 +394,7 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(OutDir)\..\WindowsAppRuntime_DLL</AdditionalLibraryDirectories>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;Microsoft.WindowsAppRuntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>WindowsAppSDK.Bootstrap.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.Bootstrap.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.WindowsAppRuntime.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <Midl>
@@ -426,7 +426,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WindowsAppSDK.Bootstrap.def" />
+    <None Include="WindowsAppRuntime.Bootstrap.def" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

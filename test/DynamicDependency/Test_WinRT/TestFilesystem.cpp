@@ -45,7 +45,7 @@ namespace Test::FileSystem
         //        DynamicDependency_Test_WinRT.dll      <== This test .dll
         //    \<project>.Msix
         //        <project>.Msix
-        //    \WindowsAppSDK_BootstrapDLL
+        //    \WindowsAppRuntime_BootstrapDLL
         //        Microsoft.WindowsAppRuntime.Bootstrap.dll
 
         // Find the test dll's directory
@@ -60,12 +60,12 @@ namespace Test::FileSystem
     {
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"WindowsAppSDK_BootstrapDLL";
+        path /= L"WindowsAppRuntime_BootstrapDLL";
         path /= L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
         return path;
     }
 
-    std::filesystem::path GetWindowsAppSDKDllAbsoluteFilename()
+    std::filesystem::path GetWindowsAppRuntimeDllAbsoluteFilename()
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();

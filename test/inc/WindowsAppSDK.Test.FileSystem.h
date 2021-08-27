@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __WINDOWSAPPSDK_TEST_FILESYSTEM_H
-#define __WINDOWSAPPSDK_TEST_FILESYSTEM_H
+#ifndef __WINDOWSAPPRUNTIME_TEST_FILESYSTEM_H
+#define __WINDOWSAPPRUNTIME_TEST_FILESYSTEM_H
 
 #include <filesystem>
 
@@ -54,7 +54,7 @@ namespace Test::FileSystem
         //         \<Configuration>                             <== ARM64|X64|X86
         //             \<project>.Msix
         //                 <project>.Msix
-        //             \WindowsAppSDK_BootstrapDLL
+        //             \WindowsAppRuntime_BootstrapDLL
         //                 Microsoft.WindowsAppRuntime.Bootstrap.dll
         //             \<TestProjectName>
         //                 <TestProjectName>.dll                <== Test .dll
@@ -71,12 +71,12 @@ namespace Test::FileSystem
     {
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"WindowsAppSDK_BootstrapDLL";
+        path /= L"WindowsAppRuntime_BootstrapDLL";
         path /= L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
         return path;
     }
 
-    inline std::filesystem::path GetWindowsAppSDKDllAbsoluteFilename()
+    inline std::filesystem::path GetWindowsAppRuntimeDllAbsoluteFilename()
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
@@ -86,4 +86,4 @@ namespace Test::FileSystem
     }
 }
 
-#endif // __WINDOWSAPPSDK_TEST_FILESYSTEM_H
+#endif // __WINDOWSAPPRUNTIME_TEST_FILESYSTEM_H

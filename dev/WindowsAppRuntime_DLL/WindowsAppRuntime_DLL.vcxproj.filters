@@ -35,7 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="WindowsAppSDK.def">
+    <None Include="WindowsAppRuntime.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

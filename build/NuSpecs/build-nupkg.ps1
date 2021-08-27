@@ -121,7 +121,7 @@ Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.Window
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
 $NugetCmdLine = "$nugetExe pack WindowsAppSDK.nuspec $NugetArgs -version $version"
-Write-Host 'Building Windows App SDK package'
+Write-Host 'Building Windows SDK package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)

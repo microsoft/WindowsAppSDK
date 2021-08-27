@@ -53,7 +53,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="WindowsAppSDKInstall.rc">
+    <ResourceCompile Include="WindowsAppRuntimeInstall.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

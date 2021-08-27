@@ -20,7 +20,7 @@ CLSID FindDDLM(
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension);
 
 IDynamicDependencyLifetimeManager* g_lifetimeManager{};
-wil::unique_hmodule g_windowsAppSdkDll;
+wil::unique_hmodule g_windowsAppRuntimeDll;
 wil::unique_process_heap_string g_packageDependencyId;
 MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 
@@ -49,7 +49,7 @@ STDAPI MddBootstrapInitialize(
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
 
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_lifetimeManager != nullptr);
-    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_windowsAppSdkDll != nullptr);
+    FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_windowsAppRuntimeDll != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
@@ -69,8 +69,8 @@ STDAPI MddBootstrapInitialize(
     wil::unique_dll_directory_cookie dllDirectoryCookie{ AddFrameworkToPath(frameworkPackageInfo->path) };
 
     auto windowsAppRuntimeDllFilename{ std::wstring(frameworkPackageInfo->path) + L"\\Microsoft.WindowsAppRuntime.dll" };
-    wil::unique_hmodule windowsAppSdkDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
-    if (!windowsAppSdkDll)
+    wil::unique_hmodule windowsAppRuntimeDll(LoadLibraryEx(windowsAppRuntimeDllFilename.c_str(), nullptr, LOAD_WITH_ALTERED_SEARCH_PATH));
+    if (!windowsAppRuntimeDll)
     {
         const auto lastError{ GetLastError() };
         THROW_WIN32_MSG(lastError, "Error in LoadLibrary: %d (0x%X) loading %ls", lastError, lastError, windowsAppRuntimeDllFilename.c_str());
@@ -91,7 +91,7 @@ STDAPI MddBootstrapInitialize(
     dllDirectoryCookie.reset();
 
     g_lifetimeManager = lifetimeManager.detach();
-    g_windowsAppSdkDll = std::move(windowsAppSdkDll);
+    g_windowsAppRuntimeDll = std::move(windowsAppRuntimeDll);
     g_packageDependencyId = std::move(packageDependencyId);
     g_packageDependencyContext = packageDependencyContext;
     return S_OK;
@@ -100,7 +100,7 @@ CATCH_RETURN();
 
 STDAPI_(void) MddBootstrapShutdown() noexcept
 {
-    if (g_packageDependencyContext && g_windowsAppSdkDll)
+    if (g_packageDependencyContext && g_windowsAppRuntimeDll)
     {
         MddRemovePackageDependency(g_packageDependencyContext);
         g_packageDependencyContext = nullptr;
@@ -108,7 +108,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
 
     g_packageDependencyId.reset();
 
-    g_windowsAppSdkDll.reset();
+    g_windowsAppRuntimeDll.reset();
 
     if (g_lifetimeManager)
     {
@@ -133,12 +133,12 @@ STDAPI MddBootstrapTestInitialize(
     return S_OK;
 } CATCH_RETURN();
 
-/// Determine the path for the Windows App SDK Framework package
+/// Determine the path for the Windows App Runtime Framework package
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo)
 {
     frameworkPackageInfo = nullptr;
 
-    // We need to determine the exact Windows App SDK Framework package
+    // We need to determine the exact Windows App Runtime Framework package
     // in the Dynamic Dependency Lifetime Manager package's dependencies,
     // as resolved by Windows. A user can have multiple framework packages
     // in a family registered at a time, for multiple reasons:
@@ -167,9 +167,9 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     auto buffer{ wil::make_unique_cotaskmem<BYTE[]>(bufferLength) };
     THROW_IF_WIN32_ERROR(GetPackageInfo(packageInfoReference.get(), PACKAGE_FILTER_DIRECT, &bufferLength, buffer.get(), &packageInfoCount));
 
-    // Find the Windows App SDK framework package in the package graph to determine its path
+    // Find the Windows App Runtime framework package in the package graph to determine its path
     //
-    // NOTE: The Windows App SDK DDLM package...
+    // NOTE: The Windows App Runtime DDLM package...
     //          * ...has 1 framework package dependency
     //          * ...its framework package dependency's name starts with "Microsoft.WindowsAppRuntime"
     //          * ...its publisher id is "8wekyb3d8bbwe"
@@ -177,7 +177,7 @@ wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packa
     // implies the DDLM is improperly built and cannot be used. Of course ThisShouldNeverHappen
     // but a little paranoia isn't a bad thing :-)
     //
-    // Verify the package providing the LifetimeManager declares a <PackageDependency> on the Windows App SDK framework package.
+    // Verify the package providing the LifetimeManager declares a <PackageDependency> on the Windows App Runtime framework package.
     THROW_HR_IF_MSG(E_UNEXPECTED, packageInfoCount != 1, "PRddlm:%ls PackageGraph.Count:%u", packageFullName, packageInfoCount);
     //
     const PACKAGE_INFO* packageInfo{ reinterpret_cast<const PACKAGE_INFO*>(buffer.get()) };
@@ -260,7 +260,7 @@ CLSID FindDDLM(
     PACKAGE_VERSION bestFitVersion{};
     CLSID bestFitClsid{};
 
-    // Look for windows.appExtension with name="microsoft.winappsdk.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
+    // Look for windows.appExtension with name="microsoft.winappruntime.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
     // NOTE: <majorversion>.<minorversion> MUST have a string length <= 8 characters ("12.34567", "12345.67", etc) to fit within
     //       the maximum allowed length of a windows.appExtension's Name (39 chars) on Windows versions <= RS5 (10.0.17763.0).
     WCHAR appExtensionName[100]{};
@@ -269,11 +269,11 @@ CLSID FindDDLM(
     const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
     if (!versionShortTag.empty())
     {
-        wsprintf(appExtensionName, L"microsoft.winappsdk.ddlm-%hu.%hu-%s-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag.c_str());
+        wsprintf(appExtensionName, L"microsoft.winappruntime.ddlm-%hu.%hu-%s-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString(), versionShortTag.c_str());
     }
     else
     {
-        wsprintf(appExtensionName, L"microsoft.winappsdk.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
+        wsprintf(appExtensionName, L"microsoft.winappruntime.ddlm-%hu.%hu-%s", majorVersion, minorVersion, AppModel::Identity::GetCurrentArchitectureAsShortString());
     }
 
     auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };

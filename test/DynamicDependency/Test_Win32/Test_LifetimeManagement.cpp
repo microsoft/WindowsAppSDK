@@ -38,10 +38,10 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
-            TP::AddPackage_WindowsAppSDKFramework();
+            TP::AddPackage_WindowsAppRuntimeFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             m_bootstrapDll = std::move(bootstrapDll);
@@ -67,7 +67,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
         }

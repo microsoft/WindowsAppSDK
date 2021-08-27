@@ -44,12 +44,12 @@
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="testfiletypeassociations">
             <uap:SupportedFileTypes>
-              <uap:FileType>.windowsappsdktestfile-packaged</uap:FileType>
+              <uap:FileType>.windowsappruntimetestfile-packaged</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="windowsappsdktestprotocol-packaged"/>
+          <uap:Protocol Name="windowsappruntimetestprotocol-packaged"/>
         </uap:Extension>
       </Extensions>
     </Application>

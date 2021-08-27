@@ -10,7 +10,7 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppSDK.Test.Singleton"
+    Name="WindowsAppRuntime.Test.Singleton"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 

@@ -16,4 +16,4 @@
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
 #include <winrt/Microsoft.Windows.PushNotifications.h>
 
-#include <WindowsAppSDK.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.Bootstrap.h>
