@@ -17,57 +17,60 @@ class PowerNotifications : public wil::TraceLoggingProvider
 
     public:
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RegisterEvent, PDT_ProductAndServiceUsage, value);
+        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UnregisterEvent, PDT_ProductAndServiceUsage, value);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(CompositeBatteryStatusCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(CompositeBatteryStatusCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusUnregisterActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeUpdateActivity, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusCallbackActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusRegisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusUnregisterActivity, PDT_ProductAndServicePerformance);
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusUpdateActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusUpdateActivity, PDT_ProductAndServicePerformance);
+
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusCallbackActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusRegisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+        DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusUpdateActivity, PDT_ProductAndServicePerformance);
 };
 
 namespace winrt::Microsoft::Windows::System::Power
@@ -143,6 +146,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void (*registerListener)();
             void (*unregisterListener)();
             void (*updateValue)();
+            std::wstring name;
         };
     }
 
@@ -197,67 +201,78 @@ namespace winrt::Microsoft::Windows::System::Power
                 &Power::implementation::EnergySaverStatus_Event,
                 &Power::implementation::EnergySaverStatus_Register,
                 &Power::implementation::EnergySaverStatus_Unregister,
-                &Power::implementation::EnergySaverStatus_Update };
+                &Power::implementation::EnergySaverStatus_Update,
+                L"EnergySaverStatus" };
 
             PowerFunctionDetails compositeBatteryStatusFunc{
                 &Power::implementation::BatteryStatus_Event,
                 &Power::implementation::BatteryStatus_Register,
                 &Power::implementation::BatteryStatus_Unregister,
-                &Power::implementation::BatteryStatus_Update };
+                &Power::implementation::BatteryStatus_Update,
+                L"BatteryStatus" };
 
             PowerFunctionDetails powerSupplyStatusFunc{
                 &Power::implementation::PowerSupplyStatus_Event,
                 &Power::implementation::PowerSupplyStatus_Register,
                 &Power::implementation::PowerSupplyStatus_Unregister,
-                &Power::implementation::PowerSupplyStatus_Update };
+                &Power::implementation::PowerSupplyStatus_Update,
+                L"PowerSupplyStatus" };
 
             PowerFunctionDetails remainingChargePercentFunc{
                 &Power::implementation::RemainingChargePercent_Event,
                 &Power::implementation::RemainingChargePercent_Register,
                 &Power::implementation::RemainingChargePercent_Unregister,
-                &Power::implementation::RemainingChargePercent_Update };
+                &Power::implementation::RemainingChargePercent_Update,
+                L"RemainingChargePercent" };
 
             PowerFunctionDetails remainingDischargeTimeFunc{
                 &Power::implementation::RemainingDischargeTime_Event,
                 &Power::implementation::RemainingDischargeTime_Register,
                 &Power::implementation::RemainingDischargeTime_Unregister,
-                &Power::implementation::RemainingDischargeTime_Update };
+                &Power::implementation::RemainingDischargeTime_Update,
+                L"RemainingDischargeTime" };
 
             PowerFunctionDetails powerSourceKindFunc{
                 &Power::implementation::PowerSourceKind_Event,
                 &Power::implementation::PowerSourceKind_Register,
                 &Power::implementation::PowerSourceKind_Unregister,
-                &Power::implementation::PowerSourceKind_Update };
+                &Power::implementation::PowerSourceKind_Update,
+                L"PowerSourceKind" };
 
             PowerFunctionDetails displayStatusFunc{
                 &Power::implementation::DisplayStatus_Event,
                 &Power::implementation::DisplayStatus_Register,
                 &Power::implementation::DisplayStatus_Unregister,
-                &Power::implementation::DisplayStatus_Update };
+                &Power::implementation::DisplayStatus_Update,
+                L"DisplayStatus" };
 
             PowerFunctionDetails systemIdleStatusFunc{
                 &Power::implementation::SystemIdleStatus_Event,
                 &Power::implementation::SystemIdleStatus_Register,
                 &Power::implementation::SystemIdleStatus_Unregister,
-                &Power::implementation::NoOperation };
+                &Power::implementation::NoOperation,
+                L"SystemIdleStatus" };
 
             PowerFunctionDetails effectivePowerModeFunc{
                 &Power::implementation::EffectivePowerMode_Event,
                 &Power::implementation::EffectivePowerMode_Register,
                 &Power::implementation::EffectivePowerMode_Unregister,
-                &Power::implementation::EffectivePowerMode_Update };
+                &Power::implementation::EffectivePowerMode_Update,
+                L"EffectivePowerMode" };
 
             PowerFunctionDetails userPresenceStatusFunc{
                 &Power::implementation::UserPresenceStatus_Event,
                 &Power::implementation::UserPresenceStatus_Register,
                 &Power::implementation::UserPresenceStatus_Unregister,
-                &Power::implementation::UserPresenceStatus_Update };
+                &Power::implementation::UserPresenceStatus_Update,
+                L"UserPresenceStatus" };
 
             PowerFunctionDetails systemSuspendFunc{
                 &Power::implementation::SystemSuspendStatus_Event,
                 &Power::implementation::SystemSuspendStatus_Register,
                 &Power::implementation::SystemSuspendStatus_Unregister,
-                &Power::implementation::NoOperation };
+                &Power::implementation::NoOperation,
+                L"SystemSuspendStatus" };
 
             bool RegisteredForEvents(const EventType& eventObj)
             {
@@ -270,6 +285,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 std::scoped_lock<std::mutex> lock(m_mutex);
                 if (!RegisteredForEvents(eventObj))
                 {
+                    PowerNotifications::RegisterEvent(fn.name.c_str());
                     fn.registerListener();
                 }
                 return eventObj.add(handler);
@@ -282,6 +298,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 eventObj.remove(token);
                 if (RegisteredForEvents(eventObj))
                 {
+                    PowerNotifications::UnregisterEvent(fn.name.c_str());
                     fn.unregisterListener();
                 }
             }
