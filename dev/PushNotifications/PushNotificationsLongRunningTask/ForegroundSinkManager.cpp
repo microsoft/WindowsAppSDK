@@ -7,17 +7,16 @@
 
 void ForegroundSinkManager::AddSink(std::string processName, IWpnForegroundSink* sink)
 {
-    /*if (!m_foregroundMap.contains(processName))
+    if (!m_foregroundMap.contains(processName))
     {
         m_foregroundMap[processName] = std::unordered_set<IWpnForegroundSink*>();
-    }*/
-    m_foregroundMap[processName] = std::unordered_set<IWpnForegroundSink*>(); // for testing
+    }
     m_foregroundMap[processName].insert(sink);
 }
 
 void ForegroundSinkManager::Remove(std::string processName, IWpnForegroundSink* sink)
 {
-    THROW_HR_IF(E_INVALIDARG, !m_foregroundMap.contains(processName));
+    //THROW_HR_IF(E_INVALIDARG, !m_foregroundMap.contains(processName));
 
     std::unordered_set<IWpnForegroundSink*> sinks = m_foregroundMap[processName];
     sinks.erase(sink);
@@ -38,7 +37,7 @@ void ForegroundSinkManager::InvokeAllHandlers(byte* payload, ULONG payloadSize)
     }
 }
 
-bool ForegroundSinkManager::InvokeForegroundHandlers(std::string processName, byte* payload, ULONG payloadSize)
+bool ForegroundSinkManager::InvokeForegroundHandlersOfProc(std::string processName, byte* payload, ULONG payloadSize)
 {
     if (!m_foregroundMap.contains(processName))
     {

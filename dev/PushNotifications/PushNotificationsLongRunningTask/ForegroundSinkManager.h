@@ -16,7 +16,7 @@ public:
 
     void InvokeAllHandlers(byte* payload, ULONG payloadSize); // for testing
 
-    bool InvokeForegroundHandlers(std::string processName, byte* payload, ULONG payloadSize);
+    bool InvokeForegroundHandlersOfProc(std::string processName, byte* payload, ULONG payloadSize);
 
 private:
     std::unordered_map<std::string, std::unordered_set<IWpnForegroundSink*>> m_foregroundMap = {};

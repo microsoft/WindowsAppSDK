@@ -80,7 +80,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 };
             });
         }
-        else
+        else // forcing the packaged application to use LRP for testing
         {
             char processName[1024];
             GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
