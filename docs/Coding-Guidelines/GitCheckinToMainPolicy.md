@@ -8,6 +8,10 @@ code change is Experimental vs Preview or Stable.
 See [Final Decision: Release channels and cadences #637](https://github.com/microsoft/WindowsAppSDK/discussions/637)
 for the expectations of the various release channels.
 
+Note: If a contribution only modifies repo documentation and does not touch product code or assets an 
+administrator is welcome to bypass build & test policies on the pull request to bypass build requirements. 
+Other contribution policies such as code review requirements still apply.
+
 ## Policy: Preview and Stable (aka non-Experimental)
 
 The following requirements must be met to checkin non-Experimental changes to main:
@@ -60,3 +64,4 @@ feedback on Experimental content.
 Experimental content must be tagged to indicate it's Experimental. The mechanisms to do so may vary
 (WinRT APIs, Flat-C APIs, non-API content (e.g. data files), etc) but the policy is the same -
 Experimental content must be marked to indicate it's Experimental.
+
