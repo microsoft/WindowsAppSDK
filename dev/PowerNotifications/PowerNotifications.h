@@ -18,22 +18,57 @@ class PowerNotifications : public wil::TraceLoggingProvider
 
     public:
 
-    // Sample Event; remove later
-    // Event that contains a single bool value as payload
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_BOOL(BooleanTelemetryEvent, // Event name
-        PDT_ProductAndServiceUsage, // Privacy data for events. Check wil/traceloggingconfig.h for a full list
-        value/* value to be logged*/);
-
-    // Sample Event; remove later
-    // Event that contains a string as payload
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(TextPayloadEvent, // Event name
-        PDT_ProductAndServiceUsage, // Privacy data data for events. Check wil/traceloggingconfig.h for a full list
-        value/* value to be logged*/);
-
-    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusEventActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusCallbackActivity, PDT_ProductAndServicePerformance);
     DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusRegisterActivity, PDT_ProductAndServicePerformance);
     DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUnregisterActivity, PDT_ProductAndServicePerformance);
     DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(CompositeBatteryStatusCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(BatteryStatusUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSupplyStatusUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingChargePercentUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(RemainingDischargeTimeUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(PowerSourceKindUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(DisplayStatusUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemIdleStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(EffectivePowerModeUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(UserPresenceStatusUpdateActivity, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusCallbackActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusRegisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusUnregisterActivity, PDT_ProductAndServicePerformance);
+    DEFINE_COMPLIANT_MEASURES_ACTIVITY(SystemSuspendStatusUpdateActivity, PDT_ProductAndServicePerformance);
 };
 
 namespace winrt::Microsoft::Windows::System::Power
@@ -275,22 +310,26 @@ namespace winrt::Microsoft::Windows::System::Power
             // EnergySaverStatus Functions
             Power::EnergySaverStatus EnergySaverStatus()
             {
+                auto activity = PowerNotifications::EnergySaverStatusUpdateActivity::Start();
                 UpdateValuesIfNecessary(energySaverStatusFunc);
                 return static_cast<Power::EnergySaverStatus>(m_cachedEnergySaverStatus);
             }
 
             event_token EnergySaverStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::EnergySaverStatusRegisterActivity::Start();
                 return AddCallback(energySaverStatusFunc, handler);
             }
 
             void EnergySaverStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::EnergySaverStatusUnregisterActivity::Start();
                 RemoveCallback(energySaverStatusFunc, token);
             }
 
             void EnergySaverStatusChanged_Callback(::EnergySaverStatus energySaverStatus)
             {
+                auto activity = PowerNotifications::EnergySaverStatusCallbackActivity::Start();
                 m_cachedEnergySaverStatus = energySaverStatus;
                 RaiseEvent(energySaverStatusFunc);
             }
@@ -385,82 +424,95 @@ namespace winrt::Microsoft::Windows::System::Power
 
             Power::BatteryStatus BatteryStatus()
             {
+                auto activity = PowerNotifications::BatteryStatusUpdateActivity::Start();
                 UpdateValuesIfNecessary(compositeBatteryStatusFunc);
                 return m_batteryStatus;
             }
 
             event_token BatteryStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::BatteryStatusRegisterActivity::Start();
                 return AddCallback(compositeBatteryStatusFunc, handler);
             }
 
             void BatteryStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::BatteryStatusUnregisterActivity::Start();
                 RemoveCallback(compositeBatteryStatusFunc, token);
             }
 
             void CompositeBatteryStatusChanged_Callback(const CompositeBatteryStatus& compositeBatteryStatus)
             {
+                auto activity = PowerNotifications::CompositeBatteryStatusCallbackActivity::Start();
                 ProcessCompositeBatteryStatus(compositeBatteryStatus);
                 FireCorrespondingCompositeBatteryEvent();
             }
 
-
             // PowerSupplyStatus Functions
             Power::PowerSupplyStatus PowerSupplyStatus()
             {
+                auto activity = PowerNotifications::PowerSupplyStatusUpdateActivity::Start();
                 UpdateValuesIfNecessary(compositeBatteryStatusFunc);
                 return m_powerSupplyStatus;
             }
 
             event_token PowerSupplyStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::PowerSupplyStatusRegisterActivity::Start();
                 return AddCallback(powerSupplyStatusFunc, handler);
             }
 
             void PowerSupplyStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::PowerSupplyStatusUnregisterActivity::Start();
                 RemoveCallback(powerSupplyStatusFunc, token);
             }
-
 
             // RemainingChargePercent Functions
             int RemainingChargePercent()
             {
+                auto activity = PowerNotifications::RemainingChargePercentUpdateActivity::Start();
                 UpdateValuesIfNecessary(compositeBatteryStatusFunc);
                 return m_batteryChargePercent;
             }
 
             event_token RemainingChargePercentChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::RemainingChargePercentRegisterActivity::Start();
                 return AddCallback(remainingChargePercentFunc, handler);
             }
 
             void RemainingChargePercentChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::RemainingChargePercentUnregisterActivity::Start();
                 RemoveCallback(remainingChargePercentFunc, token);
             }
+
 
 
             // RemainingDischargeTime Functions
             winrt::Windows::Foundation::TimeSpan RemainingDischargeTime()
             {
+                auto activity = PowerNotifications::RemainingDischargeTimeUpdateActivity::Start();
                 UpdateValuesIfNecessary(remainingDischargeTimeFunc);
                 return winrt::Windows::Foundation::TimeSpan(std::chrono::seconds(m_cachedDischargeTime));
             }
 
             event_token RemainingDischargeTimeChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::RemainingDischargeTimeRegisterActivity::Start();
                 return AddCallback(remainingDischargeTimeFunc, handler);
             }
 
             void RemainingDischargeTimeChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::RemainingDischargeTimeUnregisterActivity::Start();
                 RemoveCallback(remainingDischargeTimeFunc, token);
             }
 
             void RemainingDischargeTimeChanged_Callback(ULONGLONG remainingDischargeTime)
             {
+                auto activity = PowerNotifications::RemainingDischargeTimeCallbackActivity::Start();
                 m_cachedDischargeTime = remainingDischargeTime;
                 RaiseEvent(remainingDischargeTimeFunc);
             }
@@ -469,46 +521,53 @@ namespace winrt::Microsoft::Windows::System::Power
             // PowerSourceKind Functions
             Power::PowerSourceKind PowerSourceKind()
             {
+                auto activity = PowerNotifications::PowerSourceKindUpdateActivity::Start();
                 UpdateValuesIfNecessary(powerSourceKindFunc);
                 return static_cast<Power::PowerSourceKind>(m_cachedPowerSourceKind);
             }
 
             event_token PowerSourceKindChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::PowerSourceKindRegisterActivity::Start();
                 return AddCallback(powerSourceKindFunc, handler);
             }
 
             void PowerSourceKindChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::PowerSourceKindUnregisterActivity::Start();
                 RemoveCallback(powerSourceKindFunc, token);
             }
 
             void PowerSourceKindChanged_Callback(DWORD powerCondition)
             {
+                auto activity = PowerNotifications::PowerSourceKindCallbackActivity::Start();
                 m_cachedPowerSourceKind = powerCondition;
                 RaiseEvent(powerSourceKindFunc);
             }
 
-
             // DisplayStatus Functions
             Power::DisplayStatus DisplayStatus()
             {
+                auto activity = PowerNotifications::DisplayStatusUpdateActivity::Start();
                 UpdateValuesIfNecessary(displayStatusFunc);
                 return static_cast<Power::DisplayStatus>(m_cachedDisplayStatus);
             }
 
             event_token DisplayStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::DisplayStatusRegisterActivity::Start();
                 return AddCallback(displayStatusFunc, handler);
             }
 
             void DisplayStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::DisplayStatusUnregisterActivity::Start();
                 RemoveCallback(displayStatusFunc, token);
             }
 
             void DisplayStatusChanged_Callback(DWORD displayStatus)
             {
+                auto activity = PowerNotifications::DisplayStatusCallbackActivity::Start();
                 m_cachedDisplayStatus = displayStatus;
                 RaiseEvent(displayStatusFunc);
             }
@@ -518,22 +577,25 @@ namespace winrt::Microsoft::Windows::System::Power
             // There is no get function as there is no data to be returned
             event_token SystemIdleStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::SystemIdleStatusRegisterActivity::Start();
                 return AddCallback(systemIdleStatusFunc, handler);
             }
 
             void SystemIdleStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::SystemIdleStatusUnregisterActivity::Start();
                 RemoveCallback(systemIdleStatusFunc, token);
             }
 
             void SystemIdleStatusChanged_Callback()
             {
+                auto activity = PowerNotifications::SystemIdleStatusCallbackActivity::Start();
                 RaiseEvent(systemIdleStatusFunc);
             }
-
             // EffectivePowerMode Functions
             winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
             {
+                auto activity = PowerNotifications::EffectivePowerModeUpdateActivity::Start();
                 co_await resume_background();
                 UpdateValuesIfNecessary(effectivePowerModeFunc);
                 auto res{ static_cast<Power::EffectivePowerMode>(m_cachedPowerMode) };
@@ -542,46 +604,52 @@ namespace winrt::Microsoft::Windows::System::Power
 
             event_token EffectivePowerModeChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::EffectivePowerModeRegisterActivity::Start();
                 return AddCallback(effectivePowerModeFunc, handler);
             }
 
             void EffectivePowerModeChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::EffectivePowerModeUnregisterActivity::Start();
                 RemoveCallback(effectivePowerModeFunc, token);
             }
 
             void EffectivePowerModeChanged_Callback(EFFECTIVE_POWER_MODE mode)
             {
+                auto activity = PowerNotifications::EffectivePowerModeCallbackActivity::Start();
                 m_cachedPowerMode = mode;
                 RaiseEvent(effectivePowerModeFunc);
             }
-
             // UserPresenceStatus Functions
             Power::UserPresenceStatus UserPresenceStatus()
             {
+                auto activity = PowerNotifications::UserPresenceStatusUpdateActivity::Start();
                 UpdateValuesIfNecessary(userPresenceStatusFunc);
                 return static_cast<Power::UserPresenceStatus>(m_cachedUserPresenceStatus);
             }
 
             event_token UserPresenceStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::UserPresenceStatusRegisterActivity::Start();
                 return AddCallback(userPresenceStatusFunc, handler);
             }
 
             void UserPresenceStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::UserPresenceStatusUnregisterActivity::Start();
                 RemoveCallback(userPresenceStatusFunc, token);
             }
 
             void UserPresenceStatusChanged_Callback(DWORD userPresenceStatus)
             {
+                auto activity = PowerNotifications::UserPresenceStatusCallbackActivity::Start();
                 m_cachedUserPresenceStatus = userPresenceStatus;
                 RaiseEvent(userPresenceStatusFunc);
             }
-
             //SystemSuspend Functions
             Power::SystemSuspendStatus SystemSuspendStatus()
             {
+                auto activity = PowerNotifications::SystemSuspendStatusUpdateActivity::Start();
                 if (m_systemSuspendStatus == SystemSuspendStatus::Uninitialized)
                 {
                     throw winrt::hresult_error(E_FAIL, L"API only callable after a SystemSuspendStatusChanged callback");
@@ -591,16 +659,19 @@ namespace winrt::Microsoft::Windows::System::Power
 
             event_token SystemSuspendStatusChanged(const PowerEventHandler& handler)
             {
+                auto activity = PowerNotifications::SystemSuspendStatusRegisterActivity::Start();
                 return AddCallback(systemSuspendFunc, handler);
             }
 
             void SystemSuspendStatusChanged(const event_token& token)
             {
+                auto activity = PowerNotifications::SystemSuspendStatusUnregisterActivity::Start();
                 RemoveCallback(systemSuspendFunc, token);
             }
 
             void SystemSuspendStatusChanged_Callback(ULONG PowerEvent)
             {
+                auto activity = PowerNotifications::SystemSuspendStatusCallbackActivity::Start();
                 using namespace Power;
                 if (PowerEvent == PBT_APMSUSPEND)
                 {
