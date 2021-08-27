@@ -104,13 +104,15 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        $srcPath = get-childitem -path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-        $destinationPath = get-childitem -path 'packages' -File 'Traceloggingconfig.h' -Recurse
+        $srcPath = Get-Childitem -Path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+        
+        if (($srcPath -ne $null)){
+          $destinationPath = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-        if(($srcPath -ne $null) -and ($destinationPath -ne $null))
-        {
-          Write-host 'SourcePath:' $srcPath.FullName $destinationPath.FullName
-          copy-item -Force $srcPath.FullName $destinationPath.FullName
+          if (($destinationPath -ne $null)){
+            Write-Host 'SourcePath:' $srcPath.FullName $destinationPath.FullName
+            Copy-Item -Force $srcPath.FullName $destinationPath.FullName
+          }
         }
 
 #DISABLED - GitHub runs as a a built-in Administrator (thus Elevated and no split-token)
