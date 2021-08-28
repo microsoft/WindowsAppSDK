@@ -32,68 +32,33 @@ public:
         }
         CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(RegisterActivatorByApi)() noexcept try
-        {
-
-        }
-        CATCH_LOG()
-
-    DEFINE_EVENT_METHOD(UnregisterActivatorByApi)() noexcept try
-        {
-
-        }
-        CATCH_LOG()
-
-    DEFINE_EVENT_METHOD(IsActivatorSupportedByApi)() noexcept try
-        {
-        }
-        CATCH_LOG()
-
-    DEFINE_EVENT_METHOD(ChannelClosedbyApi)(
-        HRESULT hr,
-        const std::wstring appUserModelId,
-        const std::wstring channelId) noexcept try
+    DEFINE_EVENT_METHOD(ChannelClosedByApi)(
+        winrt::hresult hr) noexcept try
         {
             if (c_maxEventLimit >= UpdateLogEventCount())
             {
-                ChannelClosedbyApi_(hr, CensorFilePath(appUserModelId.c_str()), channelId.c_str());
+                TraceLoggingClassWriteMeasure(
+                    "ChannelClosedByApi",
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    _GENERIC_PARTB_FIELDS_ENABLED,
+                    TraceLoggingHexUInt32(hr, "OperationResult"));
             }
         }
         CATCH_LOG()
 
-    DEFINE_EVENT_METHOD(ChannelPushReceivedbyApi)() noexcept try
-        {
-        }
-        CATCH_LOG()
 private:
-    //Microsoft::WRL::Wrappers::CriticalSection m_lock;
+    Microsoft::WRL::Wrappers::CriticalSection m_lock;
     ULONGLONG m_lastFiredTick = 0;
     UINT m_eventCount = 0;
 
     static constexpr ULONGLONG c_logPeriod = 1000; // One second
     static constexpr UINT c_maxEventLimit = 10;
 
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(ChannelClosedbyApi_,
-        PDT_ProductAndServicePerformance,
-        UINT32, OperationResult,
-        bool,   AppIdProvided,
-        PCWSTR, ChannelId);
-
-    PCWSTR CensorFilePath(_In_opt_ PCWSTR path) noexcept
-    {
-        if (path)
-        {
-            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
-        }
-
-        return path;
-    }
-
     UINT UpdateLogEventCount() noexcept
     {
         ULONGLONG currentTick = GetTickCount64();
 
-        //auto lock = m_lock.Lock();
+        auto lock = m_lock.Lock();
 
         // Only fire limiting events every log period to prevent too many events from being fired
         if ((currentTick - m_lastFiredTick) > c_logPeriod)

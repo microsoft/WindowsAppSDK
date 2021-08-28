@@ -66,12 +66,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
-        PushNotificationTelemetry::RegisterActivatorByApi();
-        PushNotificationTelemetry::UnregisterActivatorByApi();
-        PushNotificationTelemetry::IsActivatorSupportedByApi();
-
-        PushNotificationTelemetry::ChannelClosedbyApi(S_OK, L"appUserModelId", L"channelId");
-
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
