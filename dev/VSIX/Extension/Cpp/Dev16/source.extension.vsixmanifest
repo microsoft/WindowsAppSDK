@@ -14,24 +14,9 @@
     <Preview>false</Preview>
   </Metadata>
   <Installation AllUsers="true">
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.9, 17.0)">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.9, 17.0)">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 18.0)">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.9, 17.0)">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.9, 17.0)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.9, 17.0)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.9, 17.0)" />
   </Installation>
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,18.0)" DisplayName="Visual Studio core editor" />
@@ -43,6 +28,7 @@
     <MoreInfoUrl>http://docs.microsoft.com/nuget/</MoreInfoUrl>
   </Reference>
   <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.CppWinRT.BlankWindow" d:TargetPath="|WinUI.Desktop.CppWinRT.BlankWindow;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.BlankPage" d:TargetPath="|WinUI.Neutral.CppWinRT.BlankPage;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.Resw" d:TargetPath="|WinUI.Neutral.CppWinRT.Resw;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />

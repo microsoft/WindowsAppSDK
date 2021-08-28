@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Microsoft.WindowsAppSDK.Cpp" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
+    <Identity Id="Microsoft.WindowsAppSDK.Cpp.Dev17" Version="|%CurrentProject%;GetVSIXVersion|" Language="en-US" Publisher="Microsoft" />
     <DisplayName>Windows App SDK (C++)</DisplayName>
     <Description xml:space="preserve">The Microsoft Windows App SDK Visual Studio extension adds C++ project and item templates to support building Windows apps and components.</Description>
     <MoreInfo>https://github.com/microsoft/WindowsAppSDK/</MoreInfo>
@@ -14,20 +14,11 @@
     <Preview>false</Preview>
   </Metadata>
   <Installation AllUsers="true">
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.9, 17.0)">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
       <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.9, 17.0)">
-      <ProductArchitecture>x86</ProductArchitecture>
-    </InstallationTarget>
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 18.0)">
       <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.9, 17.0)">
-      <ProductArchitecture>x86</ProductArchitecture>
     </InstallationTarget>
     <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
       <ProductArchitecture>amd64</ProductArchitecture>
@@ -41,6 +32,7 @@
     <MoreInfoUrl>http://docs.microsoft.com/nuget/</MoreInfoUrl>
   </Reference>
   <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Desktop.CppWinRT.BlankWindow" d:TargetPath="|WinUI.Desktop.CppWinRT.BlankWindow;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.BlankPage" d:TargetPath="|WinUI.Neutral.CppWinRT.BlankPage;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="WinUI.Neutral.CppWinRT.Resw" d:TargetPath="|WinUI.Neutral.CppWinRT.Resw;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
