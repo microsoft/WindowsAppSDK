@@ -15,9 +15,7 @@ public:
 
     void Remove(std::wstring processName);
 
-    void InvokeForegroundHandlers(ULONG payloadSize, byte* payload);
-
-    // void InvokeForegroundHandlers(std::wstring processName, byte* payload, ULONG payloadSize);
+    bool InvokeForegroundHandlers(std::wstring processName, byte* payload, ULONG payloadSize);
 
 private:
     std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<IWpnForegroundSink>> m_foregroundMap = {};

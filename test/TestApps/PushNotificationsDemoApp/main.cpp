@@ -56,9 +56,8 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
                 // Do stuff to process the raw payload
                 std::string payloadString(payload.begin(), payload.end());
                 std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
-                // args.Handled(true);
+                args.Handled(true);
             });
-
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -90,16 +89,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    Sleep(10000); // Attach to debugger
-
-    {
-        PushNotificationChannel channel = RequestChannel();
-    }
-
-    printf("Press 'Enter' at any time to exit App.");
-    std::cin.ignore();
-
-    /*PushNotificationActivationInfo info(
+    PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
@@ -140,7 +130,7 @@ int main()
     }
 
     // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);*/
+    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
 
     return 0;
 }

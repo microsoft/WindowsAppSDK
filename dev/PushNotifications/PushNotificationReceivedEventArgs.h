@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.h"
+#include <NotificationsLongRunningProcess_h.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -27,7 +28,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
 
-        ULONG m_length = 0;
-        bool m_isBIAvailable = false;
+        ULONG m_length;
+        bool m_isBIAvailable;
+        bool m_handledUnpackaged = false;
     };
 }

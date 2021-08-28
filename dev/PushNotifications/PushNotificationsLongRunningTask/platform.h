@@ -21,18 +21,16 @@ Microsoft::WRL::RuntimeClass<
 
     STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
 
-    STDMETHOD(RegisterForegroundActivator)(/*[in]*/ IWpnForegroundSink* sink, _In_ PCWSTR processName);
+    STDMETHOD(RegisterForegroundActivator)(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName);
 
-    STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName);
+    STDMETHOD(SendBackgroundNotification)(_In_ PCWSTR processName, _In_ byte* payload, _In_ ULONG payloadSize);
 
     /* Add your functions to retrieve the platform components */
 
 private:
 
-    // Extra stuff for testing
-    void SendForegroundNotification();
-    void SetForegroundTimer();
-    wil::unique_threadpool_timer m_foregroundTimer;
+    void UnregisterForegroundActivator(PCWSTR processName);
+    void DeliverPayload(PCWSTR processName, byte* payload, ULONG payloadSize);
 
     wil::srwlock m_lock;
 

@@ -23,7 +23,8 @@ interface INotificationsLongRunningPlatform : IUnknown
 
     HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
 
-    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
+    HRESULT SendBackgroundNotification([in] LPCWSTR processName, [in, string] byte data[], [in] ULONG length);
+
 };
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]

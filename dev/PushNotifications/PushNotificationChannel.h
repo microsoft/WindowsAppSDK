@@ -14,7 +14,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink>
     {
         PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
-        ~PushNotificationChannel() noexcept;
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
@@ -32,7 +31,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
 
-        bool m_isBIAvailable = false;
+        bool m_isRegisteredWithLRP = false;
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
     };
 }

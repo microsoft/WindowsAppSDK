@@ -52,38 +52,79 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+        if (m_isBIAvailable)
+        {
+            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
-        return m_backgroundTaskInstance.GetDeferral();
+            return m_backgroundTaskInstance.GetDeferral();
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
-        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+        if (m_isBIAvailable)
+        {
+            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
-        return m_backgroundTaskInstance.Canceled(handler);
+            return m_backgroundTaskInstance.Canceled(handler);
+        }
+        else
+        {
+            return { 0 };
+        }
     }
 
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
+        if (m_isBIAvailable)
+        {
+            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
-        m_backgroundTaskInstance.Canceled(token);
+            m_backgroundTaskInstance.Canceled(token);
+        }
     }
 
     bool PushNotificationReceivedEventArgs::Handled()
     {
-        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
+        if (m_isBIAvailable)
+        {
+            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
 
-        // Also, we need to handle scenario for notifications coming from the LRP
-        return m_args.Cancel();
+            return m_args.Cancel();
+        }
+        else
+        {
+            return m_handledUnpackaged;
+        }
     }
 
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
+        if (m_isBIAvailable)
+        {
+            THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
 
-        m_args.Cancel(value);
+            m_args.Cancel(value);
+        }
+        else
+        {
+            if (value)
+            {
+                wchar_t processName[1024];
+                THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
+
+                wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                notificationsLongRunningPlatform->SendBackgroundNotification(processName, m_rawNotification, m_length);
+            }
+
+            m_handledUnpackaged = value;
+        }
     }
 }
 
