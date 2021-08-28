@@ -96,9 +96,20 @@
       <AdditionalDependencies>$(OutDir)..\mrmmin\mrmmin.lib;rpcrt4.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>MRM.def</ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
+      <!-- This sets /DEBUG -->
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <!-- Note: /PROFILE implies the following 4 settings.
+           However, since /PROFILE is only supported on VS Enterprise we will also set them explicitly below as well. -->
       <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkIncremental>false</LinkIncremental>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <!-- /PROFILE implies the following settings:
+              /OPT:REF          OptimizeReferences=true
+              /OPT:NOICF        EnableCOMDATFolding=false
+              /INCREMENTAL:NO   LinkIncremental=false
+              /FIXED:NO         FixedBaseAddress=false     -->
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -121,12 +132,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
-      <LinkIncremental>false</LinkIncremental>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <!-- EnableCOMDATFolding and OptimizeReferences are set to true below for all build configurations. -->
-      <!-- /PROFILE implies /OPT:REF /OPT:NOICF /INCREMENTAL:NO /FIXED:NO -->
-      <Profile>true</Profile>
+      <!-- Note: /PROFILE is required for API scanning, and is set above for all build configurations.
+           However, this also sets /OPT:NOICF which disables EnableCOMDATFolding. For Release builds
+           it is suggested to re-enable this, but the only way to do so is by setting additional command
+           line options to the linker, after /profile is passed.
+       -->
+      <AdditionalOptions>/opt:icf %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">

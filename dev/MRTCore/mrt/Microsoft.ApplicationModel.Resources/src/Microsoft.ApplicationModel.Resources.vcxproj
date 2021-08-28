@@ -69,28 +69,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <DesktopCompatible>true</DesktopCompatible>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup Label="Configuration">
     <DesktopCompatible>true</DesktopCompatible>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -105,6 +84,7 @@
     <Import Project="PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <!-- Shared settings for all Configurations and Platforms -->
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -124,22 +104,32 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ModuleDefinitionFile>Microsoft.ApplicationModel.Resources.def</ModuleDefinitionFile>
       <AdditionalDependencies>$(OutDir)..\mrm\MRM.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- This sets /DEBUG -->
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <!-- Note: /PROFILE implies the following 4 settings.
+           However, since /PROFILE is only supported on VS Enterprise we will also set them explicitly below as well. -->
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkIncremental>false</LinkIncremental>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <!-- /PROFILE implies the following settings:
+              /OPT:REF          OptimizeReferences=true
+              /OPT:NOICF        EnableCOMDATFolding=false
+              /INCREMENTAL:NO   LinkIncremental=false
+              /FIXED:NO         FixedBaseAddress=false     -->
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ControlFlowGuard>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Guard</ControlFlowGuard>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
       <!-- Configure the release build binary to be as required by internal API scanning tools. -->
       <!-- Corresponds to /GF -->
       <StringPooling>true</StringPooling>
@@ -149,13 +139,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <LinkIncremental>false</LinkIncremental>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <!-- /PROFILE implies /OPT:REF /OPT:NOICF /INCREMENTAL:NO /FIXED:NO -->
-      <Profile>true</Profile>
+      <!-- Note: /PROFILE is required for API scanning, and is set above for all build configurations.
+           However, this also sets /OPT:NOICF which disables EnableCOMDATFolding. For Release builds
+           it is suggested to re-enable this, but the only way to do so is by setting additional command
+           line options to the linker, after /profile is passed.
+       -->
+      <AdditionalOptions>/opt:icf %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
