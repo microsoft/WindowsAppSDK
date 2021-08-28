@@ -18,6 +18,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\PushNotifications\PushNotificationTelemetry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

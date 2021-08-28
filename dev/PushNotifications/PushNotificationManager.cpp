@@ -17,6 +17,7 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include "PushNotificationTelemetry.h"
 
 using namespace std::literals;
 
@@ -65,6 +66,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
+        PushNotificationTelemetry::RegisterActivatorByApi();
+        PushNotificationTelemetry::UnregisterActivatorByApi();
+        PushNotificationTelemetry::IsActivatorSupportedByApi();
+
+        PushNotificationTelemetry::ChannelClosedbyApi(S_OK, L"appUserModelId", L"channelId");
+
         THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
         // API supports channel requests only for packaged applications for v0.8 version
@@ -97,6 +104,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
 
+                PushNotificationTelemetry::ChannelRequestedByApi(
+                    S_OK,
+                    AppModel::Identity::IsPackagedProcess(),
+                    remoteId);
+
                 co_return winrt::make<PushNotificationCreateChannelResult>(
                     winrt::make<PushNotificationChannel>(pushChannelReceived),
                     S_OK,
@@ -117,6 +129,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
                 else
                 {
+                    PushNotificationTelemetry::ChannelRequestedByApi(
+                        channelRequestException.code(),
+                        AppModel::Identity::IsPackagedProcess(),
+                        remoteId);
+
                     co_return winrt::make<PushNotificationCreateChannelResult>(
                         nullptr,
                         channelRequestException.code(),
