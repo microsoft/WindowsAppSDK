@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void PushReceived(winrt::event_token const& token) noexcept;
 
         // IWpnForegroundSink
-        HRESULT __stdcall InvokeAll(byte* start, ULONG length) noexcept;
+        HRESULT __stdcall InvokeAll(ULONG length, byte* start) noexcept;
 
     private:
         bool IsPackagedApp();

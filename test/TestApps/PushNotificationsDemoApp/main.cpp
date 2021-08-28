@@ -49,7 +49,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         auto channelExpiry = result.Channel().ExpirationTime();
 
         // Register Push Event for Foreground
-        result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
                 auto payload = args.Payload();
 
@@ -92,7 +92,9 @@ int main()
 {
     Sleep(10000); // Attach to debugger
 
-    PushNotificationChannel channel = RequestChannel();
+    {
+        PushNotificationChannel channel = RequestChannel();
+    }
 
     printf("Press 'Enter' at any time to exit App.");
     std::cin.ignore();

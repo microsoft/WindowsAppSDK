@@ -55,7 +55,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ PCWSTR processName)
 {
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
@@ -65,12 +65,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(/*[out]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName)
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(/*[in]*/ PCWSTR processName)
 {
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
 
-    m_foregroundSinkManager.Remove(processName, sink);
+    m_foregroundSinkManager.Remove(processName);
     return S_OK;
 }
 
@@ -103,8 +103,8 @@ void NotificationsLongRunningPlatformImpl::SendForegroundNotification()
     byte samplePayload[] = { 0x50, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x20,
                         0x66, 0x72, 0x6f, 0x6d, 0x20, 0x74, 0x68, 0x65,
                             0x20, 0x4c, 0x52, 0x50, 0x21 }; // Payload from the LRP!
-
-    m_foregroundSinkManager.InvokeAllHandlers(samplePayload, sizeof(samplePayload));
+    
+    m_foregroundSinkManager.InvokeForegroundHandlers(sizeof(samplePayload), samplePayload);
 
     //m_foregroundSinkManager.InvokeForegroundHandlersOfProc("PushNotificationsDemoApp.exe", samplePayload, sizeof(samplePayload));
 }

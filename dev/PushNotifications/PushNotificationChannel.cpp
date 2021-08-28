@@ -29,13 +29,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             if (IsPackagedApp())
             {
-                char processName[1024];
-                GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
-
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
                     wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
-                notificationsLongRunningPlatform->UnregisterForegroundActivator(this, processName);
+                wchar_t processName[1024];
+                THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
+
+                notificationsLongRunningPlatform->UnregisterForegroundActivator(processName);
             }
         }
         CATCH_LOG()
@@ -82,11 +82,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else // forcing the packaged application to use LRP for testing
         {
-            char processName[1024];
-            GetModuleFileNameExA(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0]));
-
             wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
                 wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+            wchar_t processName[1024];
+            THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
 
             THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(this, processName));
 
@@ -106,7 +106,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    HRESULT __stdcall PushNotificationChannel::InvokeAll(byte* start, ULONG length) noexcept try
+    HRESULT __stdcall PushNotificationChannel::InvokeAll(ULONG length, byte* start) noexcept try
     {
         std::vector<uint8_t> vec;
 

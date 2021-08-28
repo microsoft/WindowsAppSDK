@@ -21,9 +21,9 @@ Microsoft::WRL::RuntimeClass<
 
     STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
 
-    STDMETHOD(RegisterForegroundActivator)(/*[in]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName);
+    STDMETHOD(RegisterForegroundActivator)(/*[in]*/ IWpnForegroundSink* sink, _In_ PCWSTR processName);
 
-    STDMETHOD(UnregisterForegroundActivator)(/*[out]*/ IWpnForegroundSink* sink, /*[in]*/ LPCSTR processName);
+    STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName);
 
     /* Add your functions to retrieve the platform components */
 

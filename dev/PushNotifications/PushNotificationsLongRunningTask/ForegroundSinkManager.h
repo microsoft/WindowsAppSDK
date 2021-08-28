@@ -4,21 +4,22 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
+#include <vector>
 
 class ForegroundSinkManager
 {
 public:
     ForegroundSinkManager() = default;
 
-    void AddSink(std::string processName, IWpnForegroundSink* sink);
+    void AddSink(std::wstring processName, IWpnForegroundSink* sink);
 
-    void Remove(std::string processName, IWpnForegroundSink* sink);
+    void Remove(std::wstring processName);
 
-    void InvokeAllHandlers(byte* payload, ULONG payloadSize); // for testing
+    void InvokeForegroundHandlers(ULONG payloadSize, byte* payload);
 
-    bool InvokeForegroundHandlersOfProc(std::string processName, byte* payload, ULONG payloadSize);
+    // void InvokeForegroundHandlers(std::wstring processName, byte* payload, ULONG payloadSize);
 
 private:
-    std::unordered_map<std::string, std::unordered_set<IWpnForegroundSink*>> m_foregroundMap = {};
+    std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<IWpnForegroundSink>> m_foregroundMap = {};
 
 };

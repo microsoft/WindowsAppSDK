@@ -11,7 +11,7 @@ import "ocidl.idl";
 [pointer_default(unique)]
 interface IWpnForegroundSink : IUnknown
 {
-    HRESULT InvokeAll([in] byte* payload, [in] ULONG length);
+    HRESULT InvokeAll([in] ULONG length, [in, string] byte data[]);
 };
 
 [object]
@@ -21,9 +21,9 @@ interface INotificationsLongRunningPlatform : IUnknown
 {
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] GUID* appId);
 
-    HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCSTR processName);
+    HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
 
-    HRESULT UnregisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCSTR processName);
+    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
 };
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
