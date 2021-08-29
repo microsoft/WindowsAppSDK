@@ -55,3 +55,18 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return E_NOTIMPL;
 }
 
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR /*processName*/) noexcept
+{
+    auto lock = m_lock.lock_shared();
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    return E_NOTIMPL;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(_In_ PCWSTR /*processName*/) noexcept
+{
+    auto lock = m_lock.lock_shared();
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    return E_NOTIMPL;
+}

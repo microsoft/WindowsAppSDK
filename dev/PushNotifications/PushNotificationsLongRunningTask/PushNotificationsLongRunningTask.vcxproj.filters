@@ -27,6 +27,12 @@
     <ClInclude Include="PlatformLifetimeTimerManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NotificationListenerManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -42,6 +48,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlatformLifetimeTimerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationListenerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
