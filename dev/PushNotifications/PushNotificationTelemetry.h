@@ -6,8 +6,11 @@
 #include "..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h"
 #include <wrl\wrappers\corewrappers.h>
 
-DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider, "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry", (0x7c1b07ef, 0xa7c0, 0x56d1, 0x54, 0x56, 0x38, 0x5e, 0xbd, 0x44, 0x12, 0xb2));
-// {7c1b07ef-a7c0-56d1-5456-385ebd4412b2}
+DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider,
+    "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry",
+    // {7c1b07ef-a7c0-56d1-5456-385ebd4412b2}
+    (0x7c1b07ef, 0xa7c0, 0x56d1, 0x54, 0x56, 0x38, 0x5e, 0xbd, 0x44, 0x12, 0xb2));
+
 
 class PushNotificationTelemetry : public wil::TraceLoggingProvider
 {
