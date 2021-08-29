@@ -2,24 +2,34 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
-#include "Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken.g.h"
+#include "winrt/Windows.ApplicationModel.Background.h"
 
-namespace winrt::Microsoft::Windows::PushNotifications::implementation
+struct PushNotificationRegistrationToken
 {
-    struct PushNotificationRegistrationToken : PushNotificationRegistrationTokenT<PushNotificationRegistrationToken>
+    PushNotificationRegistrationToken() {}
+
+    void SetCookie(uint32_t const& cookie)
     {
-        PushNotificationRegistrationToken(uint32_t const& cookie, winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& taskRegistration);
-        uint32_t Cookie();
-        winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration TaskRegistration();
+        m_cookie = cookie;
+    }
+
+    void SetBackgroundTaskRegistration(winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& taskRegistration)
+    {
+        m_taskRegistration = taskRegistration;
+    }
+
+    uint32_t GetCookie()
+    {
+        return m_cookie;
+    }
+
+    winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration GetBackgroundTaskRegistration()
+    {
+        return m_taskRegistration;
+    }
 
     private:
-        const uint32_t m_cookie;
-        const winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_taskRegistration;
-    };
-}
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
-{
-    struct PushNotificationRegistrationToken : PushNotificationRegistrationTokenT<PushNotificationRegistrationToken, implementation::PushNotificationRegistrationToken>
-    {
-    };
-}
+        uint32_t m_cookie = 0;
+        winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration m_taskRegistration = nullptr;
+};
+

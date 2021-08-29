@@ -3,19 +3,23 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.h"
+#include "PushNotificationRegistrationToken.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
+    static PushNotificationRegistrationToken s_token;
+
     struct PushNotificationManager
     {
         PushNotificationManager() = delete;
 
-        static Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
-        static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken const& token, Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
+        static void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
+        static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
+        static void UnregisterAllActivators();
 
         static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(const winrt::guid &remoteId);
 
-        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
+        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
 
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
