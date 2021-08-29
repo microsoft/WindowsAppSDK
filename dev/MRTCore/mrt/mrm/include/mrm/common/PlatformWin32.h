@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -122,40 +122,44 @@ extern "C"
 #else // ! DOWNLEVEL_PRIOR_TO_WIN8
 #include <mrm/common/mrmtracelogging.h>
 
-#define WRITE_MRMMIN_INIT_TRACE_INFO(msg, hr) MrtRuntimeTelemetry_GenericEventParam1(TOWIDE(__FUNCTION__), msg, hr)
+#define WRITE_MRMMIN_INIT_TRACE_INFO(msg, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam1(TOWIDE(__FUNCTION__), msg, hr)
 #define WRITE_MRMMIN_INIT_TRACE_INFO_CHECK(msg, hr) \
     { \
-        MrtRuntimeTelemetry_GenericEventParam1(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
+        MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam1(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
     }
-#define WRITE_MRMMIN_INIT_TRACE_ERROR(msg, hr) MrtRuntimeTelemetry_GenericEventParam1(TOWIDE(__FUNCTION__), msg, hr)
+#define WRITE_MRMMIN_INIT_TRACE_ERROR(msg, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam1(TOWIDE(__FUNCTION__), msg, hr)
 #define WRITE_MRMMIN_INIT_TRACE_ERROR_CHECK(msg, hr) \
     { \
-        MrtRuntimeTelemetry_GenericEventParam1(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
+        MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam1(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
     }
-#define WRITE_MRMMIN_INIT_TRACE_ERROR_MEASURE(msg, hr) MrtRuntimeMeasure_GenericEventParam1(TOWIDE(__FUNCTION__), msg, hr)
+#define WRITE_MRMMIN_INIT_TRACE_ERROR_MEASURE(msg, hr) \
+    { \
+        LOG_ERROR_IN_MEMORY(hr, 1, nullptr, msg); \
+        MrtRuntimeTraceLoggingProvider::MeasureGenericEventParam1(TOWIDE(__FUNCTION__), msg, hr); \
+    }
 #define WRITE_MRMMIN_INIT_TRACE_ERROR_MEASURE_CHECK(msg, hr) \
     { \
-        MrtRuntimeMeasure_GenericEventParam1(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
+        LOG_ERROR_IN_MEMORY(hr, 1, nullptr, msg); \
+        MrtRuntimeTraceLoggingProvider::MeasureGenericEventParam1(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
     }
 
-#define WRITE_MRMMIN_TRACE_INFO(msg, msg2, hr) MrtRuntimeTelemetry_GenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
-#define WRITE_MRMMIN_TRACE_WARNING(msg, msg2, hr) MrtRuntimeTelemetry_GenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
+#define WRITE_MRMMIN_TRACE_INFO(msg, msg2, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
+#define WRITE_MRMMIN_TRACE_WARNING(msg, msg2, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_WARNING_CHECK(msg, msg2, hr) \
     { \
-        MrtRuntimeTelemetry_GenericEventParam2(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
+        MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam2(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
     }
-#define WRITE_MRMMIN_TRACE_ERROR(msg, msg2, hr) MrtRuntimeTelemetry_GenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
-#define WRITE_MRMMIN_TRACE_ERROR_MEASURE(msg, msg2, hr) MrtRuntimeMeasure_GenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
+#define WRITE_MRMMIN_TRACE_ERROR(msg, msg2, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr)
+#define WRITE_MRMMIN_TRACE_ERROR_MEASURE(msg, msg2, hr) \
+    { \
+        LOG_ERROR_IN_MEMORY(hr, 2, nullptr, msg2); \
+        MrtRuntimeTraceLoggingProvider::MeasureGenericEventParam2(TOWIDE(__FUNCTION__), msg, msg2, hr); \
+    }
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE_CHECK(msg, msg2, hr) \
     { \
-        MrtRuntimeMeasure_GenericEventParam2(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
+        LOG_ERROR_IN_MEMORY(hr, 2, nullptr, msg2); \
+        MrtRuntimeTraceLoggingProvider::MeasureGenericEventParam2(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
     }
-
-#define WRITE_MRMMIN_PRI_MERGE_INFO(mergeState, mergeInfo, result) MrtRuntimeTelemetry_PriMerge(mergeState, mergeInfo, result)
-#define WRITE_MRMMIN_PRI_MERGE_ERROR(mergeState, mergeInfo, result) MrtRuntimeMeasure_PriMerge(mergeState, mergeInfo, result)
-
-#define WRITE_MRMMIN_UNABLE_TO_OPEN_OVERLAY_FILE(overlayFileName, result) \
-    MrtRuntimeMeasure_UnableToOpenOverlayFile(TOWIDE(__FUNCTION__), overlayFileName, result)
 
 #define WRITE_ETW(etw) etw
 
