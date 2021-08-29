@@ -46,6 +46,34 @@ public:
         }
         CATCH_LOG()
 
+    DEFINE_EVENT_METHOD(ActivatorRegisteredByApi)(
+        winrt::hresult hr) noexcept try
+        {
+            if (c_maxEventLimit >= UpdateLogEventCount())
+            {
+                TraceLoggingClassWriteMeasure(
+                    "ActivatorRegisteredByApi",
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    _GENERIC_PARTB_FIELDS_ENABLED,
+                    TraceLoggingHexUInt32(hr, "OperationResult"));
+            }
+        }
+        CATCH_LOG()
+
+
+    DEFINE_EVENT_METHOD(ActivatorUnregisteredByApi)(
+        winrt::hresult hr) noexcept try
+        {
+            if (c_maxEventLimit >= UpdateLogEventCount())
+            {
+                TraceLoggingClassWriteMeasure(
+                    "ActivatorUnregisteredByApi",
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    _GENERIC_PARTB_FIELDS_ENABLED,
+                    TraceLoggingHexUInt32(hr, "OperationResult"));
+            }
+        }
+        CATCH_LOG()
 private:
     Microsoft::WRL::Wrappers::CriticalSection m_lock;
     ULONGLONG m_lastFiredTick = 0;
