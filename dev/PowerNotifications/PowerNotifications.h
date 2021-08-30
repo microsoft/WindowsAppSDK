@@ -9,26 +9,28 @@
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h>
 
-class PowerNotifications : public wil::TraceLoggingProvider
+class Telemetry : public wil::TraceLoggingProvider
 {
-    IMPLEMENT_TRACELOGGING_CLASS(PowerNotifications, "Microsoft.WindowsAppSDK.System.PowerNotifications",
+    IMPLEMENT_TRACELOGGING_CLASS(Telemetry, "Microsoft.WindowsAppSDK.System.Telemetry",
         // {a1b12e2c-12d9-564e-2ea1-2894ffcc7cc5}
         (0xa1b12e2c, 0x12d9, 0x564e, 0x2e, 0xa1, 0x28, 0x94, 0xff, 0xcc, 0x7c, 0xc5));
 
-    public:
+public:
 
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(AddCallbackEvent, PDT_ProductAndServiceUsage, eventName);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RemoveCallbackEvent, PDT_ProductAndServiceUsage, eventName);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(CallbackEvent, PDT_ProductAndServiceUsage, eventName);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UpdateValueEvent, PDT_ProductAndServiceUsage, eventName);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RegisterEvent, PDT_ProductAndServiceUsage, eventName);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UnregisterEvent, PDT_ProductAndServiceUsage, eventName);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(FailureEvent, PDT_ProductAndServiceUsage,
-            PCWSTR, eventName, PCWSTR, APIName, PCSTR, exceptionString);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(AddCallbackTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RemoveCallbackTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(CallbackTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UpdateValueTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RegisterTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UnregisterTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(FailureTrace, PDT_ProductAndServiceUsage,
+        PCWSTR, eventName, PCWSTR, APIName, PCSTR, exceptionString);
 };
 
 namespace winrt::Microsoft::Windows::System::Power
 {
+
+
     using PowerEventHandler =
         winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
     using EventType = winrt::event<PowerEventHandler>;
@@ -237,19 +239,19 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    PowerNotifications::AddCallbackEvent(fn.name.c_str());
+                    Telemetry::AddCallbackTrace(fn.name.c_str());
                     auto& eventObj{ fn.event() };
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     if (!RegisteredForEvents(eventObj))
                     {
-                        PowerNotifications::RegisterEvent(fn.name.c_str());
+                        Telemetry::RegisterTrace(fn.name.c_str());
                         fn.registerListener();
                     }
                     return eventObj.add(handler);
                 }
                 catch (std::exception& ex)
                 {
-                    PowerNotifications::FailureEvent(fn.name.c_str(), L"AddCallback", ex.what());
+                    Telemetry::FailureTrace(fn.name.c_str(), L"AddCallback", ex.what());
                     throw ex;
                 }
             }
@@ -258,19 +260,19 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    PowerNotifications::RemoveCallbackEvent(fn.name.c_str());
+                    Telemetry::RemoveCallbackTrace(fn.name.c_str());
                     auto& eventObj{ fn.event() };
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     eventObj.remove(token);
                     if (RegisteredForEvents(eventObj))
                     {
-                        PowerNotifications::UnregisterEvent(fn.name.c_str());
+                        Telemetry::UnregisterTrace(fn.name.c_str());
                         fn.unregisterListener();
                     }
                 }
                 catch (std::exception& ex)
                 {
-                    PowerNotifications::FailureEvent(fn.name.c_str(), L"RemoveCallback", ex.what());
+                    Telemetry::FailureTrace(fn.name.c_str(), L"RemoveCallback", ex.what());
                     throw ex;
                 }
             }
@@ -279,7 +281,7 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    PowerNotifications::CallbackEvent(fn.name.c_str());
+                    Telemetry::CallbackTrace(fn.name.c_str());
                     std::thread thread([fn]() {
                         fn.event()(nullptr, nullptr);
                         });
@@ -287,7 +289,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 }
                 catch (std::exception& ex)
                 {
-                    PowerNotifications::FailureEvent(fn.name.c_str(), L"RaiseEvent", ex.what());
+                    Telemetry::FailureTrace(fn.name.c_str(), L"RaiseEvent", ex.what());
                     throw ex;
                 }
             }
@@ -297,7 +299,7 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    PowerNotifications::UpdateValueEvent(fn.name.c_str());
+                    Telemetry::UpdateValueTrace(fn.name.c_str());
                     auto& eventObj{ fn.event() };
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     if (!RegisteredForEvents(eventObj))
@@ -307,7 +309,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 }
                 catch (std::exception& ex)
                 {
-                    PowerNotifications::FailureEvent(fn.name.c_str(), L"UpdateValues", ex.what());
+                    Telemetry::FailureTrace(fn.name.c_str(), L"UpdateValues", ex.what());
                     throw ex;
                 }
             }
