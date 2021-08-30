@@ -17,8 +17,8 @@ class PowerNotifications : public wil::TraceLoggingProvider
 
     public:
 
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RegisterEvent, PDT_ProductAndServiceUsage, value);
-        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UnregisterEvent, PDT_ProductAndServiceUsage, value);
+        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RegisterEvent, PDT_ProductAndServiceUsage, eventName);
+        DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UnregisterEvent, PDT_ProductAndServiceUsage, eventName);
 
         DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusCallbackActivity, PDT_ProductAndServicePerformance);
         DEFINE_COMPLIANT_MEASURES_ACTIVITY(EnergySaverStatusRegisterActivity, PDT_ProductAndServicePerformance);
