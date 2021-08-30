@@ -14,7 +14,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkIncremental>false</LinkIncremental>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <AdditionalOptions>/debugtype:cv,fixup %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>%(AdditionalOptions) /debugtype:cv,fixup</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
 </Project>
