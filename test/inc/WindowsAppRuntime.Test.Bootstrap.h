@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __WINDOWSAPPSDK_TEST_BOOTSTRAP_H
-#define __WINDOWSAPPSDK_TEST_BOOTSTRAP_H
+#ifndef __WINDOWSAPPRUNTIME_TEST_BOOTSTRAP_H
+#define __WINDOWSAPPRUNTIME_TEST_BOOTSTRAP_H
 
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 
-#include <WindowsAppSDK.Test.AppModel.h>
-#include <WindowsAppSDK.Test.Package.h>
+#include <WindowsAppRuntime.Test.AppModel.h>
+#include <WindowsAppRuntime.Test.Package.h>
 
 #include <WexTestClass.h>
 
@@ -45,7 +45,7 @@ namespace Test::Bootstrap
         // Remove our packages in case they were previously installed and incompletely removed
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Singleton))
         {
-            TP::RemovePackage_WindowsAppSDKSingleton();
+            TP::RemovePackage_WindowsAppRuntimeSingleton();
         }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM))
         {
@@ -57,13 +57,13 @@ namespace Test::Bootstrap
         }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
         {
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
         }
 
         // Install our needed packages
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
         {
-            TP::AddPackage_WindowsAppSDKFramework();
+            TP::AddPackage_WindowsAppRuntimeFramework();
         }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Main))
         {
@@ -75,7 +75,7 @@ namespace Test::Bootstrap
         }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Singleton))
         {
-            TP::AddPackage_WindowsAppSDKSingleton();
+            TP::AddPackage_WindowsAppRuntimeSingleton();
         }
     }
 
@@ -84,7 +84,7 @@ namespace Test::Bootstrap
         // Remove our packages in case they were previously installed and incompletely removed
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Singleton))
         {
-            TP::RemovePackage_WindowsAppSDKSingleton();
+            TP::RemovePackage_WindowsAppRuntimeSingleton();
         }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::DDLM))
         {
@@ -96,7 +96,7 @@ namespace Test::Bootstrap
         }
         if (WI_IsFlagSet(packagesToSetup, Test::Bootstrap::Packages::Framework))
         {
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
         }
     }
 
@@ -108,7 +108,7 @@ namespace Test::Bootstrap
             return;
         }
 
-        // We need to find Microsoft.WindowsAppSDK.Bootstrap.dll.
+        // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
         // Normally it's colocated with the application (i.e. same dir as the exe)
         // but that's not true of our test project (a dll) in our build environment
         // (different directories). So we'll explicitly find and load it so the
@@ -159,4 +159,4 @@ namespace Test::Bootstrap
     }
 }
 
-#endif // __WINDOWSAPPSDK_TEST_BOOTSTRAP_H
+#endif // __WINDOWSAPPRUNTIME_TEST_BOOTSTRAP_H

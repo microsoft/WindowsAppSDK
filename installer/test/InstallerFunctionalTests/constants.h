@@ -17,29 +17,29 @@
 #endif
 
 #define BASE_PATH L"..\\..\\..\\"
-#define INSTALLER_DIR L"WindowsAppSDKInstall"
-#define INSTALLER_FILENAME L"WindowsAppSDKInstall.exe"
+#define INSTALLER_DIR L"WindowsAppRuntimeInstall"
+#define INSTALLER_FILENAME L"WindowsAppRuntimeInstall.exe"
 #define INSTALLER_EXE_PATH BASE_PATH CONFIGURATION L"\\" ARCH L"\\" INSTALLER_DIR L"\\" INSTALLER_FILENAME
 
-namespace WindowsAppSDKInstallerTests
+namespace WindowsAppRuntimeInstallerTests
 {
     static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 
-    static const std::wstring c_x86FrameworkName = L"Microsoft.WindowsAppSDK.Test.InstallerFramework_1.0.0.0_x86__8wekyb3d8bbwe";
-    static const std::wstring c_x64FrameworkName = L"Microsoft.WindowsAppSDK.Test.InstallerFramework_1.0.0.0_x64__8wekyb3d8bbwe";
-    static const std::wstring c_arm64FrameworkName = L"Microsoft.WindowsAppSDK.Test.InstallerFramework_1.0.0.0_arm64__8wekyb3d8bbwe";
+    static const std::wstring c_x86FrameworkName = L"Microsoft.WindowsAppRuntime.Test.InstallFramework_1.0.0.0_x86__8wekyb3d8bbwe";
+    static const std::wstring c_x64FrameworkName = L"Microsoft.WindowsAppRuntime.Test.InstallFramework_1.0.0.0_x64__8wekyb3d8bbwe";
+    static const std::wstring c_arm64FrameworkName = L"Microsoft.WindowsAppRuntime.Test.InstallFramework_1.0.0.0_arm64__8wekyb3d8bbwe";
 
-    static const std::wstring c_x86MainName = L"WindowsAppSDK.Test.InstallerMain_1.0.0.0_x86__8wekyb3d8bbwe";
-    static const std::wstring c_x64MainName = L"WindowsAppSDK.Test.InstallerMain_1.0.0.0_x64__8wekyb3d8bbwe";
-    static const std::wstring c_arm64MainName = L"WindowsAppSDK.Test.InstallerMain_1.0.0.0_arm64__8wekyb3d8bbwe";
-    static const std::wstring c_mainFamilyName = L"WindowsAppSDK.Test.InstallerMain_8wekyb3d8bbwe";
+    static const std::wstring c_x86MainName = L"WindowsAppRuntime.Test.InstallerMain_1.0.0.0_x86__8wekyb3d8bbwe";
+    static const std::wstring c_x64MainName = L"WindowsAppRuntime.Test.InstallerMain_1.0.0.0_x64__8wekyb3d8bbwe";
+    static const std::wstring c_arm64MainName = L"WindowsAppRuntime.Test.InstallerMain_1.0.0.0_arm64__8wekyb3d8bbwe";
+    static const std::wstring c_mainFamilyName = L"WindowsAppRuntime.Test.InstallerMain_8wekyb3d8bbwe";
 
-    static const std::wstring c_x86DDLMName = L"WindowsAppSDK.Test.InstallerDDLM-x86_1.0.0.0_x86__8wekyb3d8bbwe";
-    static const std::wstring c_x64DDLMName = L"WindowsAppSDK.Test.InstallerDDLM-x64_1.0.0.0_x64__8wekyb3d8bbwe";
-    static const std::wstring c_arm64DDLMName = L"WindowsAppSDK.Test.InstallerDDLM-arm64_1.0.0.0_arm64__8wekyb3d8bbwe";
-    static const std::wstring c_x86DDLMFamilyName = L"WindowsAppSDK.Test.InstallerDDLM-arm64_8wekyb3d8bbwe";
-    static const std::wstring c_x64DDLMFamilyName = L"WindowsAppSDK.Test.InstallerDDLM-arm64_8wekyb3d8bbwe";
-    static const std::wstring c_arm64DDLMFamilyName = L"WindowsAppSDK.Test.InstallerDDLM-arm64_8wekyb3d8bbwe";
+    static const std::wstring c_x86DDLMName = L"WindowsAppRuntime.Test.InstallerDDLM-x86_1.0.0.0_x86__8wekyb3d8bbwe";
+    static const std::wstring c_x64DDLMName = L"WindowsAppRuntime.Test.InstallerDDLM-x64_1.0.0.0_x64__8wekyb3d8bbwe";
+    static const std::wstring c_arm64DDLMName = L"WindowsAppRuntime.Test.InstallerDDLM-arm64_1.0.0.0_arm64__8wekyb3d8bbwe";
+    static const std::wstring c_x86DDLMFamilyName = L"WindowsAppRuntime.Test.InstallerDDLM-arm64_8wekyb3d8bbwe";
+    static const std::wstring c_x64DDLMFamilyName = L"WindowsAppRuntime.Test.InstallerDDLM-arm64_8wekyb3d8bbwe";
+    static const std::wstring c_arm64DDLMFamilyName = L"WindowsAppRuntime.Test.InstallerDDLM-arm64_8wekyb3d8bbwe";
 
     static const std::wstring c_packages[] = {
         c_x86MainName,

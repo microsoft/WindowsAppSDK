@@ -35,7 +35,7 @@ namespace Test::PowerNotifications
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
@@ -43,7 +43,7 @@ namespace Test::PowerNotifications
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             return true;
@@ -73,7 +73,7 @@ namespace Test::PowerNotifications
             // The values will need to be changed to reflect real-time values
             // when running the test on such systems
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"Ignore", L"true")                
+                TEST_METHOD_PROPERTY(L"Ignore", L"true")
             END_TEST_METHOD_PROPERTIES()
 
             wil::unique_handle event(CreateEvent(nullptr, false, false, nullptr));
@@ -189,7 +189,7 @@ namespace Test::PowerNotifications
             // Ignoring this test since there is no default value for SystemIdle
             // and there is no way to know when the callback will be fired
             BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"Ignore", L"true")                
+                TEST_METHOD_PROPERTY(L"Ignore", L"true")
             END_TEST_METHOD_PROPERTIES()
 
             auto callback_success = false;

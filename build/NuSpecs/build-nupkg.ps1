@@ -108,12 +108,12 @@ function ConfigureNugetCommandLine {
 
 ConfigureNugetCommandLine("Microsoft.WindowsAppSDK")
 
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.WindowsAppSDK\Microsoft.WindowsAppSDK.dll "$runtimesDir\win10-x86\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.WindowsAppSDK\Microsoft.WindowsAppSDK.pri "$runtimesDir\win10-x86\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.WindowsAppSDK\Microsoft.WindowsAppSDK.dll "$runtimesDir\win10-x64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.WindowsAppSDK\Microsoft.WindowsAppSDK.pri "$runtimesDir\win10-x64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.WindowsAppSDK\Microsoft.WindowsAppSDK.dll "$runtimesDir\win10-arm64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.WindowsAppSDK\Microsoft.WindowsAppSDK.pri "$runtimesDir\win10-arm64\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.dll "$runtimesDir\win10-x86\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppSDK.pri "$runtimesDir\win10-x86\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.dll "$runtimesDir\win10-x64\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppSDK.pri "$runtimesDir\win10-x64\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.dll "$runtimesDir\win10-arm64\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppSDK.pri "$runtimesDir\win10-arm64\native"
 
 #
 # Build Windows App SDK package (with actual contents, i.e. not metapackage)
@@ -121,7 +121,7 @@ Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.Window
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
 $NugetCmdLine = "$nugetExe pack WindowsAppSDK.nuspec $NugetArgs -version $version"
-Write-Host 'Building Windows App SDK package'
+Write-Host 'Building Windows SDK package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)
@@ -159,13 +159,9 @@ if(-not $SkipFrameworkPackage)
     # Nuget package with framework package encapsulation
     $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir\FrameworkPackage"
 
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.WindowsAppSDK-*.msix "$toolsDir\AppX\x86\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.WindowsAppSDK-*.msix "$toolsDir\AppX\x64\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.WindowsAppSDK-*.msix "$toolsDir\AppX\arm64\Release"
-    # Currently we don't have a separate Debug package that we want to ship to customers
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x86\FrameworkPackage\Microsoft.WindowsAppSDK.Debug-*.msix "$toolsDir\AppX\x86\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x64\FrameworkPackage\Microsoft.WindowsAppSDK.Debug-*.msix "$toolsDir\AppX\x64\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\arm64\FrameworkPackage\Microsoft.WindowsAppSDK.Debug-*.msix "$toolsDir\AppX\arm64\Debug"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.WindowsAppRuntime-*.msix "$toolsDir\AppX\x86\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.WindowsAppRuntime-*.msix "$toolsDir\AppX\x64\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.WindowsAppRuntime-*.msix "$toolsDir\AppX\arm64\Release"
 
     $NugetCmdLine = "$nugetExe pack WindowsAppSDKFrameworkPackage.nuspec $NugetArgs -version $version"
     Write-Host $NugetCmdLine
