@@ -19,7 +19,7 @@ bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring processName, b
 {
     if (m_foregroundMap.find(processName) != m_foregroundMap.end())
     {
-        m_foregroundMap[processName]->InvokeAll(payloadSize, payload);
+        LOG_IF_FAILED(m_foregroundMap[processName]->InvokeAll(payloadSize, payload));
         return true;
     }
     return false;

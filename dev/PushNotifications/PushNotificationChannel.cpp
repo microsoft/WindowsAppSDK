@@ -51,7 +51,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        if (IsPackagedApp())
+        if (IsPackagedAppScenario())
         {
             return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
             {
@@ -82,7 +82,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        if (IsPackagedApp())
+        if (IsPackagedAppScenario())
         {
             m_channel.PushNotificationReceived(token);
         }
@@ -92,16 +92,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    HRESULT __stdcall PushNotificationChannel::InvokeAll(ULONG length, byte* start) noexcept try
+    HRESULT __stdcall PushNotificationChannel::InvokeAll(ULONG length, _In_ byte* start) noexcept try
     {
-        std::vector<uint8_t> vec;
-
-        for (int i = 0; (ULONG)i < length; i++)
-        {
-            vec.push_back(start[i]);
-        }
-
-        com_array<uint8_t> arr{ start, start + (length * sizeof(uint8_t)) };
         m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(start, length));
         return S_OK;
     }
@@ -113,13 +105,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
 
     // Determines if the caller should be treated as packaged app or not.
-    bool PushNotificationChannel::IsPackagedApp()
+    bool PushNotificationChannel::IsPackagedAppScenario()
     {
-        if (AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable())
-        {
-            return true;
-        }
-
-        return false;
+        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
 }

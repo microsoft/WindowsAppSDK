@@ -23,13 +23,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     private:
 
-        byte* m_rawNotification = nullptr;
+        byte* m_rawNotificationPayload = nullptr;
+        ULONG m_rawNotificationPayloadLength;
 
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
 
-        ULONG m_length;
-        bool m_isBIAvailable;
+        bool m_isUnpackagedApp;
         bool m_handledUnpackaged = false;
     };
 }

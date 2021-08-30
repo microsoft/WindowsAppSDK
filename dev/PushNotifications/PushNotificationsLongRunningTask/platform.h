@@ -30,7 +30,6 @@ Microsoft::WRL::RuntimeClass<
 private:
 
     void UnregisterForegroundActivator(PCWSTR processName);
-    void DeliverPayload(PCWSTR processName, byte* payload, ULONG payloadSize);
 
     wil::srwlock m_lock;
 

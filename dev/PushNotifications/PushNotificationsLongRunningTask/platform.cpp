@@ -18,7 +18,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     // Schedule event signaling after 5 seconds. This is in case we don't have any apps to track in the LRP.
     // If we realize that we need to persist the LRP, timer should be canceled.
     m_shutdownTimerManager = std::make_unique<PlatformLifetimeTimerManager>();
-    //m_shutdownTimerManager->Setup();
+    m_shutdownTimerManager->Setup();
 
     /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
 
@@ -76,10 +76,3 @@ void NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(_In_ PC
     m_foregroundSinkManager.Remove(processName);
 }
 
-void NotificationsLongRunningPlatformImpl::DeliverPayload(PCWSTR processName, byte* payload, ULONG payloadSize)
-{
-    if (!m_foregroundSinkManager.InvokeForegroundHandlers(processName, payload, payloadSize))
-    {
-        SendBackgroundNotification(processName, payload, payloadSize);
-    }
-}

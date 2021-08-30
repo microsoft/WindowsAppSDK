@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         HRESULT __stdcall InvokeAll(ULONG length, byte* start) noexcept;
 
     private:
-        bool IsPackagedApp();
+        bool IsPackagedAppScenario();
         bool IsBackgroundTaskBuilderAvailable();
 
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
