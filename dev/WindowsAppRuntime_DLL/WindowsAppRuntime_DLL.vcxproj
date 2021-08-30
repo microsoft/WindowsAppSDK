@@ -395,6 +395,6 @@
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(PublicHeaders)" DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="..\WindowsAppRuntime_Insights\WindowsAppSDKInsights.h" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h" DestinationFolder="$(OutDir)" />
   </Target>
 </Project>

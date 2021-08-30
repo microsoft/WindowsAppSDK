@@ -4,8 +4,8 @@
 #pragma once
 
 #if __has_include(<wil/tracelogging.h>)
-#ifndef __WINDOWSAPPSDKINSIGHTS_INCLUDED
-#define __WINDOWSAPPSDKINSIGHTS_INCLUDED
+#ifndef __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
+#define __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
 
 #ifdef __WIL_TRACELOGGING_H_INCLUDED
 #error "WIL Tracelogging.h must not be explicitly included when including this file"
@@ -13,12 +13,12 @@
 
 #include <wil/resource.h>
 #include <string>
-    namespace Microsoft::WindowsAppSDK::Insights
+    namespace Microsoft::WindowsAppRuntime::Insights
     {
     class RuntimeInformation
     {
     public:
-        static std::string WindowsAppSDKPackageVersion()
+        static std::string WindowsAppRuntimePackageVersion()
         {
             const uint32_t c_PackageVersionResourceId{ 10000 };
             static std::string version{ LoadStringFromResource(c_PackageVersionResourceId) };
@@ -59,19 +59,19 @@
         }
     };
 
-    } // namespace Microsoft::WindowsAppSDK::Insights
+    } // namespace Microsoft::WindowsAppRuntime::Insights
 
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
             TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
-            TraceLoggingString(Microsoft::WindowsAppSDK::Insights::RuntimeInformation::WindowsAppSDKPackageVersion().c_str(), "Version"), \
-            TraceLoggingString(Microsoft::WindowsAppSDK::Insights::RuntimeInformation::WindowsAppSDKExperimentationLevel().c_str(), "WindowsAppSDKChannel"), \
+            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimePackageVersion().c_str(), "Version"), \
+            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeExperimentationLevel().c_str(), "WindowsAppSDKChannel"), \
             TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
             TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
     #include <wil/tracelogging.h>
 
-#endif // __WINDOWSAPPSDKINSIGHTS_INCLUDED
+#endif // __WINDOWSAPPRUNTIMEINSIGHTS_INCLUDED
 #else
 #error "WIL package must be referenced before including this header"
 #endif
