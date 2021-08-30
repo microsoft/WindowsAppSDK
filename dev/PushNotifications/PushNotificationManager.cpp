@@ -177,7 +177,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                     auto error = winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
 
-                    PushNotificationTelemetry::ActivatorRegisteredByApi(error.code());
+                    PushNotificationTelemetry::ActivatorRegisteredByApi(error.code(), details.Options());
 
                     throw error;
                 });
@@ -234,7 +234,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (result != S_OK)
             {
-                PushNotificationTelemetry::ActivatorRegisteredByApi(result);
+                PushNotificationTelemetry::ActivatorRegisteredByApi(result, details.Options());
 
                 throw result;
             }
@@ -248,7 +248,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationRegistrationToken token = { cookie, registeredTaskFromBuilder };
         scopeExitToCleanRegistrations.release();
 
-        PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK);
+        PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Options());
 
         return token;
     }
@@ -269,7 +269,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
         }
 
-        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK);
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, options);
     }
 
     static bool HasBackgroundTaskEntryPointClsid() {

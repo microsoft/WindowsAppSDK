@@ -42,10 +42,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         catch (...)
         {
             auto channelCloseException = hresult_error(to_hresult());
+
+            PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
+
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {
-                PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
-
                 throw hresult_error(to_hresult());
             }
         }
