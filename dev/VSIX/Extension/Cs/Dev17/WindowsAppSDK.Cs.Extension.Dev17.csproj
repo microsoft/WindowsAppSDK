@@ -24,7 +24,7 @@
     <VsixManifestSource>$(Deployment)\source.extension.vsixmanifest</VsixManifestSource>
     <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
     <!-- This MUST match VSPackage.PackageGuidString -->
-    <PackageGuidString>B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B</PackageGuidString>
+    <PackageGuidString>{B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B}</PackageGuidString>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
