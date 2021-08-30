@@ -9,9 +9,9 @@
 #include <frameworkudk\PowerNotificationsPal.h>
 #include <..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h>
 
-class Telemetry : public wil::TraceLoggingProvider
+class PowerNotificationsTelemetry : public wil::TraceLoggingProvider
 {
-    IMPLEMENT_TRACELOGGING_CLASS(Telemetry, "Microsoft.WindowsAppSDK.System.Telemetry",
+    IMPLEMENT_TRACELOGGING_CLASS(PowerNotificationsTelemetry, "Microsoft.WindowsAppSDK.System.PowerNotifications",
         // {a1b12e2c-12d9-564e-2ea1-2894ffcc7cc5}
         (0xa1b12e2c, 0x12d9, 0x564e, 0x2e, 0xa1, 0x28, 0x94, 0xff, 0xcc, 0x7c, 0xc5));
 
@@ -239,19 +239,19 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    Telemetry::AddCallbackTrace(fn.name.c_str());
+                    PowerNotificationsTelemetry::AddCallbackTrace(fn.name.c_str());
                     auto& eventObj{ fn.event() };
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     if (!RegisteredForEvents(eventObj))
                     {
-                        Telemetry::RegisterTrace(fn.name.c_str());
+                        PowerNotificationsTelemetry::RegisterTrace(fn.name.c_str());
                         fn.registerListener();
                     }
                     return eventObj.add(handler);
                 }
                 catch (std::exception& ex)
                 {
-                    Telemetry::FailureTrace(fn.name.c_str(), L"AddCallback", ex.what());
+                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"AddCallback", ex.what());
                     throw ex;
                 }
             }
@@ -260,19 +260,19 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    Telemetry::RemoveCallbackTrace(fn.name.c_str());
+                    PowerNotificationsTelemetry::RemoveCallbackTrace(fn.name.c_str());
                     auto& eventObj{ fn.event() };
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     eventObj.remove(token);
                     if (RegisteredForEvents(eventObj))
                     {
-                        Telemetry::UnregisterTrace(fn.name.c_str());
+                        PowerNotificationsTelemetry::UnregisterTrace(fn.name.c_str());
                         fn.unregisterListener();
                     }
                 }
                 catch (std::exception& ex)
                 {
-                    Telemetry::FailureTrace(fn.name.c_str(), L"RemoveCallback", ex.what());
+                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"RemoveCallback", ex.what());
                     throw ex;
                 }
             }
@@ -281,7 +281,7 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    Telemetry::CallbackTrace(fn.name.c_str());
+                    PowerNotificationsTelemetry::CallbackTrace(fn.name.c_str());
                     std::thread thread([fn]() {
                         fn.event()(nullptr, nullptr);
                         });
@@ -289,7 +289,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 }
                 catch (std::exception& ex)
                 {
-                    Telemetry::FailureTrace(fn.name.c_str(), L"RaiseEvent", ex.what());
+                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"RaiseEvent", ex.what());
                     throw ex;
                 }
             }
@@ -299,7 +299,7 @@ namespace winrt::Microsoft::Windows::System::Power
             {
                 try
                 {
-                    Telemetry::UpdateValueTrace(fn.name.c_str());
+                    PowerNotificationsTelemetry::UpdateValueTrace(fn.name.c_str());
                     auto& eventObj{ fn.event() };
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     if (!RegisteredForEvents(eventObj))
@@ -309,7 +309,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 }
                 catch (std::exception& ex)
                 {
-                    Telemetry::FailureTrace(fn.name.c_str(), L"UpdateValues", ex.what());
+                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"UpdateValues", ex.what());
                     throw ex;
                 }
             }
