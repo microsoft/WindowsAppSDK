@@ -215,7 +215,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             {
                 auto lock = s_lock.lock_exclusive();
-                THROW_HR_IF(E_INVALIDARG, s_cookie > 0);
+                THROW_HR_IF_MSG(E_INVALIDARG, s_cookie > 0, "ComActivator already registered.");
             }
 
             GetWaitHandleForArgs().create();
@@ -245,7 +245,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto lock = s_lock.lock_exclusive();
         if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
         {
-            THROW_HR_IF_NULL(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_taskRegistration);
+            THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_taskRegistration, "PushTrigger not registered.");
             s_taskRegistration.Unregister(true);
             s_taskRegistration = nullptr;
         }
@@ -253,6 +253,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // Check for COM flag, a valid cookie
         if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator) && s_cookie)
         {
+            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_cookie == 0, "ComActivator not registered.");
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(s_cookie)));
             s_cookie = 0;
         }
