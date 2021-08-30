@@ -89,6 +89,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
+    Sleep(15000);
     PushNotificationActivationInfo info(
         PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
@@ -131,6 +132,5 @@ int main()
 
     // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
     PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
-
     return 0;
 }

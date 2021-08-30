@@ -17,7 +17,7 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
-
+#include <iostream>
 using namespace std::literals;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
@@ -241,8 +241,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             taskRegistration.Unregister(true);
         }
 
-        // Check for COM flag, a valid cookie and if there are outstanding locks on the PushNotificationBackgroundTask class factory
-        if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator) && s_token.GetCookie() > 0)
+        // Check for COM flag, a valid cookie
+        if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator) && s_token.GetCookie())
         {
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(s_token.GetCookie())));
         }
@@ -255,7 +255,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             taskRegistration.Unregister(true);
         }
 
-        if (s_token.GetCookie() > 0)
+        if (s_token.GetCookie())
         {
             LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(s_token.GetCookie())));
         }
