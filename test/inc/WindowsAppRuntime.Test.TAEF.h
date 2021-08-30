@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __WINDOWSAPPSDK_TEST_TAEF_H
-#define __WINDOWSAPPSDK_TEST_TAEF_H
+#ifndef __WINDOWSAPPRUNTIME_TEST_TAEF_H
+#define __WINDOWSAPPRUNTIME_TEST_TAEF_H
 
 namespace Test::TAEF
 {
@@ -14,4 +14,4 @@ namespace Test::TAEF
     }
 }
 
-#endif // __WINDOWSAPPSDK_TEST_TAEF_H
+#endif // __WINDOWSAPPRUNTIME_TEST_TAEF_H

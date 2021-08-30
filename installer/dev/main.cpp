@@ -31,7 +31,7 @@ int wmain(int argc, wchar_t *argv[])
         }
     }
 
-    const HRESULT deployPackagesResult{ WindowsAppSDKInstaller::DeployPackages(quiet) };
+    const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::DeployPackages(quiet) };
     if (!quiet)
     {
         if (SUCCEEDED(deployPackagesResult))

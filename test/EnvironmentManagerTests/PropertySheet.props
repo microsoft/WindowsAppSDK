@@ -6,10 +6,10 @@
   <ItemDefinitionGroup />
   <ItemGroup />
   <ItemGroup>
-    <Reference Include="$(SolutionDir)BuildOutput\$(Configuration)\$(PlatformShortName)\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd">
+    <Reference Include="$(SolutionDir)BuildOutput\$(Configuration)\$(PlatformShortName)\WindowsAppRuntime_DLL\Microsoft.Windows.System.winmd">
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
-    <ReferenceCopyLocalPaths Include="$(SolutionDir)BuildOutput\$(Configuration)\$(PlatformShortName)\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll">
+    <ReferenceCopyLocalPaths Include="$(SolutionDir)BuildOutput\$(Configuration)\$(PlatformShortName)\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll">
       <IsWinMDFile>false</IsWinMDFile>
     </ReferenceCopyLocalPaths>
   </ItemGroup>

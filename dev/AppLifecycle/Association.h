@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     static PCWSTR c_applicationNameValueName{ L"ApplicationName" };
     static PCWSTR c_defaultIconKeyName{ L"DefaultIcon" };
     static PCWSTR c_appUserModelIdValueName{ L"AppUserModelId" };
-    static PCWSTR c_applicationsKeyPath{ LR"(Software\Microsoft\WindowsAppSDKApplications\)" };
+    static PCWSTR c_applicationsKeyPath{ LR"(Software\Microsoft\WindowsAppRuntimeApplications\)" };
     static PCWSTR c_capabilitiesKeyPath{ LR"(\Capabilties)" };
     static PCWSTR c_registeredApplicationsKeyPath{ LR"(Software\RegisteredApplications\)" };
     static PCWSTR c_shellKeyName{ L"shell" };

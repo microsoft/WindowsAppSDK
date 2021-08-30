@@ -21,7 +21,7 @@
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -43,14 +43,14 @@
       </uap:VisualElements>
 		<Extensions>
 			<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
-				<uap:Protocol Name="windowsappsdktestprotocol-packaged">
-					<uap:DisplayName>Windows App SDK TestProtocol</uap:DisplayName>
+				<uap:Protocol Name="windowsappruntimetestprotocol-packaged">
+					<uap:DisplayName>Windows App Runtime TestProtocol</uap:DisplayName>
 				</uap:Protocol>
 			</uap:Extension>
 			<com:Extension Category="windows.comServer">
 				<com:ComServer>
-					<com:ExeServer Executable="PushNotificationsTestApp\PushNotificationsTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppSDKPushServer">
-						<com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Windows App SDK Push" />
+					<com:ExeServer Executable="PushNotificationsTestApp\PushNotificationsTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppRuntimePushServer">
+						<com:Class Id="ccd2ae3f-764f-4ae3-be45-9804761b28b2" DisplayName="Windows App Runtime Push" />
 					</com:ExeServer>
 				</com:ComServer>
 			</com:Extension>
