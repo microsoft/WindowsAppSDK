@@ -18,18 +18,18 @@
     class RuntimeInformation
     {
     public:
-        static std::string WindowsAppRuntimePackageVersion()
+        static std::string WindowsAppRuntimeVersion()
         {
-            const uint32_t c_PackageVersionResourceId{ 10000 };
-            static std::string version{ LoadStringFromResource(c_PackageVersionResourceId) };
+            const uint32_t c_versionResourceId{ 10000 };
+            static std::string version{ LoadStringFromResource(c_versionResourceId) };
             return version;
         }
 
-        static std::string WindowsAppSDKExperimentationLevel()
+        static std::string WindowsAppRuntimeChannel()
         {
-            const uint32_t c_ExperimentationLevelResourceId{ 10001 };
-            static std::string experimentationLevel{ LoadStringFromResource(c_ExperimentationLevelResourceId) };
-            return experimentationLevel;
+            const uint32_t c_channelResourceId{ 10001 };
+            static std::string channel{ LoadStringFromResource(c_channelResourceId) };
+            return channel;
         }
 
     private:
@@ -64,8 +64,8 @@
 
     #define _GENERIC_PARTB_FIELDS_ENABLED \
             TraceLoggingStruct(4, "COMMON_WINDOWSAPPSDK_PARAMS"), \
-            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimePackageVersion().c_str(), "Version"), \
-            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeExperimentationLevel().c_str(), "WindowsAppSDKChannel"), \
+            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeVersion().c_str(), "Version"), \
+            TraceLoggingString(Microsoft::WindowsAppRuntime::Insights::RuntimeInformation::WindowsAppRuntimeChannel().c_str(), "WindowsAppSDKChannel"), \
             TraceLoggingBool(wil::details::IsDebuggerPresent(), "IsDebugging"), \
             TraceLoggingBool(true, "UTCReplace_AppSessionGuid")
 
