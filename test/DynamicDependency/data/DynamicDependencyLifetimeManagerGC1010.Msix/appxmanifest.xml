@@ -10,20 +10,20 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppSDK.Test.DDLM.GC-1.0.1.0-###architecture###"
+    Name="WindowsAppRuntime.Test.DDLM.GC-1.0.1.0-###architecture###"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.1.0"
     ProcessorArchitecture="###architecture###" />
 
   <Properties>
-    <DisplayName>WindowsAppSDK.Test.DynamicDependency.LifetimeManager (aka Microsoft.WindowsAppSDK.DDLM) fake for GC tests v1</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.DynamicDependency.LifetimeManager (aka Microsoft.WindowsAppRuntime.DDLM) fake for GC tests v1</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -35,20 +35,20 @@
       Executable="DynamicDependencyLifetimeManager.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Microsoft Windows App SDK DynamicDependency LifetimeManager GC v1"
+        DisplayName="Microsoft Windows App Runtime DynamicDependency LifetimeManager GC v1"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="Microsoft Windows App SDK DynamicDependency LifetimeManager GC v1"
+        Description="Microsoft Windows App Runtime DynamicDependency LifetimeManager GC v1"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
       </uap:VisualElements>
       <Extensions>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="microsoft.winappsdk.ddlm-4.1-###shortarchitecture###"
+          <uap3:AppExtension Name="microsoft.winappruntime.ddlm-4.1-###shortarchitecture###"
                              Id="ddlm-GC-1.0.1.0-###architecture###"
                              PublicFolder="public\ddlm"
-                             DisplayName="Windows App SDK DynamicDependency LifetimeManager Extension (4.1.* ###architecture###)">
+                             DisplayName="Windows App Runtime DynamicDependency LifetimeManager Extension (4.1.* ###architecture###)">
             <uap3:Properties>
               <CLSID>DEADBEEF-DEAD-BEEF-DEAD-BEEFDEADBEEF</CLSID>
             </uap3:Properties>

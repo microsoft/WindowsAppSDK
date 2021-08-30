@@ -8,7 +8,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace WindowsAppSDKInstaller {
+namespace WindowsAppRuntimeInstaller {
 
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
@@ -157,7 +157,7 @@ namespace WindowsAppSDKInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const WindowsAppSDKInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
@@ -169,9 +169,9 @@ namespace WindowsAppSDKInstaller {
             return;
         }
 
-        PCWSTR c_windowsAppSDKTempDirectoryPrefix{ L"WAS" };
+        PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"WAR" };
         wchar_t packageFilename[MAX_PATH];
-        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppSDKTempDirectoryPrefix, 0u, packageFilename));
+        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppRuntimeTempDirectoryPrefix, 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
@@ -219,7 +219,7 @@ namespace WindowsAppSDKInstaller {
 
     HRESULT DeployPackages(bool quiet) noexcept try
     {
-        for (const auto& package : WindowsAppSDKInstaller::c_packages)
+        for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
         {
             DeployPackageFromResource(package, quiet);
         }

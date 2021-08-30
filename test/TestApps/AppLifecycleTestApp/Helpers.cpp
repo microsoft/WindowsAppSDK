@@ -4,7 +4,7 @@
 #include "Helpers.h"
 #include <TestDef.h>
 
-const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppSDK.Bootstrap.dll";
+const wchar_t* g_bootStrapDllName = L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
 
 typedef HRESULT (*BootStrapTestInit)(PCWSTR prefix, PCWSTR publisherId);
 typedef HRESULT (*BootStrapInit)(const UINT32 majorMinorVersion, PCWSTR versionTag, const PACKAGE_VERSION minVersion);
@@ -40,7 +40,7 @@ HRESULT BootstrapInitialize()
     BootStrapInit mddInitialize = reinterpret_cast<BootStrapInit>(GetProcAddress(bootStrapDll.get(), "MddBootstrapInitialize"));
     RETURN_LAST_ERROR_IF_NULL(mddInitialize);
 
-    constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppSDK.Test.DDLM" };
+    constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
     RETURN_IF_FAILED(mddTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
 

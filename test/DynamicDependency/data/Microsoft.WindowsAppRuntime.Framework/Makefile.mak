@@ -20,7 +20,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
-TARGET_BASENAME=Microsoft.WindowsAppSDK.Framework
+TARGET_BASENAME=Microsoft.WindowsAppRuntime.Framework
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
@@ -37,9 +37,9 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir) md $(WorkDir) >NUL
     @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml >NUL
     @copy /Y $(ProjectDir)logo.png $(WorkDir)\logo.png >NUL
-    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $(WorkDir)\Microsoft.WindowsAppSDK.dll
-    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $(WorkDir)\Microsoft.WindowsAppSDK.pdb
-    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
+    @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $(WorkDir)\Microsoft.WindowsAppRuntime.dll
+    @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $(WorkDir)\Microsoft.WindowsAppRuntime.pdb
+    @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 

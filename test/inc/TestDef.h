@@ -4,18 +4,18 @@
 
 constexpr static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 static const std::wstring c_genericTestMoniker = L"this_is_a_test";
-static const std::wstring c_testFailureEventName = L"WindowsAppSDKTestFailureEventName";
+static const std::wstring c_testFailureEventName = L"WindowsAppRuntimeTestFailureEventName";
 
-static const std::wstring c_testProtocolScheme = L"windowsappsdktestprotocol";
-static const std::wstring c_testProtocolScheme_Packaged = L"windowsappsdktestprotocol-packaged";
-static const std::wstring c_testProtocolPhaseEventName = L"WindowsAppSDKTestProtocolPhaseEventName";
+static const std::wstring c_testProtocolScheme = L"windowsappruntimetestprotocol";
+static const std::wstring c_testProtocolScheme_Packaged = L"windowsappruntimetestprotocol-packaged";
+static const std::wstring c_testProtocolPhaseEventName = L"WindowsAppRuntimeTestProtocolPhaseEventName";
 
-static const std::wstring c_testFileExtension = L".windowsappsdktestfile";
-static const std::wstring c_testFileExtension_Packaged = L".windowsappsdktestfile-packaged";
-static const std::wstring c_testFilePhaseEventName = L"WindowsAppSDKTestFilePhaseEventName";
+static const std::wstring c_testFileExtension = L".windowsappruntimetestfile";
+static const std::wstring c_testFileExtension_Packaged = L".windowsappruntimetestfile-packaged";
+static const std::wstring c_testFilePhaseEventName = L"WindowsAppRuntimeTestFilePhaseEventName";
 
-static const std::wstring c_testStartupPhaseEventName = L"WindowsAppSDKTestStartupPhaseEventName";
-static const std::wstring c_testInstanceRedirectedPhaseEventName = L"WindowsAppSDKTestInstanceRedirectedPhaseEventName";
+static const std::wstring c_testStartupPhaseEventName = L"WindowsAppRuntimeTestStartupPhaseEventName";
+static const std::wstring c_testInstanceRedirectedPhaseEventName = L"WindowsAppRuntimeTestInstanceRedirectedPhaseEventName";
 
 inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
 inline IID c_comServerId = winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"); // Value from PushNotificationsTestAppPackage ComActivator in appxmanifest.

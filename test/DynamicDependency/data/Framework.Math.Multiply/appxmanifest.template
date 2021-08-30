@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="WindowsAppSDK.Test.DynDep.Fwk.Math.Multiply"
+    Name="WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.2.3.4" />
 
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>WindowsAppSDK.Test.DynDep.Fwk.Math.Multiply</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
   </Properties>

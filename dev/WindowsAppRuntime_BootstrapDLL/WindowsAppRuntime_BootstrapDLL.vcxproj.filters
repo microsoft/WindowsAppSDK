@@ -40,7 +40,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WindowsAppSDK.Bootstrap.def">
+    <None Include="WindowsAppRuntime.Bootstrap.def">
       <Filter>Source Files</Filter>
     </None>
     <None Include="packages.config" />

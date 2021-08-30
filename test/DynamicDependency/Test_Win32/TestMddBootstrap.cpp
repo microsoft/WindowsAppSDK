@@ -21,7 +21,7 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_SETUP(Setup)
         {
-            // We need to find Microsoft.WindowsAppSDK.Bootstrap.dll.
+            // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
             // but that's not true of our test project (a dll) in our build environment
             // (different directories). So we'll explicitly find and load it so the
@@ -35,10 +35,10 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
-            TP::AddPackage_WindowsAppSDKFramework();
+            TP::AddPackage_WindowsAppRuntimeFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             m_bootstrapDll = std::move(bootstrapDll);
@@ -51,7 +51,7 @@ namespace Test::DynamicDependency
             m_bootstrapDll.reset();
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
         }

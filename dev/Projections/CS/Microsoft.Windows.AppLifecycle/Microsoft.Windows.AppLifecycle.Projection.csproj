@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.AppLifecycle">
-      <HintPath>$(OutDir)..\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

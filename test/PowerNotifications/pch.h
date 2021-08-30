@@ -25,7 +25,7 @@
 #include <winrt\Windows.Foundation.Collections.h>
 #include <winrt\Windows.Management.Deployment.h>
 
-#include <WindowsAppSDK.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.Bootstrap.h>
 namespace TP = ::Test::Packages;
 
 #endif //PCH_H
