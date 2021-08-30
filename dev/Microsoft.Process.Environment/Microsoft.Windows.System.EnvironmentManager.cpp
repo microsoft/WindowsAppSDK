@@ -8,6 +8,9 @@
 
 namespace winrt::Microsoft::Windows::System::implementation
 {
+    bool EnvironmentManager::s_HasCheckedIsSupported{};
+    bool EnvironmentManager::s_IsSupported{};
+
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope) { }
 
@@ -34,12 +37,42 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     bool EnvironmentManager::IsSupported()
     {
-        throw hresult_not_implemented();
+        if (s_HasCheckedIsSupported)
+        {
+            return s_IsSupported;
+        }
+
+        PCWSTR c_RegLocationForSupportCheck{ L"SOFTWARE\\Microsoft\\AppModel\\RegistryWriteVirtualization\\ExcludedKeys\\HKEY_CURRENT_USER/Software/ChangeTracker" };
+
+        wil::unique_hkey environmentVariablesHKey{};
+        LSTATUS openResult{ RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_RegLocationForSupportCheck, 0, KEY_READ | KEY_WOW64_64KEY, environmentVariablesHKey.addressof()) };
+
+        s_HasCheckedIsSupported = true;
+
+        if (openResult == ERROR_SUCCESS)
+        {
+            s_IsSupported = true;
+        }
+        else if (openResult == ERROR_FILE_NOT_FOUND)
+        {
+            s_IsSupported = false;
+        }
+        else
+        {
+            THROW_WIN32(openResult);
+        }
+
+        return s_IsSupported;
     }
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
         StringMap environmentVariables;
+
+        if (!IsSupported())
+        {
+            return environmentVariables.GetView();
+        }
 
         if (m_Scope == Scope::Process)
         {
@@ -55,9 +88,18 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
-        if (variableName.empty())
+        if (variableName.size() == 0 ||
+            std::wstring_view(variableName)._Starts_with(L"0x00") ||
+            variableName[0] == L'=' ||
+            variableName.size() >= 32767)
         {
             THROW_HR(E_INVALIDARG);
+        }
+
+
+        if (!IsSupported())
+        {
+            return hstring(L"");
         }
 
         if (m_Scope == Scope::Process)
@@ -72,6 +114,18 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
+        if (!IsSupported())
+        {
+            return;
+        }
+
+        if (std::wstring_view(name)._Starts_with(L"0x00") ||
+            name[0] == L'=' ||
+            name.size() >= 32767)
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
         auto setEV = [&, name, value, this]()
         {
             if (m_Scope == Scope::Process)
@@ -135,7 +189,17 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
-        THROW_HR_IF(E_INVALIDARG, path.empty());
+        if (path.empty() ||
+            std::wstring_view(path)._Starts_with(L"0x00") ||
+            path[0] == L'=')
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
+        if (!IsSupported())
+        {
+            return;
+        }
 
         // Get the existing path because we will append to it.
         std::wstring existingPath{ GetPath() };
@@ -191,7 +255,17 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
-        THROW_HR_IF(E_INVALIDARG, path.empty());
+        if (path.empty() ||
+            std::wstring_view(path)._Starts_with(L"0x00") ||
+            path[0] == L'=')
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
+        if (!IsSupported())
+        {
+            return;
+        }
 
         // A user is only allowed to remove something from the PATH if
         // 1. path exists in PATH
@@ -274,7 +348,17 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
-        THROW_HR_IF(E_INVALIDARG, pathExt.empty());
+        if (pathExt.empty() ||
+            std::wstring_view(pathExt)._Starts_with(L"0x00") ||
+            pathExt[0] == L'=')
+        {
+            THROW_HR(E_INVALIDARG);
+        }
+
+        if (!IsSupported())
+        {
+            return;
+        }
 
         // Get the existing path because we will append to it.
         std::wstring existingPathExt{ GetPathExt() };
@@ -331,6 +415,11 @@ namespace winrt::Microsoft::Windows::System::implementation
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
         THROW_HR_IF(E_INVALIDARG, pathExt.empty());
+
+        if (!IsSupported())
+        {
+            return;
+        }
 
         // A user is only allowed to remove something from the PATHEXT if
         // 1. path exists in PATHEXT
