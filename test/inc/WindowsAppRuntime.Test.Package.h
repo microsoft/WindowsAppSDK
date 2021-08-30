@@ -1,61 +1,61 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#ifndef __WINDOWSAPPSDK_TEST_PACKAGE_H
-#define __WINDOWSAPPSDK_TEST_PACKAGE_H
+#ifndef __WINDOWSAPPRUNTIME_TEST_PACKAGE_H
+#define __WINDOWSAPPRUNTIME_TEST_PACKAGE_H
 
 #include <appmodel.h>
 
-#include <WindowsAppSDK.Test.FileSystem.h>
+#include <WindowsAppRuntime.Test.FileSystem.h>
 
 #include <WexTestClass.h>
 
-#define WINDOWSAPPSDK_TEST_METADATA_VERSION            0x0004000107AF014DLLu
-#define WINDOWSAPPSDK_TEST_METADATA_VERSION_MAJOR      4
-#define WINDOWSAPPSDK_TEST_METADATA_VERSION_MINOR      1
-#define WINDOWSAPPSDK_TEST_METADATA_VERSION_BUILD      1967
-#define WINDOWSAPPSDK_TEST_METADATA_VERSION_REVISION   333
-#define WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING     L"4.1.1967.333"
+#define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
+#define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MAJOR      4
+#define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MINOR      1
+#define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_BUILD      1967
+#define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_REVISION   333
+#define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING     L"4.1.1967.333"
 
-#define WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID            L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Framework"
-#define WINDOWSAPPSDK_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.DDLM"
-#define WINDOWSAPPSDK_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppSDK.Main"
-#define WINDOWSAPPSDK_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppSDK.Singleton"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Framework"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DDLM_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton"
 
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppSDK.Test.DDLM"
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
 #if defined(_M_X64)
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x64"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x64"
 #elif defined(_M_IX86)
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x86"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"x86"
 #elif defined(_M_ARM64)
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm64"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm64"
 #elif defined(_M_ARM)
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm"
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE   L"arm"
 #else
 #   error "Unknown processor architecture"
 #endif
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"-" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID
-#define WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME           WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"-" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID    WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME     WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
+#define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FULLNAME       WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAME L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID
 
 namespace Test::Packages::DynamicDependencyLifetimeManager
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependencyLifetimeManager";
-    constexpr PCWSTR c_PackageNamePrefix = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_NAMEPREFIX;
-    constexpr PCWSTR c_PackagePublisherId = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_PUBLISHERID;
-    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FAMILYNAME;
-    constexpr PCWSTR c_PackageFullName = WINDOWSAPPSDK_TEST_PACKAGE_DDLM_FULLNAME;
+    constexpr PCWSTR c_PackageNamePrefix = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX;
+    constexpr PCWSTR c_PackagePublisherId = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FAMILYNAME;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_FULLNAME;
     constexpr const PACKAGE_VERSION GetPackageVersion()
     {
         PACKAGE_VERSION version{};
-        version.Major = WINDOWSAPPSDK_TEST_METADATA_VERSION_MAJOR;
-        version.Minor = WINDOWSAPPSDK_TEST_METADATA_VERSION_MINOR;
-        version.Build = WINDOWSAPPSDK_TEST_METADATA_VERSION_BUILD;
-        version.Revision = WINDOWSAPPSDK_TEST_METADATA_VERSION_REVISION;
+        version.Major = WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MAJOR;
+        version.Minor = WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MINOR;
+        version.Build = WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_BUILD;
+        version.Revision = WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_REVISION;
         return version;
     }
     constexpr const PACKAGE_VERSION c_Version = GetPackageVersion();
@@ -67,33 +67,33 @@ namespace Test::Packages::DynamicDependencyLifetimeManager
     constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
-namespace Test::Packages::WindowsAppSDKFramework
+namespace Test::Packages::WindowsAppRuntimeFramework
 {
-    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppSDK.Framework";
-    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppSDK.Framework.msix";
-    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = WINDOWSAPPSDK_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPSDK_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
+    constexpr PCWSTR c_PackageMsixFilename = L"Microsoft.WindowsAppRuntime.Framework.msix";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages::DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppSDK.Test.DynDep.DataStore_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.DynDep.DataStore_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
-namespace Test::Packages::WindowsAppSDKSingleton
+namespace Test::Packages::WindowsAppRuntimeSingleton
 {
-    constexpr PCWSTR c_PackageDirName = L"WindowsAppSDK.Test.Singleton";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppSDK.Test.Singleton_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.Singleton_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageDirName = L"WindowsAppRuntime.Test.Singleton";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.Singleton_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.Singleton_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages::PushNotificationsLongRunningTask
 {
     constexpr PCWSTR c_PackageDirName = L"PushNotificationsLongRunningTask";
-    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppSDK.Test.PushNotificationsTask_" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
-    constexpr PCWSTR c_PackageFullName = L"WindowsAppSDK.Test.PushNotificationsTask_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPSDK_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.PushNotificationsTask_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.PushNotificationsTask_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages
@@ -213,12 +213,12 @@ namespace Test::Packages
         return IsPackageRegistered(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
-    inline void AddPackage_WindowsAppSDKFramework()
+    inline void AddPackage_WindowsAppRuntimeFramework()
     {
-        AddPackage(Test::Packages::WindowsAppSDKFramework::c_PackageDirName, Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
+        AddPackage(Test::Packages::WindowsAppRuntimeFramework::c_PackageDirName, Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
     }
 
-    inline void RemovePackage_WindowsAppSDKFramework()
+    inline void RemovePackage_WindowsAppRuntimeFramework()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -226,12 +226,12 @@ namespace Test::Packages
         // we need do, we're happy as long as the package isn't registered when we're done
         //
         // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
+        RemovePackageIfNecessary(Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
     }
 
-    inline bool IsPackageRegistered_WindowsAppSDKFramework()
+    inline bool IsPackageRegistered_WindowsAppRuntimeFramework()
     {
-        return IsPackageRegistered(Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
+        return IsPackageRegistered(Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
     }
 
     inline void AddPackage_DynamicDependencyDataStore()
@@ -255,12 +255,12 @@ namespace Test::Packages
         return IsPackageRegistered(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    inline void AddPackage_WindowsAppSDKSingleton()
+    inline void AddPackage_WindowsAppRuntimeSingleton()
     {
-        AddPackage(Test::Packages::WindowsAppSDKSingleton::c_PackageDirName, Test::Packages::WindowsAppSDKSingleton::c_PackageFullName);
+        AddPackage(Test::Packages::WindowsAppRuntimeSingleton::c_PackageDirName, Test::Packages::WindowsAppRuntimeSingleton::c_PackageFullName);
     }
 
-    inline void RemovePackage_WindowsAppSDKSingleton()
+    inline void RemovePackage_WindowsAppRuntimeSingleton()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -268,12 +268,12 @@ namespace Test::Packages
         // we need do, we're happy as long as the package isn't registered when we're done
         //
         // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::WindowsAppSDKSingleton::c_PackageFullName);
+        RemovePackageIfNecessary(Test::Packages::WindowsAppRuntimeSingleton::c_PackageFullName);
     }
 
-    inline bool IsPackageRegistered_WindowsAppSDKSingleton()
+    inline bool IsPackageRegistered_WindowsAppRuntimeSingleton()
     {
-        return IsPackageRegistered(Test::Packages::WindowsAppSDKSingleton::c_PackageFullName);
+        return IsPackageRegistered(Test::Packages::WindowsAppRuntimeSingleton::c_PackageFullName);
     }
 
     inline void AddPackage_PushNotificationsLongRunningTask()
@@ -297,12 +297,12 @@ namespace Test::Packages
         return IsPackageRegistered(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
     }
 
-    inline std::filesystem::path GetWindowsAppSDKFrameworkMsixPath()
+    inline std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()
     {
-        // Determine the location of WindowsAppSDK's Framework's msix. See GetSolutionOutDirPath() for more details.
+        // Determine the location of the WindowsAppRuntime Framework's msix. See GetSolutionOutDirPath() for more details.
         auto path = ::Test::FileSystem::GetSolutionOutDirPath();
-        path /= Test::Packages::WindowsAppSDKFramework::c_PackageDirName;
-        path /= Test::Packages::WindowsAppSDKFramework::c_PackageMsixFilename;
+        path /= Test::Packages::WindowsAppRuntimeFramework::c_PackageDirName;
+        path /= Test::Packages::WindowsAppRuntimeFramework::c_PackageMsixFilename;
         return path;
     }
 }
@@ -322,4 +322,4 @@ namespace Test::Packages::WapProj
         VERIFY_SUCCEEDED(deploymentResult.ExtendedErrorCode(), WEX::Common::String().Format(L"AddPackageAsync('%s') = 0x%0X %s", packagePath.c_str(), deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str()));
     }
 }
-#endif // __WINDOWSAPPSDK_TEST_PACKAGE_H
+#endif // __WINDOWSAPPRUNTIME_TEST_PACKAGE_H

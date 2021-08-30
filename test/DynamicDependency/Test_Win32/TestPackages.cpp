@@ -155,12 +155,12 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
     }
 
-    void AddPackage_WindowsAppSDKFramework()
+    void AddPackage_WindowsAppRuntimeFramework()
     {
-        AddPackage(Test::Packages::WindowsAppSDKFramework::c_PackageDirName, Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
+        AddPackage(Test::Packages::WindowsAppRuntimeFramework::c_PackageDirName, Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
     }
 
-    void RemovePackage_WindowsAppSDKFramework()
+    void RemovePackage_WindowsAppRuntimeFramework()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -168,7 +168,7 @@ namespace Test::Packages
         // we need do, we're happy as long as the package isn't registered when we're done
         //
         // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::WindowsAppSDKFramework::c_PackageFullName);
+        RemovePackageIfNecessary(Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
     }
 
     void AddPackage_FrameworkMathAdd()
@@ -219,12 +219,12 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    std::filesystem::path GetWindowsAppSDKFrameworkMsixPath()
+    std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()
     {
         // Determine the location of Windows App SDK's Framework's msix. See GetSolutionOutDirPath() for more details.
         auto path = TF::GetSolutionOutDirPath();
-        path /= L"Microsoft.WindowsAppSDK.Framework";
-        path /= L"Microsoft.WindowsAppSDK.Framework.msix";
+        path /= L"Microsoft.WindowsAppRuntime.Framework";
+        path /= L"Microsoft.WindowsAppRuntime.Framework.msix";
         return path;
     }
 }
