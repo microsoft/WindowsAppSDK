@@ -65,7 +65,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
 
     void PushNotificationManager::RegisterUnpackagedApplicationHelper(
-        winrt::guid remoteId,
+        const winrt::guid& remoteId,
         _Out_ wil::unique_cotaskmem_string &unpackagedAppUserModelId)
     {
         THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
@@ -73,20 +73,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             [&]() { CoUninitialize(); });
 
             {
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
-
                 wchar_t processName[1024];
                 THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
 
+                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
                 winrt::check_hresult(notificationPlatform->RegisterFullTrustApplication(processName, remoteId, &unpackagedAppUserModelId));
             }
-
+            printf("appUserModelId: %ws", unpackagedAppUserModelId.get());
         return;
     }
 
     winrt::hresult PushNotificationManager::CreateChannelWithRemoteIdHelper(
-        winrt::guid remoteId,
+        const winrt::guid& remoteId,
         _Out_ wil::unique_cotaskmem_string& channelUri,
         winrt::Windows::Foundation::DateTime& channelExpiryTime)
     {

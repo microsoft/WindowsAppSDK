@@ -28,10 +28,13 @@ private:
 
     bool m_initialized = false;
     bool m_shutdown = false;
+    std::map<std::wstring, std::wstring> m_appIdMap;
 
     std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
     // Here we will define the Platform components i.e. the map wrappings
 
-    void GetAppIdentifier(PCWSTR processName, PWSTR* appId);
+    void GetAppIdentifier(std::wstring processName);
+
+    void AddToRegistry(const std::wstring& processName, const std::wstring appId);
 };

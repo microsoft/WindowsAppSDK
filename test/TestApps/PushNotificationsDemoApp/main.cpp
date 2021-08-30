@@ -90,7 +90,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    BootstrapInitialize();
+   BootstrapInitialize();
 
    /* PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
@@ -134,6 +134,5 @@ int main()
 
     // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
    // PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
-
     return 0;
 }

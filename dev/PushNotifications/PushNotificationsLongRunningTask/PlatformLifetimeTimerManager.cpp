@@ -23,7 +23,7 @@ void PlatformLifetimeTimerManager::Setup()
 
     // Negative times in SetThreadpoolTimer are relative. Allow 5 seconds to fire.
     FILETIME dueTime{};
-    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(5000 * 10000);
+    *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(50000 * 10000);
 
     SetThreadpoolTimer(m_timer.get(), &dueTime, 0, 0);
 }
