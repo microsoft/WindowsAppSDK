@@ -173,9 +173,33 @@ namespace Test::PushNotifications
             VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
         }
 
+        TEST_METHOD(BackgroundActivation_Unpackaged)
+        {
+            RunTestUnpackaged(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+
+            auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
+            auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
+            VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
+        }
+
         TEST_METHOD(MultipleBackgroundActivation)
         {
             RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+
+            auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
+            auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
+
+            auto LocalBackgroundTask2 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
+            auto mockBackgroundTaskInstance2 = winrt::make<MockBackgroundTaskInstance>();
+
+            VERIFY_NO_THROW(LocalBackgroundTask1.Run(mockBackgroundTaskInstance1));
+            VERIFY_NO_THROW(LocalBackgroundTask2.Run(mockBackgroundTaskInstance2));
+
+        }
+
+        TEST_METHOD(MultipleBackgroundActivation_Unpackaged)
+        {
+            RunTestUnpackaged(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
 
             auto LocalBackgroundTask1 = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
             auto mockBackgroundTaskInstance1 = winrt::make<MockBackgroundTaskInstance>();
@@ -193,9 +217,19 @@ namespace Test::PushNotifications
             RunTest(L"ChannelRequestUsingNullRemoteId", testWaitTime());
         }
 
+        TEST_METHOD(ChannelRequestUsingNullRemoteId_Unpackaged)
+        {
+            RunTestUnpackaged(L"ChannelRequestUsingNullRemoteId", testWaitTime());
+        }
+
         TEST_METHOD(ChannelRequestUsingRemoteId)
         {
             RunTest(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
+        }
+
+        TEST_METHOD(ChannelRequestUsingRemoteId_Unpackaged)
+        {
+            RunTestUnpackaged(L"ChannelRequestUsingRemoteId", channelTestWaitTime());
         }
 
         TEST_METHOD(MultipleChannelClose)
@@ -203,9 +237,19 @@ namespace Test::PushNotifications
             RunTest(L"MultipleChannelClose", channelTestWaitTime());
         }
 
+        TEST_METHOD(MultipleChannelClose_Unpackaged)
+        {
+            RunTestUnpackaged(L"MultipleChannelClose", channelTestWaitTime());
+        }
+
         TEST_METHOD(MultipleChannelRequestUsingSameRemoteId)
         {
             RunTest(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
+        }
+
+        TEST_METHOD(MultipleChannelRequestUsingSameRemoteId_Unpackaged)
+        {
+            RunTestUnpackaged(L"MultipleChannelRequestUsingSameRemoteId", channelTestWaitTime());
         }
 
         TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId)
@@ -213,9 +257,19 @@ namespace Test::PushNotifications
             RunTest(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
         }
 
+        TEST_METHOD(MultipleChannelRequestUsingMultipleRemoteId_Unpackaged)
+        {
+            RunTestUnpackaged(L"MultipleChannelRequestUsingMultipleRemoteId", channelTestWaitTime());
+        }
+
         TEST_METHOD(ActivatorTest)
         {
             RunTest(L"ActivatorTest", testWaitTime());
+        }
+
+        TEST_METHOD(ActivatorTest_Unpackaged)
+        {
+            RunTestUnpackaged(L"ActivatorTest", testWaitTime());
         }
 
         TEST_METHOD(RegisterActivatorNullDetails)
@@ -223,9 +277,19 @@ namespace Test::PushNotifications
             RunTest(L"RegisterActivatorNullDetails", testWaitTime());
         }
 
+        TEST_METHOD(RegisterActivatorNullDetails_Unpackaged)
+        {
+            RunTestUnpackaged(L"RegisterActivatorNullDetails", testWaitTime());
+        }
+
         TEST_METHOD(RegisterActivatorNullClsid)
         {
             RunTest(L"RegisterActivatorNullClsid", testWaitTime());
+        }
+
+        TEST_METHOD(RegisterActivatorNullClsid_Unpackaged)
+        {
+            RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
         }
 
         TEST_METHOD(UnregisterActivatorNullToken)
@@ -233,9 +297,19 @@ namespace Test::PushNotifications
             RunTest(L"UnregisterActivatorNullToken", testWaitTime());
         }
 
+        TEST_METHOD(UnregisterActivatorNullToken_Unpackaged)
+        {
+            RunTestUnpackaged(L"UnregisterActivatorNullToken", testWaitTime());
+        }
+
         TEST_METHOD(UnregisterActivatorNullBackgroundRegistration)
         {
             RunTest(L"UnregisterActivatorNullBackgroundRegistration", testWaitTime());
+        }
+
+        TEST_METHOD(UnregisterActivatorNullBackgroundRegistration_Unpackaged)
+        {
+            RunTestUnpackaged(L"UnregisterActivatorNullBackgroundRegistration", testWaitTime());
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
@@ -243,17 +317,22 @@ namespace Test::PushNotifications
             RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
         }
 
+        TEST_METHOD(MultipleRegisterActivatorTest_Unpackaged)
+        {
+            RunTestUnpackaged(L"MultipleRegisterActivatorTest", testWaitTime());
+        }
+
         TEST_METHOD(VerifyComActivatorSupported)
         {
             RunTest(L"VerifyComActivatorSupported", testWaitTime());
         }
 
-        TEST_METHOD(VerifyComActivatorNotSupported)
+        TEST_METHOD(VerifyComActivatorNotSupported_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyComActivatorNotSupported", testWaitTime());
         }
 
-        TEST_METHOD(VerifyProtocolActivatorSupported)
+        TEST_METHOD(VerifyProtocolActivatorSupported_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyProtocolActivatorSupported", testWaitTime());
         }
@@ -268,9 +347,19 @@ namespace Test::PushNotifications
             RunTest(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
         }
 
+        TEST_METHOD(VerifyComAndProtocolActivatorNotSupported_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
+        }
+
         TEST_METHOD(VerifyNullActivatorNotSupported)
         {
             RunTest(L"VerifyNullActivatorNotSupported", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyNullActivatorNotSupported_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyNullActivatorNotSupported", testWaitTime());
         }
     };
 }
