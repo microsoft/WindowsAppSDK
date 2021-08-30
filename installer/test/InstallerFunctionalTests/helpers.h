@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 
-namespace WindowsAppSDKInstallerTests
+namespace WindowsAppRuntimeInstallerTests
 {
     wil::unique_handle Execute(const std::wstring& command, const std::wstring& args);
     HRESULT RunInstaller(const std::wstring& args=L"");

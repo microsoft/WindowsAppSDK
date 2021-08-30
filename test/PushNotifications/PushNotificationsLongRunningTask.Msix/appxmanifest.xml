@@ -10,19 +10,19 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
     <Identity
-      Name="WindowsAppSDK.Test.PushNotificationsTask"
+      Name="WindowsAppRuntime.Test.PushNotificationsTask"
       Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
       Version="4.1.1967.333" />
 
     <Properties>
-        <DisplayName>Windows App SDK Test.PushNotificationsTask (aka Microsoft.WindowsAppSDK.Main) fake for tests</DisplayName>
+        <DisplayName>Windows App Runtime Test.PushNotificationsTask (aka Microsoft.WindowsAppRuntime.Main) fake for tests</DisplayName>
         <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
         <Logo>Assets\logo.png</Logo>
     </Properties>
 
     <Dependencies>
         <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-        <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+        <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
     </Dependencies>
 
     <Resources>

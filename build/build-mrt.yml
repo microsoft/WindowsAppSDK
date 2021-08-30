@@ -61,7 +61,7 @@ steps:
 #      targetType: filePath
 #      filePath: ${{ parameters.MRTSourcesDirectory }}\build\Initialize-InstallMSBuild.ps1
 #      arguments: '-installDir ${{ parameters.MRTSourcesDirectory }}\.buildtools -logsDir ${{ parameters.MRTSourcesDirectory }}\msbuild-install-logs'
-    
+
 #  - task: BatchScript@1
 #    displayName: Add the VS build tools to the path
 #    inputs:
@@ -81,7 +81,7 @@ steps:
   inputs:
     targetType: filePath
     workingDirectory: ${{ parameters.MRTSourcesDirectory }}\build
-    filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1 
+    filePath: ${{ parameters.MRTSourcesDirectory }}\build\DownloadDotNetCoreSdk.ps1
 
 - task: BatchScript@1
   displayName: 'Use .NET SDK'
@@ -99,7 +99,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $srcPath = get-childitem -path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+      $srcPath = get-childitem -path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
       $destinationPath = get-childitem -path '${{ parameters.MRTSourcesDirectory }}\mrt\packages' -File 'Traceloggingconfig.h' -Recurse
 
       if(($srcPath -ne $null) -and ($destinationPath -ne $null))
