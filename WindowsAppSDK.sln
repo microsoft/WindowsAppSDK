@@ -203,8 +203,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Po
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Projection", "dev\Projections\CS\Microsoft.Windows.System\Microsoft.Windows.System.Projection.csproj", "{AF9E4CCF-5230-4E91-9FC1-3C08161FE768}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Power.Projection", "dev\Projections\CS\Microsoft.Windows.System.Power\Microsoft.Windows.System.Power.Projection.csproj", "{65AAC0BD-ABD2-471F-9C1A-B2F9EF9D3DE7}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
