@@ -136,7 +136,7 @@ STDAPI MddGetIdForPackageDependencyContext(
 }
 CATCH_RETURN();
 
-UINT32 MddGetGenerationId() noexcept
+STDAPI_(UINT32) MddGetGenerationId() noexcept
 {
     if (!::Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled())
     {
