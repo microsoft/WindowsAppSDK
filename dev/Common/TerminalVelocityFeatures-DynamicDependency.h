@@ -7,17 +7,17 @@
 // OPTIONS: -Channel Experimental -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 
 // Feature constants
-#define WINDOWSAPPSDK_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED 1
+#define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED 1
 
 #if defined(__cplusplus)
 
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency
 {
 
-__pragma(detect_mismatch("ODR_violation_WINDOWSAPPSDK_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED_mismatch", "AlwaysEnabled"))
+__pragma(detect_mismatch("ODR_violation_WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED_mismatch", "AlwaysEnabled"))
 struct Feature_GenerationId
 {
-    static constexpr bool IsEnabled() { return WINDOWSAPPSDK_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED == 1; }
+    static constexpr bool IsEnabled() { return WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED == 1; }
 };
 
 } // namespace Microsoft.Windows.ApplicationModel.DynamicDependency

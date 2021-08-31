@@ -31,7 +31,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_METHOD_SETUP(CentennialWriteEVs)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
 

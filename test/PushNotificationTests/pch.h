@@ -31,9 +31,9 @@
 #include <winrt/Windows.Security.Cryptography.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.System.h>
-#include <WindowsAppSDK.Test.Package.h>
-#include <WindowsAppSDK.Test.TAEF.h>
-#include <WindowsAppSDK.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.Package.h>
+#include <WindowsAppRuntime.Test.TAEF.h>
+#include <WindowsAppRuntime.Test.Bootstrap.h>
 #include <windows.applicationmodel.h>
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>

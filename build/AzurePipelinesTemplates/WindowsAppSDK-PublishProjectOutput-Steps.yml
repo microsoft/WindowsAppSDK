@@ -16,7 +16,7 @@ steps:
       artifactName: ${{ parameters.artifactName }}
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget (Windows App SDK DLLs)'
+    displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
       artifactName: FullNuget
