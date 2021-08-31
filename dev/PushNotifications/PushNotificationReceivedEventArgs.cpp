@@ -25,29 +25,26 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask):
         m_backgroundTaskInstance(backgroundTask),
-        m_rawNotificationPayload(GetByteArrayFromBuffer(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())),
+        m_rawNotificationPayload(BuildPayload(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes().data(), backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes().Length())),
         m_isUnpackagedApp(true) {}
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
         m_args(args),
-        m_rawNotificationPayload(GetByteArrayFromBuffer(args.RawNotification().ContentBytes())),
+        m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes().data(), args.RawNotification().ContentBytes().Length())),
         m_isUnpackagedApp(true) {}
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload, ULONG length):
-        m_rawNotificationPayload(payload),
-        m_rawNotificationPayloadLength(length),
+        m_rawNotificationPayload(BuildPayload(payload, length)),
         m_isUnpackagedApp(false) {}
 
-    byte* PushNotificationReceivedEventArgs::GetByteArrayFromBuffer(winrt::Windows::Storage::Streams::IBuffer buffer)
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(uint8_t* payload, ULONG payloadLength)
     {
-        auto rawNotificationData = buffer.data();
-        m_rawNotificationPayloadLength = buffer.Length();
-        return rawNotificationData;
+        return { payload, payload + (payloadLength * sizeof(uint8_t)) };
     }
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        return { m_rawNotificationPayload, m_rawNotificationPayload + (m_rawNotificationPayloadLength * sizeof(uint8_t)) };
+        return { m_rawNotificationPayload.data(), m_rawNotificationPayload.data() + (m_rawNotificationPayload.size() * sizeof(uint8_t)) };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
@@ -114,13 +111,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             if (!value)
             {
-                wchar_t processName[1024];
+                wchar_t processName[MAX_PATH];
                 THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
 
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
                     wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
-                THROW_IF_FAILED(notificationsLongRunningPlatform->SendBackgroundNotification(processName, m_rawNotificationPayload, m_rawNotificationPayloadLength));
+                THROW_IF_FAILED(notificationsLongRunningPlatform->SendBackgroundNotification(processName, m_rawNotificationPayload.data(), m_rawNotificationPayload.size()));
             }
 
             m_handledUnpackaged = value;

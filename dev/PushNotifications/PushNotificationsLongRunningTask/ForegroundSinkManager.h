@@ -11,7 +11,7 @@ class ForegroundSinkManager
 public:
     ForegroundSinkManager() = default;
 
-    void AddSink(std::wstring processName, IWpnForegroundSink* sink);
+    void Add(std::wstring processName, IWpnForegroundSink* sink);
 
     void Remove(std::wstring processName);
 

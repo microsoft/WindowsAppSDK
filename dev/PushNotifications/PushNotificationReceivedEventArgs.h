@@ -19,12 +19,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool Handled();
         void Handled(bool value);
 
-        byte* GetByteArrayFromBuffer(winrt::Windows::Storage::Streams::IBuffer buffer);
+        std::vector<byte> BuildPayload(uint8_t* payload, ULONG payloadLength);
 
     private:
 
-        byte* m_rawNotificationPayload = nullptr;
-        ULONG m_rawNotificationPayloadLength;
+        std::vector<byte> m_rawNotificationPayload;
 
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;

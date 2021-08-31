@@ -5,7 +5,7 @@
 #include <NotificationsLongRunningProcess_h.h>
 #include <ForegroundSinkManager.h>
 
-void ForegroundSinkManager::AddSink(std::wstring processName, IWpnForegroundSink* sink)
+void ForegroundSinkManager::Add(std::wstring processName, IWpnForegroundSink* sink)
 {
     m_foregroundMap[processName] = sink;
 }

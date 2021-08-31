@@ -13,6 +13,7 @@ namespace winrt::Windows
 {
     using namespace winrt::Windows::Networking::PushNotifications;
     using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Metadata;
 }
 namespace winrt::Microsoft
 {
@@ -92,16 +93,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    HRESULT __stdcall PushNotificationChannel::InvokeAll(ULONG length, _In_ byte* start) noexcept try
+    HRESULT __stdcall PushNotificationChannel::InvokeAll(ULONG length, _In_ byte* payload) noexcept try
     {
-        m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(start, length));
+        m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length));
         return S_OK;
     }
     CATCH_RETURN()
 
     bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
     {
-        return winrt::Windows::Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
+        return winrt::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
     }
 
     // Determines if the caller should be treated as packaged app or not.

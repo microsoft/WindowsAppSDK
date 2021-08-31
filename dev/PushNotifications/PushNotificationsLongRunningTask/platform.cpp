@@ -60,7 +60,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
 
-    m_foregroundSinkManager.AddSink(processName, sink);
+    m_foregroundSinkManager.Add(processName, sink);
     return S_OK;
 }
 
