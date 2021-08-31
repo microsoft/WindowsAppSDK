@@ -64,7 +64,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationOptions>>(options), "RegistrationOptions"),
+                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationOptions>>(options),
+                    "RegistrationOptions"),
                 TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
         }
     }
@@ -82,7 +83,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationOptions>>(options), "RegistrationOptions"),
+                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationOptions>>(options),
+                    "RegistrationOptions"),
                 TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
         }
     }
@@ -121,7 +123,12 @@ private:
         if (m_appUserModelId[0] == '\0')
         {
             UINT32 appUserModelIdSize = ARRAYSIZE(m_appUserModelId);
-            LOG_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId));
+            auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId);
+            if (result != ERROR_SUCCESS)
+            {
+                wcscpy_s(m_appUserModelId, L"AppUserModelId not found");
+                LOG_WIN32(result);
+            }
         }
 
         return m_appUserModelId;
