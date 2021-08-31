@@ -8,7 +8,7 @@ using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Windows::System;
 
-namespace WindowsAppSDKInstallerTests
+namespace WindowsAppRuntimeInstallerTests
 {
     wil::unique_handle Execute(const std::wstring& command, const std::wstring& args)
     {

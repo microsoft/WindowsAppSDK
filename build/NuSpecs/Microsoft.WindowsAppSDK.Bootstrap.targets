@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <Target Name="BinPlaceBootstrapDll" Condition="'$(AppxPackage)' != 'true'" AfterTargets="Build">
-    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppSDK.Bootstrap.dll" DestinationFolder="$(OutDir)" OverwriteReadOnlyFiles="true" ContinueOnError="false"/>
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" OverwriteReadOnlyFiles="true" ContinueOnError="false"/>
   </Target>
 
 </Project>

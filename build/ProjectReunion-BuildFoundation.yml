@@ -10,9 +10,9 @@ parameters:
   - name: "PublishToMaestro"
     type: boolean
     default: False
-  - name: "WindowsAppSDKInsightsSourceDirectory"
+  - name: "WindowsAppRuntimeInsightsSourceDirectory"
     type: string
-    default: $(Build.SourcesDirectory)\dev\WindowsAppSDK_Insights
+    default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
 
 jobs:
 - job: CredScan
@@ -79,7 +79,7 @@ jobs:
     displayName: 'NuGet restore of packages'
     inputs:
       command: 'custom'
-      arguments: 'restore ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppSDKInsightsSourceDirectory }}\packages'
+      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
 
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
 #  - task: DownloadPackage@1

@@ -9,19 +9,19 @@
   IgnorableNamespaces="uap uap5 com rescap">
 
   <Identity
-    Name="WindowsAppSDK.Test.PowerNotifications"
+    Name="WindowsAppRuntime.Test.PowerNotifications"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>WindowsAppSDK.Test.PowerNotifications for tests</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.PowerNotifications for tests</DisplayName>
     <PublisherDisplayName>Windows APP SDK</PublisherDisplayName>
     <Logo>taef.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -33,10 +33,10 @@
       Executable="Te.ProcessHost.uap.exe"
       EntryPoint="ProcessHostApplication">
       <uap:VisualElements
-        DisplayName="WindowsAppSDK.Test.PowerNotifications"
+        DisplayName="WindowsAppRuntime.Test.PowerNotifications"
         Square150x150Logo="taef.png"
         Square44x44Logo="taef.png"
-        Description="WindowsAppSDK.Test.PowerNotifications Test App"
+        Description="WindowsAppRuntime.Test.PowerNotifications Test App"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="taef.png"/>
         <uap:SplashScreen Image="taef.png" uap5:Optional="true"/>

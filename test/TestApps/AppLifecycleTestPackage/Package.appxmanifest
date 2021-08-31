@@ -20,7 +20,7 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.18362.0" />
-    <PackageDependency Name="Microsoft.WindowsAppSDK.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -44,12 +44,12 @@
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="testfiletypeassociations">
             <uap:SupportedFileTypes>
-              <uap:FileType>.windowsappsdktestfile-packaged</uap:FileType>
+              <uap:FileType>.windowsappruntimetestfile-packaged</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="windowsappsdktestprotocol-packaged"/>
+          <uap:Protocol Name="windowsappruntimetestprotocol-packaged"/>
         </uap:Extension>
       </Extensions>
     </Application>

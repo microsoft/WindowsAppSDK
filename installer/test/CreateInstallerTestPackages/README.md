@@ -5,7 +5,7 @@ This project builds test packages for the installer. Since the installer must be
 packages, these are the default packages it targets for inclusion. These can be used for testing
 the installer itself without interfering with real Windows App SDK packages that may be on the
 system. Real packages built with the installer are to be done using the override header, specified
-in windowsappsdk_definitions.h
+in windowsappruntime_definitions.h
 
 These packages are dummy packages that do not contain any running code and are only intended to
 test deployment operations done by the installer. They are built for all architectures and placed

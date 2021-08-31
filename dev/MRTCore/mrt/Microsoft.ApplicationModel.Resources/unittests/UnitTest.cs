@@ -75,6 +75,18 @@ namespace ManagedTest
         }
 
         [TestMethod]
+        public void TryGetSubtreeTest()
+        {
+            CommonTestCode.ResourceManagerTest.TryGetSubtreeTest();
+        }
+
+        [TestMethod]
+        public void SubtreeNotFoundTest()
+        {
+            CommonTestCode.ResourceManagerTest.SubtreeNotFoundTest();
+        }
+
+        [TestMethod]
         public void ResourceNotFoundTest()
         {
             CommonTestCode.ResourceManagerTest.ResourceNotFoundTest();

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+   <Import Project="..\Directory.Build.targets"/>
+   
+     <!--
+    VSIX manifest version does not support semver, only .Net type version numbers, so we
+    need to trim the Nuget package's version number. It is then suffixed with the number of
+    seconds since 2020-01-01T00:00Z to provide a monotonically increasing (mostly) unique
+    version number for the VSIX†. This versioning scheme is only used by builds inside
+    Visual Studio; the official build pipeline enforces its own versioning.
+
+    † Note: Yes, this introduces a Year 2088 problem for the locally-built VSIX because the
+    final component of the version number can wrap around after 68 years. No, this is not
+    a concern because it seems unlikely that we'll go 68 years without resetting the clock
+    by increasing the Windows App SDK version number.
+  -->
+  <PropertyGroup Condition="'$(VSIXVersion)' == '' AND '$(OptionalVSIXVersion)'!='default' AND '$(OptionalVSIXVersion)'!=''">
+    <!-- Optional VSIX version is provided by the pipeline definition to override package version -->
+    <VSIXVersion>$(OptionalVSIXVersion)</VSIXVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VSIXVersion)' == ''">
+    <!-- Use 3-part Windows App SDK version, less any tagging suffix -->
+    <VSIXVersion>$(WindowsAppSDKVersion)</VSIXVersion>
+    <VSIXVersion Condition="$(VSIXVersion.Contains(&quot;-&quot;))">$(VSIXVersion.Substring(0, $(VSIXVersion.IndexOf("-"))))</VSIXVersion>
+    <!--
+      Add a timestamp as part 4 of the version for uniqueness, and to ensure newer builds are newer
+      versions. Note that the timestamp is also included in release builds. This avoids version
+      sequencing issues between experimental and stable/preview versions that might otherwise have the same
+      version number, since VSIX does not support preview tags or other mechanisms to distinguish.
+    -->
+    <TimeSpan>$([System.Math]::Floor($([System.DateTime]::UtcNow.Subtract($([System.DateTime]::Parse('2020-01-01T00:00Z'))).TotalSeconds)))</TimeSpan>
+    <VSIXVersion>$(VSIXVersion).$(TimeSpan)</VSIXVersion>
+  </PropertyGroup>
+  <Target Name="GetVSIXVersion" Outputs="$(VSIXVersion)" />
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="..\..\..\..\LICENSE" DestinationFolder="$(MSBuildProjectDirectory)" />
+
+    <!-- Save original values so they can be restored later -->
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixId" />
+    </XmlPeek>
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:DisplayName/text()"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixName" />
+    </XmlPeek>
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Tags/text()"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixTags" />
+    </XmlPeek>
+    <XmlPeek
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview/text()"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;">
+      <Output TaskParameter="Result" PropertyName="_OriginalVsixPreview" />
+    </XmlPeek>
+
+    <!-- Update the .vsixmanifest to reflect experimental status if necessary -->
+
+    <!-- The value set here for the Id needs to match that set for 'ExperimentalNugetRepositoryId' in
+    ..\Directory.Build.targets -->
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
+      Value="$(_OriginalVsixId).Preview"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:DisplayName"
+      Value="$(_OriginalVsixName) (Experimental)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
+      Value="$(_OriginalVsixTags), UWP"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
+      Value="true"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+  </Target>
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <BinRoot Condition="$(BinRoot) == ''">$(OutputPath)</BinRoot>
+    </PropertyGroup>
+    <Message Importance="high" Text="Binplacing to: $(BinRoot)" />
+    <Copy SourceFiles="$(TargetVsixContainer)" DestinationFolder="$(BinRoot)" />
+
+    <!-- Restore original .vsixmanifest -->
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
+      Value="$(_OriginalVsixId)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:DisplayName"
+      Value="$(_OriginalVsixName)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Tags"
+      Value="$(_OriginalVsixTags)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+    <XmlPoke
+      XmlInputPath="$(VsixManifestSource)"
+      Query="/ns:PackageManifest/ns:Metadata/ns:Preview"
+      Value="$(_OriginalVsixPreview)"
+      Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
+  </Target>
+</Project>
