@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <assemblyIdentity version="1.0.0.0" name="MyApplication.app"/>
+
+  <file name="Microsoft.Windows.ApplicationModel.Resources.dll">
+    <activatableClass
+        name="Microsoft.Windows.ApplicationModel.Resources.ResourceManager"
+        threadingModel="both"
+        xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+        name="Microsoft.Windows.ApplicationModel.Resources.ResourceLoader"
+        threadingModel="both"
+        xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+        name="Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate"
+        threadingModel="both"
+        xmlns="urn:schemas-microsoft-com:winrt.v1" />
+    <activatableClass
+        name="Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName"
+        threadingModel="both"
+        xmlns="urn:schemas-microsoft-com:winrt.v1" />
+  </file>
+
+</assembly>
