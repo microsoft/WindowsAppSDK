@@ -36,6 +36,9 @@ namespace winrt::Microsoft::Windows::System::implementation
         PCWSTR c_PathName{ L"PATH" };
         PCWSTR c_PathExtName{ L"PATHEXT" };
 
+        static bool s_HasCheckedIsSupported;
+        static bool s_IsSupported;
+
         StringMap GetProcessEnvironmentVariables() const;
         StringMap GetUserOrMachineEnvironmentVariables() const;
 

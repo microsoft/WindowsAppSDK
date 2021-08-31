@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
@@ -105,10 +105,5 @@ typedef BOOLEAN __BOOL;
 #define WRITE_MRMMIN_TRACE_ERROR_CHECK(msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE(msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE_CHECK(msg, msg2, hr)
-
-#define WRITE_MRMMIN_PRI_MERGE_INFO(mergeState, mergeInfo, result)
-#define WRITE_MRMMIN_PRI_MERGE_ERROR(mergeState, mergeInfo, result)
-
-#define WRITE_MRMMIN_UNABLE_TO_OPEN_OVERLAY_FILE(overlayFileName, result)
 
 #define WRITE_ETW(etw)

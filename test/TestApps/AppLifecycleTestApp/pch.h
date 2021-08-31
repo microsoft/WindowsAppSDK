@@ -20,4 +20,4 @@
 
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
-#include <WindowsAppSDK.Test.AppModel.h>
+#include <WindowsAppRuntime.Test.AppModel.h>

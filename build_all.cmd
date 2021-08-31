@@ -1,7 +1,7 @@
 if not exist ".\.nuget" mkdir ".\.nuget"
 if not exist ".\.nuget\nuget.exe" powershell -Command "Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile .\.nuget\nuget.exe"
 
-call .nuget\nuget.exe restore WindowsAppSDK.sln -configfile nuget.config
+call .nuget\nuget.exe restore WindowsAppRuntime.sln -configfile nuget.config
 
 call :dobuild release x86
 call :dobuild release arm
@@ -14,5 +14,5 @@ call :dobuild debug x64
 goto :eof
 
 :dobuild
-call msbuild /m /p:Configuration=%1,Platform=%2 WindowsAppSDK.sln
+call msbuild /m /p:Configuration=%1,Platform=%2 WindowsAppRuntime.sln
 goto :eof
