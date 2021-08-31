@@ -70,7 +70,7 @@
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MsixDynamicDependency.h" />
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)..\common\TerminalVelocityFeatures-DynamicDependency.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)..\..\common\TerminalVelocityFeatures-DynamicDependency.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
   </ItemGroup>
 </Project>
