@@ -39,6 +39,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             PushNotificationTelemetry::ChannelClosedByApi(S_OK);
         }
+
         catch (...)
         {
             auto channelCloseException = hresult_error(to_hresult());
