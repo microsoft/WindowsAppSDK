@@ -50,16 +50,16 @@ namespace Test::PushNotifications
 
         static PCWSTR GetTestPackageFullName()
         {
-            return L"PushNotificationsTestAppPackage_1.0.0.0_" WINDOWSAPPSDK_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
+            return L"PushNotificationsTestAppPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE L"__8wekyb3d8bbwe";
         }
 
         TEST_CLASS_SETUP(ClassInit)
         {
             try
             {
-                TP::AddPackage_WindowsAppSDKFramework();           // Installs WASfwk
-                TP::AddPackage_DynamicDependencyDataStore();       // Installs WASmain
-                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WASddlm
+                TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
+                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
+                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
                 TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
@@ -81,7 +81,7 @@ namespace Test::PushNotifications
                 TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
-                TP::RemovePackage_WindowsAppSDKFramework();
+                TP::RemovePackage_WindowsAppRuntimeFramework();
             }
             catch (...)
             {
@@ -92,7 +92,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
@@ -101,7 +101,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());

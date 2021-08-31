@@ -32,7 +32,7 @@ HRESULT BootstrapInitialize()
         return S_OK;
     }
 
-    constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppSDK.Test.DDLM" };
+    constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
     RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
 

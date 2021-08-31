@@ -4,6 +4,7 @@
   <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props')" />
   <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props')" />
   <Import Project="..\..\..\..\WindowsAppSDK.Build.Cpp.props" />
+  <Import Project="..\..\..\..\..\ApiScan.Cpp.props" />
   <PropertyGroup Label="DevEnvironmentScenario">
     <ConsumeWinRT>false</ConsumeWinRT>
     <UseModernCompliantVclibs>true</UseModernCompliantVclibs>
@@ -71,9 +72,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='ARM'">
     <WindowsSDKDesktopARMSupport>true</WindowsSDKDesktopARMSupport>
   </PropertyGroup>
@@ -86,7 +84,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;STANDALONEDLL_EXPORTS;UNICODE;_UNICODE;DOWNLEVEL_PRIOR_TO_WIN8;WIL_SUPPRESS_PRIVATE_API_USE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\mrm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\..\mrm\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <!-- MRT Core doesn't use RTTI. -->
@@ -97,8 +95,6 @@
       <ModuleDefinitionFile>MRM.def</ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -107,25 +103,15 @@
       <Optimization>Disabled</Optimization>
       <WarningVersion>18</WarningVersion>
     </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningVersion>18</WarningVersion>
-      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
-      <!-- Corresponds to /GF -->
-      <StringPooling>true</StringPooling>
-      <!-- Corresponds to /Zi -->
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <!-- Corresponds to /Gy -->
-      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
-    <Link>
-      <!-- Configure the release build binary to be as required by internal API scanning tools. -->
-      <LinkIncremental>false</LinkIncremental>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <!-- EnableCOMDATFolding and OptimizeReferences are set to true below for all build configurations. -->
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <Link>

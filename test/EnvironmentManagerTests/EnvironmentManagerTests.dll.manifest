@@ -2,7 +2,7 @@
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
     <assemblyIdentity version="1.0.0.0" name="MyApplication.app"/>
 
-    <file name="Microsoft.WindowsAppSDK_DLL.dll">
+    <file name="Microsoft.WindowsAppRuntime_DLL.dll">
         <activatableClass
             name="Microsoft.Windows.System.EnvironmentManager"
             threadingModel="both"

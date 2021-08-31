@@ -11,7 +11,7 @@
 
 #include <wrl.h>
 
-#include <../DynamicDependency/MddWinRT.h>
+#include <../DynamicDependency/API/MddWinRT.h>
 
 using namespace std;
 using namespace Microsoft::WRL;

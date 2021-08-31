@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <Platforms>x64;x86;arm64</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="1.3.3" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <CSWinRTIncludes>Microsoft.Windows.System</CSWinRTIncludes>
+    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
+  </PropertyGroup>
+
+  <!-- Configure the release build binary to be as required by internal API scanning tools. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CsWinRTInputs Include="$(OutDir)/**/*.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.System">
+      <HintPath>$(OutDir)..\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+  </ItemGroup>
+
+</Project>

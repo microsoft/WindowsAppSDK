@@ -38,7 +38,7 @@ Your app does not need to be packaged to use Windows App SDK functionality.
 If you are packaged using either a Universal Windows Application package or a Desktop Bridge package,
 referencing the NuGet package is enough to start using the Windows App SDK right away.
 
-If you have your own installer, we'll have instructions to carry the Windows App SDK components with your app
+If you have your own installer, we have [instructions](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) to carry the Windows App SDK components with your app
 and how to install them using some common installers.
 
 ## How do I contribute?

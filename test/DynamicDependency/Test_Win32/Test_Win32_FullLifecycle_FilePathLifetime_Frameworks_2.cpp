@@ -13,18 +13,18 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Frameworks_WindowsAppSDK_MathAdd()
+void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd()
 {
     // Setup our dynamic dependencies
 
-    std::wstring expectedPackageFullName_WindowsAppSDKFramework{ TP::WindowsAppSDKFramework::c_PackageFullName };
+    std::wstring expectedPackageFullName_WindowsAppRuntimeFramework{ TP::WindowsAppRuntimeFramework::c_PackageFullName };
     std::wstring expectedPackageFullName_FrameworkMathAdd{ TP::FrameworkMathAdd::c_PackageFullName };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppSDKFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusWindowsAppSDKFramework() };
-    auto packagePath_WindowsAppSDKFramework{ TP::GetPackagePath(expectedPackageFullName_WindowsAppSDKFramework) };
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
+    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework() };
+    auto packagePath_WindowsAppRuntimeFramework{ TP::GetPackagePath(expectedPackageFullName_WindowsAppRuntimeFramework) };
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
 
     // -- TryCreate
 
@@ -35,9 +35,9 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Framewo
     VERIFY_IS_TRUE(std::filesystem::exists(lifetimeArtifactFilename));
     wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd(MddPackageDependencyLifetimeKind::FilePath, lifetimeArtifactFilename.c_str()) };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppSDKFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Add
@@ -48,10 +48,10 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Framewo
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppSDKFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     auto packagePath_FrameworkMathAdd{ TP::GetPackagePath(expectedPackageFullName_FrameworkMathAdd) };
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Delete the lifetime artifact
@@ -66,14 +66,14 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Framewo
     VERIFY_IS_NOT_NULL(packageFullName.get());
     std::wstring actualPackageFullName{ packageFullName.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName, expectedPackageFullName_FrameworkMathAdd);
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, packagePath_FrameworkMathAdd, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // Remove our 2nd instance. PackageGraph = [ Fwk, MathAdd ]
     MddRemovePackageDependency(context);
-    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppSDKFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Use it
@@ -100,17 +100,17 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_FilePathLifetime_Framewo
 
     MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppSDKFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Delete
 
     MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppSDKFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_WindowsAppSDKFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 }

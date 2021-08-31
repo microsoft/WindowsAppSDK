@@ -340,7 +340,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 if (contractData.empty())
                 {
                     // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppSdkPushServer", -1, TRUE) == CSTR_EQUAL)
+                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
                     {
                         contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
                         contractArgument = c_protocolArgumentString;

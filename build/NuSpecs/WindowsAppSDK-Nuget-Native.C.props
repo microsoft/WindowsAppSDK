@@ -15,7 +15,7 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>
-        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppSDK.lib;
+        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.lib;
         %(AdditionalDependencies);
       </AdditionalDependencies>
     </Link>
@@ -24,12 +24,12 @@
   <ItemDefinitionGroup Condition="'$(AppxPackage)' != 'true'">
     <Link>
       <AdditionalDependencies>
-        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppSDK.Bootstrap.lib;
+        $(MSBuildThisFileDirectory)..\..\lib\win10-$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.lib;
         %(AdditionalDependencies);
       </AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(_WindowsAppSDKFoundationPlatform)\native\Microsoft.WindowsAppSDK.Bootstrap.dll" "$(OutDir)"</Command>
+      <Command>xcopy /y "$(MSBuildThisFileDirectory)..\..\runtimes\lib\native\$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
 
