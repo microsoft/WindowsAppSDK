@@ -69,7 +69,7 @@
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
       XmlInputPath="$(VsixManifestSource)"
       Query="/ns:PackageManifest/ns:Metadata/ns:Identity/@Id"
-      Value="$(_OriginalVsixId).Preview"
+      Value="$(_OriginalVsixId).Experimental"
       Namespaces="&lt;Namespace Prefix='ns' Uri='http://schemas.microsoft.com/developer/vsx-schema/2011' /&gt;" />
     <XmlPoke
       Condition="'$(EnableExperimentalVSIXFeatures)'=='true'"
