@@ -102,7 +102,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
     {
-        return winrt::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
+        return winrt::Windows::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
     }
 
     // Determines if the caller should be treated as packaged app or not.
