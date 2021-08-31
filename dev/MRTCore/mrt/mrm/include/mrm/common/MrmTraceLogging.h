@@ -1,18 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #pragma once
 
-#ifndef MRMTRACELOGGING_H
-#define MRMTRACELOGGING_H
-
 #include <guiddef.h>
-#include <TraceLoggingProvider.h>
-
-#ifndef DOWNLEVEL_PRIOR_TO_WIN8
-#include <telemetry\MicrosoftTelemetry.h>
-#include <telemetry\MicrosoftTelemetryPrivacy.h>
-#endif
+#include <WindowsAppRuntimeInsights.h>
 
 #include <windows.h>
 
@@ -24,6 +16,20 @@ void LogErrorInMemory(HRESULT hr, ULONG line, _In_ PCSTR filename, _In_ PCWSTR m
 #else
 #define LOG_ERROR_IN_MEMORY(hr, line, filename, message) __noop
 #endif
+
+class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
+{
+    IMPLEMENT_TRACELOGGING_CLASS(MrtRuntimeTraceLoggingProvider, "Microsoft.WindowsAppSdk.MrtCore.Runtime",
+        // {297d729d-7733-5616-aafc-9a3c8b0d5f22}
+        (0x297d729d, 0x7733, 0x5616, 0xaa, 0xfc, 0x9a, 0x3c, 0x8b, 0x0d, 0x5f, 0x22));
+
+    DEFINE_COMPLIANT_MEASURES_EVENT(MrmCreateResourceManager, PDT_ProductAndServicePerformance);
+
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(TelemetryGenericEventParam1, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM4(TelemetryGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(MeasureGenericEventParam1, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(MeasureGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
+};
 
 // case insensitive prefix match of "*:\users"
 __inline PCWSTR RemoveUsernameFromPath(_In_ PCWSTR filePath)
@@ -44,26 +50,3 @@ __inline PCWSTR RemoveUsernameFromPath(_In_ PCWSTR filePath)
     }
     return filePath;
 }
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-    TRACELOGGING_DECLARE_PROVIDER(MrtRuntimeProvider);
-
-    void MrtRuntimeTelemetry_GenericEventParam1(_In_ PCWSTR eventName, _In_ PCWSTR msg1, _In_ HRESULT hr);
-    void MrtRuntimeTelemetry_GenericEventParam2(_In_ PCWSTR eventName, _In_ PCWSTR msg1, _In_ PCWSTR msg2, _In_ HRESULT hr);
-    void MrtRuntimeMeasure_GenericEventParam1(_In_ PCWSTR eventName, _In_ PCWSTR msg1, _In_ HRESULT hr);
-    void MrtRuntimeMeasure_GenericEventParam2(_In_ PCWSTR eventName, _In_ PCWSTR msg1, _In_ PCWSTR msg2, _In_ HRESULT hr);
-
-    void MrtRuntimeMeasure_UnableToOpenOverlayFile(_In_ PCWSTR function, _In_ PCWSTR overlayFileName, _In_ HRESULT result);
-
-    void MrtRuntimeTelemetry_PriMerge(_In_ DWORD mergeState, _In_ PCWSTR mergeInfo, _In_ HRESULT result);
-    void MrtRuntimeMeasure_PriMerge(_In_ DWORD mergeState, _In_ PCWSTR mergeInfo, _In_ HRESULT result);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // ! MRMTRACELOGGING_H

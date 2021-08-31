@@ -22,10 +22,10 @@ namespace Test::DynamicDependency
         TEST_METHOD(GetFromId_Empty);
         TEST_METHOD(GetFromId_NotFound);
 
-        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_WindowsAppSDK);
-        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_WindowsAppSDK_MathAdd);
-        TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_WindowsAppSDK_MathAdd);
-        TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_WindowsAppSDK_MathAdd);
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime);
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_WindowsAppRuntime_MathAdd);
+        TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd);
+        TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_WindowsAppRuntime_MathAdd);
 
         TEST_METHOD(Add_Rank_A0_B10);
         TEST_METHOD(Add_Rank_B0prepend_A0);
@@ -141,7 +141,7 @@ namespace Test::DynamicDependency
     const winrt::hstring& packageFamilyName,
             winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions& options);
 
-        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency _Create_WindowsAppSDKFramework(
+        winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependency _Create_WindowsAppRuntimeFramework(
             const winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind lifetimeKind = winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyLifetimeArtifactKind::Process,
             PCWSTR lifetimeArtifact = nullptr);
 
@@ -210,7 +210,7 @@ namespace Test::DynamicDependency
         static std::wstring GetPathEnvironmentVariableMinusPathPrefix(
             const std::wstring& pathPrefix);
 
-        static std::wstring GetPathEnvironmentVariableMinusWindowsAppSDKFramework();
+        static std::wstring GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework();
 
     private:
         static winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::PackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();

@@ -10,20 +10,20 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppSDK.Test.InstallerSingleton"
+    Name="WindowsAppRuntime.Test.InstallerSingleton"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.0.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>WindowsAppSDK.Test.Singleton fake for tests</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.Singleton fake for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="Microsoft.WindowsAppSDK.Test.InstallerFramework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="1.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Test.InstallFramework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="1.0.0.0"/>
   </Dependencies>
 
   <Resources>
@@ -35,10 +35,10 @@
       Executable="Assets\NonFunctioning.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Microsoft WindowsAppSDK Singleton"
+        DisplayName="Microsoft WindowsAppRuntime Singleton"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="Microsoft WindowsAppSDK Singleton"
+        Description="Microsoft WindowsAppRuntime Singleton"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" uap5:Optional="true"/>
