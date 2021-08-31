@@ -32,7 +32,5 @@ private:
 
     std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
-    void GetAppIdentifier(std::wstring processName);
-
-    void AddToRegistry(const std::wstring& processName, const std::wstring appId);
+    void GetAppIdentifier(std::wstring processName, wil::unique_cotaskmem_string& appId);
 };

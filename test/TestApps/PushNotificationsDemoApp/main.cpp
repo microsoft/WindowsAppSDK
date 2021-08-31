@@ -3,6 +3,7 @@
 #include "pch.h"
 #include <wil/win32_helpers.h>
 #include <iostream>
+#include "Helpers.h"
 #include <winrt/Windows.ApplicationModel.Background.h>
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -89,12 +90,13 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    PushNotificationActivationInfo info(
+    BootstrapInitialize();
+   /* PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
     auto token = PushNotificationManager::RegisterActivator(info);
-
+    */
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
     if (kind == ExtendedActivationKind::Push)
@@ -130,7 +132,7 @@ int main()
     }
 
     // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
+   // PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
 
     return 0;
 }
