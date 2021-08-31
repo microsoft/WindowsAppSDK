@@ -197,7 +197,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrap", "Bootstrap", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CS", "CS", "{536FA8DA-51E2-40A3-8A97-A90FFA75AA18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.WindowsAppRuntime.Bootstrap.Net", "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppSDK.Bootstrap.Net.csproj", "{D6574FD6-8D13-4412-9FCB-308D44063CDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.WindowsAppRuntime.Bootstrap.Net", "dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj", "{D6574FD6-8D13-4412-9FCB-308D44063CDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Power.Projection", "dev\Projections\CS\Microsoft.Windows.System.Power\Microsoft.Windows.System.Power.Projection.csproj", "{63ACBA4F-385A-4D04-98AD-263FED501A19}"
 EndProject
