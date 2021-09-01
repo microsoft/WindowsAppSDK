@@ -7,3 +7,8 @@
 wil::unique_event& GetWaitHandleForArgs();
 
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
+
+inline HRESULT GetCurrentProcessPath(wil::unique_cotaskmem_string& processName)
+{
+    return wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
+};

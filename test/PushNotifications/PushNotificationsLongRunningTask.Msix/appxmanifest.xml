@@ -56,6 +56,12 @@
                         <com:Interface Id="60FC21B2-B396-4D49-94F0-7555869FB93C" ProxyStubClsid="60FC21B2-B396-4D49-94F0-7555869FB93C"/> <!-- IID_IWpnLrpPlatform -->
                     </com:ComInterface>
                 </com:Extension>
+                <com:Extension Category="windows.comInterface">
+                    <com:ComInterface>
+                        <com:ProxyStub Id="25604D55-9B17-426F-9D67-2B11B3A65598" DisplayName="PushNotificationsLongRunningTask ProxyStub" Path="PushNotificationsLongRunningTask.ProxyStub.dll"/>
+                        <com:Interface Id="25604D55-9B17-426F-9D67-2B11B3A65598" ProxyStubClsid="25604D55-9B17-426F-9D67-2B11B3A65598"/> <!-- IID_IWpnForegroundSink -->
+                    </com:ComInterface>
+                </com:Extension>
                 <uap5:Extension
                       Category="windows.startupTask"
                       Executable="PushNotificationsLongRunningTask.StartupTask.exe"

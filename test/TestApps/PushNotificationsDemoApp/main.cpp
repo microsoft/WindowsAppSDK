@@ -49,7 +49,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         auto channelExpiry = result.Channel().ExpirationTime();
 
         // Register Push Event for Foreground
-        result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
                 auto payload = args.Payload();
 
