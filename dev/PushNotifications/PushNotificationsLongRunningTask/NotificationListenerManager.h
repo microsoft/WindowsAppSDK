@@ -4,19 +4,17 @@
 #include <string>
 #include <vector>
 
-struct NotificationsLongRunningPlatformImpl;
-
 class NotificationListenerManager
 {
 public:
     NotificationListenerManager() {};
 
-    void Initialize(NotificationsLongRunningPlatformImpl* platform, std::vector<std::wstring>& appList);
+    void Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::vector<std::wstring>& processNameList);
 
     void AddListener(std::wstring processName);
     void RemoveListener(std::wstring processName);
 
 private:
     std::map<std::wstring, Microsoft::WRL::ComPtr<NotificationListener>> m_notificationListeners;
-    NotificationsLongRunningPlatformImpl* m_platform = nullptr;
+    std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
 };

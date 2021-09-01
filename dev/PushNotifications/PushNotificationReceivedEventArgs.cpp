@@ -40,6 +40,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_rawNotificationPayload(BuildPayload(payload, length)),
         m_unpackagedAppScenario(true) {}
 
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring& payload) :
+        m_rawNotificationPayload(BuildPayload(payload)),
+        m_unpackagedAppScenario(true) {}
+
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer)
     {
         return { buffer.data(), buffer.data() + (buffer.Length() * sizeof(uint8_t)) };
@@ -50,23 +54,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return { payload, payload + (length * sizeof(uint8_t)) };
     }
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring& payload)
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring& payload)
     {
-        m_rawNotificationFromProtocol = Utf16ToUtf8(payload.c_str());
+        std::string payloadToSimpleString = Utf16ToUtf8(payload.c_str());
+
+        return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };
     }
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
     {
-        if (m_rawNotification.data())
-        {
-            auto rawNotificationData = m_rawNotification.data();
-            return { rawNotificationData, rawNotificationData + (m_rawNotification.Length() * sizeof(uint8_t)) };
-        }
-        else
-        {
-            auto rawNotificationData = m_rawNotificationFromProtocol.c_str();
-            return { rawNotificationData, rawNotificationData + (m_rawNotificationFromProtocol.length() * sizeof(uint8_t)) };
-        }
+        return { m_rawNotificationPayload.data(), m_rawNotificationPayload.data() + (m_rawNotificationPayload.size() * sizeof(uint8_t)) };
     }
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
@@ -141,8 +138,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         int size_needed = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, nullptr, nullptr);
         THROW_LAST_ERROR_IF(size_needed == 0);
 
-        std::string utf8(size_needed, 0);
-        int size = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, &utf8[0], size_needed, nullptr, nullptr);
+        std::string utf8(size_needed - 1, 0);
+        int size = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, &utf8[0], size_needed - 1, nullptr, nullptr);
         THROW_LAST_ERROR_IF(size == 0);
         return utf8;
     }

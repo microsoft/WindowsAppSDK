@@ -13,18 +13,22 @@ void NotificationsLongRunningPlatformImpl::Initialize()
         return;
     }
 
-    // Schedule event signaling after 5 seconds. This is in case we don't have any apps to track in the LRP.
-    // If we realize that we need to persist the LRP, timer should be canceled.
+    // Schedule event signaling after 5 seconds.
+    // This is in case we later realize there are no apps to be tracked in the LRP.
     m_shutdownTimerManager = std::make_unique<PlatformLifetimeTimerManager>();
     m_shutdownTimerManager->Setup();
 
-    /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
+    m_foregroundSinkManager = std::make_shared<ForegroundSinkManager>();
 
-    std::vector<std::wstring> appList;
+    std::vector<std::wstring> listOfFullTrustApps = GetListOfFullTrustApps();
 
-    /* TODO: Load platform components */
-
-    m_notificationListenerManager.Initialize(this, appList);
+    if (listOfFullTrustApps.size() > 0)
+    {
+        // We have at least one app that could receive notifications.
+        // Cancel the timer to persist the LRP.
+        m_shutdownTimerManager->Cancel();
+        m_notificationListenerManager.Initialize(m_foregroundSinkManager, listOfFullTrustApps);
+    }
 
     m_initialized = true;
 }
@@ -57,7 +61,6 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return E_NOTIMPL;
 }
 
-
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR processName) noexcept
 {
     auto lock = m_lock.lock_shared();
@@ -87,7 +90,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
 
-    m_foregroundSinkManager.Add(processName, sink);
+    m_foregroundSinkManager->Add(processName, sink);
     return S_OK;
 }
 
@@ -96,11 +99,25 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
 
-    m_foregroundSinkManager.Remove(processName);
+    m_foregroundSinkManager->Remove(processName);
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::SendBackgroundNotification(_In_ PCWSTR processName, _In_ ULONG payloadSize, _In_ byte* payload)
+std::vector<std::wstring> NotificationsLongRunningPlatformImpl::GetListOfFullTrustApps()
 {
-    return S_OK;
+    std::vector<std::wstring> listOfFullTrustApps;
+
+    // Get list of full trust apps with valid channels from wpncore
+    wil::unique_cotaskmem_array_ptr<PWSTR> appIds;
+    PushNotifications_GetFullTrustApplicationsWithChannels(appIds.addressof(), appIds.size_address<ULONG>());
+
+    for (size_t i = 0; i < appIds.size(); ++i)
+    {
+        // TODO: Once Storage changes come in, double check if each app is tracked on the storage.
+        // Get its process name from Storage and insert it in the vector.
+        // If not present in the Storage, it means there is no associated activator and we shouldn't add the app to the resulting vector.
+        listOfFullTrustApps.push_back(reinterpret_cast<PWSTR>(appIds[i]));
+    }
+
+    return listOfFullTrustApps;
 }

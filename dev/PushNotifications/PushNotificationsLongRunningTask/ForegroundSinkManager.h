@@ -22,5 +22,4 @@ private:
     // the sink are managed by the WindowsAppSDK.
     std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<IWpnForegroundSink>> m_foregroundMap = {};
     wil::srwlock m_lock;
-
 };

@@ -2,9 +2,6 @@
 
 #include "pch.h"
 
-#include <NotificationsLongRunningProcess_h.h>
-#include <ForegroundSinkManager.h>
-
 void ForegroundSinkManager::Add(std::wstring const& processName, IWpnForegroundSink* const& sink)
 {
     auto lock = m_lock.lock_exclusive();

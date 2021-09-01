@@ -1,21 +1,17 @@
 ﻿#pragma once
 
-#define MIDL_NS_PREFIX
-
 #include <FrameworkUdk/PushNotificationsRT.h>
-
-struct NotificationsLongRunningPlatformImpl;
 
 class NotificationListener : public Microsoft::WRL::RuntimeClass<::ABI::Microsoft::Internal::PushNotifications::INotificationListener>
 {
 public:
-    HRESULT RuntimeClassInitialize(NotificationsLongRunningPlatformImpl* platform, std::wstring appId);
+    HRESULT RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring appId);
 
     STDMETHOD(OnRawNotificationReceived)(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
 
 private:
-    NotificationsLongRunningPlatformImpl* m_platform = nullptr;
+    std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
 
-    std::wstring m_appId;
+    std::wstring m_processName;
     wil::srwlock m_lock;
 };

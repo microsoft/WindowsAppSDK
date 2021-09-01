@@ -1,7 +1,5 @@
 ﻿#include "pch.h"
 
-#include <NotificationsLongRunningProcess_h.h>
-
 #include "platform.h"
 #include <wrl/implements.h>
 #include <wrl/module.h>

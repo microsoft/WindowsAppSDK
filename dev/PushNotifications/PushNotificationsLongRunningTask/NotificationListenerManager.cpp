@@ -1,18 +1,12 @@
 ﻿#include "pch.h"
 
-#include "NotificationListener.h"
-#include "platform.h"
-#include "NotificationListenerManager.h"
-
-#include <FrameworkUdk/PushNotifications.h>
-
 using namespace Microsoft::WRL;
 
-void NotificationListenerManager::Initialize(NotificationsLongRunningPlatformImpl* platform, std::vector<std::wstring>& appList)
+void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::vector<std::wstring>& processNameList)
 {
-    m_platform = platform;
+    m_foregroundSinkManager = foregroundSinkManager;
 
-    for (std::wstring& processName : appList)
+    for (std::wstring& processName : processNameList)
     {
         AddListener(processName);
     }
@@ -20,34 +14,29 @@ void NotificationListenerManager::Initialize(NotificationsLongRunningPlatformImp
 
 void NotificationListenerManager::AddListener(std::wstring processName)
 {
-    // TODO: Query the Storage
+    // TODO: Query the Storage to get appId
     std::wstring appIdFromProcessName = processName;
 
     if (appIdFromProcessName.empty())
     {
-        // TODO: Get a GUID for AppId, put it in the Storage
-        winrt::guid appId;
-        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(L"SomeAppIdentifier", appId));
+        // TODO: Get a GUID as AppId, put it in the Storage. Pass an empty guid as remoteId.
+        winrt::guid remoteId;
+        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(L"SomeAppIdentifier", remoteId));
     }
 
     ComPtr<NotificationListener> listener;
-    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_platform, appIdFromProcessName));
+    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, appIdFromProcessName));
     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appIdFromProcessName.c_str(), listener.Get()));
 
-    if (m_notificationListeners.find(appIdFromProcessName) == std::end(m_notificationListeners))
+    if (m_notificationListeners.find(processName) == std::end(m_notificationListeners))
     {
-        m_notificationListeners.insert({ appIdFromProcessName, listener });
+        m_notificationListeners.insert({ processName, listener });
     }
 }
 
 void NotificationListenerManager::RemoveListener(std::wstring processName)
 {
-    // TODO: Query the Storage
-    std::wstring appIdFromProcessName = processName;
-    HRESULT hr = PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appIdFromProcessName.c_str());
+    m_notificationListeners.erase(processName);
 
-    if (SUCCEEDED(hr))
-    {
-        m_notificationListeners.erase(appIdFromProcessName);
-    }
+    LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(processName.c_str()));
 }

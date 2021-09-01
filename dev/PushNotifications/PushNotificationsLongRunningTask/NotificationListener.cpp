@@ -1,12 +1,9 @@
 ﻿#include "pch.h"
 
-#include "NotificationListener.h"
-#include "platform.h"
-
-HRESULT NotificationListener::RuntimeClassInitialize(NotificationsLongRunningPlatformImpl* platform, std::wstring appId)
+HRESULT NotificationListener::RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring processName)
 {
-    m_platform = platform;
-    m_appId = appId;
+    m_foregroundSinkManager = foregroundSinkManager;
+    m_processName = processName;
 
     return S_OK;
 }
@@ -15,24 +12,27 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 {
     auto lock = m_lock.lock_shared();
 
-    // TODO: Look for foreground handler. If not, then do protocol activation
+    winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
 
-    std::string commandLine = "----WindowsAppSDKPushServer:-Payload:\"";
-    commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
-    commandLine.append("\"");
-
-    SHELLEXECUTEINFOA shellExecuteInfo{};
-    shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-    shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-    shellExecuteInfo.lpFile = "processName";
-    shellExecuteInfo.lpParameters = commandLine.c_str();
-
-    shellExecuteInfo.nShow = SW_NORMAL;
-
-    if (!ShellExecuteExA(&shellExecuteInfo))
+    if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_processName, payloadArray, payloadLength))
     {
-        THROW_IF_WIN32_ERROR(GetLastError());
-    }
+        std::string commandLine = "----WindowsAppSDKPushServer:-Payload:\"";
+        commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
+        commandLine.append("\"");
+
+        SHELLEXECUTEINFOA shellExecuteInfo{};
+        shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+        shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
+        shellExecuteInfo.lpFile = "processName";
+        shellExecuteInfo.lpParameters = commandLine.c_str();
+
+        shellExecuteInfo.nShow = SW_NORMAL;
+
+        if (!ShellExecuteExA(&shellExecuteInfo))
+        {
+            THROW_IF_WIN32_ERROR(GetLastError());
+        }
+    };
 
     return S_OK;
 }
