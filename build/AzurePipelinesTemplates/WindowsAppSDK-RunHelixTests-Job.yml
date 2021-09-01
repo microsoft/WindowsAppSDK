@@ -119,11 +119,11 @@ jobs:
   # In Helix, test folders are under subfolders of TAEF. MRTCore UnpackagedTests use reg-free WinRT activation. It requires the winmd file
   # under same folder as the executable.
   - task: CopyFiles@2
-    displayName: 'Copy Microsoft.Windows.ApplicationModel.Resources.winmd to test root'
+    displayName: 'Copy Microsoft.ApplicationModel.Resources.winmd to test root'
     inputs:
       sourceFolder: $(testPayloadDir)\mrtcore_test_binaries_$(buildPlatform)\MrtCoreUnpackagedTests
       contents: |
-        Microsoft.Windows.ApplicationModel.Resources.winmd
+        Microsoft.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
       
   # TODO: This test needs to be converted to TAEF to run in Helix.
