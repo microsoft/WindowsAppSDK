@@ -10,7 +10,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
         PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
-        PushNotificationReceivedEventArgs(byte* payload, ULONG length);
+        PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length);
 
         com_array<uint8_t> Payload();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
@@ -19,16 +19,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool Handled();
         void Handled(bool value);
 
-        std::vector<byte> BuildPayload(uint8_t* payload, ULONG payloadLength);
-
     private:
+        std::vector<uint8_t> BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer);
+        std::vector<uint8_t> BuildPayload(byte* const& payload, ULONG const& length);
 
-        std::vector<byte> m_rawNotificationPayload;
-
+        std::vector<uint8_t> m_rawNotificationPayload;
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
 
-        bool m_isUnpackagedApp;
-        bool m_handledUnpackaged = false;
+        bool m_unpackagedAppScenario;
+        bool m_handledUnpackaged = true;
     };
 }

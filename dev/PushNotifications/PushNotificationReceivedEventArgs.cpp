@@ -11,6 +11,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
 #include <externs.h>
+#include <PushNotificationDummyDeferral.h>
 #include "ValueMarshaling.h"
 
 namespace winrt
@@ -25,21 +26,26 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::IBackgroundTaskInstance const& backgroundTask):
         m_backgroundTaskInstance(backgroundTask),
-        m_rawNotificationPayload(BuildPayload(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes().data(), backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes().Length())),
-        m_isUnpackagedApp(true) {}
+        m_rawNotificationPayload(BuildPayload(backgroundTask.TriggerDetails().as<RawNotification>().ContentBytes())),
+        m_unpackagedAppScenario(false) {}
 
     PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(winrt::PushNotificationReceivedEventArgs const& args):
         m_args(args),
-        m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes().data(), args.RawNotification().ContentBytes().Length())),
-        m_isUnpackagedApp(true) {}
+        m_rawNotificationPayload(BuildPayload(args.RawNotification().ContentBytes())),
+        m_unpackagedAppScenario(false) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* payload, ULONG length):
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length) :
         m_rawNotificationPayload(BuildPayload(payload, length)),
-        m_isUnpackagedApp(false) {}
+        m_unpackagedAppScenario(true) {}
 
-    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(uint8_t* payload, ULONG payloadLength)
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer)
     {
-        return { payload, payload + (payloadLength * sizeof(uint8_t)) };
+        return { buffer.data(), buffer.data() + (buffer.Length() * sizeof(uint8_t)) };
+    }
+
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(byte* const& payload, ULONG const& length)
+    {
+        return { payload, payload + (length * sizeof(uint8_t)) };
     }
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
@@ -49,7 +55,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::BackgroundTaskDeferral PushNotificationReceivedEventArgs::GetDeferral()
     {
-        if (m_isUnpackagedApp)
+        if (!m_unpackagedAppScenario)
         {
             THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
@@ -57,13 +63,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
-            return nullptr;
+            auto dummyDeferral = winrt::make<PushNotificationDummyDeferral>();
+            return dummyDeferral.as<winrt::BackgroundTaskDeferral>();
         }
     }
 
     winrt::event_token PushNotificationReceivedEventArgs::Canceled(winrt::BackgroundTaskCanceledEventHandler const& handler)
     {
-        if (m_isUnpackagedApp)
+        if (!m_unpackagedAppScenario)
         {
             THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
@@ -77,7 +84,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationReceivedEventArgs::Canceled(winrt::event_token const& token) noexcept
     {
-        if (m_isUnpackagedApp)
+        if (!m_unpackagedAppScenario)
         {
             THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_backgroundTaskInstance, "Foreground activation cannot call this.");
 
@@ -87,7 +94,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationReceivedEventArgs::Handled()
     {
-        if (m_isUnpackagedApp)
+        if (!m_unpackagedAppScenario)
         {
             THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
 
@@ -101,7 +108,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationReceivedEventArgs::Handled(bool value)
     {
-        if (m_isUnpackagedApp)
+        if (!m_unpackagedAppScenario)
         {
             THROW_HR_IF_NULL_MSG(E_ILLEGAL_METHOD_CALL, m_args, "Background activation cannot call this.");
 
@@ -109,17 +116,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
-            if (!value)
-            {
-                wchar_t processName[MAX_PATH];
-                THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
-
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
-
-                THROW_IF_FAILED(notificationsLongRunningPlatform->SendBackgroundNotification(processName, m_rawNotificationPayload.data(), m_rawNotificationPayload.size()));
-            }
-
             m_handledUnpackaged = value;
         }
     }

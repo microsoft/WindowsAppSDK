@@ -23,13 +23,12 @@ Microsoft::WRL::RuntimeClass<
 
     STDMETHOD(RegisterForegroundActivator)(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName);
 
-    STDMETHOD(SendBackgroundNotification)(_In_ PCWSTR processName, _In_ byte* payload, _In_ ULONG payloadSize);
+    STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName);
+
+    STDMETHOD(SendBackgroundNotification)(_In_ PCWSTR processName, _In_ ULONG payloadSize, _In_ byte* payload);
 
     /* Add your functions to retrieve the platform components */
-
-private:
-
-    void UnregisterForegroundActivator(PCWSTR processName);
+    private:
 
     wil::srwlock m_lock;
 

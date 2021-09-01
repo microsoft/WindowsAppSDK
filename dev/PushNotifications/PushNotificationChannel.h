@@ -23,7 +23,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void PushReceived(winrt::event_token const& token) noexcept;
 
         // IWpnForegroundSink
-        HRESULT __stdcall InvokeAll(ULONG length, byte* payload) noexcept;
+        HRESULT __stdcall InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
     private:
         bool IsPackagedAppScenario();
@@ -31,8 +31,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
 
-        bool m_isRegisteredWithLRP = false;
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
+        ULONG m_foregroundHandlerCount = 0;
+        wil::srwlock m_lock;
     };
 }
 

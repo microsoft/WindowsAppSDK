@@ -8,6 +8,7 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
+#include "externs.h"
 
 namespace winrt::Windows
 {
@@ -56,8 +57,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
             {
-                auto strong = weak_self.get();
-                if (strong)
+                if (auto strong = weak_self.get())
                 {
                     handler(*strong, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args));
                 };
@@ -65,17 +65,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
-            if (!m_isRegisteredWithLRP)
+            auto lock = m_lock.lock_exclusive();
+            if (!m_foregroundHandlerCount++)
             {
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
                     wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
-                wchar_t processName[1024];
-                THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
-                THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(this, processName));
-
-                m_isRegisteredWithLRP = true;
+                THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(this, processName.get()));             
             }
             return m_foregroundHandlers.add(handler);
         }
@@ -89,20 +88,33 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
+            auto lock = m_lock.lock_exclusive();
             m_foregroundHandlers.remove(token);
+            if (!--m_foregroundHandlerCount)
+            {
+                wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+                THROW_IF_FAILED(notificationsLongRunningPlatform->UnregisterForegroundActivator(processName.get()));
+            }
         }
     }
 
-    HRESULT __stdcall PushNotificationChannel::InvokeAll(ULONG length, _In_ byte* payload) noexcept try
+    HRESULT __stdcall PushNotificationChannel::InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept try
     {
-        m_foregroundHandlers(*this, winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length));
+        auto args = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload, length);
+        m_foregroundHandlers(*this, args);
+        *foregroundHandled = args.Handled();
         return S_OK;
     }
     CATCH_RETURN()
 
     bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
     {
-        return winrt::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
+        return winrt::Windows::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
     }
 
     // Determines if the caller should be treated as packaged app or not.

@@ -11,13 +11,16 @@ class ForegroundSinkManager
 public:
     ForegroundSinkManager() = default;
 
-    void Add(std::wstring processName, IWpnForegroundSink* sink);
+    void Add(std::wstring const& processName, IWpnForegroundSink* const& sink);
 
-    void Remove(std::wstring processName);
+    void Remove(std::wstring const& processName);
 
-    bool InvokeForegroundHandlers(std::wstring processName, byte* payload, ULONG payloadSize);
+    bool InvokeForegroundHandlers(std::wstring const& processName, byte* const& payload, ULONG const& payloadSize);
 
 private:
+    // An app can only have one activate foreground sink with Long Running Process. Event handlers in
+    // the sink are managed by the WindowsAppSDK.
     std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<IWpnForegroundSink>> m_foregroundMap = {};
+    wil::srwlock m_lock;
 
 };

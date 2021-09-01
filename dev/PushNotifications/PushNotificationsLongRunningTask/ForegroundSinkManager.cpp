@@ -5,22 +5,32 @@
 #include <NotificationsLongRunningProcess_h.h>
 #include <ForegroundSinkManager.h>
 
-void ForegroundSinkManager::Add(std::wstring processName, IWpnForegroundSink* sink)
+void ForegroundSinkManager::Add(std::wstring const& processName, IWpnForegroundSink* const& sink)
 {
+    auto lock = m_lock.lock_exclusive();
     m_foregroundMap[processName] = sink;
 }
 
-void ForegroundSinkManager::Remove(std::wstring processName)
+void ForegroundSinkManager::Remove(std::wstring const& processName)
 {
+    auto lock = m_lock.lock_exclusive();
     m_foregroundMap.erase(processName);
 }
 
-bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring processName, byte* payload, ULONG payloadSize)
+bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& processName, byte* const& payload, ULONG const& payloadSize)
 {
-    if (m_foregroundMap.find(processName) != m_foregroundMap.end())
+    auto lock = m_lock.lock_exclusive();
+
+    auto it = m_foregroundMap.find(processName);
+    if (it != m_foregroundMap.end())
     {
-        LOG_IF_FAILED(m_foregroundMap[processName]->InvokeAll(payloadSize, payload));
-        return true;
+        BOOL foregroundHandled = true;
+        if (FAILED(it->second->InvokeAll(payloadSize, payload, &foregroundHandled)))
+        {
+            Remove(processName);
+            return false;
+        }
+        return foregroundHandled;
     }
     return false;
 }
