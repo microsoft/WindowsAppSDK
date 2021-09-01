@@ -6,6 +6,6 @@ packages be built. Typically this only needs to be done once unless the set of p
 To build the test packages, build CreateInstallerTestPackages.sln, located under
 installer\test\CreateInstallerTestPackages.
 
-For building an installer with real packages, create a 'windowsappsdk_definitions_override.h'
+For building an installer with real packages, create a 'windowsappruntime_definitions_override.h'
 file in this folder with preprocessor redefinitions that override the package paths for inclusion.
-See 'windowsappsdk_definitions.h' for details.
+See 'windowsappruntime_definitions.h' for details.

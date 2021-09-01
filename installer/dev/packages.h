@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "pch.h"
-#include "windowsappsdk_definitions.h"
+#include "windowsappruntime_definitions.h"
 
 using namespace winrt;
 using namespace Windows::System;
@@ -9,7 +9,7 @@ using namespace Windows::System;
 // More properties can be added as-needed, such as type - framework | main | appinstaller | bundle
 // For now all packages are frameworks and only the processor architecture is meaningful.
 
-namespace WindowsAppSDKInstaller {
+namespace WindowsAppRuntimeInstaller {
 
     enum class DeploymentBehavior
     {
@@ -26,41 +26,41 @@ namespace WindowsAppSDKInstaller {
 
     static ResourcePackageInfo c_packages[] =
     {
-    #if defined(WAS_FRAMEWORK_X86_LISTENTRY)
-        WAS_FRAMEWORK_X86_LISTENTRY
+    #if defined(WAR_FRAMEWORK_X86_LISTENTRY)
+        WAR_FRAMEWORK_X86_LISTENTRY
     #endif
-    #if defined(WAS_FRAMEWORK_X64_LISTENTRY)
-        WAS_FRAMEWORK_X64_LISTENTRY
+    #if defined(WAR_FRAMEWORK_X64_LISTENTRY)
+        WAR_FRAMEWORK_X64_LISTENTRY
     #endif
-    #if defined(WAS_FRAMEWORK_ARM64_LISTENTRY)
-        WAS_FRAMEWORK_ARM64_LISTENTRY
+    #if defined(WAR_FRAMEWORK_ARM64_LISTENTRY)
+        WAR_FRAMEWORK_ARM64_LISTENTRY
     #endif
-    #if defined(WAS_MAIN_X86_LISTENTRY)
-        WAS_MAIN_X86_LISTENTRY
+    #if defined(WAR_MAIN_X86_LISTENTRY)
+        WAR_MAIN_X86_LISTENTRY
     #endif
-    #if defined(WAS_MAIN_X64_LISTENTRY)
-        WAS_MAIN_X64_LISTENTRY
+    #if defined(WAR_MAIN_X64_LISTENTRY)
+        WAR_MAIN_X64_LISTENTRY
     #endif
-    #if defined(WAS_MAIN_ARM64_LISTENTRY)
-        WAS_MAIN_ARM64_LISTENTRY
+    #if defined(WAR_MAIN_ARM64_LISTENTRY)
+        WAR_MAIN_ARM64_LISTENTRY
     #endif
-    #if defined(WAS_SINGLETON_X86_LISTENTRY)
-        WAS_SINGLETON_X86_LISTENTRY
+    #if defined(WAR_SINGLETON_X86_LISTENTRY)
+        WAR_SINGLETON_X86_LISTENTRY
     #endif
-    #if defined(WAS_SINGLETON_X64_LISTENTRY)
-        WAS_SINGLETON_X64_LISTENTRY
+    #if defined(WAR_SINGLETON_X64_LISTENTRY)
+        WAR_SINGLETON_X64_LISTENTRY
     #endif
-    #if defined(WAS_SINGLETON_ARM64_LISTENTRY)
-        WAS_SINGLETON_ARM64_LISTENTRY
+    #if defined(WAR_SINGLETON_ARM64_LISTENTRY)
+        WAR_SINGLETON_ARM64_LISTENTRY
     #endif
-    #if defined(WAS_DDLM_X86_LISTENTRY)
-        WAS_DDLM_X86_LISTENTRY
+    #if defined(WAR_DDLM_X86_LISTENTRY)
+        WAR_DDLM_X86_LISTENTRY
     #endif
-    #if defined(WAS_DDLM_X64_LISTENTRY)
-        WAS_DDLM_X64_LISTENTRY
+    #if defined(WAR_DDLM_X64_LISTENTRY)
+        WAR_DDLM_X64_LISTENTRY
     #endif
-    #if defined(WAS_DDLM_ARM64_LISTENTRY)
-        WAS_DDLM_ARM64_LISTENTRY
+    #if defined(WAR_DDLM_ARM64_LISTENTRY)
+        WAR_DDLM_ARM64_LISTENTRY
     #endif
     };
 }

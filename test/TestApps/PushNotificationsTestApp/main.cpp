@@ -4,7 +4,7 @@
 #include <sstream>
 #include <wil/win32_helpers.h>
 #include <winrt/Windows.ApplicationModel.Background.h> // we need this for BackgroundTask APIs
-#include "WindowsAppSDK.Test.AppModel.h"
+#include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt;
 using namespace winrt::Microsoft::Windows::AppLifecycle;

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
   <TemplateData>
-    <Name>Blank App, Packaged with WAP (WinUI 3 in Desktop)</Name>
-    <Description>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3). A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</Description>
+    <Name ID="1029" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1031" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Desktop.Cs.PackagedApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.PackagedApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
@@ -28,7 +28,6 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|x86">
     <CustomParameters>
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <CustomParameter Name="$VCRTForwardersVersion$" Value="1.0.0" />
     </CustomParameters>
     <ProjectCollection>
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>

@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.System.Power">
-      <HintPath>$(OutDir)..\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd</HintPath>
+      <HintPath>$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

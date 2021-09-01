@@ -386,5 +386,4 @@ build/override/
 
 # WindowsAppSDK specific files
 Microsoft.WinUI.AppX.targets
-dev/vsix/extension/LICENSE
 !dev/vsix/**/*.pubxml

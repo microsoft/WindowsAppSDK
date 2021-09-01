@@ -1,6 +1,6 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by WindowsAppSDKInstall.rc
+// Used by WindowsAppRuntimeInstall.rc
 //
 
 // Next default values for new objects
