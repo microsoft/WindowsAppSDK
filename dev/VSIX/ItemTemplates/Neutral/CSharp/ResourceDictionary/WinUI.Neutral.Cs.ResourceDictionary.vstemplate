@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <DefaultName>ResourceDictionary.xaml</DefaultName>
-    <Name>Resource Dictionary (WinUI 3)</Name>
-    <Description>An empty, keyed collection of XAML resources for apps based on the Windows UI Library (WinUI 3).</Description>
+    <Name ID="1009" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1011" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Neutral.Cs.ResourceDictionary.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Cs.Neutral.ResourceDictionary</TemplateID>
