@@ -64,7 +64,7 @@
   </WizardExtension>
   <WizardData>
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
-    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
       <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>

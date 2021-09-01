@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "packages.h"
 
-namespace WindowsAppSDKInstaller {
+namespace WindowsAppRuntimeInstaller {
 
     struct PackageProperties
     {

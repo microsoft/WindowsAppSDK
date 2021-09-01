@@ -113,12 +113,12 @@ Class Feature
     {
         if ([String]::IsNullOrEmpty($namespace))
         {
-            return "WINDOWSAPPSDK_$($this.Name.ToUpper())_ENABLED"
+            return "WINDOWSAPPRUNTIME_$($this.Name.ToUpper())_ENABLED"
         }
         else
         {
             $ns = $namespace.replace(".", "_").replace("::", "_")
-            return "WINDOWSAPPSDK_$($ns.ToUpper())_$($this.Name.ToUpper())_ENABLED"
+            return "WINDOWSAPPRUNTIME_$($ns.ToUpper())_$($this.Name.ToUpper())_ENABLED"
         }
     }
 }

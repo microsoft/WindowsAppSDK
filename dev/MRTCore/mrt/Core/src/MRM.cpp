@@ -11,6 +11,8 @@
 #include "mrm/platform/WindowsCore.h"
 #include "mrm/readers/MrmManagers.h"
 
+#include "mrm/common/MrmTraceLogging.h"
+
 #include "MRM.h"
 
 #include <memory>
@@ -492,6 +494,8 @@ STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle*
 
     RETURN_HR_IF(E_INVALIDARG, (priFileName == nullptr) || (*priFileName == L'\0'));
 
+    MrtRuntimeTraceLoggingProvider::MrmCreateResourceManager();
+
     std::unique_ptr<MrmObjects, decltype(&DestroyResourceManager)> resourceManagerObjects(
         new (std::nothrow) MrmObjects(), &DestroyResourceManager);
     RETURN_IF_NULL_ALLOC(resourceManagerObjects);
@@ -677,7 +681,7 @@ STDAPI MrmGetChildResourceMap(
     }
 
     const ResourceMapSubtree* childSubTree;
-    RETURN_IF_FAILED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree));
+    RETURN_IF_FAILED_WITH_EXPECTED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree), HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND));
 
     *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(childSubTree));
     return S_OK;

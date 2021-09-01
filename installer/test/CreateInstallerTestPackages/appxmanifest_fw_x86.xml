@@ -6,13 +6,13 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.WindowsAppSDK.Test.InstallerFramework"
+    Name="Microsoft.WindowsAppRuntime.Test.InstallFramework"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     ProcessorArchitecture="x86"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Microsoft.WindowsAppSDK.Test.InstallerFramework for tests</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallFramework for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
     <Framework>true</Framework>
