@@ -14,13 +14,13 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.AppModel.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.Bootstrap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.Diagnostics.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.FileSystem.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.Metadata.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.Package.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppSDK.Test.TAEF.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.AppModel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Bootstrap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Diagnostics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.FileSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Metadata.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Package.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.TAEF.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TestDef.h" />
   </ItemGroup>
 </Project>

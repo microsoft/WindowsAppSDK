@@ -192,7 +192,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -210,7 +210,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <ControlFlowGuard>Guard</ControlFlowGuard>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -223,6 +223,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="NotificationListener.cpp" />
+    <ClCompile Include="ForegroundSinkManager.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="platformfactory.cpp" />
@@ -232,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NotificationListener.h" />
+    <ClInclude Include="ForegroundSinkManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="platformfactory.h" />

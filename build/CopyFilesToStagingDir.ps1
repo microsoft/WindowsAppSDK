@@ -35,15 +35,15 @@ function PublishFile {
 
 PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
 
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppSDK\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.AppLifecycle.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.PushNotifications.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $FullPublishDir\Microsoft.WindowsAppRuntime\
 
 #
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $FullPublishDir\DynamicDependency.DataStore\
@@ -54,59 +54,37 @@ PublishFile $FullBuildOutput\PushNotificationsLongRunningTask\PushNotificationsL
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe $FullPublishDir\DynamicDependencyLifetimeManager\
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.dll $FullPublishDir\DynamicDependencyLifetimeManager\
 #
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $FullPublishDir\Microsoft.WindowsAppSDK.Bootstrap\
-
-#PublishFile -IfExists $FullBuildOutput\WindowsAppSDK_DLL\Generic.xaml $FullPublishDir\Microsoft.WindowsAppSDK\
-#PublishFile -IfExists $FullBuildOutput\Microsoft.WindowsAppSDK.Design\Microsoft.WindowsAppSDK.Design.dll $FullPublishDir\Microsoft.WindowsAppSDK.Design\
-#PublishFile -IfExists $BuildOutputDir\$Configuration\AnyCPU\Microsoft.WindowsAppSDK.FrameworkPackagePRI\Microsoft.WindowsAppSDK.pri $FullPublishDir\Microsoft.WindowsAppSDK.FrameworkPackagePRI\
-
-#UNDONE - PGO etc. later PR
-# pgosweep and vcruntime are required to run pgo instrumented test run. They are placed from the
-# cx test app instead of releasetest.dll since these are architecture specific and the ReleaseTest assembly is AnyCPU.
-#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\pgosweep.exe $FullPublishDir\Test\
-#PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\vcruntime140.dll $FullPublishDir\Test\
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
+PublishFile $FullBuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
+PublishFile $FullBuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.pdb $FullPublishDir\Microsoft.WindowsAppRuntime.Bootstrap\
 
 PublishFile -IfExists $FullBuildOutput\FrameworkPackage\*.* $FullPublishDir\FrameworkPackage
 
-if($PublishAppxFiles)
-{
-    $AppxPackagesDir = "$FullPublishDir\AppxPackages"
-
-#    PublishFile -IfExists $FullBuildOutput\MUXControlsTestApp.TAEF\AppPackages\MUXControlsTestApp_Test\ $AppxPackagesDir
-#    PublishFile -IfExists $FullBuildOutput\IXMPTestApp.TAEF\AppPackages\IXMPTestApp_Test\ $AppxPackagesDir
-#    PublishFile -IfExists $FullBuildOutput\MUXControlsTestAppWPFPackage\AppPackages\MUXControlsTestAppWPFPackage_Test\ $AppxPackagesDir
-
-#    PublishFile -IfExists $FullBuildOutput\NugetPackageTestApp\AppPackages\NugetPackageTestApp_Test\ $AppxPackagesDir
-#    PublishFile -IfExists $FullBuildOutput\NugetPackageTestAppCX\AppPackages\NugetPackageTestAppCX_Test\ $AppxPackagesDir
-#    PublishFile -IfExists $FullBuildOutput\AppThatUsesMUXIndirectly\AppPackages\AppThatUsesMUXIndirectly_Test\ $AppxPackagesDir
-}
-
 # Publish pdbs:
 $symbolsOutputDir = "$($FullPublishDir)\Symbols\"
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.pdb $symbolsOutputDir
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.pdb $symbolsOutputDir
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $symbolsOutputDir
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $symbolsOutputDir
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $symbolsOutputDir
 
 # Copy files to Full Nuget package
 #
 # Includes (*.h)
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\MddBootstrap.h $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\MsixDynamicDependency.h $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\wil_msixdynamicdependency.h $NugetDir\include
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\WindowsAppRuntimeInsights.h $NugetDir\include\
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\MsixDynamicDependency.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\wil_msixdynamicdependency.h $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\WindowsAppRuntimeInsights.h $NugetDir\include\
 #
 # Libraries (*.lib)
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.lib $NugetDir\lib\win10-$Platform
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.lib $NugetDir\lib\win10-$Platform
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.lib $NugetDir\lib\win10-$Platform
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $NugetDir\lib\win10-$Platform
 #
 # MSIX Framework package - DLLs
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.dll $NugetDir\runtimes\win10-$Platform\native
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.WindowsAppSDK.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # MSIX Main package
 PublishFile $FullBuildOutput\DynamicDependency.DataStore\DynamicDependency.DataStore.exe $NugetDir\runtimes\win10-$Platform\native
@@ -123,15 +101,15 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # WinMD for UWP apps
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
-PublishFile $FullBuildOutput\WindowsAppSDK_DLL\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.AppLifecycle.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.PushNotifications.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
+PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
 #
 # Native (not managed, AppLocal / no MSIX)
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.dll $NugetDir\runtimes\win10-$Platform\native
-PublishFile $FullBuildOutput\WindowsAppSDK_BootstrapDLL\Microsoft.WindowsAppSDK.Bootstrap.pdb $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
 #
 # C#/WinRT Projections
 PublishFile $FullBuildOutput\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.dll $NugetDir\lib\net5.0-windows10.0.17763.0

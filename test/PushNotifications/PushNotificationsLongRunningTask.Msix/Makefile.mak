@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#!include <WindowsAppSDK.Tools.MakeMsix.mak>
+#!include <WindowsAppRuntime.Tools.MakeMsix.mak>
 
 MAKEAPPX_OPTS=
 !IFDEF VERBOSE
@@ -14,11 +14,11 @@ SIGNTOOL_OPTS=/v
 !ENDIF
 
 !IFDEF VERBOSE
-!MESSAGE SolutionDir                 =$(SolutionDir)
-!MESSAGE ProjectDir                  =$(ProjectDir)
-!MESSAGE OutDir                      =$(OutDir)
-!MESSAGE TargetName                  =$(TargetName)
-!MESSAGE WindowsAppSDKBuildPipeline  =$(WindowsAppSDKBuildPipeline)
+!MESSAGE SolutionDir                     =$(SolutionDir)
+!MESSAGE ProjectDir                      =$(ProjectDir)
+!MESSAGE OutDir                          =$(OutDir)
+!MESSAGE TargetName                      =$(TargetName)
+!MESSAGE WindowsAppRuntimeBuildPipeline  =$(WindowsAppRuntimeBuildPipeline)
 !ENDIF
 
 TARGET_BASENAME=PushNotificationsLongRunningTask
@@ -52,7 +52,7 @@ all: build
 $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir) md $(WorkDir)
     @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml
-    @copy /Y $(OutDir)WindowsAppSDK_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
+    @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
     @if not exist $(WorkDir)\Assets md $(WorkDir)\Assets >NUL
     @copy /Y $(ProjectDir)Assets\* $(WorkDir)\Assets\* >NUL
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL

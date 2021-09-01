@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.h"
+#include <NotificationsLongRunningProcess_h.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -9,7 +10,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         PushNotificationReceivedEventArgs(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const& backgroundTask);
         PushNotificationReceivedEventArgs(winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs const& args);
+
         PushNotificationReceivedEventArgs(std::wstring& payload);
+
+        PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length);
+
 
         com_array<uint8_t> Payload();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
@@ -23,7 +28,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         std::string m_rawNotificationFromProtocol;
         const winrt::Windows::Storage::Streams::IBuffer m_rawNotification{};
+
+        std::vector<uint8_t> BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer);
+        std::vector<uint8_t> BuildPayload(byte* const& payload, ULONG const& length);
+
+        std::vector<uint8_t> m_rawNotificationPayload;
+
         const winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance m_backgroundTaskInstance{};
         const winrt::Windows::Networking::PushNotifications::PushNotificationReceivedEventArgs m_args = nullptr;
+
+        bool m_unpackagedAppScenario;
+        bool m_handledUnpackaged = true;
     };
 }
