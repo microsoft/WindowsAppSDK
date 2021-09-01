@@ -17,7 +17,7 @@ void ForegroundSinkManager::Remove(std::wstring const& processName)
     m_foregroundMap.erase(processName);
 }
 
-bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& processName, byte* const& payload, ULONG const& payloadSize)
+bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& processName, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize)
 {
     auto lock = m_lock.lock_exclusive();
 
@@ -25,7 +25,7 @@ bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& process
     if (it != m_foregroundMap.end())
     {
         BOOL foregroundHandled = true;
-        if (FAILED(it->second->InvokeAll(payloadSize, payload, &foregroundHandled)))
+        if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), &foregroundHandled)))
         {
             Remove(processName);
             return false;
