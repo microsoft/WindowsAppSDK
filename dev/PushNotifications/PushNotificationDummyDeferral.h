@@ -10,10 +10,7 @@ struct PushNotificationDummyDeferral : winrt::implements <PushNotificationDummyD
 {
     PushNotificationDummyDeferral() {}
 
-    void Complete()
-    {
-        return;
-    }
+    void Complete() { };
 };
 
 struct PushNotificationDummyDeferralFactory : winrt::implements<PushNotificationDummyDeferralFactory, IClassFactory>
