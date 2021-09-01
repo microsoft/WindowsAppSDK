@@ -15,7 +15,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         PushNotificationReceivedEventArgs(byte* const& payload, ULONG const& length);
 
-
         com_array<uint8_t> Payload();
         winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
         winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);

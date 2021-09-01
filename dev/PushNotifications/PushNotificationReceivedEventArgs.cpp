@@ -11,7 +11,6 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
 #include <string>
-//#include <codecvt>
 #include <externs.h>
 #include <PushNotificationDummyDeferral.h>
 #include "ValueMarshaling.h"
