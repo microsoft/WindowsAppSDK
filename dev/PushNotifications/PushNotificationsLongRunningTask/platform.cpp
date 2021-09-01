@@ -102,3 +102,26 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return S_OK;
 }
 CATCH_RETURN()
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName)
+{
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    auto lock = m_lock.lock_exclusive();
+
+    m_foregroundSinkManager.Add(processName, sink);
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(_In_ PCWSTR processName)
+{
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    auto lock = m_lock.lock_exclusive();
+
+    m_foregroundSinkManager.Remove(processName);
+    return S_OK;
+}
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::SendBackgroundNotification(_In_ PCWSTR processName, _In_ ULONG payloadSize, _In_ byte* payload)
+{
+    return S_OK;
+}
