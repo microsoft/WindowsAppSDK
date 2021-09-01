@@ -1,37 +1,38 @@
 ﻿#include "pch.h"
-#include "NotificationListener.h"
 
-NotificationListener::NotificationListener(std::wstring appId)
+#include "NotificationListener.h"
+#include "platform.h"
+
+HRESULT NotificationListener::RuntimeClassInitialize(NotificationsLongRunningPlatformImpl* platform, std::wstring appId)
 {
+    m_platform = platform;
     m_appId = appId;
+
+    return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector*/) noexcept try
 {
     auto lock = m_lock.lock_shared();
 
-    // Look for foreground handler. If not, then do protocol activation
+    // TODO: Look for foreground handler. If not, then do protocol activation
 
-    std::wstring processPath = L"";
+    std::string commandLine = "----WindowsAppSDKPushServer:-Payload:\"";
+    commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
+    commandLine.append("\"");
 
-    STARTUPINFO startupInfo = { 0 };
-    wil::unique_process_information processInfo;
+    SHELLEXECUTEINFOA shellExecuteInfo{};
+    shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+    shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
+    shellExecuteInfo.lpFile = "processName";
+    shellExecuteInfo.lpParameters = commandLine.c_str();
 
-    ZeroMemory(&startupInfo, sizeof(startupInfo));
-    startupInfo.cb = sizeof(startupInfo);
+    shellExecuteInfo.nShow = SW_NORMAL;
 
-    BOOL wasProcessCreated = CreateProcess(
-        processPath.c_str(),
-        (LPWSTR) L"----WindowsAppSDKPushServer", // Argument indicating activation through Push Notification
-        nullptr, // process attributes
-        nullptr, // thread attributes
-        FALSE,   // inherit handles
-        NORMAL_PRIORITY_CLASS, // creation flags
-        nullptr, // lpEnvironment
-        nullptr, // current directory for the process
-        &startupInfo,
-        &processInfo
-    );
+    if (!ShellExecuteExA(&shellExecuteInfo))
+    {
+        THROW_IF_WIN32_ERROR(GetLastError());
+    }
 
     return S_OK;
 }

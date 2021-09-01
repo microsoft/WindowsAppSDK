@@ -2,6 +2,8 @@
 
 #include "../PushNotifications-Constants.h"
 
+#include <NotificationsLongRunningProcess_h.h>
+
 #include "PlatformLifetimeTimerManager.h"
 #include "NotificationListener.h"
 #include "NotificationListenerManager.h"
@@ -37,7 +39,7 @@ private:
 
     std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
-    NotificationListenerManager m_notificationListenerManager;
+    NotificationListenerManager m_notificationListenerManager{};
 
     // Here we will define the Platform components i.e. the map wrappings
 };

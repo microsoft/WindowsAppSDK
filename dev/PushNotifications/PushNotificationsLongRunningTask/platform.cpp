@@ -1,7 +1,5 @@
 ﻿#include "pch.h"
 
-#include <NotificationsLongRunningProcess_h.h>
-
 #include "platform.h"
 #include "platformfactory.h"
 
@@ -22,7 +20,11 @@ void NotificationsLongRunningPlatformImpl::Initialize()
 
     /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
 
+    std::vector<std::wstring> appList;
+
     /* TODO: Load platform components */
+
+    m_notificationListenerManager.Initialize(this, appList);
 
     m_initialized = true;
 }
@@ -55,18 +57,26 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     return E_NOTIMPL;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR /*processName*/) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR processName) noexcept
 {
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    return E_NOTIMPL;
+    // TODO: Look if the process name exists in the Storage
+
+    m_notificationListenerManager.AddListener(processName);
+
+    return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(_In_ PCWSTR /*processName*/) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(_In_ PCWSTR processName) noexcept
 {
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    return E_NOTIMPL;
+    // TODO: Look if the process name exists in the Storage
+
+    m_notificationListenerManager.RemoveListener(processName);
+
+    return S_OK;
 }

@@ -337,13 +337,18 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractData.empty())
+                if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppSdkPushServer", -1, TRUE) == CSTR_EQUAL)
                 {
-                    // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppSdkPushServer", -1, TRUE) == CSTR_EQUAL)
+                    if (contractData.empty())
                     {
                         contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
                         contractArgument = c_protocolArgumentString;
+                    }
+                    else // Command line contained a background notification payload
+                    {
+                        kind = ExtendedActivationKind::Push;
+                        Uri pushNotificationUri{ contractData };
+                        data = winrt::Microsoft::Windows::PushNotifications::Deserialize(pushNotificationUri);
                     }
                 }
 

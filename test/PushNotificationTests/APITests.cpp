@@ -272,5 +272,10 @@ namespace Test::PushNotifications
         {
             RunTest(L"VerifyNullActivatorNotSupported", testWaitTime());
         }
+
+        TEST_METHOD(VerifyProtocolActivation)
+        {
+            RunTestUnpackaged(L"----WindowsAppSDKPushServer:-Payload:\"<toast></toast>\"", testWaitTime());
+        }
     };
 }

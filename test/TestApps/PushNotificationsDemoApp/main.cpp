@@ -89,8 +89,6 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    Sleep(20000);
-
     PushNotificationActivationInfo info(
         PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
