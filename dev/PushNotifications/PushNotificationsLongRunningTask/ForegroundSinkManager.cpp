@@ -24,7 +24,7 @@ bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& process
         BOOL foregroundHandled = true;
         if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), &foregroundHandled)))
         {
-            Remove(processName);
+            m_foregroundMap.erase(processName);
             return false;
         }
         return foregroundHandled;

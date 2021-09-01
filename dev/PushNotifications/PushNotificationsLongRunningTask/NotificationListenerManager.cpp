@@ -14,7 +14,7 @@ void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManag
 
 void NotificationListenerManager::AddListener(std::wstring processName)
 {
-    // TODO: Query the Storage to get appId
+    // TODO: Query the Storage to get appId, to be completed after Sharath's PR
     std::wstring appIdFromProcessName = processName;
 
     if (appIdFromProcessName.empty())
@@ -36,7 +36,9 @@ void NotificationListenerManager::AddListener(std::wstring processName)
 
 void NotificationListenerManager::RemoveListener(std::wstring processName)
 {
-    m_notificationListeners.erase(processName);
-
+    // To be completed after Sharath's PR
+    std::wstring appIdFromProcessName = L"appId";
     LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(processName.c_str()));
+
+    m_notificationListeners.erase(processName);
 }

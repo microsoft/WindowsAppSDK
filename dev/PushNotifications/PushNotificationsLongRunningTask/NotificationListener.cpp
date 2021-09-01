@@ -10,7 +10,7 @@ HRESULT NotificationListener::RuntimeClassInitialize(std::shared_ptr<ForegroundS
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector*/) noexcept try
 {
-    auto lock = m_lock.lock_shared();
+    auto lock = m_lock.lock_exclusive();
 
     winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
 

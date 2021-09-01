@@ -9,6 +9,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     struct PushNotificationRegistrationToken : PushNotificationRegistrationTokenT<PushNotificationRegistrationToken>
     {
         PushNotificationRegistrationToken(uint32_t const& cookie, winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& taskRegistration);
+        // Implement dummy registration token. This class will go away anyway.
+        PushNotificationRegistrationToken(uint32_t const& cookie);
         uint32_t Cookie();
         winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration TaskRegistration();
 

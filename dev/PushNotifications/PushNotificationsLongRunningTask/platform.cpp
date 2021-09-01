@@ -57,7 +57,9 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
 {
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    
+
+    // To be completed after Sharath's PR
+
     return E_NOTIMPL;
 }
 
@@ -65,8 +67,6 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterA
 {
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-
-    // TODO: Look if the process name exists in the Storage
 
     m_notificationListenerManager.AddListener(processName);
 
@@ -78,9 +78,10 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     auto lock = m_lock.lock_shared();
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    // TODO: Look if the process name exists in the Storage
-
     m_notificationListenerManager.RemoveListener(processName);
+    m_foregroundSinkManager->Remove(processName);
+
+    // TODO: Cleanup storage app entry after Sharath's PR
 
     return S_OK;
 }
@@ -90,6 +91,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
 
+    m_notificationListenerManager.AddListener(processName);
     m_foregroundSinkManager->Add(processName, sink);
     return S_OK;
 }

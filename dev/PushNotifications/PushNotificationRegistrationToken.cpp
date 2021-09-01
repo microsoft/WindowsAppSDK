@@ -11,6 +11,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationRegistrationToken::PushNotificationRegistrationToken(uint32_t const& cookie, winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration const& taskRegistration): m_cookie(cookie), m_taskRegistration(taskRegistration) { }
 
+    PushNotificationRegistrationToken::PushNotificationRegistrationToken(uint32_t const& cookie) : m_cookie(cookie), m_taskRegistration(nullptr) {};
+
     uint32_t PushNotificationRegistrationToken::Cookie()
     {
         return m_cookie;
