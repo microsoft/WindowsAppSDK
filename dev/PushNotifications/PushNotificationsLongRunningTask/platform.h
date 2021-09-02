@@ -29,7 +29,6 @@ private:
     bool m_initialized = false;
     bool m_shutdown = false;
     winrt::Windows::Storage::ApplicationDataContainer m_storage{ nullptr };
-    std::map<std::wstring, std::wstring> m_appIdMap;
 
     std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
