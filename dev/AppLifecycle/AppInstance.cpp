@@ -20,6 +20,8 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
+
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
@@ -337,20 +339,21 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                // If the contractData is empty, handle any aliased encoded launches.
                 if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
                 {
-                    if (contractData.empty())
+                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                    contractArgument = c_protocolArgumentString;
+
+                    auto index = contractData.find(c_pushPayloadAttribute);
+
+                    if (!contractData.empty() && index == 0)
                     {
-                        contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
-                        contractArgument = c_protocolArgumentString;
+                        // Command line contained a background notification payload. This is specific to unpackaged apps.
+                        tempContractData += L"&payload=";
+                        tempContractData += contractData.substr(10, contractData.size() - 11);
                     }
-                    else // Command line contained a background notification payload
-                    {
-                        kind = ExtendedActivationKind::Push;
-                        Uri pushNotificationUri{ contractData };
-                        data = winrt::Microsoft::Windows::PushNotifications::Deserialize(pushNotificationUri);
-                    }
+
+                    contractData = tempContractData;
                 }
 
                 if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)

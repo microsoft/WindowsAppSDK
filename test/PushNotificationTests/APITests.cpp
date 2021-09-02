@@ -275,7 +275,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(VerifyProtocolActivation)
         {
-            RunTestUnpackaged(L"----WindowsAppSDKPushServer:-Payload:\"<toast></toast>\"", testWaitTime());
+            RunTestUnpackaged(L"----WindowsAppRuntimePushServer:-Payload:\"<toast></toast>\"", testWaitTime());
         }
     };
 }

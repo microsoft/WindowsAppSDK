@@ -14,13 +14,13 @@ namespace winrt::Microsoft::Windows::PushNotifications
     {
         // Verify if the uri contains a background notification payload.
         // Otherwise, we expect to process the notification in a background task.
-        std::wstring uriAsString{ uri.AbsoluteUri() };
-        if (uriAsString._Starts_with(L"-payload:"))
+        for (auto const& pair : uri.QueryParsed())
         {
-            // 10 = the size of "-payload:" + the starting character of the payload
-            // 11 = 10 + the ending quote of the payload argument.
-            std::wstring payloadString = uriAsString.substr(10, uriAsString.size() - 11);
-            return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadString);
+            if (pair.Name() == L"payload")
+            {
+                std::wstring payloadAsWstring{pair.Value()};
+                return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
+            }
         }
 
         const DWORD receiveArgsTimeoutInMSec{ 2000 };
