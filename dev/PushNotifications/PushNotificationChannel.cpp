@@ -7,6 +7,7 @@
 #include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
+#include "PushNotificationTelemetry.h"
 
 namespace winrt::Windows
 {
@@ -35,10 +36,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         try
         {
             m_channel.Close();
+
+            PushNotificationTelemetry::ChannelClosedByApi(S_OK);
         }
+
         catch (...)
         {
             auto channelCloseException = hresult_error(to_hresult());
+
+            PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
+
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {
                 throw hresult_error(to_hresult());
