@@ -1,8 +1,10 @@
 ﻿#pragma once
 
-class PlatformLifetimeTimerManager
+class PlatformLifetimeManager
 {
 public:
+
+    PlatformLifetimeManager() {};
 
     void Setup();
 
@@ -10,7 +12,7 @@ public:
 
     void Wait();
 
-    void SignalWinMainEvent();
+    void SignalEvent();
 
 private:
 

@@ -2,7 +2,7 @@
 
 #include "../PushNotifications-Constants.h"
 
-#include "PlatformLifetimeTimerManager.h"
+#include "PlatformLifetimeManager.h"
 #include "ForegroundSinkManager.h"
 
 struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRunningPlatformImpl WrlFinal :
@@ -15,9 +15,9 @@ Microsoft::WRL::RuntimeClass<
 
     void Shutdown() noexcept;
 
-    void WaitForWinMainEvent();
+    void WaitForLifetimeEvent();
 
-    /* IWpnLrpPlatform functions */
+    /* INotificationsLongRunningPlatform functions */
 
     STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
 
@@ -25,10 +25,7 @@ Microsoft::WRL::RuntimeClass<
 
     STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName);
 
-    STDMETHOD(SendBackgroundNotification)(_In_ PCWSTR processName, _In_ ULONG payloadSize, _In_ byte* payload);
-
-    /* Add your functions to retrieve the platform components */
-    private:
+private:
 
     wil::srwlock m_lock;
 
@@ -36,6 +33,6 @@ Microsoft::WRL::RuntimeClass<
     bool m_shutdown = false;
 
     // Here we will define the Platform components i.e. the map wrappings
-    std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
+    PlatformLifetimeManager m_lifetimeManager{};
     ForegroundSinkManager m_foregroundSinkManager;
 };

@@ -23,22 +23,26 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
         [&]() { CoUninitialize(); });
 
     unsigned int retries = 0;
-    bool isRpcRetriableError = true;
     HRESULT hr = S_OK;
 
-    while (retries < 3 && isRpcRetriableError)
+    while (retries < 3)
     {
         try
         {
             wil::com_ptr<INotificationsLongRunningPlatform> longRunningProcessPlatform
                 { wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
-            isRpcRetriableError = false;
+            break;
         }
         catch (...)
         {
             hr = wil::ResultFromCaughtException();
-            isRpcRetriableError = isRetriableRpcError(hr);
+
+            if (!isRetriableRpcError(hr))
+            {
+                break;
+            }
+
             retries++;
         }
     }
