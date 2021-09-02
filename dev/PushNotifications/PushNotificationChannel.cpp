@@ -32,7 +32,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
-            return m_channelUri;
+            return winrt::Windows::Uri{ m_channelInfo.channelUri };
         }
     }
 
@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         else
         {
-            return m_channelExpirationTime;
+            return m_channelInfo.channelExpiryTime;
         }
     }
 
@@ -58,7 +58,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
-               PushNotifications_CloseChannel(m_appUserModelId.c_str(), m_channelId.c_str());
+               PushNotifications_CloseChannel(m_channelInfo.appUserModelId.c_str(), m_channelInfo.channelId.c_str());
             }
         }
         catch (...)

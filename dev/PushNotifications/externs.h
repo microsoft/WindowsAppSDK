@@ -10,9 +10,9 @@ inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArg
 
 struct ChannelDetails
 {
-    wil::unique_cotaskmem_string channelUri;
-    wil::unique_cotaskmem_string channelId;
-    wil::unique_cotaskmem_string appUserModelId;
+    winrt::hstring channelUri;
+    winrt::hstring channelId;
+    winrt::hstring appUserModelId;
     winrt::Windows::Foundation::DateTime channelExpiryTime;
 };
 

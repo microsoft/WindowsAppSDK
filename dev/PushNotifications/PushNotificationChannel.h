@@ -5,6 +5,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
 #include <NotificationsLongRunningProcess_h.h>
 #include "winrt/Windows.Networking.PushNotifications.h"
+#include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -16,11 +17,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel) : m_channel(channel) {};
 
-        PushNotificationChannel(hstring const& channelUri, hstring const& channelId, hstring const& appUserModelId, winrt::Windows::Foundation::DateTime const& channelExpirationTime) :
-            m_channelUri(channelUri),
-            m_channelId(channelId),
-            m_appUserModelId(appUserModelId),
-            m_channelExpirationTime(channelExpirationTime) {};
+        PushNotificationChannel(struct ChannelDetails const& channelInfo) : m_channelInfo(channelInfo) {};
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
@@ -37,10 +34,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         bool IsBackgroundTaskBuilderAvailable();
 
         const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-        winrt::Windows::Foundation::DateTime m_channelExpirationTime{};
-        winrt::Windows::Foundation::Uri m_channelUri{ nullptr };
-        winrt::hstring m_channelId;
-        winrt::hstring m_appUserModelId;
+        const struct ChannelDetails m_channelInfo{};
 
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         ULONG m_foregroundHandlerCount = 0;

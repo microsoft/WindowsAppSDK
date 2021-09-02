@@ -81,7 +81,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), remoteId, &unpackagedAppUserModelId));
     }
 
-    winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo)
+    winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
         UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
@@ -92,29 +92,27 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         HRESULT operationalCode{};
         ABI::Windows::Foundation::DateTime channelExpiryTime{};
+        wil::unique_cotaskmem_string channelId;
+        wil::unique_cotaskmem_string channelUri;
 
-        HRESULT hr = PushNotifications_CreateChannelWithRemoteIdentifier(
+        THROW_IF_FAILED(PushNotifications_CreateChannelWithRemoteIdentifier(
             appUserModelId,
             remoteId,
             &operationalCode,
-            &channelInfo.channelId,
-            &channelInfo.channelUri,
-            &channelExpiryTime);
+            &channelId,
+            &channelUri,
+            &channelExpiryTime));
 
-        /*
-           RemoteId APIs are not applicable for downlevel OS versions.
-           So we get error E_NOTIMPL and we fallback to calling into
-           Public WinRT API CreatePushNotificationChannelForApplicationAsync
-           to request for channels
-        */
-        THROW_HR_IF(hr, (hr != E_NOTIMPL) && (hr != S_OK));
-        THROW_HR_IF(operationalCode, (hr == S_OK) && (operationalCode != S_OK));
+        THROW_IF_FAILED(operationalCode);
 
         winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
-        channelInfo.appUserModelId = wil::make_cotaskmem_string(appUserModelId);
+        channelInfo.appUserModelId = winrt::hstring{ appUserModelId };
+        channelInfo.channelId = winrt::hstring{ channelId.get() };
+        channelInfo.channelUri = winrt::hstring{ channelUri.get() };
 
-        return hr;
+        return S_OK;
     }
+    CATCH_RETURN()
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
@@ -147,11 +145,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     ChannelDetails channelInfo{};
                     winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
 
+                    /*
+                    RemoteId APIs are not applicable for downlevel OS versions.
+                    So we get error E_NOTIMPL and we fallback to calling into
+                    Public WinRT API CreatePushNotificationChannelForApplicationAsync
+                    to request for channels
+                    */
+
                     if (SUCCEEDED(hr))
                     {
                         co_return winrt::make<PushNotificationCreateChannelResult>(
-                            winrt::make<PushNotificationChannel>(channelInfo.channelUri.get(), channelInfo.channelId.get(),  channelInfo.appUserModelId.get(), channelInfo.channelExpiryTime),
-                            hr,
+                            winrt::make<PushNotificationChannel>(channelInfo),
+                            S_OK,
                             PushNotificationChannelStatus::CompletedSuccess);
                     }
                     else if (hr == E_NOTIMPL)
@@ -165,6 +170,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                             winrt::make<PushNotificationChannel>(pushChannelReceived),
                             S_OK,
                             PushNotificationChannelStatus::CompletedSuccess);
+                    }
+                    else
+                    {
+                        winrt::check_hresult(hr);
                     }
                 }
                 else

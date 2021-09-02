@@ -52,11 +52,11 @@ wil::unique_cotaskmem_string NotificationsLongRunningPlatformImpl::GetAppIdentif
 {
     auto values{ m_storage.Values() };
 
-    auto it = values.begin();
-    while (it != values.end())
+    for (auto it = values.begin(); it != values.end(); it++)
     {
         winrt::hstring settingValue{ winrt::unbox_value<winrt::hstring>(it.Current().Value()) };
-        if (settingValue.c_str() == processName.c_str())
+
+        if (processName.compare(settingValue.c_str()) == 0)
         {
             return wil::make_unique_string<wil::unique_cotaskmem_string>(it.Current().Key().c_str());
         }
