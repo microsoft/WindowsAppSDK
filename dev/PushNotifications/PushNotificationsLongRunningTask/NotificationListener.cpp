@@ -1,9 +1,11 @@
 ﻿#include "pch.h"
 
-HRESULT NotificationListener::RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring processName)
+HRESULT NotificationListener::RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring appId, std::wstring processName)
 {
     m_foregroundSinkManager = foregroundSinkManager;
-    m_processName = m_processName;
+
+    m_appId = appId;
+    m_processName = processName;
 
     return S_OK;
 }
@@ -14,7 +16,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
 
-    if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_processName, payloadArray, payloadLength))
+    if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
         std::string commandLine = "----WindowsAppSDKPushServer:-Payload:\"";
         commandLine.append(reinterpret_cast<char*>(payload), payloadLength);

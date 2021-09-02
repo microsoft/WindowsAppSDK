@@ -341,15 +341,20 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             {
                 if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
                 {
+                    // Generate a basic encoded launch Uri for all Push activations.
                     std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
                     contractArgument = c_protocolArgumentString;
 
+                    // A non-empty contractData means we have a payload.
+                    // This contains a background notification. It is specific to unpackaged apps.
+                    // It requires further processing to build PushNotificationReceivedEventArgs.
+                    // For packaged apps we don't need extra processing. A basic encoded launch Uri is sufficient.
                     auto index = contractData.find(c_pushPayloadAttribute);
 
                     if (!contractData.empty() && index == 0)
                     {
-                        // Command line contained a background notification payload. This is specific to unpackaged apps.
                         tempContractData += L"&payload=";
+                        // 11 -> the size of &payload= + starting quote + ending quote.
                         tempContractData += contractData.substr(10, contractData.size() - 11);
                     }
 

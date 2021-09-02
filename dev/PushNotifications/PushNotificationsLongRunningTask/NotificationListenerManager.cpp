@@ -21,7 +21,7 @@ void NotificationListenerManager::AddListener(std::wstring appId, std::wstring p
     THROW_HR_IF(E_INVALIDARG, processName.empty());
 
     ComPtr<INotificationListener> listener;
-    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, processName));
+    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, appId, processName));
     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), listener.Get()));
 
     if (m_notificationListeners.find(appId) == std::end(m_notificationListeners))

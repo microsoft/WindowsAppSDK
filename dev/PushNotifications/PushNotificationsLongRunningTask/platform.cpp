@@ -15,7 +15,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
         return;
     }
 
-    // Schedule event signaling after 5 seconds.
+    // Schedule event signaling to happen in 5 seconds.
     // This is in case we later realize there are no apps to be tracked in the LRP.
     m_lifetimeManager.Setup();
 
@@ -45,8 +45,6 @@ void NotificationsLongRunningPlatformImpl::Shutdown() noexcept
         return;
     }
 
-    /* TODO: Shut down your components */
-
     m_shutdown = true;
 }
 
@@ -69,15 +67,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     std::wstring appId = GetAppIdentifier(processName);
     m_notificationListenerManager.AddListener(appId, processName);
 
-    if (!m_notificationListenerManager.IsEmpty())
-    {
-        m_lifetimeManager.Cancel();
-    }
+    m_lifetimeManager.Cancel();
 
     return S_OK;
 }
@@ -86,12 +81,13 @@ CATCH_RETURN()
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(_In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    m_notificationListenerManager.RemoveListener(processName);
-    m_foregroundSinkManager->Remove(processName);
+    std::wstring appId = GetAppIdentifier(processName);
+    m_notificationListenerManager.RemoveListener(appId);
+    m_foregroundSinkManager->Remove(appId);
 
-    // TODO: Remove the app from storage
+    RemoveAppIdentifier(appId);
 
     if (m_notificationListenerManager.IsEmpty())
     {
@@ -105,12 +101,13 @@ CATCH_RETURN()
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_exclusive();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     std::wstring appId = GetAppIdentifier(processName);
 
     m_notificationListenerManager.AddListener(appId, processName);
-    m_foregroundSinkManager->Add(processName, sink);
+    m_foregroundSinkManager->Add(appId, sink);
+
     return S_OK;
 }
 CATCH_RETURN()
@@ -118,14 +115,17 @@ CATCH_RETURN()
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(_In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_exclusive();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    m_foregroundSinkManager->Remove(processName);
+    std::wstring appId = GetAppIdentifier(processName);
+    m_foregroundSinkManager->Remove(appId);
+
     return S_OK;
 }
 CATCH_RETURN()
 
 // Returns a map of key-value pairs, where key is appId and value is processName.
+// It should only be called by Initialize(), which already acquired a lock.
 std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFullTrustApps()
 {
     std::map<std::wstring, std::wstring> mapOfFullTrustApps;
@@ -150,7 +150,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
 }
 
 // Code directly pasted from Sharath's PR, adjusted to return std::wstring
-std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(const std::wstring& processName)
+std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
 {
     auto values{ m_storage.Values() };
 
@@ -171,4 +171,10 @@ std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(const std::w
 
     m_storage.Values().Insert(guidStr.get(), winrt::box_value(processName.c_str()));
     return guidStr.get();
+}
+
+void NotificationsLongRunningPlatformImpl::RemoveAppIdentifier(std::wstring const& appId)
+{
+    auto values{ m_storage.Values() };
+    values.Remove(appId);
 }

@@ -132,7 +132,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    std::string PushNotificationReceivedEventArgs::Utf16ToUtf8(_In_z_ const PCWSTR utf16)
+    std::string PushNotificationReceivedEventArgs::Utf16ToUtf8(_In_z_ PCWSTR utf16)
     {
         int size_needed = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, nullptr, nullptr);
         THROW_LAST_ERROR_IF(size_needed == 0);
