@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="$WindowsAppSDKNupkgVersion$" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSDKBuildToolsNupkgVersion$" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 </Project>

@@ -16,10 +16,9 @@ void NotificationsLongRunningPlatformImpl::Initialize()
         return;
     }
 
-    // Schedule event signaling after 5 seconds. This is in case we don't have any apps to track in the LRP.
-    // If we realize that we need to persist the LRP, timer should be canceled.
-    m_shutdownTimerManager = std::make_unique<PlatformLifetimeTimerManager>();
-    m_shutdownTimerManager->Setup();
+    // Schedule event signaling after 5 seconds.
+    // This is in case we later realize there are no apps to be tracked in the LRP.
+    m_lifetimeManager.Setup();
 
     // Creates storage if needed otherwise looks up container.
     m_storage = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().CreateContainer(L"LRP", winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
@@ -42,10 +41,9 @@ void NotificationsLongRunningPlatformImpl::Shutdown() noexcept
     m_shutdown = true;
 }
 
-void NotificationsLongRunningPlatformImpl::WaitForWinMainEvent()
+void NotificationsLongRunningPlatformImpl::WaitForLifetimeEvent()
 {
-    THROW_HR_IF_NULL(E_UNEXPECTED, m_shutdownTimerManager.get());
-    m_shutdownTimerManager->Wait();
+    m_lifetimeManager.Wait();
 }
 
 wil::unique_cotaskmem_string NotificationsLongRunningPlatformImpl::GetAppIdentifier(const std::wstring& processName)
@@ -90,8 +88,8 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName)
 {
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     m_foregroundSinkManager.Add(processName, sink);
     return S_OK;
@@ -99,14 +97,9 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterForegroundActivator(_In_ PCWSTR processName)
 {
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
     auto lock = m_lock.lock_exclusive();
+    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     m_foregroundSinkManager.Remove(processName);
-    return S_OK;
-}
-
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::SendBackgroundNotification(_In_ PCWSTR processName, _In_ ULONG payloadSize, _In_ byte* payload)
-{
     return S_OK;
 }

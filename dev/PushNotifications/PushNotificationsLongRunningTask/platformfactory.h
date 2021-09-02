@@ -10,5 +10,5 @@ struct NotificationsLongRunningProcessFactory WrlFinal : public Microsoft::WRL::
         _COM_Outptr_ void** ppvObject) override;
 
 private:
-    Microsoft::WRL::ComPtr<NotificationsLongRunningPlatformImpl> m_platform;
+    winrt::com_ptr<NotificationsLongRunningPlatformImpl> m_platform;
 };
