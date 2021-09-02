@@ -30,8 +30,8 @@ private:
     bool m_shutdown = false;
 
     winrt::Windows::Storage::ApplicationDataContainer m_storage{ nullptr };
-    std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
+    PlatformLifetimeManager m_lifetimeManager{};
     ForegroundSinkManager m_foregroundSinkManager;
 
     wil::unique_cotaskmem_string GetAppIdentifier(const std::wstring& processName);
