@@ -84,13 +84,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo)
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-        UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
+        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
 
         THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
 
         THROW_HR_IF(E_INVALIDARG, (appUserModelIdSize > APPLICATION_USER_MODEL_ID_MAX_LENGTH) || (appUserModelIdSize == 0));
 
-        HRESULT operationalCode;
+        HRESULT operationalCode{};
         ABI::Windows::Foundation::DateTime channelExpiryTime{};
 
         HRESULT hr = PushNotifications_CreateChannelWithRemoteIdentifier(
@@ -173,9 +173,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
 
                     PushNotificationChannelManager channelManager{};
-                    winrt::PushNotificationChannel pushChannelReceived{ nullptr };
-
-                    pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get());
+                    winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
                     co_return winrt::make<PushNotificationCreateChannelResult>(
                         winrt::make<PushNotificationChannel>(pushChannelReceived),
