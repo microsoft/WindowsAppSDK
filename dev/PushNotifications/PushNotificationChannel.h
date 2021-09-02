@@ -3,13 +3,20 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
+#include "winrt/Windows.Networking.PushNotifications.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
     {
-        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
-        PushNotificationChannel(hstring const& channelUri, hstring const& channelId, hstring const& appUserModelId, winrt::Windows::Foundation::DateTime const& extime);
+        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel) : m_channel(channel) {};
+
+        PushNotificationChannel(hstring const& channelUri, hstring const& channelId, hstring const& appUserModelId, winrt::Windows::Foundation::DateTime const& channelExpirationTime) :
+            m_channelUri(channelUri),
+            m_channelId(channelId),
+            m_appUserModelId(appUserModelId),
+            m_channelExpirationTime(channelExpirationTime) {};
+
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
         void Close();
@@ -24,11 +31,5 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::hstring m_channelId;
         winrt::hstring m_appUserModelId;
 
-    };
-}
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
-{
-    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, implementation::PushNotificationChannel>
-    {
     };
 }

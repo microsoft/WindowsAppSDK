@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.h"
+#include <winrt\Windows.Networking.PushNotifications.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
