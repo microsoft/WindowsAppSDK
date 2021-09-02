@@ -160,6 +160,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             GUID taskClsid = details.TaskClsid();
             THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
+            auto registrationOptions = details.Options();
+
             auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(registrationOptions, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
             THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && !IsActivatorSupported(registrationOptions));
 

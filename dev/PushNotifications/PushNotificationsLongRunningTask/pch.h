@@ -34,6 +34,6 @@
 
 // LRP files
 #include "ForegroundSinkManager.h"
-#include "PlatformLifetimeTimerManager.h"
+#include "PlatformLifetimeManager.h"
 #include "NotificationListener.h"
 #include "NotificationListenerManager.h"

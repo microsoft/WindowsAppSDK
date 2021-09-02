@@ -25,7 +25,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     {
         // We have at least one app that could receive notifications.
         // Cancel the timer to persist the LRP.
-        m_shutdownTimerManager->Cancel();
+        m_lifetimeManager.Cancel();
         m_notificationListenerManager.Initialize(m_foregroundSinkManager, listOfFullTrustApps);
     }
 
