@@ -26,15 +26,16 @@ namespace WindowsAppRuntimeInstaller {
 
     static ResourcePackageInfo c_packages[] =
     {
-    #if defined(WAR_FRAMEWORK_X86_LISTENTRY)
-        WAR_FRAMEWORK_X86_LISTENTRY
+    #if defined(WAR_FRAMEWORK_ARM64_LISTENTRY)
+        WAR_FRAMEWORK_ARM64_LISTENTRY
     #endif
     #if defined(WAR_FRAMEWORK_X64_LISTENTRY)
         WAR_FRAMEWORK_X64_LISTENTRY
     #endif
-    #if defined(WAR_FRAMEWORK_ARM64_LISTENTRY)
-        WAR_FRAMEWORK_ARM64_LISTENTRY
+    #if defined(WAR_FRAMEWORK_X86_LISTENTRY)
+        WAR_FRAMEWORK_X86_LISTENTRY
     #endif
+
     #if defined(WAR_MAIN_X86_LISTENTRY)
         WAR_MAIN_X86_LISTENTRY
     #endif
@@ -44,6 +45,7 @@ namespace WindowsAppRuntimeInstaller {
     #if defined(WAR_MAIN_ARM64_LISTENTRY)
         WAR_MAIN_ARM64_LISTENTRY
     #endif
+
     #if defined(WAR_SINGLETON_X86_LISTENTRY)
         WAR_SINGLETON_X86_LISTENTRY
     #endif
@@ -53,6 +55,7 @@ namespace WindowsAppRuntimeInstaller {
     #if defined(WAR_SINGLETON_ARM64_LISTENTRY)
         WAR_SINGLETON_ARM64_LISTENTRY
     #endif
+
     #if defined(WAR_DDLM_X86_LISTENTRY)
         WAR_DDLM_X86_LISTENTRY
     #endif
