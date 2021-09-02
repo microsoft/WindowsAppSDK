@@ -178,9 +178,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
                 THROW_IF_FAILED(notificationPlatform->RegisterActivator(processName.get()));
-
-                PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Options());
-                return PushNotificationRegistrationToken{ 0 };
             }
 
             DWORD cookie = 0;

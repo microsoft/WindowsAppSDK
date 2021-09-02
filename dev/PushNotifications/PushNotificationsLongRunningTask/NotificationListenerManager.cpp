@@ -1,44 +1,50 @@
 ﻿#include "pch.h"
 
 using namespace Microsoft::WRL;
+using namespace ::ABI::Microsoft::Internal::PushNotifications;
 
-void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::vector<std::wstring>& processNameList)
+void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::map<std::wstring, std::wstring>& appIdList)
 {
     m_foregroundSinkManager = foregroundSinkManager;
 
-    for (std::wstring& processName : processNameList)
+    for (auto appData : appIdList)
     {
-        AddListener(processName);
+        AddListener(appData.first, appData.second);
     }
 }
 
-void NotificationListenerManager::AddListener(std::wstring processName)
+void NotificationListenerManager::AddListener(std::wstring appId, std::wstring processName)
 {
-    // TODO: Query the Storage to get appId, to be completed after Sharath's PR
-    std::wstring appIdFromProcessName = processName;
+    auto lock = m_lock.lock_exclusive();
 
-    if (appIdFromProcessName.empty())
+    THROW_HR_IF(E_INVALIDARG, appId.empty());
+    THROW_HR_IF(E_INVALIDARG, processName.empty());
+
+    ComPtr<INotificationListener> listener;
+    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, processName));
+    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), listener.Get()));
+
+    if (m_notificationListeners.find(appId) == std::end(m_notificationListeners))
     {
-        // TODO: Get a GUID as AppId, put it in the Storage. Pass an empty guid as remoteId.
-        winrt::guid remoteId;
-        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(L"SomeAppIdentifier", remoteId));
-    }
-
-    ComPtr<NotificationListener> listener;
-    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, appIdFromProcessName));
-    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appIdFromProcessName.c_str(), listener.Get()));
-
-    if (m_notificationListeners.find(processName) == std::end(m_notificationListeners))
-    {
-        m_notificationListeners.insert({ processName, listener });
+        AgileRef agileListener;
+        THROW_IF_FAILED(AsAgile(listener.Get(), &agileListener));
+        m_notificationListeners.insert({ appId, agileListener });
     }
 }
 
-void NotificationListenerManager::RemoveListener(std::wstring processName)
+void NotificationListenerManager::RemoveListener(std::wstring appId)
 {
-    // To be completed after Sharath's PR
-    std::wstring appIdFromProcessName = L"appId";
-    LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(processName.c_str()));
+    auto lock = m_lock.lock_exclusive();
 
-    m_notificationListeners.erase(processName);
+    THROW_HR_IF(E_INVALIDARG, appId.empty());
+
+    LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appId.c_str()));
+
+    m_notificationListeners.erase(appId);
+}
+
+bool NotificationListenerManager::IsEmpty()
+{
+    auto lock = m_lock.lock_shared();
+    return m_notificationListeners.empty();
 }

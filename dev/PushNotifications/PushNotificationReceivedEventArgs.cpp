@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_rawNotificationPayload(BuildPayload(payload, length)),
         m_unpackagedAppScenario(true) {}
 
-    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring& payload) :
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring const& payload) :
         m_rawNotificationPayload(BuildPayload(payload)),
         m_unpackagedAppScenario(true) {}
 
@@ -53,7 +53,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return { payload, payload + (length * sizeof(uint8_t)) };
     }
 
-    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring& payload)
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring const& payload)
     {
         std::string payloadToSimpleString = Utf16ToUtf8(payload.c_str());
 
@@ -132,7 +132,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    std::string PushNotificationReceivedEventArgs::Utf16ToUtf8(_In_z_ const wchar_t* utf16)
+    std::string PushNotificationReceivedEventArgs::Utf16ToUtf8(_In_z_ const PCWSTR utf16)
     {
         int size_needed = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, nullptr, nullptr);
         THROW_LAST_ERROR_IF(size_needed == 0);

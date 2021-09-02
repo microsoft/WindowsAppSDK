@@ -25,7 +25,10 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
 private:
 
-    std::vector<std::wstring> GetListOfFullTrustApps();
+    std::map<std::wstring, std::wstring> GetFullTrustApps();
+    std::wstring GetAppIdentifier(const std::wstring& processName);
+
+    winrt::Windows::Storage::ApplicationDataContainer m_storage{ nullptr };
 
     wil::srwlock m_lock;
 

@@ -3,7 +3,7 @@
 HRESULT NotificationListener::RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring processName)
 {
     m_foregroundSinkManager = foregroundSinkManager;
-    m_processName = processName;
+    m_processName = m_processName;
 
     return S_OK;
 }
@@ -20,10 +20,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
         commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
         commandLine.append("\"");
 
+        std::string processNameAsUtf8String = ConvertProcessNameToUtf8String();
+
         SHELLEXECUTEINFOA shellExecuteInfo{};
         shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
         shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-        shellExecuteInfo.lpFile = "processName";
+        shellExecuteInfo.lpFile = processNameAsUtf8String.c_str();
         shellExecuteInfo.lpParameters = commandLine.c_str();
 
         shellExecuteInfo.nShow = SW_NORMAL;
@@ -37,3 +39,15 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
     return S_OK;
 }
 CATCH_RETURN()
+
+std::string NotificationListener::ConvertProcessNameToUtf8String()
+{
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, m_processName.c_str(), -1, NULL, 0, nullptr, nullptr);
+    THROW_LAST_ERROR_IF(size_needed == 0);
+
+    // size_needed minus the null character
+    std::string utf8(size_needed - 1, 0);
+    int size = WideCharToMultiByte(CP_UTF8, 0, m_processName.c_str(), size_needed - 1, &utf8[0], size_needed - 1, nullptr, nullptr);
+    THROW_LAST_ERROR_IF(size == 0);
+    return utf8;
+}
