@@ -151,14 +151,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Microsoft.WindowsAppRuntime</TargetName>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</IncludePath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>Microsoft.WindowsAppRuntime</TargetName>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</IncludePath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -216,7 +212,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(SolutionDir)common;D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -235,7 +231,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(SolutionDir)common;D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>

@@ -106,15 +106,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</IncludePath>
-    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
@@ -161,7 +158,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL;D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -196,7 +193,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL;D:\WindowsAppSDK\packages\Microsoft.FrameworkUdk.x86fre.10.0.22431.1002-210816-1731.ni-release-svc-reunion2110\include\FrameworkUdk</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
