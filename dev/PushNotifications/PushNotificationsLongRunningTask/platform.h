@@ -5,11 +5,8 @@
 #include "PlatformLifetimeManager.h"
 #include "ForegroundSinkManager.h"
 
-struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRunningPlatformImpl WrlFinal :
-Microsoft::WRL::RuntimeClass<
-    Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-    INotificationsLongRunningPlatform,
-    Microsoft::WRL::FtmBase>
+struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRunningPlatformImpl:
+    winrt::implements<NotificationsLongRunningPlatformImpl, INotificationsLongRunningPlatform>
 {
     void Initialize();
 
