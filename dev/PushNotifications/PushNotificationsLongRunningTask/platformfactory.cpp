@@ -9,7 +9,7 @@ using namespace Microsoft::WRL;
 
 HRESULT NotificationsLongRunningProcessFactory::RuntimeClassInitialize() noexcept try
 {
-    m_platform = Microsoft::WRL::Make<NotificationsLongRunningPlatformImpl>();
+    m_platform = winrt::make_self<NotificationsLongRunningPlatformImpl>();
     m_platform->Initialize();
 
     return S_OK;
@@ -21,7 +21,7 @@ IFACEMETHODIMP NotificationsLongRunningProcessFactory::CreateInstance(
     _In_ REFIID /*riid*/,
     _COM_Outptr_ void** obj)
 {
-    *obj = m_platform.Get();
+    *obj = m_platform.get();
     // Add one ref per platform instance request. Deref occurs automatically.
     m_platform->AddRef();
 

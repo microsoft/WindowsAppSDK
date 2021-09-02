@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
@@ -9,6 +9,8 @@
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include "externs.h"
+#include "PushNotificationTelemetry.h"
+
 
 namespace winrt::Windows
 {
@@ -40,10 +42,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         try
         {
             m_channel.Close();
+
+            PushNotificationTelemetry::ChannelClosedByApi(S_OK);
         }
+
         catch (...)
         {
             auto channelCloseException = hresult_error(to_hresult());
+
+            PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
+
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {
                 throw hresult_error(to_hresult());
