@@ -24,19 +24,6 @@ namespace winrt::Microsoft
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
-
-    PushNotificationChannel::PushNotificationChannel(hstring const& channelUri,
-        hstring const& channelId,
-        hstring const& appUserModelId,
-        winrt::Windows::Foundation::DateTime const& channelExpirationTime)
-    {
-        m_channelUri = winrt::Windows::Uri{ channelUri };
-        m_channelExpirationTime = channelExpirationTime;
-        m_channelId = channelId;
-        m_appUserModelId = appUserModelId;
-    }
-
     winrt::Windows::Uri PushNotificationChannel::Uri()
     {
         if (m_channel)

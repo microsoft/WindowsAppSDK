@@ -4,6 +4,7 @@
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
 #include <NotificationsLongRunningProcess_h.h>
+#include "winrt/Windows.Networking.PushNotifications.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -13,9 +14,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink>
     {
-        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
+        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel) : m_channel(channel) {};
 
-        PushNotificationChannel(hstring const& channelUri, hstring const& channelId, hstring const& appUserModelId, winrt::Windows::Foundation::DateTime const& extime);
+        PushNotificationChannel(hstring const& channelUri, hstring const& channelId, hstring const& appUserModelId, winrt::Windows::Foundation::DateTime const& channelExpirationTime) :
+            m_channelUri(channelUri),
+            m_channelId(channelId),
+            m_appUserModelId(appUserModelId),
+            m_channelExpirationTime(channelExpirationTime) {};
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
@@ -40,12 +45,5 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
         ULONG m_foregroundHandlerCount = 0;
         wil::srwlock m_lock;
-    };
-}
-
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
-{
-    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, implementation::PushNotificationChannel>
-    {
     };
 }

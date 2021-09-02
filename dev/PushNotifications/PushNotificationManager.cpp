@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
-    bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
+    bool IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
         {
@@ -64,25 +64,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    void PushNotificationManager::RegisterUnpackagedApplicationHelper(
+    void RegisterUnpackagedApplicationHelper(
         const winrt::guid& remoteId,
         _Out_ wil::unique_cotaskmem_string &unpackagedAppUserModelId)
     {
-        wchar_t processName[1024];
-        THROW_HR_IF(ERROR_FILE_NOT_FOUND, GetModuleFileNameExW(GetCurrentProcess(), NULL, processName, sizeof(processName) / sizeof(processName[0])) == 0);
-
         THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
         auto scopeExit = wil::scope_exit(
             [&]() { CoUninitialize(); });
 
-        wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-            wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
-        winrt::check_hresult(notificationPlatform->RegisterFullTrustApplication(processName, remoteId, &unpackagedAppUserModelId));
+        wil::unique_cotaskmem_string processName;
+        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+        THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), remoteId, &unpackagedAppUserModelId));
     }
 
-    winrt::hresult PushNotificationManager::CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo)
+    winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo)
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
         UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
@@ -92,7 +91,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(E_INVALIDARG, (appUserModelIdSize > APPLICATION_USER_MODEL_ID_MAX_LENGTH) || (appUserModelIdSize == 0));
 
         HRESULT operationalCode;
-        ABI::Windows::Foundation::DateTime channelexpirytime{};
+        ABI::Windows::Foundation::DateTime channelExpiryTime{};
 
         HRESULT hr = PushNotifications_CreateChannelWithRemoteIdentifier(
             appUserModelId,
@@ -100,7 +99,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             &operationalCode,
             &channelInfo.channelId,
             &channelInfo.channelUri,
-            &channelexpirytime);
+            &channelExpiryTime);
 
         /*
            RemoteId APIs are not applicable for downlevel OS versions.
@@ -111,7 +110,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(hr, (hr != E_NOTIMPL) && (hr != S_OK));
         THROW_HR_IF(operationalCode, (hr == S_OK) && (operationalCode != S_OK));
 
-        winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelexpirytime);
+        winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
         channelInfo.appUserModelId = wil::make_cotaskmem_string(appUserModelId);
 
         return hr;
@@ -146,7 +145,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 if (IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
                 {
                     ChannelDetails channelInfo{};
-                    hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
+                    winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
 
                     if (SUCCEEDED(hr))
                     {
@@ -331,7 +330,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
     }
 
-    bool PushNotificationManager::IsBackgroundTaskBuilderAvailable()
+    bool IsBackgroundTaskBuilderAvailable()
     {
         static bool hasSetTaskEntrypoint = HasBackgroundTaskEntryPointClsid();
         return hasSetTaskEntrypoint;

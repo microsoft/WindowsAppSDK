@@ -34,13 +34,10 @@ Microsoft::WRL::RuntimeClass<
 
     bool m_initialized = false;
     bool m_shutdown = false;
-    std::map<std::wstring, std::wstring> m_appIdMap;
-
+    winrt::Windows::Storage::ApplicationDataContainer m_storage{ nullptr };
     std::unique_ptr<PlatformLifetimeTimerManager> m_shutdownTimerManager;
 
     ForegroundSinkManager m_foregroundSinkManager;
 
-    void GetAppIdentifier(std::wstring processName);
-
-    void AddToRegistry(const std::wstring& processName, const std::wstring appId);
+    wil::unique_cotaskmem_string GetAppIdentifier(const std::wstring& processName);
 };
