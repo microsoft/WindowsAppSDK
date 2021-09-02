@@ -13,12 +13,6 @@
 #pragma warning(disable : 4267)
 #endif
 
-#ifndef DOWNLEVEL_PRIOR_TO_WIN8
-#include <nt.h>
-#include <ntrtl.h>
-#include <nturtl.h>
-#endif
-
 #include "mrm/BaseInternal.h"
 #include "mrm/readers/BaseFile.h"
 #include "mrm/readers/MrmManagers.h"
