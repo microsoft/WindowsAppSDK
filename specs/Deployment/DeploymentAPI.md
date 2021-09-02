@@ -99,11 +99,17 @@ if (!status.IsOK())
 # API Details
 
 ```c#
-namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
+namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK
 {
     /// Represents the current Deployment status of the WindowsAppRuntime
+    [experimental]
     runtimeclass DeploymentStatus
     {
+        DeploymentStatus(
+            Boolean isOK,
+            Boolean packageInstallRequired,
+            HRESULT extendedError);
+
         /// Returns True if WindowsAppRuntime has all required packages at equal or greater version
         /// than the current framework requires.
         Boolean IsOK{ get; };
@@ -111,21 +117,23 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         /// Returns True if a Package install is required the WindowsAppRuntime to be in a good
         /// state.
         Boolean PackageInstallRequired{ get; };
-
+ 
         /// Returns the first encountered error if there was an error initializing or getting the status,
         /// or S_OK if no error.
         HRESULT ExtendedError{ get; };
     }
 
     /// Used to query deployment information for WindowsAppRuntime
+    [experimental]
     static runtimeclass DeploymentManager
     {
-        /// Returns the current deployment status of Windows App Runtime.
-        static DeploymentStatus GetStatus();
+        /// Returns the current deployment status of Windows App Runtime package full name provided.
+        /// Requires that the package full name provided exists for the user.
+        static DeploymentStatus GetStatus(String packageFullName);
 
-        /// Checks the status of the WindowsAppRuntime and attempts to register any packages
-        /// that can be registered. 
-        static DeploymentStatus Initialize();
+        /// Checks the status of the Windows App Runtime and attempts to register any packages
+        /// that are missing that can be registered.
+        static DeploymentStatus Initialize(String packageFullName);
     }
 }
 ```
