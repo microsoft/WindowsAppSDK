@@ -20,9 +20,11 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentStatus.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentStatus.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PackageInfo.cpp" />
   </ItemGroup>
 </Project>

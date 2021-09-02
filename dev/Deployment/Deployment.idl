@@ -30,10 +30,10 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK
     static runtimeclass DeploymentManager
     {
         /// Returns the current deployment status of Windows App Runtime.
-        static DeploymentStatus GetStatus();
+        static DeploymentStatus GetStatus(String packageFullName);
 
         /// Checks the status of the WindowsAppRuntime and attempts to register any packages
         /// that can be registered. 
-        static DeploymentStatus Initialize();
+        static DeploymentStatus Initialize(String packageFullName);
     }
 }

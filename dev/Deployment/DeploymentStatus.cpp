@@ -6,10 +6,22 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation
 {
-    DeploymentStatus::DeploymentStatus(bool const isOK, bool const packageInstallRequired, winrt::hresult const& extendedError) :
+    DeploymentStatus::DeploymentStatus(bool isOK, bool packageInstallRequired, winrt::hresult const& extendedError) :
         m_isOK(isOK),
         m_packageInstallRequired(packageInstallRequired),
         m_extendedError(extendedError)
     {
+    }
+    bool DeploymentStatus::IsOK()
+    {
+        return m_isOK;
+    }
+    bool DeploymentStatus::PackageInstallRequired()
+    {
+        return m_packageInstallRequired;
+    }
+    winrt::hresult DeploymentStatus::ExtendedError()
+    {
+        return m_extendedError;
     }
 }
