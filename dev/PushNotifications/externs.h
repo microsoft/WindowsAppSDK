@@ -14,7 +14,6 @@ struct ChannelDetails
     wil::unique_cotaskmem_string channelId;
     wil::unique_cotaskmem_string appUserModelId;
     winrt::Windows::Foundation::DateTime channelExpiryTime;
-    winrt::hresult hr;
 };
 
 inline HRESULT GetCurrentProcessPath(wil::unique_cotaskmem_string& processName)
