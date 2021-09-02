@@ -255,12 +255,6 @@
     <VCLibsDebugConfigName Condition="'$(Configuration)' == 'Debug'">.Debug</VCLibsDebugConfigName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppSDK">
-      <HintPath>$(OutDir)\..\WindowsAppSDK_DLL\Microsoft.Windows.ApplicationModel.WindowsAppSDK.winmd</HintPath>
-      <IsWinMDFile>true</IsWinMDFile>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <CopyFileToFolders Include="..\Deployment\Deployment-AppxManifest.xml">
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(TargetDir)</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(TargetDir)</DestinationFolders>
@@ -277,10 +271,10 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dev\WindowsAppSDK_BootstrapDLL\WindowsAppSDK_BootstrapDLL.vcxproj">
-      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
+    <ProjectReference Include="..\..\dev\WindowsAppRuntime_DLL\WindowsAppRuntime_DLL.vcxproj">
+      <Project>{b73ad907-6164-4294-88fb-f3c9c10da1f1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\DynamicDependency\data\Microsoft.WindowsAppSDK.Framework\Microsoft.WindowsAppSDK.Framework.vcxproj">
+    <ProjectReference Include="..\DynamicDependency\data\Microsoft.WindowsAppRuntime.Framework\Microsoft.WindowsAppRuntime.Framework.vcxproj">
       <Project>{9c1a6c58-52d6-4514-9120-5c339c5df4be}</Project>
     </ProjectReference>
   </ItemGroup>
