@@ -69,10 +69,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         const winrt::guid& remoteId,
         _Out_ wil::unique_cotaskmem_string &unpackagedAppUserModelId)
     {
-        THROW_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
-
-        auto scopeExit = wil::scope_exit(
-            [&]() { CoUninitialize(); });
+        auto coInitialize = wil::CoInitializeEx();
 
         auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
