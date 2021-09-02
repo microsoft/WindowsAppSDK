@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
   <TemplateData>
     <DefaultName>CustomControl.cpp</DefaultName>
-    <Name>Custom Control (WinUI 3)</Name>
-    <Description>A custom control for apps based on the Windows UI Library (WinUI 3).</Description>
+    <Name ID="1017" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1019" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Neutral.CppWinRT.TemplatedControl.ico</Icon>
     <ProjectType>VC</ProjectType>
     <TemplateID>WinUI.Neutral.CppWinRT.TemplatedControl</TemplateID>
@@ -30,11 +30,9 @@
     <FullClassName>Microsoft.VisualStudio.WinRT.TemplateWizards.TemplatedControl.Wizard</FullClassName>
   </WizardExtension>
   <WizardData>
-    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
+    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
       <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK.Foundation" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
-      <package id="Microsoft.WindowsAppSDK.WinUI" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
   </WizardData>
 </VSTemplate>

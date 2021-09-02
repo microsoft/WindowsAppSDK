@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build" IgnorableNamespaces="uap build">
-  <Identity Name="Microsoft.WindowsAppSDK.0.5" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
+  <Identity Name="Microsoft.WindowsAppRuntime.1.0" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>Microsoft.WindowsAppSDK.0.5</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.1.0</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Description>Microsoft Windows App SDK Framework</Description>
+    <Description>Microsoft Windows App Runtime Framework</Description>
     <Logo>logo.png</Logo>
   </Properties>
   <Resources>
@@ -17,23 +17,23 @@
   <Extensions>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Microsoft.ApplicationModel.Resources.dll</Path>
-          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.KnownResourceQualifierName" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceCandidate" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceLoader" ThreadingModel="both" />
-          <ActivatableClass ActivatableClassId="Microsoft.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
+        <Path>Microsoft.Windows.ApplicationModel.Resources.dll</Path>
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.ResourceLoader" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.Resources.ResourceManager" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Microsoft.WindowsAppSDK.dll</Path>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
           <!-- Dynamic Dependency -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
-          
+
           <!-- Environment Manager -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 

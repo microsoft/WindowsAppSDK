@@ -6,17 +6,32 @@
         <RestoreSources Condition="'$(RestoreSources)'==''">
             https://pkgs.dev.azure.com/microsoft/ProjectReunion/_packaging/Project.Reunion.nuget.internal/nuget/v3/index.json
         </RestoreSources>
-        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210211.2</CppWinRTVersion>
-        <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">0.5.7</WindowsAppSdkVersion>
+        <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210806.1</CppWinRTVersion>
+        <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.20348.19</WindowsSDKBuildToolsVersion>
+        <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-experimental1</WindowsAppSdkVersion>
+        <Deployment Condition="'$(Deployment)' == '' ">Standalone</Deployment>
+    </PropertyGroup>
+
+    <!-- Useful folder paths -->
+    <PropertyGroup>
+        <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
+        <VSIXRootDir>$(MSBuildThisFileDirectory)</VSIXRootDir>
+        <ExtensionDir>$(VSIXRootDir)Extension\</ExtensionDir>
+        <ItemTemplatesDir>$(VSIXRootDir)ItemTemplates\</ItemTemplatesDir>
+        <ProjectTemplatesDir>$(VSIXRootDir)ProjectTemplates\</ProjectTemplatesDir>
     </PropertyGroup>
 
     <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
         <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
         <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
         <VSIXBuild>true</VSIXBuild>
         <RuntimeIdentifiers>win</RuntimeIdentifiers>
+        <SolutionDir Condition="!Exists('$(SolutionDir)')">$(MSBuildThisFileDirectory)</SolutionDir>
         <BuildOutput Condition="'$(BuildOutput)' == ''">$(SolutionDir)BuildOutput\</BuildOutput>
-        <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\</BuildOutputRoot>
+        <BuildOutputRoot>$(BuildOutput)obj\$(Platform)$(Configuration)\$(Deployment)\</BuildOutputRoot>
         <BaseIntermediateOutputPath>$(BuildOutputRoot)$(MSBuildProjectName)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <OutputPath>$(IntermediateOutputPath)</OutputPath>

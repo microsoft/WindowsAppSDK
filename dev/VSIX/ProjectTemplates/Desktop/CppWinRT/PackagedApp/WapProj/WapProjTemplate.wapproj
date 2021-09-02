@@ -80,7 +80,7 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$ext_WindowsAppSDKNupkgVersion$]">
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="[$ext_WindowsAppSDKWinUINupkgVersion$]">
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$ext_WindowsSDKBuildToolsNupkgVersion$]">
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
   </ItemGroup>

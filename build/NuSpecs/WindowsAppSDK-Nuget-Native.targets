@@ -2,7 +2,7 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.Windows.ApplicationModel.Resources.targets"/>
 
   <PropertyGroup>
     <Native-Platform Condition="'$(Platform)' == 'Win32'">x86</Native-Platform>
@@ -10,37 +10,44 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.AppLifecycle.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
-  
+
     <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.System.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+    <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.System.Power.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.PushNotifications.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.PushNotifications.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.WindowsAppSDK.dll</Implementation>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.ApplicationModel.Resources.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.Resources.winmd">
       <Private>false</Private>
-      <Implementation>Microsoft.ApplicationModel.Resources.dll</Implementation>
+      <Implementation>Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
     </Reference>
   </ItemGroup>
 
