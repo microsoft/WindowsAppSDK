@@ -226,7 +226,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="platformfactory.cpp" />
-    <ClCompile Include="PlatformLifetimeTimerManager.cpp" />
+    <ClCompile Include="PlatformLifetimeManager.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -234,7 +234,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="platformfactory.h" />
-    <ClInclude Include="PlatformLifetimeTimerManager.h" />
+    <ClInclude Include="PlatformLifetimeManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

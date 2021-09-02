@@ -1,20 +1,16 @@
 ﻿#include "pch.h"
 
-#include "PlatformLifetimeTimerManager.h"
+#include "PlatformLifetimeManager.h"
 
-void PlatformLifetimeTimerManager::Setup()
+void PlatformLifetimeManager::Setup()
 {
     auto lock = m_lock.lock_exclusive();
 
     m_timer.reset(CreateThreadpoolTimer(
         [](PTP_CALLBACK_INSTANCE, _Inout_ PVOID shutdownTimerManagerPtr, _Inout_ PTP_TIMER)
         {
-            PlatformLifetimeTimerManager* shutdownTimerManager = reinterpret_cast<PlatformLifetimeTimerManager*>(shutdownTimerManagerPtr);
-
-            if (shutdownTimerManager != nullptr)
-            {
-                shutdownTimerManager->SignalWinMainEvent();
-            }
+            PlatformLifetimeManager* shutdownTimerManager = reinterpret_cast<PlatformLifetimeManager*>(shutdownTimerManagerPtr);
+            shutdownTimerManager->SignalEvent();
         },
         this,
         nullptr));
@@ -26,20 +22,22 @@ void PlatformLifetimeTimerManager::Setup()
     *reinterpret_cast<PLONGLONG>(&dueTime) = -static_cast<LONGLONG>(5000 * 10000);
 
     SetThreadpoolTimer(m_timer.get(), &dueTime, 0, 0);
+
+    m_event.ResetEvent();
 }
 
-void PlatformLifetimeTimerManager::Cancel()
+void PlatformLifetimeManager::Cancel()
 {
     auto lock = m_lock.lock_exclusive();
     m_timer.reset();
 }
 
-void PlatformLifetimeTimerManager::Wait()
+void PlatformLifetimeManager::Wait()
 {
     m_event.wait();
 }
 
-void PlatformLifetimeTimerManager::SignalWinMainEvent()
+void PlatformLifetimeManager::SignalEvent()
 {
     m_event.SetEvent();
 }
