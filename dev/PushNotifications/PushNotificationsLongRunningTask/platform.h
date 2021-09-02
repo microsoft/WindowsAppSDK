@@ -16,7 +16,7 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
     /* INotificationsLongRunningPlatform functions */
 
-    STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
+    STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept;
 
     STDMETHOD(RegisterForegroundActivator)(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName);
 
@@ -29,7 +29,10 @@ private:
     bool m_initialized = false;
     bool m_shutdown = false;
 
-    // Here we will define the Platform components i.e. the map wrappings
+    winrt::Windows::Storage::ApplicationDataContainer m_storage{ nullptr };
+
     PlatformLifetimeManager m_lifetimeManager{};
     ForegroundSinkManager m_foregroundSinkManager;
+
+    wil::unique_cotaskmem_string GetAppIdentifier(const std::wstring& processName);
 };

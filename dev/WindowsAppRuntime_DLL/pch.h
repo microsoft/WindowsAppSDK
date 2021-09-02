@@ -47,3 +47,5 @@
 
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
+
+#define MIDL_NS_PREFIX

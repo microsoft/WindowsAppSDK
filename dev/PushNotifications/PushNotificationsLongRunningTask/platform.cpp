@@ -4,6 +4,7 @@
 
 #include "platform.h"
 #include "platformfactory.h"
+#include <FrameworkUdk/PushNotifications.h>
 
 void NotificationsLongRunningPlatformImpl::Initialize()
 {
@@ -19,7 +20,8 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     // This is in case we later realize there are no apps to be tracked in the LRP.
     m_lifetimeManager.Setup();
 
-    /* TODO: Verify registry and UDK list and make sure we have apps to be tracked */
+    // Creates storage if needed otherwise looks up container.
+    m_storage = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().CreateContainer(L"LRP", winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
 
     /* TODO: Load platform components */
 
@@ -44,14 +46,45 @@ void NotificationsLongRunningPlatformImpl::WaitForLifetimeEvent()
     m_lifetimeManager.Wait();
 }
 
-// Example of one function. We will add more as we need them.
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(_In_ PCWSTR /*processName*/, _In_ GUID /*remoteId*/, _Out_ GUID* /*appId*/) noexcept
+wil::unique_cotaskmem_string NotificationsLongRunningPlatformImpl::GetAppIdentifier(const std::wstring& processName)
 {
-    auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
-    
-    return E_NOTIMPL;
+    auto values{ m_storage.Values() };
+
+    for (auto it = values.begin(); it != values.end(); it++)
+    {
+        winrt::hstring settingValue{ winrt::unbox_value<winrt::hstring>(it.Current().Value()) };
+
+        if (processName.compare(settingValue.c_str()) == 0)
+        {
+            return wil::make_unique_string<wil::unique_cotaskmem_string>(it.Current().Key().c_str());
+        }
+    }
+
+    GUID guidReference;
+    THROW_IF_FAILED(CoCreateGuid(&guidReference));
+
+    wil::unique_cotaskmem_string guidStr;
+    THROW_IF_FAILED(StringFromCLSID(guidReference, &guidStr));
+
+    m_storage.Values().Insert(guidStr.get(), winrt::box_value(processName.c_str()));
+    return guidStr;
 }
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
+    _In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept try
+{
+    auto lock = m_lock.lock_exclusive();
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    wil::unique_cotaskmem_string appIdentifier = GetAppIdentifier(processName);
+
+    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.get(), remoteId));
+
+    *appId = appIdentifier.get();
+
+    return S_OK;
+}
+CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterForegroundActivator(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName)
 {

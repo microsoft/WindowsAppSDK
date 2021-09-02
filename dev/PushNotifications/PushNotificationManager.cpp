@@ -17,6 +17,8 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include <frameworkudk/pushnotifications.h>
+#include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationTelemetry.h"
 
 using namespace std::literals;
@@ -47,7 +49,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
-    bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
+    bool IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
         {
@@ -63,16 +65,60 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
+    void RegisterUnpackagedApplicationHelper(
+        const winrt::guid& remoteId,
+        _Out_ wil::unique_cotaskmem_string &unpackagedAppUserModelId)
+    {
+        auto coInitialize = wil::CoInitializeEx();
+
+        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+        wil::unique_cotaskmem_string processName;
+        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+        THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), remoteId, &unpackagedAppUserModelId));
+    }
+
+    winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
+    {
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+
+        THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+
+        THROW_HR_IF(E_INVALIDARG, (appUserModelIdSize > APPLICATION_USER_MODEL_ID_MAX_LENGTH) || (appUserModelIdSize == 0));
+
+        HRESULT operationalCode{};
+        ABI::Windows::Foundation::DateTime channelExpiryTime{};
+        wil::unique_cotaskmem_string channelId;
+        wil::unique_cotaskmem_string channelUri;
+
+        THROW_IF_FAILED(PushNotifications_CreateChannelWithRemoteIdentifier(
+            appUserModelId,
+            remoteId,
+            &operationalCode,
+            &channelId,
+            &channelUri,
+            &channelExpiryTime));
+
+        THROW_IF_FAILED(operationalCode);
+
+        winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
+        channelInfo.appUserModelId = winrt::hstring{ appUserModelId };
+        channelInfo.channelId = winrt::hstring{ channelId.get() };
+        channelInfo.channelUri = winrt::hstring{ channelUri.get() };
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
         try
         {
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
-            // API supports channel requests only for packaged applications for v0.8 version
-            THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
-
-            auto cancellation{ co_await winrt::get_cancellation_token() };
+			auto cancellation{ co_await winrt::get_cancellation_token() };
 
             cancellation.enable_propagation(true);
 
@@ -94,20 +140,60 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 try
                 {
-                    PushNotificationChannelManager channelManager{};
-                    winrt::PushNotificationChannel pushChannelReceived{ nullptr };
+                    if (IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+                    {
+                        ChannelDetails channelInfo{};
+                        winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
 
-                    pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
+                        /*
+                        RemoteId APIs are not applicable for downlevel OS versions.
+                        So we get error E_NOTIMPL and we fallback to calling into
+                        Public WinRT API CreatePushNotificationChannelForApplicationAsync
+                        to request for channels
+                        */
 
-                    PushNotificationTelemetry::ChannelRequestedByApi(
-                        S_OK,
-                        AppModel::Identity::IsPackagedProcess(),
-                        remoteId);
+                        if (SUCCEEDED(hr))
+                        {
+                            co_return winrt::make<PushNotificationCreateChannelResult>(
+                                winrt::make<PushNotificationChannel>(channelInfo),
+                                S_OK,
+                                PushNotificationChannelStatus::CompletedSuccess);
+                        }
+                        else if (hr == E_NOTIMPL)
+                        {
+                            PushNotificationChannelManager channelManager{};
+                            winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
-                    co_return winrt::make<PushNotificationCreateChannelResult>(
-                        winrt::make<PushNotificationChannel>(pushChannelReceived),
-                        S_OK,
-                        PushNotificationChannelStatus::CompletedSuccess);
+                            pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
+
+                            PushNotificationTelemetry::ChannelRequestedByApi(
+                                S_OK,
+                                AppModel::Identity::IsPackagedProcess(),
+                                remoteId);
+
+                            co_return winrt::make<PushNotificationCreateChannelResult>(
+                                winrt::make<PushNotificationChannel>(pushChannelReceived),
+                                S_OK,
+                                PushNotificationChannelStatus::CompletedSuccess);
+                        }
+                        else
+                        {
+                            winrt::check_hresult(hr);
+                        }
+                    }
+                    else
+                    {
+                        wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                        RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
+
+                        PushNotificationChannelManager channelManager{};
+                        winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
+
+                        co_return winrt::make<PushNotificationCreateChannelResult>(
+                            winrt::make<PushNotificationChannel>(pushChannelReceived),
+                            S_OK,
+                            PushNotificationChannelStatus::CompletedSuccess);
+                    }
                 }
                 catch (...)
                 {
@@ -138,7 +224,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 co_await winrt::resume_after(backOffTime);
             }
         }
-
         catch (...)
         {
             HRESULT hrError = wil::ResultFromCaughtException();
@@ -301,7 +386,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
     }
 
-    bool PushNotificationManager::IsBackgroundTaskBuilderAvailable()
+    bool IsBackgroundTaskBuilderAvailable()
     {
         static bool hasSetTaskEntrypoint = HasBackgroundTaskEntryPointClsid();
         return hasSetTaskEntrypoint;

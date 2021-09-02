@@ -19,7 +19,8 @@ interface IWpnForegroundSink : IUnknown
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
 {
-    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] GUID* appId);
+
+    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
 
     HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
 
