@@ -36,34 +36,34 @@ namespace WindowsAppRuntimeInstaller {
         WAR_FRAMEWORK_X86_LISTENTRY
     #endif
 
-    #if defined(WAR_MAIN_X86_LISTENTRY)
-        WAR_MAIN_X86_LISTENTRY
+    #if defined(WAR_MAIN_ARM64_LISTENTRY)
+        WAR_MAIN_ARM64_LISTENTRY
     #endif
     #if defined(WAR_MAIN_X64_LISTENTRY)
         WAR_MAIN_X64_LISTENTRY
     #endif
-    #if defined(WAR_MAIN_ARM64_LISTENTRY)
-        WAR_MAIN_ARM64_LISTENTRY
+    #if defined(WAR_MAIN_X86_LISTENTRY)
+        WAR_MAIN_X86_LISTENTRY
     #endif
 
-    #if defined(WAR_SINGLETON_X86_LISTENTRY)
-        WAR_SINGLETON_X86_LISTENTRY
+    #if defined(WAR_SINGLETON_ARM64_LISTENTRY)
+        WAR_SINGLETON_ARM64_LISTENTRY
     #endif
     #if defined(WAR_SINGLETON_X64_LISTENTRY)
         WAR_SINGLETON_X64_LISTENTRY
     #endif
-    #if defined(WAR_SINGLETON_ARM64_LISTENTRY)
-        WAR_SINGLETON_ARM64_LISTENTRY
+    #if defined(WAR_SINGLETON_X86_LISTENTRY)
+        WAR_SINGLETON_X86_LISTENTRY
     #endif
 
-    #if defined(WAR_DDLM_X86_LISTENTRY)
-        WAR_DDLM_X86_LISTENTRY
+    #if defined(WAR_DDLM_ARM64_LISTENTRY)
+        WAR_DDLM_ARM64_LISTENTRY
     #endif
     #if defined(WAR_DDLM_X64_LISTENTRY)
         WAR_DDLM_X64_LISTENTRY
     #endif
-    #if defined(WAR_DDLM_ARM64_LISTENTRY)
-        WAR_DDLM_ARM64_LISTENTRY
+    #if defined(WAR_DDLM_X86_LISTENTRY)
+        WAR_DDLM_X86_LISTENTRY
     #endif
     };
 }
