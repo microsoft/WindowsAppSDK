@@ -7,7 +7,7 @@ import "ocidl.idl";
 #include "../PushNotifications-Constants.h"
 
 [object]
-[uuid(25604D55-9B17-426F-9D67-2B11B3A65598)]
+[uuid(PUSHNOTIFICATIONS_FOREGROUNDSINK_CLSID_UUID)]
 [pointer_default(unique)]
 interface IWpnForegroundSink : IUnknown
 {
@@ -15,7 +15,7 @@ interface IWpnForegroundSink : IUnknown
 };
 
 [object]
-[uuid(60FC21B2-B396-4D49-94F0-7555869FB93C)]
+[uuid(PUSHNOTIFICATIONS_LRP_CLSID_UUID)]
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
 {
