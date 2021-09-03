@@ -339,7 +339,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
+                if (contractArgument == L"WindowsAppRuntimePushServer")
                 {
                     // Generate a basic encoded launch Uri for all Push activations.
                     std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
