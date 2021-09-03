@@ -140,7 +140,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
     wil::unique_cotaskmem_array_ptr<PWSTR> appIds;
     PushNotifications_GetFullTrustApplicationsWithChannels(appIds.addressof(), appIds.size_address<ULONG>());
 
-    // Load list of apps from Storage
+    // Get list of apps from Storage
     auto values{ m_storage.Values() };
 
     for (size_t i = 0; i < appIds.size(); ++i)
@@ -155,7 +155,6 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
     return mapOfFullTrustApps;
 }
 
-// Code directly pasted from Sharath's PR, adjusted to return std::wstring
 std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
 {
     auto values{ m_storage.Values() };
