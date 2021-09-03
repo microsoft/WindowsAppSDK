@@ -25,6 +25,5 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentStatus.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)PackageInfo.cpp" />
   </ItemGroup>
 </Project>
