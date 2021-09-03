@@ -164,15 +164,6 @@ namespace Test::PushNotifications
             VERIFY_ARE_EQUAL(exitCode, 0);
         }
 
-        TEST_METHOD(BackgroundActivation)
-        {
-            RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
-
-            auto LocalBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(c_comServerId, CLSCTX_ALL);
-            auto mockBackgroundTaskInstance = winrt::make<MockBackgroundTaskInstance>();
-            VERIFY_NO_THROW(LocalBackgroundTask.Run(mockBackgroundTaskInstance));
-        }
-
         TEST_METHOD(MultipleBackgroundActivation)
         {
             RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
