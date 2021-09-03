@@ -145,13 +145,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         ChannelDetails channelInfo{};
                         winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
 
-                        /*
-                        RemoteId APIs are not applicable for downlevel OS versions.
-                        So we get error E_NOTIMPL and we fallback to calling into
-                        Public WinRT API CreatePushNotificationChannelForApplicationAsync
-                        to request for channels
-                        */
-
+                        // RemoteId APIs are not applicable for downlevel OS versions.
+                        // So we get error E_NOTIMPL and we fallback to calling into
+                        // public WinRT API CreatePushNotificationChannelForApplicationAsync
+                        // to request a channel.
                         if (SUCCEEDED(hr))
                         {
                             co_return winrt::make<PushNotificationCreateChannelResult>(
@@ -262,7 +259,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->RegisterActivator(processName.get()));
+                THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
             }
 
             DWORD cookie = 0;
@@ -397,7 +394,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterActivator(processName.get()));
+                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
             }
         }
 

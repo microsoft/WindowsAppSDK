@@ -15,9 +15,9 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
     STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept;
 
-    STDMETHOD(RegisterActivator)(_In_ PCWSTR processName) noexcept;
+    STDMETHOD(RegisterLongRunningActivator)(_In_ PCWSTR processName) noexcept;
 
-    STDMETHOD(UnregisterActivator)(_In_ PCWSTR processName) noexcept;
+    STDMETHOD(UnregisterLongRunningActivator)(_In_ PCWSTR processName) noexcept;
 
     STDMETHOD(RegisterForegroundActivator)(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName) noexcept;
 
@@ -26,7 +26,7 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 private:
 
     std::map<std::wstring, std::wstring> GetFullTrustApps();
-    std::wstring GetAppIdentifier(std::wstring const& processName);
+    const std::wstring GetAppIdentifier(std::wstring const& processName);
     void RemoveAppIdentifier(std::wstring const& processName);
 
     winrt::Windows::Storage::ApplicationDataContainer m_storage{ nullptr };
