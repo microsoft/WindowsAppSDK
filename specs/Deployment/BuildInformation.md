@@ -79,9 +79,9 @@ namespace MyNamespace
         static void Main()
         {
             // Initialize access to Windows App SDK
-            var majorMinorRelease = Microsoft.WindowsApp.Release.MajorMinor;
-            var versionTag = Microsoft.WindowsApp.Release.VersionTag;
-            Microsoft.WindowsApp.PackageVersion minVersion{ Microsoft.WindowsApp.MSIX.Version.UInt64 };
+            var majorMinorRelease = Microsoft.WindowsAppRuntime.Release.MajorMinor;
+            var versionTag = Microsoft.WindowsAppRuntime.Release.VersionTag;
+            Microsoft.WindowsAppRuntime.PackageVersion minVersion{ Microsoft.WindowsAppRuntime.MSIX.Version.UInt64 };
             Bootstrap.Initialize(majorMinorRelease, versionTag, minVersion));
             ...
 ```
@@ -133,7 +133,7 @@ namespace MyNamespace
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.WindowsApp
+namespace Microsoft.WindowsAppRuntime
 {
     public class Release
     {
