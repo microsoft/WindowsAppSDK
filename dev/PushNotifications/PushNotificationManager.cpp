@@ -69,7 +69,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         const winrt::guid& remoteId,
         _Out_ wil::unique_cotaskmem_string &unpackagedAppUserModelId)
     {
-        //auto coInitialize = wil::CoInitializeEx();
+        auto coInitialize = wil::CoInitializeEx();
 
         auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
@@ -252,7 +252,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (isProtocolActivatorSet)
             {
-                //auto coInitialize = wil::CoInitializeEx();
+                auto coInitialize = wil::CoInitializeEx();
 
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
                     wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
@@ -387,7 +387,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator))
             {
-                //auto coInitialize = wil::CoInitializeEx();
+                auto coInitialize = wil::CoInitializeEx();
 
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
                     wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
