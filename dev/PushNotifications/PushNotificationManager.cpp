@@ -118,7 +118,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
-			auto cancellation{ co_await winrt::get_cancellation_token() };
+            auto cancellation{ co_await winrt::get_cancellation_token() };
 
             cancellation.enable_propagation(true);
 
