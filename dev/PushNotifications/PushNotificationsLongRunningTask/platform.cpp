@@ -60,11 +60,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    wil::unique_cotaskmem_string appIdentifier = GetAppIdentifier(processName);
+    std::wstring appIdentifier = GetAppIdentifier(processName);
+    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), remoteId));
 
-    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.get(), remoteId));
-
-    *appId = appIdentifier.get();
+    wil::unique_cotaskmem_string outAppId = wil::make_unique_string<wil::unique_cotaskmem_string>(appIdentifier.c_str());
+    *appId = outAppId.release();
 
     return S_OK;
 }
