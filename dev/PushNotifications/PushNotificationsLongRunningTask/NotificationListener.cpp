@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 
-HRESULT NotificationListener::RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring appId, std::wstring processName)
+HRESULT NotificationListener::RuntimeClassInitialize(
+    std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
+    std::wstring appId,
+    std::wstring processName)
 {
     m_foregroundSinkManager = foregroundSinkManager;
 
@@ -22,7 +25,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
         commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
         commandLine.append("\"");
 
-        std::string processNameAsUtf8String = ConvertProcessNameToUtf8String();
+        const std::string processNameAsUtf8String = ConvertProcessNameToUtf8String();
 
         SHELLEXECUTEINFOA shellExecuteInfo{};
         shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
@@ -42,7 +45,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 }
 CATCH_RETURN()
 
-std::string NotificationListener::ConvertProcessNameToUtf8String()
+const std::string NotificationListener::ConvertProcessNameToUtf8String()
 {
     int size_needed = WideCharToMultiByte(CP_UTF8, 0, m_processName.c_str(), -1, NULL, 0, nullptr, nullptr);
     THROW_LAST_ERROR_IF(size_needed == 0);

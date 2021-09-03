@@ -60,7 +60,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    std::wstring appIdentifier = GetAppIdentifier(processName);
+    const std::wstring appIdentifier = GetAppIdentifier(processName);
     THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), remoteId));
 
     wil::unique_cotaskmem_string outAppId = wil::make_unique_string<wil::unique_cotaskmem_string>(appIdentifier.c_str());
@@ -70,12 +70,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
 }
 CATCH_RETURN()
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR processName) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterLongRunningActivator(_In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId = GetAppIdentifier(processName);
     m_notificationListenerManager.AddListener(appId, processName);
 
     m_lifetimeManager.Cancel();
@@ -84,12 +84,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterA
 }
 CATCH_RETURN()
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterActivator(_In_ PCWSTR processName) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::UnregisterLongRunningActivator(_In_ PCWSTR processName) noexcept try
 {
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId = GetAppIdentifier(processName);
     m_notificationListenerManager.RemoveListener(appId);
     m_foregroundSinkManager->Remove(appId);
 
@@ -109,10 +109,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId = GetAppIdentifier(processName);
 
     m_notificationListenerManager.AddListener(appId, processName);
     m_foregroundSinkManager->Add(appId, sink);
+
+    m_lifetimeManager.Cancel();
 
     return S_OK;
 }
@@ -123,7 +125,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId = GetAppIdentifier(processName);
     m_foregroundSinkManager->Remove(appId);
 
     return S_OK;
@@ -155,7 +157,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
     return mapOfFullTrustApps;
 }
 
-std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
+const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
 {
     auto values{ m_storage.Values() };
 

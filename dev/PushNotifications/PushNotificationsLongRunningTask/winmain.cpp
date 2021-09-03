@@ -21,7 +21,7 @@ using namespace Microsoft::WRL;
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+    auto coInitialize = wil::CoInitializeEx();
 
     ComPtr<NotificationsLongRunningProcessFactory> platformFactory;
     RETURN_IF_FAILED(MakeAndInitialize<NotificationsLongRunningProcessFactory>(&platformFactory));
@@ -47,12 +47,11 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     // Wait returns if the platform realizes there are no more apps to be tracked.
     // It also returns if the timer initialized at the process start fires (see NotificationsLongRunningPlatformImpl::Initialize).
     platform->WaitForLifetimeEvent();
+    platform->Shutdown();
 
     RETURN_IF_FAILED(module.UnregisterCOMObject(nullptr, &cookie, 1));
 
     module.Terminate();
-
-    ::CoUninitialize();
 
     return 0;
 }
