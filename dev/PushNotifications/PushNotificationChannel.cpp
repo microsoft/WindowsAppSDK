@@ -60,7 +60,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
-               PushNotifications_CloseChannel(m_channelInfo.appUserModelId.c_str(), m_channelInfo.channelId.c_str());
+                THROW_IF_FAILED(PushNotifications_CloseChannel(m_channelInfo.appUserModelId.c_str(), m_channelInfo.channelId.c_str()));
             }
 
             PushNotificationTelemetry::ChannelClosedByApi(S_OK);
