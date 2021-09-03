@@ -40,7 +40,7 @@ developer intervention):
 ```c++
 const uint32_t c_majorMinorRelease{ WINDOWSAPPSDK_RELEASE_MAJOR_MINOR };
 auto c_versionTag{ WINDOWSAPPSDK_RELEASE_VERSION_TAG_W };
-const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_MSIX_VERSION_UINT64 };
+const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_RUNTIME_VERSION_UINT64 };
 THROW_IF_FAILED(MddBootstrapInitialize(c_majorMinorRelease, c_versionTag, minVersion));
 ```
 
@@ -62,7 +62,7 @@ int main()
 {
     const uint32_t c_majorMinorRelease{ WINDOWSAPPSDK_RELEASE_MAJOR_MINOR };
     auto c_versionTag{ WINDOWSAPPSDK_RELEASE_VERSION_TAG_W };
-    const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_MSIX_VERSION_UINT64 };
+    const PACKAGE_VERSION c_minVersion{ WINDOWSAPPSDK_RUNTIME_VERSION_UINT64 };
     RETURN_IF_FAILED(MddBootstrapInitialize(c_majorMinorRelease, c_versionTag, minVersion));
     ...
 ```
@@ -79,9 +79,9 @@ namespace MyNamespace
         static void Main()
         {
             // Initialize access to Windows App SDK
-            var majorMinorRelease = Microsoft.WindowsAppRuntime.Release.MajorMinor;
-            var versionTag = Microsoft.WindowsAppRuntime.Release.VersionTag;
-            Microsoft.WindowsAppRuntime.PackageVersion minVersion{ Microsoft.WindowsAppRuntime.MSIX.Version.UInt64 };
+            var majorMinorRelease = Microsoft.WindowsAppSDK.Release.MajorMinor;
+            var versionTag = Microsoft.WindowsAppSDK.Release.VersionTag;
+            Microsoft.WindowsAppSDK.PackageVersion minVersion{ Microsoft.WindowsAppSDK.MSIX.Version.UInt64 };
             Bootstrap.Initialize(majorMinorRelease, versionTag, minVersion));
             ...
 ```
@@ -111,18 +111,18 @@ namespace MyNamespace
 #define WINDOWSAPPSDK_RELEASE_VERSION_SHORTTAG     "e1"
 #define WINDOWSAPPSDK_RELEASE_VERSION_SHORTTAG_W   L"e1"
 
-#define WINDOWSAPPSDK_MSIX_PUBLISHER               "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-#define WINDOWSAPPSDK_MSIX_PUBLISHER_W             L"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
-#define WINDOWSAPPSDK_MSIX_PUBLISHERID             "8wekyb3d8bbwe"
-#define WINDOWSAPPSDK_MSIX_PUBLISHERID_W           L"8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PUBLISHER            "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+#define WINDOWSAPPSDK_RUNTIME_PUBLISHER_W          L"CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+#define WINDOWSAPPSDK_RUNTIME_PUBLISHERID          "8wekyb3d8bbwe"
+#define WINDOWSAPPSDK_RUNTIME_PUBLISHERID_W        L"8wekyb3d8bbwe"
 
-#define WINDOWSAPPSDK_MSIX_VERSION_MAJOR           0
-#define WINDOWSAPPSDK_MSIX_VERSION_MINOR           242
-#define WINDOWSAPPSDK_MSIX_VERSION_BUILD           1826
-#define WINDOWSAPPSDK_MSIX_VERSION_REVISION        0
-#define WINDOWSAPPSDK_MSIX_VERSION_UINT64          0x000000F207220000
-#define WINDOWSAPPSDK_MSIX_VERSION_DOTQUADSTRING   "0.242.1826.0"
-#define WINDOWSAPPSDK_MSIX_VERSION_DOTQUADSTRING_W L"0.242.1826.0"
+#define WINDOWSAPPSDK_RUNTIME_VERSION_MAJOR             0
+#define WINDOWSAPPSDK_RUNTIME_VERSION_MINOR             242
+#define WINDOWSAPPSDK_RUNTIME_VERSION_BUILD             1826
+#define WINDOWSAPPSDK_RUNTIME_VERSION_REVISION          0
+#define WINDOWSAPPSDK_RUNTIME_VERSION_UINT64            0x000000F207220000
+#define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING     "0.242.1826.0"
+#define WINDOWSAPPSDK_RUNTIME_VERSION_DOTQUADSTRING_W   L"0.242.1826.0"
 
 #endif // __WINDOWSAPPSDKVERSIONINFO_H__
 ```
@@ -133,7 +133,7 @@ namespace MyNamespace
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.WindowsAppRuntime
+namespace Microsoft.WindowsAppSDK
 {
     public class Release
     {
@@ -149,7 +149,7 @@ namespace Microsoft.WindowsAppRuntime
         public const string VersionShortTag = "e1";
     }
 
-    namespace MSIX
+    namespace Runtime
     {
         public const string Publisher = "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US";
         public const string PublisherId = "8wekyb3d8bbwe";
@@ -183,7 +183,7 @@ namespace Microsoft.WindowsAppRuntime
         "VersionTag" : "experimental1",
         "VersionShortTag" : "e1"
     },
-    "MSIX" : {
+    "Runtime" : {
         "Publisher" : "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
         "PublisherId" : "8wekyb3d8bbwe",
         "Version" : {
@@ -212,7 +212,7 @@ namespace Microsoft.WindowsAppRuntime
         <VersionTag>experimental1</VersionTag>
         <VersionShortTag>e1</VersionShortTag>
     </Release>
-    <MSIX>
+    <Runtime>
         <Publisher>CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US</Publisher>
         <PublisherId>8wekyb3d8bbwe</Publisher>
         <Version>
@@ -221,6 +221,6 @@ namespace Microsoft.WindowsAppRuntime
             <HexUInt16>0x000000F207220000</HexUInt16>
             <String>0.242.1826.0</String>
         </Version>
-    </MSIX>
+    </Runtime>
 </WindowsAppSDK>
 ```
