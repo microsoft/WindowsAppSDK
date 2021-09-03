@@ -3,9 +3,6 @@
 
 #include "stdafx.h"
 
-#include <mrm/platform/MrmWnf.h>
-#include <mrm/platform/MrmWnfHelpers.h>
-
 namespace Microsoft::Resources
 {
 
@@ -45,14 +42,6 @@ QualifierValueProviderBase::SetPersistentQualifierValue(
 
         StringResult packageName;
         RETURN_IF_FAILED(m_profile->GetPackageInfo(0, &packageName, nullptr, nullptr));
-#ifndef DOWNLEVEL_PRIOR_TO_WIN8
-        MrmWnf_PublishStateData(
-            WNF_MRT_PERSISTENT_QUALIFIER_CHANGED,
-            MrmWnf_PersistentQualifierChangedEvent_PayloadSizeInChars,
-            MrmWnf_PersistentQualifierChangedEvent_PayloadFormat,
-            m_qualifierKeyName.GetRef(),
-            packageName.GetRef());
-#endif
     }
 
     return S_OK;
