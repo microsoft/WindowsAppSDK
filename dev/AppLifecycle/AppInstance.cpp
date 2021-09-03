@@ -20,6 +20,8 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
+
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
@@ -337,14 +339,26 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractData.empty())
+                if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
                 {
-                    // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
+                    // Generate a basic encoded launch Uri for all Push activations.
+                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                    contractArgument = c_protocolArgumentString;
+
+                    // A non-empty contractData means we have a payload.
+                    // This contains a background notification. It is specific to unpackaged apps.
+                    // It requires further processing to build PushNotificationReceivedEventArgs.
+                    // For packaged apps we don't need extra processing. A basic encoded launch Uri is sufficient.
+                    auto index = contractData.find(c_pushPayloadAttribute);
+
+                    if (!contractData.empty() && index == 0)
                     {
-                        contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
-                        contractArgument = c_protocolArgumentString;
+                        tempContractData += L"&payload=";
+                        // 11 -> the size of &payload= + starting quote + ending quote.
+                        tempContractData += contractData.substr(10, contractData.size() - 11);
                     }
+
+                    contractData = tempContractData;
                 }
 
                 if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)

@@ -27,6 +27,12 @@
     <ClInclude Include="ForegroundSinkManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NotificationListenerManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="PlatformLifetimeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -45,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ForegroundSinkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationListenerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PlatformLifetimeManager.cpp">

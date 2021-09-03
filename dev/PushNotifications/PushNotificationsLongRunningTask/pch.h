@@ -27,4 +27,13 @@
 
 #include <wil/com.h>
 
+// UDK/ProxyStub files
 #define MIDL_NS_PREFIX
+#include <FrameworkUdk/PushNotifications.h>
+#include <NotificationsLongRunningProcess_h.h>
+
+// LRP files
+#include "ForegroundSinkManager.h"
+#include "PlatformLifetimeManager.h"
+#include "NotificationListener.h"
+#include "NotificationListenerManager.h"

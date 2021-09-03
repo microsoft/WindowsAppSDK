@@ -10,6 +10,7 @@
 #include "PushNotificationReceivedEventArgs.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs.g.cpp"
 #include <iostream>
+#include <string>
 #include <externs.h>
 #include <PushNotificationDummyDeferral.h>
 #include "ValueMarshaling.h"
@@ -38,6 +39,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         m_rawNotificationPayload(BuildPayload(payload, length)),
         m_unpackagedAppScenario(true) {}
 
+    PushNotificationReceivedEventArgs::PushNotificationReceivedEventArgs(std::wstring const& payload) :
+        m_rawNotificationPayload(BuildPayload(payload)),
+        m_unpackagedAppScenario(true) {}
+
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer)
     {
         return { buffer.data(), buffer.data() + (buffer.Length() * sizeof(uint8_t)) };
@@ -46,6 +51,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(byte* const& payload, ULONG const& length)
     {
         return { payload, payload + (length * sizeof(uint8_t)) };
+    }
+
+    std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring const& payload)
+    {
+        std::string payloadToSimpleString = Utf16ToUtf8(payload.c_str());
+
+        return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };
     }
 
     winrt::com_array<uint8_t> PushNotificationReceivedEventArgs::Payload()
@@ -118,6 +130,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             m_handledUnpackaged = value;
         }
+    }
+
+    std::string PushNotificationReceivedEventArgs::Utf16ToUtf8(_In_z_ PCWSTR utf16)
+    {
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, nullptr, nullptr);
+        THROW_LAST_ERROR_IF(size_needed == 0);
+
+        // size_needed minus the null character
+        std::string utf8(size_needed - 1, 0);
+        int size = WideCharToMultiByte(CP_UTF8, 0, utf16, size_needed - 1, &utf8[0], size_needed - 1, nullptr, nullptr);
+        THROW_LAST_ERROR_IF(size == 0);
+        return utf8;
     }
 }
 

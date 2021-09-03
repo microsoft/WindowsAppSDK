@@ -246,7 +246,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
             auto registrationOptions = details.Options();
-            THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationOptions, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator));
+
+            auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(registrationOptions, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
+            THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && !IsActivatorSupported(registrationOptions));
+
+            auto isProtocolActivatorSet{ WI_IsFlagSet(registrationOptions, PushNotificationRegistrationOptions::ProtocolActivator) };
+            THROW_HR_IF(E_INVALIDARG, isProtocolActivatorSet && !IsActivatorSupported(registrationOptions));
+
+            if (isProtocolActivatorSet)
+            {
+                auto coInitialize = wil::CoInitializeEx();
+
+                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                THROW_IF_FAILED(notificationPlatform->RegisterActivator(processName.get()));
+            }
 
             DWORD cookie = 0;
             IBackgroundTaskRegistration registeredTask = nullptr;
@@ -369,6 +386,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ComActivator) && token.Cookie() && winrt::get_module_lock() == 0)
             {
                 LOG_IF_FAILED(::CoRevokeClassObject(static_cast<DWORD>(token.Cookie())));
+            }
+
+            if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator))
+            {
+                auto coInitialize = wil::CoInitializeEx();
+
+                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                THROW_IF_FAILED(notificationPlatform->UnregisterActivator(processName.get()));
             }
         }
 

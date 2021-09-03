@@ -2,32 +2,29 @@
 
 #include "pch.h"
 
-#include <NotificationsLongRunningProcess_h.h>
-#include <ForegroundSinkManager.h>
-
-void ForegroundSinkManager::Add(std::wstring const& processName, IWpnForegroundSink* const& sink)
+void ForegroundSinkManager::Add(std::wstring const& appId, IWpnForegroundSink* const& sink)
 {
     auto lock = m_lock.lock_exclusive();
-    m_foregroundMap[processName] = sink;
+    m_foregroundMap[appId] = sink;
 }
 
-void ForegroundSinkManager::Remove(std::wstring const& processName)
+void ForegroundSinkManager::Remove(std::wstring const& appId)
 {
     auto lock = m_lock.lock_exclusive();
-    m_foregroundMap.erase(processName);
+    m_foregroundMap.erase(appId);
 }
 
-bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& processName, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize)
+bool ForegroundSinkManager::InvokeForegroundHandlers(std::wstring const& appId, winrt::com_array<uint8_t> const& payload, ULONG const& payloadSize)
 {
     auto lock = m_lock.lock_exclusive();
 
-    auto it = m_foregroundMap.find(processName);
+    auto it = m_foregroundMap.find(appId);
     if (it != m_foregroundMap.end())
     {
         BOOL foregroundHandled = true;
         if (FAILED(it->second->InvokeAll(payloadSize, payload.data(), &foregroundHandled)))
         {
-            Remove(processName);
+            m_foregroundMap.erase(appId);
             return false;
         }
         return foregroundHandled;
