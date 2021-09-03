@@ -80,6 +80,9 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$ext_WindowsAppSDKNupkgVersion$]">
       <IncludeAssets>build</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$ext_WindowsSDKBuildToolsNupkgVersion$]">
+      <IncludeAssets>build</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
