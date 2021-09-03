@@ -2,6 +2,7 @@
 
 #include "platform.h"
 #include "platformfactory.h"
+#include <FrameworkUdk/PushNotifications.h>
 
 using namespace winrt::Windows;
 
@@ -53,16 +54,21 @@ void NotificationsLongRunningPlatformImpl::WaitForLifetimeEvent()
     m_lifetimeManager.Wait();
 }
 
-// Example of one function. We will add more as we need them.
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(_In_ PCWSTR /*processName*/, _In_ GUID /*remoteId*/, _Out_ GUID* /*appId*/) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication(
+    _In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept try
 {
-    auto lock = m_lock.lock_shared();
-    RETURN_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+    auto lock = m_lock.lock_exclusive();
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    // To be completed after Sharath's PR
+    wil::unique_cotaskmem_string appIdentifier = GetAppIdentifier(processName);
 
-    return E_NOTIMPL;
+    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.get(), remoteId));
+
+    *appId = appIdentifier.get();
+
+    return S_OK;
 }
+CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterActivator(_In_ PCWSTR processName) noexcept try
 {

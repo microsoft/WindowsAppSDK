@@ -13,7 +13,7 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
     /* INotificationsLongRunningPlatform functions */
 
-    STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, _In_ GUID remoteId, _Out_ GUID* appId) noexcept;
+    STDMETHOD(RegisterFullTrustApplication)(_In_ PCWSTR processName, GUID remoteId, _Out_ PWSTR* appId) noexcept;
 
     STDMETHOD(RegisterActivator)(_In_ PCWSTR processName) noexcept;
 
