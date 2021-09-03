@@ -212,6 +212,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.System.Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.PushNotifications.Projection", "dev\Projections\CS\Microsoft.Windows.PushNotifications.Projection\Microsoft.Windows.PushNotifications.Projection.csproj", "{F1F2F3A6-A7DE-45D1-9E96-E28171FD3147}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PushNotificationsUnpackagedDemoApp", "test\TestApps\PushNotificationsUnpackagedDemoApp\PushNotificationsUnpackagedDemoApp.vcxproj", "{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -234,6 +236,7 @@ Global
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
 		dev\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
+		test\inc\inc.vcxitems*{ef460505-2ce8-4071-b7cf-52fee5edfcc5}*SharedItemsImports = 4
 		dev\Common\Common.vcxitems*{f76b776e-86f5-48c5-8fc7-d2795ecc9746}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -791,6 +794,18 @@ Global
 		{F1F2F3A6-A7DE-45D1-9E96-E28171FD3147}.Release|x64.Build.0 = Release|x64
 		{F1F2F3A6-A7DE-45D1-9E96-E28171FD3147}.Release|x86.ActiveCfg = Release|x86
 		{F1F2F3A6-A7DE-45D1-9E96-E28171FD3147}.Release|x86.Build.0 = Release|x86
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Debug|x64.ActiveCfg = Debug|x64
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Debug|x64.Build.0 = Debug|x64
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Debug|x86.ActiveCfg = Debug|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Debug|x86.Build.0 = Debug|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Release|Any CPU.ActiveCfg = Release|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Release|ARM64.ActiveCfg = Release|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Release|x64.ActiveCfg = Release|x64
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Release|x64.Build.0 = Release|x64
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Release|x86.ActiveCfg = Release|Win32
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -862,6 +877,7 @@ Global
 		{63ACBA4F-385A-4D04-98AD-263FED501A19} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{85E9BB46-7841-4732-A039-9C902B71DEC3} = {716C26A0-E6B0-4981-8412-D14A4D410531}
 		{F1F2F3A6-A7DE-45D1-9E96-E28171FD3147} = {716C26A0-E6B0-4981-8412-D14A4D410531}
+		{EF460505-2CE8-4071-B7CF-52FEE5EDFCC5} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
