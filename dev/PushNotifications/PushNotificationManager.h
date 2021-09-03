@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.h"
+#include <windows.foundation.h>
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -16,10 +17,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(const winrt::guid &remoteId);
 
         static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
-
-    private:
-        static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
-        static bool IsBackgroundTaskBuilderAvailable();
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
