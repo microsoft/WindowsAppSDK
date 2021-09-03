@@ -81,7 +81,7 @@ namespace MyNamespace
             // Initialize access to Windows App SDK
             var majorMinorRelease = Microsoft.WindowsAppSDK.Release.MajorMinor;
             var versionTag = Microsoft.WindowsAppSDK.Release.VersionTag;
-            Microsoft.WindowsAppSDK.PackageVersion minVersion{ Microsoft.WindowsAppSDK.MSIX.Version.UInt64 };
+            Microsoft.WindowsAppSDK.PackageVersion minVersion{ Microsoft.WindowsAppSDK.Runtime.Version.UInt64 };
             Bootstrap.Initialize(majorMinorRelease, versionTag, minVersion));
             ...
 ```
@@ -156,8 +156,8 @@ namespace Microsoft.WindowsAppSDK
 
         public class Version
         {
-            public const ushort MsixMajor = 0;
-            public const ushort MsixMinor = 242;
+            public const ushort Major = 0;
+            public const ushort Minor = 242;
             public const ushort Build = 1826;
             public const ushort Revision = 0;
             public const ulong UInt64 = 0x000000F207220000;
