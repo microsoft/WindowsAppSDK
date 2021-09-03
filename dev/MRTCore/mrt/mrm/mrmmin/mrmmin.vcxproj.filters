@@ -84,9 +84,6 @@
     <ClCompile Include="MrmTraceLogging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MrmWnf.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PriFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -207,12 +204,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\mrm\platform\MrmConstants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\mrm\platform\MrmWnf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\mrm\platform\MrmWnfHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\mrm\platform\WindowsCore.h">

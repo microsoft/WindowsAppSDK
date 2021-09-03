@@ -222,19 +222,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="NotificationListener.cpp" />
     <ClCompile Include="ForegroundSinkManager.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="platformfactory.cpp" />
     <ClCompile Include="PlatformLifetimeManager.cpp" />
+    <ClCompile Include="NotificationListenerManager.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NotificationListener.h" />
     <ClInclude Include="ForegroundSinkManager.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="platformfactory.h" />
     <ClInclude Include="PlatformLifetimeManager.h" />
+    <ClInclude Include="NotificationListenerManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

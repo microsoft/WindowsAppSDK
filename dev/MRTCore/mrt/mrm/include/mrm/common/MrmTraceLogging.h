@@ -25,10 +25,10 @@ class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
 
     DEFINE_COMPLIANT_MEASURES_EVENT(MrmCreateResourceManager, PDT_ProductAndServicePerformance);
 
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(TelemetryGenericEventParam1, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM4(TelemetryGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(MeasureGenericEventParam1, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
-    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(MeasureGenericEventParam2, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(TelemetryGenericEvent, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
+    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM4(TelemetryGenericEvent, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(MeasureGenericEvent, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message, int, hresult);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(MeasureGenericEvent, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
 };
 
 // case insensitive prefix match of "*:\users"
