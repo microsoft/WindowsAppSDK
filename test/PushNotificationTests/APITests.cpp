@@ -257,10 +257,5 @@ namespace Test::PushNotifications
         {
             RunTest(L"VerifyComAndProtocolActivatorNotSupported", testWaitTime());
         }
-
-        TEST_METHOD(VerifyNullActivatorNotSupported)
-        {
-            RunTest(L"VerifyNullActivatorNotSupported", testWaitTime());
-        }
     };
 }

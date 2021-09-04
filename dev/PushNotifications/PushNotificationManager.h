@@ -7,8 +7,8 @@
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_taskRegistration = nullptr;
-    static uint32_t s_cookie = 0;
-    static wil::srwlock s_lock;
+    static wil::unique_com_class_object_cookie s_cookie;
+    static wil::srwlock s_activatorInfoLock;
 
     struct PushNotificationManager
     {
@@ -18,7 +18,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
         static void UnregisterAllActivators();
 
-        static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(const winrt::guid& remoteId);
+        static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const& remoteId);
 
         static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
 

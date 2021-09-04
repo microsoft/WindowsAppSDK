@@ -24,13 +24,12 @@ namespace Microsoft.Windows.PushNotifications
     [flags]
     enum PushNotificationRegistrationActivators
     {
-        Undefined = 0, // Default enum to catch nullptr case when no flag is defined
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Background Task component as an in-process COM server
         ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
     };
 
-    // An abstraction over the activation Registration flow
+    [experimental]
     runtimeclass PushNotificationActivationInfo
     {
         // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
