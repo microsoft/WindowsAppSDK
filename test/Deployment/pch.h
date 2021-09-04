@@ -29,5 +29,5 @@
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.Windows.ApplicationModel.WindowsAppSDK.h>
 
-#include <WindowsAppSDK.Test.Bootstrap.h>
+#include <WindowsAppRuntime.Test.Bootstrap.h>
 namespace TP = ::Test::Packages;

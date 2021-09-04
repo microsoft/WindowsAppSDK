@@ -32,7 +32,7 @@ namespace Test::Deployment
         {
             ClassUninit();
 
-            TP::AddPackage_WindowsAppSDKFramework();
+            TP::AddPackage_WindowsAppRuntimeFramework();
             return true;
         }
 
@@ -40,14 +40,14 @@ namespace Test::Deployment
         {
             TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_WindowsAppSDKSingleton();
-            TP::RemovePackage_WindowsAppSDKFramework();
+            TP::RemovePackage_WindowsAppRuntimeSingleton();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppSDKFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             return true;
         }
 
@@ -63,7 +63,7 @@ namespace Test::Deployment
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            std::wstring WASFrameworkName { TP::WindowsAppSDKFramework::c_PackageFullName };
+            std::wstring WASFrameworkName { TP::WindowsAppRuntimeFramework::c_PackageFullName };
 
 
 
@@ -82,7 +82,7 @@ namespace Test::Deployment
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-AppxManifest.xml")
                 END_TEST_METHOD_PROPERTIES();
 
-            std::wstring WASFrameworkName{ TP::WindowsAppSDKFramework::c_PackageFullName };
+            std::wstring WASFrameworkName{ TP::WindowsAppRuntimeFramework::c_PackageFullName };
 
             auto status{ DeploymentManager::Initialize(WASFrameworkName) };
 
