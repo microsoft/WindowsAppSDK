@@ -104,7 +104,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        $srcPath = Get-Childitem -Path 'dev\WindowsAppSDK_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
+        $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
         
         if (($srcPath -ne $null)){
           $destinationPath = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
