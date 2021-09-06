@@ -5,7 +5,7 @@
 
 #include "PushNotificationManager.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationManager.g.cpp"
-
+#include "PushNotificationTelemetry.h"
 #include "PushNotificationCreateChannelResult.h"
 #include "PushNotifications-Constants.h"
 #include <winrt/Windows.ApplicationModel.background.h>
@@ -64,212 +64,271 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid const& remoteId)
     {
-        THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
-
-        // API supports channel requests only for packaged applications for v0.8 version
-        THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
-
-        auto cancellation{ co_await winrt::get_cancellation_token() };
-
-        cancellation.enable_propagation(true);
-
-        // Allow to register the progress and complete handler
-        co_await resume_background();
-
-        auto progress{ co_await winrt::get_progress_token() };
-
-        uint8_t retryCount = 0;
-        winrt::hresult channelRequestResult = E_PENDING;
-        PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
-
-        PushNotificationCreateChannelStatus
-            channelStatus = { status, channelRequestResult, retryCount };
-
-        progress(channelStatus);
-
-        for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
+        try
         {
-            try
+            THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
+
+            // API supports channel requests only for packaged applications for v0.8 version
+            THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
+
+            auto cancellation{ co_await winrt::get_cancellation_token() };
+
+            cancellation.enable_propagation(true);
+
+            // Allow to register the progress and complete handler
+            co_await resume_background();
+
+            auto progress{ co_await winrt::get_progress_token() };
+
+            uint8_t retryCount = 0;
+            winrt::hresult channelRequestResult = E_PENDING;
+            PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
+
+            PushNotificationCreateChannelStatus
+                channelStatus = { status, channelRequestResult, retryCount };
+
+            progress(channelStatus);
+
+            for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
             {
-                PushNotificationChannelManager channelManager{};
-                winrt::PushNotificationChannel pushChannelReceived{ nullptr };
-
-                pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
-
-                co_return winrt::make<PushNotificationCreateChannelResult>(
-                    winrt::make<PushNotificationChannel>(pushChannelReceived),
-                    S_OK,
-                    PushNotificationChannelStatus::CompletedSuccess);
-
-            }
-            catch (...)
-            {
-                auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
-
-                if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
+                try
                 {
-                    channelStatus.extendedError = channelRequestException.code();
-                    channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
-                    channelStatus.retryCount = ++retryCount;
+                    PushNotificationChannelManager channelManager{};
+                    winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
-                    progress(channelStatus);
-                }
-                else
-                {
+                    pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
+
+                    PushNotificationTelemetry::ChannelRequestedByApi(
+                        S_OK,
+                        AppModel::Identity::IsPackagedProcess(),
+                        remoteId);
+
                     co_return winrt::make<PushNotificationCreateChannelResult>(
-                        nullptr,
-                        channelRequestException.code(),
-                        PushNotificationChannelStatus::CompletedFailure);
-                }
-            }
+                        winrt::make<PushNotificationChannel>(pushChannelReceived),
+                        S_OK,
+                        PushNotificationChannelStatus::CompletedSuccess);
 
-            co_await winrt::resume_after(backOffTime);
+                }
+                catch (...)
+                {
+                    auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
+
+                    if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
+                    {
+                        channelStatus.extendedError = channelRequestException.code();
+                        channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
+                        channelStatus.retryCount = ++retryCount;
+
+                        progress(channelStatus);
+                    }
+                    else
+                    {
+
+                        PushNotificationTelemetry::ChannelRequestedByApi(
+                            channelRequestException.code(),
+                            AppModel::Identity::IsPackagedProcess(),
+                            remoteId);
+
+                        co_return winrt::make<PushNotificationCreateChannelResult>(
+                            nullptr,
+                            channelRequestException.code(),
+                            PushNotificationChannelStatus::CompletedFailure);
+                    }
+                }
+
+                co_await winrt::resume_after(backOffTime);
+            }
+        }
+        catch (...)
+        {
+            HRESULT hrError = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ChannelRequestedByApi(
+                hrError,
+                AppModel::Identity::IsPackagedProcess(),
+                remoteId);
+
+            THROW_HR(hrError);
         }
     }
 
     void PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
-        THROW_HR_IF_NULL(E_INVALIDARG, details);
-
-        GUID taskClsid = details.TaskClsid();
-        THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
-
-        auto registrationOptions = details.Activators();
-        THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationOptions, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator));
-
-        DWORD cookie = 0;
-        IBackgroundTaskRegistration registeredTask = nullptr;
-        BackgroundTaskBuilder builder = nullptr;
-
-        if (WI_IsFlagSet(registrationOptions, PushNotificationRegistrationActivators::PushTrigger))
+        try
         {
+            THROW_HR_IF_NULL(E_INVALIDARG, details);
+
+            GUID taskClsid = details.TaskClsid();
+            THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+
+            auto registrationActivators = details.Activators();
+            THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationActivators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator));
+
+            DWORD cookie = 0;
+            IBackgroundTaskRegistration registeredTask = nullptr;
+            BackgroundTaskBuilder builder = nullptr;
+
+            if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger))
             {
-                auto lock = s_activatorInfoLock.lock_exclusive();
-                THROW_HR_IF(E_INVALIDARG, s_taskRegistration);
+                {
+                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    THROW_HR_IF(E_INVALIDARG, s_taskRegistration);
+                }
+
+                winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
+                winrt::hstring backgroundTaskFullName = backgroundTaskName + taskClsidStr;
+
+                auto tasks = BackgroundTaskRegistration::AllTasks();
+                bool isTaskRegistered = std::any_of(std::begin(tasks), std::end(tasks),
+                    [&](auto&& task)
+                    {
+                        auto name = task.Value().Name();
+
+                        if (std::wstring_view(name).substr(0, backgroundTaskName.size()) != backgroundTaskName)
+                        {
+                            return false;
+                        }
+
+                        if (name == backgroundTaskFullName)
+                        {
+                            registeredTask = task.Value();
+                            return true;
+                        }
+
+                        throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
+                    });
+
+                if (!isTaskRegistered)
+                {
+                    builder = BackgroundTaskBuilder();
+                    builder.Name(backgroundTaskFullName);
+
+                    PushNotificationTrigger trigger{};
+                    builder.SetTrigger(trigger);
+
+                    THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
+
+                    // In case the interface is not supported, let it throw.
+                    auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
+                    builder5.SetTaskEntryPointClsid(taskClsid);
+                    winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
+                    for (auto condition : conditions)
+                    {
+                        builder.AddCondition(condition);
+                    }
+                }
             }
 
-            winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
-            winrt::hstring backgroundTaskFullName = backgroundTaskName + taskClsidStr;
+            BackgroundTaskRegistration registeredTaskFromBuilder = nullptr;
 
-            auto tasks = BackgroundTaskRegistration::AllTasks();
-            bool isTaskRegistered = std::any_of(std::begin(tasks), std::end(tasks),
-                [&](auto&& task)
+            auto scopeExitToCleanRegistrations = wil::scope_exit(
+                [&]()
                 {
-                    auto name = task.Value().Name();
-
-                    if (std::wstring_view(name).substr(0, backgroundTaskName.size()) != backgroundTaskName)
+                    if (cookie > 0)
                     {
-                        return false;
+                        LOG_IF_FAILED(::CoRevokeClassObject(cookie));
                     }
 
-                    if (name == backgroundTaskFullName)
+                    // Clean the task registration only if it was created during this call
+                    if (registeredTaskFromBuilder)
                     {
-                        registeredTask = task.Value();
-                        return true;
+                        registeredTask.Unregister(true);
                     }
-
-                    throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
-                });
-
-            if (!isTaskRegistered)
-            {
-                builder = BackgroundTaskBuilder();
-                builder.Name(backgroundTaskFullName);
-
-                PushNotificationTrigger trigger{};
-                builder.SetTrigger(trigger);
-
-                THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
-
-                // In case the interface is not supported, let it throw.
-                auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
-                builder5.SetTaskEntryPointClsid(taskClsid);
-                winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
-                for (auto condition : conditions)
-                {
-                    builder.AddCondition(condition);
                 }
+            );
+
+            if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
+            {
+                {
+                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    THROW_HR_IF_MSG(E_INVALIDARG, s_cookie, "ComActivator already registered.");
+                }
+
+                GetWaitHandleForArgs().create();
+
+                THROW_IF_FAILED(::CoRegisterClassObject(
+                    taskClsid,
+                    winrt::make<PushNotificationBackgroundTaskFactory>().get(),
+                    CLSCTX_LOCAL_SERVER,
+                    REGCLS_MULTIPLEUSE,
+                    &cookie));
             }
+
+            if (builder)
+            {
+                registeredTaskFromBuilder = builder.Register();
+            }
+
+            scopeExitToCleanRegistrations.release();
+
+            auto lock = s_activatorInfoLock.lock_exclusive();
+            s_cookie.reset(cookie);
+            s_taskRegistration = registeredTaskFromBuilder;
+
+            PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
 
-        BackgroundTaskRegistration registeredTaskFromBuilder = nullptr;
-
-        auto scopeExitToCleanRegistrations = wil::scope_exit(
-            [&]()
-            {
-                if (cookie > 0)
-                {
-                    LOG_IF_FAILED(::CoRevokeClassObject(cookie));
-                }
-
-                // Clean the task registration only if it was created during this call
-                if (registeredTaskFromBuilder)
-                {
-                    registeredTask.Unregister(true);
-                }
-            }
-        );
-
-        if (WI_IsFlagSet(registrationOptions, PushNotificationRegistrationActivators::ComActivator))
+        catch(...)
         {
-            {
-                auto lock = s_activatorInfoLock.lock_exclusive();
-                THROW_HR_IF_MSG(E_INVALIDARG, s_cookie, "ComActivator already registered.");
-            }
+            HRESULT hrError = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ActivatorRegisteredByApi(hrError, 
+                details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
 
-            GetWaitHandleForArgs().create();
-
-            THROW_IF_FAILED(::CoRegisterClassObject(
-                taskClsid,
-                winrt::make<PushNotificationBackgroundTaskFactory>().get(),
-                CLSCTX_LOCAL_SERVER,
-                REGCLS_MULTIPLEUSE,
-                &cookie));
+            THROW_HR(hrError);
         }
-
-        if (builder)
-        {
-            registeredTaskFromBuilder = builder.Register();
-        }
-
-        scopeExitToCleanRegistrations.release();
-
-        auto lock = s_activatorInfoLock.lock_exclusive();
-        s_cookie.reset(cookie);
-        s_taskRegistration = registeredTaskFromBuilder;
     }
 
     void PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators const& activators)
     {
-        auto lock = s_activatorInfoLock.lock_exclusive();
-        if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
+        try
         {
-            THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_taskRegistration, "PushTrigger not registered.");
-            s_taskRegistration.Unregister(true);
-            s_taskRegistration = nullptr;
+            auto lock = s_activatorInfoLock.lock_exclusive();
+            if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
+            {
+                THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_taskRegistration, "PushTrigger not registered.");
+                s_taskRegistration.Unregister(true);
+                s_taskRegistration = nullptr;
+            }
+
+            // Check for COM flag, a valid cookie
+            if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator))
+            {
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_cookie, "ComActivator not registered.");
+                s_cookie.reset();
+            }
+        }
+        catch (...)
+        {
+            HRESULT hrError = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, activators);
+            THROW_HR(hrError);
         }
 
-        // Check for COM flag, a valid cookie
-        if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator))
-        {
-            THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_cookie, "ComActivator not registered.");
-            s_cookie.reset();
-        }
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, activators);
     }
 
     void PushNotificationManager::UnregisterAllActivators()
     {
-        auto lock = s_activatorInfoLock.lock_exclusive();
-        if (s_taskRegistration)
+        try
         {
-            s_taskRegistration.Unregister(true);
-            s_taskRegistration = nullptr;
-        }
+            auto lock = s_activatorInfoLock.lock_exclusive();
+            if (s_taskRegistration)
+            {
+                s_taskRegistration.Unregister(true);
+                s_taskRegistration = nullptr;
+            }
 
-        if (s_cookie)
-        {
-            s_cookie.reset();
+            if (s_cookie)
+            {
+                s_cookie.reset();
+            }
         }
+        catch(...)
+        {
+            HRESULT hrError = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            THROW_HR(hrError);
+        }
+        PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
     }
 
     static bool HasBackgroundTaskEntryPointClsid() {

@@ -24,6 +24,7 @@ namespace Microsoft.Windows.PushNotifications
     [flags]
     enum PushNotificationRegistrationActivators
     {
+        Undefined = 0,
         PushTrigger = 0x1, // Registers a Push Trigger with Background Infrastructure
         ComActivator = 0x2, // Registers the Background Task component as an in-process COM server
         ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
