@@ -19,10 +19,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const& remoteId);
 
         static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
-
-    private:
-        static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
-        static bool IsBackgroundTaskBuilderAvailable();
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation

@@ -144,7 +144,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 try
                 {
-                    if (IsActivatorSupported(PushNotificationRegistrationOptions::PushTrigger))
+                    if (IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger))
                     {
                         ChannelDetails channelInfo{};
                         winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
@@ -248,10 +248,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             auto registrationActivators{ details.Activators() };
 
-            auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(registrationActivators, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator) };
+            auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator) };
             THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && !IsActivatorSupported(registrationActivators));
 
-            auto isProtocolActivatorSet{ WI_IsFlagSet(registrationActivators, PushNotificationRegistrationOptions::ProtocolActivator) };
+            auto isProtocolActivatorSet{ WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ProtocolActivator) };
             THROW_HR_IF(E_INVALIDARG, isProtocolActivatorSet && !IsActivatorSupported(registrationActivators));
 
             if (isProtocolActivatorSet)
@@ -393,7 +393,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 s_comActivatorRegistration.reset();
             }
 
-            if (WI_IsFlagSet(options, PushNotificationRegistrationOptions::ProtocolActivator))
+            if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator))
             {
                 auto coInitialize = wil::CoInitializeEx();
 
