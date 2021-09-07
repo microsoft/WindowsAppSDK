@@ -12,9 +12,5 @@
         <name>Feature_GenerationId</name>
         <description>DynamicDependency APIs to access the package graph's current Generation Id</description>
         <state>AlwaysEnabled</state>
-        <alwaysDisabledChannelTokens>
-            <channelToken>Preview</channelToken>
-            <channelToken>Stable</channelToken>
-        </alwaysDisabledChannelTokens>
     </feature>
 </features>
