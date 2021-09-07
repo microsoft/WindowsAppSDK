@@ -7,7 +7,7 @@
 #include <powersetting.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
 #include <frameworkudk\PowerNotificationsPal.h>
-#include <..\WindowsAppSDK_Insights\WindowsAppRuntimeInsights.h>
+#include <WindowsAppRuntimeInsights.h>
 
 class PowerNotificationsTelemetry : public wil::TraceLoggingProvider
 {
