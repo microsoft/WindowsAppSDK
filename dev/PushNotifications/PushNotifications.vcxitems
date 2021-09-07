@@ -23,6 +23,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationTelemetry.h" />
   </ItemGroup>
 </Project>

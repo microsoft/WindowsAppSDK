@@ -15,10 +15,10 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
-bool g_registeredActivator = false;
-
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
+
+PushNotificationRegistrationToken g_appToken = nullptr;
 
 constexpr auto timeout{ std::chrono::seconds(300) };
 
@@ -114,17 +114,29 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
 
 bool ActivatorTest()
 {
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    g_registeredActivator = false;
+    PushNotificationManager::UnregisterActivator(std::exchange(g_appToken, nullptr), PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
 
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             c_fakeComServerId);
 
-        PushNotificationManager::RegisterActivator(info);
-        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+        PushNotificationRegistrationToken fakeToken = nullptr;
+        auto scope_exit = wil::scope_exit([&] {
+            if (fakeToken)
+            {
+                PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+            }
+        });
+
+        fakeToken = PushNotificationManager::RegisterActivator(info);
+        if (!fakeToken.TaskRegistration())
+        {
+            return false;
+        }
+
+        PushNotificationManager::UnregisterActivator(std::exchange(fakeToken, nullptr), PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
     }
     catch (...)
     {
@@ -136,12 +148,16 @@ bool ActivatorTest()
 // Verify calling register activator with null PushNotificationActivationInfo is not allowed.
 bool RegisterActivatorNullDetails()
 {
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    g_registeredActivator = false;
-
     try
     {
-        PushNotificationManager::RegisterActivator(nullptr);
+        PushNotificationRegistrationToken fakeToken = nullptr;
+        auto scope_exit = wil::scope_exit([&] {
+            if (fakeToken)
+            {
+                PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+            }
+        });
+        fakeToken = PushNotificationManager::RegisterActivator(nullptr);
     }
     catch (...)
     {
@@ -153,16 +169,22 @@ bool RegisterActivatorNullDetails()
 // Verify calling register activator with null clsid is not allowed.
 bool RegisterActivatorNullClsid()
 {
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    g_registeredActivator = false;
-
+    winrt::hresult hr = S_OK;
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             winrt::guid()); // Null guid
 
-        PushNotificationManager::RegisterActivator(info);
+        PushNotificationRegistrationToken fakeToken = nullptr;
+        auto scope_exit = wil::scope_exit([&] {
+            if (fakeToken)
+            {
+                PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+            }
+        });
+
+        fakeToken = PushNotificationManager::RegisterActivator(info);
     }
     catch (...)
     {
@@ -171,16 +193,57 @@ bool RegisterActivatorNullClsid()
     return false;
 }
 
+// Verify unregistering activator with a null token is not allowed.
+bool UnregisterActivatorNullToken()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationManager::UnregisterActivator(nullptr, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+    }
+    catch (...)
+    {
+        return to_hresult() == E_INVALIDARG;
+    }
+    return false;
+}
+
+// Verify unregistering an activator with null background registration is not allowed
+// if PushTrigger option is specified.
+bool UnregisterActivatorNullBackgroundRegistration()
+{
+    winrt::hresult hr = S_OK;
+    try
+    {
+        PushNotificationRegistrationToken badToken{ 0, nullptr };
+        PushNotificationManager::UnregisterActivator(badToken, PushNotificationRegistrationOptions::PushTrigger);
+    }
+    catch (...)
+    {
+        return to_hresult() == HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
+    }
+    return false;
+}
+
 // Verify registering multiple activators is not allowed.
 bool MultipleRegisterActivatorTest()
 {
+    winrt::hresult hr = S_OK;
     try
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             c_fakeComServerId); // Fake clsid to test multiple activators
 
-        PushNotificationManager::RegisterActivator(info);
+        PushNotificationRegistrationToken fakeToken = nullptr;
+        auto scope_exit = wil::scope_exit([&] {
+            if (fakeToken)
+            {
+                PushNotificationManager::UnregisterActivator(fakeToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
+            }
+        });
+
+        fakeToken = PushNotificationManager::RegisterActivator(info);
     }
     catch (...)
     {
@@ -196,29 +259,29 @@ bool BackgroundActivationTest() // Activating application for background test.
 
 bool VerifyComActivatorSupported()
 {
-    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator);
+    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator);
 }
 
 bool VerifyComActivatorNotSupported()
 {
-    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator);
+    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator);
 }
 
 bool VerifyProtocolActivatorSupported()
 {
-    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ProtocolActivator);
+    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ProtocolActivator);
 }
 
 bool VerifyProtocolActivatorNotSupported()
 {
-    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ProtocolActivator);
+    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ProtocolActivator);
 }
 
 bool VerifyComAndProtocolActivatorNotSupported()
 {
     try
     {
-        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator | PushNotificationRegistrationActivators::ProtocolActivator);
+        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator | PushNotificationRegistrationOptions::ProtocolActivator);
     }
     catch (...)
     {
@@ -231,7 +294,7 @@ bool VerifyNullActivatorNotSupported()
 {
     try
     {
-        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::Undefined);
+        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::Undefined);
     }
     catch (...)
     {
@@ -250,6 +313,8 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "MultipleChannelRequestUsingMultipleRemoteId", &MultipleChannelRequestUsingMultipleRemoteId},
         { "RegisterActivatorNullDetails", &RegisterActivatorNullDetails},
         { "RegisterActivatorNullClsid", &RegisterActivatorNullClsid},
+        { "UnregisterActivatorNullToken", &UnregisterActivatorNullToken},
+        { "UnregisterActivatorNullBackgroundRegistration", &UnregisterActivatorNullBackgroundRegistration},
         { "ActivatorTest", &ActivatorTest},
         { "MultipleRegisterActivatorTest", &MultipleRegisterActivatorTest},
         { "BackgroundActivationTest", &BackgroundActivationTest},
@@ -291,29 +356,29 @@ int main() try
 {
     bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
-        if (g_registeredActivator)
+        if (g_appToken)
         {
-            PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            PushNotificationManager::UnregisterActivator(g_appToken, PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator);
         }
+
         ::Test::Bootstrap::CleanupBootstrap();
     });
 
     ::Test::Bootstrap::SetupBootstrap();
 
     // TODO: Register ProtocolActivator for unpackaged applications or Packaged Applications when COM activation is unsupported
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationOptions::ComActivator))
     {
         PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
             winrt::guid(c_comServerId)); // same clsid as app manifest
 
-        PushNotificationManager::RegisterActivator(info);
-        g_registeredActivator = true;
+        g_appToken = PushNotificationManager::RegisterActivator(info);
     }
     /* TODO: Register ProtocolActivator for unpackaged applications
     else
     {
-        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator, nullptr);
+        PushNotificationActivationInfo info(PushNotificationRegistrationOptions::ProtocolActivator, nullptr);
         PushNotificationManager::RegisterActivator(info);
     }
     */

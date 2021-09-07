@@ -16,7 +16,7 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 {
     IMPLEMENT_TELEMETRY_CLASS(PushNotificationTelemetry, PushNotificationTelemetryProvider);
 
-    using RegistrationActivators = winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators;
+    using RegistrationOptions = winrt::Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions;
 
 public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
@@ -55,7 +55,7 @@ public:
 
     DEFINE_EVENT_METHOD(ActivatorRegisteredByApi)(
         winrt::hresult hr,
-        RegistrationActivators activators) noexcept try
+        RegistrationOptions options) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -64,8 +64,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
-                    "RegistrationActivators"),
+                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationOptions>>(options),
+                    "RegistrationOptions"),
                 TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
         }
     }
@@ -74,7 +74,7 @@ public:
 
     DEFINE_EVENT_METHOD(ActivatorUnregisteredByApi)(
         winrt::hresult hr,
-        RegistrationActivators activators) noexcept try
+        RegistrationOptions options) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -83,8 +83,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
-                    "RegistrationActivators"),
+                TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationOptions>>(options),
+                    "RegistrationOptions"),
                 TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
         }
     }

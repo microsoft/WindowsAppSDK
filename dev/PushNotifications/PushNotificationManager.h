@@ -6,18 +6,16 @@
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-
     struct PushNotificationManager
     {
         PushNotificationManager() = delete;
 
-        static void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
-        static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
-        static void UnregisterAllActivators();
+        static Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
+        static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationToken const& token, Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
 
-        static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const& remoteId);
+        static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(const winrt::guid &remoteId);
 
-        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
+        static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationOptions const& options);
 
     private:
         static bool IsChannelRequestRetryable(const winrt::hresult& hrException);

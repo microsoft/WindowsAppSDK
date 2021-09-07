@@ -15,18 +15,16 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationActivators const& activators, winrt::guid const& taskClsid) : m_activators(activators), m_taskClsid(taskClsid) {}
-
-    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationActivators const& activators) : m_activators(activators), m_taskClsid(GUID_NULL) {}
+    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationOptions const& options, winrt::guid const& taskClsid) : m_options(options), m_taskClsid(taskClsid) {}
 
     winrt::guid PushNotificationActivationInfo::TaskClsid()
     {
         return m_taskClsid;
     }
 
-    winrt::PushNotificationRegistrationActivators PushNotificationActivationInfo::Activators()
+    winrt::PushNotificationRegistrationOptions PushNotificationActivationInfo::Options()
     {
-        return m_activators;
+        return m_options;
     }
 
     winrt::com_array<winrt::IBackgroundCondition> PushNotificationActivationInfo::GetConditions()
