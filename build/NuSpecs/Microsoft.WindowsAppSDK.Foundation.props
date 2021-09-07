@@ -8,6 +8,6 @@
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.props" Condition="Exists('$(MSBuildThisFileDirectory)Microsoft.ApplicationModel.Resources.props') and '$(EnableCoreMrtTooling)'=='true'" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.Windows.ApplicationModel.Resources.props" Condition="Exists('$(MSBuildThisFileDirectory)Microsoft.Windows.ApplicationModel.Resources.props') and '$(EnableCoreMrtTooling)'=='true'" />
 
 </Project>
