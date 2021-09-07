@@ -282,26 +282,6 @@ namespace Test::PushNotifications
             RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
         }
 
-        TEST_METHOD(UnregisterActivatorNullToken)
-        {
-            RunTest(L"UnregisterActivatorNullToken", testWaitTime());
-        }
-
-        TEST_METHOD(UnregisterActivatorNullToken_Unpackaged)
-        {
-            RunTestUnpackaged(L"UnregisterActivatorNullToken", testWaitTime());
-        }
-
-        TEST_METHOD(UnregisterActivatorNullBackgroundRegistration)
-        {
-            RunTest(L"UnregisterActivatorNullBackgroundRegistration", testWaitTime());
-        }
-
-        TEST_METHOD(UnregisterActivatorNullBackgroundRegistration_Unpackaged)
-        {
-            RunTestUnpackaged(L"UnregisterActivatorNullBackgroundRegistration", testWaitTime());
-        }
-
         TEST_METHOD(MultipleRegisterActivatorTest)
         {
             RunTest(L"MultipleRegisterActivatorTest", testWaitTime());
