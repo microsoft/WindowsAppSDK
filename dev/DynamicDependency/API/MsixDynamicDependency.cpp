@@ -138,11 +138,5 @@ CATCH_RETURN();
 
 STDAPI_(UINT32) MddGetGenerationId() noexcept
 {
-    if (!::Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled())
-    {
-        LOG_HR_MSG(E_NOTIMPL, "Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled() = false");
-        return static_cast<UINT32>(~0);
-    }
-
     return MddCore::PackageGraphManager::GetGenerationId();
 }
