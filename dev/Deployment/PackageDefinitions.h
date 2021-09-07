@@ -9,7 +9,7 @@
 #define WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER              L"Framework"
 #define WINDOWSAPPRUNTIME_MAIN_PACKAGE_IDENTIFIER                   L"Main"
 #define WINDOWSAPPRUNTIME_SINGLETON_PACKAGE_IDENTIFIER              L"Singleton"
-#define WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER                  L"Packages"
+#define WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER                  L"MSIX"
 #define WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION          L".msix"
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation

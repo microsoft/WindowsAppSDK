@@ -76,6 +76,14 @@ steps:
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DynamicDependency.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.DynamicDependency -Output $(Build.SourcesDirectory)\dev\common\MddTerminalVelocityFeatures.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
+  - task: powershell@2
+    displayName: 'Create DeploymentAPI TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
     inputs:

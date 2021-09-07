@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include <testdef.h>
+#include <TerminalVelocityFeatures-DeploymentAPI.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -30,6 +31,12 @@ namespace Test::Deployment
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            if (!::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled())
+            {
+                Log::Result(TestResults::Skipped, L"Deployment API Features are not enabled.");
+                return true;
+            }
+
             ClassUninit();
             TP::AddPackage_DeploymentWindowsAppRuntimeFramework();
             TP::AddPackage_WindowsAppRuntimeFramework();
@@ -65,7 +72,7 @@ namespace Test::Deployment
 
             std::wstring WASFrameworkName { TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
             auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
             return;
         }
@@ -80,7 +87,7 @@ namespace Test::Deployment
             // Verify package status is by default not OK.
             std::wstring runtimeFrameworkName{ TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
             auto status{ DeploymentManager::GetStatus(runtimeFrameworkName) };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
 
             // Add the missing packages externally to the API (e.g. the installer).
@@ -89,7 +96,7 @@ namespace Test::Deployment
 
             // Verify that package status is now OK.
             status = DeploymentManager::GetStatus(runtimeFrameworkName);
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(status.IsOK());
             return;
         }
@@ -103,7 +110,7 @@ namespace Test::Deployment
 
             // Verify package status using default constructor (the framework the package depends upon).
             auto status{ DeploymentManager::GetStatus() };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
 
             // Add the missing packages externally to the API (e.g. the installer).
@@ -112,7 +119,7 @@ namespace Test::Deployment
 
             // Verify that package status is now OK.
             status = DeploymentManager::GetStatus();
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(status.IsOK());
             return;
         }
@@ -127,15 +134,15 @@ namespace Test::Deployment
             // Verify package status is by default not OK.
             std::wstring WASFrameworkName{ TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
             auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
 
             // Call Initialize to correct and check status again.
             status = DeploymentManager::Initialize(WASFrameworkName);
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(status.IsOK());
             status = DeploymentManager::GetStatus(WASFrameworkName);
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(status.IsOK());
             return;
         }
@@ -149,15 +156,15 @@ namespace Test::Deployment
 
             // Verify package status is by defualt not OK.
             auto status{ DeploymentManager::GetStatus() };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
 
             // Call Initialize to correct and check status again.
             status = DeploymentManager::Initialize();
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(status.IsOK());
             status = DeploymentManager::GetStatus();
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(status.IsOK());
             return;
         }
@@ -173,12 +180,12 @@ namespace Test::Deployment
             // status is not OK, but Initialize will fail to correct with error E_ACCESSDENIED.
             std::wstring WASFrameworkName{ TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
             auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
             status = DeploymentManager::Initialize(WASFrameworkName);
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
-            VERIFY_IS_TRUE(status.ExtendedError() == HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED));
+            VERIFY_IS_TRUE(status.ExtendedError().value == HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED));
             return;
         }
 
@@ -197,24 +204,24 @@ namespace Test::Deployment
             // with the correct naming scheme.
             std::wstring runtimeFrameworkName{ TP::WindowsAppRuntimeFramework::c_PackageFullName };
             auto status{ DeploymentManager::GetStatus(runtimeFrameworkName) };
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
-            VERIFY_IS_TRUE(status.ExtendedError() == HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VERIFY_IS_TRUE(status.ExtendedError().value == HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
             status = DeploymentManager::GetStatus();
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Status: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
-            VERIFY_IS_TRUE(status.ExtendedError() == HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+            VERIFY_IS_TRUE(status.ExtendedError().value == HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 
             // Initialize is expected to fail because the packages are not contained in the framework, so they
             // will not be found when attempting to resolve the missing packages.
             status = DeploymentManager::Initialize(runtimeFrameworkName);
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
-            VERIFY_IS_TRUE(status.ExtendedError() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND));
+            VERIFY_IS_TRUE(status.ExtendedError().value == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND));
             status = DeploymentManager::Initialize();
-            WEX::Logging::Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError()));
+            Log::Comment(WEX::Common::String().Format(L"Initialize: 0x%0X", status.ExtendedError().value));
             VERIFY_IS_TRUE(!status.IsOK());
-            VERIFY_IS_TRUE(status.ExtendedError() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND));
+            VERIFY_IS_TRUE(status.ExtendedError().value == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND));
             return;
         }
     };

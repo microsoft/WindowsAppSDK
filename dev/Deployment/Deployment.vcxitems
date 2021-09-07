@@ -26,4 +26,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentStatus.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)..\common\TerminalVelocityFeatures-DeploymentAPI.h" />
+  </ItemGroup>
 </Project>

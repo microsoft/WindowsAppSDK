@@ -40,9 +40,9 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $(WorkDir)\Microsoft.WindowsAppRuntime.dll
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $(WorkDir)\Microsoft.WindowsAppRuntime.pdb
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
-    @if not exist $(WorkDir)\Packages md $(WorkDir)\Packages >NUL
-    @copy /Y $(OutDir)Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix $(WorkDir)\Packages\Main.msix
-    @copy /Y $(OutDir)Deployment.WindowsAppRuntime.Test.Singleton\Deployment.WindowsAppRuntime.Test.Singleton.msix $(WorkDir)\Packages\Singleton.msix
+    @if not exist $(WorkDir)\MSIX md $(WorkDir)\MSIX >NUL
+    @copy /Y $(OutDir)Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix $(WorkDir)\MSIX\Main.msix
+    @copy /Y $(OutDir)Deployment.WindowsAppRuntime.Test.Singleton\Deployment.WindowsAppRuntime.Test.Singleton.msix $(WorkDir)\MSIX\Singleton.msix
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
