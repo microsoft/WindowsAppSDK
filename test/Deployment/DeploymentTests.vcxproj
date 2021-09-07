@@ -255,6 +255,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DynamicDependency\data\Microsoft.WindowsAppRuntime.Framework\Microsoft.WindowsAppRuntime.Framework.vcxproj">
+      <Project>{9c1a6c58-52d6-4514-9120-5c339c5df4be}</Project>
+    </ProjectReference>
     <ProjectReference Include="data\WindowsAppRuntime.Test.Framework\WindowsAppRuntime.Test.Framework.vcxproj">
       <Project>{5e2cc9d5-7c05-41d9-9db5-ec5df64ba1dc}</Project>
     </ProjectReference>
@@ -268,6 +271,7 @@
   <ItemGroup>
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-Capabilities-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-NoCapabilities-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-RealNameFramework-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

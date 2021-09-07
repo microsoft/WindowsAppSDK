@@ -13,5 +13,6 @@
   <ItemGroup>
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-Capabilities-AppxManifest.xml" />
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-NoCapabilities-AppxManifest.xml" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-RealNameFramework-AppxManifest.xml" />
   </ItemGroup>
 </Project>

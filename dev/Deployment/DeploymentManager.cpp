@@ -9,6 +9,13 @@
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation
 {
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::GetStatus()
+    {
+        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
+        return GetStatus(GetCurrentFrameworkPackageFullName());
+    }
+
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::GetStatus(hstring const& packageFullName)
     {
         std::wstring frameworkPackageFullName{ packageFullName };
@@ -53,6 +60,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         return status;
     }
 
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize()
+    {
+        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
+        return Initialize(GetCurrentFrameworkPackageFullName());
+    }
+
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize(hstring const& packageFullName)
     {
         auto status{ DeploymentManager::GetStatus(packageFullName) };
@@ -79,7 +92,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
     {
         UINT32 count{};
         UINT32 bufferLength{};
-        const LONG rc{ FindPackagesByPackageFamily(packageFamilyName.c_str(), PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT, &count, nullptr, &bufferLength, nullptr, nullptr) };
+        const auto rc{ FindPackagesByPackageFamily(packageFamilyName.c_str(), PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT, &count, nullptr, &bufferLength, nullptr, nullptr) };
         if (rc == ERROR_SUCCESS)
         {
             // The package family has no packages registered to the user
@@ -182,4 +195,50 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         return S_OK;
     }
     CATCH_RETURN()
+
+    hstring DeploymentManager::GetCurrentFrameworkPackageFullName()
+    {
+        // Get current package identity.
+        WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFullNameLength{ static_cast<UINT32>(ARRAYSIZE(packageFullName)) };
+        const auto rc{ ::GetCurrentPackageFullName(&packageFullNameLength, packageFullName) };
+        if (rc != ERROR_SUCCESS)
+        {
+            THROW_WIN32(rc);
+        }
+
+        // Get package info for this package.
+        std::wstring currentPackageFullName{ packageFullName };
+        auto currentPackageInfo{ GetPackageInfoForPackage(currentPackageFullName) };
+
+        // Index starts at 1 since the first package is the current page and we are interested in
+        // dependency packages only.
+        for (size_t i = 0; i < currentPackageInfo.Count(); ++i)
+        {
+            auto dependencyPackage{ currentPackageInfo.Package(i) };
+
+            // Verify PublisherId matches.
+            if (CompareStringOrdinal(currentPackageInfo.Package(i).packageId.publisherId, -1, WINDOWSAPPRUNTIME_IDENTITY_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
+            {
+                continue;
+            }
+
+            // Verify that the WindowsAppRuntime identifier is in the name.
+            std::wstring dependencyPackageName{ currentPackageInfo.Package(i).packageId.name };
+            if (dependencyPackageName.find(WINDOWSAPPRUNTIME_NAME_IDENTIFIER) == std::string::npos)
+            {
+                continue;
+            }
+
+            // Verify that the framework identifier also appears in the name.
+            if (dependencyPackageName.find(WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER) == std::string::npos)
+            {
+                continue;
+            }
+
+            return hstring(currentPackageInfo.Package(i).packageFullName);
+        }
+
+        THROW_WIN32(ERROR_NOT_FOUND);
+    }
 }

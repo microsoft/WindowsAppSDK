@@ -10,8 +10,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
     struct DeploymentManager
     {
         DeploymentManager() = default;
-
+        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus GetStatus();
         static winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus GetStatus(hstring const& packageFullName);
+        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus Initialize();
         static winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus Initialize(hstring const& packageFullName);
     private:
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
@@ -20,6 +21,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         static std::wstring GetPackagePath(std::wstring const& packageFullName);
         static HRESULT AddPackage(const std::filesystem::path& packagePath);
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName);
+        static hstring GetCurrentFrameworkPackageFullName();
     };
 }
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::factory_implementation

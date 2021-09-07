@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 
+#define WINDOWSAPPRUNTIME_NAME_IDENTIFIER                           L"WindowsAppRuntime"
 #define WINDOWSAPPRUNTIME_IDENTITY_PUBLISHERID                      L"8wekyb3d8bbwe"
 #define WINDOWSAPPRUNTIME_NAME_DELIMETER                            L"_"
 #define WINDOWSAPPRUNTIME_NAME_SUFFIX                               WINDOWSAPPRUNTIME_NAME_DELIMETER WINDOWSAPPRUNTIME_IDENTITY_PUBLISHERID
