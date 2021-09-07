@@ -17,20 +17,13 @@ class PowerNotificationsTelemetry : public wil::TraceLoggingProvider
 
 public:
 
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(AddCallbackTrace, PDT_ProductAndServiceUsage, eventName);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RemoveCallbackTrace, PDT_ProductAndServiceUsage, eventName);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(CallbackTrace, PDT_ProductAndServiceUsage, eventName);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UpdateValueTrace, PDT_ProductAndServiceUsage, eventName);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(RegisterTrace, PDT_ProductAndServiceUsage, eventName);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_STRING(UnregisterTrace, PDT_ProductAndServiceUsage, eventName);
-    DEFINE_COMPLIANT_TELEMETRY_EVENT_PARAM3(FailureTrace, PDT_ProductAndServiceUsage,
+    DEFINE_COMPLIANT_MEASURES_EVENT_STRING(AddCallbackTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(FailureTrace, PDT_ProductAndServiceUsage,
         PCWSTR, eventName, PCWSTR, APIName, PCSTR, exceptionString);
 };
 
 namespace winrt::Microsoft::Windows::System::Power
 {
-
-
     using PowerEventHandler =
         winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>;
     using EventType = winrt::event<PowerEventHandler>;
@@ -244,7 +237,6 @@ namespace winrt::Microsoft::Windows::System::Power
                     std::scoped_lock<std::mutex> lock(m_mutex);
                     if (!RegisteredForEvents(eventObj))
                     {
-                        PowerNotificationsTelemetry::RegisterTrace(fn.name.c_str());
                         fn.registerListener();
                     }
                     return eventObj.add(handler);
@@ -258,59 +250,30 @@ namespace winrt::Microsoft::Windows::System::Power
 
             void RemoveCallback(PowerFunctionDetails fn, const event_token& token)
             {
-                try
+                auto& eventObj{ fn.event() };
+                std::scoped_lock<std::mutex> lock(m_mutex);
+                eventObj.remove(token);
+                if (RegisteredForEvents(eventObj))
                 {
-                    PowerNotificationsTelemetry::RemoveCallbackTrace(fn.name.c_str());
-                    auto& eventObj{ fn.event() };
-                    std::scoped_lock<std::mutex> lock(m_mutex);
-                    eventObj.remove(token);
-                    if (RegisteredForEvents(eventObj))
-                    {
-                        PowerNotificationsTelemetry::UnregisterTrace(fn.name.c_str());
-                        fn.unregisterListener();
-                    }
-                }
-                catch (std::exception& ex)
-                {
-                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"RemoveCallback", ex.what());
-                    throw ex;
+                    fn.unregisterListener();
                 }
             }
 
-            void RaiseEvent(PowerFunctionDetails fn)
+            winrt::fire_and_forget RaiseEvent(PowerFunctionDetails fn)
             {
-                try
-                {
-                    PowerNotificationsTelemetry::CallbackTrace(fn.name.c_str());
-                    std::thread thread([fn]() {
-                        fn.event()(nullptr, nullptr);
-                        });
-                    thread.detach();
-                }
-                catch (std::exception& ex)
-                {
-                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"RaiseEvent", ex.what());
-                    throw ex;
-                }
+                auto lifetime = get_strong();
+                co_await winrt::resume_background();
+                fn.event()(nullptr, nullptr);
             }
 
             // Checks if an event is already registered. If none are, then gets the status
             void UpdateValuesIfNecessary(PowerFunctionDetails fn)
             {
-                try
+                auto& eventObj{ fn.event() };
+                std::scoped_lock<std::mutex> lock(m_mutex);
+                if (!RegisteredForEvents(eventObj))
                 {
-                    PowerNotificationsTelemetry::UpdateValueTrace(fn.name.c_str());
-                    auto& eventObj{ fn.event() };
-                    std::scoped_lock<std::mutex> lock(m_mutex);
-                    if (!RegisteredForEvents(eventObj))
-                    {
-                        fn.updateValue();
-                    }
-                }
-                catch (std::exception& ex)
-                {
-                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"UpdateValues", ex.what());
-                    throw ex;
+                    fn.updateValue();
                 }
             }
 
