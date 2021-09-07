@@ -160,12 +160,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             GUID taskClsid = details.TaskClsid();
             THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
-            auto registrationActivators = details.Activators();
+            auto registrationActivators{ details.Activators() };
             THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationActivators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator));
 
             DWORD cookie = 0;
-            IBackgroundTaskRegistration registeredTask = nullptr;
-            BackgroundTaskBuilder builder = nullptr;
+            IBackgroundTaskRegistration registeredTask{};
+            BackgroundTaskBuilder builder{};
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger))
             {
@@ -218,7 +218,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
             }
 
-            BackgroundTaskRegistration registeredTaskFromBuilder = nullptr;
+            BackgroundTaskRegistration registeredTaskFromBuilder{ nullptr };
 
             auto scopeExitToCleanRegistrations = wil::scope_exit(
                 [&]()
