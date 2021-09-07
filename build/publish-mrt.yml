@@ -123,6 +123,7 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
     Contents: |
+      Microsoft.Windows.ApplicationModel.Resources.props      
       MrtCore.PriGen.targets
       MrtCore.References.targets
       MrtCore.targets
