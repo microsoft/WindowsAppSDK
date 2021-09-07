@@ -31,23 +31,21 @@ namespace Test::Deployment
         TEST_CLASS_SETUP(ClassInit)
         {
             ClassUninit();
-
-            TP::AddPackage_WindowsAppRuntimeFramework();
+            TP::AddPackage_DeploymentWindowsAppRuntimeFramework();
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
-            TP::RemovePackage_DynamicDependencyDataStore();
-            TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_WindowsAppRuntimeSingleton();
-            TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_DeploymentWindowsAppRuntimeSingleton();
+            TP::RemovePackage_DeploymentWindowsAppRuntimeMain();
+            TP::RemovePackage_DeploymentWindowsAppRuntimeFramework();
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DeploymentWindowsAppRuntimeFramework());
             return true;
         }
 
@@ -56,38 +54,77 @@ namespace Test::Deployment
             return true;
         }
 
-        TEST_METHOD(GetStatusBasicTest)
+        TEST_METHOD(GetStatus_NotOK)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-AppxManifest.xml")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-NoCapabilities-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            std::wstring WASFrameworkName { TP::WindowsAppRuntimeFramework::c_PackageFullName };
-
-
-
-
+            std::wstring WASFrameworkName { TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
             auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
-
-            VERIFY_IS_TRUE(status.IsOK());
-
+            VERIFY_IS_TRUE(!status.IsOK());
             return;
         }
 
-        TEST_METHOD(InitializeBasicTest)
+        TEST_METHOD(GetStatus_OK)
         {
             BEGIN_TEST_METHOD_PROPERTIES()
                 TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
-                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-AppxManifest.xml")
-                END_TEST_METHOD_PROPERTIES();
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
 
-            std::wstring WASFrameworkName{ TP::WindowsAppRuntimeFramework::c_PackageFullName };
+            // Verify package status is by default not OK.
+            std::wstring WASFrameworkName{ TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
+            auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
+            VERIFY_IS_TRUE(!status.IsOK());
 
-            auto status{ DeploymentManager::Initialize(WASFrameworkName) };
+            // Add the missing packages externally to the API (e.g. the installer).
+            TP::AddPackage_DeploymentWindowsAppRuntimeSingleton();
+            TP::AddPackage_DeploymentWindowsAppRuntimeMain();
 
+            // Verify that package status is now OK.
+            status = DeploymentManager::GetStatus(WASFrameworkName);
             VERIFY_IS_TRUE(status.IsOK());
+            return;
+        }
 
+
+        TEST_METHOD(Initialize_HasCapabilities)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-Capabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // Verify package status is by defualt not OK.
+            std::wstring WASFrameworkName{ TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
+            auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
+            VERIFY_IS_TRUE(!status.IsOK());
+
+            // Call Initialize to correct and check status again.
+            status = DeploymentManager::Initialize(WASFrameworkName);
+            VERIFY_IS_TRUE(status.IsOK());
+            status = DeploymentManager::GetStatus(WASFrameworkName);
+            VERIFY_IS_TRUE(status.IsOK());
+            return;
+        }
+
+        TEST_METHOD(Initialize_NoCapabilities)
+        {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"UAP")
+                TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"Deployment-NoCapabilities-AppxManifest.xml")
+            END_TEST_METHOD_PROPERTIES();
+
+            // A package that does not have capabilities will be able to sucessfully detect that
+            // status is not OK, but Initialize will fail to correct with error E_ACCESSDENIED.
+            std::wstring WASFrameworkName{ TP::DeploymentWindowsAppRuntimeFramework::c_PackageFullName };
+            auto status{ DeploymentManager::GetStatus(WASFrameworkName) };
+            VERIFY_IS_TRUE(!status.IsOK());
+            status = DeploymentManager::Initialize(WASFrameworkName);
+            VERIFY_IS_TRUE(!status.IsOK());
+            VERIFY_IS_TRUE(status.ExtendedError() == E_ACCESSDENIED);
             return;
         }
 

@@ -24,6 +24,10 @@
 #define WINDOWSAPPRUNTIME_TEST_MSIX_MAIN_PACKAGE_NAME      L"Microsoft.WindowsAppRuntime.Main"
 #define WINDOWSAPPRUNTIME_TEST_MSIX_SINGLETON_PACKAGE_NAME L"Microsoft.WindowsAppRuntime.Singleton"
 
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"WindowsAppRuntime.Test.Framework"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME      L"WindowsAppRuntime.Test.Main"
+#define WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"WindowsAppRuntime.Test.Singleton"
+
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_NAMEPREFIX     L"WindowsAppRuntime.Test.DDLM"
 #define WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION        WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING
 #if defined(_M_X64)
@@ -94,6 +98,27 @@ namespace Test::Packages::PushNotificationsLongRunningTask
     constexpr PCWSTR c_PackageDirName = L"PushNotificationsLongRunningTask";
     constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.PushNotificationsTask_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
     constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.PushNotificationsTask_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_VERSION L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
+namespace Test::Packages::DeploymentWindowsAppRuntimeFramework
+{
+    constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.Framework";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_FRAMEWORK_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
+namespace Test::Packages::DeploymentWindowsAppRuntimeMain
+{
+    constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.Main";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_MAIN_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+}
+
+namespace Test::Packages::DeploymentWindowsAppRuntimeSingleton
+{
+    constexpr PCWSTR c_PackageDirName = L"Deployment.WindowsAppRuntime.Test.Singleton";
+    constexpr PCWSTR c_PackageFamilyName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
+    constexpr PCWSTR c_PackageFullName = WINDOWSAPPRUNTIME_TEST_MSIX_DEPLOYMENT_SINGLETON_PACKAGE_NAME L"_" WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_STRING L"_neutral__" WINDOWSAPPRUNTIME_TEST_MSIX_PUBLISHERID;
 }
 
 namespace Test::Packages
@@ -295,6 +320,69 @@ namespace Test::Packages
     inline bool IsPackageRegistered_PushNotificationsLongRunningTask()
     {
         return IsPackageRegistered(Test::Packages::PushNotificationsLongRunningTask::c_PackageFullName);
+    }
+
+    inline void AddPackage_DeploymentWindowsAppRuntimeFramework()
+    {
+        AddPackage(Test::Packages::DeploymentWindowsAppRuntimeFramework::c_PackageDirName, Test::Packages::DeploymentWindowsAppRuntimeFramework::c_PackageFullName);
+    }
+
+    inline void RemovePackage_DeploymentWindowsAppRuntimeFramework()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::DeploymentWindowsAppRuntimeFramework::c_PackageFullName);
+    }
+
+    inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeFramework()
+    {
+        return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeFramework::c_PackageFullName);
+    }
+
+    inline void AddPackage_DeploymentWindowsAppRuntimeMain()
+    {
+        AddPackage(Test::Packages::DeploymentWindowsAppRuntimeMain::c_PackageDirName, Test::Packages::DeploymentWindowsAppRuntimeMain::c_PackageFullName);
+    }
+
+    inline void RemovePackage_DeploymentWindowsAppRuntimeMain()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::DeploymentWindowsAppRuntimeMain::c_PackageFullName);
+    }
+
+    inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeMain()
+    {
+        return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeMain::c_PackageFullName);
+    }
+
+    inline void AddPackage_DeploymentWindowsAppRuntimeSingleton()
+    {
+        AddPackage(Test::Packages::DeploymentWindowsAppRuntimeSingleton::c_PackageDirName, Test::Packages::DeploymentWindowsAppRuntimeSingleton::c_PackageFullName);
+    }
+
+    inline void RemovePackage_DeploymentWindowsAppRuntimeSingleton()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::DeploymentWindowsAppRuntimeSingleton::c_PackageFullName);
+    }
+
+    inline bool IsPackageRegistered_DeploymentWindowsAppRuntimeSingleton()
+    {
+        return IsPackageRegistered(Test::Packages::DeploymentWindowsAppRuntimeSingleton::c_PackageFullName);
     }
 
     inline std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()

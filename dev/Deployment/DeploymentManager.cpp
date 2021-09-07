@@ -4,6 +4,7 @@
 #include <DeploymentManager.h>
 #include <DeploymentStatus.h>
 #include <PackageInfo.h>
+#include <PackageId.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppSDK.DeploymentManager.g.cpp>
 
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation
@@ -18,16 +19,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
 
         // Only the Microsoft Publisher Id is supported.
         auto expectedPublisherId{ frameworkPackageInfo.Package(0).packageId.publisherId };
-        FAIL_FAST_HR_IF(E_INVALIDARG, CompareStringOrdinal(expectedPublisherId, -1, WINDOWSAPPSDK_IDENTITY_PUBLISHERID, -1, TRUE) != CSTR_EQUAL);
+        FAIL_FAST_HR_IF(E_INVALIDARG, CompareStringOrdinal(expectedPublisherId, -1, WINDOWSAPPRUNTIME_IDENTITY_PUBLISHERID, -1, TRUE) != CSTR_EQUAL);
 
         // The framework naming scheme consists of a prefix (ex: "Microsoft.WindowsAppSDK.") and a possible
         // postfix (ex: "-1.0-Release"). We assume all packages of this release match this similar naming scheme
         // but for their specific identifiers. The framework package is input, so we know its constant identifier,
         // therefore we can derive the prefix and postfix from the rest of the Name attribute of the Package Family.
         std::wstring frameworkFamilyName{ frameworkPackageInfo.Package(0).packageFamilyName };
-        auto posFrameworkIdentifier{ frameworkFamilyName.find(WINDOWSAPPSDK_FRAMEWORK_PACKAGE_IDENTIFIER) };
-        const int c_frameworkIdentifierLength{ ARRAYSIZE(WINDOWSAPPSDK_FRAMEWORK_PACKAGE_IDENTIFIER) - 1 };
-        auto posFrameworkDelimeter{ frameworkFamilyName.find(WINDOWSAPPSDK_NAME_DELIMETER) };
+        auto posFrameworkIdentifier{ frameworkFamilyName.find(WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER) };
+        const int c_frameworkIdentifierLength{ ARRAYSIZE(WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER) - 1 };
+        auto posFrameworkDelimeter{ frameworkFamilyName.find(WINDOWSAPPRUNTIME_NAME_DELIMETER) };
         auto packageFamilyPrefix{ frameworkFamilyName.substr(0, posFrameworkIdentifier)};
         auto packageFamilyPostfix{ frameworkFamilyName.substr(posFrameworkIdentifier + c_frameworkIdentifierLength, posFrameworkDelimeter - (posFrameworkIdentifier + c_frameworkIdentifierLength))};
 
@@ -36,7 +37,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         for (const auto& package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme.
-            std::wstring packageFamilyName{ packageFamilyPrefix + package.identifier + packageFamilyPostfix + WINDOWSAPPSDK_NAME_SUFFIX };
+            std::wstring packageFamilyName{ packageFamilyPrefix + package.identifier + packageFamilyPostfix + WINDOWSAPPRUNTIME_NAME_SUFFIX };
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
@@ -54,7 +55,16 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize(hstring const& packageFullName)
     {
-        return DeploymentManager::GetStatus(packageFullName);
+        auto status{ DeploymentManager::GetStatus(packageFullName) };
+        if (status.IsOK())
+        {
+            return status;
+        }
+
+        std::wstring frameworkPackageFullName{ packageFullName };
+        auto initializeResult{ DeployPackages(frameworkPackageFullName) };
+        auto initializeStatus{ winrt::make<implementation::DeploymentStatus>(SUCCEEDED(initializeResult), FAILED(initializeResult), initializeResult) };
+        return initializeStatus;
     }
 
     MddCore::PackageInfo DeploymentManager::GetPackageInfoForPackage(std::wstring const& packageFullName)
@@ -93,20 +103,20 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         return packageFullNamesList;
     }
 
-
-    HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion)
+    HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion) try
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
         bool match{ false };
         for (const auto& packageFullName : packageFullNames)
         {
-            auto packageInfo{ GetPackageInfoForPackage(packageFullName) };
-            if (packageInfo.Count() == 0)
+            auto packagePath{ GetPackagePath(packageFullName) };
+            if (packagePath.length() == 0)
             {
                 continue;
             }
 
-            if (packageInfo.Package(0).packageId.version.Version >= targetVersion.Version)
+            auto packageId{ MddCore::PackageId::FromPackageFullName(packageFullName.c_str()) };
+            if (packageId.Version().Version >= targetVersion.Version)
             {
                 match = true;
                 break;
@@ -120,5 +130,56 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
 
         return S_OK;
     }
+    CATCH_RETURN()
 
+    // Gets the package path, which is a fast and reliable way to check if the package is
+    // registered for the user, even without package query capabilities.
+    std::wstring DeploymentManager::GetPackagePath(std::wstring const& packageFullName)
+    {
+        UINT32 pathLength{};
+        const auto rc{ GetPackagePathByFullName(packageFullName.c_str(), &pathLength, nullptr) };
+        if (rc == ERROR_NOT_FOUND)
+        {
+            return std::wstring();
+        }
+        else if (rc != ERROR_INSUFFICIENT_BUFFER)
+        {
+            THROW_WIN32(rc);
+        }
+
+        auto path = wil::make_process_heap_string(nullptr, pathLength);
+        THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName.c_str(), &pathLength, path.get()));
+        return std::wstring(path.get());
+    }
+
+    // Adds the package at the path using PackageManager.
+    // This requires the 'packageManagement' or 'runFullTrust' capabilities.
+    HRESULT DeploymentManager::AddPackage(const std::filesystem::path& packagePath) try
+    {
+        auto packagePathUri = winrt::Windows::Foundation::Uri(packagePath.c_str());
+        winrt::Windows::Management::Deployment::PackageManager packageManager;
+        auto options{ winrt::Windows::Management::Deployment::DeploymentOptions::None };
+        auto deploymentResult{ packageManager.AddPackageAsync(packagePathUri, nullptr, options).get() };
+        return deploymentResult.ExtendedErrorCode();
+    }
+    CATCH_RETURN()
+
+    // Deploys all of the packages carried by the specified framework.
+    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName) try
+    {
+        auto frameworkPath = std::filesystem::path(GetPackagePath(frameworkPackageFullName));
+        for (const auto& package : c_targetPackages)
+        {
+            // Build path for the packages.
+            auto packagePath{ frameworkPath };
+            packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
+            packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
+            
+            // Deploy package.
+            RETURN_IF_FAILED(AddPackage(packagePath));
+        }
+
+        return S_OK;
+    }
+    CATCH_RETURN()
 }

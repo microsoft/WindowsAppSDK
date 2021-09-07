@@ -11,6 +11,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="..\Deployment\Deployment-AppxManifest.xml" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-Capabilities-AppxManifest.xml" />
+    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)Deployment-NoCapabilities-AppxManifest.xml" />
   </ItemGroup>
 </Project>
