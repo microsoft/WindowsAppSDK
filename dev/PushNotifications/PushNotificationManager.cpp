@@ -38,6 +38,10 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
+    static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_pushTriggerRegistration{ nullptr };
+    static wil::unique_com_class_object_cookie s_comActivatorRegistration;
+    static wil::srwlock s_activatorInfoLock;
+
     inline constexpr auto c_maxBackoff{ 5min };
     inline constexpr auto c_initialBackoff{ 60s };
     inline constexpr auto c_backoffIncrement{ 60s };
@@ -163,15 +167,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             auto registrationActivators{ details.Activators() };
             THROW_HR_IF(E_INVALIDARG, WI_AreAllFlagsClear(registrationActivators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator));
 
-            DWORD cookie = 0;
-            IBackgroundTaskRegistration registeredTask{};
-            BackgroundTaskBuilder builder{};
+            BackgroundTaskBuilder builder{ nullptr };
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger))
             {
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
-                    THROW_HR_IF(E_INVALIDARG, s_taskRegistration);
+                    THROW_HR_IF(E_INVALIDARG, s_pushTriggerRegistration);
                 }
 
                 winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
@@ -190,7 +192,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         if (name == backgroundTaskFullName)
                         {
-                            registeredTask = task.Value();
+                            s_pushTriggerRegistration = task.Value();
                             return true;
                         }
 
@@ -223,15 +225,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             auto scopeExitToCleanRegistrations = wil::scope_exit(
                 [&]()
                 {
-                    if (cookie > 0)
-                    {
-                        LOG_IF_FAILED(::CoRevokeClassObject(cookie));
-                    }
+                    s_comActivatorRegistration.reset();
 
                     // Clean the task registration only if it was created during this call
                     if (registeredTaskFromBuilder)
                     {
-                        registeredTask.Unregister(true);
+                        registeredTaskFromBuilder.Unregister(true);
                     }
                 }
             );
@@ -240,7 +239,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
-                    THROW_HR_IF_MSG(E_INVALIDARG, s_cookie, "ComActivator already registered.");
+                    THROW_HR_IF_MSG(E_INVALIDARG, s_comActivatorRegistration, "ComActivator already registered.");
                 }
 
                 GetWaitHandleForArgs().create();
@@ -250,7 +249,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
                     CLSCTX_LOCAL_SERVER,
                     REGCLS_MULTIPLEUSE,
-                    &cookie));
+                    &s_comActivatorRegistration));
             }
 
             if (builder)
@@ -261,8 +260,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             scopeExitToCleanRegistrations.release();
 
             auto lock = s_activatorInfoLock.lock_exclusive();
-            s_cookie.reset(cookie);
-            s_taskRegistration = registeredTaskFromBuilder;
+            s_pushTriggerRegistration = registeredTaskFromBuilder;
 
             PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
@@ -284,16 +282,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             auto lock = s_activatorInfoLock.lock_exclusive();
             if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
             {
-                THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_taskRegistration, "PushTrigger not registered.");
-                s_taskRegistration.Unregister(true);
-                s_taskRegistration = nullptr;
+                THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_pushTriggerRegistration, "PushTrigger not registered.");
+                s_pushTriggerRegistration.Unregister(true);
+                s_pushTriggerRegistration = nullptr;
             }
 
             // Check for COM flag, a valid cookie
             if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ComActivator))
             {
-                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_cookie, "ComActivator not registered.");
-                s_cookie.reset();
+                THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_comActivatorRegistration, "ComActivator not registered.");
+                s_comActivatorRegistration.reset();
             }
         }
         catch (...)
@@ -311,16 +309,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         try
         {
             auto lock = s_activatorInfoLock.lock_exclusive();
-            if (s_taskRegistration)
+            if (s_pushTriggerRegistration)
             {
-                s_taskRegistration.Unregister(true);
-                s_taskRegistration = nullptr;
+                s_pushTriggerRegistration.Unregister(true);
+                s_pushTriggerRegistration = nullptr;
             }
 
-            if (s_cookie)
-            {
-                s_cookie.reset();
-            }
+            s_comActivatorRegistration.reset();
         }
         catch(...)
         {

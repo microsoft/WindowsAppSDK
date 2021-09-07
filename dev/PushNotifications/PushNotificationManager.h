@@ -6,9 +6,6 @@
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_taskRegistration = nullptr;
-    static wil::unique_com_class_object_cookie s_cookie;
-    static wil::srwlock s_activatorInfoLock;
 
     struct PushNotificationManager
     {
