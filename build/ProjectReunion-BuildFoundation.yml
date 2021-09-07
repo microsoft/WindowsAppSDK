@@ -145,6 +145,16 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+
   - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
