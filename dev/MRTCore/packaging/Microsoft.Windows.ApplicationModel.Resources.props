@@ -3,9 +3,15 @@
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultContentItems)'!='false' and '$(EnableCoreMrtTooling)'=='true' and '$(DefaultItemExcludes)'!=''">
-    <Content Include="$(_ReunionImageGlobs)" Exclude="$(DefaultItemExcludes.Replace(`$(_ReunionImageGlobs)`, ``));$(DefaultExcludesInProjectFolder)" />
-    <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes.Replace(`**/*.resw`, ``))');$(DefaultExcludesInProjectFolder)" />
+  <PropertyGroup>
+    <_ReunionImageGlobs>**/*.png;**/*.bmp;**/*.jpg;**/*.dds;**/*.tif;**/*.tga;**/*.gif</_ReunionImageGlobs>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultContentItems)'!='false'">
+    <None Remove="**/*.resw" />
+    <None Remove="$(_ReunionImageGlobs)" />
+    <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+    <Content Include="$(_ReunionImageGlobs)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
 
 </Project>

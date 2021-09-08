@@ -13,11 +13,6 @@
     <Content Include="@(Image)" Condition="'$(OutputType)' == 'Exe'" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(EnableCoreMrtTooling)'=='true'">
-      <_ReunionImageGlobs>**/*.png;**/*.bmp;**/*.jpg;**/*.dds;**/*.tif;**/*.tga;**/*.gif</_ReunionImageGlobs>
-      <DefaultItemExcludes>$(DefaultItemExcludes);**/*.resw;$(_ReunionImageGlobs)</DefaultItemExcludes>
-  </PropertyGroup>
-
   <!--
     Setting default project properties for .NET SDK-style projects
   -->
