@@ -24,17 +24,15 @@ public:
         winrt::hresult hr,
         const winrt::guid& remoteId) noexcept try
     {
-        std::cout << "ELx - ChannelRequestedByApi - 1" << std::endl;
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
-            std::cout << "ELx - ChannelRequestedByApi - 2" << std::endl;
             TraceLoggingClassWriteMeasure(
                 "ChannelRequestedByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
@@ -50,7 +48,7 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
@@ -69,7 +67,7 @@ public:
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
@@ -89,7 +87,7 @@ public:
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
                 _GENERIC_PARTB_FIELDS_ENABLED,
-                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
@@ -121,54 +119,52 @@ private:
         return m_eventCount;
     }
 
-    std::wstring m_appId;
-
-    const wchar_t* GetAppId()
+    inline bool IsPackagedApp()
     {
-        std::cout << "ELx - GetAppUserModelId - 1" << std::endl;
-        if (m_appId.empty())
-        {
-            AppModel::Identity::IsPackagedProcess() ? InitAppIdPackaged() : InitAppIdUnpackaged();
-        }
+        static bool isPackagedApp = AppModel::Identity::IsPackagedProcess();
 
-        std::cout << "ELx - GetAppUserModelId - 6" << std::endl;
-        return m_appId.c_str();
+        return isPackagedApp;
     }
 
-    void InitAppIdPackaged() noexcept
+    inline const wchar_t* GetAppId()
+    {
+        static std::wstring appId = IsPackagedApp() ? InitAppIdPackaged() : InitAppIdUnpackaged();
+
+        return appId.c_str();
+    }
+
+    std::wstring InitAppIdPackaged() noexcept
     {
         wchar_t m_appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
 
-        std::cout << "ELx - GetAppUserModelId - 2" << std::endl;
         UINT32 appUserModelIdSize = ARRAYSIZE(m_appUserModelId);
-        std::cout << "ELx - GetAppUserModelId - 3" << std::endl;
         auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId);
-        std::cout << "ELx - GetAppUserModelId - 4" << std::endl;
         if (result != ERROR_SUCCESS)
         {
-            std::cout << "ELx - GetAppUserModelId - 5" << std::endl;
             wcscpy_s(m_appUserModelId, L"AppUserModelId not found");
             LOG_WIN32(result);
         }
 
-        m_appId = m_appUserModelId;
+        return m_appUserModelId;
     }
 
-    void InitAppIdUnpackaged() noexcept
+    std::wstring InitAppIdUnpackaged() noexcept
     {
+        std::wstring appId;
+
         wil::unique_cotaskmem_string processName;
         auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
         if (result == ERROR_SUCCESS)
         {
-            m_appId = CensorFilePath(processName.get());
+            appId = CensorFilePath(processName.get());
         }
         else
         {
-            std::cout << "ELx - GetAppUserModelId - 5" << std::endl;
-            m_appId = L"ModuleFileName not found";
+            appId = L"ModuleFileName not found";
             LOG_WIN32(result);
         }
-        std::cout << "ELx - GetAppUserModelId - 5" << std::endl;
+
+        return appId;
     }
 
     PCWSTR CensorFilePath(_In_opt_ PCWSTR path) noexcept
