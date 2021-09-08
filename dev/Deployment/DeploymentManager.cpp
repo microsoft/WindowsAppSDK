@@ -31,12 +31,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         auto expectedPublisherId{ frameworkPackageInfo.Package(0).packageId.publisherId };
         FAIL_FAST_HR_IF(E_INVALIDARG, CompareStringOrdinal(expectedPublisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL);
 
-        // The framework naming scheme consists of a prefix (ex: "Microsoft.WindowsAppRuntime.")
-        // and a possible VersionTag (ex: "-1.0-Release"). We assume all packages of this release
-        // match this similar naming scheme but for their subtype name identifiers. The framework
-        // package is input, so we know its constant identifier, therefore we can derive the
-        // prefix and subtype and postfix from the rest of the Name attribute of the Package Family.
-        // For details on package naming, see:
+        // The framework and package naming scheme is specified here:
         //     https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md#3-package-naming
         std::wstring frameworkName{ frameworkPackageInfo.Package(0).packageId.name };
         FAIL_FAST_HR_IF(E_INVALIDARG, frameworkName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0);

@@ -16,9 +16,6 @@
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation
 {
     // See https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md#3-package-naming
-    // To identify a package, it must have the correct name identifier.
-    // The Framework package does not have a name identifier, only the prefix and an optional VersionTag.
-    // All other packages have a SubtypeName following the prefix.
 
     struct PackageIdentifier
     {
