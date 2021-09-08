@@ -21,7 +21,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE WindowsAppSdkBuildPipeline =$(WindowsAppSdkBuildPipeline)
 !ENDIF
 
-TARGET_BASENAME=Deployment.Singleton
+TARGET_BASENAME=Microsoft.WindowsAppRuntime.Test.Singleton
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix

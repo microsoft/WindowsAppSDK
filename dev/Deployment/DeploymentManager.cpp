@@ -29,25 +29,30 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
 
         // Only the Microsoft Publisher Id is supported.
         auto expectedPublisherId{ frameworkPackageInfo.Package(0).packageId.publisherId };
-        FAIL_FAST_HR_IF(E_INVALIDARG, CompareStringOrdinal(expectedPublisherId, -1, WINDOWSAPPRUNTIME_IDENTITY_PUBLISHERID, -1, TRUE) != CSTR_EQUAL);
+        FAIL_FAST_HR_IF(E_INVALIDARG, CompareStringOrdinal(expectedPublisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL);
 
-        // The framework naming scheme consists of a prefix (ex: "Microsoft.WindowsAppSDK.") and a possible
-        // postfix (ex: "-1.0-Release"). We assume all packages of this release match this similar naming scheme
-        // but for their specific identifiers. The framework package is input, so we know its constant identifier,
-        // therefore we can derive the prefix and postfix from the rest of the Name attribute of the Package Family.
-        std::wstring frameworkFamilyName{ frameworkPackageInfo.Package(0).packageFamilyName };
-        auto posFrameworkIdentifier{ frameworkFamilyName.find(WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER) };
-        const int c_frameworkIdentifierLength{ ARRAYSIZE(WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER) - 1 };
-        auto posFrameworkDelimeter{ frameworkFamilyName.find(WINDOWSAPPRUNTIME_NAME_DELIMETER) };
-        auto packageFamilyPrefix{ frameworkFamilyName.substr(0, posFrameworkIdentifier)};
-        auto packageFamilyPostfix{ frameworkFamilyName.substr(posFrameworkIdentifier + c_frameworkIdentifierLength, posFrameworkDelimeter - (posFrameworkIdentifier + c_frameworkIdentifierLength))};
+        // The framework naming scheme consists of a prefix (ex: "Microsoft.WindowsAppRuntime.")
+        // and a possible VersionTag (ex: "-1.0-Release"). We assume all packages of this release
+        // match this similar naming scheme but for their subtype name identifiers. The framework
+        // package is input, so we know its constant identifier, therefore we can derive the
+        // prefix and subtype and postfix from the rest of the Name attribute of the Package Family.
+        // For details on package naming, see:
+        //     https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackages.md#3-package-naming
+        std::wstring frameworkName{ frameworkPackageInfo.Package(0).packageId.name };
+        FAIL_FAST_HR_IF(E_INVALIDARG, frameworkName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0);
+        const int c_namePrefixLength{ ARRAYSIZE(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) - 1 };
+
+        // We assume that since this is a framework there is no subtype name, meaning the remainder
+        // of the name is the VersionTag
+        auto packageNameVersionTag{ frameworkName.substr(c_namePrefixLength) };
 
         // Loop through all of the target packages and validate.
         HRESULT verifyResult{ S_OK };
         for (const auto& package : c_targetPackages)
         {
-            // Build package family name based on the framework naming scheme.
-            std::wstring packageFamilyName{ packageFamilyPrefix + package.identifier + packageFamilyPostfix + WINDOWSAPPRUNTIME_NAME_SUFFIX };
+            // Build package family name based on the framework naming scheme:
+            //     Prefix + SubTypeName + VersionTag + '_' + PublisherId
+            std::wstring packageFamilyName{ WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX };
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
@@ -223,24 +228,28 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
             auto dependencyPackage{ currentPackageInfo.Package(i) };
 
             // Verify PublisherId matches.
-            if (CompareStringOrdinal(currentPackageInfo.Package(i).packageId.publisherId, -1, WINDOWSAPPRUNTIME_IDENTITY_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
+            if (CompareStringOrdinal(currentPackageInfo.Package(i).packageId.publisherId, -1, WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID, -1, TRUE) != CSTR_EQUAL)
             {
                 continue;
             }
 
-            // Verify that the WindowsAppRuntime identifier is in the name.
+            // Verify that the WindowsAppRuntime prefix identifier is in the name.
+            // This should also be the beginning of the name, so its find position is expected to be 0.
             std::wstring dependencyPackageName{ currentPackageInfo.Package(i).packageId.name };
-            if (dependencyPackageName.find(WINDOWSAPPRUNTIME_NAME_IDENTIFIER) == std::string::npos)
+            if (dependencyPackageName.find(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) != 0)
             {
                 continue;
             }
 
-            // Verify that the framework identifier also appears in the name.
-            if (dependencyPackageName.find(WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_IDENTIFIER) == std::string::npos)
+            // Verify that no other SubTypeNames appear in the name.
+            for (const auto& subType : c_subTypeNames)
             {
-                continue;
+                if (dependencyPackageName.find(subType.identifier) != std::string::npos)
+                {
+                    continue;
+                }
             }
-
+ 
             return hstring(currentPackageInfo.Package(i).packageFullName);
         }
 

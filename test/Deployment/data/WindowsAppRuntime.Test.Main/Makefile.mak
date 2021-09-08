@@ -21,7 +21,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE WindowsAppSdkBuildPipeline =$(WindowsAppSdkBuildPipeline)
 !ENDIF
 
-TARGET_BASENAME=Deployment.Main
+TARGET_BASENAME=Microsoft.WindowsAppRuntime.Test.Main
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix

@@ -10,19 +10,19 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.Main"
+    Name="Microsoft.WindowsAppRuntime.Main.Test"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 
   <Properties>
-    <DisplayName>WindowsAppRuntime.Test.Main (aka Microsoft.WindowsAppRuntime.Main) fake for tests</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.Main.Test (aka Microsoft.WindowsAppRuntime.Main) fake for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
 
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <PackageDependency Name="WindowsAppRuntime.Test.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Test" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
   </Dependencies>
 
   <Resources>

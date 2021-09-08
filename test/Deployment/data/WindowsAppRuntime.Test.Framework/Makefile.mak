@@ -20,7 +20,7 @@ SIGNTOOL_OPTS=/v
 !MESSAGE TargetName        =$(TargetName)
 !ENDIF
 
-TARGET_BASENAME=WindowsAppRuntime.Test.Framework
+TARGET_BASENAME=Microsoft.WindowsAppRuntime.Test.Framework
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
