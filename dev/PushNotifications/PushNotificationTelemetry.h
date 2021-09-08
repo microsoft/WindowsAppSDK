@@ -5,6 +5,7 @@
 
 #include "..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h"
 #include <wrl\wrappers\corewrappers.h>
+#include <iostream>
 
 DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider,
     "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry",
@@ -21,19 +22,20 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
-        bool isAppPackaged,
         const winrt::guid& remoteId) noexcept try
     {
+        std::cout << "ELx - ChannelRequestedByApi - 1" << std::endl;
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
+            std::cout << "ELx - ChannelRequestedByApi - 2" << std::endl;
             TraceLoggingClassWriteMeasure(
                 "ChannelRequestedByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingBool(isAppPackaged, "IsAppPackaged"),
                 TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
     CATCH_LOG()
@@ -46,9 +48,10 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ChannelClosedByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
     CATCH_LOG()
@@ -62,11 +65,12 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ActivatorRegisteredByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
     CATCH_LOG()
@@ -81,11 +85,12 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ActivatorUnregisteredByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingBool(AppModel::Identity::IsPackagedProcess(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppId(), "AppId"));
         }
     }
     CATCH_LOG()
@@ -116,21 +121,63 @@ private:
         return m_eventCount;
     }
 
-    wchar_t m_appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+    std::wstring m_appId;
 
-    wchar_t* GetAppUserModelId()
+    const wchar_t* GetAppId()
     {
-        if (m_appUserModelId[0] == '\0')
+        std::cout << "ELx - GetAppUserModelId - 1" << std::endl;
+        if (m_appId.empty())
         {
-            UINT32 appUserModelIdSize = ARRAYSIZE(m_appUserModelId);
-            auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId);
-            if (result != ERROR_SUCCESS)
-            {
-                wcscpy_s(m_appUserModelId, L"AppUserModelId not found");
-                LOG_WIN32(result);
-            }
+            AppModel::Identity::IsPackagedProcess() ? InitAppIdPackaged() : InitAppIdUnpackaged();
         }
 
-        return m_appUserModelId;
+        std::cout << "ELx - GetAppUserModelId - 6" << std::endl;
+        return m_appId.c_str();
+    }
+
+    void InitAppIdPackaged() noexcept
+    {
+        wchar_t m_appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+
+        std::cout << "ELx - GetAppUserModelId - 2" << std::endl;
+        UINT32 appUserModelIdSize = ARRAYSIZE(m_appUserModelId);
+        std::cout << "ELx - GetAppUserModelId - 3" << std::endl;
+        auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId);
+        std::cout << "ELx - GetAppUserModelId - 4" << std::endl;
+        if (result != ERROR_SUCCESS)
+        {
+            std::cout << "ELx - GetAppUserModelId - 5" << std::endl;
+            wcscpy_s(m_appUserModelId, L"AppUserModelId not found");
+            LOG_WIN32(result);
+        }
+
+        m_appId = m_appUserModelId;
+    }
+
+    void InitAppIdUnpackaged() noexcept
+    {
+        wil::unique_cotaskmem_string processName;
+        auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
+        if (result == ERROR_SUCCESS)
+        {
+            m_appId = CensorFilePath(processName.get());
+        }
+        else
+        {
+            std::cout << "ELx - GetAppUserModelId - 5" << std::endl;
+            m_appId = L"ModuleFileName not found";
+            LOG_WIN32(result);
+        }
+        std::cout << "ELx - GetAppUserModelId - 5" << std::endl;
+    }
+
+    PCWSTR CensorFilePath(_In_opt_ PCWSTR path) noexcept
+    {
+        if (path)
+        {
+            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
+        }
+
+        return path;
     }
 };

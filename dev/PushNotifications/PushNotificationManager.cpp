@@ -20,6 +20,7 @@
 #include <frameworkudk/pushnotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationTelemetry.h"
+#include <iostream>
 
 using namespace std::literals;
 
@@ -118,34 +119,48 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
+        std::cout << "ELx - CreateChannelAsync -1" << std::endl;
+
         try
         {
+            std::cout << "ELx - CreateChannelAsync -2" << std::endl;
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
+            std::cout << "ELx - CreateChannelAsync -3" << std::endl;
             auto cancellation{ co_await winrt::get_cancellation_token() };
 
+            std::cout << "ELx - CreateChannelAsync -4" << std::endl;
             cancellation.enable_propagation(true);
 
+            std::cout << "ELx - CreateChannelAsync -5" << std::endl;
             // Allow to register the progress and complete handler
             co_await resume_background();
 
+            std::cout << "ELx - CreateChannelAsync -6" << std::endl;
             auto progress{ co_await winrt::get_progress_token() };
 
+            std::cout << "ELx - CreateChannelAsync -7" << std::endl;
             uint8_t retryCount = 0;
             winrt::hresult channelRequestResult = E_PENDING;
             PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
 
+            std::cout << "ELx - CreateChannelAsync -8" << std::endl;
             PushNotificationCreateChannelStatus
                 channelStatus = { status, channelRequestResult, retryCount };
 
+            std::cout << "ELx - CreateChannelAsync -9" << std::endl;
             progress(channelStatus);
 
+            std::cout << "ELx - CreateChannelAsync -10" << std::endl;
             for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
             {
+                std::cout << "ELx - CreateChannelAsync -11" << std::endl;
                 try
                 {
+                    std::cout << "ELx - CreateChannelAsync -12" << std::endl;
                     if (IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger))
                     {
+                        std::cout << "ELx - CreateChannelAsync -13" << std::endl;
                         ChannelDetails channelInfo{};
                         winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
 
@@ -153,8 +168,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         // So we get error E_NOTIMPL and we fallback to calling into
                         // public WinRT API CreatePushNotificationChannelForApplicationAsync
                         // to request a channel.
+                        std::cout << "ELx - CreateChannelAsync -14" << std::endl;
                         if (SUCCEEDED(hr))
                         {
+                            std::cout << "ELx - CreateChannelAsync -15" << std::endl;
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
+
+                            std::cout << "ELx - CreateChannelAsync -16" << std::endl;
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(channelInfo),
                                 S_OK,
@@ -162,16 +182,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
                         else if (hr == E_NOTIMPL)
                         {
+                            std::cout << "ELx - CreateChannelAsync -17" << std::endl;
                             PushNotificationChannelManager channelManager{};
                             winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
+                            std::cout << "ELx - CreateChannelAsync -18" << std::endl;
                             pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
 
-                            PushNotificationTelemetry::ChannelRequestedByApi(
-                                S_OK,
-                                AppModel::Identity::IsPackagedProcess(),
-                                remoteId);
+                            std::cout << "ELx - CreateChannelAsync -19" << std::endl;
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
 
+                            std::cout << "ELx - CreateChannelAsync -20" << std::endl;
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(pushChannelReceived),
                                 S_OK,
@@ -179,16 +200,24 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
                         else
                         {
+                            std::cout << "ELx - CreateChannelAsync -21" << std::endl;
                             winrt::check_hresult(hr);
                         }
                     }
                     else
                     {
+                        std::cout << "ELx - CreateChannelAsync -22" << std::endl;
                         wil::unique_cotaskmem_string unpackagedAppUserModelId;
                         RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
+
+                        std::cout << "ELx - CreateChannelAsync -23" << std::endl;
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
+                        std::cout << "ELx - CreateChannelAsync -24" << std::endl;
+                        PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
+
+                        std::cout << "ELx - CreateChannelAsync -25" << std::endl;
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             winrt::make<PushNotificationChannel>(pushChannelReceived),
                             S_OK,
@@ -197,24 +226,26 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
                 catch (...)
                 {
+                    std::cout << "ELx - CreateChannelAsync -26" << std::endl;
                     auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
 
+                    std::cout << "ELx - CreateChannelAsync -27" << std::endl;
                     if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
                     {
+                        std::cout << "ELx - CreateChannelAsync -28" << std::endl;
                         channelStatus.extendedError = channelRequestException.code();
                         channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
                         channelStatus.retryCount = ++retryCount;
 
+                        std::cout << "ELx - CreateChannelAsync -29" << std::endl;
                         progress(channelStatus);
                     }
                     else
                     {
+                        std::cout << "ELx - CreateChannelAsync -30" << std::endl;
+                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId);
 
-                        PushNotificationTelemetry::ChannelRequestedByApi(
-                            channelRequestException.code(),
-                            AppModel::Identity::IsPackagedProcess(),
-                            remoteId);
-
+                        std::cout << "ELx - CreateChannelAsync -31" << std::endl;
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             nullptr,
                             channelRequestException.code(),
@@ -222,17 +253,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                 }
 
+                std::cout << "ELx - CreateChannelAsync -32" << std::endl;
                 co_await winrt::resume_after(backOffTime);
             }
         }
         catch (...)
         {
+            std::cout << "ELx - CreateChannelAsync -33" << std::endl;
             HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ChannelRequestedByApi(
-                hrError,
-                AppModel::Identity::IsPackagedProcess(),
-                remoteId);
+            PushNotificationTelemetry::ChannelRequestedByApi(hrError, remoteId);
 
+            std::cout << "ELx - CreateChannelAsync -34" << std::endl;
             THROW_HR(hrError);
         }
     }

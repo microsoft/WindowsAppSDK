@@ -24,41 +24,56 @@ constexpr auto timeout{ std::chrono::seconds(300) };
 
 bool ChannelRequestUsingNullRemoteId()
 {
+    std::cout << "ELx - ChannelRequestUsingNullRemoteId -1" << std::endl;
     try
     {
+        std::cout << "ELx - ChannelRequestUsingNullRemoteId -2" << std::endl;
         auto channelOperation = PushNotificationManager::CreateChannelAsync(winrt::guid()).get();
     }
     catch (...)
     {
+        std::cout << "ELx - ChannelRequestUsingNullRemoteId -3" << std::endl;
         return to_hresult() == E_INVALIDARG;
     }
+    std::cout << "ELx - ChannelRequestUsingNullRemoteId -4" << std::endl;
     return false;
 }
 
 HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> const& channelOperation)
 {
+    std::cout << "ELx - ChannelRequestHelper -1" << std::endl;
     if (channelOperation.wait_for(timeout) != AsyncStatus::Completed)
     {
+        std::cout << "ELx - ChannelRequestHelper -2" << std::endl;
         channelOperation.Cancel();
+        std::cout << "ELx - ChannelRequestHelper -3" << std::endl;
         return HRESULT_FROM_WIN32(ERROR_TIMEOUT); // timed out or failed
     }
 
+    std::cout << "ELx - ChannelRequestHelper -4" << std::endl;
     auto result = channelOperation.GetResults();
     auto status = result.Status();
+    std::cout << "ELx - ChannelRequestHelper -5" << std::endl;
     if (status != PushNotificationChannelStatus::CompletedSuccess)
     {
+        std::cout << "ELx - ChannelRequestHelper -6" << std::endl;
         return result.ExtendedError(); // did not produce a channel
     }
 
+    std::cout << "ELx - ChannelRequestHelper -7" << std::endl;
     result.Channel().Close();
+    std::cout << "ELx - ChannelRequestHelper -8" << std::endl;
     return S_OK;
 }
 
 bool ChannelRequestUsingRemoteId()
 {
+    std::cout << "ELx - ChannelRequestUsingRemoteId -1" << std::endl;
     auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
+    std::cout << "ELx - ChannelRequestUsingRemoteId -2" << std::endl;
     auto channelOperationResult = ChannelRequestHelper(channelOperation);
 
+    std::cout << "ELx - ChannelRequestUsingRemoteId -3" << std::endl;
     return channelOperationResult == S_OK;
 }
 
@@ -336,10 +351,14 @@ int main() try
         testResult = payloadString == c_rawNotificationPayload;
     }
 
+    //char wait;
+    //std::cin >> wait;
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure
 }
 catch (...)
 {
     std::cout << winrt::to_string(winrt::to_message()) << std::endl;
+    //char wait;
+    //std::cin >> wait;
     return 1; // in the event of unhandled test crash
 }
