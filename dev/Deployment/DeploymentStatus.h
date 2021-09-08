@@ -15,8 +15,8 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         winrt::hresult ExtendedError();
 
     private:
-        const bool m_isOK{ false };
-        const bool m_packageInstallRequired{ false };
+        const bool m_isOK{};
+        const bool m_packageInstallRequired{};
         const winrt::hresult m_extendedError{};
     };
 }

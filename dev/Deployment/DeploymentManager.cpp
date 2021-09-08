@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         auto packageNameVersionTag{ frameworkName.substr(c_namePrefixLength) };
 
         // Loop through all of the target packages and validate.
-        HRESULT verifyResult{ S_OK };
+        HRESULT verifyResult{};
         for (const auto& package : c_targetPackages)
         {
             // Build package family name based on the framework naming scheme:
@@ -124,11 +124,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
     HRESULT DeploymentManager::VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion) try
     {
         auto packageFullNames{ FindPackagesByFamily(packageFamilyName) };
-        bool match{ false };
+        bool match{};
         for (const auto& packageFullName : packageFullNames)
         {
             auto packagePath{ GetPackagePath(packageFullName) };
-            if (packagePath.length() == 0)
+            if (packagePath.empty())
             {
                 continue;
             }
@@ -141,11 +141,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
             }
         }
 
-        if (!match)
-        {
-            return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-        }
-
+        RETURN_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !match);
         return S_OK;
     }
     CATCH_RETURN()
