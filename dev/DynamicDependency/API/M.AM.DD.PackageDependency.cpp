@@ -78,12 +78,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::implem
 
     uint32_t PackageDependency::GenerationId()
     {
-#if defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED) && (WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED == 1)
         return MddGetGenerationId();
-#else
-        LOG_HR_MSG(E_NOTIMPL, "Microsoft::Windows::ApplicationModel::DynamicDependency::Feature_GenerationId::IsEnabled() = false");
-        return static_cast<UINT32>(~0);
-#endif
     }
 
     hstring PackageDependency::Id()
