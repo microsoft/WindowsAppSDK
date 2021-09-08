@@ -43,6 +43,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_pushTriggerRegistration{ nullptr };
     static wil::unique_com_class_object_cookie s_comActivatorRegistration;
+    static bool s_protocolRegistration{ false };
     static wil::srwlock s_activatorInfoLock;
 
     inline constexpr auto c_maxBackoff{ 5min };
@@ -243,9 +244,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             THROW_HR_IF_NULL(E_INVALIDARG, details);
 
-            GUID taskClsid = details.TaskClsid();
-            THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
-
             auto registrationActivators{ details.Activators() };
 
             auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator) };
@@ -264,12 +262,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
                 THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+
+                {
+                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    s_protocolRegistration = true;
+                }
             }
 
             BackgroundTaskBuilder builder{ nullptr };
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger))
             {
+                GUID taskClsid = details.TaskClsid();
+                THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
                     THROW_HR_IF(E_INVALIDARG, s_pushTriggerRegistration);
@@ -336,6 +342,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
             {
+                GUID taskClsid = details.TaskClsid();
+                THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
                     THROW_HR_IF_MSG(E_INVALIDARG, s_comActivatorRegistration, "ComActivator already registered.");
@@ -395,6 +404,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator))
             {
+                THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_protocolRegistration);
                 auto coInitialize = wil::CoInitializeEx();
 
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
@@ -403,6 +413,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
                 THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+
+                s_protocolRegistration = false;
             }
         }
         catch (...)
@@ -427,6 +439,20 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
 
             s_comActivatorRegistration.reset();
+
+            if (s_protocolRegistration)
+            {
+                auto coInitialize = wil::CoInitializeEx();
+
+                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
+                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+
+                s_protocolRegistration = false;
+            }
         }
         catch(...)
         {
