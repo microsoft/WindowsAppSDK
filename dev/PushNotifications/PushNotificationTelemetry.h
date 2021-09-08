@@ -28,9 +28,9 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ChannelRequestedByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
@@ -45,8 +45,8 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ChannelClosedByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
-                TraceLoggingHexUInt32(hr, "OperationResult"),
                 _GENERIC_PARTB_FIELDS_ENABLED,
+                TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
@@ -62,10 +62,10 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ActivatorRegisteredByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
@@ -82,10 +82,10 @@ public:
             TraceLoggingClassWriteMeasure(
                 "ActivatorUnregisteredByApi",
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
-                _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppId(), "AppId"));
         }
@@ -134,17 +134,27 @@ private:
 
     std::wstring InitAppIdPackaged() noexcept
     {
-        wchar_t m_appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
 
-        UINT32 appUserModelIdSize = ARRAYSIZE(m_appUserModelId);
-        auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId);
+        UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
+        auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId);
         if (result != ERROR_SUCCESS)
         {
-            wcscpy_s(m_appUserModelId, L"AppUserModelId not found");
+            wcscpy_s(appUserModelId, L"AppUserModelId not found");
             LOG_WIN32(result);
         }
 
-        return m_appUserModelId;
+        return appUserModelId;
+    }
+
+    PCWSTR CensorFilePath(_In_opt_ PCWSTR path) noexcept
+    {
+        if (path)
+        {
+            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
+        }
+
+        return path;
     }
 
     std::wstring InitAppIdUnpackaged() noexcept
@@ -164,15 +174,5 @@ private:
         }
 
         return appId;
-    }
-
-    PCWSTR CensorFilePath(_In_opt_ PCWSTR path) noexcept
-    {
-        if (path)
-        {
-            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
-        }
-
-        return path;
     }
 };
