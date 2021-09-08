@@ -5,7 +5,6 @@
 
 #include "..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h"
 #include <wrl\wrappers\corewrappers.h>
-#include <iostream>
 
 DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider,
     "Microsoft.WindowsAppSDK.Notifications.PushNotificationTelemetry",

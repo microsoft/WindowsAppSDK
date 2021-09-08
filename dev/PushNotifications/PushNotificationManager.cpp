@@ -20,7 +20,6 @@
 #include <frameworkudk/pushnotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
 #include "PushNotificationTelemetry.h"
-#include <iostream>
 
 using namespace std::literals;
 
@@ -186,7 +185,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     {
                         wil::unique_cotaskmem_string unpackagedAppUserModelId;
                         RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
-
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
