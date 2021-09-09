@@ -1,0 +1,23 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' == 'Win32'">x86</_MrtCoreRuntimeIdentifier>
+    <_MrtCoreRuntimeIdentifier Condition="'$(Platform)' != 'Win32'">$(Platform)</_MrtCoreRuntimeIdentifier>
+    <_MrtCoreDllDir>$(MSBuildThisFileDirectory)..\runtimes\win10-$(_MrtCoreRuntimeIdentifier)\native\</_MrtCoreDllDir>
+
+    <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'=='' AND '$(Platform)' == 'AnyCPU'">false</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>
+    <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'=='' AND '$(WindowsAppSdkFoundation)' == 'true'">false</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>
+    <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'=='' AND '$(MSBuildProjectExtension)' == '.wapproj'">true</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>
+    <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'=='' AND '$(MSBuildProjectExtension)' == '.vcxproj'">true</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>
+    <_AddMrtCoreAssembliesToReferenceCopyLocalPaths Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)'==''">$(UsingMicrosoftNETSdk)</_AddMrtCoreAssembliesToReferenceCopyLocalPaths>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(_AddMrtCoreAssembliesToReferenceCopyLocalPaths)' == 'true'">
+    <ReferenceCopyLocalPaths Include="$(_MrtCoreDllDir)Microsoft.Windows.ApplicationModel.Resources.dll" />
+    <ReferenceCopyLocalPaths Include="$(_MrtCoreDllDir)MRM.dll" />
+  </ItemGroup>
+
+</Project>

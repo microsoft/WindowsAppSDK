@@ -7,8 +7,20 @@
 #include <powersetting.h>
 #include <Microsoft.Windows.System.Power.PowerManager.g.h>
 #include <frameworkudk\PowerNotificationsPal.h>
-#include <wil\resource.h>
-#include <wil\result_macros.h>
+#include <WindowsAppRuntimeInsights.h>
+
+class PowerNotificationsTelemetry : public wil::TraceLoggingProvider
+{
+    IMPLEMENT_TRACELOGGING_CLASS(PowerNotificationsTelemetry, "Microsoft.WindowsAppSDK.System.PowerNotifications",
+        // {a1b12e2c-12d9-564e-2ea1-2894ffcc7cc5}
+        (0xa1b12e2c, 0x12d9, 0x564e, 0x2e, 0xa1, 0x28, 0x94, 0xff, 0xcc, 0x7c, 0xc5));
+
+public:
+
+    DEFINE_COMPLIANT_MEASURES_EVENT_STRING(AddCallbackTrace, PDT_ProductAndServiceUsage, eventName);
+    DEFINE_COMPLIANT_MEASURES_EVENT_PARAM3(FailureTrace, PDT_ProductAndServiceUsage,
+        PCWSTR, eventName, PCWSTR, APIName, PCSTR, exceptionString);
+};
 
 namespace winrt::Microsoft::Windows::System::Power
 {
@@ -83,6 +95,7 @@ namespace winrt::Microsoft::Windows::System::Power
             void (*registerListener)();
             void (*unregisterListener)();
             void (*updateValue)();
+            std::wstring name;
         };
     }
 
@@ -137,67 +150,78 @@ namespace winrt::Microsoft::Windows::System::Power
                 &Power::implementation::EnergySaverStatus_Event,
                 &Power::implementation::EnergySaverStatus_Register,
                 &Power::implementation::EnergySaverStatus_Unregister,
-                &Power::implementation::EnergySaverStatus_Update };
+                &Power::implementation::EnergySaverStatus_Update,
+                L"EnergySaverStatus" };
 
             PowerFunctionDetails compositeBatteryStatusFunc{
                 &Power::implementation::BatteryStatus_Event,
                 &Power::implementation::BatteryStatus_Register,
                 &Power::implementation::BatteryStatus_Unregister,
-                &Power::implementation::BatteryStatus_Update };
+                &Power::implementation::BatteryStatus_Update,
+                L"BatteryStatus" };
 
             PowerFunctionDetails powerSupplyStatusFunc{
                 &Power::implementation::PowerSupplyStatus_Event,
                 &Power::implementation::PowerSupplyStatus_Register,
                 &Power::implementation::PowerSupplyStatus_Unregister,
-                &Power::implementation::PowerSupplyStatus_Update };
+                &Power::implementation::PowerSupplyStatus_Update,
+                L"PowerSupplyStatus" };
 
             PowerFunctionDetails remainingChargePercentFunc{
                 &Power::implementation::RemainingChargePercent_Event,
                 &Power::implementation::RemainingChargePercent_Register,
                 &Power::implementation::RemainingChargePercent_Unregister,
-                &Power::implementation::RemainingChargePercent_Update };
+                &Power::implementation::RemainingChargePercent_Update,
+                L"RemainingChargePercent" };
 
             PowerFunctionDetails remainingDischargeTimeFunc{
                 &Power::implementation::RemainingDischargeTime_Event,
                 &Power::implementation::RemainingDischargeTime_Register,
                 &Power::implementation::RemainingDischargeTime_Unregister,
-                &Power::implementation::RemainingDischargeTime_Update };
+                &Power::implementation::RemainingDischargeTime_Update,
+                L"RemainingDischargeTime" };
 
             PowerFunctionDetails powerSourceKindFunc{
                 &Power::implementation::PowerSourceKind_Event,
                 &Power::implementation::PowerSourceKind_Register,
                 &Power::implementation::PowerSourceKind_Unregister,
-                &Power::implementation::PowerSourceKind_Update };
+                &Power::implementation::PowerSourceKind_Update,
+                L"PowerSourceKind" };
 
             PowerFunctionDetails displayStatusFunc{
                 &Power::implementation::DisplayStatus_Event,
                 &Power::implementation::DisplayStatus_Register,
                 &Power::implementation::DisplayStatus_Unregister,
-                &Power::implementation::DisplayStatus_Update };
+                &Power::implementation::DisplayStatus_Update,
+                L"DisplayStatus" };
 
             PowerFunctionDetails systemIdleStatusFunc{
                 &Power::implementation::SystemIdleStatus_Event,
                 &Power::implementation::SystemIdleStatus_Register,
                 &Power::implementation::SystemIdleStatus_Unregister,
-                &Power::implementation::NoOperation };
+                &Power::implementation::NoOperation,
+                L"SystemIdleStatus" };
 
             PowerFunctionDetails effectivePowerModeFunc{
                 &Power::implementation::EffectivePowerMode_Event,
                 &Power::implementation::EffectivePowerMode_Register,
                 &Power::implementation::EffectivePowerMode_Unregister,
-                &Power::implementation::EffectivePowerMode_Update };
+                &Power::implementation::EffectivePowerMode_Update,
+                L"EffectivePowerMode" };
 
             PowerFunctionDetails userPresenceStatusFunc{
                 &Power::implementation::UserPresenceStatus_Event,
                 &Power::implementation::UserPresenceStatus_Register,
                 &Power::implementation::UserPresenceStatus_Unregister,
-                &Power::implementation::UserPresenceStatus_Update };
+                &Power::implementation::UserPresenceStatus_Update,
+                L"UserPresenceStatus" };
 
             PowerFunctionDetails systemSuspendFunc{
                 &Power::implementation::SystemSuspendStatus_Event,
                 &Power::implementation::SystemSuspendStatus_Register,
                 &Power::implementation::SystemSuspendStatus_Unregister,
-                &Power::implementation::NoOperation };
+                &Power::implementation::NoOperation,
+                L"SystemSuspendStatus" };
 
             bool RegisteredForEvents(const EventType& eventObj)
             {
@@ -206,13 +230,22 @@ namespace winrt::Microsoft::Windows::System::Power
 
             event_token AddCallback(PowerFunctionDetails fn, const PowerEventHandler& handler)
             {
-                auto& eventObj{ fn.event() };
-                std::scoped_lock<std::mutex> lock(m_mutex);
-                if (!RegisteredForEvents(eventObj))
+                try
                 {
-                    fn.registerListener();
+                    PowerNotificationsTelemetry::AddCallbackTrace(fn.name.c_str());
+                    auto& eventObj{ fn.event() };
+                    std::scoped_lock<std::mutex> lock(m_mutex);
+                    if (!RegisteredForEvents(eventObj))
+                    {
+                        fn.registerListener();
+                    }
+                    return eventObj.add(handler);
                 }
-                return eventObj.add(handler);
+                catch (std::exception& ex)
+                {
+                    PowerNotificationsTelemetry::FailureTrace(fn.name.c_str(), L"AddCallback", ex.what());
+                    throw ex;
+                }
             }
 
             void RemoveCallback(PowerFunctionDetails fn, const event_token& token)
@@ -226,12 +259,11 @@ namespace winrt::Microsoft::Windows::System::Power
                 }
             }
 
-            void RaiseEvent(PowerFunctionDetails fn)
+            winrt::fire_and_forget RaiseEvent(PowerFunctionDetails fn)
             {
-                std::thread thread([fn]() {
-                    fn.event()(nullptr, nullptr);
-                });
-                thread.detach();
+                auto lifetime = get_strong();
+                co_await winrt::resume_background();
+                fn.event()(nullptr, nullptr);
             }
 
             // Checks if an event is already registered. If none are, then gets the status
@@ -505,6 +537,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 RaiseEvent(systemIdleStatusFunc);
             }
 
+
             // EffectivePowerMode Functions
             winrt::Windows::Foundation::IAsyncOperation<Power::EffectivePowerMode> EffectivePowerMode()
             {
@@ -530,6 +563,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 RaiseEvent(effectivePowerModeFunc);
             }
 
+
             // UserPresenceStatus Functions
             Power::UserPresenceStatus UserPresenceStatus()
             {
@@ -552,6 +586,7 @@ namespace winrt::Microsoft::Windows::System::Power
                 m_cachedUserPresenceStatus = userPresenceStatus;
                 RaiseEvent(userPresenceStatusFunc);
             }
+
 
             //SystemSuspend Functions
             Power::SystemSuspendStatus SystemSuspendStatus()

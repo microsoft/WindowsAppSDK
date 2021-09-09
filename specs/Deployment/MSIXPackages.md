@@ -213,5 +213,5 @@ string ToShortVersionTag(string versionTag)
 
 # 4. Package Versioning
 
-See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md)
+See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/Deployment/MSIXPackageVersioning.md)
 decision document for more details.
