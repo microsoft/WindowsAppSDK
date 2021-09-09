@@ -123,13 +123,12 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.PriGen.targets
-      Microsoft.Windows.ApplicationModel.Resources.References.targets
-      Microsoft.Windows.ApplicationModel.Resources.targets
-      native\Microsoft.Windows.ApplicationModel.Resources.C.props
-      native\Microsoft.Windows.ApplicationModel.Resources.props
-      native\Microsoft.Windows.ApplicationModel.Resources.targets
-      native\Microsoft.Windows.ApplicationModel.Resources.WinRt.props
+      MrtCore.PriGen.targets
+      MrtCore.References.targets
+      MrtCore.targets
+      native\MrtCore.C.props
+      native\MrtCore.props
+      native\MrtCore.targets
       README.md
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false
