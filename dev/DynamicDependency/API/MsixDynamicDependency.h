@@ -189,9 +189,7 @@ STDAPI MddGetIdForPackageDependencyContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext,
     _Outptr_result_maybenull_ PWSTR* packageDependencyId) noexcept;
 
-#if defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED) && (WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_GENERATIONID_ENABLED == 1)
 /// Return the package graph's current generation id.
 STDAPI_(UINT32) MddGetGenerationId() noexcept;
-#endif
 
 #endif // MSIXDYNAMICDEPENDENCY_H

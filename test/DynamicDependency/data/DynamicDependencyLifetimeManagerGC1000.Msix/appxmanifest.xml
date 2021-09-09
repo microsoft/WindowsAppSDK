@@ -16,7 +16,7 @@
     ProcessorArchitecture="###architecture###" />
 
   <Properties>
-    <DisplayName>WindowsAppRuntime.Test.DynamicDependency.LifetimeManager (aka Microsoft.WindowsAppRuntime.DDLM) fake for GC tests v1</DisplayName>
+    <DisplayName>WindowsAppRuntime.Test.DynamicDependency.LifetimeManager (aka Microsoft.WinAppRuntime.DDLM) fake for GC tests v1</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>Assets\logo.png</Logo>
   </Properties>
