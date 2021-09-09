@@ -118,10 +118,10 @@ STDAPI MddLifetimeManagementGC() noexcept try
                 // Build the list of DDLMs
                 std::vector<MddCore::LifetimeManagement::DDLMPackage> ddlmPackages;
 
-                // Look for windows.appExtension with name="microsoft.windowsappruntime.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
+                // Look for windows.appExtension with name="microsoft.winappruntime.ddlm-<majorversion>.<minorversion>-<shortarchitecture>[-shorttag]"
                 // NOTE: We don't support VersionTag (i.e. we only support 'Stable' versions)
                 WCHAR appExtensionName[100]{};
-                wsprintf(appExtensionName, L"microsoft.windowsappruntime.ddlm-%hu.%hu-%s", majorVersion, minorVersion, shortArchitecture);
+                wsprintf(appExtensionName, L"microsoft.winappruntime.ddlm-%hu.%hu-%s", majorVersion, minorVersion, shortArchitecture);
 
                 auto catalog{ winrt::Windows::ApplicationModel::AppExtensions::AppExtensionCatalog::Open(appExtensionName) };
                 auto appExtensions{ catalog.FindAllAsync().get() };
