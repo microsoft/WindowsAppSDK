@@ -7,6 +7,18 @@
     <_ReunionImageGlobs>**/*.png;**/*.bmp;**/*.jpg;**/*.dds;**/*.tif;**/*.tga;**/*.gif</_ReunionImageGlobs>
   </PropertyGroup>
 
+  <!--
+    By default, add the .RESW files in the project to PRIResource and the image files in the project to Content.
+    That's needed for the strings in the .RESW files and the image files to be indexed during PRI generation.
+    The app dev can opt out a file by changing the Build Action file property to None in Visual Studio.
+
+    The implementation here is the same as the .NET SDK's implementation for default file inclusion.
+    See https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes.
+
+    Yes, DefaultItemExcludes, DefaultExcludesInProjectFolder, EnableDefaultItems, and other properties here are
+    defined in a .NET SDK file that's imported after this one, but ItemGroup definitions are evaluated in a later pass.
+    See https://docs.microsoft.com/en-us/visualstudio/msbuild/build-process-overview?view=vs-2019#evaluation-phase  
+  -->
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultContentItems)'!='false'">
     <None Remove="**/*.resw" />
     <None Remove="$(_ReunionImageGlobs)" />
