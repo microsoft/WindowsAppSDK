@@ -14,4 +14,12 @@ LONG WINAPI GetCurrentStaticPackageInfo(
     BYTE* buffer,
     UINT32* count) noexcept;
 
+LONG MddGetPackageInfo1Or2(
+    PACKAGE_INFO_REFERENCE packageInfoReference,
+    UINT32 flags,
+    PackagePathType packagePathType,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count);
+
 #endif // MDDDETOURPACKAGEGRAPH_H
