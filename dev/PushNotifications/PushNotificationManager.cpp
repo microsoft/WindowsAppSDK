@@ -224,10 +224,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ChannelRequestedByApi(hrError, remoteId);
+            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId);
 
-            THROW_HR(hrError);
+            throw;
         }
     }
 
@@ -360,11 +359,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         catch(...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorRegisteredByApi(hrError, 
+            PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
 
-            THROW_HR(hrError);
+            throw;
         }
     }
 
@@ -401,9 +399,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, activators);
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(), activators);
+            throw;
         }
 
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, activators);
@@ -424,9 +421,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch(...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(),
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+
+            throw;
         }
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
     }
