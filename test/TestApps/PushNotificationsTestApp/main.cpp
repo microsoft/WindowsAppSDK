@@ -195,7 +195,8 @@ bool MultipleRegisterActivatorTest()
         }
         else
         {
-
+            PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
+            PushNotificationManager::RegisterActivator(info);
         }
     }
     catch (...)
@@ -305,7 +306,6 @@ std::string unitTestNameFromLaunchArguments(const ILaunchActivatedEventArgs& lau
 
 int main() try
 {
-    Sleep(20000);
     bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
         PushNotificationManager::UnregisterAllActivators();

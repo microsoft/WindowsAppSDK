@@ -254,6 +254,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (isProtocolActivatorSet)
             {
+                {
+                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
+                }
+
                 auto coInitialize = wil::CoInitializeEx();
 
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
