@@ -219,9 +219,9 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& path
     }
 
     std::wstring newPath{};
-    for (auto pathPart : pathParts)
+    for (auto part : pathParts)
     {
-        newPath += pathPart;
+        newPath += part;
     }
 
     if (isProcess)
