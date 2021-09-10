@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Microsoft.Windows.System.EnvironmentManager.h"
 #include "Microsoft.Windows.System.EnvironmentManager.g.cpp"
+#include "Microsoft.Windows.System.EnvironmentManager.Insights.h"
 #include <EnvironmentVariableChangeTracker.h>
 #include <PathChangeTracker.h>
 #include <PathExtChangeTracker.h>
@@ -16,6 +17,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
+        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for Process Scope");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
@@ -23,6 +25,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
+        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for User Scope");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
         return environmentManager;
@@ -30,6 +33,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
+        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for Machine Scope");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
@@ -88,6 +92,10 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
+        std::wstring logMessage(L"Getting environment variable for variable ");
+        logMessage.append(variableName);
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, logMessage.c_str());
+
         if (variableName.size() == 0 ||
             std::wstring_view(variableName)._Starts_with(L"0x00") ||
             variableName[0] == L'=' ||
@@ -114,6 +122,11 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
+        /*std::wstring logMessage(L"Setting environment variable. Name: ");
+        logMessage.append(name);
+        logMessage.append(L".  Value: ");
+        logMessage.append(value.c_str());
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, logMessage.c_str());*/
         if (!IsSupported())
         {
             return;
@@ -189,6 +202,9 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
+        /*std::wstring logMessage(L"Appending to path. Path: ");
+        logMessage.append(path);
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, logMessage.c_str());*/
         if (path.empty() ||
             std::wstring_view(path)._Starts_with(L"0x00") ||
             path[0] == L'=')

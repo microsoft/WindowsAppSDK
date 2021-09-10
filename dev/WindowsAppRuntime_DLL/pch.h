@@ -47,3 +47,4 @@
 
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
+#include "..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h"

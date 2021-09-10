@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.Insights.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Windows.System.EnvironmentManager.idl" />
