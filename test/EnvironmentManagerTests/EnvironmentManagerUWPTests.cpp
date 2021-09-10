@@ -105,7 +105,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // setting the value to empty is the same as deleting the variable
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
         VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
-        VERIFY_ARE_EQUAL(ERROR_ENVVAR_NOT_FOUND, GetLastError());
+        VERIFY_ARE_EQUAL(static_cast<DWORD>(ERROR_ENVVAR_NOT_FOUND), GetLastError());
     }
 
     void EnvironmentManagerUWPTests::UWPTestSetEnvironmentVariableForUser()
