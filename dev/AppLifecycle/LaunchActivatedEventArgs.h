@@ -19,6 +19,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             m_kind = ActivationKind::Launch;
         }
+        
+        winrt::hstring GetRuntimeClassName() const noexcept override
+        {
+            return winrt::hstring(L"Windows::ApplicationModel::Activation.LaunchActivatedEventArgs"sv);
+        }
 
         static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
         {
