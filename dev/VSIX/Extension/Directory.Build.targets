@@ -130,7 +130,7 @@
     <PropertyGroup>
       <VsixIdentity>$(_OriginalVsixId)</VsixIdentity>
       <ExperimentalVsixIdentity>$(_OriginalVsixId).Experimental</ExperimentalVsixIdentity>
-      <ExperimentalVsixDisplayName>$(_OriginalVsixName) (Experimental)</ExperimentalVsixDisplayName>
+      <ExperimentalVsixDisplayName>Experimental $(_OriginalVsixName)</ExperimentalVsixDisplayName>
       <ExperimentalVsixTags>$(_OriginalVsixTags), UWP</ExperimentalVsixTags>
 
       <_OriginalVsixId></_OriginalVsixId>

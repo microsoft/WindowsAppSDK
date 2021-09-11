@@ -112,9 +112,9 @@
     <Import Project="..\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems" Label="Shared" />
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
     <Import Project="..\PowerNotifications\PowerNotifications.vcxitems" Label="Shared" />
-    <Import Project="..\Microsoft.Process.Environment\Microsoft.Process.Environment.vcxitems" Label="Shared" />
     <Import Project="..\Deployment\Deployment.vcxitems" Label="Deployment" />
-    <Import Project="..\ChangeTracker\ChangeTracker.vcxitems" Label="Shared" />
+    <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
+    <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
