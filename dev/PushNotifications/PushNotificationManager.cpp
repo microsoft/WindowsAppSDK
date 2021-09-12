@@ -118,6 +118,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
+        bool usingLegacyImpl = false;
+
         try
         {
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
@@ -155,7 +157,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         // to request a channel.
                         if (SUCCEEDED(hr))
                         {
-                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImpl);
 
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(channelInfo),
@@ -164,12 +166,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
                         else if (hr == E_NOTIMPL)
                         {
+                            usingLegacyImpl = true;
+
                             PushNotificationChannelManager channelManager{};
                             winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
                             pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
 
-                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, true /*usingLegacyImpl*/);
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImpl);
 
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(pushChannelReceived),
@@ -188,7 +192,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
-                        PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
+                        PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImpl);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             winrt::make<PushNotificationChannel>(pushChannelReceived),
@@ -210,7 +214,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                     else
                     {
-                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId);
+                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId, usingLegacyImpl);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             nullptr,
@@ -224,7 +228,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId);
+            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId, usingLegacyImpl);
 
             throw;
         }

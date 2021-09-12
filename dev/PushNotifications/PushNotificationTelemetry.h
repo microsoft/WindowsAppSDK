@@ -22,7 +22,7 @@ public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
         const winrt::guid& remoteId,
-        bool usingLegacyImpl = false) noexcept try
+        bool usingLegacyImpl) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
