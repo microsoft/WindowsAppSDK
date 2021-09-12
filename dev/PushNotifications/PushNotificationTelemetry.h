@@ -32,7 +32,7 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppId(), "AppId"));
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -48,7 +48,7 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppId(), "AppId"));
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -67,7 +67,7 @@ public:
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppId(), "AppId"));
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -87,7 +87,7 @@ public:
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
-                TraceLoggingWideString(GetAppId(), "AppId"));
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -125,14 +125,14 @@ private:
         return isPackagedApp;
     }
 
-    inline const wchar_t* GetAppId()
+    inline const wchar_t* GetAppName()
     {
-        static std::wstring appId = IsPackagedApp() ? InitAppIdPackaged() : InitAppIdUnpackaged();
+        static std::wstring AppName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
 
-        return appId.c_str();
+        return AppName.c_str();
     }
 
-    std::wstring InitAppIdPackaged() noexcept
+    std::wstring GetAppNamePackaged() noexcept
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
 
@@ -157,22 +157,22 @@ private:
         return path;
     }
 
-    std::wstring InitAppIdUnpackaged() noexcept
+    std::wstring GetAppNameUnpackaged()
     {
-        std::wstring appId;
+        std::wstring AppName;
 
         wil::unique_cotaskmem_string processName;
         auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
         if (result == ERROR_SUCCESS)
         {
-            appId = CensorFilePath(processName.get());
+            AppName = CensorFilePath(processName.get());
         }
         else
         {
-            appId = L"ModuleFileName not found";
+            AppName = L"ModuleFileName not found";
             LOG_WIN32(result);
         }
 
-        return appId;
+        return AppName;
     }
 };
