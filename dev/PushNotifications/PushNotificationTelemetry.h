@@ -21,7 +21,8 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
-        const winrt::guid& remoteId) noexcept try
+        const winrt::guid& remoteId,
+        bool usingLegacyImpl = false) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -31,6 +32,7 @@ public:
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
+                TraceLoggingBool(usingLegacyImpl, "UsingLegacyImpl"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }

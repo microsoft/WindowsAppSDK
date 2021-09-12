@@ -169,7 +169,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                             pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
 
-                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, true /*usingLegacyImpl*/);
 
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(pushChannelReceived),
