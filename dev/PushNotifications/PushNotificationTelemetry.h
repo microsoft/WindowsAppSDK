@@ -129,9 +129,9 @@ private:
 
     inline const wchar_t* GetAppName()
     {
-        static const std::wstring AppName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
+        static const std::wstring appName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
 
-        return AppName.c_str();
+        return appName.c_str();
     }
 
     std::wstring GetAppNamePackaged() noexcept
