@@ -122,14 +122,14 @@ private:
 
     inline bool IsPackagedApp()
     {
-        static bool isPackagedApp = AppModel::Identity::IsPackagedProcess();
+        static const bool isPackagedApp = AppModel::Identity::IsPackagedProcess();
 
         return isPackagedApp;
     }
 
     inline const wchar_t* GetAppName()
     {
-        static std::wstring AppName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
+        static const std::wstring AppName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
 
         return AppName.c_str();
     }
