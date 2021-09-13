@@ -271,6 +271,13 @@ namespace winrt::Microsoft::Windows::System::implementation
         // 1. path exists in PATH
         // 2. path matches a path part exactly (ignoring case)
         std::wstring currentPath{ GetPath() };
+
+        // Do not attempt to remove something if PATH does not exist.
+        if (currentPath.empty())
+        {
+            return;
+        }
+
         std::wstring pathPartToFind(path);
 
         if (pathPartToFind.back() != L';')
@@ -425,6 +432,13 @@ namespace winrt::Microsoft::Windows::System::implementation
         // 1. path exists in PATHEXT
         // 2. path matches a path part exactly (ignoring case)
         std::wstring currentPathExt{ GetPathExt() };
+
+        // Do not mess with PATHEXT if it does not exist.
+        if (currentPathExt.empty())
+        {
+            return;
+        }
+
         std::wstring pathExtPartToFind(pathExt);
 
         if (pathExtPartToFind.back() != L';')
@@ -531,7 +545,7 @@ namespace winrt::Microsoft::Windows::System::implementation
             path = std::wstring(environmentValue.get());
         }
 
-        if (path.back() != L';')
+        if (!path.empty() && path.back() != L';')
         {
             path += L';';
         }
@@ -570,7 +584,7 @@ namespace winrt::Microsoft::Windows::System::implementation
             pathExt = std::wstring(environmentValue.get());
         }
 
-        if (pathExt.back() != L';')
+        if (!pathExt.empty() && pathExt.back() != L';')
         {
             pathExt += L';';
         }
