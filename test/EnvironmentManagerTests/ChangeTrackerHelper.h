@@ -34,7 +34,7 @@ inline wil::unique_hkey GetKeyForTrackingChange(bool isUser)
 inline wil::unique_hkey GetKeyForTrackingChange(bool isUser, LPCWSTR subKey)
 {
     wil::unique_hkey keyToTrackChanges{};
-    THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,
+    THROW_IF_WIN32_ERROR(RegCreateKeyEx(topLevelKey,
         subKey, 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS | KEY_WOW64_64KEY,
         nullptr, keyToTrackChanges.put(), nullptr));
 

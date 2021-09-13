@@ -198,6 +198,20 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& path
         token = wcstok_s(NULL, L";", &tokenizationState);
     }
 
+    // Since this will inject something into the path to be removed
+    // The injection should happen around other items.
+    // +2 to make sure the injection site is surrounded.
+    if (pathParts.size() <= index)
+    {
+        for (int partToAdd = pathParts.size(); partToAdd < index + 2; partToAdd++)
+        {
+            std::wstring stringToAdd(L"index");
+            stringToAdd.append(std::to_wstring((partToAdd)));
+            stringToAdd.append(L";");
+
+            pathParts.push_back(stringToAdd);
+        }
+    }
 
     int currentIndex{ 0 };
     for (auto iterator = pathParts.begin(); iterator != pathParts.end(); ++iterator)
@@ -274,6 +288,20 @@ inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& p
         token = wcstok_s(NULL, L";", &tokenizationState);
     }
 
+    // Since this will inject something into the path to be removed
+    // The injection should happen around other items.
+    // +2 to make sure the injection site is surrounded.
+    if (pathExtParts.size() <= index)
+    {
+        for (int partToAdd = pathExtParts.size(); partToAdd < index + 2; partToAdd++)
+        {
+            std::wstring stringToAdd(L"index");
+            stringToAdd.append(std::to_wstring((partToAdd)));
+            stringToAdd.append(L";");
+
+            pathExtParts.push_back(stringToAdd);
+        }
+    }
 
     int currentIndex{ 0 };
     for (auto iterator = pathExtParts.begin(); iterator != pathExtParts.end(); ++iterator)
