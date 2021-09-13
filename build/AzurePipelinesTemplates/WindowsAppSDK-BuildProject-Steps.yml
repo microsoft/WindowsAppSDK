@@ -83,6 +83,14 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
       workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Create DeploymentAPI TerminalVelocity features'
+    inputs:
+      targetType: filePath
+      filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
+      workingDirectory: '$(Build.SourcesDirectory)'
       
   - task: powershell@2
     name: UpdateTraceloggingConfig
