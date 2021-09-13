@@ -85,7 +85,7 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
-    displayName: 'Create DeploymentAPI TerminalVelocity features'
+    displayName: 'Create PushNotifications TerminalVelocity features'
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
