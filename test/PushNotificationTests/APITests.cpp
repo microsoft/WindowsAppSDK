@@ -262,6 +262,11 @@ namespace Test::PushNotifications
             RunTest(L"ActivatorTest", testWaitTime());
         }
 
+        TEST_METHOD(ActivatorTest_Unpackaged)
+        {
+            RunTestUnpackaged(L"ActivatorTest", channelTestWaitTime());
+        }
+
         TEST_METHOD(RegisterActivatorNullDetails)
         {
             RunTest(L"RegisterActivatorNullDetails", testWaitTime());
@@ -275,6 +280,11 @@ namespace Test::PushNotifications
         TEST_METHOD(RegisterActivatorNullClsid)
         {
             RunTest(L"RegisterActivatorNullClsid", testWaitTime());
+        }
+
+        TEST_METHOD(RegisterActivatorNullClsid_Unpackaged)
+        {
+            RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)

@@ -15,8 +15,6 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
-bool g_isPackaged = false;
-
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
 
@@ -117,7 +115,7 @@ bool ActivatorTest()
     PushNotificationManager::UnregisterAllActivators();
     try
     {
-        if (g_isPackaged)
+        if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
@@ -161,10 +159,9 @@ bool RegisterActivatorNullDetails()
 bool RegisterActivatorNullClsid()
 {
     PushNotificationManager::UnregisterAllActivators();
-    try
+    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
     {
-        // Only applies to packaged apps
-        if (g_isPackaged)
+        try
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
@@ -172,12 +169,28 @@ bool RegisterActivatorNullClsid()
 
             PushNotificationManager::RegisterActivator(info);
         }
+        catch(...)
+        {
+            return to_hresult() == E_INVALIDARG;
+        }
+        return false;
     }
-    catch (...)
+    else
     {
-        return to_hresult() == E_INVALIDARG;
+        try
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::ProtocolActivator,
+                winrt::guid()); // Null guid
+
+            PushNotificationManager::RegisterActivator(info);
+        }
+        catch(...)
+        {
+            return false;
+        }
+        return true;
     }
-    return false;
 }
 
 // Verify registering multiple activators is not allowed.
@@ -185,7 +198,7 @@ bool MultipleRegisterActivatorTest()
 {
     try
     {
-        if (g_isPackaged)
+        if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
@@ -322,13 +335,11 @@ int main() try
             winrt::guid(c_comServerId)); // same clsid as app manifest
 
         PushNotificationManager::RegisterActivator(info);
-        g_isPackaged = true;
     }
     else
     {
         PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
         PushNotificationManager::RegisterActivator(info);
-        g_isPackaged = false;
     }
     
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();

@@ -409,7 +409,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator))
             {
-                THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_protocolRegistration);
+                THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_protocolRegistration);
                 auto coInitialize = wil::CoInitializeEx();
 
                 wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
