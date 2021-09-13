@@ -161,20 +161,20 @@ private:
 
     std::wstring GetAppNameUnpackaged()
     {
-        std::wstring AppName;
+        std::wstring appName;
 
         wil::unique_cotaskmem_string processName;
         auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
         if (result == ERROR_SUCCESS)
         {
-            AppName = CensorFilePath(processName.get());
+            appName = CensorFilePath(processName.get());
         }
         else
         {
-            AppName = L"ModuleFileName not found";
+            appName = L"ModuleFileName not found";
             LOG_WIN32(result);
         }
 
-        return AppName;
+        return appName;
     }
 };
