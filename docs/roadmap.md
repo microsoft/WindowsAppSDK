@@ -41,7 +41,7 @@ XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Support
 [Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
 [Elevation support](https://github.com/microsoft/WindowsAppSDK/issues/1407) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 **Deploy options:**  |
-• [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) | ✅ Supported | ✅ Supported | ✅ Supported |
+• [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 • [Self-contained](https://github.com/microsoft/WindowsAppSDK/issues/1204) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 
 ## 2021 Focus Areas
