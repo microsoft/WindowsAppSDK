@@ -18,10 +18,12 @@ XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Support
 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-Deploy Options: |
-• In-app | ✅ Supported | ✅ Supported | ✅ Supported |
-• Fx Package | ✅ Supported | ✅ Supported | ✅ Supported |
+[Single-project MSIX](https://docs.microsoft.com/windows/apps/windows-app-sdk/single-project-msix) | ❌ Not Supported | ✅ Supported | ✅ Supported |
+[Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+[Elevation support](https://github.com/microsoft/WindowsAppSDK/issues/1407) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
+**Deploy options:** |
+• [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-packaged-apps) | ✅ Supported | ✅ Supported | ✅ Supported |
+• [Self-contained](https://github.com/microsoft/WindowsAppSDK/issues/1204) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 
 ### Unpackaged Desktop Apps
 
@@ -36,10 +38,10 @@ XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Support
 [App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Push Notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-Deploy Options:  |
-• In-app | 🔄 Experimental | ✅ Supported | ✅ Supported |
-• Fx Package | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+**Deploy options:**  |
+• [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) | ✅ Supported | ✅ Supported | ✅ Supported |
+• [Self-contained](https://github.com/microsoft/WindowsAppSDK/issues/1204) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 
 ## 2021 Focus Areas
 
