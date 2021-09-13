@@ -1,0 +1,10 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [ "Build", "Coding", "Programming Languages" ],
+    "identity": {
+        "internalName": "WindowsAppSDK"
+    },
+    "overview": "overview.md",
+    "publisher": "microsoft",
+    "repo": "https://github.com/microsoft/WindowsAppSDK"
+}
