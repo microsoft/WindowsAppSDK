@@ -8,3 +8,4 @@ languages used in implementation or testing.
 * Languages (This list is non-exhaustive; new guidelines for languages will be added over time)
   * [C++](Coding-Guidelines/Languages-CPP.md)
   * [Markdown](Coding-Guidelines/Languages-Markdown.md)
+* Experimental-only Implementation via [TerminalVelocity](Coding-Guidelines/TerminalVelocity.md)
