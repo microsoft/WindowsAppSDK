@@ -22,7 +22,7 @@ public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
         const winrt::guid& remoteId,
-        bool usingLegacyImpl) noexcept try
+        bool usingLegacyImplementation) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -31,8 +31,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
-                TraceLoggingBool(usingLegacyImpl, "UsingLegacyImpl"),
+                TraceLoggingGuid(remoteId, "RemoteId"),
+                TraceLoggingBool(usingLegacyImplementation, "usingLegacyImplementation"),
                 TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
                 TraceLoggingWideString(GetAppName(), "AppName"));
         }
@@ -136,7 +136,7 @@ private:
 
     std::wstring GetAppNamePackaged() noexcept
     {
-        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
 
         UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
         auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId);
@@ -149,7 +149,7 @@ private:
         return appUserModelId;
     }
 
-    PCWSTR CensorFilePath(_In_opt_ PCWSTR path) noexcept
+    PCWSTR CensorFilePath(PCWSTR path) noexcept
     {
         if (path)
         {
