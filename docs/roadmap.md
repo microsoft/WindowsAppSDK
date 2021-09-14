@@ -20,6 +20,7 @@ XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Support
 [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Single-project MSIX](https://docs.microsoft.com/windows/apps/windows-app-sdk/single-project-msix) | ❌ Not Supported | ✅ Supported | ✅ Supported |
 [Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+[Dynamic dependencies](https://docs.microsoft.com/windows/apps/desktop/modernize/framework-packages/) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 [Elevation support](https://github.com/microsoft/WindowsAppSDK/issues/1407) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 **Deploy options:** |
 • [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-packaged-apps) | ✅ Supported | ✅ Supported | ✅ Supported |
@@ -39,6 +40,7 @@ XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Support
 [Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+[Dynamic dependencies](https://docs.microsoft.com/windows/apps/desktop/modernize/framework-packages/) | 🔄 Experimental | ✅ Supported | ✅ Supported |
 [Elevation support](https://github.com/microsoft/WindowsAppSDK/issues/1407) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 **Deploy options:**  |
 • [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) | 🔄 Experimental | ✅ Supported | ✅ Supported |
