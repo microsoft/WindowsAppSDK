@@ -150,11 +150,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\en-US\VSPackage.en-US.resx">
-      <Link>Resources\VSPackage.resx</Link>
+      <Link>Resources\VSPackage.en-US.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\ja-JP\VSPackage.ja-JP.resx">
-      <Link>Resources\VSPackage.resx</Link>
+      <Link>Resources\VSPackage.ja-JP.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>

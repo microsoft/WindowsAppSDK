@@ -159,16 +159,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
-      <Link>Resources\VSPackage.resx</Link>
-      <Generator></Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\en-US\VSPackage.en-US.resx">
-      <Link>Resources\VSPackage.resx</Link>
+      <Link>Resources\VSPackage.en-US.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ja-JP\VSPackage.ja-JP.resx">
-      <Link>Resources\VSPackage.resx</Link>
+      <Link>Resources\VSPackage.ja-JP.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
