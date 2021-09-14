@@ -16,15 +16,15 @@
     The implementation here is the same as the .NET SDK's implementation for default file inclusion.
     See https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes.
 
-    Yes, DefaultItemExcludes, DefaultExcludesInProjectFolder, EnableDefaultItems, and other properties here are
-    defined in a .NET SDK file that's imported after this one, but ItemGroup definitions are evaluated in a later pass.
-    See https://docs.microsoft.com/en-us/visualstudio/msbuild/build-process-overview?view=vs-2019#evaluation-phase  
+    Yes, the properties used here, including EnableCoreMrtTooling, are defined in MSBuild files imported after
+    this file. This is correct though because ItemGroup definitions are evaluated in a later pass. See
+    https://docs.microsoft.com/en-us/visualstudio/msbuild/build-process-overview?view=vs-2019#evaluation-phase.
   -->
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultContentItems)'!='false'">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultContentItems)'!='false' and '$(EnableCoreMrtTooling)'=='true'">
     <None Remove="$(_ReunionImageGlobs)" />
     <Content Include="$(_ReunionImageGlobs)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultPRIResourceItems)'!='false'">
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableDefaultPRIResourceItems)'!='false' and '$(EnableCoreMrtTooling)'=='true'">
     <None Remove="**/*.resw" />
     <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
   </ItemGroup>
