@@ -102,7 +102,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // Remove the value
         // setting the value to empty is the same as deleting the variable
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
-        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
+        VERIFY_ARE_EQUAL(0u, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
     }
 
     void EnvironmentManagerWin32Tests::TestSetEnvironmentVariableForUser()
@@ -295,7 +295,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
     }
 
     void EnvironmentManagerWin32Tests::TestRemoveFromPathForMachine()
-    {        
+    {
         // Keep a local string to match all operations to PATH
         std::wstring pathToManipulate{ GetEnvironmentVariableForMachine(c_PathName) };
 
