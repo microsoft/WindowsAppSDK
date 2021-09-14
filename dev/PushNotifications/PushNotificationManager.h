@@ -29,9 +29,5 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, implementation::PushNotificationManager, static_lifetime>
     {
         winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const& remoteId);
-
-    private:
-        static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
-
     };
 }

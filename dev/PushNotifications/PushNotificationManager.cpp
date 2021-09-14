@@ -263,7 +263,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
-    bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
+    bool IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
         {
