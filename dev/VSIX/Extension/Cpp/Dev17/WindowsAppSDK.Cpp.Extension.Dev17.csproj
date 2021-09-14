@@ -150,7 +150,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\VSPackage.resx">
+    <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\en-US\VSPackage.en-US.resx">
+      <Link>Resources\VSPackage.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cpp\Common\ja-JP\VSPackage.ja-JP.resx">
       <Link>Resources\VSPackage.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
