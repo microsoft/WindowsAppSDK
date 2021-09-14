@@ -255,7 +255,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             if (isProtocolActivatorSet)
             {
                 {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    auto lock = s_activatorInfoLock.lock_shared();
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
@@ -282,7 +282,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
                 {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    auto lock = s_activatorInfoLock.lock_shared();
                     THROW_HR_IF(E_INVALIDARG, s_pushTriggerRegistration);
                 }
 
@@ -351,7 +351,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
 
                 {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    auto lock = s_activatorInfoLock.lock_shared();
                     THROW_HR_IF_MSG(E_INVALIDARG, s_comActivatorRegistration, "ComActivator already registered.");
                 }
 

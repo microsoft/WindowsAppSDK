@@ -165,7 +165,7 @@ bool RegisterActivatorNullClsid()
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-                winrt::guid()); // Null guid
+                winrt::guid());
 
             PushNotificationManager::RegisterActivator(info);
         }
@@ -181,7 +181,7 @@ bool RegisterActivatorNullClsid()
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::ProtocolActivator,
-                winrt::guid()); // Null guid
+                winrt::guid());
 
             PushNotificationManager::RegisterActivator(info);
         }
