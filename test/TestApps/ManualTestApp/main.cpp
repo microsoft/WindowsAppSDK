@@ -14,15 +14,28 @@ using namespace winrt::Microsoft::Windows::AppLifecycle;
 
 using namespace std::chrono;
 
-bool IsPackagedProcess()
+std::wstring GetFullIdentityString()
 {
-    UINT32 n{};
-    return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
+    std::wstring identityString;
+    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
+    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
+    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
+    {
+        identityString = idNameBuffer;
+    }
+
+    return identityString;
+}
+
+bool HasIdentity()
+{
+    static bool hasIdentity = !(GetFullIdentityString()).empty();
+    return hasIdentity;
 }
 
 bool NeedDynamicDependencies()
 {
-    return !IsPackagedProcess();
+    return !HasIdentity();
 }
 
 HRESULT BootstrapInitialize()
@@ -36,10 +49,10 @@ HRESULT BootstrapInitialize()
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
     RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
 
-    // Version <major>.0.0.0 to find any framework package for this major version
-    const UINT64 c_Version_Major{ 4 };
-    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
-    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_Major, nullptr, minVersion));
+    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+    const UINT32 c_Version_MajorMinor{ 0x00040001 };
+    const PACKAGE_VERSION minVersion{};
+    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
     return S_OK;
 }
@@ -72,33 +85,26 @@ int main()
 
     THROW_IF_FAILED(BootstrapInitialize());
 
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto myKeyInstance = AppInstance::FindOrRegisterForKey(L"MyKey");
+    AppInstance::Activated_revoker token;
 
-    for (const auto& instance : AppInstance::GetInstances())
+    AppInstance keyInstance = AppInstance::FindOrRegisterForKey(L"derp.txt");
+    if (keyInstance.IsCurrent())
     {
-        wprintf(L"key: %s, isCurrent: %d\n", instance.Key().c_str(), instance.IsCurrent());
+        AppInstance thisInstance = AppInstance::GetCurrent();
+        token = thisInstance.Activated(
+            auto_revoke, [&thisInstance](
+                const auto& sender, const AppActivationArguments& args)
+            { OnActivated(sender, args); }
+        );
+    }
+    else
+    {
+         printf("Redirecting to key owner!\n");
+        keyInstance.RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs()).get();
+        printf("Finished redirecting!\n");
     }
 
-    if (myKeyInstance)
-    {
-        if (myKeyInstance.IsCurrent())
-        {
-            printf("Key owner activated!\n");
-
-            // Sign up for the activated event.
-            auto token = myKeyInstance.Activated(auto_revoke, [&myKeyInstance](const auto& sender, const AppActivationArguments& args) { OnActivated(sender, args); });
-
-            printf("Activated, waiting for redirections!\n");
-            WaitForActivations().get();
-        }
-        else
-        {
-            printf("Redirecting to key owner!\n");
-            myKeyInstance.RedirectActivationToAsync(args).get();
-            printf("Finished redirecting!\n");
-        }
-    }
+    WaitForActivations().get();
 
     BootstrapShutdown();
     return 0;
