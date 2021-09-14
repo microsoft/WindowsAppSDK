@@ -16,7 +16,7 @@ using namespace winrt::Windows::Storage::Streams;
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
     // To obtain an AAD RemoteIdentifier for your app,
-    // follow the instructions on https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app
+    // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
     auto channelOperation = PushNotificationManager::CreateChannelAsync(
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
 
@@ -90,10 +90,10 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 int main()
 {
     PushNotificationActivationInfo info(
-        PushNotificationRegistrationOptions::PushTrigger | PushNotificationRegistrationOptions::ComActivator,
+        PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
-    auto token = PushNotificationManager::RegisterActivator(info);
+    PushNotificationManager::RegisterActivator(info);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -129,8 +129,7 @@ int main()
         std::cin.ignore();
     }
 
-    // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure. 
-    PushNotificationManager::UnregisterActivator(token, PushNotificationRegistrationOptions::ComActivator);
-
+    // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
+    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     return 0;
 }

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>Windows Runtime Component (WinUI 3)</Name>
-    <Description>A project for creating a C++/WinRT Windows Runtime Component (.winmd) for both Desktop and Universal Windows Platform (UWP) apps, based on the Windows UI Library (WinUI 3).</Description>
+    <Name ID="1033" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1035" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Neutral.CppWinRT.RuntimeComponent.ico</Icon>
     <TemplateID>Microsoft.WinUI.Neutral.CppWinRT.RuntimeComponent</TemplateID>
     <ProjectType>VC</ProjectType>
@@ -20,7 +20,7 @@
     <LanguageTag>cpp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Project Reunion</PlatformTag>
+    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
@@ -51,17 +51,15 @@
   </WizardExtension>
   <WizardData>
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
-    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
-      <package id="Microsoft.Windows.CppWinRT" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion.Foundation" version="1.0.0" />
-      <package id="Microsoft.ProjectReunion.WinUI" version="1.0.0" />
+    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
+      <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.Windows.SDK.BuildTools" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
     <Assets>
-      <Asset Type="Microsoft.Windows.CppWinRT.nupkg" Source="File" Path="Microsoft.Windows.CppWinRT.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.ProjectReunion.nupkg" Source="File" Path="Microsoft.ProjectReunion.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.ProjectReunion.Foundation.nupkg" Source="File" Path="Microsoft.ProjectReunion.Foundation.1.0.0.nupkg" VsixSubPath="Packages" />
-      <Asset Type="Microsoft.ProjectReunion.WinUI.nupkg" Source="File" Path="Microsoft.ProjectReunion.WinUI.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.Windows.CppWinRT.nupkg" Source="File" Path="Microsoft.Windows.CppWinRT.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.Windows.SDK.BuildTools.nupkg" Source="File" Path="Microsoft.Windows.SDK.BuildTools.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>

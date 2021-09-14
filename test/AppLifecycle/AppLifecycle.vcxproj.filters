@@ -53,7 +53,7 @@
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" />
-    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\AppLifecycleTestPackage_1.0.0.0_$(Platform)_$(Configuration).msix" />
-    <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestPackage\AppPackages\AppLifecycleTestPackage_1.0.0.0_$(Configuration)_Test\Dependencies\$(Platform)\Microsoft.VCLibs.$(Platform).Debug.14.00.Desktop.appx" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build" IgnorableNamespaces="uap build">
-  <Identity Name="Microsoft.ProjectReunion.0.5" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
+  <Identity Name="Microsoft.WindowsAppRuntime.1.0" ProcessorArchitecture="x64" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.52102.3000.0" />
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>Microsoft.ProjectReunion.0.5</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.1.0</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Description>Microsoft Project Reunion Framework</Description>
+    <Description>Microsoft Windows App Runtime Framework</Description>
     <Logo>logo.png</Logo>
   </Properties>
   <Resources>
@@ -26,13 +26,16 @@
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
       <InProcessServer>
-        <Path>Microsoft.ProjectReunion.dll</Path>
+        <Path>Microsoft.WindowsAppRuntime.dll</Path>
           <!-- Dynamic Dependency -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.AddPackageDependencyOptions" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.CreatePackageDependencyOptions" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependency" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyContext" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.DynamicDependency.PackageDependencyRank" ThreadingModel="both" />
+
+          <!-- Environment Manager -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
 
           <!-- AppLifecycle -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.AppLifecycle.ActivationRegistrationManager" ThreadingModel="both" />
@@ -45,6 +48,14 @@
           <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" ThreadingModel="both" />
           <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationManager" ThreadingModel="both" />
+
+          <!-- Deployment -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppSDK.DeploymentManager" ThreadingModel="both" />
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.ApplicationModel.WindowsAppSDK.DeploymentStatus" ThreadingModel="both" />
+
+          <!-- PowerNotifications -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
+
       </InProcessServer>
     </Extension>
   </Extensions>

@@ -1,7 +1,7 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
-- template: ProjectReunion-Versions.yml
-- template: ProjectReunion-CommonVariables.yml
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
 
 parameters:
   - name: "ReleaseSigning"
@@ -10,11 +10,13 @@ parameters:
   - name: "PublishToMaestro"
     type: boolean
     default: False
+  - name: "WindowsAppRuntimeInsightsSourceDirectory"
+    type: string
+    default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
 
 jobs:
 - job: CredScan
-  pool:
-    vmImage: 'windows-2019'
+  pool: $(ProjectReunionBuildPool)
   steps:
   # Scans the root source folder for security vulnerability
   - task: CredScan@2
@@ -44,8 +46,7 @@ jobs:
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
     eq(variables['useBuildOutputFromBuildId'],'')
-  pool:
-    vmImage: 'windows-2019'
+  pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
@@ -68,7 +69,18 @@ jobs:
   variables:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
+
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+
   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
 #  - task: DownloadPackage@1
 #    displayName: 'Download Microsoft.Telemetry.Inbox.Native'
@@ -87,9 +99,9 @@ jobs:
 #    failOnStderr: true
 #    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
 
-  - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
 
-  - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -118,10 +130,8 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
-
 - job: BuildMRT
-  pool:
-    vmImage: 'windows-latest'
+  pool: $(ProjectReunionBuildPool)
   strategy:
     maxParallel: 10
     matrix:
@@ -135,6 +145,16 @@ jobs:
         buildPlatform: 'ARM64'
         buildConfiguration: 'Release'
   steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+
   - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
@@ -167,8 +187,7 @@ jobs:
   dependsOn:
     - BuildMRT
   condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool:
-    vmImage: 'windows-latest'
+  pool: $(ProjectReunionBuildPool)
   steps:
   - template: publish-mrt.yml
 
@@ -187,8 +206,7 @@ jobs:
       in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
       in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     )
-  pool:
-    name: Package ES Lab E
+  pool: $(ProjectReunionBuildPool)
 
   steps:
   - task: DownloadBuildArtifacts@0
@@ -218,7 +236,7 @@ jobs:
   - script: cmd /c dir /s /b $(Build.ArtifactStagingDirectory)
     displayName: Dump artifact staging directory
 
-  - template: AzurePipelinesTemplates\ProjectReunion-PopulateBuildDateAndRevision-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
   - task: CopyFiles@2
     displayName: 'Copy symbols to artifact staging directory'
@@ -239,8 +257,8 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-    # This ADO task does not support indexing of github sources currently :-(      
-      indexSources: false 
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
@@ -252,15 +270,15 @@ jobs:
     inputs:
       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
       symbolServerType: 'TeamServices'
-    # This ADO task does not support indexing of github sources currently :-(      
-      indexSources: false 
+    # This ADO task does not support indexing of github sources currently :-(
+      indexSources: false
       detailedLog: true
     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
     # To work around this issue, we just force LIB to be any dir that we know exists.
     env:
       LIB: $(Build.SourcesDirectory)
       ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-      ArtifactServices_Symbol_UseAAD: true
+      ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
 
   - task: EsrpCodeSigning@1
     inputs:
@@ -358,13 +376,14 @@ jobs:
       artifactName: 'FullNuget'
 
 # Create Nuget Package
-- template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
   parameters:
     jobName: CreateNugetPackage
     dependsOn: SignBinariesAndPublishSymbols
-    signConfigPattern: 'Microsoft.ProjectReunion*.nupkg'
-    useReleaseTag: '$(ProjectReunionFinalRelease)'
+    signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
+    useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     prereleaseVersionTag: nightly
+    buildPool: $(ProjectReunionBuildPool)
     ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
       publishToMaestro: True
     ${{ if ne(variables['Build.Reason'], 'Schedule') }}:

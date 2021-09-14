@@ -3,7 +3,6 @@
 
 #pragma once
 #include "ResourceCandidate.g.h"
-using namespace winrt;
 
 namespace winrt::Microsoft::Windows::ApplicationModel::Resources::implementation
 {
@@ -13,8 +12,8 @@ struct ResourceCandidate : ResourceCandidateT<ResourceCandidate>
     ResourceCandidate() = delete;
     ResourceCandidate(ResourceCandidateKind kind, hstring data);
     ResourceCandidate(array_view<uint8_t const> data);
-    ResourceCandidate(MrmManagerHandle manager, MrmContextHandle context, MrmMapHandle map, uint32_t index, const hstring& id, ResourceCandidateKind kind, hstring data);
-    ResourceCandidate(MrmManagerHandle manager, MrmContextHandle context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data);
+    ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, ResourceCandidateKind kind, hstring data);
+    ResourceCandidate(MrmManagerHandle manager, Microsoft::Windows::ApplicationModel::Resources::ResourceContext context, MrmMapHandle map, uint32_t index, const hstring& id, array_view<uint8_t const> data);
 
     hstring ValueAsString();
     com_array<uint8_t> ValueAsBytes();
@@ -31,7 +30,7 @@ private:
 
     // Information required to refetch the candidate for candidate qualifier values
     MrmManagerHandle m_resourceManagerHandle = nullptr;
-    MrmContextHandle m_resourceContextHandle = nullptr;
+    Microsoft::Windows::ApplicationModel::Resources::ResourceContext m_resourceContext = nullptr;
     MrmMapHandle m_resourceMapHandle = nullptr;
     uint32_t m_resourceIndex = static_cast<uint32_t>(-1);
     hstring m_resourceId;

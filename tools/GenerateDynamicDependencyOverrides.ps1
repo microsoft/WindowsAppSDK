@@ -1,4 +1,4 @@
-﻿# Make a valid AppxManifest.xml from a templated file and variable substititon
+﻿# Generate DynamicDependency overrides for use at build time
 
 Param(
     [Parameter(Mandatory)]

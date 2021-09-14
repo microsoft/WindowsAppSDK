@@ -15,5 +15,5 @@ namespace Test::FileSystem
 
     std::filesystem::path GetBootstrapAbsoluteFilename();
 
-    std::filesystem::path GetProjectReunionDllAbsoluteFilename();
+    std::filesystem::path GetWindowsAppRuntimeDllAbsoluteFilename();
 }

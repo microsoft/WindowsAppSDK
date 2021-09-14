@@ -36,27 +36,6 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\uap10.0\'
     flattenFolders: true
 
-# Needed so that the NuGet package can be installed in a win32 app. It avoids this error: "You are trying to
-# install this package into a project that targets 'native,Version=v0.0', but the package does not contain any
-# assembly references or content files that are compatible with that framework."
-- task: CopyFiles@2
-  displayName: 'copy winmd into native folder'
-  inputs:
-    SourceFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\mrtcore_binaries\lib\anycpu'
-    Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.winmd
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native'
-    flattenFolders: true
-
-- task: CopyFiles@2
-  displayName: 'copy Intellisense into native folder'
-  inputs:
-    SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
-    Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.xml
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\native\'
-    flattenFolders: true
-
 - task: CopyFiles@2
   displayName: 'copy .net 5 projection DLL and PDB'
   inputs:
@@ -64,7 +43,7 @@ steps:
     Contents: |
       net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.pdb
       net5.0\Microsoft.Windows.ApplicationModel.Resources.Projection.dll
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows10.0.17763.0\'
     flattenFolders: true
 
 - task: CopyFiles@2
@@ -73,7 +52,7 @@ steps:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging\Intellisense'
     Contents: |
       Microsoft.Windows.ApplicationModel.Resources.Projection.xml
-    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows\'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\lib\net5.0-windows10.0.17763.0\'
     flattenFolders: true
 
 - task: CopyFiles@2
@@ -144,13 +123,12 @@ steps:
   inputs:
     SourceFolder: '${{ parameters.MRTSourcesDirectory }}\packaging'
     Contents: |
-      Microsoft.Windows.ApplicationModel.Resources.PriGen.targets
-      Microsoft.Windows.ApplicationModel.Resources.References.targets
-      Microsoft.Windows.ApplicationModel.Resources.targets
-      native\Microsoft.Windows.ApplicationModel.Resources.C.props
-      native\Microsoft.Windows.ApplicationModel.Resources.props
-      native\Microsoft.Windows.ApplicationModel.Resources.targets
-      native\Microsoft.Windows.ApplicationModel.Resources.WinRt.props
+      MrtCore.PriGen.targets
+      MrtCore.References.targets
+      MrtCore.targets
+      native\MrtCore.C.props
+      native\MrtCore.props
+      native\MrtCore.targets
       README.md
     TargetFolder: '$(Build.ArtifactStagingDirectory)\fullnuget\build'
     flattenFolders: false

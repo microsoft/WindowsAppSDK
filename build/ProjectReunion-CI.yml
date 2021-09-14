@@ -1,8 +1,8 @@
-# see https://docs.microsoft.com/en-us/azure/devops/pipelines/process/phases for info on yaml ADO jobs
+# see https://docs.microsoft.com/azure/devops/pipelines/process/phases for info on yaml ADO jobs
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 variables:
-- template: ProjectReunion-Versions.yml
-- template: ProjectReunion-CommonVariables.yml
+- template: WindowsAppSDK-Versions.yml
+- template: WindowsAppSDK-CommonVariables.yml
 
 jobs:
 - job: CredScan
@@ -58,8 +58,8 @@ jobs:
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
-  - template: AzurePipelinesTemplates\ProjectReunion-BuildDevProject-Steps.yml
-  - template: AzurePipelinesTemplates\ProjectReunion-PublishProjectOutput-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
   - task: BinSkim@3
     inputs:
@@ -140,7 +140,7 @@ jobs:
   steps:
   - template: publish-mrt.yml
 
-- template: AzurePipelinesTemplates\ProjectReunion-RunHelixTests-Job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
     dependsOn:
@@ -149,7 +149,7 @@ jobs:
     condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
 
 # Create Nuget Package
-- template: AzurePipelinesTemplates\ProjectReunion-CreateNugetPackage-Job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
   parameters:
     publishToMaestro: false
     jobName: CreateNugetPackage

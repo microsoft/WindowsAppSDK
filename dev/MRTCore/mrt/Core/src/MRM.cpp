@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
@@ -10,6 +10,8 @@
 #include "mrm/readers/MrmReaders.h"
 #include "mrm/platform/WindowsCore.h"
 #include "mrm/readers/MrmManagers.h"
+
+#include "mrm/common/MrmTraceLogging.h"
 
 #include "MRM.h"
 
@@ -256,7 +258,7 @@ static HRESULT LoadResourceCandidate(
             RETURN_IF_FAILED(resourceManagerObjects->priFile->GetResourceMapById(rootResourceMap, &internalResourceMap));
         }
 
-        RETURN_IF_FAILED(internalResourceMap->GetResource(relativeResourceId, &namedResource));
+        RETURN_IF_FAILED_WITH_EXPECTED(internalResourceMap->GetResource(relativeResourceId, &namedResource), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     }
     else
     {
@@ -276,7 +278,7 @@ static HRESULT LoadResourceCandidate(
 
         if (index == INDEX_RESOURCE_ID)
         {
-            RETURN_IF_FAILED(internalResourceMap->GetResource(resourceIdOrUri, &namedResource));
+            RETURN_IF_FAILED_WITH_EXPECTED(internalResourceMap->GetResource(resourceIdOrUri, &namedResource), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
         }
         else
         {
@@ -334,7 +336,8 @@ static HRESULT LoadStringResource(
     _Outptr_ PWSTR* resourceString)
 {
     ResourceCandidateResult candidate;
-    RETURN_IF_FAILED(LoadResourceCandidate(resourceManager, resourceContext, resourceMap, index, resourceIdOrUri, &candidate, nullptr, nullptr, nullptr, nullptr));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadResourceCandidate(resourceManager, resourceContext, resourceMap, index, resourceIdOrUri, &candidate, nullptr, nullptr, nullptr, nullptr),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
 
     StringResult stringResult;
     if (!candidate.TryGetStringValue(&stringResult))
@@ -360,7 +363,8 @@ static HRESULT LoadEmbeddedResource(
     data->size = 0;
 
     ResourceCandidateResult candidate;
-    RETURN_IF_FAILED(LoadResourceCandidate(resourceManager, resourceContext, resourceMap, index, resourceIdOrUri, &candidate, nullptr, nullptr, nullptr, nullptr));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadResourceCandidate(resourceManager, resourceContext, resourceMap, index, resourceIdOrUri, &candidate, nullptr, nullptr, nullptr, nullptr),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
 
     BlobResult blobResult;
     if (!candidate.TryGetBlobValue(&blobResult))
@@ -393,7 +397,7 @@ static HRESULT LoadStringOrEmbeddedResource(
 
     ResourceCandidateResult candidate;
     PWSTR localName = nullptr;
-    RETURN_IF_FAILED(LoadResourceCandidate(
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadResourceCandidate(
         resourceManager, 
         resourceContext, 
         resourceMap, 
@@ -403,7 +407,8 @@ static HRESULT LoadStringOrEmbeddedResource(
         &localName,
         qualifierCount,
         qualifierNames,
-        qualifierValues));
+        qualifierValues), 
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     std::unique_ptr<wchar_t[], decltype(&MrmFreeResource)> name(localName, MrmFreeResource);
 
     MrmEnvironment::ResourceValueType internalResourceType;
@@ -488,6 +493,8 @@ STDAPI MrmCreateResourceManager(_In_ PCWSTR priFileName, _Out_ MrmManagerHandle*
     *resourceManager = nullptr;
 
     RETURN_HR_IF(E_INVALIDARG, (priFileName == nullptr) || (*priFileName == L'\0'));
+
+    MrtRuntimeTraceLoggingProvider::MrmCreateResourceManager();
 
     std::unique_ptr<MrmObjects, decltype(&DestroyResourceManager)> resourceManagerObjects(
         new (std::nothrow) MrmObjects(), &DestroyResourceManager);
@@ -674,7 +681,7 @@ STDAPI MrmGetChildResourceMap(
     }
 
     const ResourceMapSubtree* childSubTree;
-    RETURN_IF_FAILED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree));
+    RETURN_IF_FAILED_WITH_EXPECTED(originalMapSubtree->GetSubtree(childResourceMapName, &childSubTree), HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND));
 
     *childResourceMap = reinterpret_cast<MrmMapHandle>(const_cast<ResourceMapSubtree*>(childSubTree));
     return S_OK;
@@ -710,7 +717,7 @@ STDAPI MrmLoadStringResource(
     _In_ PCWSTR resourceId,
     _Outptr_ PWSTR* resourceString)
 {
-    RETURN_IF_FAILED(LoadStringResource(resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceString));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringResource(resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceString), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -720,7 +727,7 @@ STDAPI MrmLoadStringResourceFromResourceUri(
     _In_ PCWSTR resourceUri,
     _Outptr_ PWSTR* resourceString)
 {
-    RETURN_IF_FAILED(LoadStringResource(resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceUri, resourceString));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringResource(resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceUri, resourceString), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -731,7 +738,7 @@ STDAPI MrmLoadEmbeddedResource(
     _In_ PCWSTR resourceId,
     _Out_ MrmResourceData* data)
 {
-    RETURN_IF_FAILED(LoadEmbeddedResource(resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, data));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadEmbeddedResource(resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, data), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -741,7 +748,7 @@ STDAPI MrmLoadEmbeddedResourceFromResourceUri(
     _In_ PCWSTR resourceUri,
     _Out_ MrmResourceData* data)
 {
-    RETURN_IF_FAILED(LoadEmbeddedResource(resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceUri, data));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadEmbeddedResource(resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceUri, data), HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -754,8 +761,9 @@ STDAPI MrmLoadStringOrEmbeddedResource(
     _Outptr_result_maybenull_ PWSTR* resourceString,
     _Out_ MrmResourceData* data)
 {
-    RETURN_IF_FAILED(LoadStringOrEmbeddedResource(
-        resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
+        resourceManager, resourceContext, resourceMap, INDEX_RESOURCE_ID, resourceId, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -771,7 +779,7 @@ STDAPI MrmLoadStringOrEmbeddedResourceWithQualifierValues(
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierNames,
     _Outptr_result_buffer_(*qualifierCount) PWSTR** qualifierValues)
 {
-    RETURN_IF_FAILED(LoadStringOrEmbeddedResource(
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
         resourceManager, 
         resourceContext, 
         resourceMap, 
@@ -783,7 +791,8 @@ STDAPI MrmLoadStringOrEmbeddedResourceWithQualifierValues(
         nullptr, 
         qualifierCount, 
         qualifierNames, 
-        qualifierValues));
+        qualifierValues),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 
@@ -795,8 +804,9 @@ STDAPI MrmLoadStringOrEmbeddedFromResourceUri(
     _Outptr_result_maybenull_ PWSTR* resourceString,
     _Out_ MrmResourceData* data)
 {
-    RETURN_IF_FAILED(LoadStringOrEmbeddedResource(
-        resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceUri, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr));
+    RETURN_IF_FAILED_WITH_EXPECTED(LoadStringOrEmbeddedResource(
+        resourceManager, resourceContext, nullptr, INDEX_RESOURCE_URI, resourceUri, resourceType, resourceString, data, nullptr, nullptr, nullptr, nullptr),
+        HRESULT_FROM_WIN32(ERROR_MRM_NAMED_RESOURCE_NOT_FOUND));
     return S_OK;
 }
 

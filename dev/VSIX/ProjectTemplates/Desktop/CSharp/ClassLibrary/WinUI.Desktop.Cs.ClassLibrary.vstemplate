@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>Class Library (WinUI 3 in Desktop)</Name>
-    <Description>A project for creating a managed class library (.dll) for Desktop apps based on the Windows UI Library (WinUI 3).</Description>
+    <Name ID="1025" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1027" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Desktop.Cs.ClassLibrary.ico</Icon>
     <TemplateID>Microsoft.WinUI.Desktop.Cs.ClassLibrary</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
@@ -21,15 +21,14 @@
     <LanguageTag>csharp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Project Reunion</PlatformTag>
+    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>desktop</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
   <TemplateContent PreferedSolutionConfiguration="Debug|AnyCPU">
     <CustomParameters>
-      <CustomParameter Name="$ReunionNupkgVersion$" Value="1.0.0" />
-      <CustomParameter Name="$ReunionFoundationNupkgVersion$" Value="1.0.0" />
-      <CustomParameter Name="$ReunionWinUINupkgVersion$" Value="1.0.0" />
+      <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" OpenInEditor="true">Class1.cs</ProjectItem>
