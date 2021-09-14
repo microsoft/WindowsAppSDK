@@ -10,7 +10,6 @@ public:
     STDMETHOD(OnRawNotificationReceived)(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
 
 private:
-    const std::string ConvertWideStringToUtf8String(std::wstring const& wideString);
     const std::wstring GetPayloadAsWideString(unsigned int payloadLength, byte* payload);
 
     std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
