@@ -42,117 +42,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     static wil::unique_com_class_object_cookie s_comActivatorRegistration;
     static wil::srwlock s_activatorInfoLock;
 
-    inline constexpr auto c_maxBackoff{ 5min };
-    inline constexpr auto c_initialBackoff{ 60s };
-    inline constexpr auto c_backoffIncrement{ 60s };
-
-    const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
-    const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
-    const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
-
-    bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
-    {
-        switch (hr)
-        {
-        case HRESULT_FROM_WIN32(ERROR_TIMEOUT):
-        case WNP_E_NOT_CONNECTED:
-        case WPN_E_OUTSTANDING_CHANNEL_REQUEST:
-        case WNP_E_RECONNECTING:
-        case WNP_E_BIND_USER_BUSY:
-        case HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE):
-            return true;
-        default:
-            return false;
-        }
-    }
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid const& remoteId)
     {
-        try
-        {
-            THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
-
-            // API supports channel requests only for packaged applications for v0.8 version
-            THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
-
-            auto cancellation{ co_await winrt::get_cancellation_token() };
-
-            cancellation.enable_propagation(true);
-
-            // Allow to register the progress and complete handler
-            co_await resume_background();
-
-            auto progress{ co_await winrt::get_progress_token() };
-
-            uint8_t retryCount = 0;
-            winrt::hresult channelRequestResult = E_PENDING;
-            PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
-
-            PushNotificationCreateChannelStatus
-                channelStatus = { status, channelRequestResult, retryCount };
-
-            progress(channelStatus);
-
-            for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
-            {
-                try
-                {
-                    PushNotificationChannelManager channelManager{};
-                    winrt::PushNotificationChannel pushChannelReceived{ nullptr };
-
-                    pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
-
-                    PushNotificationTelemetry::ChannelRequestedByApi(
-                        S_OK,
-                        AppModel::Identity::IsPackagedProcess(),
-                        remoteId);
-
-                    co_return winrt::make<PushNotificationCreateChannelResult>(
-                        winrt::make<PushNotificationChannel>(pushChannelReceived),
-                        S_OK,
-                        PushNotificationChannelStatus::CompletedSuccess);
-
-                }
-                catch (...)
-                {
-                    auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
-
-                    if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
-                    {
-                        channelStatus.extendedError = channelRequestException.code();
-                        channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
-                        channelStatus.retryCount = ++retryCount;
-
-                        progress(channelStatus);
-                    }
-                    else
-                    {
-
-                        PushNotificationTelemetry::ChannelRequestedByApi(
-                            channelRequestException.code(),
-                            AppModel::Identity::IsPackagedProcess(),
-                            remoteId);
-
-                        co_return winrt::make<PushNotificationCreateChannelResult>(
-                            nullptr,
-                            channelRequestException.code(),
-                            PushNotificationChannelStatus::CompletedFailure);
-                    }
-                }
-
-                co_await winrt::resume_after(backOffTime);
-            }
-        }
-        catch (...)
-        {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ChannelRequestedByApi(
-                hrError,
-                AppModel::Identity::IsPackagedProcess(),
-                remoteId);
-
-            THROW_HR(hrError);
-        }
+        return make_self<factory_implementation::PushNotificationManager>()->CreateChannelAsync(remoteId);
     }
 
     void PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
@@ -355,6 +248,122 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         else
         {
             return isProtocolActivatorSet;
+        }
+    }
+}
+
+namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
+{
+
+    inline constexpr auto c_maxBackoff{ 5min };
+    inline constexpr auto c_initialBackoff{ 60s };
+    inline constexpr auto c_backoffIncrement{ 60s };
+
+    const HRESULT WNP_E_NOT_CONNECTED = static_cast<HRESULT>(0x880403E8L);
+    const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
+    const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
+
+    bool PushNotificationManager::IsChannelRequestRetryable(const hresult& hr)
+    {
+        switch (hr)
+        {
+        case HRESULT_FROM_WIN32(ERROR_TIMEOUT):
+        case WNP_E_NOT_CONNECTED:
+        case WPN_E_OUTSTANDING_CHANNEL_REQUEST:
+        case WNP_E_RECONNECTING:
+        case WNP_E_BIND_USER_BUSY:
+        case HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE):
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid const& remoteId)
+    {
+        try
+        {
+            auto strong_this{ get_strong() };
+            THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
+
+            // API supports channel requests only for packaged applications for v0.8 version
+            THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
+
+            auto cancellation{ co_await winrt::get_cancellation_token() };
+
+            cancellation.enable_propagation(true);
+
+            // Allow to register the progress and complete handler
+            co_await resume_background();
+
+            auto progress{ co_await winrt::get_progress_token() };
+
+            uint8_t retryCount = 0;
+            winrt::hresult channelRequestResult = E_PENDING;
+            PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
+
+            PushNotificationCreateChannelStatus
+                channelStatus = { status, channelRequestResult, retryCount };
+
+            progress(channelStatus);
+
+            for (auto backOffTime = c_initialBackoff; ; backOffTime += c_backoffIncrement)
+            {
+                try
+                {
+                    PushNotificationChannelManager channelManager{};
+                    winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync() };
+
+                    PushNotificationTelemetry::ChannelRequestedByApi(
+                        S_OK,
+                        AppModel::Identity::IsPackagedProcess(),
+                        remoteId);
+
+                    co_return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                        winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel>(pushChannelReceived),
+                        S_OK,
+                        PushNotificationChannelStatus::CompletedSuccess);
+
+                }
+                catch (...)
+                {
+                    auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
+
+                    if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
+                    {
+                        channelStatus.extendedError = channelRequestException.code();
+                        channelStatus.status = PushNotificationChannelStatus::InProgressRetry;
+                        channelStatus.retryCount = ++retryCount;
+
+                        progress(channelStatus);
+                    }
+                    else
+                    {
+
+                        PushNotificationTelemetry::ChannelRequestedByApi(
+                            channelRequestException.code(),
+                            AppModel::Identity::IsPackagedProcess(),
+                            remoteId);
+
+                        co_return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
+                            nullptr,
+                            channelRequestException.code(),
+                            PushNotificationChannelStatus::CompletedFailure);
+                    }
+                }
+
+                co_await winrt::resume_after(backOffTime);
+            }
+        }
+        catch (...)
+        {
+            HRESULT hrError = wil::ResultFromCaughtException();
+            PushNotificationTelemetry::ChannelRequestedByApi(
+                hrError,
+                AppModel::Identity::IsPackagedProcess(),
+                remoteId);
+
+            THROW_HR(hrError);
         }
     }
 }

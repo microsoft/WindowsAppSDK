@@ -6,6 +6,23 @@
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
+    struct PushNotificationManager;
+}
+
+namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
+{
+    struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, implementation::PushNotificationManager, static_lifetime>
+    {
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const& remoteId);
+
+        private:
+            static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
+
+    };
+}
+
+namespace winrt::Microsoft::Windows::PushNotifications::implementation
+{
 
     struct PushNotificationManager
     {
@@ -20,13 +37,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
 
     private:
-        static bool IsChannelRequestRetryable(const winrt::hresult& hrException);
         static bool IsBackgroundTaskBuilderAvailable();
-    };
-}
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
-{
-    struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, implementation::PushNotificationManager>
-    {
     };
 }
