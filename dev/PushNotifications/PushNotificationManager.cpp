@@ -118,6 +118,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
     {
+        bool usingLegacyImplementation{ false };
+
         try
         {
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
@@ -155,6 +157,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         // to request a channel.
                         if (SUCCEEDED(hr))
                         {
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
+
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(channelInfo),
                                 S_OK,
@@ -162,15 +166,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
                         else if (hr == E_NOTIMPL)
                         {
+                            usingLegacyImplementation = true;
+
                             PushNotificationChannelManager channelManager{};
                             winrt::PushNotificationChannel pushChannelReceived{ nullptr };
 
                             pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
 
-                            PushNotificationTelemetry::ChannelRequestedByApi(
-                                S_OK,
-                                AppModel::Identity::IsPackagedProcess(),
-                                remoteId);
+                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
                             co_return winrt::make<PushNotificationCreateChannelResult>(
                                 winrt::make<PushNotificationChannel>(pushChannelReceived),
@@ -188,6 +191,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
+
+                        PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             winrt::make<PushNotificationChannel>(pushChannelReceived),
@@ -209,11 +214,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                     else
                     {
-
-                        PushNotificationTelemetry::ChannelRequestedByApi(
-                            channelRequestException.code(),
-                            AppModel::Identity::IsPackagedProcess(),
-                            remoteId);
+                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId, usingLegacyImplementation);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             nullptr,
@@ -227,13 +228,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ChannelRequestedByApi(
-                hrError,
-                AppModel::Identity::IsPackagedProcess(),
-                remoteId);
+            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId, usingLegacyImplementation);
 
-            THROW_HR(hrError);
+            throw;
         }
     }
 
@@ -366,11 +363,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         catch(...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorRegisteredByApi(hrError, 
+            PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
 
-            THROW_HR(hrError);
+            throw;
         }
     }
 
@@ -407,9 +403,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, activators);
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(), activators);
+            throw;
         }
 
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, activators);
@@ -430,9 +425,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch(...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(),
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+
+            throw;
         }
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
     }
