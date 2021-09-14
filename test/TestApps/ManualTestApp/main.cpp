@@ -14,6 +14,13 @@ using namespace winrt::Microsoft::Windows::AppLifecycle;
 
 using namespace std::chrono;
 
+HWND g_window = NULL;
+wchar_t g_windowClass[] = L"TestWndClass"; // the main window class name
+
+ATOM _RegisterClass(HINSTANCE hInstance);
+BOOL InitInstance(HINSTANCE, int);
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
 std::wstring GetFullIdentityString()
 {
     std::wstring identityString;
@@ -77,6 +84,7 @@ void OnActivated(const winrt::Windows::Foundation::IInspectable&, const AppActiv
 {
     auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
     wprintf(L"Activated via redirection with args: %s\n", launchArgs.Arguments().c_str());
+    SetForegroundWindow(g_window);
 }
 
 int main()
@@ -88,7 +96,11 @@ int main()
     AppInstance::Activated_revoker token;
 
     AppInstance keyInstance = AppInstance::FindOrRegisterForKey(L"derp.txt");
-    if (keyInstance.IsCurrent())
+    if (!keyInstance.IsCurrent())
+    {
+        keyInstance.RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs()).get();
+    }
+    else
     {
         AppInstance thisInstance = AppInstance::GetCurrent();
         token = thisInstance.Activated(
@@ -96,16 +108,83 @@ int main()
                 const auto& sender, const AppActivationArguments& args)
             { OnActivated(sender, args); }
         );
-    }
-    else
-    {
-         printf("Redirecting to key owner!\n");
-        keyInstance.RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs()).get();
-        printf("Finished redirecting!\n");
-    }
 
-    WaitForActivations().get();
+        auto hInstance = GetModuleHandle(NULL);
+        _RegisterClass(hInstance);
+
+        // Perform application initialization:
+        if (!InitInstance(hInstance, SW_SHOWDEFAULT))
+        {
+            return 1;
+        }
+
+        // Main message loop:
+        MSG msg;
+        BOOL msgRet;
+        while ((msgRet = GetMessage(&msg, NULL, 0, 0)) != 0)
+        {
+            if (msgRet == -1)
+            {
+                return (int)GetLastError();
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
 
     BootstrapShutdown();
+    return 0;
+}
+
+ATOM _RegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEX wcex = {};
+
+    wcex.cbSize = sizeof(wcex);
+
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wcex.lpszClassName = g_windowClass;
+
+    return RegisterClassEx(&wcex);
+}
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    g_window = CreateWindow(g_windowClass, L"ContainerWindowingTestApp", WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+
+    if (!g_window)
+    {
+        return FALSE;
+    }
+
+    ShowWindow(g_window, nCmdShow);
+    UpdateWindow(g_window);
+    return TRUE;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT ps;
+    HDC hdc;
+
+    switch (message)
+    {
+    case WM_PAINT:
+        hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+        break;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
     return 0;
 }
