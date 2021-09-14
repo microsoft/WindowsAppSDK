@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DataStore.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.cpp" />
@@ -34,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_msixdynamicdependency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.AddPackageDependencyOptions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)M.AM.DD.CreatePackageDependencyOptions.h" />

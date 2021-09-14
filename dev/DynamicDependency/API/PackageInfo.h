@@ -4,6 +4,8 @@
 #if !defined(PACKAGEINFO_H)
 #define PACKAGEINFO_H
 
+#include "appmodel_packageinfo.h"
+
 namespace MddCore
 {
 class PackageInfo
@@ -15,11 +17,11 @@ public:
         const PackagePathType packagePathType = PackagePathType_Effective)
     {
         UINT32 bufferLength{};
-        const LONG rc{ ::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, nullptr, nullptr) };
+        const LONG rc{ appmodel::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, nullptr, nullptr) };
         THROW_HR_IF(HRESULT_FROM_WIN32(rc), rc != ERROR_INSUFFICIENT_BUFFER);
         std::unique_ptr<BYTE[]> buffer{ std::make_unique<BYTE[]>(bufferLength) };
         UINT32 count{};
-        THROW_IF_WIN32_ERROR(::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, buffer.get(), &count));
+        THROW_IF_WIN32_ERROR(appmodel::GetPackageInfo2(packageInfoReference, flags, packagePathType, &bufferLength, buffer.get(), &count));
 
         auto packageInfo{ PackageInfo(buffer.get(), count) };
         buffer.release();
