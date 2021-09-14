@@ -148,7 +148,7 @@ STDAPI MddLifetimeManagementGC() noexcept try
                     if ((id.size() >= maxIdLength) ||
                         (swscanf_s(id.c_str(), L"ddlm-%hu.%hu.%hu.%hu-%9s", &version.Major, &version.Minor, &version.Build, &version.Revision, architectureAsString, static_cast<unsigned>(ARRAYSIZE(architectureAsString))) != 5))
                     {
-                        (void)LOG_HR_MSG(ERROR_INVALID_DATA, "%ls", id.c_str());
+                        (void)LOG_WIN32_MSG(ERROR_INVALID_DATA, "%ls", id.c_str());
                         continue;
                     }
 
