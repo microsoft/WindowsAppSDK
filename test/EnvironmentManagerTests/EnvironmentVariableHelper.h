@@ -165,7 +165,7 @@ inline std::wstring GetEnvironmentVariableForProcess(const std::wstring variable
     return environmentVariableValue;
 }
 
-inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& pathPart, int index)
+inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& pathPart, UINT index)
 {
     std::wstring existingPath{};
 
@@ -203,7 +203,7 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& path
     // +2 to make sure the injection site is surrounded.
     if (pathParts.size() <= index)
     {
-        for (int partToAdd = pathParts.size(); partToAdd < index + 2; partToAdd++)
+        for (UINT partToAdd = static_cast<UINT>(pathParts.size()); partToAdd < index + 2; partToAdd++)
         {
             std::wstring stringToAdd(L"index");
             stringToAdd.append(std::to_wstring((partToAdd)));
@@ -213,7 +213,7 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& path
         }
     }
 
-    int currentIndex{ 0 };
+    UINT currentIndex{ 0 };
     for (auto iterator = pathParts.begin(); iterator != pathParts.end(); ++iterator)
     {
         if (currentIndex == index)
@@ -255,7 +255,7 @@ inline void InjectIntoPath(bool isProcess, bool isUser, const std::wstring& path
 
 }
 
-inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& pathExtPart, int index)
+inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& pathExtPart, UINT index)
 {
     std::wstring existingPathExt{};
 
@@ -293,7 +293,7 @@ inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& p
     // +2 to make sure the injection site is surrounded.
     if (pathExtParts.size() <= index)
     {
-        for (int partToAdd = pathExtParts.size(); partToAdd < index + 2; partToAdd++)
+        for (UINT partToAdd = static_cast<UINT>(pathExtParts.size()); partToAdd < index + 2; partToAdd++)
         {
             std::wstring stringToAdd(L"index");
             stringToAdd.append(std::to_wstring((partToAdd)));
@@ -303,7 +303,7 @@ inline void InjectIntoPathExt(bool isProcess, bool isUser, const std::wstring& p
         }
     }
 
-    int currentIndex{ 0 };
+    UINT currentIndex{ 0 };
     for (auto iterator = pathExtParts.begin(); iterator != pathExtParts.end(); ++iterator)
     {
         if (currentIndex == index)
