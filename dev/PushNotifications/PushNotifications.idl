@@ -21,6 +21,7 @@ namespace Microsoft.Windows.PushNotifications
         Boolean Handled;
     };
 
+    [experimental]
     [flags]
     enum PushNotificationRegistrationActivators
     {
@@ -108,6 +109,7 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
+    [experimental]
     static runtimeclass PushNotificationManager
     {
         // Register an activator using an ActivationInfo context and cache the flag for unregister

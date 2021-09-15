@@ -33,7 +33,7 @@ static LONG (WINAPI* TrueGetCurrentPackageInfo)(
     const UINT32 flags,
     UINT32* bufferLength,
     BYTE* buffer,
-    UINT32* count) = GetCurrentPackageInfo;
+    UINT32* count) = ::GetCurrentPackageInfo;
 
 LONG WINAPI DynamicGetCurrentPackageInfo(
     const UINT32 flags,
@@ -46,7 +46,7 @@ static LONG (WINAPI* TrueGetCurrentPackageInfo2)(
     PackagePathType packagePathType,
     UINT32* bufferLength,
     BYTE* buffer,
-    UINT32* count) = GetCurrentPackageInfo2;
+    UINT32* count) = nullptr;
 
 LONG WINAPI DynamicGetCurrentPackageInfo2(
     const UINT32 flags,
@@ -55,11 +55,11 @@ LONG WINAPI DynamicGetCurrentPackageInfo2(
     BYTE* buffer,
     UINT32* count);
 
-HRESULT WINAPI StubGetCurrentPackageInfo3(
-    UINT32 flags,
-    PackageInfoType packageInfoType,
+typedef HRESULT (WINAPI* GetCurrentPackageInfo2Function)(
+    const UINT32 flags,
+    PackagePathType packagePathType,
     UINT32* bufferLength,
-    void* buffer,
+    BYTE* buffer,
     UINT32* count);
 
 static HRESULT (WINAPI* TrueGetCurrentPackageInfo3)(
@@ -81,6 +81,22 @@ typedef HRESULT (WINAPI* GetCurrentPackageInfo3Function)(
     PackageInfoType packageInfoType,
     UINT32* bufferLength,
     void* buffer,
+    UINT32* count);
+
+static LONG (WINAPI* TrueGetPackageInfo2)(
+    PACKAGE_INFO_REFERENCE packageInfoReference,
+    const UINT32 flags,
+    PackagePathType packagePathType,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count) = nullptr;
+
+typedef HRESULT (WINAPI* GetPackageInfo2Function)(
+    PACKAGE_INFO_REFERENCE packageInfoReference,
+    const UINT32 flags,
+    PackagePathType packagePathType,
+    UINT32* bufferLength,
+    BYTE* buffer,
     UINT32* count);
 
 VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(
@@ -109,6 +125,12 @@ VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(
     return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_BUILDNUMBER, c_conditionMask) != FALSE;
 }
 
+VERSIONHELPERAPI IsWindows10_19H1OrGreater()
+{
+    const WORD c_win10_19h1_build{ 18362 };
+    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_win10_19h1_build);
+}
+
 VERSIONHELPERAPI IsWindows10_20H1OrGreater()
 {
     const WORD c_win10_20h1_build{ 19041 };
@@ -120,18 +142,35 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
     // Detour package graph APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourUpdateThread(GetCurrentThread()));
     FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
-    FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
-    if (IsWindows10_20H1OrGreater())
+    //
+    // NOTE: GetCurrentPackageInfo2 requires >=19H1
+    // NOTE: GetCurrentPackageInfo3 requires >=20H1
+    // Support down to RS5
+    if (IsWindows10_19H1OrGreater())
     {
-        HMODULE dllKernelbase{ LoadLibraryExW(L"kernelbase.dll", nullptr, 0) };
-        FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllKernelbase);
+        HMODULE dllApisetAppmodelRuntime_1_3{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-3.dll", nullptr, 0) };
+        FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntime_1_3);
 
-        auto dllGetCurrentPackageInfo3{ reinterpret_cast<GetCurrentPackageInfo3Function>(GetProcAddress(dllKernelbase, "GetCurrentPackageInfo3")) };
-        FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetCurrentPackageInfo3);
+        auto dllGetCurrentPackageInfo2{ reinterpret_cast<GetCurrentPackageInfo2Function>(GetProcAddress(dllApisetAppmodelRuntime_1_3, "GetCurrentPackageInfo2")) };
+        FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetCurrentPackageInfo2);
+        TrueGetCurrentPackageInfo2 = dllGetCurrentPackageInfo2;
+        FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
 
-        TrueGetCurrentPackageInfo3 = dllGetCurrentPackageInfo3;
+        // Also grab GetPackageInfo2 if available (see MddGetPackageInfo1Or2() for details)
+        auto dllGetPackageInfo2{ reinterpret_cast<GetPackageInfo2Function>(GetProcAddress(dllApisetAppmodelRuntime_1_3, "GetPackageInfo2")) };
+        FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetPackageInfo2);
+        TrueGetPackageInfo2 = dllGetPackageInfo2;
 
-        FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo3, DynamicGetCurrentPackageInfo3));
+        if (IsWindows10_20H1OrGreater())
+        {
+            HMODULE dllApisetAppmodelRuntimeInternal_1_6{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-internal-l1-1-6.dll", nullptr, 0) };
+            FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntimeInternal_1_6);
+
+            auto dllGetCurrentPackageInfo3{ reinterpret_cast<GetCurrentPackageInfo3Function>(GetProcAddress(dllApisetAppmodelRuntimeInternal_1_6, "GetCurrentPackageInfo3")) };
+            FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetCurrentPackageInfo3);
+            TrueGetCurrentPackageInfo3 = dllGetCurrentPackageInfo3;
+            FAIL_FAST_IF_WIN32_ERROR(DetourAttach(&(PVOID&)TrueGetCurrentPackageInfo3, DynamicGetCurrentPackageInfo3));
+        }
     }
     return S_OK;
 }
@@ -140,10 +179,16 @@ HRESULT _MddDetourPackageGraphShutdown() noexcept
 {
     // Stop Detour'ing package graph APIs to our implementation
     FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo, DynamicGetCurrentPackageInfo));
-    FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
+    TrueGetCurrentPackageInfo = ::GetCurrentPackageInfo;
+    if (TrueGetCurrentPackageInfo2)
+    {
+        FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo2, DynamicGetCurrentPackageInfo2));
+        TrueGetCurrentPackageInfo2 = nullptr;
+    }
     if (TrueGetCurrentPackageInfo3)
     {
         FAIL_FAST_IF_WIN32_ERROR(DetourDetach(&(PVOID&)TrueGetCurrentPackageInfo3, DynamicGetCurrentPackageInfo3));
+        TrueGetCurrentPackageInfo3 = nullptr;
     }
     return S_OK;
 }
@@ -197,4 +242,24 @@ LONG WINAPI GetCurrentStaticPackageInfo(
     UINT32* count) noexcept
 {
     return TrueGetCurrentPackageInfo(flags, bufferLength, buffer, count);
+}
+
+LONG MddGetPackageInfo1Or2(
+    PACKAGE_INFO_REFERENCE packageInfoReference,
+    UINT32 flags,
+    PackagePathType packagePathType,
+    UINT32* bufferLength,
+    BYTE* buffer,
+    UINT32* count)
+{
+    // GetPackageInfo2 is only available on Windows >= 19H1
+    // Call it if available, else fall back to GetPAckageInfo (v1)
+    if (TrueGetPackageInfo2)
+    {
+        return TrueGetPackageInfo2(packageInfoReference, flags, packagePathType, bufferLength, buffer, count);
+    }
+    else
+    {
+        return ::GetPackageInfo(packageInfoReference, flags, bufferLength, buffer, count);
+    }
 }
