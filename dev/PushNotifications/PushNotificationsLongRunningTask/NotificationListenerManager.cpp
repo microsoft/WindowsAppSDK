@@ -24,6 +24,7 @@ void NotificationListenerManager::AddListener(std::wstring appId, std::wstring p
     {
         ComPtr<INotificationListener> listener;
         THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, appId, processName));
+        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appId.c_str(), GUID_NULL));
         THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), listener.Get()));
 
         AgileRef agileListener;
