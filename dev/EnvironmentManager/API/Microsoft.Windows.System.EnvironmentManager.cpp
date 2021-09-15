@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        EnvrionmentManagerInsights::StringTelemetryEvent(L"Making EM for process");
+        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for process");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        EnvrionmentManagerInsights::StringTelemetryEvent(L"Making EM for User");
+        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for User");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
         return environmentManager;
@@ -33,7 +33,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        EnvrionmentManagerInsights::StringTelemetryEvent(L"Making EM for Machine");
+        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for Machine");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
@@ -71,6 +71,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariables");
         StringMap environmentVariables;
 
         if (!IsSupported())
@@ -92,6 +93,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariable");
         if (variableName.size() == 0 ||
             std::wstring_view(variableName)._Starts_with(L"0x00") ||
             variableName[0] == L'=' ||
@@ -118,6 +120,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling SetEnvironmentVariable");
         if (!IsSupported())
         {
             return;
@@ -193,6 +196,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AppendToPath");
         if (path.empty() ||
             std::wstring_view(path)._Starts_with(L"0x00") ||
             path[0] == L'=')
@@ -259,6 +263,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveFromPath");
         if (path.empty() ||
             std::wstring_view(path)._Starts_with(L"0x00") ||
             path[0] == L'=')
@@ -359,6 +364,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AddExecutableFileExtension");
         if (pathExt.empty() ||
             std::wstring_view(pathExt)._Starts_with(L"0x00") ||
             pathExt[0] == L'=')
@@ -425,6 +431,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
+        EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveExecutableFileExtension");
         THROW_HR_IF(E_INVALIDARG, pathExt.empty());
 
         if (!IsSupported())
