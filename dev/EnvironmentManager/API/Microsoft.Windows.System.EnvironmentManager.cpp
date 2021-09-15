@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Microsoft.Windows.System.EnvironmentManager.h"
 #include "Microsoft.Windows.System.EnvironmentManager.g.cpp"
+#include "Microsoft.Windows.System.EnvironmentManager.Insights.h"
 #include <EnvironmentVariableChangeTracker.h>
 #include <PathChangeTracker.h>
 #include <PathExtChangeTracker.h>
@@ -16,6 +17,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
+        EnvrionmentManagerInsights::StringTelemetryEvent(L"Making EM for process");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
@@ -23,6 +25,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
+        EnvrionmentManagerInsights::StringTelemetryEvent(L"Making EM for User");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
         return environmentManager;
@@ -30,6 +33,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
+        EnvrionmentManagerInsights::StringTelemetryEvent(L"Making EM for Machine");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
