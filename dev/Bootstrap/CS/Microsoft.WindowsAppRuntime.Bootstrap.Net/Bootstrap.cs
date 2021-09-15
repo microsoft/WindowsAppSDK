@@ -64,13 +64,13 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
 
     internal static class NativeMethods
     {
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", EntryPoint = "MddBootstrapInitialize", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
+        [DllImport("Microsoft.WindowsAppRuntime.Bootstrap.dll", EntryPoint = "MddBootstrapInitialize", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
         internal static extern void MddBootstrapInitialize_Throw(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
 
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+        [DllImport("Microsoft.WindowsAppRuntime.Bootstrap.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
         internal static extern int MddBootstrapInitialize(uint majorMinorVersion, string versionTag, PackageVersion packageVersion);
 
-        [DllImport("Microsoft.WindowsAppSDK.Bootstrap.dll", ExactSpelling = true)]
+        [DllImport("Microsoft.WindowsAppRuntime.Bootstrap.dll", ExactSpelling = true)]
         internal static extern void MddBootstrapShutdown();
     }
 
