@@ -14,15 +14,35 @@ using namespace winrt::Microsoft::Windows::AppLifecycle;
 
 using namespace std::chrono;
 
-bool IsPackagedProcess()
+HWND g_window = NULL;
+wchar_t g_windowClass[] = L"TestWndClass"; // the main window class name
+
+ATOM _RegisterClass(HINSTANCE hInstance);
+BOOL InitInstance(HINSTANCE, int);
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
+std::wstring GetFullIdentityString()
 {
-    UINT32 n{};
-    return ::GetCurrentPackageFullName(&n, nullptr) == ERROR_INSUFFICIENT_BUFFER;;
+    std::wstring identityString;
+    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
+    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
+    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
+    {
+        identityString = idNameBuffer;
+    }
+
+    return identityString;
+}
+
+bool HasIdentity()
+{
+    static bool hasIdentity = !(GetFullIdentityString()).empty();
+    return hasIdentity;
 }
 
 bool NeedDynamicDependencies()
 {
-    return !IsPackagedProcess();
+    return !HasIdentity();
 }
 
 HRESULT BootstrapInitialize()
@@ -36,10 +56,10 @@ HRESULT BootstrapInitialize()
     constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
     RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
 
-    // Version <major>.0.0.0 to find any framework package for this major version
-    const UINT64 c_Version_Major{ 4 };
-    PACKAGE_VERSION minVersion{ static_cast<UINT64>(c_Version_Major) << 48 };
-    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_Major, nullptr, minVersion));
+    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+    const UINT32 c_Version_MajorMinor{ 0x00040001 };
+    const PACKAGE_VERSION minVersion{};
+    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
     return S_OK;
 }
@@ -64,6 +84,7 @@ void OnActivated(const winrt::Windows::Foundation::IInspectable&, const AppActiv
 {
     auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
     wprintf(L"Activated via redirection with args: %s\n", launchArgs.Arguments().c_str());
+    SetForegroundWindow(g_window);
 }
 
 int main()
@@ -72,34 +93,98 @@ int main()
 
     THROW_IF_FAILED(BootstrapInitialize());
 
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto myKeyInstance = AppInstance::FindOrRegisterForKey(L"MyKey");
+    AppInstance::Activated_revoker token;
 
-    for (const auto& instance : AppInstance::GetInstances())
+    AppInstance keyInstance = AppInstance::FindOrRegisterForKey(L"derp.txt");
+    if (!keyInstance.IsCurrent())
     {
-        wprintf(L"key: %s, isCurrent: %d\n", instance.Key().c_str(), instance.IsCurrent());
+        keyInstance.RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs()).get();
     }
-
-    if (myKeyInstance)
+    else
     {
-        if (myKeyInstance.IsCurrent())
+        AppInstance thisInstance = AppInstance::GetCurrent();
+        token = thisInstance.Activated(
+            auto_revoke, [&thisInstance](
+                const auto& sender, const AppActivationArguments& args)
+            { OnActivated(sender, args); }
+        );
+
+        auto hInstance = GetModuleHandle(NULL);
+        _RegisterClass(hInstance);
+
+        // Perform application initialization:
+        if (!InitInstance(hInstance, SW_SHOWDEFAULT))
         {
-            printf("Key owner activated!\n");
-
-            // Sign up for the activated event.
-            auto token = myKeyInstance.Activated(auto_revoke, [&myKeyInstance](const auto& sender, const AppActivationArguments& args) { OnActivated(sender, args); });
-
-            printf("Activated, waiting for redirections!\n");
-            WaitForActivations().get();
+            return 1;
         }
-        else
+
+        // Main message loop:
+        MSG msg;
+        BOOL msgRet;
+        while ((msgRet = GetMessage(&msg, NULL, 0, 0)) != 0)
         {
-            printf("Redirecting to key owner!\n");
-            myKeyInstance.RedirectActivationToAsync(args).get();
-            printf("Finished redirecting!\n");
+            if (msgRet == -1)
+            {
+                return (int)GetLastError();
+            }
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
     }
 
     BootstrapShutdown();
+    return 0;
+}
+
+ATOM _RegisterClass(HINSTANCE hInstance)
+{
+    WNDCLASSEX wcex = {};
+
+    wcex.cbSize = sizeof(wcex);
+
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wcex.lpszClassName = g_windowClass;
+
+    return RegisterClassEx(&wcex);
+}
+
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    g_window = CreateWindow(g_windowClass, L"ContainerWindowingTestApp", WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+
+    if (!g_window)
+    {
+        return FALSE;
+    }
+
+    ShowWindow(g_window, nCmdShow);
+    UpdateWindow(g_window);
+    return TRUE;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT ps;
+    HDC hdc;
+
+    switch (message)
+    {
+    case WM_PAINT:
+        hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+        break;
+
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
     return 0;
 }
