@@ -63,7 +63,7 @@
         </com:Extension>
         <com:Extension Category="windows.comInterface">
           <com:ComInterface>
-            <com:ProxyStub Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" DisplayName="DynamicDependencyLifetimeManager ProxyStub" Path="DynamicDependencyLifetimeManager.ProxyStub.dll"/>
+            <com:ProxyStub Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" DisplayName="DynamicDependencyLifetimeManager ProxyStub" Path="WindowsAppRuntime.ProxyStub.dll"/>
             <com:Interface Id="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB" ProxyStubClsid="06F1BAD0-DD14-11d0-AB8F-0000C0148FDB"/> <!-- IID_IDynamicDependencyLifetimeManager -->
           </com:ComInterface>
         </com:Extension>

@@ -5,7 +5,7 @@
 
 #include "..\DynamicDependencyLifetimeManager-Constants.h"
 
-#include <DynamicDependencyLifetimeManager_h.h>
+#include <../WindowsAppRuntime.ProxyStub/WindowsAppRuntime_h.h>
 
 #include <wrl\module.h>
 

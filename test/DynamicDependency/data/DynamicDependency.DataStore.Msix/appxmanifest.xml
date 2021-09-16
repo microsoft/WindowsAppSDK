@@ -52,7 +52,7 @@
         </com:Extension>
         <com:Extension Category="windows.comInterface">
           <com:ComInterface>
-            <com:ProxyStub Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" DisplayName="DynamicDependency.DataStore ProxyStub" Path="DynamicDependency.DataStore.ProxyStub.dll"/>
+            <com:ProxyStub Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" DisplayName="DynamicDependency.DataStore ProxyStub" Path="WindowsAppRuntime.ProxyStub.dll"/>
             <com:Interface Id="DDEB4D6A-E146-476d-B729-0BFB1A29A86E" ProxyStubClsid="DDEB4D6A-E146-476d-B729-0BFB1A29A86E"/> <!-- IID_IDynamicDependencyDataStore -->
           </com:ComInterface>
         </com:Extension>

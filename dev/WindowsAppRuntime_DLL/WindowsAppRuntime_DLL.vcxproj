@@ -367,9 +367,6 @@
     <ProjectReference Include="..\Detours\Detours.vcxproj">
       <Project>{d6bc25c5-1aa7-4c4a-a02c-b42dedbfea33}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
-      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
       <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
     </ProjectReference>

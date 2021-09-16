@@ -338,8 +338,8 @@
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
-      <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
+    <ProjectReference Include="..\..\WindowsAppRuntime.ProxyStub\WindowsAppRuntime.ProxyStub.vcxproj">
+      <Project>{403237a1-d7aa-427e-a316-34139013fd41}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -14,12 +14,4 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="appxmanifest.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="IDynamicDependencyLifetimeManager.idl">
-      <Filter>Source Files</Filter>
-    </Midl>
-  </ItemGroup>
 </Project>

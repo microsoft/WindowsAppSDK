@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\WindowsAppSDK.Build.Cpp.props" />
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\WindowsAppSDK.Build.Cpp.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -38,11 +38,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{8c79c46d-1577-44ca-83df-88b74c3e4586}</ProjectGuid>
-    <RootNamespace>DynamicDependencyLifetimeManager.ProxyStub</RootNamespace>
+    <ProjectGuid>{403237a1-d7aa-427e-a316-34139013fd41}</ProjectGuid>
+    <RootNamespace>WindowsAppRuntimeProxyStub</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>DynamicDependencyLifetimeManager.ProxyStub</ProjectName>
-    <UseUnicrt>true</UseUnicrt>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -130,7 +128,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <LinkIncremental>true</LinkIncremental>
@@ -151,6 +149,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -160,6 +159,34 @@
     <LinkIncremental>false</LinkIncremental>
     <CustomBuildAfterTargets>PostBuildEvent</CustomBuildAfterTargets>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <!-- We use MultiThreadedDebug, rather than MultiThreadedDebugDLL, to avoid DLL dependencies on VCRUNTIME140d.dll and MSVCP140d.dll. -->
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
+           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
+           supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
+           than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrtd.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrtd.lib</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <!-- We use MultiThreaded, rather than MultiThreadedDLL, to avoid DLL dependencies on VCRUNTIME140.dll and MSVCP140.dll. -->
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
+           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
+           supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
+           than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -169,16 +196,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -193,16 +219,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -219,7 +244,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -227,10 +252,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -245,16 +269,15 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -271,7 +294,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -279,10 +302,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -299,7 +321,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -307,10 +329,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -325,7 +346,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -333,10 +354,9 @@
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -353,7 +373,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)\..\WindowsAppRuntime_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -361,10 +381,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalDependencies>onecore.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>DynamicDependencyLifetimeManager.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>WindowsAppRuntime.ProxyStub.def</ModuleDefinitionFile>
     </Link>
     <Midl>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(OutDir)\..\IDynamicDependencyLifetimeManager</AdditionalIncludeDirectories>
       <DllDataFileName>dlldata.c</DllDataFileName>
       <GenerateTypeLibrary>false</GenerateTypeLibrary>
       <OutputDirectory>$(PlatformTarget)\$(Configuration)\</OutputDirectory>
@@ -385,7 +404,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\DynamicDependencyLifetimeManager_i.c">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\WindowsAppRuntime_i.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -395,7 +414,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="$(PlatformTarget)\$(Configuration)\DynamicDependencyLifetimeManager_p.c">
+    <ClCompile Include="$(PlatformTarget)\$(Configuration)\WindowsAppRuntime_p.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">NotUsing</PrecompiledHeader>
@@ -416,22 +435,18 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Midl Include="DynamicDependencyLifetimeManager.idl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DynamicDependencyLifetimeManager.def" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\DynamicDependencyLifetimeManager_h.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)$(PlatformTarget)\$(Configuration)\WindowsAppRuntime_h.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj">
-      <Project>{ccd23028-b9d3-410b-836e-20b2e7c08451}</Project>
-    </ProjectReference>
+    <None Include="WindowsAppRuntime.ProxyStub.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="WindowsAppRuntime.idl" />
   </ItemGroup>
   <!-- Include header files from the dev chunks -->
   <Target Name="CopyFiles" AfterTargets="AfterBuild">

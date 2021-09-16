@@ -4,7 +4,8 @@
 import "oaidl.idl";
 import "ocidl.idl";
 
-#include "..\DynamicDependencyDataStore-Constants.h"
+#include "../DynamicDependencyDataStore/DynamicDependencyDataStore-Constants.h"
+#include "../DynamicDependencyLifetimeManager/DynamicDependencyLifetimeManager-Constants.h"
 
 [object]
 [uuid(DDEB4D6A-E146-476d-B729-0BFB1A29A86E)]
@@ -16,13 +17,32 @@ interface IDynamicDependencyDataStore : IUnknown
     HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
 };
 
+[object]
+[uuid(06F1BAD0-DD14-11d0-AB8F-0000C0148FDB)]
+[pointer_default(unique)]
+interface IDynamicDependencyLifetimeManager : IUnknown
+{
+    HRESULT Initialize();
+
+    HRESULT Shutdown();
+
+    HRESULT GetPackageFullName([out, retval] LPWSTR* packageFullName);
+};
+
 [uuid(PR_DYNDEP_LIBID_UUID)]
 [version(1.0)]
-library DynamicDependencyDataStoreLib
+library DynamicDependencyLib
 {
     [uuid(PR_DYNDEP_DATASTORE_CLSID_UUID)]
     coclass DynamicDependencyDataStore
     {
         [default] interface IDynamicDependencyDataStore;
     };
+
+    [uuid(PR_DYNDEP_LIFETIMEMANAGER_CLSID_UUID)]
+    coclass DynamicDependencyLifetimeManager
+    {
+        [default] interface IDynamicDependencyLifetimeManager;
+    };
 };
+
