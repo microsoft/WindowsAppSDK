@@ -8,6 +8,7 @@
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include "PushNotificationTelemetry.h"
+#include <TerminalVelocityFeatures-PushNotifications.h>
 
 namespace winrt::Windows
 {
@@ -21,7 +22,10 @@ namespace winrt::Microsoft
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) {}
+    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) 
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+    }
 
     winrt::Windows::Uri PushNotificationChannel::Uri()
     {
