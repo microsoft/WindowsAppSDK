@@ -65,18 +65,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger))
             {
                 {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    auto lock{ s_activatorInfoLock.lock_exclusive() };
                     THROW_HR_IF(E_INVALIDARG, s_pushTriggerRegistration);
                 }
 
-                winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
-                winrt::hstring backgroundTaskFullName = backgroundTaskName + taskClsidStr;
+                winrt::hstring taskClsidStr{ winrt::to_hstring(taskClsid) };
+                winrt::hstring backgroundTaskFullName{ backgroundTaskName + taskClsidStr };
 
-                auto tasks = BackgroundTaskRegistration::AllTasks();
-                bool isTaskRegistered = std::any_of(std::begin(tasks), std::end(tasks),
+                auto tasks{ BackgroundTaskRegistration::AllTasks() };
+                bool isTaskRegistered{ std::any_of(std::begin(tasks), std::end(tasks),
                     [&](auto&& task)
                     {
-                        auto name = task.Value().Name();
+                        auto name{ task.Value().Name() };
 
                         if (std::wstring_view(name).substr(0, backgroundTaskName.size()) != backgroundTaskName)
                         {
@@ -90,7 +90,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
 
                         throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
-                    });
+                    }) };
 
                 if (!isTaskRegistered)
                 {
@@ -103,7 +103,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
                     // In case the interface is not supported, let it throw.
-                    auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
+                    auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
                     builder5.SetTaskEntryPointClsid(taskClsid);
                     winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
                     for (auto condition : conditions)
@@ -115,7 +115,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             BackgroundTaskRegistration registeredTaskFromBuilder{ nullptr };
 
-            auto scopeExitToCleanRegistrations = wil::scope_exit(
+            auto scopeExitToCleanRegistrations{ wil::scope_exit(
                 [&]()
                 {
                     s_comActivatorRegistration.reset();
@@ -126,12 +126,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         registeredTaskFromBuilder.Unregister(true);
                     }
                 }
-            );
+            ) };
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
             {
                 {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
+                    auto lock{ s_activatorInfoLock.lock_exclusive() };
                     THROW_HR_IF_MSG(E_INVALIDARG, s_comActivatorRegistration, "ComActivator already registered.");
                 }
 
@@ -152,7 +152,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             scopeExitToCleanRegistrations.release();
 
-            auto lock = s_activatorInfoLock.lock_exclusive();
+            auto lock{ s_activatorInfoLock.lock_exclusive() };
             s_pushTriggerRegistration = registeredTaskFromBuilder;
 
             PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
@@ -160,7 +160,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         catch(...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
+            HRESULT hrError{ wil::ResultFromCaughtException() };
             PushNotificationTelemetry::ActivatorRegisteredByApi(hrError, 
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
 
@@ -172,7 +172,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         try
         {
-            auto lock = s_activatorInfoLock.lock_exclusive();
+            auto lock{ s_activatorInfoLock.lock_exclusive() };
             if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
             {
                 THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_pushTriggerRegistration, "PushTrigger not registered.");
@@ -189,7 +189,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
+            HRESULT hrError{ wil::ResultFromCaughtException() };
             PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, activators);
             THROW_HR(hrError);
         }
@@ -201,7 +201,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         try
         {
-            auto lock = s_activatorInfoLock.lock_exclusive();
+            auto lock{ s_activatorInfoLock.lock_exclusive() };
             if (s_pushTriggerRegistration)
             {
                 s_pushTriggerRegistration.Unregister(true);
@@ -212,7 +212,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch(...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
+            HRESULT hrError{ wil::ResultFromCaughtException() };
             PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
             THROW_HR(hrError);
         }
@@ -225,7 +225,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsBackgroundTaskBuilderAvailable()
     {
-        static bool hasSetTaskEntrypoint = HasBackgroundTaskEntryPointClsid();
+        static bool hasSetTaskEntrypoint{ HasBackgroundTaskEntryPointClsid() };
         return hasSetTaskEntrypoint;
     }
 
@@ -263,7 +263,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
     const HRESULT WNP_E_RECONNECTING = static_cast<HRESULT>(0x880403E9L);
     const HRESULT WNP_E_BIND_USER_BUSY = static_cast<HRESULT>(0x880403FEL);
 
-    bool IsChannelRequestRetryable(const hresult& hr)
+    inline bool IsChannelRequestRetryable(const hresult& hr)
     {
         switch (hr)
         {
@@ -286,7 +286,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
             auto strong_this{ get_strong() };
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
-            // API supports channel requests only for packaged applications for v0.8 version
+            // API supports channel requests only for packaged applications currently
             THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
             auto cancellation{ co_await winrt::get_cancellation_token() };
@@ -298,12 +298,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
 
             auto progress{ co_await winrt::get_progress_token() };
 
-            uint8_t retryCount = 0;
-            winrt::hresult channelRequestResult = E_PENDING;
-            PushNotificationChannelStatus status = PushNotificationChannelStatus::InProgress;
+            uint8_t retryCount{};
+            winrt::hresult channelRequestResult{ E_PENDING };
+            PushNotificationChannelStatus status{ PushNotificationChannelStatus::InProgress };
 
             PushNotificationCreateChannelStatus
-                channelStatus = { status, channelRequestResult, retryCount };
+                channelStatus { status, channelRequestResult, retryCount };
 
             progress(channelStatus);
 
@@ -314,10 +314,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
                     PushNotificationChannelManager channelManager{};
                     winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync() };
 
-                    PushNotificationTelemetry::ChannelRequestedByApi(
-                        S_OK,
-                        AppModel::Identity::IsPackagedProcess(),
-                        remoteId);
+                    PushNotificationTelemetry::ChannelRequestedByApi(S_OK, AppModel::Identity::IsPackagedProcess(), remoteId);
 
                     co_return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationCreateChannelResult>(
                         winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationChannel>(pushChannelReceived),
@@ -327,7 +324,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
                 }
                 catch (...)
                 {
-                    auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
+                    auto channelRequestException{ hresult_error(to_hresult(), take_ownership_from_abi) };
 
                     if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
                     {
@@ -357,7 +354,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
+            HRESULT hrError{ wil::ResultFromCaughtException() };
             PushNotificationTelemetry::ChannelRequestedByApi(
                 hrError,
                 AppModel::Identity::IsPackagedProcess(),
