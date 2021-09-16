@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
     VS SDK Notes: This resx file contains the resources that will be consumed from
     your package by Visual Studio. For example, Visual Studio will attempt to load
@@ -186,40 +186,40 @@
     <value>A user control for apps based on the Windows UI Library (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Class Library (WinUI 3 in Desktop)</value>
+    <value>クラスライブラリ（デスクトップのWinUI 3）</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimental] Class Library (WinUI 3 in Desktop)</value>
+    <value>[Experimental] クラスライブラリ（デスクトップのWinUI 3）</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>A project for creating a managed class library (.dll) for Desktop apps based on the Windows UI Library (WinUI 3).</value>
+    <value>Windows UIライブラリ（WinUI 3）に基づいてデスクトップアプリのマネージクラスライブラリ（.dll）を作成するためのプロジェクト。</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Blank App, Packaged with WAP (WinUI 3 in Desktop)</value>
+    <value>空白のアプリ、WAPでパッケージ化（デスクトップのWinUI 3）</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Experimental] Blank App, Packaged with WAP (WinUI 3 in Desktop)</value>
+    <value>[Experimental] 空白のアプリ、WAPでパッケージ化（デスクトップのWinUI 3）</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3). A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</value>
+    <value>Windows UIライブラリ（WinUI 3）に基づいてデスクトップアプリを作成するためのプロジェクトテンプレート。 Windowsアプリケーションパッケージング（WAP）プロジェクトは、MicrosoftStoreを介したサイドローディングまたは配布用のMSIXパッケージを作成するために含まれています。</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Blank App, Packaged (WinUI 3 in Desktop)</value>
+    <value>空白のアプリ、WAPでパッケージ化（デスクトップのWinUI 3）</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimental] Blank App, Packaged (WinUI 3 in Desktop)</value>
+    <value>[Experimental]空白のアプリ、WAPでパッケージ化（デスクトップのWinUI 3）</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3) along with a MSIX package for side-loading or distribution via the Microsoft Store.</value>
+    <value>Windows UIライブラリ（WinUI 3）に基づいてデスクトップアプリを作成するためのプロジェクトテンプレート。 Windowsアプリケーションパッケージング（WAP）プロジェクトは、MicrosoftStoreを介したサイドローディングまたは配布用のMSIXパッケージを作成するために含まれています。</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Blank App (WinUI 3 in UWP)</value>
+    <value>空白のアプリ（UWPのWinUI 3）</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimental] Blank App (WinUI 3 in UWP)</value>
+    <value>[Experimental] 空白のアプリ（UWPのWinUI 3）</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Windows App SDK experimental support.</value>
+    <value>Windows UIライブラリ（WinUI 3）に基づいてデスクトップアプリを作成するためのプロジェクトテンプレート。 Windowsアプリケーションパッケージング（WAP）プロジェクトは、MicrosoftStoreを介したサイドローディングまたは配布用のMSIXパッケージを作成するために含まれています。</value>
   </data>
   <data name="1041" xml:space="preserve">
     <value>Class Library (WinUI 3 in UWP)</value>
