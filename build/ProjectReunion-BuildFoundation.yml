@@ -196,6 +196,7 @@ jobs:
     signingPattern: |
         **/*.winmd
         **/*.dll
+        **/*.exe
   dependsOn:
     - Build
     - PublishMRT
