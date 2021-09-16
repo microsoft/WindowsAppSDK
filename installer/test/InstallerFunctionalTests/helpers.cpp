@@ -110,8 +110,19 @@ namespace WindowsAppRuntimeInstallerTests
 
     ProcessorArchitecture GetSystemArchitecture()
     {
-        SYSTEM_INFO systemInfo{};
-        GetNativeSystemInfo(&systemInfo);
-        return static_cast<ProcessorArchitecture>(systemInfo.wProcessorArchitecture);
+        USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
+        switch (nativeMachine)
+        {
+        case IMAGE_FILE_MACHINE_I386:
+            return ProcessorArchitecture::X86;
+        case IMAGE_FILE_MACHINE_AMD64:
+            return ProcessorArchitecture::X64;
+        case IMAGE_FILE_MACHINE_ARM64:
+            return ProcessorArchitecture::Arm64;
+        default:
+            THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+        }
     }
 }

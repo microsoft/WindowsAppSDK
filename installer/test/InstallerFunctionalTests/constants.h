@@ -34,6 +34,11 @@ namespace WindowsAppRuntimeInstallerTests
     static const std::wstring c_arm64MainName = L"WindowsAppRuntime.Test.InstallerMain_1.0.0.0_arm64__8wekyb3d8bbwe";
     static const std::wstring c_mainFamilyName = L"WindowsAppRuntime.Test.InstallerMain_8wekyb3d8bbwe";
 
+    static const std::wstring c_x86SingletonName = L"WindowsAppRuntime.Test.InstallerSingleton_1.0.0.0_x86__8wekyb3d8bbwe";
+    static const std::wstring c_x64SingletonName = L"WindowsAppRuntime.Test.InstallerSingleton_1.0.0.0_x64__8wekyb3d8bbwe";
+    static const std::wstring c_arm64SingletonName = L"WindowsAppRuntime.Test.InstallerSingleton_1.0.0.0_arm64__8wekyb3d8bbwe";
+    static const std::wstring c_singletonFamilyName = L"WindowsAppRuntime.Test.InstallerSingleton_8wekyb3d8bbwe";
+
     static const std::wstring c_x86DDLMName = L"WindowsAppRuntime.Test.InstallerDDLM-x86_1.0.0.0_x86__8wekyb3d8bbwe";
     static const std::wstring c_x64DDLMName = L"WindowsAppRuntime.Test.InstallerDDLM-x64_1.0.0.0_x64__8wekyb3d8bbwe";
     static const std::wstring c_arm64DDLMName = L"WindowsAppRuntime.Test.InstallerDDLM-arm64_1.0.0.0_arm64__8wekyb3d8bbwe";
@@ -45,6 +50,9 @@ namespace WindowsAppRuntimeInstallerTests
         c_x86MainName,
         c_x64MainName,
         c_arm64MainName,
+        c_x86SingletonName,
+        c_x64SingletonName,
+        c_arm64SingletonName,
         c_x86DDLMName,
         c_x64DDLMName,
         c_arm64DDLMName,
@@ -60,5 +68,6 @@ namespace WindowsAppRuntimeInstallerTests
         c_x64DDLMFamilyName,
         c_arm64DDLMFamilyName,
         c_mainFamilyName,
+        c_singletonFamilyName
     };
 }
