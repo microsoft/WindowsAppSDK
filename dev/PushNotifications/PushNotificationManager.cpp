@@ -17,6 +17,7 @@
 #include "PushNotificationChannel.h"
 #include "externs.h"
 #include <string_view>
+#include <TerminalVelocityFeatures-PushNotifications.h>
 
 using namespace std::literals;
 
@@ -68,6 +69,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(winrt::guid const& remoteId)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
         try
         {
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
@@ -157,6 +160,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::RegisterActivator(PushNotificationActivationInfo const& details)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
         try
         {
             THROW_HR_IF_NULL(E_INVALIDARG, details);
@@ -277,6 +282,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators const& activators)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
         try
         {
             auto lock = s_activatorInfoLock.lock_exclusive();
@@ -306,6 +313,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationManager::UnregisterAllActivators()
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
         try
         {
             auto lock = s_activatorInfoLock.lock_exclusive();
@@ -338,6 +347,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators const& activators)
     {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+
         THROW_HR_IF(E_INVALIDARG, activators == PushNotificationRegistrationActivators::Undefined);
 
         auto isBackgroundTaskFlagSet{ WI_IsAnyFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator) };
