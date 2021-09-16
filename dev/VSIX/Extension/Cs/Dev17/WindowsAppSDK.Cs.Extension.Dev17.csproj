@@ -128,6 +128,8 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
     <ProjectReference Include="$(ProjectTemplatesDir)Desktop\CSharp\SingleProjectPackagedApp\WinUI.Desktop.Cs.SingleProjectPackagedApp.csproj">
       <Project>{D9C038B7-6A62-4945-A030-4AC7597F53CA}</Project>
       <Name>WinUI.Desktop.Cs.SingleProjectPackagedApp</Name>
@@ -135,8 +137,6 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(EnableExperimentalVSIXFeatures)'=='true'">
     <ProjectReference Include="$(ProjectTemplatesDir)UWP\CSharp\BlankApp\WinUI.UWP.Cs.BlankApp.csproj">
       <Project>{93abc6a8-319a-4291-b8e2-607d3272a4b4}</Project>
       <Name>WinUI.UWP.Cs.BlankApp</Name>
