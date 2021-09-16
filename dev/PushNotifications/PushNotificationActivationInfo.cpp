@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "PushNotificationActivationInfo.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationActivationInfo.g.cpp"
-
+#include <TerminalVelocityFeatures-PushNotifications.h>
 #include <Windows.ApplicationModel.background.h>
 
 namespace winrt
@@ -15,9 +15,15 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationActivators const& activators, winrt::guid const& taskClsid) : m_activators(activators), m_taskClsid(taskClsid) {}
+    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationActivators const& activators, winrt::guid const& taskClsid) : m_activators(activators), m_taskClsid(taskClsid)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+    }
 
-    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationActivators const& activators) : m_activators(activators), m_taskClsid(GUID_NULL) {}
+    PushNotificationActivationInfo::PushNotificationActivationInfo(winrt::PushNotificationRegistrationActivators const& activators) : m_activators(activators), m_taskClsid(GUID_NULL)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+    }
 
     winrt::guid PushNotificationActivationInfo::TaskClsid()
     {
