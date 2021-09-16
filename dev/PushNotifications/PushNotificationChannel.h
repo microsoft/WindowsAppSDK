@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink>
     {
-        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel) : m_channel(channel) {};
+        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
 
         PushNotificationChannel(struct ChannelDetails const& channelInfo) : m_channelInfo(channelInfo) {};
 

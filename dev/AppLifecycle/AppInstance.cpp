@@ -218,8 +218,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         wil::unique_event cleanupEvent;
         cleanupEvent.create(wil::EventOptions::ManualReset, eventName.c_str());
 
-        // Enqueue the request and signal the other instance.
+        // Enqueue the request and transfer foreground rights.
         EnqueueRedirectionRequestId(id);
+        AllowSetForegroundWindow(m_processId);
+
+        // Signal the activation.
         m_innerActivated.SetEvent();
 
         // Wait for the other instance to open the memory mapped file before exiting and cleaning our interest in it.
@@ -249,6 +252,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     IVector<Microsoft::Windows::AppLifecycle::AppInstance> AppInstance::GetInstances()
     {
+        // Force the singleton init.
+        GetCurrent();
+
         IVector<Microsoft::Windows::AppLifecycle::AppInstance> instances{ winrt::single_threaded_vector<Microsoft::Windows::AppLifecycle::AppInstance>() };
 
         // Grab the list of processes while under the lock, and then drop it since we'll be calling out to other code.
@@ -296,12 +302,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     AppLifecycle::AppInstance AppInstance::FindOrRegisterForKey(hstring const& key)
     {
+        // Force the singleton init.
+        GetCurrent();
+
         // Try to register and return the current instance.  If we fail to do that, then
         // search and find the correct instance.
         if (s_current->TrySetKey(key.c_str()))
         {
-            // Register the class as owning the key, and return it.
-            return s_current.as<AppLifecycle::AppInstance>();
+            return GetCurrent();
         }
 
         return s_current->FindForKey(key.c_str());
