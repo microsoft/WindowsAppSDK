@@ -3,10 +3,13 @@
 using namespace Microsoft::WRL;
 using namespace ::ABI::Microsoft::Internal::PushNotifications;
 
-void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::map<std::wstring, std::wstring>& appIdList)
+void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager)
 {
     m_foregroundSinkManager = foregroundSinkManager;
+}
 
+void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::wstring>& appIdList)
+{
     for (auto appData : appIdList)
     {
         AddListener(appData.first, appData.second);
@@ -15,29 +18,30 @@ void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManag
 
 void NotificationListenerManager::AddListener(std::wstring appId, std::wstring processName)
 {
-    auto lock = m_lock.lock_exclusive();
-
     THROW_HR_IF(E_INVALIDARG, appId.empty());
     THROW_HR_IF(E_INVALIDARG, processName.empty());
 
-    if (m_notificationListeners.find(appId) == std::end(m_notificationListeners))
-    {
-        ComPtr<INotificationListener> listener;
-        THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&listener, m_foregroundSinkManager, appId, processName));
-        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appId.c_str(), GUID_NULL));
-        THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), listener.Get()));
+    auto lock = m_lock.lock_exclusive();
 
-        AgileRef agileListener;
-        THROW_IF_FAILED(AsAgile(listener.Get(), &agileListener));
-        m_notificationListeners.insert({ appId, agileListener });
-    }
+    // Make sure we keep the long running sink up-to-date with wpncore.
+    ComPtr<INotificationListener> newListener;
+    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&newListener, m_foregroundSinkManager, appId, processName));
+    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), newListener.Get()));
+
+    // Before updating the listener in the map,
+    // remove any previous listener that belongs to the app.
+    m_notificationListeners.erase(appId);
+
+    AgileRef newListenerAsAgile;
+    THROW_IF_FAILED(AsAgile(newListener.Get(), &newListenerAsAgile));
+    m_notificationListeners.insert({ appId, newListenerAsAgile });
 }
 
 void NotificationListenerManager::RemoveListener(std::wstring appId)
 {
-    auto lock = m_lock.lock_exclusive();
-
     THROW_HR_IF(E_INVALIDARG, appId.empty());
+
+    auto lock = m_lock.lock_exclusive();
 
     LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appId.c_str()));
 
