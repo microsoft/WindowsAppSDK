@@ -23,6 +23,7 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <VsixManifestSource>source.extension.vsixmanifest</VsixManifestSource>
     <TargetVsixContainerName>$(AssemblyName).vsix</TargetVsixContainerName>
+    <UICulture>en-US</UICulture>
     <!-- This MUST match VSPackage.PackageGuidString -->
     <PackageGuidString>{B14EB1D0-DD99-4930-A232-23275B4F8ED6}</PackageGuidString>
   </PropertyGroup>
@@ -159,12 +160,64 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\en-US\VSPackage.resx">
-      <Link>Resources\en-US\VSPackage.resx</Link>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
+      <Link>Resources\VSPackage.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ja-JP\VSPackage.resx">
-      <Link>Resources\ja-JP\VSPackage.resx</Link>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\cs-CZ\VSPackage.cs-CZ.resx">
+      <Link>Resources\VSPackage.cs-CZ.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\de-DE\VSPackage.de-DE.resx">
+      <Link>Resources\VSPackage.de-DE.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\en-US\VSPackage.en-US.resx">
+      <Link>Resources\VSPackage.en-US.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\es-ES\VSPackage.es-ES.resx">
+      <Link>Resources\VSPackage.es-ES.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\fr-FR\VSPackage.fr-FR.resx">
+      <Link>Resources\VSPackage.fr-FR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\it-IT\VSPackage.it-IT.resx">
+      <Link>Resources\VSPackage.it-IT.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ja-JP\VSPackage.ja-JP.resx">
+      <Link>Resources\VSPackage.ja-JP.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ko-KR\VSPackage.ko-KR.resx">
+      <Link>Resources\VSPackage.ko-KR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\pl-PL\VSPackage.pl-PL.resx">
+      <Link>Resources\VSPackage.pl-PL.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\pt-BR\VSPackage.pt-BR.resx">
+      <Link>Resources\VSPackage.pt-BR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ru-RU\VSPackage.ru-RU.resx">
+      <Link>Resources\VSPackage.ru-RU.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\tr-TR\VSPackage.tr-TR.resx">
+      <Link>Resources\VSPackage.tr-TR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\zh-CN\VSPackage.zh-CN.resx">
+      <Link>Resources\VSPackage.zh-CN.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\zh-TW\VSPackage.zh-TW.resx">
+      <Link>Resources\VSPackage.zh-TW.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
