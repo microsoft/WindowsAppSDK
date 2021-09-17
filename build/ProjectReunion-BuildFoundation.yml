@@ -194,9 +194,9 @@ jobs:
 - job: SignBinariesAndPublishSymbols
   variables:
     signingPattern: |
-        lib\uap10.0\*.winmd
-        lib\net5.0-windows\*.dll
-        runtimes\*\*\*.dll
+        **/*.winmd
+        **/*.dll
+        **/*.exe
   dependsOn:
     - Build
     - PublishMRT
