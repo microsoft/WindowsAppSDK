@@ -14,6 +14,8 @@ namespace winrt::Microsoft::Windows::PushNotifications
     {
         const DWORD receiveArgsTimeoutInMSec{ 2000 };
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().TryLookup(ACTIVATED_EVENT_ARGS_KEY).as<PushNotificationReceivedEventArgs>();
+
+        // If COM static store was uninit, let it throw
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
     }
 }
