@@ -42,7 +42,6 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Microsoft.WindowsAppRuntime</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <UseUnicrt>true</UseUnicrt>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
     <CppWinRTOptimized>true</CppWinRTOptimized>
