@@ -17,7 +17,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for process");
+        EnvironmentManagerInsights::LogMessage(L"Making EM for process");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
         return environmentManager;
@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for User");
+        EnvironmentManagerInsights::LogMessage(L"Making EM for User");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
         return environmentManager;
@@ -33,7 +33,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        EnvironmentManagerInsights::StringTelemetryEvent(L"Making EM for Machine");
+        EnvironmentManagerInsights::LogMessage(L"Making EM for Machine");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
         return environmentManager;
