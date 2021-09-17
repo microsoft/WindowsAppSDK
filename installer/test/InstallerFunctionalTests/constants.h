@@ -16,10 +16,10 @@
     #define CONFIGURATION L"Release"
 #endif
 
-#define BASE_PATH L"..\\..\\..\\"
+#define BUILDOUTPUT_DIR L"BuildOutput"
 #define INSTALLER_DIR L"WindowsAppRuntimeInstall"
 #define INSTALLER_FILENAME L"WindowsAppRuntimeInstall.exe"
-#define INSTALLER_EXE_PATH BASE_PATH CONFIGURATION L"\\" ARCH L"\\" INSTALLER_DIR L"\\" INSTALLER_FILENAME
+#define INSTALLER_EXE_PATH BUILDOUTPUT_DIR L"\\" CONFIGURATION L"\\" ARCH L"\\" INSTALLER_DIR L"\\" INSTALLER_FILENAME
 
 namespace WindowsAppRuntimeInstallerTests
 {
@@ -56,8 +56,6 @@ namespace WindowsAppRuntimeInstallerTests
         c_x86DDLMName,
         c_x64DDLMName,
         c_arm64DDLMName,
-
-        // Frameworks listed last since this list is used for removal
         c_x86FrameworkName,
         c_x64FrameworkName,
         c_arm64FrameworkName,

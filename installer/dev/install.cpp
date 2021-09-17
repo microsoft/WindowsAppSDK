@@ -82,7 +82,7 @@ namespace WindowsAppRuntimeInstaller {
             systemArchitecture = ProcessorArchitecture::Arm64;
             break;
         default:
-            THROW_HR(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED));
+            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
         }
 
         // Same-arch is always applicable for any package type.
