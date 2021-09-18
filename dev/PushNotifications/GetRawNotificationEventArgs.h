@@ -18,7 +18,10 @@ namespace winrt::Microsoft::Windows::PushNotifications
         {
             if (pair.Name() == L"payload")
             {
-                std::wstring payloadAsWstring{pair.Value()};
+                // Convert escaped components to its normal content
+                // from the conversion done in the LRP (see NotificationListener.cpp)
+                std::wstring payloadAsEscapedWstring{ pair.Value() };
+                std::wstring payloadAsWstring{ winrt::Windows::Foundation::Uri::UnescapeComponent(payloadAsEscapedWstring) };
                 return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
             }
         }

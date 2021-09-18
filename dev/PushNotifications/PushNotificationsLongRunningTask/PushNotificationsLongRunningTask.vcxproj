@@ -239,6 +239,7 @@
     <ClInclude Include="platformfactory.h" />
     <ClInclude Include="PlatformLifetimeManager.h" />
     <ClInclude Include="NotificationListenerManager.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
