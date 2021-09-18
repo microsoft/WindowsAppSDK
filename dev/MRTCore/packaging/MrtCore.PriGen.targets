@@ -11,8 +11,8 @@
     <!-- Any .NET 5 or greater version is valid here! -->
     <TargetPlatformIdentifierAdjusted Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp' and $([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '5.0'))">UAP</TargetPlatformIdentifierAdjusted>
 
-    <!-- Add support for console apps. -->
-    <TargetPlatformIdentifierAdjusted Condition="'$(OutputType)' == 'Exe'">UAP</TargetPlatformIdentifierAdjusted>
+    <!-- Add support for console apps and libraries. -->
+    <TargetPlatformIdentifierAdjusted Condition="'$(OutputType)' == 'Exe' or $(OutputType)' == 'Library'">UAP</TargetPlatformIdentifierAdjusted>
   </PropertyGroup>
 
   <!-- The win32 project system adds all images in the project to the Image array in the project file.
