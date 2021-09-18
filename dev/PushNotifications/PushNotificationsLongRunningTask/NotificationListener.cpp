@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "utils.h"
 
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
@@ -21,12 +22,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
-        // Command line format: ----WindowsAppSDKPushServer:-Payload:"<payloadAsEscapedUriFormat>"
-        std::wstring commandLine = L"----WindowsAppSDKPushServer:-Payload:\"";
+        // Command line format: ----WindowsAppRuntimePushServer:-Payload:"<payloadAsEscapedUriFormat>"
+        std::wstring commandLine = L"----WindowsAppRuntimePushServer:-Payload:\"";
 
         // Escape special characters to follow command line standards for any app activation type in AppLifecycle
         // (See AppInstance.cpp and Serialize() from other activation types)
-        std::wstring payloadAsWideString = GetPayloadAsWideString(payloadLength, payload);
+        std::wstring payloadAsWideString = ConvertByteArrayToWideString(payloadLength, payload);
         auto payloadAsEscapedUriFormat = winrt::Windows::Foundation::Uri::EscapeComponent(payloadAsWideString.c_str());
 
         commandLine.append(payloadAsEscapedUriFormat);
@@ -49,27 +50,3 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
     return S_OK;
 }
 CATCH_RETURN()
-
-const std::wstring NotificationListener::GetPayloadAsWideString(unsigned int payloadLength, byte* payload)
-{
-    int size_needed = MultiByteToWideChar(
-        CP_UTF8,
-        0,
-        reinterpret_cast<PCSTR>(payload),
-        payloadLength,
-        nullptr,
-        0);
-    THROW_LAST_ERROR_IF(size_needed == 0);
-
-    std::wstring payloadAsWideString(size_needed, 0);
-    size_needed = MultiByteToWideChar(
-        CP_UTF8,
-        0,
-        reinterpret_cast<PCSTR>(payload),
-        payloadLength,
-        &payloadAsWideString[0],
-        size_needed);
-    THROW_LAST_ERROR_IF(size_needed == 0);
-
-    return payloadAsWideString;
-}

@@ -24,8 +24,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         void Handled(bool value);
 
     private:
-        std::string Utf16ToUtf8(_In_ std::wstring const& utf16string);
-
         const winrt::Windows::Storage::Streams::IBuffer m_rawNotification{};
 
         std::vector<uint8_t> BuildPayload(winrt::Windows::Storage::Streams::IBuffer const& buffer);
