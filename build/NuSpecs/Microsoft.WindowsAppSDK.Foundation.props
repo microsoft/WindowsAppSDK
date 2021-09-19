@@ -12,6 +12,6 @@
     Ideally, this import would be done only if EnableCoreMrtTooling is true. That's impossible though because that
     property cannot be defined beforehand.
   -->
-  <Import Project="$(MSBuildThisFileDirectory)MrtCore.props"" />
+  <Import Project="$(MSBuildThisFileDirectory)MrtCore.props" />
 
 </Project>
