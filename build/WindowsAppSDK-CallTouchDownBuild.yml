@@ -1,0 +1,22 @@
+# see https://docs.microsoft.com/azure/devops/pipelines/process/phases for info on yaml ADO jobs
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+jobs:
+- job: Localization
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - task: TouchdownBuildTask@1
+    inputs:
+      environment: 'PRODEXT'
+      teamId: '36910'
+      authType: 'OAuth'
+      authId: $(TdBuildAuthID)
+      authKey: $(TdBuildToken)
+      localizationTarget: false
+      isPreview: false
+      resourceFilePath: |
+        dev\VSIX\Extension\Cpp\Common\VSPackage.resx
+        dev\VSIX\Extension\Cs\Common\VSPackage.resx
+      appendRelativeDir: true
+      cultureMappingType: 'None'
+      gitAction: 'COMMIT'
