@@ -5,8 +5,6 @@ jobs:
   pool: 'ProjectReunionESPool'
   steps:
   - script: |
-      Write-Host $(GitEmail)
-      Write-Host $(GitUserName)
       git config --global user.email $(GitEmail)
       git config --global user.name $(GitUserName)
 
