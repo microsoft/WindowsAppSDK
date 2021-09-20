@@ -24,4 +24,4 @@ jobs:
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
       appendRelativeDir: true
       cultureMappingType: 'None'
-      gitAction: 'COMMIT'
+      gitAction: 'None'
