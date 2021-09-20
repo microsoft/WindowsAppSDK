@@ -23,3 +23,6 @@ jobs:
       appendRelativeDir: true
       cultureMappingType: 'None'
       gitAction: 'None'
+
+  - script: |
+      git push
