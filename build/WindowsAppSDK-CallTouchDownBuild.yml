@@ -4,6 +4,10 @@ jobs:
 - job: Localization
   pool: 'ProjectReunionESPool'
   steps:
+  - script: |
+      git config --global user.email $(GitEmail)
+      git config --global user.name $(GitUserName)
+
   - task: TouchdownBuildTask@1
     inputs:
       environment: 'PRODEXT'
