@@ -2,8 +2,7 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 jobs:
 - job: Localization
-  pool:
-    vmImage: 'windows-2019'
+  pool: 'ProjectReunionESPool'
   steps:
   - task: TouchdownBuildTask@1
     inputs:
