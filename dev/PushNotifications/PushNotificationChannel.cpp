@@ -89,15 +89,36 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         if (IsPackagedAppScenario())
         {
-            return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
+            if (m_channel)
             {
-                if (auto strong = weak_self.get())
+                return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
                 {
-                    auto pushArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args);
-                    pushArgs.Handled(true);
-                    handler(*strong, pushArgs);
-                };
-            });
+                    if (auto strong = weak_self.get())
+                    {
+                        auto pushArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args);
+                        pushArgs.Handled(true);
+                        handler(*strong, pushArgs);
+                    };
+                });
+            }
+            else
+            {
+                auto lock = m_lock.lock_exclusive();
+
+                THROW_HR_IF_NULL(E_UNEXPECTED, m_channelInfo.channelUri.c_str());
+
+                wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+                UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+
+                THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+
+                THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId, this));
+
+                return m_foregroundHandlers.add(handler);
+               
+
+            }
+            // One more check if channelInfo struct is null - we should throw E_UNEXPECTED
         }
         else
         {
@@ -120,7 +141,23 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         if (IsPackagedAppScenario())
         {
-            m_channel.PushNotificationReceived(token);
+            if (m_channel)
+            {
+                m_channel.PushNotificationReceived(token);
+            }
+            else
+            {
+                auto lock = m_lock.lock_exclusive();
+
+                wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+                UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+
+                THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+
+                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId));
+                m_foregroundHandlers.remove(token);
+
+            }
         }
         else
         {
