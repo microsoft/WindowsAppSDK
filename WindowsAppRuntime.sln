@@ -111,6 +111,15 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManagerGC1010.Msix", "test\DynamicDependency\data\DynamicDependencyLifetimeManagerGC1010.Msix\DynamicDependencyLifetimeManagerGC1010.Msix.vcxproj", "{72F124D1-A1D2-44BC-8941-1B4C452591E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A657A14D-910D-43F3-9994-DAB0E22C4530}"
+	ProjectSection(SolutionItems) = preProject
+		dev\Common\AppModel.Identity.h = dev\Common\AppModel.Identity.h
+		dev\Common\AppModel.Package.h = dev\Common\AppModel.Package.h
+		dev\Common\Microsoft.Utf8.h = dev\Common\Microsoft.Utf8.h
+		dev\Common\Security.IntegrityLevel.h = dev\Common\Security.IntegrityLevel.h
+		dev\Common\TerminalVelocityFeatures-DeploymentAPI.h = dev\Common\TerminalVelocityFeatures-DeploymentAPI.h
+		dev\Common\TerminalVelocityFeatures-DynamicDependency.h = dev\Common\TerminalVelocityFeatures-DynamicDependency.h
+		dev\Common\TerminalVelocityFeatures-PushNotifications.h = dev\Common\TerminalVelocityFeatures-PushNotifications.h
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ManualTestApp", "test\TestApps\ManualTestApp\ManualTestApp.vcxproj", "{8E52D7EA-A200-4A6B-BA74-8EFB49468CAF}"
 	ProjectSection(ProjectDependencies) = postProject

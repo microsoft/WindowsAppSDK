@@ -21,3 +21,7 @@
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Management.Deployment.h>
+
+#include <AppModel.Package.h>
+#include <Microsoft.Utf8.h>
+

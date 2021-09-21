@@ -6,7 +6,7 @@ namespace Microsoft::Utf8
 template<typename T>
 T ToUtf16(PCSTR utf8);
 
-template<> std::unique_ptr<WCHAR[]> ToUtf16(PCSTR utf8)
+template<> inline std::unique_ptr<WCHAR[]> ToUtf16(PCSTR utf8)
 {
     if (!utf8)
     {
@@ -23,7 +23,7 @@ template<> std::unique_ptr<WCHAR[]> ToUtf16(PCSTR utf8)
     return s;
 }
 
-template<> std::wstring ToUtf16(PCSTR utf8)
+template<> inline std::wstring ToUtf16(PCSTR utf8)
 {
     if (!utf8)
     {
@@ -34,7 +34,7 @@ template<> std::wstring ToUtf16(PCSTR utf8)
     return std::wstring(s.get());
 }
 
-template<> winrt::hstring ToUtf16(PCSTR utf8)
+template<> inline winrt::hstring ToUtf16(PCSTR utf8)
 {
     if (!utf8)
     {
@@ -45,7 +45,7 @@ template<> winrt::hstring ToUtf16(PCSTR utf8)
     return winrt::hstring(s.get());
 }
 
-winrt::hstring ToHString(PCSTR utf8)
+inline winrt::hstring ToHString(PCSTR utf8)
 {
     return ToUtf16<winrt::hstring>(utf8);
 }
