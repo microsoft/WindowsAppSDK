@@ -4,10 +4,7 @@
   <!-- PRI generation in VS apps was developed for UWPs originally. Some of the binaries involved assume
        that the app is a UWP. Change the value provided to said binaries to UAP. -->
   <PropertyGroup>
-    <TargetPlatformIdentifierAdjusted>$(TargetPlatformIdentifier)</TargetPlatformIdentifierAdjusted>
-
-    <!-- Add support for console apps, non-console apps, and libraries. -->
-    <TargetPlatformIdentifierAdjusted Condition="'$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe' or '$(OutputType)' == 'Library'">UAP</TargetPlatformIdentifierAdjusted>
+    <TargetPlatformIdentifierAdjusted>UAP</TargetPlatformIdentifierAdjusted>
   </PropertyGroup>
 
   <!-- The win32 project system adds all images in the project to the Image array in the project file.
