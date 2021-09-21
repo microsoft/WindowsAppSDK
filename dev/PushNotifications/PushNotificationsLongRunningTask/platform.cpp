@@ -111,8 +111,6 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     const std::wstring appId = GetAppIdentifier(processName);
-
-    m_notificationListenerManager.AddListener(appId, processName);
     m_foregroundSinkManager->Add(appId, sink);
 
     m_lifetimeManager.Cancel();

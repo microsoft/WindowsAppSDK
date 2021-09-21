@@ -127,6 +127,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         try
         {
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
+            {
+                auto lock = s_activatorInfoLock.lock_shared();
+                THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_protocolRegistration);
+            }
 
             auto cancellation{ co_await winrt::get_cancellation_token() };
 
@@ -197,7 +201,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
+                        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
 
+                        wil::unique_cotaskmem_string processName;
+                        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                        notificationPlatform->RegisterLongRunningActivator(processName.get());
+                        
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             winrt::make<PushNotificationChannel>(pushChannelReceived),
                             S_OK,
@@ -268,7 +277,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+
+                wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                // Create default registration with the LRP
+                THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), GUID_NULL, &unpackagedAppUserModelId));
 
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
@@ -420,7 +432,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get())); // expected to fail if no channel for the app
 
                 s_protocolRegistration = false;
             }

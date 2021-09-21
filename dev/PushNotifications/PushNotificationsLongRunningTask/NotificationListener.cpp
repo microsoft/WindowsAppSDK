@@ -21,7 +21,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
-        std::string commandLine = "----WindowsAppSDKPushServer:-Payload:\"";
+        std::string commandLine = "----WindowsAppRuntimePushServer:-Payload:\"";
         commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
         commandLine.append("\"");
 
