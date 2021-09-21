@@ -32,7 +32,7 @@ class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
 };
 
 // Remove PII from string
-__inline PCWSTR RemovePiiFromString(PCWSTR)
+inline PCWSTR RemovePiiUserProfileFilename(PCWSTR)
 {
     // TODO: Once the feature below is available, this function can be removed.
     // Create a centralized PII scrubber · Issue #1461 (https://github.com/microsoft/WindowsAppSDK/issues/1461)
