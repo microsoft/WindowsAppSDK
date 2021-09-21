@@ -104,7 +104,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // Remove the value
         // setting the value to empty is the same as deleting the variable
         VERIFY_NO_THROW(environmentManager.SetEnvironmentVariable(c_EvKeyName, L""));
-        VERIFY_ARE_EQUAL(0, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
+        VERIFY_ARE_EQUAL(0u, ::GetEnvironmentVariable(c_EvKeyName, nullptr, 0));
     }
 
     void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForUser()
@@ -202,11 +202,8 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
     void EnvironmentManagerCentennialTests::CentennialTestAppendToPathForUser()
     {
-        // Store PATH so it can be restored
-        std::wstring pathToRestore{ GetEnvironmentVariableForUser(c_PathName) };
-
         // Keep a local string to match all operations to PATH
-        std::wstring pathToManipulate{ pathToRestore };
+        std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathName) };
 
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
@@ -284,7 +281,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         // Keep a local string to match all operations to PATH
         std::wstring pathToManipulate{ GetEnvironmentVariableForProcess(c_PathName) };
 
-        if (pathToManipulate.back() != L';')
+        if (!pathToManipulate.empty() && pathToManipulate.back() != L';')
         {
             pathToManipulate += L';';
         }

@@ -36,7 +36,7 @@ UINT32 MddCore::PackageGraphNode::CountMatchingPackages(
 {
     UINT32 bufferLength{};
     UINT32 count{};
-    const LONG rc{ ::GetPackageInfo2(m_packageInfoReference.get(), flags, packagePathType, &bufferLength, nullptr, &count) };
+    const LONG rc{ appmodel::GetPackageInfo2(m_packageInfoReference.get(), flags, packagePathType, &bufferLength, nullptr, &count) };
     if ((rc != ERROR_SUCCESS) && (rc != ERROR_INSUFFICIENT_BUFFER))
     {
         THROW_WIN32(rc);
@@ -59,7 +59,7 @@ UINT32 MddCore::PackageGraphNode::GetMatchingPackages(
     wil::unique_cotaskmem_ptr<BYTE[]>& buffer) const
 {
     UINT32 bufferLength{};
-    const LONG rc{ ::GetPackageInfo2(m_packageInfoReference.get(), flags, packagePathType, &bufferLength, nullptr, nullptr) };
+    const LONG rc{ appmodel::GetPackageInfo2(m_packageInfoReference.get(), flags, packagePathType, &bufferLength, nullptr, nullptr) };
     if (rc == ERROR_SUCCESS)
     {
         // Success with no buffer can only mean count==0
@@ -71,7 +71,7 @@ UINT32 MddCore::PackageGraphNode::GetMatchingPackages(
     }
     buffer = std::move(wil::make_unique_cotaskmem<BYTE[]>(bufferLength));
     UINT32 count{};
-    THROW_IF_WIN32_ERROR(::GetPackageInfo2(m_packageInfoReference.get(), flags, packagePathType, &bufferLength, buffer.get(), &count));
+    THROW_IF_WIN32_ERROR(appmodel::GetPackageInfo2(m_packageInfoReference.get(), flags, packagePathType, &bufferLength, buffer.get(), &count));
     return count;
 }
 

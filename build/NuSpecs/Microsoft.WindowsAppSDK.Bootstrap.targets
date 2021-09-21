@@ -5,10 +5,13 @@
   <PropertyGroup>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' == 'Win32'">x86</_WindowsAppSDKFoundationPlatform>
     <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_WindowsAppSDKFoundationPlatform>
+    <_WindowsAppSDKBootstrapPlatform Condition="'$(_WindowsAppSDKFoundationPlatform)' == 'AnyCPU'">x86</_WindowsAppSDKBootstrapPlatform>
+    <_WindowsAppSDKBootstrapPlatform Condition="'$(_WindowsAppSDKFoundationPlatform)' != 'AnyCPU'">$(_WindowsAppSDKFoundationPlatform)</_WindowsAppSDKBootstrapPlatform>
   </PropertyGroup>
 
-  <Target Name="BinPlaceBootstrapDll" Condition="'$(AppxPackage)' != 'true'" AfterTargets="Build">
-    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" OverwriteReadOnlyFiles="true" ContinueOnError="false"/>
+  <Target Name="BinPlaceBootstrapDll" Condition="'$(AppxPackage)' != 'true' and '$(OutputType)' != 'Library'" AfterTargets="Build">
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKBootstrapPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" OverwriteReadOnlyFiles="true" ContinueOnError="false"/>
+    <Copy SourceFiles="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKBootstrapPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll" DestinationFolder="$(OutDir)" OverwriteReadOnlyFiles="true" ContinueOnError="false"/>
   </Target>
 
 </Project>
