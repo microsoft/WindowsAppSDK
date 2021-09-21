@@ -24,6 +24,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
         L"LRP", Storage::ApplicationDataCreateDisposition::Always);
 
     m_foregroundSinkManager = std::make_shared<ForegroundSinkManager>();
+    m_notificationListenerManager.Initialize(m_foregroundSinkManager);
 
     auto fullTrustApps = GetFullTrustApps();
 
@@ -32,7 +33,7 @@ void NotificationsLongRunningPlatformImpl::Initialize()
         // We have at least one app that could receive notifications.
         // Cancel the timer to persist the LRP.
         m_lifetimeManager.Cancel();
-        m_notificationListenerManager.Initialize(m_foregroundSinkManager, fullTrustApps);
+        m_notificationListenerManager.SetAppIdMapping(fullTrustApps);
     }
 
     m_initialized = true;
