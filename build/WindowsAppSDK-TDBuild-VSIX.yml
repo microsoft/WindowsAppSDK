@@ -4,9 +4,8 @@ jobs:
 - job: Localization
   pool: 'ProjectReunionESPool'
   steps:
-  - script: |
-      git config --global user.email $(GitEmail)
-      git config --global user.name $(GitUserName)
+  - checkout: self
+    persistCredentials: true
 
   - task: TouchdownBuildTask@1
     inputs:
@@ -23,6 +22,3 @@ jobs:
       appendRelativeDir: true
       cultureMappingType: 'None'
       gitAction: 'None'
-
-  - script: |
-      git push
