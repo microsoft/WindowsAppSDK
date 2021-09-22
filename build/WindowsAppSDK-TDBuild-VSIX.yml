@@ -1,4 +1,5 @@
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
 - name: GitAction
   type: string
   default: 'None'
