@@ -1,5 +1,14 @@
 parameters:
-  ResourceFilePath: ""
+- name: ResourceFilePath
+  type: string
+  default: ""
+- name: GitAction
+  type: string
+  default: 'None'
+  values:
+  - 'None'
+  - 'COMMIT'
+
 steps:
 - checkout: self
   persistCredentials: true
@@ -21,4 +30,4 @@ steps:
     resourceFilePath: ${{ parameters.ResourceFilePath }}
     appendRelativeDir: true
     cultureMappingType: 'None'
-    gitAction: 'COMMIT'
+    gitAction: ${{ paramters.GitAction }}
