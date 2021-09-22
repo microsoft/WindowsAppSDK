@@ -7,6 +7,11 @@ jobs:
   - checkout: self
     persistCredentials: true
 
+  # This is needed to avoid credentials errors for later in the TDBuild Task
+  - script: |
+      git config --global user.email "you@example.com"
+      git config --global user.name "Your Name"
+
   - task: TouchdownBuildTask@1
     inputs:
       environment: 'PRODEXT'
@@ -21,4 +26,4 @@ jobs:
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
       appendRelativeDir: true
       cultureMappingType: 'None'
-      gitAction: 'None'
+      gitAction: 'COMMIT'
