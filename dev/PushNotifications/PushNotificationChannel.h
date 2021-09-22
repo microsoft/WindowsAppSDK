@@ -31,15 +31,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         HRESULT __stdcall InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
         //INotificationHandler
-        HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept
-        {
-            BOOL foregroundHandled = false;
-            THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
-            THROW_HR_IF(E_NOT_VALID_STATE, !foregroundHandled);
-
-            return S_OK;
-        }
-
+        HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
 
     private:
         bool IsPackagedAppScenario();
