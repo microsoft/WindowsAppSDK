@@ -13,7 +13,6 @@
 #include "PushNotificationTelemetry.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
 
-
 namespace winrt::Windows
 {
     using namespace winrt::Windows::Networking::PushNotifications;
@@ -107,18 +106,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 THROW_HR_IF_NULL(E_UNEXPECTED, m_channelInfo.channelUri.c_str());
 
-                wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-                UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+                wil::unique_cotaskmem_string appUserModelId;
+                THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
 
-                THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+                THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
 
-                THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId, this));
+                winrt::event_token token = m_foregroundHandlers.add(handler);
 
-                return m_foregroundHandlers.add(handler);
-               
+                ++m_foregroundHandlerCount;
 
+                return token;
             }
-            // One more check if channelInfo struct is null - we should throw E_UNEXPECTED
         }
         else
         {
@@ -149,14 +147,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto lock = m_lock.lock_exclusive();
 
-                wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-                UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+                wil::unique_cotaskmem_string appUserModelId;
+                THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
 
-                THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
+                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
 
-                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId));
                 m_foregroundHandlers.remove(token);
 
+                --m_foregroundHandlerCount;
             }
         }
         else
@@ -184,6 +182,44 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return S_OK;
     }
     CATCH_RETURN()
+
+    HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept
+    {
+        try
+        {
+            BOOL foregroundHandled = false;
+            THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+            THROW_HR(E_INVALIDARG);
+        }
+        catch(...)
+        {
+            //TODO: Capture the HRESULT in telemetry
+            winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
+            std::string commandLine = "----WindowsAppRuntimePushServer:-Payload:\"";
+            commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
+            commandLine.append("\"");
+
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+            const std::string processNameAsUtf8String = ConvertProcessNameToUtf8String(processName.get());
+
+            SHELLEXECUTEINFOA shellExecuteInfo{};
+            shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+            shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
+            shellExecuteInfo.lpFile = processNameAsUtf8String.c_str();
+            shellExecuteInfo.lpParameters = commandLine.c_str();
+
+            shellExecuteInfo.nShow = SW_NORMAL;
+
+            if (!ShellExecuteExA(&shellExecuteInfo))
+            {
+                THROW_IF_WIN32_ERROR(GetLastError());
+            }
+        }
+
+        return S_OK;
+    }
 
     bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
     {
