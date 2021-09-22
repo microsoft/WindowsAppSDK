@@ -1,4 +1,3 @@
-# see https://docs.microsoft.com/azure/devops/pipelines/process/phases for info on yaml ADO jobs
 name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 jobs:
 - job: Localization
