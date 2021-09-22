@@ -30,4 +30,4 @@ steps:
     resourceFilePath: ${{ parameters.ResourceFilePath }}
     appendRelativeDir: true
     cultureMappingType: 'None'
-    gitAction: ${{ paramters.GitAction }}
+    gitAction: ${{ parameters.GitAction }}
