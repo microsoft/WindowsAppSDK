@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+    VS SDK Notes: This resx file contains the resources that will be consumed from
+    your package by Visual Studio. For example, Visual Studio will attempt to load
+    resource '1000' from this resource stream when it needs to load one of your
+    package's template's name. Because Visual Studio will always look in the
+    VSPackage.resources stream first for resources it needs, you should put additional
+    resources that Visual Studio will load directly into this resx file.
+
+    By convention, strings that have both non-experimental and experimental versions
+    have consecutive IDs (even = non-experimental, odd = experimental).
+
+    Resources that you would like to access directly from your package in a strong-typed
+    fashion should be stored in Resources.resx or another resx file.
+-->
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="1001" xml:space="preserve">
+    <value>Ьŀǻиκ Ẃіŉđòщ (ШιπŲÌ 3 їп Ďęѕќţǿр)</value>
+  </data>
+  <data name="1002" xml:space="preserve">
+    <value>[Ėжρзґïмєлτǻł] Ъłăŉĸ Ẁіⁿďõẁ (ẀίпŨÍ 3 ΐň Đέšĸťоφ)</value>
+  </data>
+  <data name="1003" xml:space="preserve">
+    <value>А ъłаπκ ẃíпďοẅ ƒŏř Ðεşķťбφ ãрρš ьαś℮ď őň τħε Ŵīŉđθщŝ ÙΊ Ĺĩвяãŗỳ (ŴίлŮΊ 3).</value>
+  </data>
+  <data name="1005" xml:space="preserve">
+    <value>Бļāиќ Рāĝê (ШΐлŰÎ 3)</value>
+  </data>
+  <data name="1006" xml:space="preserve">
+    <value>[Ēхρēяΐmëπŧáľ] Ьŀåήķ Ρǻģê (ŴĩņЦİ 3)</value>
+  </data>
+  <data name="1007" xml:space="preserve">
+    <value>Δ вŀдπķ рàĝë ƒöг ąρρš ъаşëδ οņ ţнę Ẅíлďόώš ÛÎ Ŀĭвŕǻґў (ШϊŋŰÍ 3).</value>
+  </data>
+  <data name="1009" xml:space="preserve">
+    <value>Яěśøϋяĉз Ďїςтιǿиαřу (ẄїπÜÌ 3)</value>
+  </data>
+  <data name="1010" xml:space="preserve">
+    <value>[Ěжр℮ѓĩmзйτãľ] Γèšбμяćё Đĭçťїσňäгу (ẂιйŪΊ 3)</value>
+  </data>
+  <data name="1011" xml:space="preserve">
+    <value>Ąŋ έмρţу, ќêŷėď сθℓĺęçŧĩбń ŏƒ ЖǺМ£ ŗзѕøúřĉèŝ ƒσѓ ǻρφś ьášęδ θп ŧнé Ẃΐπđбŵś ЏΊ Ĺϊвřåяу (ẀїήЦİ 3).</value>
+  </data>
+  <data name="1013" xml:space="preserve">
+    <value>Řěşŏυѓċēŝ ₣íℓé (.ґěѕẃ)</value>
+  </data>
+  <data name="1014" xml:space="preserve">
+    <value>[Εхρ℮řіmęŋŧдℓ] Řęśőůřĉзś ₣ĭŀε (.яеѕω)</value>
+  </data>
+  <data name="1015" xml:space="preserve">
+    <value>Ã ƒΐľ℮ ƒǿѓ ѕťσŗìŉĝ şŧŕîиğ ăпð čόⁿðіťįôńãł ґèşōùŗ¢ёš ƒόŕ āρφś ьāѕ℮đ ŏŉ τĥè Ẃιηδŏщѕ ÚĪ Ľїьŕαřу (ЩĩиŮΪ 3).</value>
+  </data>
+  <data name="1017" xml:space="preserve">
+    <value>Сύśţσм Ĉòⁿťřõĺ (ẀĩлÚĨ 3)</value>
+  </data>
+  <data name="1018" xml:space="preserve">
+    <value>[É×ρэѓĩмęŉŧάĺ] Ċΰşťǿм Ċόŉτřòĺ (ШìπÙĨ 3)</value>
+  </data>
+  <data name="1019" xml:space="preserve">
+    <value>Д čũśтøm сöňťŗôł ƒõґ âррѕ ьǻŝęď òп тħē Щĭηđóẃş ŰÍ Łìьґåѓγ (ЩϊŋŬΪ 3).</value>
+  </data>
+  <data name="1021" xml:space="preserve">
+    <value>Ůŝеѓ €θńŧřôℓ (ẄĭŋŲİ 3)</value>
+  </data>
+  <data name="1022" xml:space="preserve">
+    <value>[Ē×ρēѓίмεŉтдℓ] Цşέř Čőŉťřòĺ (ẄіⁿŲΊ 3)</value>
+  </data>
+  <data name="1023" xml:space="preserve">
+    <value>À ΰŝέг ςöηŧřõĺ ƒòґ ªррş ъăšĕδ òη τĥê Ẁĭⁿδöщŝ ŮĪ £íвřāяÿ (ẂΐŉŨÌ 3).</value>
+  </data>
+  <data name="1025" xml:space="preserve">
+    <value>Бĺάиķ Áφρ, Рâçķåģ℮δ ωΐŧн ЩΆР (ЩįńŬЇ 3 ιⁿ Ďзšķτōρ)</value>
+  </data>
+  <data name="1026" xml:space="preserve">
+    <value>[Ё×ρзřімзлŧăŀ] βŀªпќ Άφρ, Ρåĉκäġēđ ώïťħ ЩĂΡ (ẂΐńÚΪ 3 ϊή Ďèšĸťόρ)</value>
+  </data>
+  <data name="1027" xml:space="preserve">
+    <value>Ǻ φяøјêćτ тěмρļǻтē ƒôг ¢ŗĕâŧįņģ ª Ďεśĸŧòр âрр ьãśéð ôη ţнє Щϊňðοщŝ ÛΪ ₤іьřãŗŷ (ЩĩиÛЇ 3). ∆ Щïņđбŵŝ Áрρĺíċάтіόñ Рāĉќáĝìŉģ (ẂΑΡ) φřојēĉŧ ìѕ ïŋčĺŭðëđ ŧŏ čѓéāŧē ǻ ΜŞĮΧ φăĉкâģĕ ƒŏя ŝιďę-ŀόάđїŉĝ ŏŗ ðιśтřĭьūтįőй νĩã ţн℮ Мΐ¢яǿѕóƒŧ Šťόґэ.</value>
+  </data>
+  <data name="1029" xml:space="preserve">
+    <value>Ьľäиķ Аφρ, Рªćķάğēď (ẀįήЦĪ 3 ĭл Ď℮ŝкťθр)</value>
+  </data>
+  <data name="1030" xml:space="preserve">
+    <value>[Э×рέřΐмēиŧαľ] Βĺàņķ ∆ρφ, Ραćкąğëđ (ШїлŮĬ 3 ïи Ðĕŝķťōφ)</value>
+  </data>
+  <data name="1031" xml:space="preserve">
+    <value>Ǻ рŕбĵêċţ ťèмрļáтé ƒòг çŕéäťїŉģ à Ďєѕĸτóφ äρρ ъªŝèđ óŋ τђ℮ Ŵïⁿδŏωŝ ŪĮ ₤ìьŗåгŷ (ШĩñÛЇ 3) ąľöлģ ŵìŧħ ã ΜŠÍΧ φăčќąģ℮ ƒоѓ ŝіδê-ļоăđιñğ оř δϊśţřïьцτíōň νίā ťħé Мιčřθŝǿƒŧ Ѕŧöŗε.</value>
+  </data>
+  <data name="1033" xml:space="preserve">
+    <value>Шįñðŏẁš Γûňŧϊmę Ĉômρøŋεйť (ẂіñŨΪ 3)</value>
+  </data>
+  <data name="1034" xml:space="preserve">
+    <value>[Ёжρėřіmĕńťαŀ] Шïήδōωѕ Яύпτíмē €õmφøηĕиτ (ЩīлŲİ 3)</value>
+  </data>
+  <data name="1035" xml:space="preserve">
+    <value>À φѓојеċť ƒŏя čŗздŧïпğ ǻ С++/ШíήŔŤ Шîηðŏωş Ŗŭňτімë Čσмрόņęπţ (.ώíймð) ƒоř вόťн Ď℮şķţõр āлđ Ũňïνêґŝǻľ Ẅїйðбшş Ρľąтƒóřм (ÜẂΡ) ǻρρş, ъαѕёď ōй τĥέ Щīπđöẁş Ůİ ₤ίъřдřγ (ЩϊπŮΊ 3).</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>ßℓäñĸ Ǻφφ (ŴîňŬĨ 3 īņ ЏШΡ)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Êхφзѓїměņŧαℓ] βļāŉķ Ǻφρ (ẄíпŬĬ 3 ϊŉ ŨŴР)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>Ǻ ρŗόĵêċť ƒőř сřёâťϊήĝ ā Ûлїνèŕśăľ Ẃìņďòẅŝ Рłªťƒθŗm (ŰШΡ) ăφφ ъäŝέď ōņ ŧћê Ẅìŉđőωŝ ŲΪ ₤ĭвяąŗÿ (ẄīñŲΪ 3). Ѓëqúіґĕš Ẁįηďòẃş Âφρ ŠĎК ėжφ℮řΐмĕлŧãŀ šūφрσґт.</value>
+  </data>
+</root>
