@@ -7,6 +7,9 @@ parameters:
   - 'None'
   - 'COMMIT'
 
+variables:
+- group: TouchDownBuild-Secrets
+
 jobs:
 - job: Localization
   pool: 'ProjectReunionESPool'
