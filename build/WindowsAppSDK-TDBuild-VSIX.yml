@@ -4,26 +4,8 @@ jobs:
 - job: Localization
   pool: 'ProjectReunionESPool'
   steps:
-  - checkout: self
-    persistCredentials: true
-
-  # This is needed to avoid credentials errors for later in the TDBuild Task
-  - script: |
-      git config --global user.email "you@example.com"
-      git config --global user.name "Your Name"
-
-  - task: TouchdownBuildTask@1
-    inputs:
-      environment: 'PRODEXT'
-      teamId: '36910'
-      authType: 'OAuth'
-      authId: $(TdBuildAuthID)
-      authKey: $(TdBuildToken)
-      localizationTarget: false
-      isPreview: false
-      resourceFilePath: |
+  - template: WindowsAppSDK-CreateMergedAppXandNugetPackages-Steps.yml
+    parameters:
+      ResourceFilePath: |
         dev\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
-      appendRelativeDir: true
-      cultureMappingType: 'None'
-      gitAction: 'COMMIT'
