@@ -116,12 +116,11 @@ PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicD
 PublishFile $FullBuildOutput\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # .NET Assemblies
-PublishFile $FullBuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll $NugetDir\runtimes\lib\net5.0-windows10.0.17763.0
+PublishFile $FullBuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll $NugetDir\lib\net5.0-windows10.0.18362.0
 #
 # Native (not managed, AppLocal / no MSIX)
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll $NugetDir\runtimes\lib\native\$Platform
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.pdb $NugetDir\runtimes\lib\native\$Platform
-PublishFile $FullBuildOutput\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.dll $NugetDir\runtimes\lib\native\$Platform
 #
 # Tools
 PublishFile $FullBuildOutput\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.exe $NugetDir\tools\$Platform
