@@ -3,7 +3,7 @@ jobs:
 - job: Localization
   pool: 'ProjectReunionESPool'
   steps:
-  - template: WindowsAppSDK-CreateMergedAppXandNugetPackages-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
     parameters:
       ResourceFilePath: |
         dev\VSIX\Extension\Cpp\Common\VSPackage.resx
