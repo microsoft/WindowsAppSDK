@@ -31,22 +31,10 @@ class MrtRuntimeTraceLoggingProvider : public wil::TraceLoggingProvider
     DEFINE_COMPLIANT_MEASURES_EVENT_PARAM4(MeasureGenericEvent, PDT_ProductAndServicePerformance, PCWSTR, functionName, PCWSTR, message1, PCWSTR, message2, int, hresult);
 };
 
-// case insensitive prefix match of "*:\users"
-__inline PCWSTR RemoveUsernameFromPath(_In_ PCWSTR filePath)
+// Remove PII from string
+inline PCWSTR RemovePiiUserProfileFilename(PCWSTR)
 {
-    if ((filePath != NULL) &&
-        (filePath[0] != 0) &&
-        (filePath[1] == L':') &&
-        (filePath[2] == L'\\') &&
-        ((filePath[3] == L'u') || (filePath[3] == L'U')) && 
-        ((filePath[4] == L's') || (filePath[4] == L'S')) &&
-        ((filePath[5] == L'e') || (filePath[5] == L'E')) &&
-        ((filePath[6] == L'r') || (filePath[6] == L'R')) &&
-        ((filePath[7] == L's') || (filePath[7] == L'S')) &&
-        (filePath[8] == L'\\'))
-    {
-        PCWSTR logPath = wcsstr(&filePath[9], L"\\");
-        return (logPath != NULL) ? logPath : L"";
-    }
-    return filePath;
+    // TODO: Once the feature below is available, this function can be removed.
+    // Create a centralized PII scrubber · Issue #1461 (https://github.com/microsoft/WindowsAppSDK/issues/1461)
+    return L"";
 }
