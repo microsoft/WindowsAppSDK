@@ -5,6 +5,7 @@
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include <MddBootstrap.h>
+#include <..\..\dev\Common\AppModel.Identity.h>
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
@@ -90,16 +91,19 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
-    const UINT32 c_Version_MajorMinor{ 0x00040001 };
-    const PACKAGE_VERSION minVersion{};
-    RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+    if (!AppModel::Identity::IsPackagedProcess())
+    {
+        // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+        const UINT32 c_Version_MajorMinor{ 0x00040001 };
+        const PACKAGE_VERSION minVersion{};
+        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+    }
 
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+            winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914")); // same clsid as app manifest
 
         PushNotificationManager::RegisterActivator(info);
     }
@@ -149,6 +153,9 @@ int main()
         PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
-    MddBootstrapShutdown();
+    if (!AppModel::Identity::IsPackagedProcess())
+    {
+        MddBootstrapShutdown();
+    }
     return 0;
 }
