@@ -13,7 +13,7 @@ jobs:
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
     parameters:
-      GitAction: ${{ paramters.GitAction }}
+      GitAction: ${{ parameters.GitAction }}
       ResourceFilePath: |
         dev\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
