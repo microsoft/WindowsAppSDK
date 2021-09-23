@@ -14,6 +14,7 @@
     <TargetName>$(RootNamespace)</TargetName>
     <DefaultLanguage>$currentuiculturename$</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
     <AppxPackage>true</AppxPackage>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
@@ -143,13 +144,13 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Images\LockScreenLogo.scale-200.png" />
-    <Image Include="Images\SplashScreen.scale-200.png" />
-    <Image Include="Images\Square150x150Logo.scale-200.png" />
-    <Image Include="Images\Square44x44Logo.scale-200.png" />
-    <Image Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Image Include="Images\StoreLogo.png" />
-    <Image Include="Images\Wide310x150Logo.scale-200.png" />
+    <Image Include="Assets\LockScreenLogo.scale-200.png" />
+    <Image Include="Assets\SplashScreen.scale-200.png" />
+    <Image Include="Assets\Square150x150Logo.scale-200.png" />
+    <Image Include="Assets\Square44x44Logo.scale-200.png" />
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Image Include="Assets\StoreLogo.png" />
+    <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
