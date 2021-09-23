@@ -70,14 +70,13 @@
     </Content>
     <Content Include="App.xaml.cs" />
     <Content Include="MainWindow.xaml.cs" />
-    <Content Include="Images\LockScreenLogo.scale-200.png" />
-    <Content Include="Images\SplashScreen.scale-200.png" />
-    <Content Include="Images\Square150x150Logo.scale-200.png" />
-    <Content Include="Images\Square44x44Logo.scale-200.png" />
-    <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Images\StoreLogo.png" />
-    <Content Include="Images\Wide310x150Logo.scale-200.png" />
-    <Content Include="WapProjTemplate.ico" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\StoreLogo.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="WinUI.Desktop.Cs.SingleProjectPackagedApp.ico" />
     <Content Include="WinUI.Desktop.Cs.SingleProjectPackagedApp.png" />
     <VSTemplate Include="WinUI.Desktop.Cs.SingleProjectPackagedApp.vstemplate" />
