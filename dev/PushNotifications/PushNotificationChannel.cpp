@@ -12,6 +12,7 @@
 #include "externs.h"
 #include "PushNotificationTelemetry.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
+#include <variant>
 
 namespace winrt::Windows
 {
@@ -104,18 +105,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto lock = m_lock.lock_exclusive();
 
-                THROW_HR_IF_NULL(E_UNEXPECTED, m_channelInfo.channelUri.c_str());
+                std::variant<ChannelDetails> details{ m_channelInfo };
+                THROW_HR_IF_NULL(E_UNEXPECTED, std::get_if<ChannelDetails>(&details));
 
-                wil::unique_cotaskmem_string appUserModelId;
-                THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
+                if (!m_foregroundHandlerCount++)
+                {
+                    wil::unique_cotaskmem_string appUserModelId;
+                    THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
 
-                THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
+                    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
+                }
 
-                winrt::event_token token = m_foregroundHandlers.add(handler);
-
-                ++m_foregroundHandlerCount;
-
-                return token;
+                return m_foregroundHandlers.add(handler);
             }
         }
         else
@@ -147,14 +148,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto lock = m_lock.lock_exclusive();
 
-                wil::unique_cotaskmem_string appUserModelId;
-                THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
+                if (!--m_foregroundHandlerCount)
+                {
+                    wil::unique_cotaskmem_string appUserModelId;
+                    THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
 
-                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
+                    THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
+                }
 
                 m_foregroundHandlers.remove(token);
-
-                --m_foregroundHandlerCount;
             }
         }
         else
@@ -185,37 +187,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept
     {
-        try
+        BOOL foregroundHandled = false;
+        THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+        if (!foregroundHandled)
         {
-            BOOL foregroundHandled = false;
-            THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
-            THROW_HR(E_INVALIDARG);
-        }
-        catch(...)
-        {
-            //TODO: Capture the HRESULT in telemetry
-            winrt::com_array<uint8_t> payloadArray{ payload, payload + (payloadLength * sizeof(uint8_t)) };
-            std::string commandLine = "----WindowsAppRuntimePushServer:-Payload:\"";
-            commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
-            commandLine.append("\"");
-
-            wil::unique_cotaskmem_string processName;
-            THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
-            const std::string processNameAsUtf8String = ConvertProcessNameToUtf8String(processName.get());
-
-            SHELLEXECUTEINFOA shellExecuteInfo{};
-            shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-            shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-            shellExecuteInfo.lpFile = processNameAsUtf8String.c_str();
-            shellExecuteInfo.lpParameters = commandLine.c_str();
-
-            shellExecuteInfo.nShow = SW_NORMAL;
-
-            if (!ShellExecuteExA(&shellExecuteInfo))
-            {
-                THROW_IF_WIN32_ERROR(GetLastError());
-            }
+            ProtocolLaunchHelper(payloadLength, payload);
         }
 
         return S_OK;
