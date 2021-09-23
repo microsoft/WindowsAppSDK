@@ -13,16 +13,23 @@
     The app dev can opt out a file by changing the Build Action file property to None in Visual Studio, or
     by manually modifying the CSPROJ file.
 
-    The implementation here is the same as the .NET SDK's implementation for default file inclusion.
-    See https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes.
+    The implementation here is NOT exactly the same as the .NET SDK's implementation for default file inclusion
+    (https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes). Specifically,
+    we don't remove the .RESW and image files from None here because None is populated in
+    Microsoft.NET.Sdk.DefaultItems.props which is imported later. Removing them from a targets file would have to be
+    done as follows in order to respect the app dev's potential opt-outs: <None Remove="@(Content)" /> and
+    <None Remove="@(PRIResource)" />. That doesn't work though due to a bug: when an app dev changes the
+    Build Action from PRIResource to None, an error message box is displayed saying None is invalid because
+    "the path is explicitly excluded from the project". Leaving the .RESW and image files in None doesn't cause
+    any confusion in the VS UI though and the scenarios work, so this is an acceptable solution. 
 
     Yes, the properties used here, including EnableCoreMrtTooling, are defined in MSBuild files imported after
     this file. This is correct though because ItemGroup definitions are evaluated in a later pass. See
     https://docs.microsoft.com/en-us/visualstudio/msbuild/build-process-overview?view=vs-2019#evaluation-phase.
   -->
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableCoreMrtTooling)'=='true'">
-    <Content Include="$(_MrtCoreImageGlobs)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultContentItems)'=='true'" />
-    <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultPRIResourceItems)'=='true'"/>
+    <Content Include="$(_MrtCoreImageGlobs)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultContentItems)'!='false'" />
+    <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultPRIResourceItems)'!='false'"/>
   </ItemGroup>
 
 </Project>

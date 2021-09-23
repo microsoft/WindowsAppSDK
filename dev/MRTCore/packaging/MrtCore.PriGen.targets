@@ -14,15 +14,6 @@
   </ItemGroup>
 
   <!--
-    We match the semantics of EnableDefaultCompileItems here: if EnableDefaultCompileItems is false, .CS files,
-    for example, are not added to the project, as opposed to added as None.
-  -->
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp'">
-    <None Remove="@(Content)" />
-    <None Remove="@(PRIResource)" />
-  </ItemGroup>
-
-  <!--
     Setting default project properties for .NET SDK-style projects
   -->
   <PropertyGroup Condition="'$(UsingMicrosoftNETSdk)' == 'true'">
