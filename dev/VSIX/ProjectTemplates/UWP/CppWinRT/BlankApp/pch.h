@@ -17,4 +17,3 @@
 #include <winrt/Microsoft.UI.Xaml.Navigation.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
-#include <winrt/microsoft.ui.dispatching.co_await.h>
