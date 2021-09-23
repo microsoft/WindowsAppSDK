@@ -2,25 +2,32 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include <DeploymentManager.h>
-#include <DeploymentStatus.h>
+#include <DeploymentResult.h>
 #include <PackageInfo.h>
 #include <PackageId.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
-#include <Microsoft.Windows.ApplicationModel.WindowsAppSDK.DeploymentManager.g.cpp>
+#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
 
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::GetStatus()
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentAPI::IsEnabled());
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return GetStatus(GetCurrentFrameworkPackageFullName());
     }
 
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::GetStatus(hstring const& packageFullName)
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentAPI::IsEnabled());
+        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
+        return Initialize(GetCurrentFrameworkPackageFullName());
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentAPI::IsEnabled());
         std::wstring frameworkPackageFullName{ packageFullName };
         auto frameworkPackageInfo{ GetPackageInfoForPackage(frameworkPackageFullName) };
 
@@ -59,30 +66,43 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
             }
         }
 
-        auto status{ winrt::make<implementation::DeploymentStatus>(SUCCEEDED(verifyResult), FAILED(verifyResult), verifyResult) };
-        return status;
-    }
-
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize()
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
-        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
-        return Initialize(GetCurrentFrameworkPackageFullName());
-    }
-
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize(hstring const& packageFullName)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
-        auto status{ DeploymentManager::GetStatus(packageFullName) };
-        if (status.IsOK())
+        DeploymentStatus status{};
+        if (SUCCEEDED(verifyResult))
         {
-            return status;
+            status = DeploymentStatus::Ok;
+        }
+        else
+        {
+            status = DeploymentStatus::PackageInstallRequired;
+        }
+
+        auto result{ winrt::make<implementation::DeploymentResult>(status, verifyResult) };
+        return result;
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName)
+    {
+        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentAPI::IsEnabled());
+        auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
+        if (getStatusResult.Status() == DeploymentStatus::Ok)
+        {
+            return getStatusResult;
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto initializeResult{ DeployPackages(frameworkPackageFullName) };
-        auto initializeStatus{ winrt::make<implementation::DeploymentStatus>(SUCCEEDED(initializeResult), FAILED(initializeResult), initializeResult) };
-        return initializeStatus;
+        auto deployPackagesResult{ DeployPackages(frameworkPackageFullName) };
+        DeploymentStatus status{};
+        if (SUCCEEDED(deployPackagesResult))
+        {
+            status = DeploymentStatus::Ok;
+        }
+        else
+        {
+            status = DeploymentStatus::PackageInstallFailed;
+        }
+
+        auto initializeResult{ winrt::make<implementation::DeploymentResult>(status, deployPackagesResult) };
+        return initializeResult;
     }
 
     MddCore::PackageInfo DeploymentManager::GetPackageInfoForPackage(std::wstring const& packageFullName)

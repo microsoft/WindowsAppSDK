@@ -10,7 +10,7 @@ using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
 using namespace winrt;
-using namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK;
+using namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Management::Deployment;
@@ -31,7 +31,7 @@ namespace Test::Deployment
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            if (!::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled())
+            if (!::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentAPI::IsEnabled())
             {
                 Log::Result(TestResults::Skipped, L"Deployment API Features are not enabled.");
                 return true;

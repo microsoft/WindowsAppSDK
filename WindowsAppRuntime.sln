@@ -183,7 +183,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CS", "CS", "{716C26A0-E6B0-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.DynamicDependency.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.DynamicDependency\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.csproj", "{47D8D21D-F022-4D58-8DB2-8B467756E08C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.WindowsAppSDK.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppSDK\Microsoft.Windows.ApplicationModel.WindowsAppSDK.Projection.csproj", "{4782BB2A-2968-44B4-867C-5FAEB7A51C6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection", "dev\Projections\CS\Microsoft.Windows.ApplicationModel.WindowsAppRuntime\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.Projection.csproj", "{4782BB2A-2968-44B4-867C-5FAEB7A51C6B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Windows.AppLifecycle.Projection", "dev\Projections\CS\Microsoft.Windows.AppLifecycle\Microsoft.Windows.AppLifecycle.Projection.csproj", "{D417EDBE-D783-484F-83F3-710DEC7CB585}"
 EndProject
