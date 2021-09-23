@@ -1,7 +1,7 @@
 {
   "profiles": {
     "$projectname$": {
-      "commandName": "AppContainer"
+      "commandName": "MsixPackage"
     }
   }
 }
