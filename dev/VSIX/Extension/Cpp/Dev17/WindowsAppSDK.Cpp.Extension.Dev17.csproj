@@ -37,7 +37,6 @@
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_SDK_BuildTools)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_SDK_BuildTools)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -49,7 +48,7 @@
     <Content Include="$(RepoRoot)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="ExtensionPack.vsext">
+    <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     </ItemGroup>
@@ -57,11 +56,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-1-31325-273" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-4-31709-430" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.3177-preview3">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.4207-preview4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

@@ -48,7 +48,7 @@
     <Content Include="$(RepoRoot)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="ExtensionPack.vsext">
+    <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
