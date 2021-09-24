@@ -129,7 +129,7 @@ jobs:
       command: 'custom'
       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
   
-  - template: WindowsAppSDK-BuildProject-Steps.yml
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml
     parameters:
       solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
       nugetConfigPath: nuget.config
