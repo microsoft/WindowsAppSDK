@@ -128,12 +128,14 @@ jobs:
     inputs:
       command: 'custom'
       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+  
+  - template: WindowsAppSDK-BuildProject-Steps.yml
+    parameters:
+      solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
+      nugetConfigPath: nuget.config
+      buildOutputDir: $(buildOutputDir)
+      publishDir: $(publishDir)
 
-  - task: MSBuild@1
-    inputs:
-      solution: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
-      msbuildVersion: 'latest' # Optional. Options: latest, 16.0, 15.0, 14.0, 12.0, 4.0
-      msbuildArchitecture: 'Any CPU' # Optional. Options: x86, x64
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
