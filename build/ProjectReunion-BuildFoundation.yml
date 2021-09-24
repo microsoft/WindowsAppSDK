@@ -104,8 +104,6 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
 - job: BuildAnyCPU
-  dependsOn:
-    - Build
   # Skip the build job if we are reusing the output of a previous build.
   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
   condition:
@@ -131,55 +129,11 @@ jobs:
       command: 'custom'
       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
 
-  # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
-#  - task: DownloadPackage@1
-#    displayName: 'Download Microsoft.Telemetry.Inbox.Native'
-#    inputs:
-#      feed: '/3415933f-ac0d-4766-8c0a-3f4c247c25f5'                         # 0
-#      view: 'ef61a1c1-003b-4a27-bde5-beec8301021b'                          # Release
-#      definition: '2fe60c09-c66f-4275-ae2d-f015c7170c72'                    # Microsoft.Telemetry.Inbox.Native
-#      version: '10.0.18362.1-190318-1202.19h1-release.amd64fre'             # latest version
-#      downloadPath: '$(System.DefaultWorkingDirectory)'                     # download and extract to repo root
-
-  # Replace the stubbed MicrosoftTelemetry.h with the real one
-  # Delete the existing stubbed MicrosoftTelemetry.h first, to ensure that if it is no longer at the expected path that the task, and build, fails
-#  - script: |
-#     del $(System.DefaultWorkingDirectory)\dev\telemetry\MicrosoftTelemetry.h
-#     move /Y $(System.DefaultWorkingDirectory)\build\native\inc\MicrosoftTelemetry.h $(System.DefaultWorkingDirectory)\dev\telemetry\
-#    failOnStderr: true
-#    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
-
-
-# component detection must happen *within* the build task
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-
-  - task: BinSkim@3
+  - task: MSBuild@1
     inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+      solution: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
+      msbuildVersion: 'latest' # Optional. Options: latest, 16.0, 15.0, 14.0, 12.0, 4.0
+      msbuildArchitecture: 'Any CPU' # Optional. Options: x86, x64
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
