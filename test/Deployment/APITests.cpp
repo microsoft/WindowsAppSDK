@@ -31,12 +31,6 @@ namespace Test::Deployment
 
         TEST_CLASS_SETUP(ClassInit)
         {
-            if (!::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::Feature_DeploymentAPI::IsEnabled())
-            {
-                Log::Result(TestResults::Skipped, L"Deployment API Features are not enabled.");
-                return true;
-            }
-
             ClassUninit();
             TP::AddPackage_DeploymentWindowsAppRuntimeFramework();
             TP::AddPackage_WindowsAppRuntimeFramework();
