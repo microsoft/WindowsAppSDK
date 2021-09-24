@@ -111,7 +111,7 @@ jobs:
   pool: $(ProjectReunionBuildPool)
   timeoutInMinutes: 120
   variables:
-    buildPlatform: 'Any CPU'
+    buildPlatform: 'anycpu'
     buildConfiguration: 'Release'
     normalizedConfiguration: 'fre'
     PGOBuildMode: 'Optimize'
