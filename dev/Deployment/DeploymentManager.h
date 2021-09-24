@@ -10,11 +10,11 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     struct DeploymentManager
     {
         DeploymentManager() = default;
-        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult GetStatus();
-        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult Initialize();
+        static WindowsAppRuntime::DeploymentResult GetStatus();
+        static WindowsAppRuntime::DeploymentResult Initialize();
     private:
-        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult GetStatus(hstring const& packageFullName);
-        static winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName);
+        static WindowsAppRuntime::DeploymentResult GetStatus(hstring const& packageFullName);
+        static WindowsAppRuntime::DeploymentResult Initialize(hstring const& packageFullName);
         static MddCore::PackageInfo GetPackageInfoForPackage(std::wstring const& packageFullName);
         static std::vector<std::wstring> FindPackagesByFamily(std::wstring const& packageFamilyName);
         static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion);

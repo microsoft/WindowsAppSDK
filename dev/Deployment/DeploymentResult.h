@@ -9,12 +9,12 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     {
         DeploymentResult() = default;
 
-        DeploymentResult(winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus const& status, winrt::hresult const& extendedError);
+        DeploymentResult(WindowsAppRuntime::DeploymentStatus const& status, winrt::hresult const& extendedError);
         winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus Status();
         winrt::hresult ExtendedError();
 
     private:
-        const winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus m_status{winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentStatus::Unknown};
+        const WindowsAppRuntime::DeploymentStatus m_status{WindowsAppRuntime::DeploymentStatus::Unknown};
         const winrt::hresult m_extendedError{};
     };
 }

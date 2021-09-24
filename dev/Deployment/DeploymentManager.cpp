@@ -76,8 +76,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             status = DeploymentStatus::PackageInstallRequired;
         }
 
-        auto result{ winrt::make<implementation::DeploymentResult>(status, verifyResult) };
-        return result;
+        return winrt::make<implementation::DeploymentResult>(status, verifyResult);
     }
 
     winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName)
@@ -101,8 +100,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             status = DeploymentStatus::PackageInstallFailed;
         }
 
-        auto initializeResult{ winrt::make<implementation::DeploymentResult>(status, deployPackagesResult) };
-        return initializeResult;
+        return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
     }
 
     MddCore::PackageInfo DeploymentManager::GetPackageInfoForPackage(std::wstring const& packageFullName)

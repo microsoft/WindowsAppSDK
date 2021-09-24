@@ -4,7 +4,7 @@
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     /// Represents the current Deployment status of the WindowsAppRuntime
-    [experimental][flags]
+    [experimental]
     enum DeploymentStatus
     {
         Unknown = 0,
