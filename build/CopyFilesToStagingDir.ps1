@@ -132,3 +132,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.Application
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.WindowsAppSDK.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
+
+#Bootstrap Static Helper Files
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapModuleInitializer.cs $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapInitializer.cpp $NugetDir\include
