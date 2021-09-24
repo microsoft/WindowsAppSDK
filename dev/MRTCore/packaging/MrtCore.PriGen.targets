@@ -13,24 +13,6 @@
     <Content Include="@(Image)" Condition="'$(OutputType)' == 'Exe'" />
   </ItemGroup>
 
-  <!-- The .NET/C# project system does not add the .resw files added to the project to PRIResource, unlike the UWP
-       project system (this is expected since .resw files were historically UWP specific). That is needed for the
-       .resw files to be indexed during PRI generation. Likewise, image files need to be added to Content for them
-       to be indexed. These files exist in the None list by default (meaning without app developer intervention).
-       We address this requirement here so that the app developer doesn't need to manually intervene. -->
-  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">
-    <!-- Add .resw files to PRIResource so they are indexed. -->
-    <PRIResource Include="@(None->WithMetadataValue('Extension', '.resw'))" />
-    <!-- Add image files to PRIResource so they are indexed. -->
-    <Content Include="@(None->WithMetadataValue('Extension', '.png'))" />
-    <Content Include="@(None->WithMetadataValue('Extension', '.bmp'))" />
-    <Content Include="@(None->WithMetadataValue('Extension', '.jpg'))" />
-    <Content Include="@(None->WithMetadataValue('Extension', '.dds'))" />
-    <Content Include="@(None->WithMetadataValue('Extension', '.tif'))" />
-    <Content Include="@(None->WithMetadataValue('Extension', '.tga'))" />
-    <Content Include="@(None->WithMetadataValue('Extension', '.gif'))" />
-  </ItemGroup>
-
   <!--
     Setting default project properties for .NET SDK-style projects
   -->
