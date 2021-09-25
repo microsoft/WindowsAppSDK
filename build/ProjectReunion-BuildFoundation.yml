@@ -117,7 +117,7 @@ jobs:
     PGOBuildMode: 'Optimize'
     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
     publishDir : $(Build.ArtifactStagingDirectory)
-
+    artifactName: 'windowsappsdk_binaries'
   steps:
   - task: NuGetAuthenticate@0
     inputs:
@@ -136,6 +136,27 @@ jobs:
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
 
+  - task: CopyFiles@2
+    displayName: 'copy projection binaries and symbols for signing'
+    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
+    inputs:
+      SourceFolder: '$(buildOutputDir)\$(Configuration)\$(Platform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
+      Contents: |
+        Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.18362.0'
+      flattenFolders: false
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: ${{ parameters.artifactName }}'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}'
+      artifactName: ${{ parameters.artifactName }}
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
+      artifactName: FullNuget
 
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
