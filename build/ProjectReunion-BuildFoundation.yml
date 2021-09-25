@@ -137,20 +137,13 @@ jobs:
       publishDir: $(publishDir)
 
   - task: CopyFiles@2
-    displayName: 'copy projection binaries and symbols for signing'
-    condition: and(succeeded(), eq(variables['buildPlatform'], 'x86'))
+    displayName: 'Copy bootstrap.net.dll'
     inputs:
       SourceFolder: '$(buildOutputDir)\$(Configuration)\$(Platform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
       Contents: |
         Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.18362.0'
       flattenFolders: false
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: $(artifactName)'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\$(artifactName)'
-      artifactName: $(artifactName)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
