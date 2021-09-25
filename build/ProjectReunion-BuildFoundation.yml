@@ -139,7 +139,7 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy bootstrap.net.dll'
     inputs:
-      SourceFolder: '$(buildOutputDir)\$(Configuration)\$(Platform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
+      SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
       Contents: |
         Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.18362.0'
