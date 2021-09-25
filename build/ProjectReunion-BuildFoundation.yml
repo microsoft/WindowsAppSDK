@@ -147,10 +147,10 @@ jobs:
       flattenFolders: false
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: ${{ parameters.artifactName }}'
+    displayName: 'Publish artifact: $(artifactName)'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}'
-      artifactName: ${{ parameters.artifactName }}
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\$(artifactName)'
+      artifactName: $(artifactName)
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
