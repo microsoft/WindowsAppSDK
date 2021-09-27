@@ -104,8 +104,8 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
 - job: BuildAnyCPU
-  # Skip the build job if we are reusing the output of a previous build.
-  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+  # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+  # Can be expanded to add any other binary as needed
   condition:
     eq(variables['useBuildOutputFromBuildId'],'')
   pool: $(ProjectReunionBuildPool)
