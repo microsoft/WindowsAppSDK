@@ -140,7 +140,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
     std::map<std::wstring, std::wstring> mapOfFullTrustApps;
 
     // Get list of full trust apps with valid channels from wpncore
-    wil::unique_cotaskmem_array_ptr<PWSTR> appIds;
+    wil::unique_cotaskmem_array_ptr<wil::unique_cotaskmem_string> appIds;
     PushNotifications_GetFullTrustApplicationsWithChannels(appIds.addressof(), appIds.size_address<ULONG>());
 
     // Get list of apps from Storage

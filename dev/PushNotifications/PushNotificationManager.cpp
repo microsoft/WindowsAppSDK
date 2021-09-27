@@ -198,6 +198,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
+                        wil::unique_cotaskmem_string processName;
+                        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+                        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             winrt::make<PushNotificationChannel>(pushChannelReceived),
                             S_OK,
@@ -268,7 +274,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+                THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), GUID_NULL, &unpackagedAUMID));
 
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
@@ -420,7 +426,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
 
                 s_protocolRegistration = false;
             }
@@ -458,7 +464,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
 
                 s_protocolRegistration = false;
             }
