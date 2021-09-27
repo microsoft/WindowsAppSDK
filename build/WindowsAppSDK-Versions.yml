@@ -1,6 +1,6 @@
 variables:
   # Version Control
   major: "0"
-  minor: "8"
+  minor: "1"
   patch: "0"
-  branch: 'main'
+  branch: 'preview2'
