@@ -12,7 +12,7 @@
 #include "externs.h"
 #include "PushNotificationTelemetry.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
-#include <variant>
+#include "PushNotificationUtility.h"
 
 namespace winrt::Windows
 {
@@ -105,9 +105,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto lock = m_lock.lock_exclusive();
 
-                std::variant<ChannelDetails> details{ m_channelInfo };
-                THROW_HR_IF_NULL(E_UNEXPECTED, std::get_if<ChannelDetails>(&details));
-
                 if (!m_foregroundHandlerCount++)
                 {
                     wil::unique_cotaskmem_string appUserModelId;
@@ -189,6 +186,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         BOOL foregroundHandled = false;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
+
         if (!foregroundHandled)
         {
             ProtocolLaunchHelper(payloadLength, payload);
