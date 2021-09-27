@@ -21,7 +21,7 @@ steps:
 - task: TouchdownBuildTask@1
   inputs:
     environment: 'PRODEXT'
-    teamId: '36910'
+    teamId: (TdBuildTeamID)
     authType: 'OAuth'
     authId: $(TdBuildAuthID)
     authKey: $(TdBuildToken)
