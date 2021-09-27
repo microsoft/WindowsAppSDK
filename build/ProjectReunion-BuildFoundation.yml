@@ -164,7 +164,7 @@ jobs:
       publishDir: $(publishDir)
 
   - task: CopyFiles@2
-    displayName: 'Copy bootstrap.net.dll'
+    displayName: 'Copy AnyCpu-built binaries'
     inputs:
       SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
       Contents: |
