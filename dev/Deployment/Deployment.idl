@@ -4,7 +4,6 @@
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     /// Represents the current Deployment status of the WindowsAppRuntime
-    [experimental]
     enum DeploymentStatus
     {
         Unknown = 0,
@@ -14,7 +13,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Represents the a result of a Deployment Manager method.
-    [experimental]
     runtimeclass DeploymentResult
     {
         DeploymentResult(DeploymentStatus status, HRESULT extendedError);
@@ -27,7 +25,6 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
     };
 
     /// Used to query deployment information for WindowsAppRuntime
-    [experimental]
     static runtimeclass DeploymentManager
     {
         /// Returns the current deployment status of the current package's Windows App Runtime.
