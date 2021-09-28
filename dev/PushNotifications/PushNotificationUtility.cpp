@@ -4,7 +4,7 @@
 #include "externs.h"
 #include "PushNotificationUtility.h"
 
-const std::wstring ConvertByteArrayToWideString(unsigned int payloadLength, byte* payload) noexcept
+const std::wstring ConvertByteArrayToWideString(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload)
 {
     int size = MultiByteToWideChar(
         CP_UTF8,
@@ -28,7 +28,7 @@ const std::wstring ConvertByteArrayToWideString(unsigned int payloadLength, byte
     return payloadAsWideString;
 }
 
-void ProtocolLaunchHelper(unsigned int payloadLength, _In_ byte* payload) noexcept
+void ProtocolLaunchHelper(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload)
 {
     // Command line format: ----WindowsAppRuntimePushServer:-Payload:"<payloadAsEscapedUriFormat>"
     std::wstring commandLine = L"----WindowsAppRuntimePushServer:-Payload:\"";

@@ -4,8 +4,8 @@
 #pragma once
 #include "pch.h"
 
-const std::wstring ConvertByteArrayToWideString(unsigned int payloadLength, byte* payload) noexcept;
-void ProtocolLaunchHelper(unsigned int payloadLength, _In_ byte* payload) noexcept;
+const std::wstring ConvertByteArrayToWideString(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload);
+void ProtocolLaunchHelper(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload);
 
 inline HRESULT GetAppUserModelId(wil::unique_cotaskmem_string& appUserModelId)
 {
