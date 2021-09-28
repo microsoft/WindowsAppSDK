@@ -15,8 +15,8 @@ steps:
 
 # This is needed to avoid credentials errors for later in the TDBuild Task
 - script: |
-    git config --global user.email "you@example.com"
-    git config --global user.name "Your Name"
+    git config --global user.email "DoNotEmailThis@dev.null.microsoft.com"
+    git config --global user.name "TDBuild"
 
 - task: TouchdownBuildTask@1
   inputs:
