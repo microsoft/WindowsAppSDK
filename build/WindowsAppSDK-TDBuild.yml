@@ -21,5 +21,3 @@ jobs:
         dev\VSIX\Extension\Cpp\Common\VSPackage.resx
         dev\VSIX\Extension\Cs\Common\VSPackage.resx
       teamId: $(TdBuildTeamIDVSIX)
-      authId: $(TdBuildAuthID)
-      authKey: $(TdBuildToken)
