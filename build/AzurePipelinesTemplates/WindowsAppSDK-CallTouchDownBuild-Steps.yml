@@ -4,7 +4,7 @@ parameters:
   default: ""
 - name: GitAction
   type: string
-  default: 'None'
+  default: 'COMMIT'
   values:
   - 'None'
   - 'COMMIT'
