@@ -11,12 +11,6 @@ parameters:
 - name: TeamID
   type: string
   default: ''
-- name: AuthID
-  type: string
-  default: ''
-- name: AuthToken
-  type: string
-  default: ''
 
 steps:
 - checkout: self
@@ -32,8 +26,8 @@ steps:
     environment: 'PRODEXT'
     teamId: ${{ parameters.TeamID }}
     authType: 'OAuth'
-    authId: ${{ parameters.AuthID }}
-    authKey: ${{ parameters.AuthToken }}
+    authId: $(TdBuildAuthID)
+    authKey: $(TdBuildToken)
     localizationTarget: true
     isPreview: false
     resourceFilePath: ${{ parameters.ResourceFilePath }}
