@@ -8,6 +8,15 @@ parameters:
   values:
   - 'None'
   - 'COMMIT'
+- name: TeamID
+  type: string
+  default: ''
+- name: AuthID
+  type: string
+  default: ''
+- name: AuthToken
+  type: string
+  default: ''
 
 steps:
 - checkout: self
@@ -21,10 +30,10 @@ steps:
 - task: TouchdownBuildTask@1
   inputs:
     environment: 'PRODEXT'
-    teamId: $(TdBuildTeamIDVSIX)
+    teamId: ${{ parameters.TeamID }}
     authType: 'OAuth'
-    authId: $(TdBuildAuthID)
-    authKey: $(TdBuildToken)
+    authId: ${{ parameters.AuthID }}
+    authKey: ${{ parameters.AuthToken }}
     localizationTarget: true
     isPreview: false
     resourceFilePath: ${{ parameters.ResourceFilePath }}
