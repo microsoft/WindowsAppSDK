@@ -1,0 +1,25 @@
+name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
+parameters:
+- name: GitAction
+  type: string
+  default: 'None'
+  values:
+  - 'None'
+  - 'COMMIT'
+
+variables:
+- group: TouchDownBuild-Secrets
+
+jobs:
+- job: Localization
+  pool: 'ProjectReunionESPool'
+  steps:
+  - template: AzurePipelinesTemplates\WindowsAppSDK-CallTouchDownBuild-Steps.yml
+    parameters:
+      GitAction: ${{ parameters.GitAction }}
+      ResourceFilePath: |
+        dev\VSIX\Extension\Cpp\Common\VSPackage.resx
+        dev\VSIX\Extension\Cs\Common\VSPackage.resx
+      teamId: $(TdBuildTeamIDVSIX)
+      authId: $(TdBuildAuthID)
+      authKey: $(TdBuildToken)

@@ -1,0 +1,42 @@
+parameters:
+- name: ResourceFilePath
+  type: string
+  default: ""
+- name: GitAction
+  type: string
+  default: 'COMMIT'
+  values:
+  - 'None'
+  - 'COMMIT'
+- name: TeamID
+  type: string
+  default: ''
+- name: AuthID
+  type: string
+  default: ''
+- name: AuthToken
+  type: string
+  default: ''
+
+steps:
+- checkout: self
+  persistCredentials: true
+
+# This is needed to avoid credentials errors for later in the TDBuild Task
+- script: |
+    git config --global user.email "DoNotEmailThis@dev.null.microsoft.com"
+    git config --global user.name "TDBuild"
+
+- task: TouchdownBuildTask@1
+  inputs:
+    environment: 'PRODEXT'
+    teamId: ${{ parameters.TeamID }}
+    authType: 'OAuth'
+    authId: ${{ parameters.AuthID }}
+    authKey: ${{ parameters.AuthToken }}
+    localizationTarget: true
+    isPreview: false
+    resourceFilePath: ${{ parameters.ResourceFilePath }}
+    appendRelativeDir: true
+    cultureMappingType: 'None'
+    gitAction: ${{ parameters.GitAction }}
