@@ -25,7 +25,7 @@ steps:
     authType: 'OAuth'
     authId: $(TdBuildAuthID)
     authKey: $(TdBuildToken)
-    localizationTarget: false
+    localizationTarget: true
     isPreview: false
     resourceFilePath: ${{ parameters.ResourceFilePath }}
     appendRelativeDir: true
