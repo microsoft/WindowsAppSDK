@@ -36,7 +36,6 @@
   <ItemGroup>
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_SDK_BuildTools)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
-    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_SDK_BuildTools)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -48,7 +47,7 @@
     <Content Include="$(RepoRoot)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="ExtensionPack.vsext">
+    <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
@@ -56,11 +55,11 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-1-31325-273" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-4-31709-430" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.3177-preview3">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.4207-preview4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -162,6 +161,62 @@
   <ItemGroup>
     <EmbeddedResource Include="$(ExtensionDir)Cs\Common\VSPackage.resx">
       <Link>Resources\VSPackage.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\cs-CZ\VSPackage.cs-CZ.resx">
+      <Link>Resources\VSPackage.cs-CZ.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\de-DE\VSPackage.de-DE.resx">
+      <Link>Resources\VSPackage.de-DE.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\en-US\VSPackage.en-US.resx">
+      <Link>Resources\VSPackage.en-US.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\es-ES\VSPackage.es-ES.resx">
+      <Link>Resources\VSPackage.es-ES.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\fr-FR\VSPackage.fr-FR.resx">
+      <Link>Resources\VSPackage.fr-FR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\it-IT\VSPackage.it-IT.resx">
+      <Link>Resources\VSPackage.it-IT.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ja-JP\VSPackage.ja-JP.resx">
+      <Link>Resources\VSPackage.ja-JP.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ko-KR\VSPackage.ko-KR.resx">
+      <Link>Resources\VSPackage.ko-KR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\pl-PL\VSPackage.pl-PL.resx">
+      <Link>Resources\VSPackage.pl-PL.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\pt-BR\VSPackage.pt-BR.resx">
+      <Link>Resources\VSPackage.pt-BR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\ru-RU\VSPackage.ru-RU.resx">
+      <Link>Resources\VSPackage.ru-RU.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\tr-TR\VSPackage.tr-TR.resx">
+      <Link>Resources\VSPackage.tr-TR.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\zh-CN\VSPackage.zh-CN.resx">
+      <Link>Resources\VSPackage.zh-CN.resx</Link>
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(ExtensionDir)Cs\Common\zh-TW\VSPackage.zh-TW.resx">
+      <Link>Resources\VSPackage.zh-TW.resx</Link>
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
