@@ -28,7 +28,6 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GetRawNotificationEventArgs.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannel.h" />
@@ -38,6 +37,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationDummyDeferral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationTelemetry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
   </ItemGroup>
 </Project>
