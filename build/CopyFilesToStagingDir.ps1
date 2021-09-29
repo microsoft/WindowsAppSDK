@@ -34,6 +34,7 @@ function PublishFile {
 }
 
 PublishFile $OverrideDir\DynamicDependency-Override.json $FullPublishDir\
+PublishFile $OverrideDir\PushNotifications-Override.json $FullPublishDir\
 
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $FullPublishDir\Microsoft.WindowsAppRuntime\
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.lib $FullPublishDir\Microsoft.WindowsAppRuntime\
@@ -86,6 +87,9 @@ PublishFile $FullBuildOutput\Microsoft.Windows.System.Power.Projection\Microsoft
 #
 # Dynamic Dependency build overrides
 PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
+#
+# Push Notifications build overrides
+PublishFile $OverrideDir\PushNotifications-Override.json $NugetDir\runtimes\win10-$Platform\native
 #
 # Includes (*.h)
 PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrap.h $NugetDir\include
