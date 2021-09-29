@@ -118,7 +118,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     CATCH_RETURN()
 
-    winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid &remoteId)
+    winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
@@ -196,6 +196,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
+                        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+
+                        wil::unique_cotaskmem_string processName;
+                        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
@@ -261,17 +267,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
-                auto coInitialize = wil::CoInitializeEx();
-
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
-
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
-
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
+                    wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                    RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
+
                     s_protocolRegistration = true;
                 }
             }
@@ -420,7 +420,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
 
                 s_protocolRegistration = false;
             }
@@ -458,7 +458,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
 
                 s_protocolRegistration = false;
             }
