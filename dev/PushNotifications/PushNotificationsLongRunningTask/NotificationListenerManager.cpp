@@ -16,7 +16,7 @@ void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::ws
     }
 }
 
-void NotificationListenerManager::AddListener(std::wstring appId, std::wstring processName)
+void NotificationListenerManager::AddListener(std::wstring const& appId, std::wstring const& processName)
 {
     THROW_HR_IF(E_INVALIDARG, appId.empty());
     THROW_HR_IF(E_INVALIDARG, processName.empty());

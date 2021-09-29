@@ -14,7 +14,7 @@ public:
 
     void SetAppIdMapping(std::map<std::wstring, std::wstring>& appIdList);
 
-    void AddListener(std::wstring appId, std::wstring processName);
+    void AddListener(std::wstring const& appId, std::wstring const& processName);
     void RemoveListener(std::wstring appId);
 
     bool IsEmpty();
