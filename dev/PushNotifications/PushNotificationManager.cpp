@@ -267,13 +267,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
-                {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
-                    wil::unique_cotaskmem_string unpackagedAppUserModelId;
-                    RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
+                wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
 
-                    s_protocolRegistration = true;
-                }
+                s_protocolRegistration = true;
             }
 
             BackgroundTaskBuilder builder{ nullptr };
