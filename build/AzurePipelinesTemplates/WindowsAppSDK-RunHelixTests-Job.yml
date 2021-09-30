@@ -17,7 +17,7 @@ jobs:
   condition: ${{ parameters.condition }}
   pool:
     vmImage: 'windows-2019'
-  timeoutInMinutes: 120
+  timeoutInMinutes: 80
   strategy:
     maxParallel: ${{ parameters.maxParallel }}
     matrix: ${{ parameters.matrix }}
@@ -157,6 +157,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (open queues)'
     condition: and(succeeded(),eq(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     inputs:
@@ -168,6 +169,7 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: 'Run tests in Helix (closed queues)'
     condition: and(succeeded(),ne(variables['System.CollectionUri'],'https://dev.azure.com/ms/'))
+    timeoutInMinutes: 45
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)
@@ -181,6 +183,7 @@ jobs:
   - task: powershell@2
     displayName: 'UpdateUnreliableTests.ps1'
     condition: succeededOrFailed()
+    timeoutInMinutes: 15
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)
@@ -193,6 +196,7 @@ jobs:
   - task: powershell@2
     displayName: 'OutputTestResults.ps1'
     condition: succeededOrFailed()
+    timeoutInMinutes: 15
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)
@@ -206,6 +210,7 @@ jobs:
   - task: powershell@2
     displayName: 'ProcessHelixFiles.ps1'
     condition: succeededOrFailed()
+    timeoutInMinutes: 15
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       HelixAccessToken: $(HelixApiAccessToken)
