@@ -95,12 +95,12 @@ extern "C"
 #define WRITE_MRMMIN_INIT_TRACE_INFO(msg, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, hr)
 #define WRITE_MRMMIN_INIT_TRACE_INFO_CHECK(msg, hr) \
     { \
-        MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), RemovePiiUserProfileFilename(msg), hr); \
+        MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
     }
 #define WRITE_MRMMIN_INIT_TRACE_ERROR(msg, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, hr)
 #define WRITE_MRMMIN_INIT_TRACE_ERROR_CHECK(msg, hr) \
     { \
-        MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), RemovePiiUserProfileFilename(msg), hr); \
+        MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
     }
 #define WRITE_MRMMIN_INIT_TRACE_ERROR_MEASURE(msg, hr) \
     { \
@@ -110,14 +110,14 @@ extern "C"
 #define WRITE_MRMMIN_INIT_TRACE_ERROR_MEASURE_CHECK(msg, hr) \
     { \
         LOG_ERROR_IN_MEMORY(hr, __LINE__, __FILE__, msg); \
-        MrtRuntimeTraceLoggingProvider::MeasureGenericEvent(TOWIDE(__FUNCTION__), RemovePiiUserProfileFilename(msg), hr); \
+        MrtRuntimeTraceLoggingProvider::MeasureGenericEvent(TOWIDE(__FUNCTION__), RemoveUsernameFromPath(msg), hr); \
     }
 
 #define WRITE_MRMMIN_TRACE_INFO(msg, msg2, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_WARNING(msg, msg2, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_WARNING_CHECK(msg, msg2, hr) \
     { \
-        MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, RemovePiiUserProfileFilename(msg2), hr); \
+        MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
     }
 #define WRITE_MRMMIN_TRACE_ERROR(msg, msg2, hr) MrtRuntimeTraceLoggingProvider::TelemetryGenericEvent(TOWIDE(__FUNCTION__), msg, msg2, hr)
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE(msg, msg2, hr) \
@@ -128,7 +128,7 @@ extern "C"
 #define WRITE_MRMMIN_TRACE_ERROR_MEASURE_CHECK(msg, msg2, hr) \
     { \
         LOG_ERROR_IN_MEMORY(hr, __LINE__, __FILE__, msg2); \
-        MrtRuntimeTraceLoggingProvider::MeasureGenericEvent(TOWIDE(__FUNCTION__), msg, RemovePiiUserProfileFilename(msg2), hr); \
+        MrtRuntimeTraceLoggingProvider::MeasureGenericEvent(TOWIDE(__FUNCTION__), msg, RemoveUsernameFromPath(msg2), hr); \
     }
 
 #define WRITE_ETW(etw) __noop

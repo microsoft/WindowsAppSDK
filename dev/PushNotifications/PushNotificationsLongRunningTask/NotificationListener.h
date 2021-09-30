@@ -10,6 +10,8 @@ public:
     STDMETHOD(OnRawNotificationReceived)(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
 
 private:
+    const std::string ConvertProcessNameToUtf8String();
+
     std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
 
     std::wstring m_appId;

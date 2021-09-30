@@ -81,7 +81,7 @@ steps:
     inputs:
       targetType: filePath
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
-      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
+      arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.ApplicationModel.WindowsAppSDK -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-DeploymentAPI.h
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2

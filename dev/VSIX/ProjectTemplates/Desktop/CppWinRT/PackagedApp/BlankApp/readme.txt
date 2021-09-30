@@ -18,20 +18,6 @@ Steps:
     Windows Runtime classes.
 
 ========================================================================
-    Support for async APIs
-========================================================================
-
-If you want to co_await on the `DispatcherQueue.TryEnqueue` method, use the
-resume_foreground helper function
-(https://github.com/microsoft/wil/blob/master/include/wil/cppwinrt.h#L548-L555)
-in the Windows Implementation Library (WIL).
-
-Steps:
-1. Add a reference to the Microsoft.Windows.ImplementationLibrary NuGet package.
-2. Add the `#include <wil/cppwinrt.h>` statement to your code file.
-3. Use `wil::resume_foreground(your_dispatcher);` to co_await the result.
-
-========================================================================
 Learn more about Windows App SDK here:
 https://docs.microsoft.com/windows/apps/windows-app-sdk/
 Learn more about WinUI3 here:

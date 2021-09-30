@@ -8,8 +8,7 @@
         </RestoreSources>
         <CppWinRTVersion Condition="'$(CppWinRTVersion)' == ''">2.0.210806.1</CppWinRTVersion>
         <WindowsSDKBuildToolsVersion Condition="'$(WindowsSDKBuildToolsVersion)' == ''">10.0.20348.19</WindowsSDKBuildToolsVersion>
-        <!-- Provides a default package version in order to simplify dev inner loop testing -->
-        <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-preview1</WindowsAppSdkVersion>
+        <WindowsAppSdkVersion Condition="'$(WindowsAppSdkVersion)' == ''">1.0.0-experimental1</WindowsAppSdkVersion>
         <Deployment Condition="'$(Deployment)' == '' ">Standalone</Deployment>
     </PropertyGroup>
 

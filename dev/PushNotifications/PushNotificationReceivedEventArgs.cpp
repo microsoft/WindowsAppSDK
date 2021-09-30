@@ -15,8 +15,6 @@
 #include <PushNotificationDummyDeferral.h>
 #include "ValueMarshaling.h"
 
-#include "utils.h"
-
 namespace winrt
 {
     using namespace Windows::ApplicationModel::Background;
@@ -69,7 +67,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring const& payload)
     {
-        std::string payloadToSimpleString = ConvertWideStringToUtf8String(payload);
+        std::string payloadToSimpleString = Utf16ToUtf8(payload.c_str());
 
         return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };
     }
@@ -144,6 +142,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             m_handledUnpackaged = value;
         }
+    }
+
+    std::string PushNotificationReceivedEventArgs::Utf16ToUtf8(_In_z_ PCWSTR utf16)
+    {
+        int size_needed = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, nullptr, nullptr);
+        THROW_LAST_ERROR_IF(size_needed == 0);
+
+        // size_needed minus the null character
+        std::string utf8(size_needed - 1, 0);
+        int size = WideCharToMultiByte(CP_UTF8, 0, utf16, size_needed - 1, &utf8[0], size_needed - 1, nullptr, nullptr);
+        THROW_LAST_ERROR_IF(size == 0);
+        return utf8;
     }
 }
 

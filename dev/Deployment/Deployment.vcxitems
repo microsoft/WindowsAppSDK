@@ -19,12 +19,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentResult.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeploymentStatus.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageDefinitions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentResult.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeploymentStatus.cpp" />
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)..\common\TerminalVelocityFeatures-DeploymentAPI.h" />
