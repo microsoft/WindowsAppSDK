@@ -41,31 +41,24 @@ else
 # Generate the json file
 $content_json=@"
 {
-    "PushNotifications": {
-        "LIBID": "CE96C745-3017-460E-895B-4FD98E1194F2",
-        "Impl": {
-            "CLSID": {
-                "UUID": "E739C755-0D09-48DF-A468-A5DF0B5422DC"
-            }
-        },
-        "ComInterfaces": {
-            "LRP": {
-                "CLSID": {
-                    "UUID": "60FC21B2-B396-4D49-94F0-7555869FB93C"
-                }
-            },
-            "ForegroundSink": {
-                "CLSID": {
-                    "UUID": "25604D55-9B17-426F-9D67-2B11B3A65598"
-                }
-            }  
-        },
-        "ComServer": {
-            "CLSID": {
-                "UUID": "2DC0B845-A8FD-44D6-B79C-91152C2511EB"
-            }
-        }     
-    }
+	"LIBID": "CE96C745-3017-460E-895B-4FD98E1194F2",
+	"ComServer": {
+		"CLSID": {
+			"UUID": "E739C755-0D09-48DF-A468-A5DF0B5422DC"
+		}
+	},
+	"ComInterfaces": {
+		"LRP": {
+			"CLSID": {
+				"UUID": "60FC21B2-B396-4D49-94F0-7555869FB93C"
+			}
+		},
+		"ForegroundSink": {
+			"CLSID": {
+				"UUID": "25604D55-9B17-426F-9D67-2B11B3A65598"
+			}
+		}
+	}
 }
 "@
 
