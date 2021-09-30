@@ -66,9 +66,24 @@ namespace WindowsAppRuntimeInstaller {
             return true;
         }
 
-        SYSTEM_INFO systemInfo{};
-        GetNativeSystemInfo(&systemInfo);
-        const auto systemArchitecture{ static_cast<ProcessorArchitecture>(systemInfo.wProcessorArchitecture) };
+        USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
+        ProcessorArchitecture systemArchitecture{};
+        switch (nativeMachine)
+        {
+        case IMAGE_FILE_MACHINE_I386:
+            systemArchitecture = ProcessorArchitecture::X86;
+            break;
+        case IMAGE_FILE_MACHINE_AMD64:
+            systemArchitecture = ProcessorArchitecture::X64;
+            break;
+        case IMAGE_FILE_MACHINE_ARM64:
+            systemArchitecture = ProcessorArchitecture::Arm64;
+            break;
+        default:
+            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
+        }
 
         // Same-arch is always applicable for any package type.
         if (packageProperties->architecture == systemArchitecture)
