@@ -12,7 +12,7 @@ inline HRESULT GetAppUserModelId(wil::unique_cotaskmem_string& appUserModelId)
     wchar_t appId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
     UINT32 appIdSize{ ARRAYSIZE(appId) };
 
-    GetCurrentApplicationUserModelId(&appIdSize, appId);
+    RETURN_IF_FAILED(GetCurrentApplicationUserModelId(&appIdSize, appId));
 
     appUserModelId = wil::make_unique_string<wil::unique_cotaskmem_string>(appId);
 

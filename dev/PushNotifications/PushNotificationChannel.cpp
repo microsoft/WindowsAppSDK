@@ -103,15 +103,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
             else
             {
+                // The channelUri is directly obtained when we request Channel from UDK using RemoteId
                 auto lock = m_lock.lock_exclusive();
 
-                if (!m_foregroundHandlerCount++)
+                if (!m_foregroundHandlerCount)
                 {
                     wil::unique_cotaskmem_string appUserModelId;
                     THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
 
                     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
                 }
+
+                ++m_foregroundHandlerCount;
 
                 return m_foregroundHandlers.add(handler);
             }
@@ -145,7 +148,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto lock = m_lock.lock_exclusive();
 
-                if (!--m_foregroundHandlerCount)
+                if (m_foregroundHandlerCount == 1)
                 {
                     wil::unique_cotaskmem_string appUserModelId;
                     THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
@@ -154,6 +157,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
 
                 m_foregroundHandlers.remove(token);
+                --m_foregroundHandlerCount;
             }
         }
         else
@@ -182,7 +186,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     CATCH_RETURN()
 
-    HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept
+    HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
     {
         BOOL foregroundHandled = false;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
@@ -194,6 +198,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         return S_OK;
     }
+    CATCH_RETURN();
 
     bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
     {

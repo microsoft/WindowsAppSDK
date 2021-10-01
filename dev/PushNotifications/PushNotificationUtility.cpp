@@ -4,7 +4,7 @@
 #include "externs.h"
 #include "PushNotificationUtility.h"
 
-const std::wstring ConvertByteArrayToWideString(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload)
+std::wstring Utf8BytesToWideString(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload)
 {
     int size = MultiByteToWideChar(
         CP_UTF8,
@@ -35,7 +35,7 @@ void ProtocolLaunchHelper(unsigned int payloadLength, _In_reads_(payloadLength) 
 
     // Escape special characters to follow command line standards for any app activation type in AppLifecycle
     // (See AppInstance.cpp and Serialize() from other activation types)
-    std::wstring payloadAsWideString = ConvertByteArrayToWideString(payloadLength, payload);
+    std::wstring payloadAsWideString = Utf8BytesToWideString(payloadLength, payload);
     auto payloadAsEscapedUriFormat = winrt::Windows::Foundation::Uri::EscapeComponent(payloadAsWideString.c_str());
 
     commandLine.append(payloadAsEscapedUriFormat);

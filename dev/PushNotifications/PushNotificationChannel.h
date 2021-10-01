@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         // IWpnForegroundSink
         HRESULT __stdcall InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
-        //INotificationHandler
+        // INotificationHandler
         HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
 
     private:
