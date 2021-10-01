@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\..\ProjectReunion.Build.Cpp.props" />
+  <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props')" />
+  <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props')" />
+  <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="..\..\..\..\WindowsAppSDK.Build.Cpp.props" />
+  <Import Project="..\..\..\..\..\ApiScan.Cpp.props" />
   <PropertyGroup Label="DevEnvironmentScenario">
     <ConsumeWinRT>false</ConsumeWinRT>
     <UseModernCompliantVclibs>true</UseModernCompliantVclibs>
@@ -68,24 +72,26 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='ARM'">
     <WindowsSDKDesktopARMSupport>true</WindowsSDKDesktopARMSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='ARM64'">
     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
   </PropertyGroup>
+  <!-- Shared settings for all Configurations and Platforms -->
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;STANDALONEDLL_EXPORTS;UNICODE;_UNICODE;DOWNLEVEL_PRIOR_TO_WIN8;WIL_SUPPRESS_PRIVATE_API_USE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\mrm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\WindowsAppRuntime_Insights;..\..\mrm\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <!-- MRT Core doesn't use RTTI. -->
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(OutDir)..\mrmmin\mrmmin.lib;rpcrt4.lib;onecore_downlevel.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(OutDir)..\mrmmin\mrmmin.lib;rpcrt4.lib;onecoreuap.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>MRM.def</ModuleDefinitionFile>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -93,64 +99,24 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <!-- We use MultiThreadedDebug, rather than MultiThreadedDebugDLL, to avoid DLL dependencies on VCRUNTIME140d.dll and MSVCP140d.dll. -->
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
       <WarningVersion>18</WarningVersion>
     </ClCompile>
     <Link>
-      <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
-           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
-           supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
-           than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrtd.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrtd.lib</AdditionalOptions>
-      <EntryPointSymbol>
-      </EntryPointSymbol>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <!-- We use MultiThreaded, rather than MultiThreadedDLL, to avoid DLL dependencies on VCRUNTIME140.dll and MSVCP140.dll. -->
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WarningVersion>18</WarningVersion>
-    </ClCompile>
-    <Link>
-      <!-- Link statically against the runtime and STL, but link dynamically against the CRT by ignoring the static CRT
-           lib and instead linking against the Universal CRT DLL import library. This "hybrid" linking mechanism is
-           supported according to the CRT maintainer. Dynamic linking against the CRT makes the binaries a bit smaller
-           than they would otherwise be if the CRT, runtime, and STL were all statically linked in. -->
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries);libucrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>%(AdditionalOptions) /defaultlib:ucrt.lib</AdditionalOptions>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup>
-    <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <ClCompile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Guard</ControlFlowGuard>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Guard</ControlFlowGuard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <ClCompile>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Guard</ControlFlowGuard>
-    </ClCompile>
-    <ClCompile>
-      <ControlFlowGuard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Guard</ControlFlowGuard>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MRM.cpp" />
@@ -169,12 +135,21 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.200519.2\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.props'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets'))" />
   </Target>
 </Project>

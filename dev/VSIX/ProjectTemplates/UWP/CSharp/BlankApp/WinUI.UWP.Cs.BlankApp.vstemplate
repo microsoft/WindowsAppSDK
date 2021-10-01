@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
   <TemplateData>
-    <Name>Blank App (WinUI 3 in UWP), Experimental</Name>
-    <Description>A project for creating a Universal Windows Platform (UWP) app based on the Windows UI Library (WinUI 3). Requires Project Reunion prerelease support.</Description>
+    <Name ID="1037" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1039" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.UWP.Cs.BlankApp.ico</Icon>
     <TemplateID>Microsoft.WinUI.UWP.Cs.BlankApp</TemplateID>
     <TemplateGroupID>WinRT-Managed</TemplateGroupID>
@@ -21,7 +21,7 @@
     <LanguageTag>csharp</LanguageTag>
     <LanguageTag>XAML</LanguageTag>
     <PlatformTag>windows</PlatformTag>
-    <PlatformTag>Project Reunion</PlatformTag>
+    <PlatformTag>Windows App SDK</PlatformTag>
     <ProjectTypeTag>uwp</ProjectTypeTag>
     <ProjectTypeTag>WinUI</ProjectTypeTag>
   </TemplateData>
@@ -62,11 +62,13 @@
   <WizardData>
     <MinSupportedVersion>10.0.17763.0</MinSupportedVersion>
     <UsePackageReferences>true</UsePackageReferences>
-    <packages repository="extension" repositoryId="Microsoft.ProjectReunion">
-      <package id="Microsoft.ProjectReunion" version="1.0.0" />
+    <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cs">
+      <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.Windows.SDK.BuildTools" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
     <Assets>
-      <Asset Type="Microsoft.ProjectReunion.nupkg" Source="File" Path="Microsoft.ProjectReunion.1.0.0.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.Windows.SDK.BuildTools.nupkg" Source="File" Path="Microsoft.Windows.SDK.BuildTools.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>

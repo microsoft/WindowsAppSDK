@@ -13,37 +13,35 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution()
 {
     // Setup our dynamic dependencies
 
-    winrt::hstring expectedPackageFullName_ProjectReunionFramework{ TP::ProjectReunionFramework::c_PackageFullName };
+    winrt::hstring expectedPackageFullName_WindowsAppRuntimeFramework{ TP::WindowsAppRuntimeFramework::c_PackageFullName };
     winrt::hstring expectedPackageFullName_FrameworkMathAdd{ TP::FrameworkMathAdd::c_PackageFullName };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusProjectReunionFramework() };
-    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(expectedPackageFullName_ProjectReunionFramework) };
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework() };
+    auto packagePath_WindowsAppRuntimeFramework{ TP::GetPackagePath(expectedPackageFullName_WindowsAppRuntimeFramework) };
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
 
     // -- Create
 
     // Create a package dependency without verifying its resolution
     TP::RemovePackage_FrameworkMathAdd();
-    Assert::IsFalse(TP::IsPackageRegistered(Test::Packages::FrameworkMathAdd::c_PackageFullName));
+    VERIFY_IS_FALSE(TP::IsPackageRegistered(Test::Packages::FrameworkMathAdd::c_PackageFullName));
 
-    winrt::Microsoft::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions{};
+    winrt::Microsoft::Windows::ApplicationModel::DynamicDependency::CreatePackageDependencyOptions createOptions{};
     createOptions.VerifyDependencyResolution(false);
     auto packageDependency_FrameworkMathAdd{ _Create_FrameworkMathAdd(createOptions) };
-    Assert::IsFalse(!packageDependency_FrameworkMathAdd);
+    VERIFY_IS_FALSE(!packageDependency_FrameworkMathAdd);
     auto packageDependencyId_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Id() };
-    Assert::IsFalse(packageDependencyId_FrameworkMathAdd.empty());
+    VERIFY_IS_FALSE(packageDependencyId_FrameworkMathAdd.empty());
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 
     TP::AddPackage_FrameworkMathAdd();
@@ -51,13 +49,13 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
     // -- Add
 
     auto packageDependencyContext_FrameworkMathAdd{ packageDependency_FrameworkMathAdd.Add() };
-    Assert::IsFalse(!packageDependencyContext_FrameworkMathAdd);
-    Assert::AreEqual(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
+    VERIFY_IS_FALSE(!packageDependencyContext_FrameworkMathAdd);
+    VERIFY_ARE_EQUAL(std::wstring(packageDependencyContext_FrameworkMathAdd.PackageFullName()), std::wstring(expectedPackageFullName_FrameworkMathAdd));
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     auto packagePath_FrameworkMathAdd{ TP::GetPackagePath(expectedPackageFullName_FrameworkMathAdd) };
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Use it
@@ -68,15 +66,15 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
     {
         const auto lastError{ GetLastError() };
         auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, mathAddDllFilename) };
-        Assert::IsNotNull(mathAddDll.get(), message.get());
+        VERIFY_IS_NOT_NULL(mathAddDll.get(), message.get());
     }
 
     auto mathAdd{ GetProcAddressByFunctionDeclaration(mathAddDll.get(), Math_Add) };
-    Assert::IsNotNull(mathAdd);
+    VERIFY_IS_NOT_NULL(mathAdd);
 
     const int expectedValue{ 2 + 3 };
     const auto actualValue{ mathAdd(2, 3) };
-    Assert::AreEqual(expectedValue, actualValue);
+    VERIFY_ARE_EQUAL(expectedValue, actualValue);
 
     // Tear down our dynamic dependencies
 
@@ -84,17 +82,17 @@ void Test::DynamicDependency::Test_WinRT::Create_DoNotVerifyDependencyResolution
 
     packageDependencyContext_FrameworkMathAdd.Remove();
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, S_OK, expectedPackageFullName_FrameworkMathAdd);
 
     // -- Delete
 
     packageDependency_FrameworkMathAdd.Delete();
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd, HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
 }

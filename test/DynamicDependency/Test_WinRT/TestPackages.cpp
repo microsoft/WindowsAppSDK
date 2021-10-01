@@ -3,8 +3,6 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 namespace TF = ::Test::FileSystem;
 
 namespace Test::Packages
@@ -13,7 +11,7 @@ namespace Test::Packages
     {
         if (!IsPackageRegistered(packageFullName))
         {
-            AddPackageIfNecessary(packageDirName, packageFullName);
+            AddPackage(packageDirName, packageFullName);
         }
     }
 
@@ -36,7 +34,7 @@ namespace Test::Packages
             msix /= packageDirName;
             msix /= packageDirName;
             msix += L".msix";
-            Assert::IsTrue(std::filesystem::is_regular_file(msix));
+            VERIFY_IS_TRUE(std::filesystem::is_regular_file(msix));
         }
         auto msixUri = winrt::Windows::Foundation::Uri(msix.c_str());
 
@@ -47,7 +45,7 @@ namespace Test::Packages
         if (FAILED(deploymentResult.ExtendedErrorCode()))
         {
             auto message = wil::str_printf<wil::unique_process_heap_string>(L"AddPackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
-            Assert::Fail(message.get());
+            VERIFY_FAIL(message.get());
         }
     }
 
@@ -66,7 +64,7 @@ namespace Test::Packages
         if (!deploymentResult)
         {
             auto message = wil::str_printf<wil::unique_process_heap_string>(L"RemovePackageAsync('%s') = 0x%0X %s", packageFullName, deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str());
-            Assert::Fail(message.get());
+            VERIFY_FAIL(message.get());
         }
     }
 
@@ -88,9 +86,9 @@ namespace Test::Packages
             return std::wstring();
         }
 
-        Assert::AreEqual(ERROR_INSUFFICIENT_BUFFER, rc);
+        VERIFY_ARE_EQUAL(ERROR_INSUFFICIENT_BUFFER, rc);
         auto path = wil::make_process_heap_string(nullptr, pathLength);
-        Assert::AreEqual(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
+        VERIFY_ARE_EQUAL(ERROR_SUCCESS, GetPackagePathByFullName(packageFullName, &pathLength, path.get()));
         return std::wstring(path.get());
     }
 
@@ -120,12 +118,17 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManager::c_PackageFullName);
     }
 
-    void AddPackage_ProjectReunionFramework()
+    void AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1000()
     {
-        AddPackage(Test::Packages::ProjectReunionFramework::c_PackageDirName, Test::Packages::ProjectReunionFramework::c_PackageFullName);
+        AddPackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName);
     }
 
-    void RemovePackage_ProjectReunionFramework()
+    void AddPackage_DynamicDependencyLifetimeManagerGC1000()
+    {
+        AddPackage(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName);
+    }
+
+    void RemovePackage_DynamicDependencyLifetimeManagerGC1000()
     {
         // Best-effort removal. PackageManager.RemovePackage errors if the package
         // is not registered, but if it's not registered we're good. "'Tis the destination
@@ -133,7 +136,44 @@ namespace Test::Packages
         // we need do, we're happy as long as the package isn't registered when we're done
         //
         // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::ProjectReunionFramework::c_PackageFullName);
+        RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1000::c_PackageFullName);
+    }
+
+    void AddPackageIfNecessary_DynamicDependencyLifetimeManagerGC1010()
+    {
+        AddPackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
+    }
+
+    void AddPackage_DynamicDependencyLifetimeManagerGC1010()
+    {
+        AddPackage(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageDirName, Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
+    }
+
+    void RemovePackage_DynamicDependencyLifetimeManagerGC1010()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::DynamicDependencyLifetimeManagerGC1010::c_PackageFullName);
+    }
+
+    void AddPackage_WindowsAppRuntimeFramework()
+    {
+        AddPackage(Test::Packages::WindowsAppRuntimeFramework::c_PackageDirName, Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
+    }
+
+    void RemovePackage_WindowsAppRuntimeFramework()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::WindowsAppRuntimeFramework::c_PackageFullName);
     }
 
     void AddPackage_FrameworkMathAdd()
@@ -184,12 +224,12 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::DynamicDependencyDataStore::c_PackageFullName);
     }
 
-    std::filesystem::path GetProjectReunionFrameworkMsixPath()
+    std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath()
     {
-        // Determine the location of ProjectReunion's Framework's msix. See GetSolutionOutDirPath() for more details.
+        // Determine the location of Windows App SDK's Framework's msix. See GetSolutionOutDirPath() for more details.
         auto path = TF::GetSolutionOutDirPath();
-        path /= L"Microsoft.ProjectReunion.Framework";
-        path /= L"Microsoft.ProjectReunion.Framework.msix";
+        path /= L"Microsoft.WindowsAppRuntime.Framework";
+        path /= L"Microsoft.WindowsAppRuntime.Framework.msix";
         return path;
     }
 }

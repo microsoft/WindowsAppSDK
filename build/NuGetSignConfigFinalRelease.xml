@@ -1,10 +1,10 @@
 <!-- This shouldn't be used anymore but keeping it for reference -->
 <?xml version="1.0" encoding="utf-8" ?>
 <SignConfigXML>
-  <job platform="" configuration="" dest="__OUTPATHROOT__\Final" jobname="project.reunion" approvers="">
-    <file src="__INPATHROOT__\PostBuild\Final\Microsoft.ProjectReunion*.nupkg" signType="Nuget" />
+  <job platform="" configuration="" dest="__OUTPATHROOT__\Final" jobname="windowsappsdk" approvers="">
+    <file src="__INPATHROOT__\PostBuild\Final\Microsoft.WindowsAppSDK*.nupkg" signType="Nuget" />
   </job>
-  <job platform="" configuration="" dest="__OUTPATHROOT__\Final\FrameworkPackage" jobname="project.reunion" approvers="">
-    <file src="__INPATHROOT__\PostBuild\Final\FrameworkPackage\Microsoft.ProjectReunion*.nupkg" signType="Nuget" />
+  <job platform="" configuration="" dest="__OUTPATHROOT__\Final\FrameworkPackage" jobname="windowsappsdk" approvers="">
+    <file src="__INPATHROOT__\PostBuild\Final\FrameworkPackage\Microsoft.WindowsAppSDK*.nupkg" signType="Nuget" />
   </job>
 </SignConfigXML>

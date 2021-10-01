@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <DefaultName>BlankPage.xaml</DefaultName>
-    <Name>Blank Page (WinUI 3)</Name>
-    <Description>A blank page for apps based on the Windows UI Library (WinUI 3).</Description>
+    <Name ID="1005" Package="FIXME-PACKAGEGUID" />
+    <Description ID="1007" Package="FIXME-PACKAGEGUID" />
     <Icon>WinUI.Neutral.Cs.BlankPage.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <TemplateID>WinUI.Neutral.Cs.BlankPage</TemplateID>

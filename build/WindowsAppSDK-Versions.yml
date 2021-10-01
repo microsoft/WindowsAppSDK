@@ -1,0 +1,6 @@
+variables:
+  # Version Control
+  major: "1"
+  minor: "0"
+  patch: "0"
+  branch: 'main'

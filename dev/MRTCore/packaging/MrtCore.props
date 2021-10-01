@@ -1,0 +1,37 @@
+<!--
+  Copyright (c) Microsoft Corporation. Licensed under the MIT License
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_MrtCoreImageGlobs>**/*.png;**/*.bmp;**/*.jpg;**/*.dds;**/*.tif;**/*.tga;**/*.gif</_MrtCoreImageGlobs>
+  </PropertyGroup>
+
+  <!--
+    By default, add the .RESW files in the project to PRIResource and the image files in the project to Content.
+    That's needed for the strings in the .RESW files and the image files to be indexed during PRI generation.
+    The app dev can opt out a file by changing the Build Action file property to None in Visual Studio, which
+    will automatically modify the project file accordingly, or by manually modifying the CSPROJ file.
+
+    Yes, the properties used here, including EnableCoreMrtTooling, are defined in MSBuild files imported after
+    this file. This is correct though because ItemGroup definitions are evaluated in a later pass. See
+    https://docs.microsoft.com/en-us/visualstudio/msbuild/build-process-overview?view=vs-2019#evaluation-phase.
+
+    The implementation here is NOT exactly the same as the .NET SDK's implementation for default file inclusion
+    (https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview#default-includes-and-excludes). Specifically,
+    we don't remove the .RESW and image files from None here because None is populated in
+    Microsoft.NET.Sdk.DefaultItems.props, which is evaluated after this file. Removing them in a NuGet targets file,
+    which is evaluated after all props files and the project file, would have to be done as follows in order to respect
+    the app dev's potential opt-outs: <None Remove="@(Content)" /> and <None Remove="@(PRIResource)" />. That doesn't work
+    though due to a VS CPS bug: when an app dev changes the Build Action from PRIResource to None, an error message box
+    is displayed saying None is invalid because "the path is explicitly excluded from the project", referring to the
+    removal in the targets file. The change though removes the file from PRIResource (logic to do that is added to the
+    project file), so this error is invalid. Leaving the .RESW and image files in None doesn't confuse the VS UI though,
+    and the scenarios work, so this seems acceptable.
+  -->
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)'=='.NETCoreApp' and '$(EnableDefaultItems)'=='true' and '$(EnableCoreMrtTooling)'=='true'">
+    <Content Include="$(_MrtCoreImageGlobs)" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultContentItems)'!='false'" />
+    <PRIResource Include="**/*.resw" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition="'$(EnableDefaultPRIResourceItems)'!='false'"/>
+  </ItemGroup>
+
+</Project>

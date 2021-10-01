@@ -6,8 +6,6 @@
 namespace TF = ::Test::FileSystem;
 namespace TP = ::Test::Packages;
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 inline DWORD WIN32_FROM_HRESULT(const HRESULT hr)
 {
     return HRESULT_FACILITY(hr) == FACILITY_WIN32 ? HRESULT_CODE(hr) : hr;
@@ -15,37 +13,41 @@ inline DWORD WIN32_FROM_HRESULT(const HRESULT hr)
 
 namespace Test::DynamicDependency
 {
-    TEST_CLASS(GetCurrentPackageInfoTests)
+    class GetCurrentPackageInfoTests
     {
     public:
+        BEGIN_TEST_CLASS(GetCurrentPackageInfoTests)
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
 
-        TEST_CLASS_INITIALIZE(Setup)
+        TEST_CLASS_SETUP(Setup)
         {
-            // CppUnitTest initializes COM as STA before we get called
-            // But we don't need (or want) STA, and we do want MTA. We can't
-            // stop CppUnitTest from initializing COM but we can uninitialize
-            // it and (re)initialize it as MTA. Don't think of it as crude
-            // and brutish but rather 'thinking outside the box'...
-            COM::CoSuperInitialize();
-
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_DynamicDependencyDataStore();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();
-            TP::AddPackage_ProjectReunionFramework();
+            TP::AddPackage_WindowsAppRuntimeFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             // Load the DLL hooking GetCurrentPackageInfo*()
-            auto dllAbsoluteFilename{ TF::GetProjectReunionDllAbsoluteFilename() };
+            auto dllAbsoluteFilename{ TF::GetWindowsAppRuntimeDllAbsoluteFilename() };
             wil::unique_hmodule dll(LoadLibrary(dllAbsoluteFilename.c_str()));
             if (!dll)
             {
                 const auto lastError{ GetLastError() };
                 auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, dllAbsoluteFilename.c_str()) };
-                Assert::IsNotNull(dll.get(), message.get());
+                VERIFY_IS_NOT_NULL(dll.get(), message.get());
             }
 
             m_dll = std::move(dll);
+
+            return true;
         }
 
         TEST_CLASS_CLEANUP(Cleanup)
@@ -53,13 +55,10 @@ namespace Test::DynamicDependency
             m_dll.reset();
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
             TP::RemovePackage_FrameworkMathAdd();
 
-            // Undo COM::CoSuperInitialize() and restore the thread to its initial state
-            // as when CppUnitTest  called us. Or as close as we can get to it
-            winrt::uninit_apartment();
-            winrt::init_apartment(winrt::apartment_type::single_threaded);
+            return true;
         }
 
         TEST_METHOD(Unpackaged_PackageGraph0)
@@ -102,20 +101,20 @@ namespace Test::DynamicDependency
         TEST_METHOD(Unpackaged_PackageGraph1)
         {
             // -- TryCreate
-            PACKAGE_VERSION minVersion{};
+            const PACKAGE_VERSION minVersion{};
             const MddPackageDependencyProcessorArchitectures architectures{};
             const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
             PCWSTR lifetimeArtifact{};
             const MddCreatePackageDependencyOptions createOptions{};
             wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd;
-            Assert::AreEqual(S_OK, MddTryCreatePackageDependency(nullptr, TP::FrameworkMathAdd::c_PackageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId_FrameworkMathAdd));
+            VERIFY_ARE_EQUAL(S_OK, MddTryCreatePackageDependency(nullptr, TP::FrameworkMathAdd::c_PackageFamilyName, minVersion, architectures, lifetimeKind, lifetimeArtifact, createOptions, &packageDependencyId_FrameworkMathAdd));
 
             // -- Add
             const auto rank{ MDD_PACKAGE_DEPENDENCY_RANK_DEFAULT };
             const MddAddPackageDependencyOptions addOptions{};
             MDD_PACKAGEDEPENDENCY_CONTEXT packageDependencyContext_FrameworkMathAdd{};
             wil::unique_process_heap_string packageFullName_FrameworkMathAdd;
-            Assert::AreEqual(S_OK, MddAddPackageDependency(packageDependencyId_FrameworkMathAdd.get(), rank, addOptions, &packageDependencyContext_FrameworkMathAdd, &packageFullName_FrameworkMathAdd));
+            VERIFY_ARE_EQUAL(S_OK, MddAddPackageDependency(packageDependencyId_FrameworkMathAdd.get(), rank, addOptions, &packageDependencyContext_FrameworkMathAdd, &packageFullName_FrameworkMathAdd));
 
             // Verify GetCurrentPackageInfo*()
             PrintGetCurrentPackageInfoHeader();
@@ -171,9 +170,9 @@ namespace Test::DynamicDependency
             UINT32 count{};
             const auto rc{ GetCurrentPackageInfo(flags, &bufferSize, nullptr, &count) };
             PrintGetCurrentPackageInfoN(L"GetCurrentPackageInfo ", flags, rc, bufferSize, count, expectedRC, minExpectedBufferSize, expectedCount);
-            Assert::AreEqual(expectedRC, rc);
-            Assert::IsTrue(minExpectedBufferSize <= bufferSize);
-            Assert::AreEqual(expectedCount, count);
+            VERIFY_ARE_EQUAL(expectedRC, rc);
+            VERIFY_IS_TRUE(minExpectedBufferSize <= bufferSize);
+            VERIFY_ARE_EQUAL(expectedCount, count);
         }
 
         void VerifyGetCurrentPackageInfo2(
@@ -188,9 +187,9 @@ namespace Test::DynamicDependency
             UINT32 count{};
             const auto rc{ GetCurrentPackageInfo2(flags, packagePathType, &bufferSize, nullptr, &count) };
             PrintGetCurrentPackageInfoN(L"GetCurrentPackageInfo2", flags, rc, bufferSize, count, expectedRC, minExpectedBufferSize, expectedCount);
-            Assert::AreEqual(expectedRC, rc);
-            Assert::IsTrue(minExpectedBufferSize <= bufferSize);
-            Assert::AreEqual(expectedCount, count);
+            VERIFY_ARE_EQUAL(expectedRC, rc);
+            VERIFY_IS_TRUE(minExpectedBufferSize <= bufferSize);
+            VERIFY_ARE_EQUAL(expectedCount, count);
         }
 
         void VerifyGetCurrentPackageInfo3(
@@ -209,9 +208,9 @@ namespace Test::DynamicDependency
             UINT32 count{};
             const auto hr{ m_getCurrentPackageInfo3(flags, packageInfoType, &bufferSize, nullptr, &count) };
             PrintGetCurrentPackageInfoN(L"GetCurrentPackageInfo3", flags, hr, bufferSize, count, expectedHR, minExpectedBufferSize, expectedCount);
-            Assert::AreEqual(expectedHR, hr);
-            Assert::IsTrue(minExpectedBufferSize <= bufferSize);
-            Assert::AreEqual(expectedCount, count);
+            VERIFY_ARE_EQUAL(expectedHR, hr);
+            VERIFY_IS_TRUE(minExpectedBufferSize <= bufferSize);
+            VERIFY_ARE_EQUAL(expectedCount, count);
         }
 
         void VerifyGetCurrentPackageInfo123(
@@ -243,16 +242,19 @@ namespace Test::DynamicDependency
             auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Get...GenerationId: hr:0x%X id:%u\n"
                                                                            L"          Expected: hr:0x%X id:%u",
                                                                            hr, generationId, expectedHR, expectedGenerationId) };
-            Assert::IsTrue(true, message.get());
+            VERIFY_IS_TRUE(true, message.get());
             OutputDebugStringW(message.get());
-            Assert::AreEqual(expectedHR, hr);
-            Assert::AreEqual(expectedGenerationId, generationId);
+            VERIFY_ARE_EQUAL(expectedHR, hr);
+            VERIFY_ARE_EQUAL(expectedGenerationId, generationId);
+
+            const auto actualGenerationId{ MddGetGenerationId() };
+            VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
         }
 
         void PrintGetCurrentPackageInfoHeader()
         {
             auto message{ wil::str_printf<wil::unique_process_heap_string>(L"%-10s %5s %7s %s\n", L"ErrorCode", L"Count", L"BufSize", L"Function") };
-            Assert::IsTrue(true, message.get());
+            VERIFY_IS_TRUE(true, message.get());
             OutputDebugStringW(message.get());
         }
 
@@ -323,7 +325,7 @@ namespace Test::DynamicDependency
                 }
             }
             message += L"\n";
-            Assert::IsTrue(true, message.c_str());
+            VERIFY_IS_TRUE(true, message.c_str());
             OutputDebugStringW(message.c_str());
         }
 

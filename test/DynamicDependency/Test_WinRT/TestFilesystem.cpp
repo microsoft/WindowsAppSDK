@@ -3,8 +3,6 @@
 
 #include "pch.h"
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 namespace Test::FileSystem
 {
     std::filesystem::path GetModulePath(HMODULE hmodule)
@@ -24,7 +22,7 @@ namespace Test::FileSystem
     {
         wil::unique_hmodule dll(LoadLibrary(L"DynamicDependency_Test_WinRT.dll"));
         const auto lastError{ GetLastError() };
-        Assert::IsNotNull(dll.get());
+        VERIFY_IS_NOT_NULL(dll.get());
         return GetModulePath(dll.get());
     }
 
@@ -47,8 +45,8 @@ namespace Test::FileSystem
         //        DynamicDependency_Test_WinRT.dll      <== This test .dll
         //    \<project>.Msix
         //        <project>.Msix
-        //    \ProjectReunion_BootstrapDLL
-        //        Microsoft.ProjectReunion.Bootstrap.dll
+        //    \WindowsAppRuntime_BootstrapDLL
+        //        Microsoft.WindowsAppRuntime.Bootstrap.dll
 
         // Find the test dll's directory
         auto testPath = GetTestAbsoluteFilename();
@@ -62,17 +60,17 @@ namespace Test::FileSystem
     {
         // Determine the location of the bootstrap dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"ProjectReunion_BootstrapDLL";
-        path /= L"Microsoft.ProjectReunion.Bootstrap.dll";
+        path /= L"WindowsAppRuntime_BootstrapDLL";
+        path /= L"Microsoft.WindowsAppRuntime.Bootstrap.dll";
         return path;
     }
 
-    std::filesystem::path GetProjectReunionDllAbsoluteFilename()
+    std::filesystem::path GetWindowsAppRuntimeDllAbsoluteFilename()
     {
         // Determine the location of the dll. See GetSolutionOutDirPath() for more details.
         auto path = GetSolutionOutDirPath();
-        path /= L"ProjectReunion_DLL";
-        path /= L"Microsoft.ProjectReunion.dll";
+        path /= L"WindowsAppRuntime_DLL";
+        path /= L"Microsoft.WindowsAppRuntime.dll";
         return path;
     }
 }

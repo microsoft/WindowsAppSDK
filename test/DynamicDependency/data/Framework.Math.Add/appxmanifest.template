@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="ProjectReunion.Test.DynDep.Fwk.Math.Add"
+    Name="WindowsAppRuntime.Test.DynDep.Fwk.Math.Add"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.2.3.4" />
 
   <Properties>
     <Framework>true</Framework>
-    <DisplayName>ProjectReunion.Test.DynDep.Fwk.Math.Add</DisplayName>
-    <PublisherDisplayName>Project Reunion</PublisherDisplayName>
+    <DisplayName>WindowsAppRuntime.Test.DynDep.Fwk.Math.Add</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
   </Properties>
 

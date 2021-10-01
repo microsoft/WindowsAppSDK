@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#!include <ProjectReunion.Tools.MakeMsix.mak>
+#!include <WindowsAppSDK.Tools.MakeMsix.mak>
 
 MAKEAPPX_OPTS=
 !IFDEF VERBOSE
@@ -14,10 +14,11 @@ SIGNTOOL_OPTS=/v
 !ENDIF
 
 !IFDEF VERBOSE
-!MESSAGE SolutionDir       =$(SolutionDir)
-!MESSAGE ProjectDir        =$(ProjectDir)
-!MESSAGE OutDir            =$(OutDir)
-!MESSAGE TargetName        =$(TargetName)
+!MESSAGE SolutionDir                =$(SolutionDir)
+!MESSAGE ProjectDir                 =$(ProjectDir)
+!MESSAGE OutDir                     =$(OutDir)
+!MESSAGE TargetName                 =$(TargetName)
+!MESSAGE WindowsAppSdkBuildPipeline =$(WindowsAppSdkBuildPipeline)
 !ENDIF
 
 !IF "$(Platform)" == "Win32" || "$(Platform)" == "x86" || "$(Platform)" == "X86"

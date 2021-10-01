@@ -1,0 +1,167 @@
+parameters:
+  AssetName: ''
+  AssetVersion: ''
+  TriggerSubscription: false
+
+steps:
+  - task: PowerShell@2
+    displayName: Check prerequisites
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host "Pipeline Variable 'MaestroToken' and 'MaestroUri' must have a value"
+        Write-Host "##vso[task.complete result=Failed;]DONE"
+    condition: or(eq(variables['MaestroUri'], ''), eq(variables['MaestroToken'], ''))
+
+  - task: PowerShell@2
+    displayName: Build JsonBody 
+    inputs:
+      targetType: 'inline'
+      script: |
+        . .\eng\common\MaestroHelpers.ps1
+        
+        $jsonBase = @{}
+
+        $assetList = New-Object System.Collections.ArrayList
+        $assetList.Add(
+          @{
+            "name"="${{ parameters.AssetName }}";
+            "version"="${{ parameters.AssetVersion }}";
+            "nonShipping"=$false;
+            "locations"=$null
+          }
+        )
+
+        # These fields below are unused but can be enabled in the future
+        # $locationList = New-Object System.Collections.ArrayList
+        # $locationList.Add(@{"location"="maestroTestValue";"type"="none"})
+
+        # $dependenciesList = New-Object System.Collections.ArrayList
+        # $dependenciesList.Add(
+        #   @{
+        #     "buildId"=0;
+        #     "isProduct"=$true;
+        #     "timeToInclusionInMinutes"=0;
+        #   }
+        # )
+
+        # $incoherenciesList = New-Object System.Collections.ArrayList
+        # $incoherenciesList.Add(
+        #   @{
+        #     "name"="maestroTestValue";
+        #     "version"="maestroTestValue";
+        #     "repository"="maestroTestValue";
+        #     "commit"="maestroTestValue";
+        #   }
+        # )
+
+        Write-Host "collectionuri: $(System.CollectionUri)"
+        $devOpsAccount = ExtractOrgFromAzureDevOpsCollectionUri '$(System.CollectionUri)'
+        Write-Host "reposiitory: $(Build.Repository.Uri)"
+        Write-Host "account: " $devOpsAccount
+
+        $gitHubRepo = "$(Build.Repository.Uri)"
+        $azureDevOpsRepo = "$(Build.Repository.Uri)"
+
+        $jsonBase = 
+          @{
+            "commit"="$(Build.SourceVersion)";
+            "assets"=$assetList;
+            "dependencies"=$null;
+            "azureDevOpsBuildId"=$(Build.BuildId);
+            "azureDevOpsBuildDefinitionId"=$(System.DefinitionId);
+            "azureDevOpsAccount"=$devOpsAccount;
+            "azureDevOpsProject"="$(System.TeamProject)";
+            "azureDevOpsBuildNumber"="$(Build.BuildNumber)";
+            "azureDevOpsRepository"=$azureDevOpsRepo;
+            "azureDevOpsBranch"="$(Build.SourceBranch)";
+            "gitHubRepository"=$gitHubRepo;
+            "gitHubBranch"="$(Build.SourceBranch)";
+            "released"=$true;
+            "stable"=$true
+            "incoherencies"=$null;
+          }
+
+        $jsonBase | ConvertTo-Json -Depth 10 | Out-File '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+        $body = Get-Content -Raw -Path '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+        Write-host $body
+
+  - task: powershell@2
+    displayName: 'Post build to Maestro'
+    inputs:
+      targetType: filePath
+      filePath: eng\common\MaestroPostRequest.ps1
+      arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
+ 
+  - ${{ if eq(parameters.TriggerSubscription, 'true') }}:
+    - task: powershell@2
+      displayName: 'Publish Build to Default Channel'
+      inputs:
+        targetType: 'inline'
+        script: |
+          . .\eng\common\MaestroHelpers.ps1
+
+          $repository = '$(Build.Repository.Uri)'
+          if (!(IsGitHubRepo($repository)))
+          {
+            # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
+            # But Build.Repository.Uri returns https://microsoft.visualstudio.com/xx/_git/xx
+            # So we convert it into the right form here
+            $repository = ConvertToMaestroFriendlyUri $repository
+          }
+
+          # Get the id of the default channel of this branch
+          $api = "/api/default-channels"
+          $queryParam = "&repository=" + $repository + "&branch=$(Build.SourceBranch)"
+          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
+          $jsonObj = ConvertFrom-Json $response.Content
+          $channelId = $jsonObj.channel.id
+          if ([string]::IsNullOrEmpty($channelId))
+          {
+            Write-Host "Error: Default channel not found. Please use darc add-default-channel to add a default channel for this repo and branch"
+            Write-Host "##vso[task.complete result=SucceededWithIssues;]DONE"
+          }
+          else
+          {
+            # Get the id of the build posted earlier
+            $api = "/api/builds"
+            $queryParam = "&repository=" + $repository + "&commit=$(Build.SourceVersion)"
+            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
+            $jsonObj = ConvertFrom-Json $response.Content
+            $buildId = $jsonObj.id
+            if ([string]::IsNullOrEmpty($buildId))
+            {
+              Write-Host "Error: build not found in Maestro"
+              Write-Host "##vso[task.complete result=Failed;]DONE"
+            }
+
+            # AddBuildToChannel with the corresponding build id and channel id
+            $api = "/api/channels/" + $channelId + "/builds/" + $buildId
+            # buildId may return a space separated numbers if there are more than one build for the same commit
+            $api =  $api.Split(" ")[0] 
+            $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
+
+            # Get the list of subscriptions on the channel
+            $api = "/api/subscriptions"
+            $queryParams = "&channelId=" + $channelId
+            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParams
+            $jsonObj = ConvertFrom-Json $response.Content
+            foreach ($sub in $jsonObj)
+            {
+              if ($sub.sourceRepository -eq $repository)
+              {
+                # Trigger the subscription
+                $id = $sub.id
+                $updateFrequency = $sub.policy.updateFrequency
+                Write-Host "updateFrequency " $updateFrequency
+                if ($updateFrequency -eq 'everyBuild')
+                {
+                  Write-Host "Triggering subscription on " $id
+                  # bar-build-id is always 0
+                  $api = "/api/subscriptions/" + $id + "/trigger"
+                  $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+                }
+              }
+            }
+          }
+

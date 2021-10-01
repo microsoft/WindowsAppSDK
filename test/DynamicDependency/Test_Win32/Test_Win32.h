@@ -5,10 +5,16 @@
 
 namespace Test::DynamicDependency
 {
-	TEST_CLASS(Test_Win32)
+	class Test_Win32
 	{
 	public:
-        TEST_CLASS_INITIALIZE(Setup);
+        BEGIN_TEST_CLASS(Test_Win32)
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup);
         TEST_CLASS_CLEANUP(Cleanup);
 
         TEST_METHOD(Create_Delete);
@@ -16,10 +22,10 @@ namespace Test::DynamicDependency
         TEST_METHOD(Delete_Null);
         TEST_METHOD(Delete_NotFound);
 
-        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_ProjectReunion);
-        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_ProjectReunion_MathAdd);
-        TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_ProjectReunion_MathAdd);
-        TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_ProjectReunion_MathAdd);
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime);
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_WindowsAppRuntime_MathAdd);
+        TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd);
+        TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_WindowsAppRuntime_MathAdd);
 
         TEST_METHOD(Add_Rank_A0_B10);
         TEST_METHOD(Add_Rank_B0prepend_A0);
@@ -111,7 +117,7 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr,
             MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
-        wil::unique_process_heap_string Mdd_TryCreate_ProjectReunionFramework(
+        wil::unique_process_heap_string Mdd_TryCreate_WindowsAppRuntimeFramework(
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
             PCWSTR lifetimeArtifact = nullptr);
 
@@ -192,10 +198,14 @@ namespace Test::DynamicDependency
         static std::wstring GetPathEnvironmentVariableMinusPathPrefix(
             const std::wstring& pathPrefix);
 
-        static std::wstring GetPathEnvironmentVariableMinusProjectReunionFramework();
+        static std::wstring GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework();
 
     private:
         static MddPackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
+
+    private:
+        static void VerifyGenerationId(
+            const UINT32 expectedGenerationId);
 
     private:
         static wil::unique_hmodule m_bootstrapDll;
