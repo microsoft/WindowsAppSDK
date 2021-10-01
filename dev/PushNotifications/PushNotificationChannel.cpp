@@ -188,7 +188,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     HRESULT __stdcall PushNotificationChannel::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept try
     {
-        BOOL foregroundHandled = false;
+        BOOL foregroundHandled = true;
         THROW_IF_FAILED(InvokeAll(payloadLength, payload, &foregroundHandled));
 
         if (!foregroundHandled)
