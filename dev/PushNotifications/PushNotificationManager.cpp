@@ -71,9 +71,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
+        wil::winrt_module_reference moduleRef{};
         try
         {
-            wil::winrt_module_reference moduleRef{};
             THROW_HR_IF(E_INVALIDARG, (remoteId == winrt::guid()));
 
             // API supports channel requests only for packaged applications for v0.8 version
@@ -149,13 +149,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError = wil::ResultFromCaughtException();
-            PushNotificationTelemetry::ChannelRequestedByApi(
-                hrError,
-                AppModel::Identity::IsPackagedProcess(),
-                remoteId);
-
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), AppModel::Identity::IsPackagedProcess(), remoteId);
+            throw;
         }
     }
 
@@ -264,20 +259,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
 
             scopeExitToCleanRegistrations.release();
-
             auto lock{ s_activatorInfoLock.lock_exclusive() };
             s_pushTriggerRegistration = registeredTaskFromBuilder;
-
             PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
 
         catch(...)
         {
-            HRESULT hrError{ wil::ResultFromCaughtException() };
-            PushNotificationTelemetry::ActivatorRegisteredByApi(hrError, 
-                details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
-
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
+                details ? details.Activators() : PushNotificationRegistrationActivators::Undefined);
+            throw;
         }
     }
 
@@ -304,9 +295,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            HRESULT hrError{ wil::ResultFromCaughtException() };
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, activators);
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(), activators);
+            throw;
         }
 
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, activators);
@@ -329,9 +319,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch(...)
         {
-            HRESULT hrError{ wil::ResultFromCaughtException() };
-            PushNotificationTelemetry::ActivatorUnregisteredByApi(hrError, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-            THROW_HR(hrError);
+            PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(), PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            throw;
         }
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
     }
