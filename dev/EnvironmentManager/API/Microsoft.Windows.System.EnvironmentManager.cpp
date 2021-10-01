@@ -730,11 +730,11 @@ namespace winrt::Microsoft::Windows::System::implementation
         wil::unique_hkey environmentVariablesHKey{};
         if (m_Scope == Scope::User)
         {
-            THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof()));
+            THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_CURRENT_USER, c_UserEvRegLocation, 0, registrySecurity | KEY_WOW64_64KEY, environmentVariablesHKey.addressof()));
         }
         else //Scope is Machine
         {
-            THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, registrySecurity, environmentVariablesHKey.addressof()));
+            THROW_IF_WIN32_ERROR(RegOpenKeyEx(HKEY_LOCAL_MACHINE, c_MachineEvRegLocation, 0, registrySecurity | KEY_WOW64_64KEY, environmentVariablesHKey.addressof()));
         }
 
         return environmentVariablesHKey;
