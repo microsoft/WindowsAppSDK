@@ -225,6 +225,8 @@ namespace winrt::Microsoft::Windows::System::implementation
             newPath += L';';
         }
 
+        newPath += L'\0';
+
         auto setPath = [&, newPath, this]()
         {
             if (m_Scope == Scope::Process)
