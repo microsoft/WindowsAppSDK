@@ -6,7 +6,6 @@
 #include "DataStore.h"
 
 #include "DynamicDependencyDataStore_h.h"
-#include "utf8.h"
 #include "winrt_msixdynamicdepednency.h"
 
 #include <wil/winrt.h>

@@ -30,7 +30,7 @@ NuGet package version:
 <!-- Example: [Microsoft.WindowsAppSDK 0.1.0-prerelease2] -->
 
 <!-- Which Windows versions did you see the issue on? Leave blank if you didn't try that version. -->
-| Windows 10 version                  | Saw the problem? |
+| Windows version                    | Saw the problem? |
 | :--------------------------------- | :-------------------- |
 | Insider Build (xxxxx)              | <!-- Yes/No? -->   |
 | May 2020 Update (19041)            | <!-- Yes/No? -->   |

@@ -27,41 +27,37 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
     {
-        auto argsStart = commandLine.rfind(c_argumentPrefix);
-        if (argsStart == std::wstring::npos)
-        {
-            return { L"", L"" };
-        }
+        int argc{};
+        wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
-        // Push past the '----' commandline argument prefix.
-        argsStart += 4;
-
-        auto argsEnd = commandLine.find_first_of(L' ', argsStart);
-
-        // Separate the argument from any behind it on the command-line.
-        std::wstring argument;
-        if (argsEnd == std::wstring::npos)
+        // Search for ----ms-protocol:
+        for (int index = 0; index < argc; index++)
         {
-            argument = commandLine.substr(argsStart);
-        }
-        else
-        {
-            if (argsStart > argsEnd)
+            std::wstring_view fullArgument = argv[index];
+            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, c_protocolArgumentString, c_argumentSuffix);
+
+            auto argStart = fullArgument.find(protocolQualifier);
+            if (argStart == std::wstring::npos)
             {
-                throw std::invalid_argument("commandLine");
+                continue;
             }
 
-            argument = commandLine.substr(argsStart, (argsEnd - argsStart));
+            // Push past the '----' commandline argument prefix.
+            argStart += 4;
+
+            std::wstring argument{ fullArgument.substr(argStart) };
+
+            // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
+            auto argsDelim = argument.find_first_of(L':');
+            if (argsDelim == std::wstring::npos)
+            {
+                return { argument, L"" };
+            }
+
+            return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
         }
 
-        // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-        auto argsDelim = argument.find_first_of(L':');
-        if (argsDelim == std::wstring::npos)
-        {
-            return { argument, L"" };
-        }
-
-        return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
+        return { L"", L"" };
     }
 
     std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)

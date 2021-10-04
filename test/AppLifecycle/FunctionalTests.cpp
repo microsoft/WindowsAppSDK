@@ -216,7 +216,7 @@ namespace Test::AppLifecycle
             }
             THROW_IF_WIN32_ERROR(result);
 
-            auto argsStart = command.rfind(L"----");
+            auto argsStart = command.rfind(L"\"----");
             auto exe = command.substr(0, argsStart);
             auto params = command.substr(argsStart);
             Execute(exe, params, g_deploymentDir);

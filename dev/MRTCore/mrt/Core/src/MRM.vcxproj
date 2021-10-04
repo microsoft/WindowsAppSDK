@@ -8,9 +8,6 @@
   <PropertyGroup Label="DevEnvironmentScenario">
     <ConsumeWinRT>false</ConsumeWinRT>
     <UseModernCompliantVclibs>true</UseModernCompliantVclibs>
-    <UseStl>true</UseStl>
-    <StlVersion>StlVerCurrent</StlVersion>
-    <UseUnicrt>true</UseUnicrt>
     <ImpLibAdditionalOptions>/IGNORE:4221 $(ImpLibAdditionalOptions)</ImpLibAdditionalOptions>
     <ExcludeWin32Libs>true</ExcludeWin32Libs>
   </PropertyGroup>
