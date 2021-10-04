@@ -203,7 +203,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         {
             THROW_HR(E_INVALIDARG);
         }
-
+        __debugbreak();
         if (!IsSupported())
         {
             return;
