@@ -1196,15 +1196,16 @@
     </PropertyGroup>
 
     <MSBuild
-      Projects="@(ProjectReferenceWithConfiguration)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
       Targets="GetMrtPackagingOutputs"
       BuildInParallel="$(BuildInParallel)"
-      Properties="%(ProjectReferenceWithConfiguration.SetConfiguration); %(ProjectReferenceWithConfiguration.SetPlatform)"
-      Condition="'@(ProjectReferenceWithConfiguration)' != ''
-                 and '%(ProjectReferenceWithConfiguration.BuildReference)' == 'true'
-                 and '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == 'true'"
+      Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform); %(_MSBuildProjectReferenceExistent.SetTargetFramework)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''
+                 and '%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true'
+                 and '%(_MSBuildProjectReferenceExistent.ReferenceOutputAssembly)' == 'true'"
       SkipNonexistentTargets="true"
-      ContinueOnError="$(_ContinueOnError)">
+      ContinueOnError="!$(BuildingProject)"
+      RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
       <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherMrtCoreProjects"/>
     </MSBuild>
 
@@ -1212,16 +1213,17 @@
          project is of type UWP, it'll have GetPackagingOutputs defined. So, try calling GetPackagingOutputs. If it does not exist,
          we simply no-op - see the SkipNonexistentTargets parameter below. -->
     <MSBuild
-      Projects="@(ProjectReferenceWithConfiguration)"
+      Projects="@(_MSBuildProjectReferenceExistent)"
       Targets="GetPackagingOutputs"
       BuildInParallel="$(BuildInParallel)"
-      Properties="%(ProjectReferenceWithConfiguration.SetConfiguration); %(ProjectReferenceWithConfiguration.SetPlatform)"
-      Condition="'@(ProjectReferenceWithConfiguration)' != ''
-                 and '%(ProjectReferenceWithConfiguration.BuildReference)' == 'true'
-                 and '%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == 'true'"
+      Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration); %(_MSBuildProjectReferenceExistent.SetPlatform); %(_MSBuildProjectReferenceExistent.SetTargetFramework)"
+      Condition="'@(_MSBuildProjectReferenceExistent)' != ''
+                 and '%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true'
+                 and '%(_MSBuildProjectReferenceExistent.ReferenceOutputAssembly)' == 'true'"
       SkipNonexistentTargets="true"
-      ContinueOnError="$(_ContinueOnError)">
-      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherUwpProjects"/>
+      ContinueOnError="!$(BuildingProject)"
+      RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
+      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherProjects"/>
     </MSBuild>
 
     <ItemGroup>
