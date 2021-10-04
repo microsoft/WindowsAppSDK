@@ -1204,7 +1204,7 @@
                  and '%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true'
                  and '%(_MSBuildProjectReferenceExistent.ReferenceOutputAssembly)' == 'true'"
       SkipNonexistentTargets="true"
-      ContinueOnError="!$(BuildingProject)"
+      ContinueOnError="$(_ContinueOnError)"
       RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
       <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherMrtCoreProjects"/>
     </MSBuild>
@@ -1221,7 +1221,7 @@
                  and '%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true'
                  and '%(_MSBuildProjectReferenceExistent.ReferenceOutputAssembly)' == 'true'"
       SkipNonexistentTargets="true"
-      ContinueOnError="!$(BuildingProject)"
+      ContinueOnError="$(_ContinueOnError)"
       RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
       <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherUwpProjects"/>
     </MSBuild>
