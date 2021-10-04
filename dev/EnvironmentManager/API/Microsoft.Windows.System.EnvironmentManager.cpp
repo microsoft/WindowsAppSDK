@@ -196,6 +196,8 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
+        __debugbreak();
+        //MessageBoxEx(NULL, L"In AppendToPath", L"In AppendToPath", 0, 0);
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AppendToPath");
         if (path.empty() ||
             std::wstring_view(path)._Starts_with(L"0x00") ||
@@ -203,6 +205,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         {
             THROW_HR(E_INVALIDARG);
         }
+
         __debugbreak();
         if (!IsSupported())
         {
