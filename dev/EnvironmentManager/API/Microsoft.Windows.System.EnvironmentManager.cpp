@@ -69,6 +69,11 @@ namespace winrt::Microsoft::Windows::System::implementation
         return s_IsSupported;
     }
 
+    void EnvironmentManager::Hello()
+    {
+
+    }
+
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariables");
