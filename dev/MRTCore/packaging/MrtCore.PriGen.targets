@@ -1223,7 +1223,7 @@
       SkipNonexistentTargets="true"
       ContinueOnError="!$(BuildingProject)"
       RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
-      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherProjects"/>
+      <Output TaskParameter="TargetOutputs" ItemName="_PackagingOutputsFromOtherUwpProjects"/>
     </MSBuild>
 
     <ItemGroup>
