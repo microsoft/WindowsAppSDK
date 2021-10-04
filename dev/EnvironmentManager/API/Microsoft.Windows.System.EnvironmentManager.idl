@@ -14,7 +14,6 @@ namespace Microsoft.Windows.System
         IMapView<String, String> GetEnvironmentVariables();
         String GetEnvironmentVariable(String name);
         void SetEnvironmentVariable(String name, String value);
-        void Hello();
 
         // Path manipulation
         void AppendToPath(String path);

@@ -27,7 +27,6 @@ namespace winrt::Microsoft::Windows::System::implementation
         void RemoveFromPath(hstring const& path);
         void AddExecutableFileExtension(hstring const& pathExt);
         void RemoveExecutableFileExtension(hstring const& pathExt);
-        void Hello();
 
     private:
         Scope m_Scope{};

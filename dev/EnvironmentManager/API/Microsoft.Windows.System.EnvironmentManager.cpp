@@ -69,11 +69,6 @@ namespace winrt::Microsoft::Windows::System::implementation
         return s_IsSupported;
     }
 
-    void EnvironmentManager::Hello()
-    {
-
-    }
-
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariables");
@@ -211,7 +206,6 @@ namespace winrt::Microsoft::Windows::System::implementation
             THROW_HR(E_INVALIDARG);
         }
 
-        __debugbreak();
         if (!IsSupported())
         {
             return;
@@ -236,7 +230,9 @@ namespace winrt::Microsoft::Windows::System::implementation
             existingPath.append(L";");
         }
 
-        std::wstring newPath{ existingPath.append(path) };
+        std::wstring newPath{ existingPath };
+
+        newPath.append(path);
 
         if (newPath.back() != L';')
         {
@@ -261,7 +257,7 @@ namespace winrt::Microsoft::Windows::System::implementation
                     , 0
                     , REG_EXPAND_SZ
                     , reinterpret_cast<const BYTE*>(newPath.c_str())
-                    , static_cast<DWORD>((newPath.size() + 1) * sizeof(wchar_t))));
+                    , static_cast<DWORD>((newPath.size()) * sizeof(wchar_t))));
 
                 LRESULT broadcastResult{ SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE,
                     reinterpret_cast<WPARAM>(nullptr), reinterpret_cast<LPARAM>(L"Environment"),

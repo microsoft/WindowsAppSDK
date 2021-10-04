@@ -347,6 +347,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
     void EnvironmentManagerWin32Tests::TestAppendToPathExtForUser()
     {
+        MessageBoxEx(NULL, L"In here", L"In here", 0, 0);
         // Keep a local string to match all operations to PATH
         std::wstring pathToManipulate{ GetEnvironmentVariableForUser(c_PathExtName) };
 
@@ -358,7 +359,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
             return;
         }
 
-        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(c_EvValueName));
+        VERIFY_NO_THROW(environmentManager.AddExecutableFileExtension(L".XYZ"));
 
         // Current path should have the semi-colon
         std::wstring currentPath{ GetEnvironmentVariableForUser(c_PathExtName) };
