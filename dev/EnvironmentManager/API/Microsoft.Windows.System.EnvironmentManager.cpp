@@ -218,6 +218,16 @@ namespace winrt::Microsoft::Windows::System::implementation
             return;
         }
 
+        if (existingPath.back() == L'\0')
+        {
+            existingPath.pop_back();
+        }
+
+        if (existingPath.back() != L';')
+        {
+            existingPath.append(L";");
+        }
+
         std::wstring newPath{ existingPath.append(path) };
 
         if (newPath.back() != L';')
