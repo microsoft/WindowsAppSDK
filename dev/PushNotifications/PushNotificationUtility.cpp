@@ -4,6 +4,18 @@
 #include "externs.h"
 #include "PushNotificationUtility.h"
 
+wil::unique_cotaskmem_string GetAppUserModelId()
+{
+    wchar_t appId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
+    UINT32 appIdSize{ ARRAYSIZE(appId) };
+
+    const HRESULT hr = ::GetCurrentApplicationUserModelId(&appIdSize, appId);
+    
+    THROW_HR_IF(hr, hr != HRESULT_FROM_WIN32(ERROR_SUCCESS));
+
+    return wil::make_unique_string<wil::unique_cotaskmem_string>(appId);
+}
+
 std::wstring Utf8BytesToWideString(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload)
 {
     int size = MultiByteToWideChar(

@@ -108,8 +108,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (!m_foregroundHandlerCount)
                 {
-                    wil::unique_cotaskmem_string appUserModelId;
-                    THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
+                    auto appUserModelId = GetAppUserModelId();
 
                     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
                 }
@@ -150,8 +149,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (m_foregroundHandlerCount == 1)
                 {
-                    wil::unique_cotaskmem_string appUserModelId;
-                    THROW_IF_FAILED(GetAppUserModelId(appUserModelId));
+                    auto appUserModelId = GetAppUserModelId();
 
                     THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                 }
