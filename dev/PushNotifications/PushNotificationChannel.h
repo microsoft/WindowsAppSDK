@@ -5,6 +5,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
 #include <NotificationsLongRunningProcess_h.h>
 #include "winrt/Windows.Networking.PushNotifications.h"
+#include <frameworkudk/pushnotificationsRT.h>
 #include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -13,7 +14,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel,
         winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
 
-    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink>
+    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener>
     {
         PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
 
@@ -28,6 +29,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         // IWpnForegroundSink
         HRESULT __stdcall InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
+
+        // INotificationHandler
+        HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
 
     private:
         bool IsPackagedAppScenario();
