@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity
+    Name="WindowsAppRuntime.Test.DynDep.Fwk.Widgets"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="1.2.3.4" />
+
+  <Properties>
+    <Framework>true</Framework>
+    <DisplayName>WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>logo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en"/>
+  </Resources>
+
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+        <InProcessServer>
+            <Path>Framework.Widgets.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Test.DynamicDependency.Widgets.Widget1" ThreadingModel="both" />
+        </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+        <InProcessServer>
+            <Path>Framework.Widgets.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Test.DynamicDependency.Widgets.Widget2" ThreadingModel="both" />
+        </InProcessServer>
+    </Extension>
+  </Extensions>
+</Package>

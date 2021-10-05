@@ -24,7 +24,6 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{2cd5cd9b-cf45-4fa7-9769-ee4e02426bf0}</ProjectGuid>
     <RootNamespace>EnvironmentManagerTests</RootNamespace>
-    <UseUnicrt>true</UseUnicrt>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

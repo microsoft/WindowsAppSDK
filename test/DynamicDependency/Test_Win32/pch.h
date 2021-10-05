@@ -37,4 +37,6 @@
 #include "TestFilesystem.h"
 #include "TestPackages.h"
 
+#include <winrt/Microsoft.Test.DynamicDependency.Widgets.h>
+
 #endif //PCH_H
