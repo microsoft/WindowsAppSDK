@@ -203,6 +203,22 @@ namespace Test::Packages
         RemovePackageIfNecessary(Test::Packages::FrameworkMathMultiply::c_PackageFullName);
     }
 
+    void AddPackage_FrameworkWidgets()
+    {
+        AddPackage(Test::Packages::Widgets::c_PackageDirName, Test::Packages::Widgets::c_PackageFullName);
+    }
+
+    void RemovePackage_FrameworkWidgets()
+    {
+        // Best-effort removal. PackageManager.RemovePackage errors if the package
+        // is not registered, but if it's not registered we're good. "'Tis the destination
+        // that matters, not the journey" so regardless how much or little work
+        // we need do, we're happy as long as the package isn't registered when we're done
+        //
+        // Thus, do a *IfNecessary removal
+        RemovePackageIfNecessary(Test::Packages::Widgets::c_PackageFullName);
+    }
+
     void AddPackage_DynamicDependencyDataStore()
     {
         AddPackage(Test::Packages::DynamicDependencyDataStore::c_PackageDirName, Test::Packages::DynamicDependencyDataStore::c_PackageFullName);

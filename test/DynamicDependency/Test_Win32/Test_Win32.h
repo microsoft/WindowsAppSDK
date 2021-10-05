@@ -44,6 +44,8 @@ namespace Test::DynamicDependency
         TEST_METHOD(GetIdForPackageDependencyContext_Null);
         TEST_METHOD(GetIdForPackageDependencyContext);
 
+        TEST_METHOD(WinRTReentrancy);
+
     private:
         static void VerifyPackageDependency(
             PCWSTR packageDependencyId,

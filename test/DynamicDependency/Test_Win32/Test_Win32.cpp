@@ -21,12 +21,14 @@ bool Test::DynamicDependency::Test_Win32::Setup()
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_WindowsAppRuntimeFramework();
+    TP::RemovePackage_FrameworkWidgets();
     TP::RemovePackage_FrameworkMathMultiply();
     TP::RemovePackage_FrameworkMathAdd();
 
     // Install our needed packages
     TP::AddPackage_FrameworkMathAdd();
     TP::AddPackage_FrameworkMathMultiply();
+    TP::AddPackage_FrameworkWidgets();
     TP::AddPackage_WindowsAppRuntimeFramework();
     TP::AddPackage_DynamicDependencyDataStore();
     TP::AddPackage_DynamicDependencyLifetimeManager();
@@ -67,6 +69,7 @@ bool Test::DynamicDependency::Test_Win32::Cleanup()
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
     TP::RemovePackage_WindowsAppRuntimeFramework();
+    TP::RemovePackage_FrameworkWidgets();
     TP::RemovePackage_FrameworkMathMultiply();
     TP::RemovePackage_FrameworkMathAdd();
 
