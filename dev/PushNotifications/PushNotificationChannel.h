@@ -5,7 +5,7 @@
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
 #include <NotificationsLongRunningProcess_h.h>
 #include "winrt/Windows.Networking.PushNotifications.h"
-#include <frameworkudk\pushnotificationsRT.h>
+#include <frameworkudk/pushnotificationsRT.h>
 #include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
