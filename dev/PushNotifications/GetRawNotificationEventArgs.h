@@ -18,13 +18,18 @@ namespace winrt::Microsoft::Windows::PushNotifications
         {
             if (pair.Name() == L"payload")
             {
-                std::wstring payloadAsWstring{pair.Value()};
+                // Convert escaped components to its normal content
+                // from the conversion done in the LRP (see NotificationListener.cpp)
+                std::wstring payloadAsEscapedWstring{ pair.Value() };
+                std::wstring payloadAsWstring{ winrt::Windows::Foundation::Uri::UnescapeComponent(payloadAsEscapedWstring) };
                 return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
             }
         }
 
         const DWORD receiveArgsTimeoutInMSec{ 2000 };
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().TryLookup(ACTIVATED_EVENT_ARGS_KEY).as<PushNotificationReceivedEventArgs>();
+
+        // If COM static store was uninit, let it throw
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
     }
 }

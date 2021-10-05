@@ -161,7 +161,7 @@ The following SubName values are used:
 | | Framework | Microsoft.WindowsAppRuntime.1.0-experimental1 |
 | Main | Main | Microsoft.WindowsAppRuntime.Main.1.0-experimental1 |
 | Singleton | Singleton | Microsoft.WindowsAppRuntime.Singleton-experimental1 |
-| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WindowsAppRuntime.DDLM.7.3944.123.1-x6-e1 |
+| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.7.3944.123.1-x6-e1 |
 
 ## 3.2. Package Naming - Singleton
 

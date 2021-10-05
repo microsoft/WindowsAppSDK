@@ -46,6 +46,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <microsoft.utf8.h>
 #include <security.integritylevel.h>
 
 #define MIDL_NS_PREFIX

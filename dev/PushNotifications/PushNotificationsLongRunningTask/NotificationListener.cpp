@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "utils.h"
 
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
@@ -21,21 +22,26 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
-        std::string commandLine = "----WindowsAppRuntimePushServer:-Payload:\"";
-        commandLine.append(reinterpret_cast<char*>(payload), payloadLength);
-        commandLine.append("\"");
+        // Command line format: ----WindowsAppRuntimePushServer:-Payload:"<payloadAsEscapedUriFormat>"
+        std::wstring commandLine = L"----WindowsAppRuntimePushServer:-Payload:\"";
 
-        const std::string processNameAsUtf8String = ConvertProcessNameToUtf8String();
+        // Escape special characters to follow command line standards for any app activation type in AppLifecycle
+        // (See AppInstance.cpp and Serialize() from other activation types)
+        std::wstring payloadAsWideString = ConvertByteArrayToWideString(payloadLength, payload);
+        auto payloadAsEscapedUriFormat = winrt::Windows::Foundation::Uri::EscapeComponent(payloadAsWideString.c_str());
 
-        SHELLEXECUTEINFOA shellExecuteInfo{};
-        shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+        commandLine.append(payloadAsEscapedUriFormat);
+        commandLine.append(L"\"");
+
+        SHELLEXECUTEINFO shellExecuteInfo{};
+        shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
         shellExecuteInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_DOENVSUBST;
-        shellExecuteInfo.lpFile = processNameAsUtf8String.c_str();
+        shellExecuteInfo.lpFile = m_processName.c_str();
         shellExecuteInfo.lpParameters = commandLine.c_str();
 
         shellExecuteInfo.nShow = SW_NORMAL;
 
-        if (!ShellExecuteExA(&shellExecuteInfo))
+        if (!ShellExecuteEx(&shellExecuteInfo))
         {
             THROW_IF_WIN32_ERROR(GetLastError());
         }
@@ -44,15 +50,3 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
     return S_OK;
 }
 CATCH_RETURN()
-
-const std::string NotificationListener::ConvertProcessNameToUtf8String()
-{
-    int size_needed = WideCharToMultiByte(CP_UTF8, 0, m_processName.c_str(), -1, NULL, 0, nullptr, nullptr);
-    THROW_LAST_ERROR_IF(size_needed == 0);
-
-    // size_needed minus the null character
-    std::string utf8(size_needed - 1, 0);
-    int size = WideCharToMultiByte(CP_UTF8, 0, m_processName.c_str(), size_needed - 1, &utf8[0], size_needed - 1, nullptr, nullptr);
-    THROW_LAST_ERROR_IF(size == 0);
-    return utf8;
-}

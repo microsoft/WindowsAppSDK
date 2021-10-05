@@ -17,6 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppSDK.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.AppLifecycle.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
