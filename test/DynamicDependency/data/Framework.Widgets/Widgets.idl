@@ -15,5 +15,7 @@ namespace Microsoft.Test.DynamicDependency.Widgets
         Widget2();
 
         Widget1 GetWidget1();
+
+        static Widget1 GetStaticWidget1();
     };
 }

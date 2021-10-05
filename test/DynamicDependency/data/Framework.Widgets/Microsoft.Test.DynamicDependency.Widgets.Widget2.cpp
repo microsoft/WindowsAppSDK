@@ -6,13 +6,15 @@
 
 namespace winrt::Microsoft::Test::DynamicDependency::Widgets::implementation
 {
-    Widget2::Widget2() :
-        m_widget1(winrt::make<implementation::Widget1>())
+    winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 Widget2::GetStaticWidget1()
     {
+        static winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 widget1;
+        return widget1;
     }
-
     winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 Widget2::GetWidget1()
     {
-        return m_widget1;
+        winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 widget1;
+        return widget1;
+        //return winrt::make<implementation::Widget1>();
     }
 }
