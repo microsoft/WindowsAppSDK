@@ -90,7 +90,7 @@ steps:
     displayName: 'Post build to Maestro'
     inputs:
       targetType: filePath
-      filePath: eng\common\MaestroPostRequest.ps1
+      filePath: eng\common\Scripts\MaestroPostRequest.ps1
       arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
  
   - ${{ if eq(parameters.TriggerSubscription, 'true') }}:
