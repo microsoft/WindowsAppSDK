@@ -8,6 +8,8 @@ namespace Microsoft.Test.DynamicDependency.Widgets
         Widget1();
 
         Int32 Value;
+
+        static Widget1 GetStatic();
     };
 
     runtimeclass Widget2

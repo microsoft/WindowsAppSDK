@@ -7,6 +7,7 @@ namespace winrt::Microsoft::Test::DynamicDependency::Widgets::implementation
     {
         Widget1() = default;
 
+        static winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 GetStatic();
         int32_t Value();
         void Value(int32_t value);
 

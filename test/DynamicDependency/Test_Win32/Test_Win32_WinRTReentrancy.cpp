@@ -55,6 +55,7 @@ void Test::DynamicDependency::Test_Win32::WinRTReentrancy()
     // -- Use it
 
     // Let's use resources from the dynamically added package
+#if 0
     winrt::Microsoft::Test::DynamicDependency::Widgets::Widget2 widget2;
     VERIFY_IS_NOT_NULL(widget2);
     auto widget1{ widget2.GetWidget1() };
@@ -83,8 +84,22 @@ void Test::DynamicDependency::Test_Win32::WinRTReentrancy()
     auto staticWidget2{ winrt::Microsoft::Test::DynamicDependency::Widgets::Widget2::GetStaticWidget1() };
     VERIFY_IS_NOT_NULL(staticWidget2);
     auto staticBefore2{ staticWidget2.Value() };
-    VERIFY_ARE_EQUAL(0, staticBefore2);
-    VERIFY_ARE_EQUAL(staticBefore, staticBefore2);
+    VERIFY_ARE_EQUAL(staticAfter, staticBefore2);
+#else
+    auto widget1{ winrt::Microsoft::Test::DynamicDependency::Widgets::Widget2::GetStaticWidget1() };
+    VERIFY_IS_NOT_NULL(widget1);
+    //
+    auto before{ widget1.Value() };
+    VERIFY_ARE_EQUAL(0, before);
+    widget1.Value(before + 1);
+    auto after{ widget1.Value() };
+    VERIFY_ARE_EQUAL(before + 1, after);
+    //
+    auto widget2{ winrt::Microsoft::Test::DynamicDependency::Widgets::Widget2::GetStaticWidget1() };
+    VERIFY_IS_NOT_NULL(widget2);
+    auto value2{ widget2.Value() };
+    VERIFY_ARE_EQUAL(after, value2);
+#endif
 
     // Tear down our dynamic dependencies
 

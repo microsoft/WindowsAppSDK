@@ -4,6 +4,11 @@
 
 namespace winrt::Microsoft::Test::DynamicDependency::Widgets::implementation
 {
+    winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 Widget1::GetStatic()
+    {
+        static winrt::Microsoft::Test::DynamicDependency::Widgets::Widget1 m_widget;
+        return m_widget;
+    }
     int32_t Widget1::Value()
     {
         return m_value;
