@@ -28,6 +28,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
     {
         int argc{};
+
+
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
         // Search for ----ms-protocol:
@@ -57,6 +59,32 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
         }
 
+        // Search for ----WindowsAppRuntimePushServer:
+        for (int index = 0; index < argc; index++)
+        {
+            std::wstring_view fullArgument = argv[index];
+            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, L"WindowsAppRuntimePushServer", c_argumentSuffix);
+
+            auto argStart = fullArgument.find(protocolQualifier);
+            if (argStart == std::wstring::npos)
+            {
+                continue;
+            }
+
+            // Push past the '----' commandline argument prefix.
+            argStart += 4;
+
+            std::wstring argument{ fullArgument.substr(argStart) };
+
+            // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
+            auto argsDelim = argument.find_first_of(L':');
+            if (argsDelim == std::wstring::npos)
+            {
+                return { argument, L"" };
+            }
+
+            return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
+        }
         return { L"", L"" };
     }
 
@@ -358,8 +386,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     if (!contractData.empty() && index == 0)
                     {
                         tempContractData += L"&payload=";
-                        // 11 -> the size of &payload= + starting quote + ending quote.
-                        tempContractData += contractData.substr(10, contractData.size() - 11);
+                        // 11 -> the size of &payload= + starting quote + ending quote. now 9 as quotes got stripped along the way ELx
+                        tempContractData += contractData.substr(9, contractData.size() - 9);
                     }
 
                     contractData = tempContractData;

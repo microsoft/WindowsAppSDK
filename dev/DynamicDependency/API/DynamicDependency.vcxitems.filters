@@ -49,7 +49,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />
