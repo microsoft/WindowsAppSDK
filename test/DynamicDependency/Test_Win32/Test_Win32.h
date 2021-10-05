@@ -141,6 +141,24 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr,
             MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            MddCreatePackageDependencyOptions options);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const HRESULT expectedHR,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
     private:
         // Overloads and conveniences for Add to simplify test readability
         MDD_PACKAGEDEPENDENCY_CONTEXT Mdd_Add(

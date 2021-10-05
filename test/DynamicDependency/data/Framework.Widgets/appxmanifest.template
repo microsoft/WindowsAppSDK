@@ -25,4 +25,14 @@
   <Resources>
     <Resource Language="en"/>
   </Resources>
+
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+        <InProcessServer>
+            <Path>Framework.Widgets.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Test.DynamicDependency.Widgets.Widget1" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Test.DynamicDependency.Widgets.Widget2" ThreadingModel="both" />
+        </InProcessServer>
+    </Extension>
+  </Extensions>
 </Package>

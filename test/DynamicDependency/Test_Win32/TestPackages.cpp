@@ -205,7 +205,7 @@ namespace Test::Packages
 
     void AddPackage_FrameworkWidgets()
     {
-        AddPackage(Test::Packages::Widgets::c_PackageDirName, Test::Packages::Widgets::c_PackageFullName);
+        AddPackage(Test::Packages::FrameworkWidgets::c_PackageDirName, Test::Packages::FrameworkWidgets::c_PackageFullName);
     }
 
     void RemovePackage_FrameworkWidgets()
@@ -216,7 +216,7 @@ namespace Test::Packages
         // we need do, we're happy as long as the package isn't registered when we're done
         //
         // Thus, do a *IfNecessary removal
-        RemovePackageIfNecessary(Test::Packages::Widgets::c_PackageFullName);
+        RemovePackageIfNecessary(Test::Packages::FrameworkWidgets::c_PackageFullName);
     }
 
     void AddPackage_DynamicDependencyDataStore()

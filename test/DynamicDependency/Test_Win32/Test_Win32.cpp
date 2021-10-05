@@ -438,6 +438,38 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
     return Mdd_TryCreate(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
 }
 
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    MddCreatePackageDependencyOptions options)
+{
+    const MddPackageDependencyLifetimeKind lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+    PCWSTR lifetimeArtifact{};
+    return Mdd_TryCreate(S_OK, TP::FrameworkWidgets::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact)
+{
+    return Mdd_TryCreate(TP::FrameworkWidgets::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    const MddPackageDependencyProcessorArchitectures architectures,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact)
+{
+    return Mdd_TryCreate(S_OK, TP::FrameworkWidgets::c_PackageFamilyName, architectures, lifetimeKind, lifetimeArtifact);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    const HRESULT expectedHR,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
+{
+    return Mdd_TryCreate(expectedHR, TP::FrameworkWidgets::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
     PCWSTR packageDependencyId)
 {
