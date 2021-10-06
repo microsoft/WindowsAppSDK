@@ -35,13 +35,16 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         {
             std::wstring_view fullArgument = argv[index];
             auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, c_protocolArgumentString, c_argumentSuffix);
+            auto pushProtocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, c_pushArgumentString, c_argumentSuffix);
 
-            auto argStart = fullArgument.find(protocolQualifier);
-            if (argStart == std::wstring::npos)
+            auto protocolArgStart = fullArgument.find(protocolQualifier);
+            auto pushArgStart = fullArgument.find(pushProtocolQualifier);
+            if (protocolArgStart == std::wstring::npos && pushArgStart == std::wstring::npos)
             {
                 continue;
             }
 
+            auto argStart = (protocolArgStart != std::wstring::npos) ? protocolArgStart : pushArgStart;
             // Push past the '----' commandline argument prefix.
             argStart += 4;
 
@@ -358,8 +361,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     if (!contractData.empty() && index == 0)
                     {
                         tempContractData += L"&payload=";
-                        // 11 -> the size of &payload= + starting quote + ending quote.
-                        tempContractData += contractData.substr(10, contractData.size() - 11);
+                        tempContractData += contractData.substr(9);
                     }
 
                     contractData = tempContractData;

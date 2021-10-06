@@ -10,6 +10,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     static PCWSTR c_argumentPrefix{ L"----" };
     static PCWSTR c_argumentSuffix{ L":" };
     static PCWSTR c_protocolArgumentString{ L"ms-protocol" };
+    static PCWSTR c_pushArgumentString{ L"WindowsAppRuntimePushServer" };
     static PCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
 
     struct ActivationRegistrationManager
