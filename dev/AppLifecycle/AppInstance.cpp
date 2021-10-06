@@ -25,66 +25,53 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
+    std::tuple<std::wstring, std::wstring> SearchForProtocol(PWSTR argv[], int argc, PCWSTR protocolName)
+    {
+        for (int index = 0; index < argc; index++)
+        {
+            std::wstring_view fullArgument = argv[index];
+            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, protocolName, c_argumentSuffix);
+
+            auto argStart = fullArgument.find(protocolQualifier);
+            if (argStart == std::wstring::npos)
+            {
+                continue;
+            }
+
+            // Push past the '----' commandline argument prefix.
+            argStart += 4;
+
+            std::wstring argument{ fullArgument.substr(argStart) };
+
+            // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
+            auto argsDelim = argument.find_first_of(L':');
+            if (argsDelim == std::wstring::npos)
+            {
+                return { argument, L"" };
+            }
+
+            return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
+        }
+
+        return { L"", L""};
+    }
+
     std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
     {
         int argc{};
 
-
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
-        // Search for ----ms-protocol:
-        for (int index = 0; index < argc; index++)
+        PCWSTR protocols[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
+        for (auto protocol : protocols)
         {
-            std::wstring_view fullArgument = argv[index];
-            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, c_protocolArgumentString, c_argumentSuffix);
-
-            auto argStart = fullArgument.find(protocolQualifier);
-            if (argStart == std::wstring::npos)
+            auto [ kind, data ] = SearchForProtocol(argv.get(), argc, protocol);
+            if (kind != L"")
             {
-                continue;
+                return { kind, data };
             }
-
-            // Push past the '----' commandline argument prefix.
-            argStart += 4;
-
-            std::wstring argument{ fullArgument.substr(argStart) };
-
-            // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-            auto argsDelim = argument.find_first_of(L':');
-            if (argsDelim == std::wstring::npos)
-            {
-                return { argument, L"" };
-            }
-
-            return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
         }
 
-        // Search for ----WindowsAppRuntimePushServer:
-        for (int index = 0; index < argc; index++)
-        {
-            std::wstring_view fullArgument = argv[index];
-            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, L"WindowsAppRuntimePushServer", c_argumentSuffix);
-
-            auto argStart = fullArgument.find(protocolQualifier);
-            if (argStart == std::wstring::npos)
-            {
-                continue;
-            }
-
-            // Push past the '----' commandline argument prefix.
-            argStart += 4;
-
-            std::wstring argument{ fullArgument.substr(argStart) };
-
-            // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-            auto argsDelim = argument.find_first_of(L':');
-            if (argsDelim == std::wstring::npos)
-            {
-                return { argument, L"" };
-            }
-
-            return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
-        }
         return { L"", L"" };
     }
 
@@ -371,11 +358,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractArgument == L"WindowsAppRuntimePushServer")
+                if (contractArgument == c_pushProtocolArgumentString)
                 {
                     // Generate a basic encoded launch Uri for all Push activations.
                     std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
-                    contractArgument = c_protocolArgumentString;
+                    contractArgument = c_msProtocolArgumentString;
 
                     // A non-empty contractData means we have a payload.
                     // This contains a background notification. It is specific to unpackaged apps.
@@ -393,7 +380,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     contractData = tempContractData;
                 }
 
-                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)
+                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_msProtocolArgumentString, -1, TRUE) == CSTR_EQUAL)
                 {
                     kind = ExtendedActivationKind::Protocol;
                     auto args = make<ProtocolActivatedEventArgs>(contractData.c_str());
