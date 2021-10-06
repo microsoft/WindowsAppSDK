@@ -427,7 +427,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     bool AppInstance::TrySetKey(std::wstring const& key)
     {
-        std::wstring mutexName = m_moduleName + L"_Mutex";
+        auto escapedKey = std::regex_replace(key, std::wregex(L"\\\\"), L"_");
+        std::wstring mutexName = wil::str_printf<std::wstring>(L"%s_%s_Mutex", m_moduleName.c_str(), escapedKey.c_str());
 
         // We keep the mutex as a live member to ensure all other instances continue
         // to get an 'open' instead of a 'create' due to it already existing.
