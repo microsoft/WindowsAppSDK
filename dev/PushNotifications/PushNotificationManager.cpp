@@ -77,7 +77,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         auto coInitialize = wil::CoInitializeEx();
 
-        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+        auto notificationPlatform{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::GetNotificationPlatform() };
 
         wil::unique_cotaskmem_string processName;
         THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -410,8 +410,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_protocolRegistration);
                 auto coInitialize = wil::CoInitializeEx();
 
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                auto notificationPlatform{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -448,8 +447,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto coInitialize = wil::CoInitializeEx();
 
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                auto notificationPlatform{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));

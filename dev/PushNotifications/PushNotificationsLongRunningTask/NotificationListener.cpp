@@ -22,7 +22,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
-        THROW_IF_FAILED(winrt::Microsoft::Windows::PushNotifications::Helpers::ProtocolLaunchHelper(m_processName, payload));
+        THROW_IF_FAILED(winrt::Microsoft::Windows::PushNotifications::Helpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
     };
 
     return S_OK;

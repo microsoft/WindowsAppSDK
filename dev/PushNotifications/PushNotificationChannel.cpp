@@ -191,7 +191,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             wil::unique_cotaskmem_string processName;
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
-            THROW_IF_FAILED(winrt::Microsoft::Helpers::ProtocolLaunchHelper(processName.get(), payload));
+            THROW_IF_FAILED(winrt::Microsoft::Helpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
         }
 
         return S_OK;

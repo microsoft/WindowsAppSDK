@@ -38,7 +38,4 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
   </ItemGroup>
-  <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
-  </ItemGroup>
 </Project>

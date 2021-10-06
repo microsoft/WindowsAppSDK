@@ -3,11 +3,66 @@
 
 #pragma once
 #include "pch.h"
-#include "../Common/Microsoft.Utf8.h"
 #include  "NotificationsLongRunningProcess_h.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 {
+    inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
+    {
+        int size = WideCharToMultiByte(
+            CP_UTF8,
+            0,
+            utf16string.data(),
+            static_cast<int>(utf16string.length()),
+            nullptr,
+            0,
+            nullptr,
+            nullptr);
+
+        THROW_LAST_ERROR_IF(size == 0);
+
+        std::string utf8string;
+        utf8string.resize(size);
+
+        size = WideCharToMultiByte(
+            CP_UTF8,
+            0,
+            utf16string.data(),
+            static_cast<int>(utf16string.length()),
+            &utf8string[0],
+            size,
+            nullptr,
+            nullptr);
+
+        THROW_LAST_ERROR_IF(size == 0);
+
+        return utf8string;
+    }
+
+    inline std::wstring Utf8BytesToWideString(unsigned int payloadLength, _In_reads_(payloadLength) byte* payload)
+    {
+        int size = MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            reinterpret_cast<PCSTR>(payload),
+            payloadLength,
+            nullptr,
+            0);
+        THROW_LAST_ERROR_IF(size == 0);
+
+        std::wstring payloadAsWideString(size, 0);
+        size = MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            reinterpret_cast<PCSTR>(payload),
+            payloadLength,
+            &payloadAsWideString[0],
+            size);
+        THROW_LAST_ERROR_IF(size == 0);
+
+        return payloadAsWideString;
+    }
+
     inline wil::unique_cotaskmem_string GetAppUserModelId()
     {
         wchar_t appId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
@@ -18,14 +73,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         return wil::make_unique_string<wil::unique_cotaskmem_string>(appId);
     }
 
-    inline HRESULT ProtocolLaunchHelper(std::wstring processName, _In_ byte* payload) noexcept try
+    inline HRESULT ProtocolLaunchHelper(std::wstring processName, unsigned int payloadLength, _In_reads_(payloadLength) byte* payload) noexcept try
     {
         // Command line format: ----WindowsAppRuntimePushServer:-Payload:"<payloadAsEscapedUriFormat>"
         std::wstring commandLine = L"----WindowsAppRuntimePushServer:-Payload:\"";
 
         // Escape special characters to follow command line standards for any app activation type in AppLifecycle
         // (See AppInstance.cpp and Serialize() from other activation types)
-        auto payloadAsWideString{ ::Microsoft::Utf8::ToUtf16<std::wstring>(reinterpret_cast<PCSTR>(payload)) };
+        auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
         auto payloadAsEscapedUriFormat = winrt::Windows::Foundation::Uri::EscapeComponent(payloadAsWideString.c_str());
 
         commandLine.append(payloadAsEscapedUriFormat);
