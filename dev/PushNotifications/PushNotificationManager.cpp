@@ -19,8 +19,8 @@
 #include <string_view>
 #include <frameworkudk/pushnotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
-#include "PushNotificationTelemetry.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
+#include "PushNotificationUtility.h"
 
 using namespace std::literals;
 
@@ -196,7 +196,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
-                        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                        auto notificationPlatform{ ::winrt::Microsoft::Windows::PushNotifications::Helpers::GetNotificationPlatform() };
 
                         wil::unique_cotaskmem_string processName;
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -239,7 +239,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         catch (...)
         {
             PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId, usingLegacyImplementation);
-
             throw;
         }
     }
@@ -267,13 +266,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
-                {
-                    auto lock = s_activatorInfoLock.lock_exclusive();
-                    wil::unique_cotaskmem_string unpackagedAppUserModelId;
-                    RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
+                wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
 
-                    s_protocolRegistration = true;
-                }
+                s_protocolRegistration = true;
             }
 
             BackgroundTaskBuilder builder{ nullptr };
@@ -384,7 +380,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
-
             throw;
         }
     }
@@ -467,7 +462,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(),
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-
             throw;
         }
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);

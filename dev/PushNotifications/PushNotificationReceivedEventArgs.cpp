@@ -14,8 +14,7 @@
 #include <externs.h>
 #include <PushNotificationDummyDeferral.h>
 #include "ValueMarshaling.h"
-
-#include "utils.h"
+#include "../Common/Microsoft.Utf8.h"
 
 namespace winrt
 {
@@ -69,8 +68,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     std::vector<uint8_t> PushNotificationReceivedEventArgs::BuildPayload(std::wstring const& payload)
     {
-        std::string payloadToSimpleString = ConvertWideStringToUtf8String(payload);
-
+        std::string payloadToSimpleString{ ::Microsoft::Utf8::ToUtf8(payload) };
         return { payloadToSimpleString.c_str(), payloadToSimpleString.c_str() + (payloadToSimpleString.length() * sizeof(uint8_t)) };
     }
 

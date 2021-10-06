@@ -284,7 +284,7 @@ namespace Test::PushNotifications
 
         TEST_METHOD(RegisterActivatorNullClsid_Unpackaged)
         {
-            RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
+            RunTestUnpackaged(L"RegisterActivatorNullClsid", channelTestWaitTime());
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)
