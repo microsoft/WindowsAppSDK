@@ -373,7 +373,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                     if (!contractData.empty() && index == 0)
                     {
                         tempContractData += L"&payload=";
-                        // 11 -> the size of &payload= + starting quote + ending quote. now 9 as quotes got stripped along the way ELx
+                        // 9 -> the size of &payload= as quotes in the contrat data will
+                        // have been tripped in the call to ParseCommandLine.
                         tempContractData += contractData.substr(9, contractData.size() - 9);
                     }
 
