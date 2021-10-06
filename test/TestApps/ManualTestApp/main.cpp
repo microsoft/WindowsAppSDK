@@ -82,8 +82,12 @@ IAsyncAction WaitForActivations()
 
 void OnActivated(const winrt::Windows::Foundation::IInspectable&, const AppActivationArguments& args)
 {
-    auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
-    wprintf(L"Activated via redirection with args: %s\n", launchArgs.Arguments().c_str());
+    if (args.Kind() == ExtendedActivationKind::Launch)
+    {
+        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
+        wprintf(L"Activated via redirection with args: %s\n", launchArgs.Arguments().c_str());
+    }
+
     SetForegroundWindow(g_window);
 }
 
@@ -93,21 +97,44 @@ int main()
 
     THROW_IF_FAILED(BootstrapInitialize());
 
+    std::wstring key{ L"derp.txt" };
     AppInstance::Activated_revoker token;
 
-    AppInstance keyInstance = AppInstance::FindOrRegisterForKey(L"derp.txt");
+    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    if (args.Kind() == ExtendedActivationKind::File)
+    {
+        auto fileArgs = args.Data().as<winrt::Windows::ApplicationModel::Activation::FileActivatedEventArgs>();
+        key = fileArgs.Files().GetAt(0).Path();
+    }
+
+    if (args.Kind() == ExtendedActivationKind::Launch)
+    {
+        auto launchArgs = args.Data().as<winrt::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs>();
+        std::wstring cmdLine{ launchArgs.Arguments() };
+        auto c_testFileExtension{ L".alt" };
+        if (cmdLine.rfind(L"/reg") != 0)
+        {
+            ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension },
+                L"logo", L"Windows App SDK AppLifecycle Test File", { L"open" }, L"");
+        }
+        else if (cmdLine.rfind(L"/unreg") != 0)
+        {
+            ActivationRegistrationManager::UnregisterForFileTypeActivation({ c_testFileExtension }, L"");
+        }
+    }
+
+    AppInstance keyInstance = AppInstance::FindOrRegisterForKey(key.c_str());
     if (!keyInstance.IsCurrent())
     {
-        keyInstance.RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs()).get();
+        keyInstance.RedirectActivationToAsync(args).get();
     }
     else
     {
         AppInstance thisInstance = AppInstance::GetCurrent();
-        token = thisInstance.Activated(
-            auto_revoke, [&thisInstance](
-                const auto& sender, const AppActivationArguments& args)
-            { OnActivated(sender, args); }
-        );
+        token = thisInstance.Activated(auto_revoke, [&thisInstance](const auto& sender, const AppActivationArguments& args)
+            {
+                OnActivated(sender, args);
+            });
 
         auto hInstance = GetModuleHandle(NULL);
         _RegisterClass(hInstance);
@@ -155,7 +182,7 @@ ATOM _RegisterClass(HINSTANCE hInstance)
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    g_window = CreateWindow(g_windowClass, L"ContainerWindowingTestApp", WS_OVERLAPPEDWINDOW,
+    g_window = CreateWindow(g_windowClass, L"App Lifecycle Manual Test Application", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
     if (!g_window)

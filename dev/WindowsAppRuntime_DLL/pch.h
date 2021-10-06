@@ -18,7 +18,7 @@
 #include <mutex>
 #include <list>
 #include <stdexcept>
-
+#include <regex>
 #include <filesystem>
 
 #include <wil/cppwinrt.h>
