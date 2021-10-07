@@ -21,7 +21,7 @@ class MddBootstrapInitializerCS
         ushort Revision = Microsoft.WindowsAppSDK.Runtime.Version.Revision;
         
    
-        var minVersion = new PackageVersion(Revision, Build, Minor, Major);
+        var minVersion = new PackageVersion(Major, Build, Minor, Revision);
         try
         {
             Bootstrap.Initialize(majorMinorVersion, versionTag,minVersion);
