@@ -25,12 +25,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
-    std::tuple<std::wstring, std::wstring> SearchForProtocol(PWSTR argv[], int argc, PCWSTR protocolName)
+    std::tuple<std::wstring, std::wstring> GetActivationArguments(PWSTR argv[], int argc, PCWSTR activationKind)
     {
         for (int index = 0; index < argc; index++)
         {
             std::wstring_view fullArgument = argv[index];
-            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, protocolName, c_argumentSuffix);
+            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, activationKind, c_argumentSuffix);
 
             auto argStart = fullArgument.find(protocolQualifier);
             if (argStart == std::wstring::npos)
@@ -62,10 +62,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
-        PCWSTR protocols[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
-        for (auto protocol : protocols)
+        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
+        for (auto activationKind : activationKinds)
         {
-            auto [ kind, data ] = SearchForProtocol(argv.get(), argc, protocol);
+            auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);
             if (kind != L"")
             {
                 return { kind, data };
