@@ -3,29 +3,11 @@
 
 This is the spec for proposal [Windows App Runtime Deployment API #1240](https://github.com/microsoft/WindowsAppSDK/issues/1240).
 
-Windows App SDK (WinAppSDK) deployment consists of a multiple packages, one or more of which is a
-mainpackage, all of which are signed and published by Microsoft. Consumers of WinAppSDK will be both
-Microsoft and non-Microsoft publishers. In order to have WinAppSDK fully present and functional,
-all the packages must be deployed to the system. While the Windows application 
-model naturally supports framework dependencies it does not have a means of declaring a dependency
-on main packages. This API spec and feature proposal is to provide a means of identifying when
-the WinAppSDK dependencies are not satisfied, and if that is the case, provide a means to resolve the
-missing dependency.
+The Windows App SDK (WinAppSDK) for packaged apps involves the framework, main, and singleton packages, which are all signed and published by Microsoft. The framework package contains the WinAppSDK binaries used at run time, and it is installed with the application. The main package contains out-of-process services that are brokered between apps, such as push notifications, and it is also needed for the framework to be serviced by the Microsoft Store. The singleton package supports a single long-running process that is brokered between apps for features like push notifications. 
 
-The key scenario that is expected to have a missing dependency is for packaged MSIX which have
-declared the WinAppSDK frameworks as a dependency. In this scenario it is likely the main packages
-would be missing because they cannot declare a dependency on main packages and it will not be
-deployed by the Store or other mechanisms which only expect a single main package. For MSIX
-packages with permissions, this dependency could be immediately resolved online or offline if the
-package size is small and the framework carries the dependency.
+If developers want to use features not included in the framework and prefer to have the framework automatically updated by the Store without needing to redistribute their packaged app, then the main and singleton packages are also required to be installed on the system. But while the Windows application model supports framework dependencies, it does not support a packaged app (a main package) to declare a dependency on other main packages (the Windows App SDK main and singleton packages), so the Store cannot install these with the app. The framework package that is installed with your app will have the main and singleton package embedded within it, and your packaged app must then use the **Deployment API** to get those packages installed on the machine, whether online or offline. 
 
-A class of MSIX packages that are Full Trust or have the packageManagement capability will have
-the permissions to immediately resolve the dependency. These packages are the target for this
-API. These packages will have the capability to deploy packages and satisfy the dependency.
-Since the main packages for the WinAppSDK are expected to be very small, this API has a
-streamlined solution for this scenario, which is to carry the WinAppSDK main packages inside
-the WinAppSDK frameworks, and leverage the full trust capability of the caller to deploy the main
-packages.
+Note that in Windows App SDK version 1.0, only MSIX packaged apps that are full trust or have the packageManagement restricted capability have the permission to use the Deployment API to install the main and singleton package dependencies. Support for partial trust packaged apps will be coming in later releases.
 
 
 # Description
