@@ -2,7 +2,7 @@
 
     <!-- Props file common to both managed and native projects that helps enable access to Framework packages-->
 
-    <PropertyGroup Condition="'$(WindowsAppSdkEnableMdd)'=='' and '$(WindowsAppSdkFrameworkDependent)'!='false' and '$(WindowsPackageType)'=='Desktop'">
+    <PropertyGroup Condition="'$(WindowsAppSdkEnableMdd)'=='' and '$(WindowsAppSdkFrameworkDependent)'!='false' and '$(WindowsPackageType)'=='None'">
         <!--Allows GenerateBootstrapCS/GenerateBootstrapCpp to run-->
         <WindowsAppSdkEnableMdd>true</WindowsAppSdkEnableMdd>
     </PropertyGroup>
@@ -11,6 +11,7 @@
         <MddGeneratedFilesDir Condition="'$(MddGeneratedFilesDir)' == ''">$(GeneratedFilesDir)</MddGeneratedFilesDir>
         <MddGeneratedFilesDir Condition="'$(MddGeneratedFilesDir)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Generated Files'))</MddGeneratedFilesDir>
         <MddFileName>$(MddGeneratedFilesDir)_MddGeneratedFile</MddFileName>
+        <PublishAppxPackage>false</PublishAppxPackage>
     </PropertyGroup>      
-
+    
 </Project>
