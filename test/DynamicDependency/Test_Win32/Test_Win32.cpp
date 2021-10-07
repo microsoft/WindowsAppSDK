@@ -76,6 +76,18 @@ bool Test::DynamicDependency::Test_Win32::Cleanup()
     return true;
 }
 
+void Test::DynamicDependency::Test_Win32::Create_Elevated()
+{
+    PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
+    const PACKAGE_VERSION minVersion{};
+    const MddPackageDependencyProcessorArchitectures architectureFilter{};
+    const auto lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+    PCWSTR lifetimeArtifact{};
+    const MddCreatePackageDependencyOptions options{};
+    wil::unique_process_heap_string packageDependencyId;
+    VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
+}
+
 void Test::DynamicDependency::Test_Win32::Create_Delete()
 {
     // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
