@@ -4,7 +4,7 @@ SETLOCAL
 IF /I "%1" == "-help" GOTO Help
 IF /I "%1" == "--help" GOTO Help
 
-powershell %~dpn0.ps1 %*
+powershell -ExecutionPolicy Unrestricted -NoLogo -NoProfile %~dpn0.ps1 %*
 GOTO TheEnd
 
 :Help
