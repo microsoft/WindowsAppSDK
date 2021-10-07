@@ -1308,8 +1308,9 @@
       Projects="@(OptionalProjectBuildReferences)"
       Targets="GetOptionalProjectOutputs"
       BuildInParallel="$(BuildInParallel)"
-      Properties="%(OptionalProjectBuildReferences.SetConfiguration); %(OptionalProjectBuildReferences.SetPlatform)"
-      ContinueOnError="$(_ContinueOnError)">
+      Properties="%(OptionalProjectBuildReferences.SetConfiguration); %(OptionalProjectBuildReferences.SetPlatform); %(OptionalProjectBuildReferences.SetTargetFramework)"
+      ContinueOnError="$(_ContinueOnError)"      
+      RemoveProperties="%(OptionalProjectBuildReferences.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)">
       <Output TaskParameter="TargetOutputs" ItemName="_OptionalProjectOutputsFromOtherProjects"/>
     </MSBuild>
 
