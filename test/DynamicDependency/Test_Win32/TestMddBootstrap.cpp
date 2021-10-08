@@ -14,9 +14,9 @@ namespace Test::DynamicDependency
     {
     public:
         BEGIN_TEST_CLASS(BootstrapTests)
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(Setup)
@@ -77,10 +77,12 @@ namespace Test::DynamicDependency
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
         }
 
-        BEGIN_TEST_METHOD(Initialize_Elevated)
-            TEST_METHOD_PROPERTY("RunAs", L"ElevatedUser,System")
-        END_TEST_METHOD()
+        TEST_METHOD(Initialize_Elevated)
         {
+            BEGIN_TEST_METHOD_PROPERTIES()
+                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+            END_TEST_METHOD_PROPERTIES()
+
             VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version

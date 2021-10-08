@@ -9,17 +9,13 @@ namespace Test::DynamicDependency
 	{
 	public:
         BEGIN_TEST_CLASS(Test_Win32)
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(Setup);
         TEST_CLASS_CLEANUP(Cleanup);
-
-        BEGIN_TEST_METHOD(Create_Elevated)
-            TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser,System")
-        END_TEST_METHOD()
 
         TEST_METHOD(Create_Delete);
 
