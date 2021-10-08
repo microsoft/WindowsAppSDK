@@ -9,8 +9,6 @@ If developers want to use features not included in the framework and prefer to h
 
 **_Note that in Windows App SDK version 1.0, only MSIX packaged apps that are full trust or have the packageManagement restricted capability have the permission to use the Deployment API to install the main and singleton package dependencies. Support for partial trust packaged apps will be coming in later releases. Additionally, support for main and singleton package deployment through the Microsoft Store will be coming in later releases._**
 
-
-OFFLINE
 # Description
 
 When a packaged app using the WinAppSDK is deployed from the Store, it will be installed with the application's main package and the WinAppSDK framework package. The WinAppSDK main and singleton packages may not already be present on the system, or may not be at the version required by the application. The Deployment API enables a developer to check when the required WinAppSDK main and singleton packages are missing and get them installed.
