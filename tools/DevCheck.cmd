@@ -8,7 +8,7 @@ powershell -ExecutionPolicy Unrestricted -NoLogo -NoProfile %~dpn0.ps1 %*
 GOTO TheEnd
 
 :Help
-powershell -c Get-Help %~dpn0.ps1 -full
+powershell -ExecutionPolicy Unrestricted -NoLogo -NoProfile -c Get-Help %~dpn0.ps1 -full
 
 :TheEnd
 ENDLOCAL
