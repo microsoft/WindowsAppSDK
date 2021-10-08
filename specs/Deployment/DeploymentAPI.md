@@ -15,11 +15,11 @@ Currently, packaged apps can only declare dependencies on framework packages. In
 other packages (main, singleton) deployed, apps can use the mechanism described here as part of
 their first-run experience.
 
-**_Note that in Windows App SDK version 1.0, only MSIX packaged apps that are full trust or have the
-packageManagement restricted capability have the permission to use the Deployment API to install the
-main and singleton package dependencies. Support for partial trust packaged apps will be coming in
-later releases. Additionally, support for main and singleton package deployment through the
-Microsoft Store will be coming in later releases._**
+> **Note that in Windows App SDK version 1.0**, only MSIX packaged apps that are full trust or have
+> the packageManagement restricted capability have the permission to use the Deployment API to
+> install the main and singleton package dependencies. Support for partial trust packaged apps will
+> be coming in later releases. Additionally, support for main and singleton package deployment
+> through the Microsoft Store will be coming in later releases.
 
 # Description
 
