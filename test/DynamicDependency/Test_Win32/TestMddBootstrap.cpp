@@ -93,40 +93,12 @@ namespace Test::DynamicDependency
 
         TEST_CLASS_SETUP(Setup)
         {
-            // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
-            // Normally it's colocated with the application (i.e. same dir as the exe)
-            // but that's not true of our test project (a dll) in our build environment
-            // (different directories). So we'll explicitly find and load it so the
-            // rest of our test is fine
-            auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
-            wil::unique_hmodule bootstrapDll(LoadLibrary(bootstrapDllAbsoluteFilename.c_str()));
-            const auto lastError{ GetLastError() };
-            VERIFY_IS_NOT_NULL(bootstrapDll.get());
-
-            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
-            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
-            TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_DynamicDependencyDataStore();
-            TP::RemovePackage_WindowsAppRuntimeFramework();
-            TP::RemovePackage_FrameworkWidgets();
-            TP::RemovePackage_FrameworkMathMultiply();
-            TP::RemovePackage_FrameworkMathAdd();
-            TP::AddPackage_WindowsAppRuntimeFramework();
-            TP::AddPackage_DynamicDependencyLifetimeManager();
-
-            m_bootstrapDll = std::move(bootstrapDll);
-
-            return true;
+            return BootstrapFixtures::Setup();
         }
 
         TEST_CLASS_CLEANUP(Cleanup)
         {
-            m_bootstrapDll.reset();
-
-            TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_WindowsAppRuntimeFramework();
-
-            return true;
+            return BootstrapFixtures::Cleanup();
         }
 
         TEST_METHOD(Initialize_DDLMNotFound)
@@ -258,10 +230,5 @@ namespace Test::DynamicDependency
                 VERIFY_ARE_EQUAL(0u, bufferLength);
             }
         }
-
-    private:
-        static wil::unique_hmodule m_bootstrapDll;
     };
 }
-
-wil::unique_hmodule Test::DynamicDependency::BootstrapTests::m_bootstrapDll;
