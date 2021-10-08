@@ -10,11 +10,82 @@ namespace TP = ::Test::Packages;
 
 namespace Test::DynamicDependency
 {
+    class ElevatedBootstrapTests
+    {
+    public:
+        BEGIN_TEST_CLASS(ElevatedBootstrapTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        static bool Setup()
+        {
+            // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
+            // Normally it's colocated with the application (i.e. same dir as the exe)
+            // but that's not true of our test project (a dll) in our build environment
+            // (different directories). So we'll explicitly find and load it so the
+            // rest of our test is fine
+            auto bootstrapDllAbsoluteFilename{ TF::GetBootstrapAbsoluteFilename() };
+            wil::unique_hmodule bootstrapDll(LoadLibrary(bootstrapDllAbsoluteFilename.c_str()));
+            const auto lastError{ GetLastError() };
+            VERIFY_IS_NOT_NULL(bootstrapDll.get());
+
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1010();
+            TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
+            TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_DynamicDependencyDataStore();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_FrameworkWidgets();
+            TP::RemovePackage_FrameworkMathMultiply();
+            TP::RemovePackage_FrameworkMathAdd();
+            TP::AddPackage_WindowsAppRuntimeFramework();
+            TP::AddPackage_DynamicDependencyLifetimeManager();
+
+            m_bootstrapDll = std::move(bootstrapDll);
+
+            return true;
+        }
+
+        static bool Cleanup()
+        {
+            m_bootstrapDll.reset();
+
+            TP::RemovePackage_DynamicDependencyLifetimeManager();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
+
+            return true;
+        }
+
+        TEST_METHOD(Initialize_Elevated)
+        {
+            //BEGIN_TEST_METHOD_PROPERTIES()
+            //    TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+            //END_TEST_METHOD_PROPERTIES()
+
+            Setup();
+
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION minVersion{};
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+            Cleanup();
+        }
+
+    private:
+        static wil::unique_hmodule m_bootstrapDll;
+    };
+    wil::unique_hmodule Test::DynamicDependency::ElevatedBootstrapTests::m_bootstrapDll;
+
     class BootstrapTests
     {
     public:
         BEGIN_TEST_CLASS(BootstrapTests)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
@@ -75,20 +146,6 @@ namespace Test::DynamicDependency
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             PACKAGE_VERSION minVersionNoMatch{ static_cast<UINT64>(Test::Packages::DynamicDependencyLifetimeManager::c_Version.Major) << 48 | 0x0000FFFFFFFFFFFFuI64 };
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NO_MATCH), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersionNoMatch));
-        }
-
-        TEST_METHOD(Initialize_Elevated)
-        {
-            BEGIN_TEST_METHOD_PROPERTIES()
-                TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            END_TEST_METHOD_PROPERTIES()
-
-            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
-
-            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
-            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
-            const PACKAGE_VERSION minVersion{};
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
         }
 
         TEST_METHOD(Initialize)
