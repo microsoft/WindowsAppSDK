@@ -19,8 +19,8 @@
 #include <string_view>
 #include <frameworkudk/pushnotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
-#include "PushNotificationTelemetry.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
+#include "PushNotificationUtility.h"
 
 using namespace std::literals;
 
@@ -40,6 +40,10 @@ namespace winrt
     using namespace Windows::Foundation;
 }
 
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
+}
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_pushTriggerRegistration{ nullptr };
@@ -77,7 +81,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         auto coInitialize = wil::CoInitializeEx();
 
-        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+        auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
         wil::unique_cotaskmem_string processName;
         THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -196,6 +200,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         PushNotificationChannelManager channelManager{};
                         winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
 
+                        auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+
+                        wil::unique_cotaskmem_string processName;
+                        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
@@ -233,7 +243,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         catch (...)
         {
             PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId, usingLegacyImplementation);
-
             throw;
         }
     }
@@ -261,14 +270,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
-                auto coInitialize = wil::CoInitializeEx();
-
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
-
-                wil::unique_cotaskmem_string processName;
-                THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+                wil::unique_cotaskmem_string unpackagedAppUserModelId;
+                RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
 
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
@@ -384,7 +387,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             PushNotificationTelemetry::ActivatorRegisteredByApi(wil::ResultFromCaughtException(),
                 details == nullptr ? PushNotificationRegistrationActivators::Undefined : details.Activators());
-
             throw;
         }
     }
@@ -415,12 +417,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_protocolRegistration);
                 auto coInitialize = wil::CoInitializeEx();
 
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
 
                 s_protocolRegistration = false;
             }
@@ -453,12 +454,11 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto coInitialize = wil::CoInitializeEx();
 
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                THROW_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
+                LOG_IF_FAILED(notificationPlatform->UnregisterLongRunningActivator(processName.get()));
 
                 s_protocolRegistration = false;
             }
@@ -467,7 +467,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             PushNotificationTelemetry::ActivatorUnregisteredByApi(wil::ResultFromCaughtException(),
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-
             throw;
         }
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
