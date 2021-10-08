@@ -135,11 +135,9 @@ later releases_**.
 # API Details
 
 ```c#
-
 namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
 {
     /// Represents the current Deployment status of the WindowsAppRuntime
-    [flags]
     enum DeploymentStatus
     {
         Unknown = 0,
@@ -148,7 +146,7 @@ namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
         PackageInstallFailed,
     };
 
-    /// Represents the a result of a Deploymen Manager method.
+    /// Represents the a result of a Deployment Manager method.
     runtimeclass DeploymentResult
     {
         DeploymentResult(DeploymentStatus status, HRESULT extendedError);
