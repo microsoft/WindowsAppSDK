@@ -9,6 +9,7 @@
 #include "PushNotificationTelemetry.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
 #include "externs.h"
+#include <stdio.h>
 
 namespace winrt
 {
@@ -18,20 +19,15 @@ namespace winrt
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    static std::wstring GetRegistrySubKey(std::wstring const& appId)
+    void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const BYTE* value, DWORD const& valueType, DWORD const& size)
     {
-        return L"Software\\Classes\\AppUserModelId\\" + appId;
+        THROW_IF_FAILED(RegSetValueExW(hKey.get(), key, 0, valueType, value, size));
     }
 
-    void RegisterAsset(wil::unique_hkey const& hKey, std::wstring const& key, const BYTE* value)
-    {
-        THROW_IF_FAILED(RegSetValueExW(hKey.get(), key.c_str(), 0, REG_SZ, value, 0));
-    }
-
-    void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color)
+    void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color, wil::unique_cotaskmem_string const& clsid)
     {
         wil::unique_hkey hKey;
-        std::wstring subKey { GetRegistrySubKey(appId) };
+        std::wstring subKey { L"Software\\Classes\\AppUserModelId\\" + appId };
         THROW_IF_FAILED(RegCreateKeyEx(
             HKEY_CURRENT_USER,
             subKey.c_str(),
@@ -42,12 +38,40 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             nullptr,
             &hKey,
             nullptr));
-            
-        RegisterAsset(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()));
-        RegisterAsset(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()));
-        RegisterAsset(hKey, L"IconBackgroundColor", reinterpret_cast<const BYTE*>(color.ToString()));
-        RegisterAsset(hKey, L"CustomActivator", nullptr);
+       
+        RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
+        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()), REG_EXPAND_SZ, iconUri.AbsoluteUri().size() * sizeof(wchar_t));
+
+        WCHAR buffer[24];
+        wsprintf(buffer, L"%X%X%X%X", color.A, color.R, color.G, color.B);
+        RegisterValue(hKey, L"IconBackgroundColor", reinterpret_cast<const BYTE*>(buffer), REG_SZ, sizeof(buffer));
+
+        std::wstring wideStringClsid{ clsid.get() };
+        RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
         return;
+    }
+
+    void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
+    {
+        wil::unique_hkey hKey;
+        std::wstring wideStringClsid = { clsid.get() };
+        std::wstring subKey{ L"Software\\Classes\\CLSID\\" + wideStringClsid + L"\\LocalServer32" };
+        THROW_IF_FAILED(RegCreateKeyEx(
+            HKEY_CURRENT_USER,
+            subKey.c_str(),
+            0,
+            nullptr,
+            REG_OPTION_NON_VOLATILE,
+            KEY_ALL_ACCESS,
+            nullptr,
+            &hKey,
+            nullptr));
+
+        std::wstring comRegistrationExeString{ L"\"" };
+        comRegistrationExeString.append(processName.get());
+        comRegistrationExeString.append(L"\" ");
+        comRegistrationExeString.append(L"-ToastActivated");
+        RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
     }
 
     void ToastNotificationManager::RegisterActivator(winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color)
@@ -60,7 +84,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         wil::unique_cotaskmem_string unpackagedAppUserModelId;
         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), GUID_NULL, &unpackagedAppUserModelId));
 
-        RegisterAssets(unpackagedAppUserModelId.get(), displayName, iconUri, color);
+        GUID guidReference;
+        THROW_IF_FAILED(CoCreateGuid(&guidReference));
+
+        wil::unique_cotaskmem_string guidStr;
+        THROW_IF_FAILED(StringFromCLSID(guidReference, &guidStr));
+
+        RegisterAssets(unpackagedAppUserModelId.get(), displayName, iconUri, color, guidStr);
+        RegisterComServer(processName, guidStr);
         return;
     }    
 }

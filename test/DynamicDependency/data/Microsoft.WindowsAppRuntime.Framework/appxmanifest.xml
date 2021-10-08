@@ -69,6 +69,7 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationReceivedEventArgs" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationRegistrationToken" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.PushNotificationManager" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.PushNotifications.ToastNotificationManager" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
