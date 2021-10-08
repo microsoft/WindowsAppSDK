@@ -11,14 +11,9 @@ is also needed for the framework to be serviced by the Microsoft Store. The sing
 supports a single long-running process that is brokered between apps for features like push
 notifications.
 
-If developers want to use features not included in the framework and prefer to have the framework
-automatically updated by the Store without needing to redistribute their packaged app, then the main
-and singleton packages are also required to be installed on the system. But while the Windows
-application model supports framework dependencies, it does not support a packaged app (a main
-package) to declare a dependency on other main packages (the Windows App SDK main and singleton
-packages), so the Store cannot currently install these with the app. The framework package that is
-installed with your app will have the main and singleton package embedded within it, and your
-packaged app must then use the **Deployment API** to get those packages installed on the machine.
+Currently, packaged apps can only declare dependencies on framework packages. In order to get the
+other packages (main, singleton) deployed, apps can use the mechanism described here as part of
+their first-run experience.
 
 **_Note that in Windows App SDK version 1.0, only MSIX packaged apps that are full trust or have the
 packageManagement restricted capability have the permission to use the Deployment API to install the
