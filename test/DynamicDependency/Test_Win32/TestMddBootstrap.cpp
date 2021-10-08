@@ -10,16 +10,9 @@ namespace TP = ::Test::Packages;
 
 namespace Test::DynamicDependency
 {
-    class ElevatedBootstrapTests
+    class BootstrapFixtures
     {
     public:
-        BEGIN_TEST_CLASS(ElevatedBootstrapTests)
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-            TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-        END_TEST_CLASS()
-
         static bool Setup()
         {
             // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
@@ -58,13 +51,27 @@ namespace Test::DynamicDependency
             return true;
         }
 
+    private:
+        static wil::unique_hmodule m_bootstrapDll;
+    };
+
+    wil::unique_hmodule Test::DynamicDependency::BootstrapFixtures::m_bootstrapDll;
+
+    class ElevatedBootstrapTests
+    {
+    public:
+        BEGIN_TEST_CLASS(ElevatedBootstrapTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
         TEST_METHOD(Initialize_Elevated)
         {
-            //BEGIN_TEST_METHOD_PROPERTIES()
-            //    TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
-            //END_TEST_METHOD_PROPERTIES()
-
-            Setup();
+            BootstrapFixtures::Setup();
+            auto cleanup = wil::scope_exit([&]{
+                BootstrapFixtures::Cleanup();
+            });
 
             VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
 
@@ -72,14 +79,8 @@ namespace Test::DynamicDependency
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             const PACKAGE_VERSION minVersion{};
             VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
-
-            Cleanup();
         }
-
-    private:
-        static wil::unique_hmodule m_bootstrapDll;
     };
-    wil::unique_hmodule Test::DynamicDependency::ElevatedBootstrapTests::m_bootstrapDll;
 
     class BootstrapTests
     {
