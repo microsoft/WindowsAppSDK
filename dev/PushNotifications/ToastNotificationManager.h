@@ -3,7 +3,7 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.ToastNotificationManager.g.h"
-#include <windows.foundation.h>
+#include <winrt/Windows.Foundation.h>
 #include "winrt/Windows.UI.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -13,7 +13,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         ToastNotificationManager() = delete;
 
-        static void RegisterActivator(winrt::hstring displayName, winrt::Windows::Foundation::Uri iconUri, winrt::Windows::UI::Color const& color);
+        static void RegisterActivator(winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri, winrt::Windows::UI::Color const& color);
     };
 }
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
