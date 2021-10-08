@@ -44,8 +44,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             nullptr));
             
         RegisterAsset(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()));
-        RegisterAsset(hKey, L"IconUri", nullptr);
-        RegisterAsset(hKey, L"IconBackgroundColor", nullptr);
+        RegisterAsset(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()));
+        RegisterAsset(hKey, L"IconBackgroundColor", reinterpret_cast<const BYTE*>(color.ToString()));
         RegisterAsset(hKey, L"CustomActivator", nullptr);
         return;
     }
