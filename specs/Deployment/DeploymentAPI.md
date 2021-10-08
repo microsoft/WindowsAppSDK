@@ -17,9 +17,9 @@ When a packaged app using the WinAppSDK is deployed from the Store, it will be i
 
 Since the Deployment API is part of the WinAppSDK framework package, the framework itself must be present. To deploy the framework package with the MSIX packaged application, the framework must be declared as a dependency in the application manifest with a min version specified. For instructions on deploying the framework package, see the [developer docs](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/deploy-packaged-apps#deploy-the-windows-app-sdk-framework-package).  
 
-If a developer prefers to have the Microsoft Store automatically service the WinAppSDK framework package and if features like push notifications are desired, then the main and singleton should also be deployed. Developers must not assume that the WinAppSDK main and singleton packages are already present on the system, or that the version present is the minimum version required required by the application. Instead, the Deployment API should be used to validate the WinAppSDK is at the correct version and that all required packages are present. 
+If a developer prefers to have the Microsoft Store automatically service the WinAppSDK framework package and if features like push notifications are desired, then the main and singleton should also be deployed. Developers must not assume that the WinAppSDK main and singleton packages are already present on the system, or that the version present is the minimum version required by the application. Instead, the Deployment API should be used to validate that the WinAppSDK is at the correct version and that all required packages are present. 
 
-The Deployment API address the following two developer scenarios: 
+The Deployment API addresses the following two developer scenarios: 
 1. Does this system have the min version of the WinAppSDK main and singleton packages required by my app?
 2. How do I install these packages, if they are not already present on the system? 
 
@@ -52,13 +52,11 @@ if (!result.Status() == Microsoft::Windows::ApplicationModel::WindowsAppRuntime:
 This API performs a status check, and if the main and/or singleton packages are missing or not at the required version, it will attempt to deploy those packages and get the WindowsAppRuntime into an OK state. All information about the version, channel, and
 architecture needed are derived from the current WinAppSDK framework package. 
 
-Since both the main _and_ the singleton packages may need to be installed, it is possible that one package is installed successfully but not the other. If so, the returned WindowsAppRuntimeStatus will contain the error, if one occurs during package install. There will be no rollback of any successfully installed packages. 
+Since both the main _and_ the singleton packages may need to be installed, it is possible that one package is installed successfully but not the other. If so, the returned WindowsAppRuntimeStatus will contain the error, if one occurs during package install. There will be no rollback of any successfully installed packages. See the [developer docs](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/deploy-packaged-apps#address-installation-errors) for instructions on how to handle errors. 
 
 The install of the packages may take a couple seconds to complete, which may be a performance concern to some developers. To address these concerns, developers can instead call GetStatus() first and verify that the required packages are missing. If so, then call Initialize() on another thread to handle the time delay more elegantly.
 
-See [developer docs](https://docs.microsoft.com/en-us/windows/apps/windows-app-sdk/deploy-packaged-apps#address-installation-errors) for instructions on how to handle errors. 
-
-Once the main and singleton packages have been deployed, they generally do not need to be deployed again. If a user were to remove the main or singleton package, the API can be used to reinstall them. **_Note that the Windows App SDK main and singleton packages will me made non-removable in later releases_**.  
+Once the main and singleton packages have been deployed, they generally do not need to be deployed again. If a user were to remove the main or singleton package, the API can be used to reinstall them again. **_Note that the Windows App SDK main and singleton packages will me made non-removable in later releases_**.  
 
 
 ```C++
