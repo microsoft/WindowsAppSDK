@@ -17,7 +17,7 @@ namespace Test::DynamicDependency
     {
     public:
         BEGIN_TEST_CLASS(GetCurrentPackageInfoTests)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
