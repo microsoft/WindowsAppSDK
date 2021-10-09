@@ -18,7 +18,7 @@
 #include <mutex>
 #include <list>
 #include <stdexcept>
-
+#include <regex>
 #include <filesystem>
 
 #include <wil/cppwinrt.h>
@@ -46,5 +46,6 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <microsoft.utf8.h>
 #include <security.integritylevel.h>
 #include <..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h>

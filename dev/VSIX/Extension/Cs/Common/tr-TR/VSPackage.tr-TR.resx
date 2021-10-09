@@ -131,4 +131,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="1001" xml:space="preserve">
+    <value>Boş Pencere (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1002" xml:space="preserve">
+    <value>[Deneysel] Boş Pencere (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1003" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak Masaüstü uygulamaları için boş bir pencere.</value>
+  </data>
+  <data name="1005" xml:space="preserve">
+    <value>Boş Sayfa (WinUI 3)</value>
+  </data>
+  <data name="1006" xml:space="preserve">
+    <value>[Deneysel] Boş Sayfa (WinUI 3)</value>
+  </data>
+  <data name="1007" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak uygulamalar için boş bir sayfa.</value>
+  </data>
+  <data name="1009" xml:space="preserve">
+    <value>Kaynak Sözlüğü (WinUI 3)</value>
+  </data>
+  <data name="1010" xml:space="preserve">
+    <value>[Deneysel] Kaynak Sözlüğü (WinUI 3)</value>
+  </data>
+  <data name="1011" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için boş, anahtarlı XAML kaynakları koleksiyonu.</value>
+  </data>
+  <data name="1013" xml:space="preserve">
+    <value>Kaynak Dosyası (.resw)</value>
+  </data>
+  <data name="1014" xml:space="preserve">
+    <value>[Deneysel] Kaynak Dosyası (.resw)</value>
+  </data>
+  <data name="1015" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak uygulamalar için dize ve koşullu kaynakları depolamaya yönelik bir dosya.</value>
+  </data>
+  <data name="1017" xml:space="preserve">
+    <value>Özel Denetim (WinUI 3)</value>
+  </data>
+  <data name="1018" xml:space="preserve">
+    <value>[Deneysel] Özel Denetim (WinUI 3)</value>
+  </data>
+  <data name="1019" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için özel bir denetim.</value>
+  </data>
+  <data name="1021" xml:space="preserve">
+    <value>Kullanıcı Denetimi (WinUI 3)</value>
+  </data>
+  <data name="1022" xml:space="preserve">
+    <value>[Deneysel] Kullanıcı Denetimi (WinUI 3)</value>
+  </data>
+  <data name="1023" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için kullanıcı denetimi.</value>
+  </data>
+  <data name="1025" xml:space="preserve">
+    <value>Sınıf Kitaplığı (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1026" xml:space="preserve">
+    <value>[Deneysel] Sınıf Kitaplığı (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1027" xml:space="preserve">
+    <value>Windows UI Kitaplığı'.dll (WinUI 3) temel alınarak Masaüstü uygulamaları için yönetilen sınıf kitaplığı (.dll) oluşturmaya yönelik bir proje.</value>
+  </data>
+  <data name="1029" xml:space="preserve">
+    <value>Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1030" xml:space="preserve">
+    <value>[Deneysel] Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1031" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak Masaüstü uygulaması oluşturmaya yönelik proje şablonu. Windows Uygulama Paketleme (WAP) projesi, dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Microsoft Store.</value>
+  </data>
+  <data name="1033" xml:space="preserve">
+    <value>Boş Uygulama, Paketlenmiş (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1034" xml:space="preserve">
+    <value>[Deneysel] Boş Uygulama, Paketlenmiş (Masaüstünde WinUI 3)</value>
+  </data>
+  <data name="1035" xml:space="preserve">
+    <value>Windows UI Kitaplığı'nın (WinUI 3) yanı sıra dışarıdan yükleme veya dağıtım için bir MSIX paketiyle birlikte masaüstü uygulaması oluşturmaya yönelik proje Microsoft Store.</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>Boş Uygulama (UWP'de WinUI 3)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Deneysel] Boş Uygulama (UWP'de WinUI 3)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>Windows UI Kitaplığı'Evrensel Windows Platformu (WinUI 3) tabanlı bir uygulama (UWP) oluşturma projesi. Windows Uygulama SDK deneysel desteği gerektirir.</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Sınıf Kitaplığı (UWP'de WinUI 3)</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>[Deneysel] Sınıf Kitaplığı (UWP'de WinUI 3)</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Windows UI Kitaplığı'.dll (WinUI 3) Evrensel Windows Platformu (UWP) uygulamaları için yönetilen sınıf kitaplığı (.dll) oluşturmaya yönelik bir proje. Windows Uygulama SDK deneysel desteği gerektirir.</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Windows Çalışma Zamanı Bileşeni (UWP'de WinUI 3)</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>[Deneysel] Windows Çalışma Zamanı Bileşeni (UWP'de WinUI 3)</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Windows UI Kitaplığı'Windows Çalışma Zamanı (WinUI 3) temel alınarak Evrensel Windows Platformu (UWP) uygulamaları için yönetilen Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik bir proje. Windows Uygulama SDK deneysel desteği gerektirir.</value>
+  </data>
 </root>

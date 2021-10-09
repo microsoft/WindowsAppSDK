@@ -44,6 +44,8 @@ namespace Test::DynamicDependency
         TEST_METHOD(GetIdForPackageDependencyContext_Null);
         TEST_METHOD(GetIdForPackageDependencyContext);
 
+        TEST_METHOD(WinRTReentrancy);
+
     private:
         static void VerifyPackageDependency(
             PCWSTR packageDependencyId,
@@ -134,6 +136,24 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr);
 
         wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const HRESULT expectedHR,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            MddCreatePackageDependencyOptions options);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
             const HRESULT expectedHR,
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
             PCWSTR lifetimeArtifact = nullptr,
