@@ -22,7 +22,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         {
             if (!::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled())
             {
-                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Deployment API Features are not enabled.");
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Environment Manager is not enabled because it is experimental..");
                 return false;
             }
 
