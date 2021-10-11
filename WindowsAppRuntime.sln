@@ -236,6 +236,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_MSIXInsta
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Widgets", "test\DynamicDependency\data\Framework.Widgets\Framework.Widgets.vcxproj", "{09DDAE21-397F-4263-8561-7F2FF28127CF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandLineParser", "CommandLineParser", "{6A040B01-1F0F-47C7-88C0-03A7D26FCF95}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommandLineParser", "dev\CommandLineParser\CommandLineParser.vcxitems", "{F2FFE2BA-8201-4ABD-89FE-23FD399DF143}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -259,6 +263,7 @@ Global
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
 		dev\AppLifecycle\AppLifecycle.vcxitems*{e3a522a3-6635-4a42-bded-1af46a15f63c}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{e5659a29-fe68-417b-9bc5-613073dd54df}*SharedItemsImports = 4
+		dev\CommandLineParser\CommandLineParser.vcxitems*{f2ffe2ba-8201-4abd-89fe-23fd399df143}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{f76b776e-86f5-48c5-8fc7-d2795ecc9746}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -964,6 +969,8 @@ Global
 		{E15C3465-9D45-495D-92CE-B91EF45E8623} = {6967798A-AC07-4994-8FE9-DC9442F88E97}
 		{D45D4170-E055-4926-8B03-04DAA5F02C6C} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{09DDAE21-397F-4263-8561-7F2FF28127CF} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
+		{6A040B01-1F0F-47C7-88C0-03A7D26FCF95} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{F2FFE2BA-8201-4ABD-89FE-23FD399DF143} = {6A040B01-1F0F-47C7-88C0-03A7D26FCF95}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
