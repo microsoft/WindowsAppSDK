@@ -118,6 +118,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A657A1
 		dev\Common\Security.IntegrityLevel.h = dev\Common\Security.IntegrityLevel.h
 		dev\Common\TerminalVelocityFeatures-DeploymentAPI.h = dev\Common\TerminalVelocityFeatures-DeploymentAPI.h
 		dev\Common\TerminalVelocityFeatures-DynamicDependency.h = dev\Common\TerminalVelocityFeatures-DynamicDependency.h
+		dev\Common\TerminalVelocityFeatures-EnvironmentManager.h = dev\Common\TerminalVelocityFeatures-EnvironmentManager.h
 		dev\Common\TerminalVelocityFeatures-PushNotifications.h = dev\Common\TerminalVelocityFeatures-PushNotifications.h
 	EndProjectSection
 EndProject
