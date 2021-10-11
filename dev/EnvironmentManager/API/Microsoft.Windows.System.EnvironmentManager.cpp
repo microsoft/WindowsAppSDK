@@ -16,12 +16,12 @@ namespace winrt::Microsoft::Windows::System::implementation
     EnvironmentManager::EnvironmentManager(Scope const& scope)
         : m_Scope(scope)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
     }
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForProcess()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogMessage(L"Making EM for process");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Process);
@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogMessage(L"Making EM for User");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::User);
@@ -39,7 +39,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForMachine()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogMessage(L"Making EM for Machine");
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
         environmentManager = winrt::make<implementation::EnvironmentManager>(Scope::Machine);
@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     bool EnvironmentManager::IsSupported()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         if (s_HasCheckedIsSupported)
         {
             return s_IsSupported;
@@ -79,7 +79,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     IMapView<hstring, hstring> EnvironmentManager::GetEnvironmentVariables()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariables");
         StringMap environmentVariables;
 
@@ -102,7 +102,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     hstring EnvironmentManager::GetEnvironmentVariable(hstring const& variableName)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling GetEnvironmentVariable");
         if (variableName.size() == 0 ||
             std::wstring_view(variableName)._Starts_with(L"0x00") ||
@@ -130,7 +130,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::SetEnvironmentVariable(hstring const& name, hstring const& value)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling SetEnvironmentVariable");
         if (!IsSupported())
         {
@@ -207,7 +207,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AppendToPath(hstring const& path)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AppendToPath");
         if (path.empty() ||
             std::wstring_view(path)._Starts_with(L"0x00") ||
@@ -275,7 +275,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveFromPath(hstring const& path)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveFromPath");
         if (path.empty() ||
             std::wstring_view(path)._Starts_with(L"0x00") ||
@@ -377,7 +377,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::AddExecutableFileExtension(hstring const& pathExt)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling AddExecutableFileExtension");
         if (pathExt.empty() ||
             std::wstring_view(pathExt)._Starts_with(L"0x00") ||
@@ -445,7 +445,7 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     void EnvironmentManager::RemoveExecutableFileExtension(hstring const& pathExt)
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), !::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled());
         EnvironmentManagerInsights::LogWithScopeAndMessage(m_Scope, L"Calling RemoveExecutableFileExtension");
         THROW_HR_IF(E_INVALIDARG, pathExt.empty());
 
