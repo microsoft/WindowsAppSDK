@@ -6,39 +6,22 @@ namespace Microsoft.Windows.System
     [experimental]
     runtimeclass EnvironmentManager
     {
-        [experimental]
         static EnvironmentManager GetForProcess();
-
-        [experimental]
         static EnvironmentManager GetForUser();
-
-        [experimental]
         static EnvironmentManager GetForMachine();
 
-        [experimental]
         static Boolean IsSupported{ get; };
 
-        [experimental]
         IMapView<String, String> GetEnvironmentVariables();
-
-        [experimental]
         String GetEnvironmentVariable(String name);
-
-        [experimental]
         void SetEnvironmentVariable(String name, String value);
 
         // Path manipulation
-        [experimental]
         void AppendToPath(String path);
-
-        [experimental]
         void RemoveFromPath(String path);
 
         // PathExt Manipulation
-        [experimental]
         void AddExecutableFileExtension(String pathExt);
-
-        [experimental]
         void RemoveExecutableFileExtension(String pathExt);
     }
 }
