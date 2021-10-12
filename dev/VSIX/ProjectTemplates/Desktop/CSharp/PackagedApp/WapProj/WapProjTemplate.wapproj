@@ -5,14 +5,6 @@
     <VisualStudioVersion>15.0</VisualStudioVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '17.0'">
-    <_DotNetPrefix>net5.0</_DotNetPrefix>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(VisualStudioVersion)' &gt;= '17.0'">
-    <_DotNetPrefix>net6.0</_DotNetPrefix>
-  </PropertyGroup>
-
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x86">
       <Configuration>Debug</Configuration>
@@ -51,7 +43,7 @@
     <ProjectGuid>$guid1$</ProjectGuid>
     <TargetPlatformVersion>$targetplatformversion$</TargetPlatformVersion>
     <TargetPlatformMinVersion>$targetplatformminversion$</TargetPlatformMinVersion>
-    <AssetTargetFallback>$(_DotNetPrefix)-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
+    <AssetTargetFallback>net5.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
     <DefaultLanguage>$currentuiculturename$</DefaultLanguage>
     $if$($includeKeyFile$==true)
     <PackageCertificateKeyFile>$projectname$_TemporaryKey.pfx</PackageCertificateKeyFile>

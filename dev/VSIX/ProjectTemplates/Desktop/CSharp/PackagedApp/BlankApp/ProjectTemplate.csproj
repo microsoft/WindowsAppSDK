@@ -1,15 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '17.0'">
-    <_DotNetPrefix>net5.0</_DotNetPrefix>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(VisualStudioVersion)' &gt;= '17.0'">
-    <_DotNetPrefix>net6.0</_DotNetPrefix>
-  </PropertyGroup>
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>$(_DotNetPrefix)-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>$safeprojectname$</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
