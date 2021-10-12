@@ -49,7 +49,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         auto channelExpiry = result.Channel().ExpirationTime();
 
         // Register Push Event for Foreground
-        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+       /* winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
                 auto payload = args.Payload();
 
@@ -57,7 +57,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
                 std::string payloadString(payload.begin(), payload.end());
                 std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
                 args.Handled(true);
-            });
+            }); */
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -89,11 +89,12 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    PushNotificationActivationInfo info(
+   /* PushNotificationActivationInfo info(
         PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
         winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
-    PushNotificationManager::RegisterActivator(info);
+    PushNotificationManager::RegisterActivator(info); */
+    ToastNotificationManager::RegisterActivator(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -130,6 +131,7 @@ int main()
     }
 
     // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+   // PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+   // ToastNotificationManager::UnRegisterActivator();
     return 0;
 }

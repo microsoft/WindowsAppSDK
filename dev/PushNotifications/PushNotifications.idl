@@ -130,4 +130,10 @@ namespace Microsoft.Windows.PushNotifications
         // Applications will call this to check which flags are supported for RegisterActivator
         static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
     };
+
+    static runtimeclass ToastNotificationManager
+    {
+        static void RegisterActivator(Guid taskClsid);
+        static void UnRegisterActivator();
+    };
 }
