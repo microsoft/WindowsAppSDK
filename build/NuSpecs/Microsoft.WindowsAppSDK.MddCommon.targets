@@ -2,7 +2,7 @@
 
     <!-- Targets file common to both managed and native projects that helps enable access to Framework packages-->
 
-    <PropertyGroup Condition="'$(WindowsAppSdkBootstrapInitialize)'=='' and '$(WindowsAppSDKSelfContained)'!='false' and '$(WindowsPackageType)'=='None'">
+    <PropertyGroup Condition="'$(WindowsAppSdkBootstrapInitialize)'=='' and '$(WindowsAppSDKSelfContained)'!='true' and '$(WindowsPackageType)'=='None'">
         <!--Allows GenerateBootstrapCS/GenerateBootstrapCpp to run-->
         <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
     </PropertyGroup>
