@@ -10,6 +10,7 @@ namespace Microsoft.Windows.System
         CommandLineParser(String arguments);
 
         void AddArguments(String arguments);
-        Map<String, String> Parse();
+        IMapView<String, String> Parse();
+        void Reset();
     }
 }

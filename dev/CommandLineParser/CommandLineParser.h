@@ -14,9 +14,13 @@ namespace winrt::Microsoft::Windows::System::implementation
         CommandLineParser(hstring const& arguments);
         void AddArguments(hstring const& arguments);
 
+        IMapView<hstring, hstring> GetParsedArguments();
+        IMapView<hstring, hstring> Parse();
+        void Reset();
+
     private:
         std::wstring m_Arguments{};
-        std::map<std::wstring, std::wstring> m_ParsedArguments{};
+        std::Map<hstring, hstring> m_ParsedArguments{};
 
     };
 }
