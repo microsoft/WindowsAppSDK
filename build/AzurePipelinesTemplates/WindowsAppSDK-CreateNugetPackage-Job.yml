@@ -63,7 +63,7 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Foundation.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
-        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.Cpp.targets" -Destination "$fullpackagePath\build\native\Microsoft.WindowsAppSDK.Bootstrap.Cpp.targets"
+        Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\Microsoft.WindowsAppSDK.Bootstrap.Cpp.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.MddCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.MddCommon.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"

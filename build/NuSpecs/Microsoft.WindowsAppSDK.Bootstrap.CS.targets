@@ -1,8 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> 
 
     <Target Name="GenerateBootstrapCS" 
-            BeforeTargets="BeforeCompile"
-            Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'">
+            BeforeTargets="BeforeCompile">
         <ItemGroup>
             <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapAutoInitializer.cs" />
             <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
