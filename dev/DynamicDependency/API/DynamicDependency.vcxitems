@@ -56,12 +56,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphNode.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageId.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageInfo.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)wil_msixdynamicdependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTPackage.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)winrt_namespaces.h" />
   </ItemGroup>
   <ItemGroup>

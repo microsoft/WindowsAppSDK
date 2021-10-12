@@ -72,19 +72,14 @@ rules for Visual Studio to build projects with the Hybrid CRT.
 
 The steps involved:
 
-1. `<UseUnicrt>` = true -- use the UCRT
-2. `<RuntimeLibrary>` = MultiThreaded\[Debug\] -- use the static CRT
-3. `<IgnoreSpecificDefaultLibraries>` includes `libucrt[d].lib` -- ignore the libucrt\[d\] library
-4. `<AdditionalOptions>` includes `/defaultlib:ucrt[d].lib` -- link the ucrt\[d\] library
+1. `<RuntimeLibrary>` = MultiThreaded\[Debug\] -- use the static CRT
+2. `<IgnoreSpecificDefaultLibraries>` includes `libucrt[d].lib` -- ignore the libucrt\[d\] library
+3. `<AdditionalOptions>` includes `/defaultlib:ucrt[d].lib` -- link the ucrt\[d\] library
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <PropertyGroup Label="Globals">
-    <UseUnicrt>true</UseUnicrt>
-  </PropertyGroup>
 
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
@@ -131,3 +126,74 @@ all projects in the repository via this statement:
 ```
 
 This applies to all projects in the repository (product, test, ...).
+
+## C++/CX Special Considerations
+
+Projects that include CX code, and wish to use Hybrid CRT, require the following compile
+settings (explanations below):
+
+```xml
+  <ClCompile>
+    <PreprocessorDefinitions>_CRTIMP2_IMPORT=;_CRTIMP2_PURE_IMPORT=;_CRTDATA2_IMPORT=;_ALLOW_RUNTIME_LIBRARY_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+  </ClCompile>
+```
+
+As stated above, ClCompile.RuntimeLibrary should not be specified in a C++ project.  
+But CX involves a bit more work.  CX compilation requires the /ZW switch, which in turn
+requires dynamic CRT linkage, via the /MD(d) switch, which in turn requires
+ClCompile.RuntimeLibrary to be set to MultiThreaded(Debug)Dll:  
+
+```build
+1>cl : command line error D8016: '/MTd' and '/ZW' command-line options are incompatible 
+```
+
+The /MD(d) switch in turn defines the preprocessor symbol _DLL, causing the compile-time
+and link-time issues below.
+
+### Compilation
+
+The CRT yvals.h header consults _DLL to conditionally add __declspec(dllimport) to any
+CRT/STL externals.  Compiling CX code that expects to use dynamic CRT, but linking with
+the static CRT libraries, produces warnings and errors such as:
+
+```build
+1>warning LNK4217: symbol '…' defined in 'libcpmtd.lib(cout.obj)' is imported by '…' 
+1>error LNK2019: unresolved external symbol "__declspec(dllimport) …"
+```
+
+To ensure that CX code is compiled to expect static CRT linkage, the following symbols
+are defined (with no values, to mimic #defines), preventing decoration of externals with
+__declspec(dllimport):
+
+```xml
+<ClCompile>
+  <PreprocessorDefinitions>_CRTIMP2_IMPORT=;_CRTIMP2_PURE_IMPORT=;_CRTDATA2_IMPORT=;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+</ClCompile>
+```
+
+### Linking
+
+The CRT yvals.h header also uses _DLL to determine the value of the RuntimeLibrary pragma
+detect mismatch (PDM).  Normally, this PDM would ensure that a mixture of CRTs (static and
+dynamic) is not introduced into a single binary.  But this produces an error linking CX code
+with C++ code compiled for Hybrid (static) CRT linkage:
+
+```build
+1>error LNK2038: mismatch detected for 'RuntimeLibrary': value 'MDd_DynamicDebug' doesn't match value 'MTd_StaticDebug'
+```
+
+There are two potential sources of the RuntimeLibrary PDM being set to dynamic.
+One is the scenario described above - compiling user CX code with /MD(d).
+The other is linking with the CRT import library, msvcrt(d).lib.  
+
+For user CX code compilation, the only option is to suppress definition of the
+RuntimeLibrary PDM by defining the following symbol:  
+
+```xml
+<ClCompile>
+  <PreprocessorDefinitions>_ALLOW_RUNTIME_LIBRARY_MISMATCH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+</ClCompile>
+```
+
+For linkage, msvcrt(d).lib must never be used.  In other words, even test code
+which pulls in production code must use Hybrid (static) CRT linkage.

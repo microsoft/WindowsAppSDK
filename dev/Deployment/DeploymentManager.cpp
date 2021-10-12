@@ -2,25 +2,29 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
 #include <DeploymentManager.h>
-#include <DeploymentStatus.h>
+#include <DeploymentResult.h>
 #include <PackageInfo.h>
 #include <PackageId.h>
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
-#include <Microsoft.Windows.ApplicationModel.WindowsAppSDK.DeploymentManager.g.cpp>
+#include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 
-namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementation
+namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
 
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::GetStatus()
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
         FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
         return GetStatus(GetCurrentFrameworkPackageFullName());
     }
 
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::GetStatus(hstring const& packageFullName)
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
+        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
+        return Initialize(GetCurrentFrameworkPackageFullName());
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::GetStatus(hstring const& packageFullName)
+    {
         std::wstring frameworkPackageFullName{ packageFullName };
         auto frameworkPackageInfo{ GetPackageInfoForPackage(frameworkPackageFullName) };
 
@@ -38,16 +42,38 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
         const int c_namePrefixLength{ ARRAYSIZE(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) - 1 };
 
         // We assume that since this is a framework there is no subtype name, meaning the remainder
-        // of the name is the VersionTag
-        auto packageNameVersionTag{ frameworkName.substr(c_namePrefixLength) };
+        // of the name is the Version Identifier, which contains .Major.Minor-VersionTag
+        auto packageNameVersionIdentifier{ frameworkName.substr(c_namePrefixLength) };
+
+        // Version tag is the -Foo at the end, typically the channel.
+        std::wstring packageNameVersionTag{};
+        auto versionTagPos{ packageNameVersionIdentifier.find('-') };
+        if (versionTagPos != std::string::npos)
+        {
+            packageNameVersionTag = packageNameVersionIdentifier.substr(versionTagPos);
+        }
 
         // Loop through all of the target packages and validate.
         HRESULT verifyResult{};
         for (const auto& package : c_targetPackages)
         {
-            // Build package family name based on the framework naming scheme:
-            //     Prefix + SubTypeName + VersionTag + '_' + PublisherId
-            std::wstring packageFamilyName{ WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX };
+            // Build package family name based on the framework naming scheme.
+            std::wstring packageFamilyName{};
+            if (package.versionType == PackageVersionType::Versioned)
+            {
+                // Prefix + SubTypeName + VersionIdentifier + Suffix
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+            }
+            else if (package.versionType == PackageVersionType::Unversioned)
+            {
+                // Prefix + Subtypename + VersionTag + Suffix
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+            }
+            else
+            {
+                // Other version types not supported.
+                FAIL_FAST_HR(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE));
+            }
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };
@@ -59,30 +85,40 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::implementa
             }
         }
 
-        auto status{ winrt::make<implementation::DeploymentStatus>(SUCCEEDED(verifyResult), FAILED(verifyResult), verifyResult) };
-        return status;
-    }
-
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize()
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
-        FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE), !AppModel::Identity::IsPackagedProcess());
-        return Initialize(GetCurrentFrameworkPackageFullName());
-    }
-
-    winrt::Microsoft::Windows::ApplicationModel::WindowsAppSDK::DeploymentStatus DeploymentManager::Initialize(hstring const& packageFullName)
-    {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::ApplicationModel::WindowsAppSDK::Feature_DeploymentAPI::IsEnabled());
-        auto status{ DeploymentManager::GetStatus(packageFullName) };
-        if (status.IsOK())
+        DeploymentStatus status{};
+        if (SUCCEEDED(verifyResult))
         {
-            return status;
+            status = DeploymentStatus::Ok;
+        }
+        else
+        {
+            status = DeploymentStatus::PackageInstallRequired;
+        }
+
+        return winrt::make<implementation::DeploymentResult>(status, verifyResult);
+    }
+
+    winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::DeploymentResult DeploymentManager::Initialize(hstring const& packageFullName)
+    {
+        auto getStatusResult{ DeploymentManager::GetStatus(packageFullName) };
+        if (getStatusResult.Status() == DeploymentStatus::Ok)
+        {
+            return getStatusResult;
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto initializeResult{ DeployPackages(frameworkPackageFullName) };
-        auto initializeStatus{ winrt::make<implementation::DeploymentStatus>(SUCCEEDED(initializeResult), FAILED(initializeResult), initializeResult) };
-        return initializeStatus;
+        auto deployPackagesResult{ DeployPackages(frameworkPackageFullName) };
+        DeploymentStatus status{};
+        if (SUCCEEDED(deployPackagesResult))
+        {
+            status = DeploymentStatus::Ok;
+        }
+        else
+        {
+            status = DeploymentStatus::PackageInstallFailed;
+        }
+
+        return winrt::make<implementation::DeploymentResult>(status, deployPackagesResult);
     }
 
     MddCore::PackageInfo DeploymentManager::GetPackageInfoForPackage(std::wstring const& packageFullName)
