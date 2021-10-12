@@ -15,12 +15,12 @@ namespace winrt::Microsoft::Windows::System::implementation
         void AddArguments(hstring const& arguments);
 
         IMapView<hstring, hstring> GetParsedArguments();
-        IMapView<hstring, hstring> Parse();
+        IMapView<hstring, hstring> ParseArguments();
         void Reset();
 
     private:
         std::wstring m_Arguments{};
-        std::Map<hstring, hstring> m_ParsedArguments{};
+        std::map<hstring, hstring> m_ParsedArguments{};
 
     };
 }

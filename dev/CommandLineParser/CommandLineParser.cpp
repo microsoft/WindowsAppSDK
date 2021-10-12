@@ -19,31 +19,39 @@ namespace winrt::Microsoft::Windows::System::implementation
         m_Arguments.append(arguments);
     }
 
-    IMapView<hstring, hstring> CommandLineParser::Parse()
+    IMapView<hstring, hstring> CommandLineParser::GetParsedArguments()
     {
-        return m_ParsedArguments;
+        auto mapToMove{ m_ParsedArguments };
+        auto coll1{ winrt::single_threaded_map<hstring, hstring>(std::move(mapToMove)) };
+
+        return coll1.GetView();
     }
 
-    IMapView<hstring, hstring> CommandLineParser::Parse()
+    IMapView<hstring, hstring> CommandLineParser::ParseArguments()
     {
         if (m_Arguments.empty())
         {
             return {};
         }
 
-        std::unique_ptr<wchar_t> argumentsToParse = new wchar_t[m_Arguments.size() + 1];
-        wcscpy(argumentsToParse, m_Arguments.c_str());
+        std::unique_ptr<wchar_t[]> argumentsToParse(new wchar_t[m_Arguments.size() + 1]);
+        wcscpy_s(argumentsToParse.get(), m_Arguments.size() + 1, m_Arguments.c_str());
 
-        for (auto environmentVariableOffset = argumentsToParse; *environmentVariableOffset; environmentVariableOffset += wcslen(environmentVariableOffset) + 1)
+        for (auto environmentVariableOffset = argumentsToParse.get(); *environmentVariableOffset; environmentVariableOffset += wcslen(environmentVariableOffset) + 1)
         {
             auto delimiter{ wcschr(environmentVariableOffset, L' ') };
             FAIL_FAST_HR_IF_NULL(E_UNEXPECTED, delimiter);
+
             std::wstring switchName(environmentVariableOffset, 0, delimiter - environmentVariableOffset);
             auto switchValue{ delimiter + 1 };
-            m_ParsedArguments.insert(variableName, variableValue);
+
+            m_ParsedArguments[hstring(switchName)] = hstring(switchValue);
         }
 
-        return m_ParsedArguments.GetView();
+        auto mapToMove{m_ParsedArguments};
+        auto coll1{ winrt::single_threaded_map<hstring, hstring>(std::move(mapToMove)) };
+
+        return coll1.GetView();
     }
 
     void CommandLineParser::Reset()
