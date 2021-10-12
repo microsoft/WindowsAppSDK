@@ -29,6 +29,7 @@ STDAPI_(void) MddBootstrapShutdown() noexcept;
 // C++ friendly APIs
 #if defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED) && (WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED == 1)
 #if defined(__cplusplus)
+#if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RELEASE_VERSION_UINT64)
 namespace Microsoft::Windows::ApplicationModel
 {
 class PackageVersion : public PACKAGE_VERSION
@@ -106,7 +107,8 @@ namespace DynamicDependency::Bootstrap
     /// @param versionTag version tag (if any), e.g. "preview1".
     /// @see TryInitialize(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
-    inline HRESULT TryInitialize(uint32_t majorMinorVersion, PCWSTR versionTag = nullptr)
+    inline HRESULT TryInitialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
+                                 PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W)
     {
         const PackageVersion minVersion{};
         return TryInitialize(majorMinorVersion, versionTag, minVersion);
@@ -141,7 +143,6 @@ namespace DynamicDependency::Bootstrap
         THROW_IF_FAILED(TryInitialize(majorMinorVersion, versionTag, minVersion));
     }
 
-#if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RELEASE_VERSION_UINT64)
     /// Initialize the calling process to use Windows App SDK's framework package.
     ///
     /// Find a Windows App SDK framework package meeting the criteria and make it available
@@ -156,11 +157,10 @@ namespace DynamicDependency::Bootstrap
     /// @see Initialize(uint32_t, PCWSTR, PackageVersion)
     /// @see Shutdown()
     inline void Initialize(uint32_t majorMinorVersion = WINDOWSAPPSDK_RELEASE_MAJORMINOR,
-        PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W)
+                           PCWSTR versionTag = WINDOWSAPPSDK_RELEASE_VERSION_TAG_W)
     {
         THROW_IF_FAILED(TryInitialize(majorMinorVersion, versionTag));
     }
-#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RELEASE_VERSION_UINT64)
 #endif // defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
 
     // Automate Boostrap shutdown when leaving scope.
@@ -176,7 +176,6 @@ namespace DynamicDependency::Bootstrap
     };
 
 #if defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
-#if defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined(WINDOWSAPPSDK_RELEASE_VERSION_UINT64)
     // Automate Boostrap initialization and shutdown.
     class AutoInitialize
     {
@@ -198,10 +197,10 @@ namespace DynamicDependency::Bootstrap
             Shutdown();
         }
     };
-#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RELEASE_VERSION_UINT64)
 #endif // defined(_CPPUNWIND) && defined(WIL_ENABLE_EXCEPTIONS)
 }
 }
+#endif // defined(WINDOWSAPPSDK_RELEASE_MAJORMINOR) && defined(WINDOWSAPPSDK_RELEASE_VERSION_TAG_W) && defined()WINDOWSAPPSDK_RELEASE_VERSION_UINT64)
 #endif // defined(WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED) && (WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_APPLICATIONMODEL_DYNAMICDEPENDENCY_FEATURE_BOOTSTRAPCPPINITIALIZATION_ENABLED == 1)
 #endif // defined(__cplusplus)
 
