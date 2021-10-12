@@ -8,9 +8,6 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(WindowsAppSdkBootstrapInitialize)'== 'true'">
-        <MddGeneratedFilesDir Condition="'$(MddGeneratedFilesDir)' == ''">$(GeneratedFilesDir)</MddGeneratedFilesDir>
-        <MddGeneratedFilesDir Condition="'$(MddGeneratedFilesDir)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Generated Files'))</MddGeneratedFilesDir>
-        <MddFileName>$(MddGeneratedFilesDir)_MddGeneratedFile</MddFileName>
         <PublishAppxPackage>false</PublishAppxPackage>
     </PropertyGroup>      
     

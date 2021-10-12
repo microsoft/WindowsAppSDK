@@ -2,11 +2,10 @@
 
 
     <Target Name="GenerateBootstrapCpp" 
-            BeforeTargets="ClCompile"
-            Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'">
+            BeforeTargets="ClCompile">
 
         <ItemGroup>
-            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapInitializer.cpp" />
+            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp" />
         </ItemGroup>
 
     </Target>

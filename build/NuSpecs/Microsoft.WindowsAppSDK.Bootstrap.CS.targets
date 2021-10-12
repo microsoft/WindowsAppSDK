@@ -4,7 +4,7 @@
             BeforeTargets="BeforeCompile"
             Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'">
         <ItemGroup>
-            <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapModuleInitializer.cs" />
+            <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapAutoInitializer.cs" />
             <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />
         </ItemGroup>
     </Target>

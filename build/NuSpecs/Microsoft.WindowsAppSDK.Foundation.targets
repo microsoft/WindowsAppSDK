@@ -4,5 +4,5 @@
   <Import Project="$(MSBuildThisFileDirectory)MrtCore.targets" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.targets" Condition="'$(MSBuildProjectExtension)' != '.wapproj'" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.MddCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.CS.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.CS.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
 </Project>
