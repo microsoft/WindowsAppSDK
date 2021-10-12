@@ -59,6 +59,6 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.MddCommon.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.MddInitalize.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.Cpp.targets" />
 
 </Project>
