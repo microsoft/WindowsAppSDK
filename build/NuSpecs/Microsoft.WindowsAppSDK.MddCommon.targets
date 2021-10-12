@@ -1,13 +1,13 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <!-- Props file common to both managed and native projects that helps enable access to Framework packages-->
+    <!-- Targets file common to both managed and native projects that helps enable access to Framework packages-->
 
-    <PropertyGroup Condition="'$(WindowsAppSdkEnableMdd)'=='' and '$(WindowsAppSdkFrameworkDependent)'!='false' and '$(WindowsPackageType)'=='None'">
+    <PropertyGroup Condition="'$(WindowsAppSdkBootstrapInitialize)'=='' and '$(WindowsAppSDKSelfContained)'!='false' and '$(WindowsPackageType)'=='None'">
         <!--Allows GenerateBootstrapCS/GenerateBootstrapCpp to run-->
-        <WindowsAppSdkEnableMdd>true</WindowsAppSdkEnableMdd>
+        <WindowsAppSdkBootstrapInitialize>true</WindowsAppSdkBootstrapInitialize>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(WindowsAppSdkEnableMdd)'== 'true'">
+    <PropertyGroup Condition="'$(WindowsAppSdkBootstrapInitialize)'== 'true'">
         <MddGeneratedFilesDir Condition="'$(MddGeneratedFilesDir)' == ''">$(GeneratedFilesDir)</MddGeneratedFilesDir>
         <MddGeneratedFilesDir Condition="'$(MddGeneratedFilesDir)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'Generated Files'))</MddGeneratedFilesDir>
         <MddFileName>$(MddGeneratedFilesDir)_MddGeneratedFile</MddFileName>

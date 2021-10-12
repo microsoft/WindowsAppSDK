@@ -2,7 +2,7 @@
 
     <Target Name="GenerateBootstrapCS" 
             BeforeTargets="BeforeCompile"
-            Condition="'$(WindowsAppSdkEnableMdd)' == 'true'">
+            Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'">
         <ItemGroup>
             <Compile Include="$(MSBuildThisFileDirectory)..\include\MddBootstrapModuleInitializer.cs" />
             <Compile Include="$(MSBuildThisFileDirectory)..\include\WindowsAppSDK-VersionInfo.cs" />

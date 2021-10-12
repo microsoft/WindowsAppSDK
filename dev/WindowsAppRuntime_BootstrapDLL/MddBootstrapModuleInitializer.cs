@@ -15,10 +15,10 @@ class MddBootstrapInitializerCS
         uint majorMinorVersion = Release.MajorMinor;
         string versionTag = Release.VersionTag;
 
-        ushort Major = Microsoft.WindowsAppSDK.Runtime.Version.Major;
-        ushort Minor = Microsoft.WindowsAppSDK.Runtime.Version.Minor;
-        ushort Build = Microsoft.WindowsAppSDK.Runtime.Version.Build;
-        ushort Revision = Microsoft.WindowsAppSDK.Runtime.Version.Revision;
+        var Major = Microsoft.WindowsAppSDK.Runtime.Version.Major;
+        var Minor = Microsoft.WindowsAppSDK.Runtime.Version.Minor;
+        var Build = Microsoft.WindowsAppSDK.Runtime.Version.Build;
+        var Revision = Microsoft.WindowsAppSDK.Runtime.Version.Revision;
         
    
         var minVersion = new PackageVersion(Major, Build, Minor, Revision);

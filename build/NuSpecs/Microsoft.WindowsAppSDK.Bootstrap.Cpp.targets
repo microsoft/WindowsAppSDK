@@ -3,7 +3,7 @@
 
     <Target Name="GenerateBootstrapCpp" 
             BeforeTargets="ClCompile"
-            Condition="'$(WindowsAppSdkEnableMdd)' == 'true'">
+            Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'">
 
         <ItemGroup>
             <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapInitializer.cpp" />
