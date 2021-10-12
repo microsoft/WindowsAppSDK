@@ -215,9 +215,6 @@
       <Project>{9c1a6c58-52d6-4514-9120-5c339c5df4be}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)..\..\common\TerminalVelocityFeatures-DynamicDependency.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />
