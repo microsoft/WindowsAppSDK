@@ -3,6 +3,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)MrtCore.targets" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.targets" Condition="'$(MSBuildProjectExtension)' != '.wapproj'" />
+  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.MddCommon.targets" />
   <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.Bootstrap.CS.targets" />
-  <Import Project="$(MSBuildThisFileDirectory)Microsoft.WindowsAppSDK.MddInitalize.targets" />
 </Project>

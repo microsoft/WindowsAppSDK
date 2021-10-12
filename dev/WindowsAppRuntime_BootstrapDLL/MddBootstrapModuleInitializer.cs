@@ -3,8 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.Windows.ApplicationModel.DynamicDependency;
 using Microsoft.WindowsAppSDK;
-
-//Driver Code
 class MddBootstrapInitializerCS
 {
     [ModuleInitializer]
