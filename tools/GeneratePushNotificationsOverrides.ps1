@@ -38,26 +38,30 @@ else
     Write-Output "$Path exists"
 }
 
-$pushnotifications_clsid_uuid = New-Guid
-
 # Generate the json file
 $content_json=@"
 {
-    "PushNotifications": {
-        "LIBID": "CE96C745-3017-460E-895B-4FD98E1194F2",
-        "Impl": {
-            "CLSID": {
-                "UUID": "E739C755-0D09-48DF-A468-A5DF0B5422DC"
-            }
-        },
-        "Task": {
-            "CLSID": {
-                "UUID": "$pushnotifications_clsid_uuid"
-            }
-        }
-    }
+	"LIBID": "CE96C745-3017-460E-895B-4FD98E1194F2",
+	"ComServer": {
+		"CLSID": {
+			"UUID": "E739C755-0D09-48DF-A468-A5DF0B5422DC"
+		}
+	},
+	"ComInterfaces": {
+		"LRP": {
+			"CLSID": {
+				"UUID": "60FC21B2-B396-4D49-94F0-7555869FB93C"
+			}
+		},
+		"ForegroundSink": {
+			"CLSID": {
+				"UUID": "25604D55-9B17-426F-9D67-2B11B3A65598"
+			}
+		}
+	}
 }
 "@
+
 $file_json = Join-Path $Path 'PushNotifications-Override.json'
 Write-Output "Writing $file_json..."
 "$content_json" | Out-File $file_json -Encoding utf8
@@ -88,14 +92,14 @@ $content_h=@"
 #define PUSHNOTIFICATIONS_IMPL_CLSID_STRING      _STRINGIZE(PUSHNOTIFICATIONS_IMPL_CLSID_UUID)
 #endif
 
-#ifdef PUSHNOTIFICATIONS_TASK_CLSID_UUID
-#undef PUSHNOTIFICATIONS_TASK_CLSID_UUID
-#define PUSHNOTIFICATIONS_TASK_CLSID_UUID        $pushnotifications_clsid_uuid
+#ifdef PUSHNOTIFICATIONS_LRP_CLSID_UUID
+#undef PUSHNOTIFICATIONS_LRP_CLSID_UUID
+#define PUSHNOTIFICATIONS_LRP_CLSID_UUID        60FC21B2-B396-4D49-94F0-7555869FB93C
 #endif
 
-#ifdef PUSHNOTIFICATIONS_TASK_CLSID_STRING
-#undef PUSHNOTIFICATIONS_TASK_CLSID_STRING
-#define PUSHNOTIFICATIONS_TASK_CLSID_STRING      _STRINGIZE(PUSHNOTIFICATIONS_TASK_CLSID_UUID)
+#ifdef PUSHNOTIFICATIONS_FOREGROUNDSINK_CLSID_UUID
+#undef PUSHNOTIFICATIONS_FOREGROUNDSINK_CLSID_UUID
+#define PUSHNOTIFICATIONS_FOREGROUNDSINK_CLSID_UUID        25604D55-9B17-426F-9D67-2B11B3A65598
 #endif
 "@
 $file_h = Join-Path $Path 'PushNotifications-Override.h'

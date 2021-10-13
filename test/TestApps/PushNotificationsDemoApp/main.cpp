@@ -4,6 +4,8 @@
 #include <wil/win32_helpers.h>
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
+#include <MddBootstrap.h>
+#include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
@@ -18,7 +20,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
     auto channelOperation = PushNotificationManager::CreateChannelAsync(
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
+        winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(
@@ -49,7 +51,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         auto channelExpiry = result.Channel().ExpirationTime();
 
         // Register Push Event for Foreground
-        result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
                 auto payload = args.Payload();
 
@@ -89,11 +91,27 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    PushNotificationActivationInfo info(
-        PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+    if (!Test::AppModel::IsPackagedProcess())
+    {
+        // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+        const UINT32 c_Version_MajorMinor{ 0x00040001 };
+        const PACKAGE_VERSION minVersion{};
+        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+    }
 
-    PushNotificationManager::RegisterActivator(info);
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+
+        PushNotificationManager::RegisterActivator(info);
+    }
+    else
+    {
+        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
+        PushNotificationManager::RegisterActivator(info);
+    }
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -129,7 +147,15 @@ int main()
         std::cin.ignore();
     }
 
-    // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    {
+        // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
+        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+    }
+
+    if (!Test::AppModel::IsPackagedProcess())
+    {
+        MddBootstrapShutdown();
+    }
     return 0;
 }

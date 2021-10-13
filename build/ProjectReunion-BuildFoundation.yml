@@ -130,6 +130,54 @@ jobs:
       TSLint: false
       ToolLogsNotFoundAction: 'Standard'
 
+- job: BuildAnyCPU
+  # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+  # Can be expanded to add any other binary as needed
+  condition:
+    eq(variables['useBuildOutputFromBuildId'],'')
+  pool: $(ProjectReunionBuildPool)
+  timeoutInMinutes: 120
+  variables:
+    buildPlatform: 'anycpu'
+    buildConfiguration: 'Release'
+    normalizedConfiguration: 'fre'
+    PGOBuildMode: 'Optimize'
+    buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
+    publishDir : $(Build.ArtifactStagingDirectory)
+    artifactName: 'windowsappsdk_binaries'
+  steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'TelemetryInternal'
+
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet restore of packages'
+    inputs:
+      command: 'custom'
+      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+  
+  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml
+    parameters:
+      solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
+      nugetConfigPath: nuget.config
+      buildOutputDir: $(buildOutputDir)
+      publishDir: $(publishDir)
+
+  - task: CopyFiles@2
+    displayName: 'Copy AnyCpu-built binaries'
+    inputs:
+      SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
+      Contents: |
+        Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.18362.0'
+      flattenFolders: false
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
+      artifactName: FullNuget
+
 - job: BuildMRT
   pool: $(ProjectReunionBuildPool)
   strategy:

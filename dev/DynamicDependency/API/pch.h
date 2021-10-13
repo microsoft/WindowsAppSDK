@@ -38,4 +38,5 @@
 #include <winrt/Windows.System.h>
 
 #include <appmodel.identity.h>
+#include <microsoft.utf8.h>
 #include <security.integritylevel.h>

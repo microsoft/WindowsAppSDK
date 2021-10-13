@@ -3,6 +3,7 @@
 
 namespace Microsoft.Windows.System
 {
+    [experimental]
     runtimeclass EnvironmentManager
     {
         static EnvironmentManager GetForProcess();

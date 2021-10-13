@@ -20,46 +20,59 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
+
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
-    std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
+    std::tuple<std::wstring, std::wstring> GetActivationArguments(PWSTR argv[], int argc, PCWSTR activationKind)
     {
-        auto argsStart = commandLine.rfind(c_argumentPrefix);
-        if (argsStart == std::wstring::npos)
+        for (int index = 0; index < argc; index++)
         {
-            return { L"", L"" };
-        }
+            std::wstring_view fullArgument = argv[index];
+            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, activationKind, c_argumentSuffix);
 
-        // Push past the '----' commandline argument prefix.
-        argsStart += 4;
-
-        auto argsEnd = commandLine.find_first_of(L' ', argsStart);
-
-        // Separate the argument from any behind it on the command-line.
-        std::wstring argument;
-        if (argsEnd == std::wstring::npos)
-        {
-            argument = commandLine.substr(argsStart);
-        }
-        else
-        {
-            if (argsStart > argsEnd)
+            auto argStart = fullArgument.find(protocolQualifier);
+            if (argStart == std::wstring::npos)
             {
-                throw std::invalid_argument("commandLine");
+                continue;
             }
 
-            argument = commandLine.substr(argsStart, (argsEnd - argsStart));
+            // Push past the '----' commandline argument prefix.
+            argStart += 4;
+
+            std::wstring argument{ fullArgument.substr(argStart) };
+
+            // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
+            auto argsDelim = argument.find_first_of(L':');
+            if (argsDelim == std::wstring::npos)
+            {
+                return { argument, L"" };
+            }
+
+            return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
         }
 
-        // We explicitly use find_first_of here, so that the resulting data may contain : as a valid character.
-        auto argsDelim = argument.find_first_of(L':');
-        if (argsDelim == std::wstring::npos)
+        return { L"", L""};
+    }
+
+    std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
+    {
+        int argc{};
+
+        wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
+
+        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
+        for (auto activationKind : activationKinds)
         {
-            return { argument, L"" };
+            auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);
+            if (kind != L"")
+            {
+                return { kind, data };
+            }
         }
 
-        return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
+        return { L"", L"" };
     }
 
     std::tuple<ExtendedActivationKind, winrt::Windows::Foundation::IInspectable> GetEncodedLaunchActivatedEventArgs(IProtocolActivatedEventArgs const& args)
@@ -345,17 +358,30 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractData.empty())
+                if (contractArgument == c_pushProtocolArgumentString)
                 {
-                    // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
+                    // Generate a basic encoded launch Uri for all Push activations.
+                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                    contractArgument = c_msProtocolArgumentString;
+
+                    // A non-empty contractData means we have a payload.
+                    // This contains a background notification. It is specific to unpackaged apps.
+                    // It requires further processing to build PushNotificationReceivedEventArgs.
+                    // For packaged apps we don't need extra processing. A basic encoded launch Uri is sufficient.
+                    auto index = contractData.find(c_pushPayloadAttribute);
+
+                    if (!contractData.empty() && index == 0)
                     {
-                        contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
-                        contractArgument = c_protocolArgumentString;
+                        tempContractData += L"&payload=";
+                        // 9 -> the size of &payload= as quotes in the contrat data will
+                        // have been tripped in the call to ParseCommandLine.
+                        tempContractData += contractData.substr(9, contractData.size() - 9);
                     }
+
+                    contractData = tempContractData;
                 }
 
-                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)
+                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_msProtocolArgumentString, -1, TRUE) == CSTR_EQUAL)
                 {
                     kind = ExtendedActivationKind::Protocol;
                     auto args = make<ProtocolActivatedEventArgs>(contractData.c_str());
@@ -402,7 +428,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     bool AppInstance::TrySetKey(std::wstring const& key)
     {
-        std::wstring mutexName = m_moduleName + L"_Mutex";
+        auto escapedKey = std::regex_replace(key, std::wregex(L"\\\\"), L"_");
+        std::wstring mutexName = wil::str_printf<std::wstring>(L"%s_%s_Mutex", m_moduleName.c_str(), escapedKey.c_str());
 
         // We keep the mutex as a live member to ensure all other instances continue
         // to get an 'open' instead of a 'create' due to it already existing.
