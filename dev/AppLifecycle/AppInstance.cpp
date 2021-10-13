@@ -20,19 +20,17 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
+    static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
+
     INIT_ONCE AppInstance::s_initOnce{};
     winrt::com_ptr<AppInstance> AppInstance::s_current;
 
-    std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
+    std::tuple<std::wstring, std::wstring> GetActivationArguments(PWSTR argv[], int argc, PCWSTR activationKind)
     {
-        int argc{};
-        wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
-
-        // Search for ----ms-protocol:
         for (int index = 0; index < argc; index++)
         {
             std::wstring_view fullArgument = argv[index];
-            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, c_protocolArgumentString, c_argumentSuffix);
+            auto protocolQualifier = wil::str_printf<std::wstring>(L"%s%s%s", c_argumentPrefix, activationKind, c_argumentSuffix);
 
             auto argStart = fullArgument.find(protocolQualifier);
             if (argStart == std::wstring::npos)
@@ -53,6 +51,25 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
 
             return { argument.substr(0, argsDelim), argument.substr(argsDelim + 1) };
+        }
+
+        return { L"", L""};
+    }
+
+    std::tuple<std::wstring, std::wstring> ParseCommandLine(const std::wstring& commandLine)
+    {
+        int argc{};
+
+        wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
+
+        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
+        for (auto activationKind : activationKinds)
+        {
+            auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);
+            if (kind != L"")
+            {
+                return { kind, data };
+            }
         }
 
         return { L"", L"" };
@@ -341,17 +358,30 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractData.empty())
+                if (contractArgument == c_pushProtocolArgumentString)
                 {
-                    // If the contractData is empty, handle any aliased encoded launches.
-                    if (CompareStringOrdinal(contractArgument.data(), static_cast<int>(contractArgument.size()), L"WindowsAppRuntimePushServer", -1, TRUE) == CSTR_EQUAL)
+                    // Generate a basic encoded launch Uri for all Push activations.
+                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                    contractArgument = c_msProtocolArgumentString;
+
+                    // A non-empty contractData means we have a payload.
+                    // This contains a background notification. It is specific to unpackaged apps.
+                    // It requires further processing to build PushNotificationReceivedEventArgs.
+                    // For packaged apps we don't need extra processing. A basic encoded launch Uri is sufficient.
+                    auto index = contractData.find(c_pushPayloadAttribute);
+
+                    if (!contractData.empty() && index == 0)
                     {
-                        contractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
-                        contractArgument = c_protocolArgumentString;
+                        tempContractData += L"&payload=";
+                        // 9 -> the size of &payload= as quotes in the contrat data will
+                        // have been tripped in the call to ParseCommandLine.
+                        tempContractData += contractData.substr(9, contractData.size() - 9);
                     }
+
+                    contractData = tempContractData;
                 }
 
-                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_protocolArgumentString, -1, TRUE) == CSTR_EQUAL)
+                if (CompareStringOrdinal(contractArgument.c_str(), static_cast<int>(contractArgument.size()), c_msProtocolArgumentString, -1, TRUE) == CSTR_EQUAL)
                 {
                     kind = ExtendedActivationKind::Protocol;
                     auto args = make<ProtocolActivatedEventArgs>(contractData.c_str());

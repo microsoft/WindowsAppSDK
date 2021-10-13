@@ -188,6 +188,18 @@ namespace Test::AppLifecycle
             WaitForEvent(event, m_failed);
         }
 
+        TEST_METHOD(GetActivatedEventArgsForPush_Win32)
+        {
+            // Create a named event for communicating with test app.
+            auto event = CreateTestEvent(c_testPushPhaseEventName);
+
+            // Launch the test app using the push activationprotocol.
+            Execute(L"AppLifecycleTestApp.exe", L"----WindowsAppRuntimePushServer:-Payload:\"<toast></toast>\"", g_deploymentDir);
+
+            // Wait for the protocol activation.
+            WaitForEvent(event, m_failed);
+        }
+
         TEST_METHOD(GetActivatedEventArgsForStartup_Win32)
         {
             // Create a named event for communicating with test app.

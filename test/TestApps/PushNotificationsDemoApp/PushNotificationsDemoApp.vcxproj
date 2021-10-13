@@ -80,6 +80,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\..\inc\inc.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -250,10 +251,16 @@
       <Implementation>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
+      <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets" Condition="Exists('..\..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -262,6 +269,7 @@
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Taef.10.58.210222006-develop\build\Microsoft.Taef.targets'))" />
   </Target>
   <Target Name="CopyFiles" AfterTargets="AfterBuild">
     <Copy SourceFiles="$(OutDir)\..\WindowsAppRuntime_BootstrapDLL\Microsoft.WindowsAppRuntime.Bootstrap.dll" DestinationFolder="$(OutDir)" />

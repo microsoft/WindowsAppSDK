@@ -78,8 +78,6 @@ namespace Microsoft.Windows.PushNotifications
     [experimental]
     runtimeclass PushNotificationChannel
     {
-        PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
-
         // The Channel Uri for app to Post a notification to.
         Windows.Foundation.Uri Uri { get; };
 

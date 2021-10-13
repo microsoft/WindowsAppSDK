@@ -18,12 +18,48 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="platformfactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ForegroundSinkManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationListenerManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NotificationListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformLifetimeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="winmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platformfactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ForegroundSinkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationListenerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformLifetimeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
