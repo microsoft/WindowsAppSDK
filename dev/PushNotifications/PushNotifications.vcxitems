@@ -33,6 +33,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationRegistrationToken.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationDummyDeferral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationTelemetry.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
   </ItemGroup>
 </Project>
