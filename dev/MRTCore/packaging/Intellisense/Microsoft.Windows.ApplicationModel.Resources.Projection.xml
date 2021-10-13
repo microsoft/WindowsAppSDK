@@ -8,8 +8,8 @@
       <summary>Contains names for common resource qualifiers such as language, system theme, and display scale.</summary>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Contrast">
-      <summary>Gets the name for a qualifier based on the system contrast settings.</summary>
-      <returns>The name for a qualifier based on the system contrast settings.</returns>
+      <summary>Gets the name for a qualifier based on the contrast settings.</summary>
+      <returns>The name for a qualifier based on the contrast settings.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Custom">
       <summary>Gets the name for a qualifier based on a custom value.</summary>
@@ -20,16 +20,16 @@
       <returns>The name for a qualifier based on the current device's family.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.HomeRegion">
-      <summary>Gets the name for a qualifier based on the current system home region.</summary>
-      <returns>The name for a qualifier based on the current system home region.</returns>
+      <summary>Gets the name for a qualifier based on the current home region.</summary>
+      <returns>The name for a qualifier based on the current home region.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Language">
-      <summary>Gets the name for a qualifier based on the system language.</summary>
-      <returns>The name for a qualifier based on the system language.</returns>
+      <summary>Gets the name for a qualifier based on the current language.</summary>
+      <returns>The name for a qualifier based on the current language.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.LayoutDirection">
-      <summary>Gets the name for a qualifier based on the current system UI layout direction.</summary>
-      <returns>The name for a qualifier based on the current system UI layout direction.</returns>
+      <summary>Gets the name for a qualifier based on the current UI layout direction.</summary>
+      <returns>The name for a qualifier based on the current UI layout direction.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Scale">
       <summary>Gets the name for a qualifier based on the current display scale.</summary>
@@ -40,8 +40,8 @@
       <returns>The name for a qualifier based on target size.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Theme">
-      <summary>Gets the name for a qualifier based on the system theme.</summary>
-      <returns>The name for a qualifier based on the system theme.</returns>
+      <summary>Gets the name for a qualifier based on the current theme.</summary>
+      <returns>The name for a qualifier based on the current theme.</returns>
     </member>
     <member name="T:Microsoft.Windows.ApplicationModel.Resources.MrtContract" />
     <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate">
@@ -85,7 +85,7 @@
       <summary>The resource is a string.</summary>
     </member>
     <member name="F:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind.Unknown">
-      <summary>The ResourceCandidate contains a value with an unknown type.</summary>
+      <summary>The ResourceCandidate is of an unknown type.</summary>
     </member>
     <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceContext">
       <summary>Encapsulates all of the factors that might affect resource selection.</summary>
@@ -97,13 +97,13 @@
 | Qualifier name                | Qualifier values |
 |-------------------------------|------------------|
 | alternateform, or altform     | A string, between 1 and 16 chars in length, representing an alternate form of a resource. |
-| configuration, or configA     | string. Matches the value of the MS_CONFIGURATION_ATTRIBUTE_VALUE environment variable. It’s unlikely that you’ll need to use this qualifier name (see the Configuration section of Tailor your resources for language, scale, high contrast, and other qualifiers). |
+| configuration, or configA     | string. Matches the value of the MS_CONFIGURATION_ATTRIBUTE_VALUE environment variable. It's unlikely that you'll need to use this qualifier name (see the Configuration section of Tailor your resources for language, scale, high contrast, and other qualifiers). |
 | contrast                      | Either standard (the default; matches high contrast off), high (matches any high contrast setting), black (matches High Contrast Black, High Contrast #1, and High Contrast #2), or white (matches High Contrast White). |
 | custom                        | A custom value. |
-| devicefamily                  | It’s unlikely that you’ll need to use this qualifier name (see the DeviceFamily section of Tailor your resources for language, scale, high contrast, and other qualifiers). |
+| devicefamily                  | It's unlikely that you'll need to use this qualifier name (see the DeviceFamily section of Tailor your resources for language, scale, high contrast, and other qualifiers). |
 | dxfeaturelevel, or dxfl       | Either DX9, DX10, DX11, or DX12. This qualifier has been deprecated. See the DXFeatureLevel section of Tailor your resources for language, scale, high contrast, and other qualifiers. |
 | homeregion                    | Any valid BCP-47 region tag (such as us, or 840). That is, any ISO 3166-1 alpha-2 two-letter region code, plus the set of ISO 3166-1 numeric three-digit geographic codes for composed regions (see United Nations Statistic Division M49 composition of region codes). Matches the country or region setting. |
-| language, or lang             | Any valid BCP-47 language tag (such as en, or en-us). Matches the display language setting. For a list of languages, see the IANA language subtag registry. |
+| language, or lang             | Any valid BCP-47 language tag (such as en, or en-US). Matches the display language setting. For a list of languages, see the IANA language subtag registry. |
 | layoutdirection, or layoutdir | Either LTR (left-to-right), RTL (right-to-left), TTBLTR (top-to-bottom, left-to-right), or TTBRTL (top-to-bottom, right-to-left). Matches the layout direction of the display language setting. |
 | scale                         | Either 80, 100 (default), 120, 125, 140, 150, 160, 175, 180, 200, 225, 250, 300, 350, 400, or 450. Matches the display scale setting. The values 125, 150, 175, 225, 250, 300, 350, 400, and 450 were introduced in Windows 10. |
 | targetsize                    | A positive integer that represents the side length of a square image in raw (physical) pixels. Matches the View setting in File Explorer. |
@@ -132,23 +132,20 @@
       <returns>The default path.</returns>
     </member>
     <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.GetString(System.String)">
-      <summary>Returns the most appropriate string value of a resource, specified by resource identifier.
-
-
-&lt;!--Writer todo: Link to how to create and identify resources.--&gt;</summary>
+      <summary>Returns the most appropriate string value of a resource, specified by resource identifier.</summary>
       <param name="resourceId">The resource identifier of the resource to be resolved.
 
 &gt; [!NOTE]
 &gt; The resource identifier is treated as a Uniform Resource Identifier (URI) fragment, subject to Uniform Resource Identifier (URI) semantics. For example, getString ("Caption%20") is treated as getString ("Caption "). Do not use "?" or "#" in resource identifiers, as they terminate the resource path. For example, "Foo?3" is treated as "Foo".</param>
       <returns>The most appropriate string value of the specified resource for the default ResourceContext.</returns>
     </member>
-    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.GetStringForUri(System.Uri)">
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.GetStringForUri(Windows.Foundation.Uri)">
       <summary>Returns the most appropriate string value of a resource, specified by a Uniform Resource Identifier (URI) resource identifier, for the default ResourceContext of the currently running app.</summary>
       <param name="resourceUri">A Uniform Resource Identifier (URI) that represents the resource to be retrieved.</param>
       <returns>The most appropriate string value of the specified resource for the default ResourceContext.</returns>
     </member>
     <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceManager">
-      <summary>Provides access to application resource maps and more advanced resource functionality.</summary>
+      <summary>Provides access to app resource maps and more advanced resource functionality.</summary>
     </member>
     <member name="E:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.ResourceNotFound">
       <summary>Event that fires when an attempt to get a resource fails because the specified resource was not found.</summary>
@@ -165,7 +162,7 @@
       <returns>A ResourceContext.</returns>
     </member>
     <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.MainResourceMap">
-      <summary>Gets the ResourceMap that is associated with the main package of the currently running application.</summary>
+      <summary>Gets the ResourceMap that is associated with the main package of the currently running app.</summary>
       <returns>The ResourceMap.</returns>
     </member>
     <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceMap">
