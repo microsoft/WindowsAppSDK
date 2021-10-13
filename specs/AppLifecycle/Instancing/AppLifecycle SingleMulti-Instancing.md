@@ -235,6 +235,7 @@ int APIENTRY wWinMain(
             if (instance.Key == L"REUSABLE")
             {
                 isFound = true;
+                // Note that get() is a synchronous call that will block the current thread.
                 instance.RedirectActivationToAsync(activationArgs).get();
                 break;
             }
