@@ -163,19 +163,19 @@ void RegisterForActivation()
     hstring verbs[2] = { L"view", L"edit" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
         myFileTypes,
-        szExePathAndIconIndex,
+        exePathAndIconIndex,
         L"Contoso File Types",
         verbs,
-        szExePath
+        exePath
     );
 
     // Register a URI scheme for protocol activation,
     // specifying the scheme name, icon, display name and EXE path.
     ActivationRegistrationManager::RegisterForProtocolActivation(
         L"foo",
-        szExePathAndIconIndex,
+        exePathAndIconIndex,
         L"Contoso Foo Protocol",
-        szExePath
+        exePath
     );
 
     // Register for startup activation.
@@ -184,7 +184,7 @@ void RegisterForActivation()
     // activated at startup.
     ActivationRegistrationManager::RegisterForStartupActivation(
         L"ContosoStartupId",
-        szExePath
+        exePath
     );
 
     // If we don't specify the EXE, it will default to this EXE.
@@ -216,14 +216,23 @@ void RespondToActivation()
     {
         ILaunchActivatedEventArgs launchArgs = 
             args.Data().as<ILaunchActivatedEventArgs>();
-        if (launchArgs != NULL)
+        if (launchArgs)
         {
-            winrt::hstring argString = launchArgs.Arguments().c_str();
-            std::vector<std::wstring> argStrings = split_strings(argString);
+            winrt::hstring argString = launchArgs.Arguments();
+            std::vector<std::wstring> argStrings = SplitStrings(argString);
             OutputMessage(L"Launch activation");
-            for (std::wstring s : argStrings)
+            for (std::wstring const& s : argStrings)
             {
                 OutputMessage(s.c_str());
+            }
+            // If the first argument is "Settings", we'll launch the Settings page.
+            if (wcscmp(argStrings[1].c_str(), L"Settings") == 0)
+            {
+                LaunchSettingsPage();
+            }
+            else
+            {
+                LaunchMainPage();
             }
         }
     }
@@ -231,7 +240,7 @@ void RespondToActivation()
     {
         IFileActivatedEventArgs fileArgs = 
             args.Data().as<IFileActivatedEventArgs>();
-        if (fileArgs != NULL)
+        if (fileArgs)
         {
             IStorageItem file = fileArgs.Files().GetAt(0);
             OutputFormattedMessage(
@@ -242,7 +251,7 @@ void RespondToActivation()
     {
         IProtocolActivatedEventArgs protocolArgs = 
             args.Data().as<IProtocolActivatedEventArgs>();
-        if (protocolArgs != NULL)
+        if (protocolArgs)
         {
             Uri uri = protocolArgs.Uri();
             OutputFormattedMessage(
@@ -253,7 +262,7 @@ void RespondToActivation()
     {
         IStartupTaskActivatedEventArgs startupArgs = 
             args.Data().as<IStartupTaskActivatedEventArgs>();
-        if (startupArgs != NULL)
+        if (startupArgs)
         {
             OutputFormattedMessage(
                 L"Startup activation: %s", startupArgs.TaskId().c_str());
@@ -283,7 +292,7 @@ void UnregisterForActivation()
         hstring myFileTypes[3] = { L".foo", L".foo2", L".foo3" };
         ActivationRegistrationManager::UnregisterForFileTypeActivation(
             myFileTypes,
-            szExePath
+            exePath
         );
     }
     catch (...)
