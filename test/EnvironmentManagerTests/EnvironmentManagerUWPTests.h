@@ -3,6 +3,7 @@
 
 #pragma once
 #include "TestSetupAndTeardownHelper.h"
+#include <TerminalVelocityFeatures-EnvironmentManager.h>
 
 namespace WindowsAppSDKEnvironmentManagerTests
 {
@@ -16,6 +17,12 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
         TEST_CLASS_SETUP(ClassInit)
         {
+            if (!::Microsoft::Windows::System::Feature_EnvironmentManager::IsEnabled())
+            {
+                WEX::Logging::Log::Result(WEX::Logging::TestResults::Skipped, L"Environment Manager is experimental.");
+                return false;
+            }
+
             ::Test::Bootstrap::Setup();
             return true;
         }
