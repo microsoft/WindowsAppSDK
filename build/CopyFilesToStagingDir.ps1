@@ -140,6 +140,10 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.Application
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.winmd $NugetDir\lib\uap10.0
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.Windows.System.Power.winmd $NugetDir\lib\uap10.0
 #
+# Bootstrap Static Helper Files
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cs $NugetDir\include
+PublishFile $FullBuildOutput\WindowsAppRuntime_BootstrapDLL\MddBootstrapAutoInitializer.cpp $NugetDir\include
+#
 # Build overrides
 PublishFile $OverrideDir\DynamicDependency-Override.json $NugetDir\runtimes\win10-$Platform\native
 PublishFile $OverrideDir\PushNotifications-Override.json $NugetDir\runtimes\win10-$Platform\native
