@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include <Windows.h>
+#include <stdint.h>
 #include <MddBootstrap.h>
 #include <WindowsAppSDK-VersionInfo.h>
 

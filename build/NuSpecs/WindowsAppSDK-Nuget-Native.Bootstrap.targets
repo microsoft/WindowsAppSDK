@@ -3,7 +3,9 @@
     <Target Name="GenerateBootstrapCpp" 
             BeforeTargets="ClCompile">
         <ItemGroup>
-            <ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp" />
+			<ClCompile Include="$(MSBuildThisFileDirectory)..\..\include\MddBootstrapAutoInitializer.cpp">
+				<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			</ClCompile>
         </ItemGroup>
     </Target>
 
