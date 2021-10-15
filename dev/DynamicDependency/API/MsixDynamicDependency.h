@@ -6,6 +6,8 @@
 
 #include <appmodel.h>
 
+#include <stdint.h>
+
 enum class MddCreatePackageDependencyOptions : uint32_t
 {
     None = 0,
