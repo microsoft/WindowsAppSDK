@@ -449,6 +449,8 @@
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapTest.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapAutoInitializer.cs" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapAutoInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj">
