@@ -61,7 +61,9 @@ jobs:
         Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.WinRt.props" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.WinRt.props"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Foundation.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Foundation.targets"
         Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Foundation.props" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Foundation.props"
-        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.Bootstrap.CS.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.Bootstrap.CS.targets"
+        Copy-Item -Path "$targetsFilePath\WindowsAppSDK-Nuget-Native.Bootstrap.targets" -Destination "$fullpackagePath\build\native\WindowsAppSDK-Nuget-Native.Bootstrap.targets"
+        Copy-Item -Path "$targetsFilePath\Microsoft.WindowsAppSDK.MddCommon.targets" -Destination "$fullpackagePath\build\Microsoft.WindowsAppSDK.MddCommon.targets"
 
         Copy-Item -Path "$targetsFilePath\AppxManifest.xml" -Destination "$fullpackagePath\AppxManifest.xml"
         $manifestPath = $fullpackagePath+'\manifests';

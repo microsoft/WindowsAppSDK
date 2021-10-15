@@ -29,6 +29,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_FrameworkWidgets();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();

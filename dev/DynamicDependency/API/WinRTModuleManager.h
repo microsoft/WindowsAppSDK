@@ -29,7 +29,7 @@ public:
         std::shared_ptr<MddCore::WinRTPackage>& winrtPackage);
 
 private:
-    static std::mutex s_lock;
+    static std::recursive_mutex s_lock;
     static std::vector<std::shared_ptr<MddCore::WinRTPackage>> s_winrtPackages;
 };
 }

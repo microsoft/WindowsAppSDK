@@ -155,7 +155,7 @@ jobs:
     inputs:
       command: 'custom'
       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
-  
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml
     parameters:
       solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
@@ -169,7 +169,7 @@ jobs:
       SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
       Contents: |
         Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.18362.0'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.17763.0'
       flattenFolders: false
 
   - task: PublishBuildArtifacts@1

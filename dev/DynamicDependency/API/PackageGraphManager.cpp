@@ -5,7 +5,7 @@
 
 #include "PackageGraphManager.h"
 
-std::mutex MddCore::PackageGraphManager::s_lock;
+std::recursive_mutex MddCore::PackageGraphManager::s_lock;
 MddCore::PackageGraph MddCore::PackageGraphManager::s_packageGraph;
 volatile ULONG MddCore::PackageGraphManager::s_generationId{};
 
@@ -29,7 +29,7 @@ HRESULT MddCore::PackageGraphManager::ResolvePackageDependency(
     MddAddPackageDependencyOptions options,
     wil::unique_process_heap_string& packageFullName)
 {
-    std::unique_lock<std::mutex> lock(s_lock);
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
 
     return s_packageGraph.ResolvePackageDependency(packageDependencyId, options, packageFullName);
 }
@@ -41,7 +41,7 @@ HRESULT MddCore::PackageGraphManager::AddToPackageGraph(
     _Out_ MDD_PACKAGEDEPENDENCY_CONTEXT* context,
     _Outptr_opt_result_maybenull_ PWSTR* packageFullName)
 {
-    std::unique_lock<std::mutex> lock(s_lock);
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
 
     RETURN_IF_FAILED(s_packageGraph.Add(packageDependencyId, rank, options, *context, packageFullName));
 
@@ -57,7 +57,7 @@ void MddCore::PackageGraphManager::RemoveFromPackageGraph(
         return;
     }
 
-    std::unique_lock<std::mutex> lock(s_lock);
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
 
     (void) LOG_IF_FAILED(s_packageGraph.Remove(context));
 
@@ -68,7 +68,7 @@ HRESULT MddCore::PackageGraphManager::GetPackageDependencyForContext(
     _In_ MDD_PACKAGEDEPENDENCY_CONTEXT context,
     wil::unique_process_heap_string& packageDependencyId)
 {
-    std::unique_lock<std::mutex> lock(s_lock);
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
 
     return s_packageGraph.GetPackageDependencyForContext(context, packageDependencyId);
 }
@@ -100,7 +100,7 @@ HRESULT MddCore::PackageGraphManager::GetCurrentPackageInfo3(
         *count = 0;
     }
 
-    std::unique_lock<std::mutex> lock(s_lock);
+    std::unique_lock<std::recursive_mutex> lock(s_lock);
 
     // Do we need Static and/or Dynamic items? NOTE: If neither are specified we need both
     const bool filterStatic{ WI_IsFlagSet(flags, PACKAGE_FILTER_STATIC) };
