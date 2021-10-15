@@ -2,6 +2,7 @@
 #include "ToastNotificationManager.h"
 #include "Microsoft.Windows.PushNotifications.ToastNotificationManager.g.cpp"
 #include "ToastBackgroundTask.h"
+#include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
@@ -10,6 +11,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     void ToastNotificationManager::RegisterActivator(winrt::guid const& taskClsid)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
+
+        GetWaitHandleForArgs().create();
 
         THROW_IF_FAILED(::CoRegisterClassObject(
             taskClsid,

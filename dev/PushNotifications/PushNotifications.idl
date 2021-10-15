@@ -131,6 +131,14 @@ namespace Microsoft.Windows.PushNotifications
         static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
     };
 
+    [experimental]
+    // Event args for the Push payload.
+    runtimeclass ToastActivatedEventArgs
+    {
+        String Arguments { get; };
+        Windows.Foundation.Collections.IMap<String, String> UserInput{ get; };
+    };
+
     static runtimeclass ToastNotificationManager
     {
         static void RegisterActivator(Guid taskClsid);

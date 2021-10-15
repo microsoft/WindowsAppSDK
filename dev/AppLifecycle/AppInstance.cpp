@@ -11,7 +11,7 @@
 #include "FileActivatedEventArgs.h"
 #include "Association.h"
 #include "ExtensionContract.h"
-#include "GetRawNotificationEventArgs.h"
+#include "GetNotificationEventArgs.h"
 
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
@@ -62,7 +62,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
-        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString };
+        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString, c_toastProtocolArgumentString };
         for (auto activationKind : activationKinds)
         {
             auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);
@@ -358,10 +358,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractArgument == c_pushProtocolArgumentString)
+                if (contractArgument == c_pushProtocolArgumentString || contractArgument == c_toastProtocolArgumentString)
                 {
                     // Generate a basic encoded launch Uri for all Push activations.
-                    std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", c_pushContractId);
+                    std::wstring tempContractData = (contractArgument == c_pushProtocolArgumentString) ? GenerateEncodedLaunchUri(L"App", c_pushContractId) : GenerateEncodedLaunchUri(L"App", c_toastContractId);
                     contractArgument = c_msProtocolArgumentString;
 
                     // A non-empty contractData means we have a payload.

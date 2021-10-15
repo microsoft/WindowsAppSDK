@@ -3,14 +3,16 @@
 
 #pragma once
 #include "PushNotificationReceivedEventArgs.h"
+#include "ToastActivatedEventArgs.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include "externs.h"
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
+constexpr PCWSTR c_toastContractId = L"Windows.Toast";
 
 namespace winrt::Microsoft::Windows::PushNotifications
 {
-    static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
+    static winrt::Windows::Foundation::IInspectable PushDeserialize(winrt::Windows::Foundation::Uri const& uri)
     {
         // Verify if the uri contains a background notification payload.
         // Otherwise, we expect to process the notification in a background task.
@@ -26,6 +28,15 @@ namespace winrt::Microsoft::Windows::PushNotifications
             }
         }
 
+        const DWORD receiveArgsTimeoutInMSec{ 2000 };
+        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
+
+        // If COM static store was uninit, let it throw
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+    }
+
+    static winrt::Windows::Foundation::IInspectable ToastDeserialize(winrt::Windows::Foundation::Uri const& uri)
+    {
         const DWORD receiveArgsTimeoutInMSec{ 2000 };
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
 

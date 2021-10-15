@@ -11,7 +11,7 @@
 
 	<Identity
 	  Name="PushNotificationsWin32App"
-	  Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+	  Publisher="CN=WNP_Reunion"
 	  Version="1.0.0.0" />
 
 	<Properties>
@@ -48,7 +48,7 @@
         </desktop:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="PushNotificationsDemoApp\PushNotificationsDemoApp.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
+            <com:ExeServer Executable="PushNotificationsDemoApp\PushNotificationsDemoApp.exe" Arguments="----ToastActivated:" DisplayName="Toast activator">
               <com:Class Id="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" DisplayName="Toast activator"/>
             </com:ExeServer>
           </com:ComServer>

@@ -12,6 +12,7 @@ using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask 
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
+using namespace winrt::Windows::Foundation::Collections;
 
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
@@ -89,11 +90,11 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-   /* PushNotificationActivationInfo info(
-        PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+    //PushNotificationActivationInfo info(
+    //    PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+    //    winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
-    PushNotificationManager::RegisterActivator(info); */
+    //PushNotificationManager::RegisterActivator(info);
     ToastNotificationManager::RegisterActivator(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -121,6 +122,23 @@ int main()
     {
         PushNotificationChannel channel = RequestChannel();
         printf("Press 'Enter' at any time to exit App.");
+        std::cin.ignore();
+    }
+    else if (kind == ExtendedActivationKind::ToastActivation)
+    {
+        Sleep(12000);
+        printf("ToastActivation received!\n");
+        printf("Press 'Enter' at any time to exit App.\n\n");
+        ToastActivatedEventArgs toastArgs = args.Data().as<ToastActivatedEventArgs>();
+
+        winrt::hstring arguments = toastArgs.Arguments();
+        std::wcout << arguments.c_str() << std::endl << std::endl;
+
+        IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
+        for (auto pair : userInput)
+        {
+            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
+        }
         std::cin.ignore();
     }
     else if (kind == ExtendedActivationKind::ToastNotification)
