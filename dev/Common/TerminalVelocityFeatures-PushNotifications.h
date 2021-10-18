@@ -6,6 +6,13 @@
 // INPUT FILE: dev\common\TerminalVelocityFeatures-PushNotifications.xml
 // OPTIONS: -Channel Experimental -Language C++ -Namespace Microsoft.Windows.PushNotifications
 
+#ifdef __midlrt
+namespace features
+{
+    feature_name Feature_PushNotifications = { AlwaysDisabled, FALSE };
+}
+#endif
+
 // Feature constants
 #define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_PUSHNOTIFICATIONS_FEATURE_PUSHNOTIFICATIONS_ENABLED 1
 
