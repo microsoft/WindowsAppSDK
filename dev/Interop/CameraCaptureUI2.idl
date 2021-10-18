@@ -1,0 +1,45 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+namespace Microsoft.Windows.Media.Capture
+{
+    // TEMPORARY
+	struct WindowId
+	{
+		UInt64 Value;
+	};
+
+	[default_interface]
+	runtimeclass CameraCaptureUIPhotoSettings
+	{
+		CameraCaptureUIPhotoSettings();
+
+		Boolean AllowCropping;
+		Windows.Foundation.Size CroppedAspectRatio;
+		Windows.Foundation.Size CroppedSizeInPixels;
+		Windows.Media.Capture.CameraCaptureUIPhotoFormat Format;
+		Windows.Media.Capture.CameraCaptureUIMaxPhotoResolution MaxResolution;
+	}
+
+	[default_interface]
+	runtimeclass CameraCaptureUIVideoSettings
+	{
+		CameraCaptureUIVideoSettings();
+
+		Boolean AllowTrimming;
+		Windows.Media.Capture.CameraCaptureUIVideoFormat Format;
+		Single MaxDurationInSeconds;
+		Windows.Media.Capture.CameraCaptureUIMaxVideoResolution MaxResolution;
+	}
+
+	[default_interface]
+	runtimeclass CameraCaptureUI
+	{
+		CameraCaptureUI(WindowId window);
+        // CameraCaptureUI(Microsoft.UI.WindowId window);
+
+		CameraCaptureUIPhotoSettings PhotoSettings{ get; };
+		CameraCaptureUIVideoSettings VideoSettings{ get; };
+
+		Windows.Foundation.IAsyncOperation<Windows.Storage.StorageFile> CaptureFileAsync(Windows.Media.Capture.CameraCaptureUIMode mode);
+	}
+}
