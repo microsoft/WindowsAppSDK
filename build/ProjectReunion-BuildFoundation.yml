@@ -100,6 +100,8 @@ jobs:
 #    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
+    parameters:
+      channel: 'experimental'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
