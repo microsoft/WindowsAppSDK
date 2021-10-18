@@ -9,7 +9,7 @@
 #ifdef __midlrt
 namespace features
 {
-    feature_name Feature_PushNotifications = { AlwaysDisabled, FALSE };
+    feature_name Feature_PushNotifications = { DisabledByDefault, FALSE };
 }
 #endif
 
