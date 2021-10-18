@@ -8,4 +8,4 @@ steps:
       nugetConfigPath: nuget.config
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
-      channel: {{ parameters.channel }}
+      channel: ${{ parameters.channel }}

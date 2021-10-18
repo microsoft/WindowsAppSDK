@@ -101,7 +101,7 @@ jobs:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
-      channel: 'experimental'
+      channel: ${{ variables.channel }}
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
@@ -164,6 +164,7 @@ jobs:
       nugetConfigPath: nuget.config
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
+      channel: ${{ variables.channel }}
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries'
