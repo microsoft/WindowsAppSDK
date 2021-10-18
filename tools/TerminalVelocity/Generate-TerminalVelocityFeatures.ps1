@@ -211,6 +211,28 @@ function Generate_CPP()
 {
     $content = Output_Header
 
+    $content += @"
+#ifdef __midlrt
+namespace features
+{
+
+"@
+    ForEach ($feature in $features)
+    {
+        $state = $featureFinalStates[$feature.Name]
+
+        $content += @"
+    feature_name $($feature.Name) = { $(if ($state -eq [State]::AlwaysDisabled) { "AlwaysDisabled" } else {"DisabledByDefault" }), FALSE };
+
+"@
+    }    
+    $content += @"
+}
+#endif
+
+
+"@
+
     $content += "// Feature constants`r`n"
     ForEach ($feature in $features)
     {
