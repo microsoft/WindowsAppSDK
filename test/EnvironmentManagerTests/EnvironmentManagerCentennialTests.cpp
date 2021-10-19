@@ -109,6 +109,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
 
     void EnvironmentManagerCentennialTests::CentennialTestSetEnvironmentVariableForUser()
     {
+        MessageBoxEx(NULL, L"In here", L"In here", 0, 0);
         EnvironmentManager environmentManager{ EnvironmentManager::GetForUser() };
 
         if (!IsILAtOrAbove(ProcessRunLevel::Standard))
