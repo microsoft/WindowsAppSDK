@@ -6,6 +6,8 @@
         If true, this is the WindowsAppSdk deployment of Foundation, versus the internal deployment for test only.
         This property is defined by deployment-specific props imports, and should not be overridden by clients.-->
     <WindowsAppSdkFoundation>true</WindowsAppSdkFoundation>
+    <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' == 'Win32'">x86</_WindowsAppSDKFoundationPlatform>
+    <_WindowsAppSDKFoundationPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</_WindowsAppSDKFoundationPlatform>
   </PropertyGroup>
 
   <!--
@@ -13,5 +15,9 @@
     property cannot be defined beforehand.
   -->
   <Import Project="$(MSBuildThisFileDirectory)MrtCore.props" />
+
+  <ItemGroup Condition="'$(AppxPackage)' != 'true'">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.dll"/>
+  </ItemGroup>
 
 </Project>
