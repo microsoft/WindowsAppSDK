@@ -72,3 +72,22 @@ populate `-i`. Finally, it uses `-n:9` to split the output winmds by namespace, 
 
 When it is time to consume winmds for generating public projections (e.g. C#/WinRT) and to copy
 winmds for publishing to NuGet, be sure to use the stripped winmds, not the intermediate winmds.
+
+# Rationale and rejected approaches
+
+## Use [experimental] directly in IDL, with channel-based stripping
+
+This has the benefit of clarity in the IDL file, because `[experimental]` states a clearer intent than `[feature(Feature_MyFeature)]`.
+However, this would have one major drawback, and one inconvenience:
+1. The state of the WinRT API stripping would no longer be tied to the state of the implementation. This would increase the risk
+of accidentally having a disabled implementation behind a visible API, or having a live implementation hidden by a stripped API.
+2. Stripping of the WinRT API would no longer be controlled by TerminalVelocity, but would be controlled inside
+the MSBuild of the project, which would neccessitate plumbing that pipeline build parameter into the build.
+
+## Use [experimental] directly in IDL, with conditional compilation
+
+One could achieve a similar approach by tagging an API directly with `[experimental]` in the IDL, and adding `#if defined(...)`
+preprocessor guards to conditionally compile the API.
+
+This adds error-prone clutter to the IDL. Additionally, this conditional compilation would break the ability to compile unit tests
+without also infecting them with conditional compilation.
