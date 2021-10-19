@@ -8,7 +8,7 @@
 
 class AppLifecycleTelemetry : public wil::TraceLoggingProvider
 {
-    IMPLEMENT_TRACELOGGING_CLASS(AppLifecycleTelemetry, "Microsoft.WindowsAppSDK.Microsoft.Windows.AppLifecycle",
+    IMPLEMENT_TRACELOGGING_CLASS(AppLifecycleTelemetry, "Microsoft.Windows.AppLifecycle",
         // {129A9300-9EA3-40B1-922B-43D46349BB91}
         (0x129a9300, 0x9ea3, 0x40b1, 0x92, 0x2b, 0x43, 0xd4, 0x63, 0x49, 0xbb, 0x91));
 
