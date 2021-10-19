@@ -212,7 +212,7 @@ function Generate_CPP()
     $content = Output_Header
 
     $content += @"
-#ifdef __midlrt
+#if defined(__midlrt)
 namespace features
 {
 
@@ -228,7 +228,7 @@ namespace features
     }    
     $content += @"
 }
-#endif
+#endif // defined(__midlrt)
 
 
 "@

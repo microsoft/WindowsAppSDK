@@ -6,12 +6,12 @@
 // INPUT FILE: dev\common\TerminalVelocityFeatures-EnvironmentManager.xml
 // OPTIONS: -Channel Experimental -Language C++ -Namespace Microsoft.Windows.System
 
-#ifdef __midlrt
+#if defined(__midlrt)
 namespace features
 {
     feature_name Feature_EnvironmentManager = { DisabledByDefault, FALSE };
 }
-#endif
+#endif // defined(__midlrt)
 
 // Feature constants
 #define WINDOWSAPPRUNTIME_MICROSOFT_WINDOWS_SYSTEM_FEATURE_ENVIRONMENTMANAGER_ENABLED 1
