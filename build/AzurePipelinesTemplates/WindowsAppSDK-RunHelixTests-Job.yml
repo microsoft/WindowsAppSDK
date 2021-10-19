@@ -101,14 +101,14 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'DynamicDependency_Test_Win32\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-TestWin32.proj' -WorkItemPrefix 'DynamicDependencies.Test.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Test.Win32.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'DynamicDependency_Test_Win32\DynamicDependency*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-TestWin32.proj' -WorkItemPrefix 'DynamicDependencies.Test.Win32.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Test.Win32.$(buildPlatform).$(buildConfiguration)'
 
   - task: powershell@2
     displayName: 'Discover DynamicDependencies Tests: WinRT'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'DynamicDependency_Test_WinRT\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-TestWinRT.proj' -WorkItemPrefix 'DynamicDependencies.Test.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Test.WinRT.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'DynamicDependency_Test_WinRT\DynamicDependency*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-TestWinRT.proj' -WorkItemPrefix 'DynamicDependencies.Test.WinRT.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.Test.WinRT.$(buildPlatform).$(buildConfiguration)'
 
   # Note: There are 4 test suites for MRT Core. We currently run 3 of them in Helix.
   - task: powershell@2
