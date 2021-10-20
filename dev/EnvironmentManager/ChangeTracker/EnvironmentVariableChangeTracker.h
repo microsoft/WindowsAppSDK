@@ -41,7 +41,7 @@ namespace winrt::Microsoft::Windows::System::implementation
         wil::unique_hkey GetKeyForTrackingChange(DWORD* disposition) const
         {
             std::filesystem::path subKey = std::filesystem::path{L"Software\\ChangeTracker"}
-            / KeyName() / ScopeToString() / m_PackageFullName / m_Key;
+            / KeyName() / m_PackageFullName / ScopeToString() / m_Key;
 
             wil::unique_hkey keyToTrackChanges{};
             THROW_IF_WIN32_ERROR(RegCreateKeyEx(HKEY_CURRENT_USER,
@@ -89,15 +89,15 @@ namespace winrt::Microsoft::Windows::System::implementation
         {
             if (m_Scope == EnvironmentManager::Scope::Process)
             {
-                return L"Process";
+                return L"process";
             }
             else if (m_Scope == EnvironmentManager::Scope::User)
             {
-                return L"User";
+                return L"user";
             }
             else
             {
-                return L"Machine";
+                return L"machine";
             }
         }
     };

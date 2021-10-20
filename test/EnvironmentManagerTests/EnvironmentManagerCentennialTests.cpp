@@ -425,7 +425,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         std::wstring expectedValue{ c_EvValueName };
         expectedValue += L';';
 
-        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(true, GetPackageFullName()) };
+        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(GetPackageFullName()) };
         VERIFY_ARE_EQUAL(expectedValue, GetEnvironmentVariableFromRegistry(L"AppendedValues", keyChangeTracker.get()));
     }
 
@@ -462,7 +462,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         std::wstring expectedValue{ c_EvValueName };
         expectedValue += L';';
 
-        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(false, GetPackageFullName()) };
+        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(GetPackageFullName()) };
         VERIFY_ARE_EQUAL(expectedValue, GetEnvironmentVariableFromRegistry(L"AppendedValues", keyChangeTracker.get()));
     }
 
@@ -522,7 +522,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         std::wstring expectedValue{ c_EvValueName };
         expectedValue += L";,5\t";
 
-        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(true, GetPackageFullName()) };
+        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(GetPackageFullName()) };
         VERIFY_ARE_EQUAL(expectedValue, GetEnvironmentVariableFromRegistry(L"RemovedValues", keyChangeTracker.get()));
     }
 
@@ -553,7 +553,7 @@ namespace WindowsAppSDKEnvironmentManagerTests
         std::wstring expectedValue{ c_EvValueName };
         expectedValue += L";,5\t";
 
-        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(false, GetPackageFullName()) };
+        wil::unique_hkey keyChangeTracker{ GetKeyForPathExtTrackingChange(GetPackageFullName()) };
         VERIFY_ARE_EQUAL(expectedValue, GetEnvironmentVariableFromRegistry(L"RemovedValues", keyChangeTracker.get()));
     }
 }
