@@ -36,7 +36,7 @@
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.System">
-      <HintPath>$(OutDir)..\WindowsAppSDK_DLL\Microsoft.Windows.System.winmd</HintPath>
+      <HintPath>$(OutDir)..\WindowsAppSDK_DLL\StrippedWinMD\Microsoft.Windows.System.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
