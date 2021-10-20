@@ -358,7 +358,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
 
                 GetWaitHandleForArgs().create();
-
+                
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     taskClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),

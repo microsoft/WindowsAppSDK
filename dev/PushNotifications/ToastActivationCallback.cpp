@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include <ToastBackgroundTask.h>
+#include <ToastActivationCallback.h>
 #include "ToastActivatedEventArgs.h"
 #include "externs.h"
 #include <winrt/Windows.Foundation.Collections.h>
@@ -14,7 +14,7 @@ namespace winrt
     using namespace Windows::Foundation::Collections;
 }
 
-HRESULT __stdcall ToastBackgroundTask::Activate(
+HRESULT __stdcall ToastActivationCallback::Activate(
     LPCWSTR appUserModelId,
     LPCWSTR invokedArgs,
     [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
@@ -28,8 +28,15 @@ HRESULT __stdcall ToastBackgroundTask::Activate(
 
     auto appProperties = winrt::CoreApplication::Properties();
     winrt::ToastActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::ToastActivatedEventArgs>(invokedArgs, userInput);
-    appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
 
-    SetEvent(GetWaitHandleForArgs().get());
+    if (GetToastHandleCount())
+    {
+        GetToastHandlers()(*this, activatedEventArgs);
+    }
+    else
+    {
+        appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+        SetEvent(GetWaitHandleForArgs().get());
+    }
     return S_OK;
 }

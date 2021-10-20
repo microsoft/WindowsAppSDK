@@ -37,7 +37,7 @@ namespace winrt::Microsoft::Windows::PushNotifications
 
     static winrt::Windows::Foundation::IInspectable ToastDeserialize(winrt::Windows::Foundation::Uri const& uri)
     {
-        const DWORD receiveArgsTimeoutInMSec{ 2000 };
+        const DWORD receiveArgsTimeoutInMSec{ 5000 };
         THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
 
         // If COM static store was uninit, let it throw

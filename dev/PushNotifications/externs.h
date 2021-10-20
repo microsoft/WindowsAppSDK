@@ -3,8 +3,11 @@
 
 #pragma once
 #include "pch.h"
+#include "ToastActivatedEventArgs.h"
 
 wil::unique_event& GetWaitHandleForArgs();
+winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs>>& GetToastHandlers();
+int& GetToastHandleCount();
 
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
 

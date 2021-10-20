@@ -111,7 +111,7 @@ int main()
         // Do stuff to process the raw payload
         std::string payloadString(payload.begin(), payload.end());
         printf("Push notification content received from BACKGROUND: %s\n", payloadString.c_str());
-        printf("Press 'Enter' to exit the App.");
+        printf("Press 'Enter' to exit the App.\n");
 
         // Call Complete on the deferral when finished processing the payload.
         // This removes the override that kept the app running even when the system was in a low power mode.
@@ -121,13 +121,25 @@ int main()
     else if (kind == ExtendedActivationKind::Launch)
     {
         PushNotificationChannel channel = RequestChannel();
-        printf("Press 'Enter' at any time to exit App.");
+
+        winrt::event_token token = ToastNotificationManager::ToastActivated([](const auto&, ToastActivatedEventArgs const& toastArgs)
+        {
+                printf("ToastActivation received foreground!\n");
+                winrt::hstring arguments = toastArgs.Arguments();
+                std::wcout << arguments.c_str() << std::endl << std::endl;
+
+                IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
+                for (auto pair : userInput)
+                {
+                    std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
+                }
+        });
+        printf("Press 'Enter' at any time to exit App.\n\n");
         std::cin.ignore();
     }
     else if (kind == ExtendedActivationKind::ToastActivation)
     {
-        Sleep(12000);
-        printf("ToastActivation received!\n");
+        printf("ToastActivation received background!\n");
         printf("Press 'Enter' at any time to exit App.\n\n");
         ToastActivatedEventArgs toastArgs = args.Data().as<ToastActivatedEventArgs>();
 
@@ -139,6 +151,19 @@ int main()
         {
             std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
         }
+
+        winrt::event_token token = ToastNotificationManager::ToastActivated([](const auto&, ToastActivatedEventArgs const& toastArgs)
+            {
+                printf("ToastActivation received foreground!\n");
+                winrt::hstring arguments = toastArgs.Arguments();
+                std::wcout << arguments.c_str() << std::endl << std::endl;
+
+                IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
+                for (auto pair : userInput)
+                {
+                    std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
+                }
+            });
         std::cin.ignore();
     }
     else if (kind == ExtendedActivationKind::ToastNotification)

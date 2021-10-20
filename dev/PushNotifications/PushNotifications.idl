@@ -143,5 +143,8 @@ namespace Microsoft.Windows.PushNotifications
     {
         static void RegisterActivator(Guid taskClsid);
         static void UnRegisterActivator();
+        // Event handler for Toast Activations
+        static event Windows.Foundation.EventHandler<ToastActivatedEventArgs> ToastActivated;
+
     };
 }
