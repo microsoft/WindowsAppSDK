@@ -213,7 +213,8 @@
 
     <PropertyGroup>
       <!-- XSL transform that we want to always run against .vstemplates -->
-      <_UnconditionalVsTemplateXslt><![CDATA[
+      <_UnconditionalVsTemplateXslt>
+            <![CDATA[
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://schemas.microsoft.com/developer/vstemplate/2005">
     <!-- Identity template to copy everything by default -->
     <xsl:template match="@*|node()">
@@ -275,6 +276,9 @@
     </xsl:template>
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WILVersion$']/@Value">
         <xsl:attribute name="Value">$(WILVersion)</xsl:attribute>
+    </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$DotNetVersion$']/@Value">
+        <xsl:attribute name="Value">$(DotNetVersion)</xsl:attribute>
     </xsl:template>
 </xsl:stylesheet>
       ]]></_UnconditionalVsTemplateXslt>
