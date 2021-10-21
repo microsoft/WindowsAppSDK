@@ -5,6 +5,7 @@
 #include <AppInstance.h>
 #include <Microsoft.Windows.AppLifecycle.AppInstance.g.cpp>
 
+#include "AppLifecycleTelemetry.h"
 #include "ActivationRegistrationManager.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
@@ -207,6 +208,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     IAsyncAction AppInstance::QueueRequest(AppLifecycle::AppActivationArguments args)
     {
+        // Report feature usage.
+        static bool featureUsageReported{ false };
+        if (!featureUsageReported)
+        {
+            AppLifecycleTelemetry::RedirectActivationToAsync();
+            featureUsageReported = true;
+        }
+
         auto strongThis{ get_strong() };
 
         // Push this work onto a background thread.
@@ -337,6 +346,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         ExtendedActivationKind kind = ExtendedActivationKind::Launch;
         IInspectable data;
+
+        // Report feature usage.
+        static bool featureUsageReported{ false };
+        if (!featureUsageReported)
+        {
+            AppLifecycleTelemetry::GetActivatedEventArgs();
+            featureUsageReported = true;
+        }
 
         // For packaged, try to get platform args first.
         if (HasIdentity())
