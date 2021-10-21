@@ -43,7 +43,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivationCallback.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationManager.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)utils.h" />
   </ItemGroup>
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />

@@ -9,12 +9,14 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency
     // * individual `ushort` values (uint16)
     // * an unsigned `ulong` value (uint64)
     // * a dot-string notation ("major.minor.build.revision")
+    [StructLayout(LayoutKind.Sequential)]
     public struct PackageVersion
     {
-        public ushort Major;
-        public ushort Minor;
-        public ushort Build;
+        // NOTE: MUST match memory layout of PACKAGE_VERSION in appmodel.h
         public ushort Revision;
+        public ushort Build;
+        public ushort Minor;
+        public ushort Major;
 
         // Create an instance with the value `major.0.0.0`.
         public PackageVersion(ushort major) :

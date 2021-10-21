@@ -11,7 +11,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     static PCWSTR c_argumentSuffix{ L":" };
     static PCWSTR c_msProtocolArgumentString{ L"ms-protocol" };
     static PCWSTR c_pushProtocolArgumentString{ L"WindowsAppRuntimePushServer" };
-    static PCWSTR c_toastProtocolArgumentString{ L"ToastActivated" };
     static PCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
 
     struct ActivationRegistrationManager
@@ -36,6 +35,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             std::wstring const& exePath);
         static void RegisterEncodedLaunchCommand();
         static void RegisterEncodedLaunchSupport(std::wstring const& appUserModelId, std::wstring const& exePath);
+        static void ReportFeatureUsage();
     };
 }
 

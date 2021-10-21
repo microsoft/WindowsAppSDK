@@ -108,7 +108,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (!m_foregroundHandlerCount)
                 {
-                    auto appUserModelId = GetAppUserModelId();
+                    auto appUserModelId{ winrt::Microsoft::Helpers::GetAppUserModelId() };
 
                     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
                 }
@@ -123,8 +123,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             auto lock = m_lock.lock_exclusive();
             if (!m_foregroundHandlerCount++)
             {
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                auto notificationsLongRunningPlatform{ winrt::Microsoft::Helpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -149,7 +148,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                 if (m_foregroundHandlerCount == 1)
                 {
-                    auto appUserModelId = GetAppUserModelId();
+                    auto appUserModelId{ winrt::Microsoft::Helpers::GetAppUserModelId() };
 
                     THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
                 }
@@ -164,8 +163,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             m_foregroundHandlers.remove(token);
             if (!--m_foregroundHandlerCount)
             {
-                wil::com_ptr<INotificationsLongRunningPlatform> notificationsLongRunningPlatform{
-                    wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
+                auto notificationsLongRunningPlatform{ winrt::Microsoft::Helpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -191,7 +189,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (!foregroundHandled)
         {
-            ProtocolLaunchHelper(payloadLength, payload);
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+            THROW_IF_FAILED(winrt::Microsoft::Helpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
         }
 
         return S_OK;

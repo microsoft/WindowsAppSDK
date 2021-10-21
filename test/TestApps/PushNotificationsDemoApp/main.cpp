@@ -4,6 +4,8 @@
 #include <wil/win32_helpers.h>
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
+#include <MddBootstrap.h>
+#include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
