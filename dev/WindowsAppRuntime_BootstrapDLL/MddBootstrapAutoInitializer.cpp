@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <MddBootstrap.h>
 #include <WindowsAppSDK-VersionInfo.h>
+#include <intrin.h>
 
 namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
 {
@@ -26,7 +27,7 @@ namespace Microsoft::Windows::ApplicationModel::DynamicDependency::Bootstrap
             const HRESULT hr{::MddBootstrapInitialize(WINDOWSAPPSDK_RELEASE_MAJORMINOR, WINDOWSAPPSDK_RELEASE_VERSION_TAG_W, c_minVersion)};
             if (FAILED(hr))
             {
-                exit(hr);
+                __fastfail(hr);
             }
         }
     };
