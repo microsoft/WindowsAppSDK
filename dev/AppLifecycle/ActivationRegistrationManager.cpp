@@ -4,6 +4,7 @@
 #include <ActivationRegistrationManager.h>
 #include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.cpp>
 
+#include "AppLifecycleTelemetry.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
@@ -22,6 +23,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Example: C:\some\path\App.exe "----ms-protocol:myscheme:some=data&some=other"
         return wil::str_printf<std::wstring>(L"%s \"%s%s%s%s\"", exePath.c_str(), c_argumentPrefix,
             c_msProtocolArgumentString, c_argumentSuffix, argumentData.c_str());
+    }
+
+    void ActivationRegistrationManager::ReportFeatureUsage()
+    {
+        static bool reported{ false };
+
+        if (!reported)
+        {
+            AppLifecycleTelemetry::ActivationRegistrationManager();
+            reported = true;
+        }
     }
 
     void ActivationRegistrationManager::RegisterForFileTypeActivation(

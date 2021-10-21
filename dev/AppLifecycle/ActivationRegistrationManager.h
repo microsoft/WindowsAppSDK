@@ -35,6 +35,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             std::wstring const& exePath);
         static void RegisterEncodedLaunchCommand();
         static void RegisterEncodedLaunchSupport(std::wstring const& appUserModelId, std::wstring const& exePath);
+        static void ReportFeatureUsage();
     };
 }
 
