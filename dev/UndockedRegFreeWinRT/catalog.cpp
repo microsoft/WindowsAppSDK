@@ -8,6 +8,7 @@
 
 #include <activation.h>
 #include <shlwapi.h>
+#include <rometadata.h>
 
 #include <wrl.h>
 
@@ -404,9 +405,7 @@ HRESULT WinRTGetMetadataFile(
     // will create an instance of the metadata reader to dispense metadata files.
     if (metaDataDispenser == nullptr)
     {
-        RETURN_IF_FAILED(CoCreateInstance(CLSID_CorMetaDataDispenser,
-            nullptr,
-            CLSCTX_INPROC,
+        RETURN_IF_FAILED(MetaDataGetDispenser(CLSID_CorMetaDataDispenser,
             IID_IMetaDataDispenser,
             &spMetaDataDispenser));
         {
