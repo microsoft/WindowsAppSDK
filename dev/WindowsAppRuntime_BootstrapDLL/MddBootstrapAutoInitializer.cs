@@ -12,6 +12,11 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
         [ModuleInitializer]
         internal static void AccessWindowsAppSDK()
         {
+            if (Assembly.GetEntryAssembly() != Assembly.GetExecutingAssembly())
+            {
+                return;
+            }   
+
             var minVersion = new PackageVersion(Version.UInt64);
             try
             {
