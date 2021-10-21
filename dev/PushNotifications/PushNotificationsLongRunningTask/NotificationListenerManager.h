@@ -9,9 +9,12 @@ class NotificationListenerManager
 public:
     NotificationListenerManager() {};
 
-    void Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::map<std::wstring, std::wstring>& appIdList);
+    // This function has to be called after initializing the ForegroundSinkManager during Platform initialization
+    void Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager);
 
-    void AddListener(std::wstring appId, std::wstring processName);
+    void SetAppIdMapping(std::map<std::wstring, std::wstring>& appIdList);
+
+    void AddListener(std::wstring const& appId, std::wstring const& processName);
     void RemoveListener(std::wstring appId);
 
     bool IsEmpty();

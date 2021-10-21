@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppSDK.winmd">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd">
       <Private>false</Private>
       <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
     </Reference>
@@ -57,5 +57,8 @@
       <Implementation>Microsoft.Windows.ApplicationModel.Resources.dll</Implementation>
     </Reference>
   </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\Microsoft.WindowsAppSDK.MddCommon.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)WindowsAppSDK-Nuget-Native.Bootstrap.targets" Condition="'$(WindowsAppSdkBootstrapInitialize)' == 'true'"/>
 
 </Project>

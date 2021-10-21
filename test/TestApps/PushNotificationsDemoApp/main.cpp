@@ -22,7 +22,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
     auto channelOperation = PushNotificationManager::CreateChannelAsync(
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
+        winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(
@@ -101,11 +101,19 @@ int main()
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
 
-    PushNotificationActivationInfo info(
-        PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-        winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    {
+        PushNotificationActivationInfo info(
+            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+            winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
-    //PushNotificationManager::RegisterActivator(info);
+        PushNotificationManager::RegisterActivator(info);
+    }
+    else
+    {
+        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
+        PushNotificationManager::RegisterActivator(info);
+    }
 
     std::wstring uriToLaunch{ L"http://www.bing.com" };
     winrt::Windows::Foundation::Uri appUri{ uriToLaunch };
@@ -144,8 +152,11 @@ int main()
         std::cin.ignore();
     }
 
-    // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    {
+        // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
+        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+    }
 
     if (!Test::AppModel::IsPackagedProcess())
     {

@@ -42,16 +42,38 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         const int c_namePrefixLength{ ARRAYSIZE(WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX) - 1 };
 
         // We assume that since this is a framework there is no subtype name, meaning the remainder
-        // of the name is the VersionTag
-        auto packageNameVersionTag{ frameworkName.substr(c_namePrefixLength) };
+        // of the name is the Version Identifier, which contains .Major.Minor-VersionTag
+        auto packageNameVersionIdentifier{ frameworkName.substr(c_namePrefixLength) };
+
+        // Version tag is the -Foo at the end, typically the channel.
+        std::wstring packageNameVersionTag{};
+        auto versionTagPos{ packageNameVersionIdentifier.find('-') };
+        if (versionTagPos != std::string::npos)
+        {
+            packageNameVersionTag = packageNameVersionIdentifier.substr(versionTagPos);
+        }
 
         // Loop through all of the target packages and validate.
         HRESULT verifyResult{};
         for (const auto& package : c_targetPackages)
         {
-            // Build package family name based on the framework naming scheme:
-            //     Prefix + SubTypeName + VersionTag + '_' + PublisherId
-            std::wstring packageFamilyName{ WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX };
+            // Build package family name based on the framework naming scheme.
+            std::wstring packageFamilyName{};
+            if (package.versionType == PackageVersionType::Versioned)
+            {
+                // Prefix + SubTypeName + VersionIdentifier + Suffix
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionIdentifier + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+            }
+            else if (package.versionType == PackageVersionType::Unversioned)
+            {
+                // Prefix + Subtypename + VersionTag + Suffix
+                packageFamilyName = WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER + package.identifier + packageNameVersionTag + WINDOWSAPPRUNTIME_PACKAGE_NAME_SUFFIX;
+            }
+            else
+            {
+                // Other version types not supported.
+                FAIL_FAST_HR(HRESULT_FROM_WIN32(ERROR_UNSUPPORTED_TYPE));
+            }
 
             // Get target version based on the framework.
             auto targetPackageVersion{ frameworkPackageInfo.Package(0).packageId.version };

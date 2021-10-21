@@ -8,14 +8,14 @@
 #include "DataStore.h"
 #include "PackageGraph.h"
 
-static std::mutex g_lock;
+static std::recursive_mutex g_lock;
 std::vector<MddCore::PackageDependency> g_packageDependencies;
 
 bool MddCore::PackageDependencyManager::ExistsPackageDependency(
     PSID user,
     _In_ PCWSTR packageDependencyId)
 {
-    auto lock{ std::unique_lock<std::mutex>(g_lock) };
+    auto lock{ std::unique_lock<std::recursive_mutex>(g_lock) };
 
     // Find it (if we can)
     auto packageDependency{ GetPackageDependency(packageDependencyId) };
@@ -54,7 +54,7 @@ void MddCore::PackageDependencyManager::CreatePackageDependency(
 
     MddCore::DataStore::Save(packageDependency, options);
 
-    auto lock{ std::unique_lock<std::mutex>(g_lock) };
+    auto lock{ std::unique_lock<std::recursive_mutex>(g_lock) };
 
     g_packageDependencies.push_back(packageDependency);
 
@@ -81,7 +81,7 @@ void MddCore::PackageDependencyManager::DeletePackageDependency(
         return;
     }
 
-    auto lock{ std::unique_lock<std::mutex>(g_lock) };
+    auto lock{ std::unique_lock<std::recursive_mutex>(g_lock) };
 
     for (size_t index=0; index < g_packageDependencies.size(); ++index)
     {

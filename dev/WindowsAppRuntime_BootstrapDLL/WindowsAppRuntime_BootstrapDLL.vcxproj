@@ -45,7 +45,6 @@
     <ProjectGuid>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</ProjectGuid>
     <RootNamespace>Microsoft.WindowsAppRuntime.Bootstrap</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <UseUnicrt>true</UseUnicrt>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
     <CppWinRTOptimized>true</CppWinRTOptimized>
@@ -461,6 +460,8 @@
   <ItemGroup>
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrap.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapTest.h" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapAutoInitializer.cs" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapAutoInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj">

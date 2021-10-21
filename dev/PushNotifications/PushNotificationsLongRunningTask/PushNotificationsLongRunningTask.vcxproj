@@ -126,7 +126,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,7 +144,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,7 +161,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -179,7 +179,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ControlFlowGuard>Guard</ControlFlowGuard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -196,7 +196,7 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -214,7 +214,7 @@
       <ConformanceMode>true</ConformanceMode>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(OutDir)\..\WindowsAppRuntime_DLL;$(OutDir)..\WindowsAppSDK_BootstrapDLL</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -242,7 +242,6 @@
     <ClInclude Include="platformfactory.h" />
     <ClInclude Include="PlatformLifetimeManager.h" />
     <ClInclude Include="NotificationListenerManager.h" />
-    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -259,10 +258,8 @@
     <Import Project="..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
     <Import Project="..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets')" />
-    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" />
-    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" />
-    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" />
-    </ImportGroup>
+    <Import Project="..\..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets')" />
+  </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -276,8 +273,6 @@
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210803.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.Windows.CppWinRT.2.0.210722.2\build\native\Microsoft.Windows.CppWinRT.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets'))" />
-   </Target>
+    <Error Condition="!Exists('..\..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets'))" />
+  </Target>
 </Project>
