@@ -32,4 +32,11 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="$WindowsSDKBuildToolsNupkgVersion$" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
+
+  <!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+       Tools extension to be activated for this project even if the Windows App SDK Nuget
+       package has not yet been restored -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix"/>
+  </ItemGroup>
 </Project>
