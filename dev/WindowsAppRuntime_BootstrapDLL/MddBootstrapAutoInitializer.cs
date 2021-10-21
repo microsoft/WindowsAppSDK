@@ -12,12 +12,10 @@ namespace Microsoft.Windows.ApplicationModel.DynamicDependency.BootstrapCS
         [ModuleInitializer]
         internal static void AccessWindowsAppSDK()
         {
-            uint majorMinorVersion = Release.MajorMinor;
-            string versionTag = Release.VersionTag;
             var minVersion = new PackageVersion(Version.UInt64);
             try
             {
-                Bootstrap.Initialize(majorMinorVersion, versionTag, minVersion);
+                Bootstrap.Initialize(Release.MajorMinor, Release.VersionTag, minVersion);
             }
             catch (global::System.Exception e)
             {
