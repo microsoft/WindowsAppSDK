@@ -194,6 +194,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -213,6 +216,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -232,6 +238,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
@@ -251,6 +260,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -274,6 +286,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
@@ -297,6 +312,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -320,6 +338,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
@@ -343,6 +364,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -389,6 +413,13 @@
     <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
+  <Target Name="MakeStrippedMetadata" AfterTargets="CppWinRTMergeProjectWinMDInputs" BeforeTargets="ClCompile">
+    <PropertyGroup>
+      <_MdMergeParameters>-v @(CppWinRTMdMergeMetadataDirectories->'-metadata_dir "%(RelativeDir)."', ' ')</_MdMergeParameters>
+      <_MdMergeParameters>$(_MdMergeParameters) -o "$(OutDir)StrippedWinMD" @(CppWinRTMdMergeInputs->'-i "%(Identity)"', ' ') -partial -n:9 -createPublicMetadata -transformExperimental:transform</_MdMergeParameters>
+    </PropertyGroup>
+    <Exec Command="$(MdMergePath)mdmerge $(_MdMergeParameters)" />
+  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
