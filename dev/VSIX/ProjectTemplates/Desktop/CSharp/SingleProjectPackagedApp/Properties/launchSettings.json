@@ -3,7 +3,7 @@
     "$projectname$ (Package)": {
       "commandName": "MsixPackage"
     },
-    "$projectname$": {
+    "$projectname$ (Unpackaged)": {
       "commandName": "Project"
     }
   }
