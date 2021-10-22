@@ -336,8 +336,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void AppInstance::UnregisterKey()
     {
         auto releaseOnExit = m_dataMutex.acquire();
-        m_key.Reset();
-        m_keyCreationMutex.reset();
+        if (m_isCurrent)
+        {
+            m_key.Reset();
+            m_keyCreationMutex.reset();
+        }
     }
 
     AppLifecycle::AppActivationArguments AppInstance::GetActivatedEventArgs()
@@ -427,7 +430,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     hstring AppInstance::Key()
     {
-        return winrt::hstring(m_key.Get());
+        if (m_key.IsValid())
+        {
+            return winrt::hstring(m_key.Get());
+        }
+
+        return winrt::hstring(L"");
     }
 
 

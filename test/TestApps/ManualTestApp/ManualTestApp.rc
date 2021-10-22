@@ -54,6 +54,8 @@ IDM_FILE_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "RegisterInstance(foo)",       IDM_FILE_REGISTERINSTANCE
+        MENUITEM "UnregisterInstance",          IDM_FILE_UNREGISTERINSTANCE
         MENUITEM "&GetInstances",               IDM_FILE_GETINSTANCES
         MENUITEM "E&xit",                       IDM_FILE_EXIT
     END
