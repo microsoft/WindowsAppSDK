@@ -3,12 +3,6 @@
 
 #pragma once
 
-#ifndef DOWNLEVEL_PRIOR_TO_WIN8
-#include <nt.h>
-#include <ntrtl.h>
-#include <nturtl.h>
-#endif
-
 #include <strsafe.h>
 
 #include "mrm/BaseInternal.h"
@@ -23,11 +17,7 @@
 #include "mrm/readers/SectionReaders.h"
 #include "mrm/readers/SectionParser.h"
 #include "mrm/readers/MrmReaders.h"
-#ifdef DOWNLEVEL_PRIOR_TO_WIN8
 #include "mrm/readers/BaseFile.h"
 #include "mrm/readers/Atoms.h"
-#else
-#include "mrm/build/Base.h"
-#endif
 #include "mrm/Results.h"
 #include "mrm/readers/MrmManagers.h"

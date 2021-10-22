@@ -22,10 +22,10 @@ namespace Test::DynamicDependency
         TEST_METHOD(Delete_Null);
         TEST_METHOD(Delete_NotFound);
 
-        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_ProjectReunion);
-        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_ProjectReunion_MathAdd);
-        TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_ProjectReunion_MathAdd);
-        TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_ProjectReunion_MathAdd);
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime);
+        TEST_METHOD(FullLifecycle_ProcessLifetime_Frameworks_WindowsAppRuntime_MathAdd);
+        TEST_METHOD(FullLifecycle_FilePathLifetime_Frameworks_WindowsAppRuntime_MathAdd);
+        TEST_METHOD(FullLifecycle_RegistryLifetime_Frameworks_WindowsAppRuntime_MathAdd);
 
         TEST_METHOD(Add_Rank_A0_B10);
         TEST_METHOD(Add_Rank_B0prepend_A0);
@@ -43,6 +43,8 @@ namespace Test::DynamicDependency
 
         TEST_METHOD(GetIdForPackageDependencyContext_Null);
         TEST_METHOD(GetIdForPackageDependencyContext);
+
+        TEST_METHOD(WinRTReentrancy);
 
     private:
         static void VerifyPackageDependency(
@@ -117,7 +119,7 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr,
             MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
 
-        wil::unique_process_heap_string Mdd_TryCreate_ProjectReunionFramework(
+        wil::unique_process_heap_string Mdd_TryCreate_WindowsAppRuntimeFramework(
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
             PCWSTR lifetimeArtifact = nullptr);
 
@@ -134,6 +136,24 @@ namespace Test::DynamicDependency
             PCWSTR lifetimeArtifact = nullptr);
 
         wil::unique_process_heap_string Mdd_TryCreate_FrameworkMathAdd(
+            const HRESULT expectedHR,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr,
+            MddCreatePackageDependencyOptions options = MddCreatePackageDependencyOptions::None);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            MddCreatePackageDependencyOptions options);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
+            const MddPackageDependencyProcessorArchitectures architectures,
+            const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
+            PCWSTR lifetimeArtifact = nullptr);
+
+        wil::unique_process_heap_string Mdd_TryCreate_FrameworkWidgets(
             const HRESULT expectedHR,
             const MddPackageDependencyLifetimeKind lifetimeKind = MddPackageDependencyLifetimeKind::Process,
             PCWSTR lifetimeArtifact = nullptr,
@@ -198,10 +218,14 @@ namespace Test::DynamicDependency
         static std::wstring GetPathEnvironmentVariableMinusPathPrefix(
             const std::wstring& pathPrefix);
 
-        static std::wstring GetPathEnvironmentVariableMinusProjectReunionFramework();
+        static std::wstring GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework();
 
     private:
         static MddPackageDependencyProcessorArchitectures GetCurrentArchitectureAsFilter();
+
+    private:
+        static void VerifyGenerationId(
+            const UINT32 expectedGenerationId);
 
     private:
         static wil::unique_hmodule m_bootstrapDll;

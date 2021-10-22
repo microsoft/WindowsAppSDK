@@ -8,7 +8,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace ProjectReunionInstaller {
+namespace WindowsAppRuntimeInstaller {
 
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
@@ -58,7 +58,7 @@ namespace ProjectReunionInstaller {
         return S_OK;
     }
 
-    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties)
+    bool IsPackageApplicable(const std::unique_ptr<PackageProperties>& packageProperties, DeploymentBehavior deploymentBehavior)
     {
         // Neutral package architecture is applicable on all systems.
         if (packageProperties->architecture == ProcessorArchitecture::Neutral)
@@ -66,9 +66,24 @@ namespace ProjectReunionInstaller {
             return true;
         }
 
-        SYSTEM_INFO systemInfo{};
-        GetNativeSystemInfo(&systemInfo);
-        const auto systemArchitecture{ static_cast<ProcessorArchitecture>(systemInfo.wProcessorArchitecture) };
+        USHORT processMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        USHORT nativeMachine{ IMAGE_FILE_MACHINE_UNKNOWN };
+        THROW_IF_WIN32_BOOL_FALSE(::IsWow64Process2(::GetCurrentProcess(), &processMachine, &nativeMachine));
+        ProcessorArchitecture systemArchitecture{};
+        switch (nativeMachine)
+        {
+        case IMAGE_FILE_MACHINE_I386:
+            systemArchitecture = ProcessorArchitecture::X86;
+            break;
+        case IMAGE_FILE_MACHINE_AMD64:
+            systemArchitecture = ProcessorArchitecture::X64;
+            break;
+        case IMAGE_FILE_MACHINE_ARM64:
+            systemArchitecture = ProcessorArchitecture::Arm64;
+            break;
+        default:
+            THROW_HR_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), "nativeMachine=%hu", nativeMachine);
+        }
 
         // Same-arch is always applicable for any package type.
         if (packageProperties->architecture == systemArchitecture)
@@ -78,7 +93,7 @@ namespace ProjectReunionInstaller {
 
         // It is assumed that all available architectures for non-framework packages are present,
         // so only the same-architecture or neutral will be matched for non-frameworks.
-        if (!packageProperties->isFramework)
+        if (!packageProperties->isFramework && (deploymentBehavior != DeploymentBehavior::Framework))
         {
             return false;
         }
@@ -157,20 +172,21 @@ namespace ProjectReunionInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const ProjectReunionInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const bool quiet)
     {
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
         // Skip non-applicable packages.
-        if (!IsPackageApplicable(packageProperties))
+        if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior))
         {
             return;
         }
 
+        PCWSTR c_windowsAppRuntimeTempDirectoryPrefix{ L"WAR" };
         wchar_t packageFilename[MAX_PATH];
-        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), L"PRP", 0u, packageFilename));
+        THROW_LAST_ERROR_IF(0 == GetTempFileName(std::filesystem::temp_directory_path().c_str(), c_windowsAppRuntimeTempDirectoryPrefix, 0u, packageFilename));
 
         // GetTempFileName will create the temp file by that name due to the unique parameter being specified.
         // From here on out if we leave scope for any reason we will attempt to delete that file.
@@ -181,8 +197,7 @@ namespace ProjectReunionInstaller {
 
         if (!quiet)
         {
-            std::wcout << "Package Full Name: " << packageProperties->fullName.get() << std::endl;
-            std::wcout << "Temp package path: " << packageFilename << std::endl;
+            std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
         // Write the package to a temp file. The PackageManager APIs require a Uri.
@@ -219,7 +234,7 @@ namespace ProjectReunionInstaller {
 
     HRESULT DeployPackages(bool quiet) noexcept try
     {
-        for (const auto& package : ProjectReunionInstaller::c_packages)
+        for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
         {
             DeployPackageFromResource(package, quiet);
         }

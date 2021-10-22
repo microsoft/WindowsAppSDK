@@ -4,18 +4,25 @@
 namespace Test::Packages::FrameworkMathAdd
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Math.Add";
-    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.Fwk.Math.Add_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Fwk.Math.Add_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Add_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Add_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages::FrameworkMathMultiply
 {
     constexpr PCWSTR c_PackageDirName = L"Framework.Math.Multiply";
-    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.Fwk.Math.Multiply_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
-#define TEST_PACKAGE_DDLM_NAMEPREFIX    L"ProjectReunion.Test.DDLM"
+namespace Test::Packages::FrameworkWidgets
+{
+    constexpr PCWSTR c_PackageDirName = L"Framework.Widgets";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_1.2.3.4_neutral__8wekyb3d8bbwe";
+}
+
+#define TEST_PACKAGE_DDLM_NAMEPREFIX    L"WindowsAppRuntime.Test.DDLM"
 #define TEST_PACKAGE_DDLM_VERSION       L"4.1.1967.333"
 #if defined(_M_X64)
 #define TEST_PACKAGE_DDLM_ARCHITECTURE  L"x64"
@@ -116,18 +123,18 @@ namespace Test::Packages::DynamicDependencyLifetimeManagerGC1010
     constexpr const UINT32 c_Version_MajorMinor = GetPackageVersionMajorMinor();
 }
 
-namespace Test::Packages::ProjectReunionFramework
+namespace Test::Packages::WindowsAppRuntimeFramework
 {
-    constexpr PCWSTR c_PackageDirName = L"Microsoft.ProjectReunion.Framework";
-    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.ProjectReunion.Framework_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"Microsoft.ProjectReunion.Framework_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageDirName = L"Microsoft.WindowsAppRuntime.Framework";
+    constexpr PCWSTR c_PackageFamilyName = L"Microsoft.WindowsAppRuntime.Framework_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"Microsoft.WindowsAppRuntime.Framework_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages::DynamicDependencyDataStore
 {
     constexpr PCWSTR c_PackageDirName = L"DynamicDependency.DataStore";
-    constexpr PCWSTR c_PackageFamilyName = L"ProjectReunion.Test.DynDep.DataStore_8wekyb3d8bbwe";
-    constexpr PCWSTR c_PackageFullName = L"ProjectReunion.Test.DynDep.DataStore_4.1.1967.333_neutral__8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.DataStore_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.DataStore_4.1.1967.333_neutral__8wekyb3d8bbwe";
 }
 
 namespace Test::Packages
@@ -162,9 +169,9 @@ namespace Test::Packages
 
     void RemovePackage_DynamicDependencyLifetimeManagerGC1010();
 
-    void AddPackage_ProjectReunionFramework();
+    void AddPackage_WindowsAppRuntimeFramework();
 
-    void RemovePackage_ProjectReunionFramework();
+    void RemovePackage_WindowsAppRuntimeFramework();
 
     void AddPackage_FrameworkMathAdd();
 
@@ -174,9 +181,13 @@ namespace Test::Packages
 
     void RemovePackage_FrameworkMathMultiply();
 
+    void AddPackage_FrameworkWidgets();
+
+    void RemovePackage_FrameworkWidgets();
+
     void AddPackage_DynamicDependencyDataStore();
 
     void RemovePackage_DynamicDependencyDataStore();
 
-    std::filesystem::path GetProjectReunionFrameworkMsixPath();
+    std::filesystem::path GetWindowsAppRuntimeFrameworkMsixPath();
 }

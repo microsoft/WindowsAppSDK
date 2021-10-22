@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- We want the VS Test Explorer to invoke TE from the same folder as the test binaries. -->
+    <!-- This file is automatically updated during the build to point to the output folder. -->
+    <TestAdaptersPaths>.\</TestAdaptersPaths>
+  </RunConfiguration>
+</RunSettings>

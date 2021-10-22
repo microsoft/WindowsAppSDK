@@ -17,7 +17,7 @@ namespace Test::DynamicDependency
     {
     public:
         BEGIN_TEST_CLASS(GetCurrentPackageInfoTests)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
@@ -28,15 +28,16 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
-            TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_FrameworkWidgets();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();
-            TP::AddPackage_ProjectReunionFramework();
+            TP::AddPackage_WindowsAppRuntimeFramework();
             TP::AddPackage_DynamicDependencyLifetimeManager();
 
             // Load the DLL hooking GetCurrentPackageInfo*()
-            auto dllAbsoluteFilename{ TF::GetProjectReunionDllAbsoluteFilename() };
+            auto dllAbsoluteFilename{ TF::GetWindowsAppRuntimeDllAbsoluteFilename() };
             wil::unique_hmodule dll(LoadLibrary(dllAbsoluteFilename.c_str()));
             if (!dll)
             {
@@ -55,7 +56,7 @@ namespace Test::DynamicDependency
             m_dll.reset();
 
             TP::RemovePackage_DynamicDependencyLifetimeManager();
-            TP::RemovePackage_ProjectReunionFramework();
+            TP::RemovePackage_WindowsAppRuntimeFramework();
             TP::RemovePackage_FrameworkMathAdd();
 
             return true;
@@ -246,6 +247,9 @@ namespace Test::DynamicDependency
             OutputDebugStringW(message.get());
             VERIFY_ARE_EQUAL(expectedHR, hr);
             VERIFY_ARE_EQUAL(expectedGenerationId, generationId);
+
+            const auto actualGenerationId{ MddGetGenerationId() };
+            VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
         }
 
         void PrintGetCurrentPackageInfoHeader()

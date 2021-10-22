@@ -38,13 +38,13 @@ if ($VersionOverride)
 else
 {
     [xml]$customProps = (Get-Content ..\..\version.props)
-    $versionMajor = $customProps.GetElementsByTagName("ProjectReunionVersionMajor").'#text'
-    $versionMinor = $customProps.GetElementsByTagName("ProjectReunionVersionMinor").'#text'
-    $versionPatch = $customProps.GetElementsByTagName("ProjectReunionVersionPatch").'#text'
+    $versionMajor = $customProps.GetElementsByTagName("WindowsAppSDKVersionMajor").'#text'
+    $versionMinor = $customProps.GetElementsByTagName("WindowsAppSDKVersionMinor").'#text'
+    $versionPatch = $customProps.GetElementsByTagName("WindowsAppSDKVersionPatch").'#text'
 
     if ((!$versionMajor) -or (!$versionMinor) -or (!$versionPatch))
     {
-        Write-Error "Expected ProjectReunionVersionMajor, ProjectReunionVersionMinor, and ProjectReunionVersionPatch tags to be in version.props file"
+        Write-Error "Expected WindowsAppSDKVersionMajor, WindowsAppSDKVersionMinor, and WindowsAppSDKVersionPatch tags to be in version.props file"
         Exit 1
     }
 
@@ -106,22 +106,19 @@ function ConfigureNugetCommandLine {
     $script:NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir"
 }
 
-ConfigureNugetCommandLine("Microsoft.ProjectReunion")
+ConfigureNugetCommandLine("Microsoft.WindowsAppSDK")
 
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-x86\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-x86\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-x64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-x64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.dll "$runtimesDir\win10-arm64\native"
-Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.ProjectReunion\Microsoft.ProjectReunion.pri "$runtimesDir\win10-arm64\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.dll "$runtimesDir\win10-x86\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.dll "$runtimesDir\win10-x64\native"
+Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\Microsoft.WindowsAppRuntime\Microsoft.WindowsAppRuntime.dll "$runtimesDir\win10-arm64\native"
 
 #
-# Build Project Reunion package (with actual contents, i.e. not metapackage)
+# Build Windows App SDK package (with actual contents, i.e. not metapackage)
 #
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
-$NugetCmdLine = "$nugetExe pack ProjectReunion.nuspec $NugetArgs -version $version"
-Write-Host 'Building Project Reunion package'
+$NugetCmdLine = "$nugetExe pack WindowsAppSDK.nuspec $NugetArgs -version $version"
+Write-Host 'Building Windows SDK package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)
@@ -132,14 +129,14 @@ if ($lastexitcode -ne 0)
 Write-Host
 
 #
-# Build Project Reunion package meta package (no direct contents, only references)
+# Build Windows App SDK package meta package (no direct contents, only references)
 #
 
-ConfigureNugetCommandLine("Microsoft.ProjectReunion.MetaPackage")
+ConfigureNugetCommandLine("Microsoft.WindowsAppSDK.MetaPackage")
 
 $nugetExe = "$scriptDirectory\..\..\tools\NugetWrapper.cmd"
-$NugetCmdLine = "$nugetExe pack ProjectReunionMetaPackage.nuspec $NugetArgs -version $version"
-Write-Host 'Building Project Reunion Meta Package'
+$NugetCmdLine = "$nugetExe pack WindowsAppSDKMetaPackage.nuspec $NugetArgs -version $version"
+Write-Host 'Building Windows App SDK Meta Package'
 Write-Host $NugetCmdLine
 Invoke-Expression $NugetCmdLine
 if ($lastexitcode -ne 0)
@@ -154,20 +151,16 @@ Write-Host
 
 if(-not $SkipFrameworkPackage)
 {
-    ConfigureNugetCommandLine("Microsoft.ProjectReunion")
+    ConfigureNugetCommandLine("Microsoft.WindowsAppSDK")
 
     # Nuget package with framework package encapsulation
     $NugetArgs = "$CommonNugetArgs -OutputDirectory $OutputDir\FrameworkPackage"
 
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.ProjectReunion-*.msix "$toolsDir\AppX\x86\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.ProjectReunion-*.msix "$toolsDir\AppX\x64\Release"
-    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.ProjectReunion-*.msix "$toolsDir\AppX\arm64\Release"
-    # Currently we don't have a separate Debug package that we want to ship to customers
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x86\FrameworkPackage\Microsoft.ProjectReunion.Debug-*.msix "$toolsDir\AppX\x86\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\x64\FrameworkPackage\Microsoft.ProjectReunion.Debug-*.msix "$toolsDir\AppX\x64\Debug"
-    #Copy-IntoNewDirectory -IfExists $BuildOutput\debug\arm64\FrameworkPackage\Microsoft.ProjectReunion.Debug-*.msix "$toolsDir\AppX\arm64\Debug"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x86\FrameworkPackage\Microsoft.WindowsAppRuntime-*.msix "$toolsDir\AppX\x86\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\x64\FrameworkPackage\Microsoft.WindowsAppRuntime-*.msix "$toolsDir\AppX\x64\Release"
+    Copy-IntoNewDirectory -IfExists $BuildOutput\$BuildFlavor\arm64\FrameworkPackage\Microsoft.WindowsAppRuntime-*.msix "$toolsDir\AppX\arm64\Release"
 
-    $NugetCmdLine = "$nugetExe pack ProjectReunionFrameworkPackage.nuspec $NugetArgs -version $version"
+    $NugetCmdLine = "$nugetExe pack WindowsAppSDKFrameworkPackage.nuspec $NugetArgs -version $version"
     Write-Host $NugetCmdLine
     Invoke-Expression $NugetCmdLine
     if ($lastexitcode -ne 0)

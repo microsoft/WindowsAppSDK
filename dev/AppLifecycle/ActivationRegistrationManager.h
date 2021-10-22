@@ -2,18 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
-#include <Microsoft.ApplicationModel.Activation.ActivationRegistrationManager.g.h>
+#include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.h>
 
-namespace winrt::Microsoft::ApplicationModel::Activation::implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     // Registration constant values.
-    static LPCWSTR c_argumentPrefix{ L"----" };
-    static LPCWSTR c_argumentSuffix{ L":" };
-    static LPCWSTR c_protocolArgumentString{ L"ms-protocol" };
-    static LPCWSTR c_launchSchemeName{ L"ms-launch" };
-    static LPCWSTR c_encodedLaunchSchemeName{ L"ms-encodedlaunch" };
-    static LPCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
-    static LPCWSTR c_contractIdKeyName{ L"ContractId" };
+    static PCWSTR c_argumentPrefix{ L"----" };
+    static PCWSTR c_argumentSuffix{ L":" };
+    static PCWSTR c_msProtocolArgumentString{ L"ms-protocol" };
+    static PCWSTR c_pushProtocolArgumentString{ L"WindowsAppRuntimePushServer" };
+    static PCWSTR c_runKeyPath{ LR"(Software\Microsoft\Windows\CurrentVersion\Run\)" };
 
     struct ActivationRegistrationManager
     {
@@ -37,10 +35,11 @@ namespace winrt::Microsoft::ApplicationModel::Activation::implementation
             std::wstring const& exePath);
         static void RegisterEncodedLaunchCommand();
         static void RegisterEncodedLaunchSupport(std::wstring const& appUserModelId, std::wstring const& exePath);
+        static void ReportFeatureUsage();
     };
 }
 
-namespace winrt::Microsoft::ApplicationModel::Activation::factory_implementation
+namespace winrt::Microsoft::Windows::AppLifecycle::factory_implementation
 {
     struct ActivationRegistrationManager : ActivationRegistrationManagerT<ActivationRegistrationManager,
         implementation::ActivationRegistrationManager>

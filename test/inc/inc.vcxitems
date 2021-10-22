@@ -14,12 +14,13 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.AppModel.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Bootstrap.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Diagnostics.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.FileSystem.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Metadata.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ProjectReunion.Test.Package.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.AppModel.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Bootstrap.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Diagnostics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.FileSystem.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Metadata.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.Package.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WindowsAppRuntime.Test.TAEF.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TestDef.h" />
   </ItemGroup>
 </Project>

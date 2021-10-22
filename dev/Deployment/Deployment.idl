@@ -1,0 +1,37 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Windows.ApplicationModel.WindowsAppRuntime
+{
+    /// Represents the current Deployment status of the WindowsAppRuntime
+    enum DeploymentStatus
+    {
+        Unknown = 0,
+        Ok,
+        PackageInstallRequired,
+        PackageInstallFailed,
+    };
+
+    /// Represents the a result of a Deployment Manager method.
+    runtimeclass DeploymentResult
+    {
+        DeploymentResult(DeploymentStatus status, HRESULT extendedError);
+
+        /// Returns the DeploymentStatus of the result.
+        DeploymentStatus Status { get; };
+
+        /// Returns the first encountered error if there was an error or S_OK if no error.
+        HRESULT ExtendedError{ get; };
+    };
+
+    /// Used to query deployment information for WindowsAppRuntime
+    static runtimeclass DeploymentManager
+    {
+        /// Returns the current deployment status of the current package's Windows App Runtime.
+        static DeploymentResult GetStatus();
+
+        /// Checks the status of the WindowsAppRuntime of the current package and attempts to
+        /// register any missing packages that can be registered.
+        static DeploymentResult Initialize();
+    };
+}

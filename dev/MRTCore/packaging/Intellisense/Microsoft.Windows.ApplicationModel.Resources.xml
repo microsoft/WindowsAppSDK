@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Microsoft.Windows.ApplicationModel.Resources</name>
+  </assembly>
+  <members>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName">
+      <summary>Contains names for common resource qualifiers such as language, system theme, and display scale.</summary>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Contrast">
+      <summary>Gets the name for a qualifier based on the contrast settings.</summary>
+      <returns>The name for a qualifier based on the contrast settings.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Custom">
+      <summary>Gets the name for a qualifier based on a custom value.</summary>
+      <returns>The name for a qualifier based a custom value.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.DeviceFamily">
+      <summary>Gets the name for a qualifier based on the current device's family.</summary>
+      <returns>The name for a qualifier based on the current device's family.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.HomeRegion">
+      <summary>Gets the name for a qualifier based on the current home region.</summary>
+      <returns>The name for a qualifier based on the current home region.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Language">
+      <summary>Gets the name for a qualifier based on the current language.</summary>
+      <returns>The name for a qualifier based on the current language.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.LayoutDirection">
+      <summary>Gets the name for a qualifier based on the current UI layout direction.</summary>
+      <returns>The name for a qualifier based on the current UI layout direction.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Scale">
+      <summary>Gets the name for a qualifier based on the current display scale.</summary>
+      <returns>The name for a qualifier based on the current display scale.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.TargetSize">
+      <summary>Gets the name for a qualifier based on target size.</summary>
+      <returns>The name for a qualifier based on target size.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.KnownResourceQualifierName.Theme">
+      <summary>Gets the name for a qualifier based on the current theme.</summary>
+      <returns>The name for a qualifier based on the current theme.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.MrtContract" />
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate">
+      <summary>Represents a single possible value for a given resource, the qualifiers associated with that resource, and how well those qualifiers match the context against which it was resolved.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.#ctor(Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind,System.String)">
+      <summary>Creates an instance of the ResourceCandidate class with the specified value.</summary>
+      <param name="kind">The type of ResourceCandidate being created.</param>
+      <param name="data">The value of the ResourceCandidate.</param>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.#ctor(System.Byte[])">
+      <summary>Creates an instance of the ResourceCandidate class with the specified value.</summary>
+      <param name="data">The value for this ResourceCandidate represented as a bytes.</param>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.Kind">
+      <summary>Gets the type of resource that is encapsulated in this ResourceCandidate.</summary>
+      <returns>A ResourceCandidateKind that specifies the type of resource that is encapsulated in this ResourceCandidate.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.QualifierValues">
+      <summary>Gets the qualifiers associated with this ResourceCandidate.</summary>
+      <returns>A dictionary that contains all qualifiers associated with this ResourceCandidate.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.ValueAsBytes">
+      <summary>Gets the value of the ResourceCandidate represented in bytes.</summary>
+      <returns>The value of the ResourceCandidate represented in bytes.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate.ValueAsString">
+      <summary>Gets the value of the ResourceCandidate represented as a string.</summary>
+      <returns>The value of the ResourceCandidate represented as a string.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind">
+      <summary>Defines values that represent the type of resource that is encapsulated in a ResourceCandidate.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind.EmbeddedData">
+      <summary>The resource is embedded data in some containing resource file (such as a .resw file).</summary>
+    </member>
+    <member name="F:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind.FilePath">
+      <summary>The resource is a file located at the specified location.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind.String">
+      <summary>The resource is a string.</summary>
+    </member>
+    <member name="F:Microsoft.Windows.ApplicationModel.Resources.ResourceCandidateKind.Unknown">
+      <summary>The ResourceCandidate is of an unknown type.</summary>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceContext">
+      <summary>Encapsulates all of the factors that might affect resource selection.</summary>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceContext.QualifierValues">
+      <summary>Gets a map of all supported qualifiers, indexed by name.</summary>
+      <returns>The map of qualifiers, which you use to map a qualifier name to a qualifier value. The qualifier value returned represents the current setting. Here is a reference table of all the possible qualifier values that can be returned. See Tailor your resources for language, scale, high contrast, and other qualifiers for an explanation of the general concept of qualifiers, how to use them, and the purpose of each of the qualifier names.
+
+| Qualifier name                | Qualifier values |
+|-------------------------------|------------------|
+| alternateform, or altform     | A string, between 1 and 16 chars in length, representing an alternate form of a resource. |
+| configuration, or configA     | string. Matches the value of the MS_CONFIGURATION_ATTRIBUTE_VALUE environment variable. It's unlikely that you'll need to use this qualifier name (see the Configuration section of Tailor your resources for language, scale, high contrast, and other qualifiers). |
+| contrast                      | Either standard (the default; matches high contrast off), high (matches any high contrast setting), black (matches High Contrast Black, High Contrast #1, and High Contrast #2), or white (matches High Contrast White). |
+| custom                        | A custom value. |
+| devicefamily                  | It's unlikely that you'll need to use this qualifier name (see the DeviceFamily section of Tailor your resources for language, scale, high contrast, and other qualifiers). |
+| dxfeaturelevel, or dxfl       | Either DX9, DX10, DX11, or DX12. This qualifier has been deprecated. See the DXFeatureLevel section of Tailor your resources for language, scale, high contrast, and other qualifiers. |
+| homeregion                    | Any valid BCP-47 region tag (such as us, or 840). That is, any ISO 3166-1 alpha-2 two-letter region code, plus the set of ISO 3166-1 numeric three-digit geographic codes for composed regions (see United Nations Statistic Division M49 composition of region codes). Matches the country or region setting. |
+| language, or lang             | Any valid BCP-47 language tag (such as en, or en-US). Matches the display language setting. For a list of languages, see the IANA language subtag registry. |
+| layoutdirection, or layoutdir | Either LTR (left-to-right), RTL (right-to-left), TTBLTR (top-to-bottom, left-to-right), or TTBRTL (top-to-bottom, right-to-left). Matches the layout direction of the display language setting. |
+| scale                         | Either 80, 100 (default), 120, 125, 140, 150, 160, 175, 180, 200, 225, 250, 300, 350, 400, or 450. Matches the display scale setting. The values 125, 150, 175, 225, 250, 300, 350, 400, and 450 were introduced in Windows 10. |
+| targetsize                    | A positive integer that represents the side length of a square image in raw (physical) pixels. Matches the View setting in File Explorer. |
+| theme                         | Either dark or light. Matches the default or overridden app mode setting.|</returns>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader">
+      <summary>Provides simplified access to app resources such as app UI strings.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.#ctor">
+      <summary>Constructs a new ResourceLoader object for the "Resources" subtree of the currently running app's main ResourceMap.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.#ctor(System.String)">
+      <summary>Constructs a new ResourceLoader object for the specified ResourceMap.</summary>
+      <param name="fileName">The resource identifier of the ResourceMap that the new resource loader uses for unqualified resource references. It can then retrieve resources relative to those references.
+
+&gt; [!NOTE]
+&gt; The resource identifier is treated as a Uniform Resource Identifier (URI) fragment, subject to Uniform Resource Identifier (URI) semantics. For example, "Caption%20" is treated as "Caption ". Do not use "?" or "#" in resource identifiers, as they terminate the resource path. For example, "Foo?3" is treated as "Foo".</param>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.#ctor(System.String,System.String)">
+      <summary>Creates a ResourceLoader for the given context and map.</summary>
+      <param name="fileName">The path and name of the file that should be used for the current context.</param>
+      <param name="resourceMap">The resource identifier of the resourceMap used for unqualified resource references by the new ResourceLoader. The ResourceLoader can then retrieve resources relative to those references.</param>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.GetDefaultResourceFilePath">
+      <summary>Gets the default resource file path, which is the path a ResourceLoader will be created with if no custom path is specified.</summary>
+      <returns>The default path.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.GetString(System.String)">
+      <summary>Returns the most appropriate string value of a resource, specified by resource identifier.</summary>
+      <param name="resourceId">The resource identifier of the resource to be resolved.
+
+&gt; [!NOTE]
+&gt; The resource identifier is treated as a Uniform Resource Identifier (URI) fragment, subject to Uniform Resource Identifier (URI) semantics. For example, getString ("Caption%20") is treated as getString ("Caption "). Do not use "?" or "#" in resource identifiers, as they terminate the resource path. For example, "Foo?3" is treated as "Foo".</param>
+      <returns>The most appropriate string value of the specified resource for the default ResourceContext.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceLoader.GetStringForUri(Windows.Foundation.Uri)">
+      <summary>Returns the most appropriate string value of a resource, specified by a Uniform Resource Identifier (URI) resource identifier, for the default ResourceContext of the currently running app.</summary>
+      <param name="resourceUri">A Uniform Resource Identifier (URI) that represents the resource to be retrieved.</param>
+      <returns>The most appropriate string value of the specified resource for the default ResourceContext.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceManager">
+      <summary>Provides access to app resource maps and more advanced resource functionality.</summary>
+    </member>
+    <member name="E:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.ResourceNotFound">
+      <summary>Event that fires when an attempt to get a resource fails because the specified resource was not found.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.#ctor">
+      <summary>Creates a ResourceManager object using the default settings.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.#ctor(System.String)">
+      <summary>Creates a ResourceManager object.</summary>
+      <param name="fileName">The resource file.</param>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.CreateResourceContext">
+      <summary>Creates a ResourceContext with the default settings.</summary>
+      <returns>A ResourceContext.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceManager.MainResourceMap">
+      <summary>Gets the ResourceMap that is associated with the main package of the currently running app.</summary>
+      <returns>The ResourceMap.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceMap">
+      <summary>A collection of related resources, typically either for a particular app package, or a resource file for a particular package.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.GetSubtree(System.String)">
+      <summary>Returns a ResourceMap that represents a part of another ResourceMap, typically used to access a particular resource file within an app package.
+
+This method finds subtree, ancestor, sibling and cousin maps to this resource map, as well as top-level maps. It returns the resource map represented by a given resource map identifier, relative to this resource map. This method is typically used to make simpler references to a particular subset of resources, such as a single resource file, or a directory of files.</summary>
+      <param name="reference">A resource map identifier that identifies the root of the new subtree. For details, see the remarks for ResourceMap class.</param>
+      <returns>The subtree ResourceMap.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.GetValue(System.String)">
+      <summary>Returns the most appropriate candidate for a resource that is specified by a resource identifier within the default context.</summary>
+      <param name="resource">A resource identifier specified as a name or reference. For details, see the remarks for ResourceMap class.</param>
+      <returns>A ResourceCandidate that describes the most appropriate candidate.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.GetValue(System.String,Microsoft.Windows.ApplicationModel.Resources.ResourceContext)">
+      <summary>Returns the most appropriate candidate for a resource that is specified by a resource identifier for the supplied context.</summary>
+      <param name="resource">A resource specified as a name or reference. For details, see the remarks for ResourceMap class.</param>
+      <param name="context">The context for which to select the most appropriate candidate.</param>
+      <returns>A ResourceCandidate that describes the most appropriate candidate.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.GetValueByIndex(System.UInt32)">
+      <summary>Returns the resource at the specified index in the default context.</summary>
+      <param name="index">The index to use to locate the resource in the context.</param>
+      <returns>The value, if an item with the specified index exists.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.GetValueByIndex(System.UInt32,Microsoft.Windows.ApplicationModel.Resources.ResourceContext)">
+      <summary>Returns the resource at the specified index in the specified context.</summary>
+      <param name="index">The index to use to locate the resource in the context.</param>
+      <param name="context"></param>
+      <returns>The value, if an item with the specified index exists.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.TryGetSubtree(System.String)">
+      <summary>Tries to find a ResourceMap that represents a part of another ResourceMap, typically used to access a particular resource file within an app package.
+
+This method finds subtree, ancestor, sibling and cousin maps to this resource map, as well as top-level maps. It returns the resource map represented by a given resource map identifier, relative to this resource map. This method is typically used to make simpler references to a particular subset of resources, such as a single resource file, or a directory of files.</summary>
+      <param name="reference">A resource map identifier that identifies the root of the new subtree. For details, see the remarks for ResourceMap class.</param>
+      <returns>The subtree ResourceMap. If the specified resource map identifier is not found, this method returns null.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.TryGetValue(System.String)">
+      <summary>Tries to find the most appropriate candidate for a resource that is specified by a resource identifier within the default context.</summary>
+      <param name="resource">A resource identifier specified as a name or reference. For details, see the remarks for ResourceMap class.</param>
+      <returns>A ResourceCandidate that describes the most appropriate candidate. If the specified resource identifier is not found, this method returns null.</returns>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.TryGetValue(System.String,Microsoft.Windows.ApplicationModel.Resources.ResourceContext)">
+      <summary>Tries to find the most appropriate candidate for a resource that is specified by a resource identifier for the supplied context.</summary>
+      <param name="resource">A resource specified as a name or reference. For details, see the remarks for ResourceMap class.</param>
+      <param name="context">The context for which to select the most appropriate candidate.</param>
+      <returns>A ResourceCandidate that describes the most appropriate candidate. If the specified resource identifier is not found, this method returns null.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceMap.ResourceCount">
+      <summary>Gets the number of resources in the ResourceMap.</summary>
+      <returns>The number of resources contained in the map.</returns>
+    </member>
+    <member name="T:Microsoft.Windows.ApplicationModel.Resources.ResourceNotFoundEventArgs">
+      <summary>Provides information about a failed attempt to retrieve a resource.</summary>
+    </member>
+    <member name="M:Microsoft.Windows.ApplicationModel.Resources.ResourceNotFoundEventArgs.SetResolvedCandidate(Microsoft.Windows.ApplicationModel.Resources.ResourceCandidate)">
+      <summary>Specify a ResourceCandidate to be used when the requested candidate is not found.</summary>
+      <param name="candidate">The ResourceCandidate to be used instead of the requested candidate.</param>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceNotFoundEventArgs.Context">
+      <summary>Gets the ResourceContext in which the resource was not found.</summary>
+      <returns>The ResourceContext in which the resource was not found.</returns>
+    </member>
+    <member name="P:Microsoft.Windows.ApplicationModel.Resources.ResourceNotFoundEventArgs.Name">
+      <summary>Gets the name of the resource that was not found.</summary>
+      <returns>The name of the resource that was not found.</returns>
+    </member>
+  </members>
+</doc>

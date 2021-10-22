@@ -185,6 +185,7 @@ Use your language's preferred event-registration management system if your app d
 recieve power status notifications during its entire lifecycle.
 
 ```c++
+
 void UnregisterPowerManagerCallbacks()
 {
     PowerManager::BatteryStatusChanged(batteryToken);

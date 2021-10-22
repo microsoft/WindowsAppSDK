@@ -17,7 +17,7 @@
 using namespace Microsoft::WRL;
 
 // Implement the DataStore as a classic COM Out-of-Proc server, via WRL
-// See https://docs.microsoft.com/en-us/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
+// See https://docs.microsoft.com/cpp/cppcx/wrl/how-to-create-a-classic-com-component-using-wrl?redirectedfrom=MSDN&view=vs-2019 for more details
 
 struct __declspec(uuid(PR_DYNDEP_DATASTORE_CLSID_STRING)) DynamicDependencyDataStoreImpl WrlFinal : RuntimeClass<RuntimeClassFlags<ClassicCom>, IDynamicDependencyDataStore>
 {
@@ -56,7 +56,7 @@ void EndOfTheLine()
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
-    ::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+    RETURN_IF_FAILED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
     wil::unique_event endOfTheLine(::CreateEventW(nullptr, TRUE, FALSE, nullptr));
     RETURN_LAST_ERROR_IF_NULL(endOfTheLine);

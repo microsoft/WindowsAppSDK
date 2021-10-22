@@ -20,18 +20,20 @@ bool Test::DynamicDependency::Test_Win32::Setup()
     // Remove our packages in case they were previously installed and incompletely removed
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
-    TP::RemovePackage_ProjectReunionFramework();
+    TP::RemovePackage_WindowsAppRuntimeFramework();
+    TP::RemovePackage_FrameworkWidgets();
     TP::RemovePackage_FrameworkMathMultiply();
     TP::RemovePackage_FrameworkMathAdd();
 
     // Install our needed packages
     TP::AddPackage_FrameworkMathAdd();
     TP::AddPackage_FrameworkMathMultiply();
-    TP::AddPackage_ProjectReunionFramework();
+    TP::AddPackage_FrameworkWidgets();
+    TP::AddPackage_WindowsAppRuntimeFramework();
     TP::AddPackage_DynamicDependencyDataStore();
     TP::AddPackage_DynamicDependencyLifetimeManager();
 
-    // We need to find Microsoft.ProjectReunion.Bootstrap.dll.
+    // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
     // Normally it's colocated with the application (i.e. same dir as the exe)
     // but that's not true of our test project (a dll) in our build environment
     // (different directories). So we'll explicitly find and load it so the
@@ -66,7 +68,8 @@ bool Test::DynamicDependency::Test_Win32::Cleanup()
     TP::RemovePackage_DynamicDependencyLifetimeManagerGC1000();
     TP::RemovePackage_DynamicDependencyLifetimeManager();
     TP::RemovePackage_DynamicDependencyDataStore();
-    TP::RemovePackage_ProjectReunionFramework();
+    TP::RemovePackage_WindowsAppRuntimeFramework();
+    TP::RemovePackage_FrameworkWidgets();
     TP::RemovePackage_FrameworkMathMultiply();
     TP::RemovePackage_FrameworkMathAdd();
 
@@ -75,6 +78,9 @@ bool Test::DynamicDependency::Test_Win32::Cleanup()
 
 void Test::DynamicDependency::Test_Win32::Create_Delete()
 {
+    // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
+    VerifyGenerationId(1);
+
     PCWSTR packageFamilyName{ TP::FrameworkMathAdd::c_PackageFamilyName };
     const PACKAGE_VERSION minVersion{};
     const MddPackageDependencyProcessorArchitectures architectureFilter{};
@@ -85,6 +91,8 @@ void Test::DynamicDependency::Test_Win32::Create_Delete()
     VERIFY_ARE_EQUAL(S_OK, MddTryCreatePackageDependency(nullptr, packageFamilyName, minVersion, architectureFilter, lifetimeKind, lifetimeArtifact, options, &packageDependencyId));
 
     MddDeletePackageDependency(packageDependencyId.get());
+
+    VerifyGenerationId(1);
 }
 
 void Test::DynamicDependency::Test_Win32::Delete_Null()
@@ -99,27 +107,32 @@ void Test::DynamicDependency::Test_Win32::Delete_NotFound()
     MddDeletePackageDependency(packageDependencyId);
 }
 
-void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framework_ProjectReunion()
+void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framework_WindowsAppRuntime()
 {
+    // The process starts at GenerationId=0 but the bootstrap API was called which calls DynamicDependencies so it's now 1
+    VerifyGenerationId(1);
+
     // Setup our dynamic dependencies
 
-    std::wstring expectedPackageFullName_ProjectReunionFramework{ TP::ProjectReunionFramework::c_PackageFullName };
+    std::wstring expectedPackageFullName_WindowsAppRuntimeFramework{ TP::WindowsAppRuntimeFramework::c_PackageFullName };
     std::wstring expectedPackageFullName_FrameworkMathAdd{ TP::FrameworkMathAdd::c_PackageFullName };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusProjectReunionFramework() };
-    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(expectedPackageFullName_ProjectReunionFramework) };
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    auto pathEnvironmentVariable{ GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework() };
+    auto packagePath_WindowsAppRuntimeFramework{ TP::GetPackagePath(expectedPackageFullName_WindowsAppRuntimeFramework) };
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
+    VerifyGenerationId(1);
 
     // -- TryCreate
 
     wil::unique_process_heap_string packageDependencyId_FrameworkMathAdd{ Mdd_TryCreate_FrameworkMathAdd() };
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyGenerationId(1);
 
     // -- Add
 
@@ -129,24 +142,25 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     std::wstring actualPackageFullName_FrameworkMathAdd{ packageFullName_FrameworkMathAdd.get() };
     VERIFY_ARE_EQUAL(actualPackageFullName_FrameworkMathAdd, expectedPackageFullName_FrameworkMathAdd);
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
     auto packagePath_FrameworkMathAdd{ TP::GetPackagePath(expectedPackageFullName_FrameworkMathAdd) };
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, packagePath_FrameworkMathAdd, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyGenerationId(2);
 
     // -- Use it
 
     // Let's use resources from the dynamically added package
-    auto projectReunionDllFilename{ L"Microsoft.ProjectReunion.dll" };
-    wil::unique_hmodule projectReunionDll(LoadLibrary(projectReunionDllFilename));
+    auto windowsAppRuntimeDllFilename{ L"Microsoft.WindowsAppRuntime.dll" };
+    wil::unique_hmodule windowsAppRuntimeDll(LoadLibrary(windowsAppRuntimeDllFilename));
     {
         const auto lastError{ GetLastError() };
-        auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, projectReunionDllFilename) };
-        VERIFY_IS_NOT_NULL(projectReunionDll.get(), message.get());
+        auto message{ wil::str_printf<wil::unique_process_heap_string>(L"Error in LoadLibrary: %d (0x%X) loading %s", lastError, lastError, windowsAppRuntimeDllFilename) };
+        VERIFY_IS_NOT_NULL(windowsAppRuntimeDll.get(), message.get());
     }
 
-    auto mddGetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(projectReunionDll.get(), MddGetResolvedPackageFullNameForPackageDependency) };
+    auto mddGetResolvedPackageFullNameForPackageDependency{ GetProcAddressByFunctionDeclaration(windowsAppRuntimeDll.get(), MddGetResolvedPackageFullNameForPackageDependency) };
     VERIFY_IS_NOT_NULL(mddGetResolvedPackageFullNameForPackageDependency);
 
     wil::unique_process_heap_string resolvedPackageFullName;
@@ -155,6 +169,7 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
     std::wstring actualResolvedPackageFullName{ resolvedPackageFullName.get() };
     const auto& expectedResolvedPackageFullName{ expectedPackageFullName_FrameworkMathAdd };
     VERIFY_ARE_EQUAL(expectedResolvedPackageFullName, actualResolvedPackageFullName);
+    VerifyGenerationId(2);
 
     // Tear down our dynamic dependencies
 
@@ -162,19 +177,21 @@ void Test::DynamicDependency::Test_Win32::FullLifecycle_ProcessLifetime_Framewor
 
     MddRemovePackageDependency(packageDependencyContext_FrameworkMathAdd);
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), S_OK, expectedPackageFullName_FrameworkMathAdd);
+    VerifyGenerationId(3);
 
     // -- Delete
 
     MddDeletePackageDependency(packageDependencyId_FrameworkMathAdd.get());
 
-    VerifyPackageInPackageGraph(expectedPackageFullName_ProjectReunionFramework, S_OK);
+    VerifyPackageInPackageGraph(expectedPackageFullName_WindowsAppRuntimeFramework, S_OK);
     VerifyPackageNotInPackageGraph(expectedPackageFullName_FrameworkMathAdd, S_OK);
-    VerifyPathEnvironmentVariable(packagePath_ProjectReunionFramework, pathEnvironmentVariable.c_str());
+    VerifyPathEnvironmentVariable(packagePath_WindowsAppRuntimeFramework, pathEnvironmentVariable.c_str());
     VerifyPackageDependency(packageDependencyId_FrameworkMathAdd.get(), HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    VerifyGenerationId(3);
 }
 
 void Test::DynamicDependency::Test_Win32::GetResolvedPackageFullName_Null()
@@ -382,11 +399,11 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
     return packageDependencyId;
 }
 
-wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_ProjectReunionFramework(
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_WindowsAppRuntimeFramework(
     const MddPackageDependencyLifetimeKind lifetimeKind,
     PCWSTR lifetimeArtifact)
 {
-    return Mdd_TryCreate(TP::ProjectReunionFramework::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
+    return Mdd_TryCreate(TP::WindowsAppRuntimeFramework::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
 }
 
 wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkMathAdd(
@@ -419,6 +436,38 @@ wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCrea
     MddCreatePackageDependencyOptions options)
 {
     return Mdd_TryCreate(expectedHR, TP::FrameworkMathAdd::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    MddCreatePackageDependencyOptions options)
+{
+    const MddPackageDependencyLifetimeKind lifetimeKind{ MddPackageDependencyLifetimeKind::Process };
+    PCWSTR lifetimeArtifact{};
+    return Mdd_TryCreate(S_OK, TP::FrameworkWidgets::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact)
+{
+    return Mdd_TryCreate(TP::FrameworkWidgets::c_PackageFamilyName, lifetimeKind, lifetimeArtifact);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    const MddPackageDependencyProcessorArchitectures architectures,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact)
+{
+    return Mdd_TryCreate(S_OK, TP::FrameworkWidgets::c_PackageFamilyName, architectures, lifetimeKind, lifetimeArtifact);
+}
+
+wil::unique_process_heap_string Test::DynamicDependency::Test_Win32::Mdd_TryCreate_FrameworkWidgets(
+    const HRESULT expectedHR,
+    const MddPackageDependencyLifetimeKind lifetimeKind,
+    PCWSTR lifetimeArtifact,
+    MddCreatePackageDependencyOptions options)
+{
+    return Mdd_TryCreate(expectedHR, TP::FrameworkWidgets::c_PackageFamilyName, lifetimeKind, lifetimeArtifact, options);
 }
 
 MDD_PACKAGEDEPENDENCY_CONTEXT Test::DynamicDependency::Test_Win32::Mdd_Add(
@@ -576,10 +625,10 @@ std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariableMinu
     return GetPathEnvironmentVariableMinusPathPrefix(pathPrefix.c_str());
 }
 
-std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariableMinusProjectReunionFramework()
+std::wstring Test::DynamicDependency::Test_Win32::GetPathEnvironmentVariableMinusWindowsAppRuntimeFramework()
 {
-    auto packagePath_ProjectReunionFramework{ TP::GetPackagePath(TP::ProjectReunionFramework::c_PackageFullName) };
-    return GetPathEnvironmentVariableMinusPathPrefix(packagePath_ProjectReunionFramework);
+    auto packagePath_WindowsAppRuntimeFramework{ TP::GetPackagePath(TP::WindowsAppRuntimeFramework::c_PackageFullName) };
+    return GetPathEnvironmentVariableMinusPathPrefix(packagePath_WindowsAppRuntimeFramework);
 }
 
 MddPackageDependencyProcessorArchitectures Test::DynamicDependency::Test_Win32::GetCurrentArchitectureAsFilter()
@@ -595,4 +644,11 @@ MddPackageDependencyProcessorArchitectures Test::DynamicDependency::Test_Win32::
 #else
 #   error "Unknown processor architecture"
 #endif
+}
+
+void Test::DynamicDependency::Test_Win32::VerifyGenerationId(
+    const UINT32 expectedGenerationId)
+{
+    const auto actualGenerationId{ MddGetGenerationId() };
+    VERIFY_ARE_EQUAL(expectedGenerationId, actualGenerationId);
 }

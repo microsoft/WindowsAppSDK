@@ -1,0 +1,10 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [ "Other", "Templates" ],
+    "identity": {
+        "internalName": "[ReplaceInternalName]"
+    },
+    "overview": "[ReplaceOverview]",
+    "publisher": "Microsoft",
+    "repo": "https://github.com/microsoft/WindowsAppSDK"
+}

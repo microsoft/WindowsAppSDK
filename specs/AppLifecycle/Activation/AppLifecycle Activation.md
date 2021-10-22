@@ -33,6 +33,7 @@ Conversely, UWP supports [44 different kinds of activation](https://docs.microso
 IActivatedEventArgs class, where the arguments are passed in to the app's Launched or 
 Activated event handlers, as properties on a specific XXXActivatedEventArgs object. In addition, 
 multi-instanced UWP and Desktop Bridge apps can call the [AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
+
 API.
 
 Of all the rich activation kinds, some require some form of prior information registered with the
@@ -344,6 +345,7 @@ IActivatedEventArgs.
 ### ExtendedActivationKind
 
 ```idl
+
 namespace Microsoft.Windows.AppLifecycle
 {
     enum ExtendedActivationKind
@@ -353,7 +355,9 @@ namespace Microsoft.Windows.AppLifecycle
 }
 ```
 
+
 This enum is based on the platform
+
 [ActivationKind](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
 All platform ActivationKind values are cloned to this class. We determine an "extension base" value which
 is well above the existing highest ActivationKind value (1026), to allow for new values to be added to the
@@ -388,6 +392,7 @@ This enables generic functions such as GetActivatedEventArgs and the Activated e
 provide the app with an IActivatedEventArgs that the app can then convert to a specific 
 type. However, IActivatedEventArgs also defines other properties that are only useful in a UWP
 context. In addition, we need a mechanism that supports both platform ActivationKinds and also
+
 Windows app SDK ExtendedActivationKinds and their corresponding interface types.
 
 The new ActivationArguments type serves this purpose: the app can examine the Kind, and then cast
@@ -402,6 +407,7 @@ the Data property to the interface type that represents the specific activation.
 Windows App SDK initially defines four `-ActivatedEventArgs` types that replicate the Windows
 equivalent `Windows.ApplicationModel.Activation.-ActivatedEventArgs`, but support adding new
 functionality over time. These are:
+
 
 | API                                      | Description                                                  |
 | ---------------------------------------- | ------------------------------------------------------------ |

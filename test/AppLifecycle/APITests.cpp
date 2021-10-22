@@ -10,9 +10,7 @@ using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
 using namespace winrt;
-using namespace winrt::Microsoft::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel;
-using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::Management::Deployment;
@@ -74,7 +72,7 @@ namespace Test::AppLifecycle
 
         TEST_METHOD_SETUP(MethodInit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
 
@@ -85,7 +83,7 @@ namespace Test::AppLifecycle
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_ProjectReunionFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
 
@@ -99,7 +97,7 @@ namespace Test::AppLifecycle
                 TEST_METHOD_PROPERTY(L"UAP:AppxManifest", L"AppLifecycle-AppxManifest.xml")
             END_TEST_METHOD_PROPERTIES();
 
-            VERIFY_IS_NULL(winrt::Microsoft::ApplicationModel::Activation::AppLifecycle::GetActivatedEventArgs());
+            VERIFY_IS_NULL(AppInstance::GetCurrent().GetActivatedEventArgs().Data());
         }
     };
 }

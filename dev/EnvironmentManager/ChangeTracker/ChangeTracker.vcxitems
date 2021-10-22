@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{e15c3465-9d45-495d-92ce-b91ef45e8623}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)EnvironmentVariableChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PathChangeTracker.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PathExtChangeTracker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)EnvironmentVariableChangeTracker.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PathChangeTracker.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PathExtChangeTracker.cpp" />
+  </ItemGroup>
+</Project>

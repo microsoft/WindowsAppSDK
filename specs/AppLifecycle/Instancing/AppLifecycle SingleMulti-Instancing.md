@@ -235,6 +235,7 @@ int APIENTRY wWinMain(
             if (instance.Key == L"REUSABLE")
             {
                 isFound = true;
+
                 // Note that get() is a synchronous call that will block the current thread.
                 instance.RedirectActivationToAsync(activationArgs).get();
                 break;
@@ -272,6 +273,7 @@ int APIENTRY wWinMain(
 
     // First, hook up the Activated event, to allow for this instance of the app
     // getting reactivated as a result of multi-instance redirection.
+
     AppInstance thisInstance = AppInstance::GetCurrent();
     auto activationToken = thisInstance.Activated(
         auto_revoke, [&thisInstance](
