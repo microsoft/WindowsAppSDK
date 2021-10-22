@@ -18,6 +18,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         // No interface public methods.
         AppInstance(uint32_t processId);
+        ~AppInstance()
+        {
+            if (m_terminationWatcherWaitHandle)
+            {
+                UnregisterWait(m_terminationWatcherWaitHandle);
+            }
+        }
 
         // IAppInstanceStatics.
         static Microsoft::Windows::AppLifecycle::AppInstance GetCurrent();
@@ -37,7 +44,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     private:
         winrt::Windows::Foundation::IAsyncAction QueueRequest(Microsoft::Windows::AppLifecycle::AppActivationArguments args);
-        void OnInstanceTerminated();
+        void RemoveInstance(uint32_t processId);
         void ProcessRedirectionRequests();
         bool TrySetKey(std::wstring const& key);
         Microsoft::Windows::AppLifecycle::AppInstance FindForKey(std::wstring const& key);
@@ -63,7 +70,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         wil::unique_event m_innerActivated;
         wil::unique_event_watcher m_activationWatcher;
 
-        wil::unique_event_watcher m_terminationWatcher;
+        // Wait threadpool handle for cleaning up AppInstance data on termination.  This handle is invalid for use with CloseHandle().
+        HANDLE m_terminationWatcherWaitHandle{ nullptr };
         wil::unique_handle m_instanceHandle;
 
         SharedProcessList m_instances;
