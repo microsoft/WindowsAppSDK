@@ -48,11 +48,11 @@ inline wil::unique_hkey GetKeyForEVTrackingChange(bool isUser, std::wstring pack
 
     if (isUser)
     {
-        scope = L"User";
+        scope = L"user";
     }
     else
     {
-        scope = L"Machine";
+        scope = L"machine";
     }
 
     std::filesystem::path subKey = std::filesystem::path{ L"Software\\ChangeTracker" }
