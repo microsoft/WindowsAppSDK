@@ -172,6 +172,17 @@ void RunGetInstancesTest()
     g_instances = AppInstance::GetInstances();
 }
 
+void RunRegisterKeyTest()
+{
+    auto instance = AppInstance::FindOrRegisterForKey(L"foo");
+    THROW_IF_NULL_ALLOC(instance);
+}
+
+void RunUnregisterKeyTest()
+{
+    AppInstance::GetCurrent().UnregisterKey();
+}
+
 ATOM _RegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEX wcex = {};
@@ -221,6 +232,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         case IDM_FILE_GETINSTANCES:
             RunGetInstancesTest();
+            break;
+
+        case IDM_FILE_REGISTERINSTANCE:
+            RunRegisterKeyTest();
+            break;
+
+        case IDM_FILE_UNREGISTERINSTANCE:
+            RunUnregisterKeyTest();
             break;
         }
         break;

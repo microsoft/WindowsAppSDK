@@ -77,6 +77,11 @@ public:
         m_file.reset();
     }
 
+    bool IsValid()
+    {
+        return (m_name.size() != 0);
+    }
+
 protected:
     bool OpenInternal(size_t size)
     {
