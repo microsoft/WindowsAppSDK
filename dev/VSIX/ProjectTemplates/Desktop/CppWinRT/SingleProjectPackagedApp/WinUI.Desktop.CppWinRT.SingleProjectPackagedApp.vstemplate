@@ -27,7 +27,6 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|Win32">
     <Project File="ProjectTemplate.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.filters">ProjectTemplate.vcxproj.filters</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.user">ProjectTemplate.vcxproj.user_template</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.cpp">pch.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="app.manifest">app.manifest</ProjectItem>
