@@ -186,10 +186,10 @@
     <value>A user control for apps based on the Windows UI Library (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Blank App, Packaged with Windows Packaging Project (WinUI 3 in Desktop)</value>
+    <value>Blank App, Packaged with Windows Application Packaging Project (WinUI 3 in Desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimental] Blank App, Packaged with Windows Packaging Project (WinUI 3 in Desktop)</value>
+    <value>[Experimental] Blank App, Packaged with Windows Application Packaging Project (WinUI 3 in Desktop)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>A project template for creating a Desktop app based on the Windows UI Library (WinUI 3). A Windows Application Packaging (WAP) project is included to create a MSIX package for side-loading or distribution via the Microsoft Store.</value>
