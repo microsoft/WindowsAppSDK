@@ -13,7 +13,28 @@
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
-CLSID FindDDLM(
+void CreateLifetimeManager(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager>& lifetimeManager,
+    wil::unique_cotaskmem_string& packageFullName);
+void CreateLifetimeManagerViaAppExtension(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager>& lifetimeManager,
+    wil::unique_cotaskmem_string& packageFullName);
+void CreateLifetimeManagerViaEnumeration(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    wil::unique_cotaskmem_string& packageFullName);
+CLSID FindDDLMViaAppExtension(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion);
+CLSID FindDDLMViaEnumeration(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion);
@@ -54,14 +75,9 @@ STDAPI MddBootstrapInitialize(
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyId != nullptr);
     FAIL_FAST_HR_IF(HRESULT_FROM_WIN32(ERROR_ALREADY_INITIALIZED), g_packageDependencyContext != nullptr);
 
-    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLM(majorMinorVersion, versionTag, minVersion) };
-
-    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager(wil::CoCreateInstance<IDynamicDependencyLifetimeManager>(appDynamicDependencyLifetimeManagerClsid, CLSCTX_LOCAL_SERVER));
-
-    THROW_IF_FAILED(lifetimeManager->Initialize());
-
     wil::unique_cotaskmem_string packageFullName;
-    THROW_IF_FAILED(lifetimeManager->GetPackageFullName(&packageFullName));
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> lifetimeManager;
+    CreateLifetimeManager(majorMinorVersion, versionTag, minVersion, lifetimeManager, packageFullName);
 
     const PACKAGE_INFO* frameworkPackageInfo{};
     auto packageInfoBuffer{ GetFrameworkPackageInfoForPackage(packageFullName.get(), frameworkPackageInfo) };
@@ -251,7 +267,68 @@ void RemoveFrameworkFromPath(PCWSTR frameworkPath)
     }
 }
 
-CLSID FindDDLM(
+void CreateLifetimeManager(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager>& lifetimeManager,
+    wil::unique_cotaskmem_string& packageFullName)
+{
+    // AppExtension only enumerates appextensions on <=19H1 if the caller declares a matching AppExtensionHost.
+    // To work around on older systems that we'll fallback to a more complex but functionally equivalent solution.
+    if SEEME
+    {
+        CreateLifetimeManagerViaAppExtension(majorMinorVersion, versionTag, minVersion, lifetimeManager, packageFullName);
+    }
+    else
+    {
+        CreateLifetimeManagerViaEnumeration(majorMinorVersion, versionTag, minVersion, packageFullName);
+    }
+}
+
+void CreateLifetimeManagerViaAppExtension(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager>& lifetimeManager,
+    wil::unique_cotaskmem_string& packageFullName)
+{
+    const auto appDynamicDependencyLifetimeManagerClsid{ FindDDLMViaAppExtension(majorMinorVersion, versionTag, minVersion) };
+
+    wil::com_ptr_nothrow<IDynamicDependencyLifetimeManager> dynamicDependencyLifetimeManager{
+        wil::CoCreateInstance<IDynamicDependencyLifetimeManager>(appDynamicDependencyLifetimeManagerClsid, CLSCTX_LOCAL_SERVER);
+    };
+
+    THROW_IF_FAILED(dynamicDependencyLifetimeManager->Initialize());
+
+    THROW_IF_FAILED(dynamicDependencyLifetimeManager->GetPackageFullName(&packageFullName));
+
+    lifetimeManager = std::move(dynamicDependencyLifetimeManager);
+}
+
+void CreateLifetimeManagerViaEnumeration(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion,
+    wil::unique_cotaskmem_string& packageFullName)
+{
+    FindDDLMViaEnumeration(majorMinorVersion, versionTag, minVersion, packageFullName);
+
+    // Create the named event to signal to the lifetime manager it's time to quit
+    auto eventName{ wil::str_printf<wil::x>(L"%s;%u;%s", packageFullName.get(), GetCurrentProcessId(), winrt::guid_to_string()) };
+
+    WCHAR lifetimeManagerApplicationUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
+    uint32_t lifetimeManagerApplicationUserModelIdLength{ static_cast<uint32_t>(ARRAYSIZE(lifetimeManagerApplicationUserModelId) };
+    PCWSTR c_packageRelativeApplicationId{ L"DDLM" };
+    THROW_IF_WIN32_ERROR(FormatApplicationUserModelId(lifetimeManagerApplicationUserModelId, &lifetimeManagerApplicationUserModelIdLength, packageFamilyName, c_packageRelativeApplicationId));
+
+    ApplicationActivationManager aam;
+    auto applicationUserModelId{ winrt::hstring(lifetimeManagerApplicationUserModelId.get()) };
+    auto arguments{ winrt::hstring(eventName.get() };
+    aam.ActivateApplication(applicationUserModelId, arguments);
+}
+
+CLSID FindDDLMViaAppExtension(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion)
@@ -339,6 +416,128 @@ CLSID FindDDLM(
     THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "AppExtension.Name=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
                     appExtensionName, majorVersion, minorVersion, (!versionTag ? L"" : versionTag), minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
     return bestFitClsid;
+}
+
+CLSID FindDDLMViaEnumeration(
+    UINT32 majorMinorVersion,
+    PCWSTR versionTag,
+    PACKAGE_VERSION minVersion)
+{
+    // Find the best fit
+    bool foundAny{};
+    PACKAGE_VERSION bestFitVersion{};
+
+    // We need to look for DDLM packages in the package family for release <major>.<minor> and <versiontag>
+    // But we have no single (simple) enumeration to match that so our logic's more involved compared
+    // to FindDDLMViaAppExtension():
+    // 1. Look for Framework packages with Name="microsoft.winappruntime.ddlm.<minorversion>.*[-shorttag]"
+    // 1a. Enumerate all Framework packages registered to the user
+    // 1b. Only consider packages whose Name starts with "microsoft.winappruntime.ddlm.<minorversion>."
+    // 1c. If versiontag is specified, Only consider packages whose Name ends with [-shorttag]
+    // 1d. Only consider packages whose PublisherID = "8wekyb3d8bbwe"
+    // 2. Check if the package is in the <majorversion>.<minorversion> release
+    // 2a. Check if the package's Description starts with "Microsoft Windows App Runtime DDLM <majorversion>.<minorversion> "
+    // 3. Check if the architecture matches
+    // 4. Check if the package meets the specified minVerrsion
+
+    const UINT16 majorVersion{ HIWORD(majorMinorVersion) };
+    const UINT16 minorVersion{ LOWORD(majorMinorVersion) };
+    WCHAR packageNamePrefix[PACKAGE_NAME_MAX_LENGTH + 1]{};
+    if (!g_test_ddlmPackageNamePrefix.empty())
+    {
+        FAIL_FAST_IF_FAILED(StringCchCopyW(packageNamePrefix, ARRAYSIZE(packageNamePrefix), g_test_ddlmPackageNamePrefix.c_str()));
+    }
+    else
+    {
+        wsprintf(packageNamePrefix, L"microsoft.winappruntime.ddlm.%hu.", minorVersion);
+    }
+    const auto packageNamePrefixLength{ wcslen(packageNamePrefix) };
+
+    WCHAR packageNameSuffix[10]{};
+    const size_t packageNameSuffixLength{};
+    const auto versionShortTag{ AppModel::Identity::GetVersionShortTagFromVersionTag(versionTag) };
+    if (!versionShortTag.empty())
+    {
+        packageNameSuffix[0] = L'-';
+        FAIL_FAST_IF_FAILED(StringCchCopyW(packageNameSuffix + 1, ARRAYSIZE(packageNameSuffix) - 1, versionShortTag.c_str()));
+        packageNameSuffixLength = wcslen(packageNameSuffix);
+    }
+
+    PCWSTR c_expectedPublisherId{ L"8wekyb3d8bbwe" };
+    if (!g_test_ddlmPackageNameSuffix.empty())
+    {
+        expectedPublisherId = g_test_ddlmPackagePublisherId.c_str();
+    }
+
+    winrt::Windows::Management::Deployment::PackageManager packageManager;
+    winrt::hstring currentUser;
+    const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageType::Framework };
+    for (auto package : packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes))
+    {
+        // Check the package identity against the package identity test qualifiers (if any)
+        const auto& packageName{ packageId.Name() };
+        if ((name.size() < packageNamePrefixLength) ||
+            (CompareStringOrdinal(name.c_str(), packageNamePrefixLength, packageNamePrefix, packageNamePrefixLength, TRUE) != CSTR_EQUAL))
+            {
+                // The package's Name prefix doesn't match the expected value. Skip it
+                continue;
+            }
+        }
+        if (packageNameSuffixLength > 0)
+        {
+            if ((name.size() < packageNameSuffixLength) ||
+                (CompareStringOrdinal(name.c_str() + offsetToSuffix, packageNamePrefixLength, packageNamePrefix, packageNamePrefixLength, TRUE) != CSTR_EQUAL))
+                {
+                    // The package's Name prefix doesn't match the expected value. Skip it
+                    continue;
+                }
+            }
+        }
+        const auto packageId{ package.Id() };
+        if (CompareStringOrdinal(packageId.PublisherId().c_str(), -1, expectedPublisherId, -1, TRUE) != CSTR_EQUAL)
+        {
+            // The package's PublisherId doesn't match the expected value. Skip it
+            continue;
+        }
+
+        // Does the version meet the minVersion criteria?
+        const auto& packageVersion{ packageId.Version() };
+        PACKAGE_VERSION version{};
+        version.Major = packageVersion.Major;
+        version.Minor = packageVersion.Minor;
+        version.Build = packageVersion.Build;
+        version.Revision = packageVersion.Revision;
+        if (version.Version < minVersion.Version)
+        {
+            continue;
+        }
+
+        // Does the architecture match?
+        const auto architecture{ packageId.Architecture() };
+        if (architecture != AppModel::Identity::GetCurrentArchitecture())
+        {
+            continue;
+        }
+
+        // Do we have a package under consideration?
+        if (!foundAny)
+        {
+            bestFitVersion = version;
+            foundAny = true;
+            continue;
+        }
+
+        // Do we already have a higher version under consideration?
+        if (bestFitVersion.Version < version.Version)
+        {
+            bestFitVersion = version;
+            continue;
+        }
+    }
+    THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NO_MATCH), !foundAny, "Package.FullName=%ls, Major=%hu, Minor=%hu, Tag=%ls, MinVersion=%hu.%hu.%hu.%hu",
+                    packageId.FullName().c_str(), majorVersion, minorVersion, (!versionTag ? L"" : versionTag),
+                    minVersion.Major, minVersion.Minor, minVersion.Build, minVersion.Revision);
+    return GUID{};
 }
 
 CLSID GetClsid(const winrt::Windows::ApplicationModel::AppExtensions::AppExtension& appExtension)
