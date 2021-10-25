@@ -405,6 +405,9 @@ HRESULT WinRTGetMetadataFile(
     // will create an instance of the metadata reader to dispense metadata files.
     if (metaDataDispenser == nullptr)
     {
+        // Avoid using CoCreateInstance here, which will trigger a Feature-On-Demand (FOD) 
+        // installation request of .NET Framework 3.5 if it's not already installed. In the
+        // mean time, Windows App SDK runtime doesn't need .NET Framework 3.5.
         RETURN_IF_FAILED(MetaDataGetDispenser(CLSID_CorMetaDataDispenser,
             IID_IMetaDataDispenser,
             &spMetaDataDispenser));
