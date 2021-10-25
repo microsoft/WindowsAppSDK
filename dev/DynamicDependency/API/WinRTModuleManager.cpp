@@ -5,14 +5,14 @@
 
 #include "WinRTModuleManager.h"
 
-std::mutex MddCore::WinRTModuleManager::s_lock;
+std::recursive_mutex MddCore::WinRTModuleManager::s_lock;
 std::vector<std::shared_ptr<MddCore::WinRTPackage>> MddCore::WinRTModuleManager::s_winrtPackages;
 
 bool MddCore::WinRTModuleManager::GetThreadingType(
     HSTRING className,
     ABI::Windows::Foundation::ThreadingType& threadingType)
 {
-    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+    auto lock{ std::unique_lock<std::recursive_mutex>(s_lock) };
 
     auto threadingModel{ MddCore::WinRTModuleManager::GetThreadingModel(className) };
     if (threadingModel == MddCore::WinRT::ThreadingModel::Unknown)
@@ -47,7 +47,7 @@ void* MddCore::WinRTModuleManager::GetActivationFactory(
     HSTRING className,
     REFIID iid)
 {
-    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+    auto lock{ std::unique_lock<std::recursive_mutex>(s_lock) };
 
     if (!s_winrtPackages.empty())
     {
@@ -68,7 +68,7 @@ void MddCore::WinRTModuleManager::Insert(
     size_t index,
     std::shared_ptr<MddCore::WinRTPackage>& winrtPackage)
 {
-    auto lock{ std::unique_lock<std::mutex>(s_lock) };
+    auto lock{ std::unique_lock<std::recursive_mutex>(s_lock) };
 
     if (index < s_winrtPackages.size())
     {

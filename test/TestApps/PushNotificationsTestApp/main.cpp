@@ -15,8 +15,6 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
-bool g_registeredActivator = false;
-
 winrt::guid remoteId1(L"a2e4a323-b518-4799-9e80-0b37aeb0d225"); // Generated from ms.portal.azure.com
 winrt::guid remoteId2(L"CA1A4AB2-AC1D-4EFC-A132-E5A191CA285A"); // Dummy guid from visual studio guid tool generator
 
@@ -114,17 +112,26 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
 
 bool ActivatorTest()
 {
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    g_registeredActivator = false;
-
+    PushNotificationManager::UnregisterAllActivators();
     try
     {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            c_fakeComServerId);
+        if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+                c_fakeComServerId);
 
-        PushNotificationManager::RegisterActivator(info);
-        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+        }
+        else
+        {
+            PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
+
+            PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ProtocolActivator);
+        }
+
     }
     catch (...)
     {
@@ -136,9 +143,7 @@ bool ActivatorTest()
 // Verify calling register activator with null PushNotificationActivationInfo is not allowed.
 bool RegisterActivatorNullDetails()
 {
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    g_registeredActivator = false;
-
+    PushNotificationManager::UnregisterAllActivators();
     try
     {
         PushNotificationManager::RegisterActivator(nullptr);
@@ -153,22 +158,39 @@ bool RegisterActivatorNullDetails()
 // Verify calling register activator with null clsid is not allowed.
 bool RegisterActivatorNullClsid()
 {
-    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-    g_registeredActivator = false;
-
-    try
+    PushNotificationManager::UnregisterAllActivators();
+    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
     {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            winrt::guid()); // Null guid
+        try
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+                winrt::guid());
 
-        PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::RegisterActivator(info);
+        }
+        catch(...)
+        {
+            return to_hresult() == E_INVALIDARG;
+        }
+        return false;
     }
-    catch (...)
+    else
     {
-        return to_hresult() == E_INVALIDARG;
+        try
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::ProtocolActivator,
+                winrt::guid());
+
+            PushNotificationManager::RegisterActivator(info);
+        }
+        catch(...)
+        {
+            return false;
+        }
+        return true;
     }
-    return false;
 }
 
 // Verify registering multiple activators is not allowed.
@@ -176,11 +198,19 @@ bool MultipleRegisterActivatorTest()
 {
     try
     {
-        PushNotificationActivationInfo info(
-            PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-            c_fakeComServerId); // Fake clsid to test multiple activators
+        if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+        {
+            PushNotificationActivationInfo info(
+                PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
+                c_fakeComServerId); // Fake clsid to test multiple activators
 
-        PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::RegisterActivator(info);
+        }
+        else
+        {
+            PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
+            PushNotificationManager::RegisterActivator(info);
+        }
     }
     catch (...)
     {
@@ -291,10 +321,7 @@ int main() try
 {
     bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
-        if (g_registeredActivator)
-        {
-            PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
-        }
+        PushNotificationManager::UnregisterAllActivators();
         ::Test::Bootstrap::CleanupBootstrap();
     });
 
@@ -308,15 +335,13 @@ int main() try
             winrt::guid(c_comServerId)); // same clsid as app manifest
 
         PushNotificationManager::RegisterActivator(info);
-        g_registeredActivator = true;
     }
-    /* TODO: Register ProtocolActivator for unpackaged applications
     else
     {
-        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator, nullptr);
+        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
         PushNotificationManager::RegisterActivator(info);
     }
-    */
+    
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 

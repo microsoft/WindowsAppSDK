@@ -7,3 +7,16 @@
 wil::unique_event& GetWaitHandleForArgs();
 
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
+
+struct ChannelDetails
+{
+    winrt::hstring channelUri;
+    winrt::hstring channelId;
+    winrt::hstring appUserModelId;
+    winrt::Windows::Foundation::DateTime channelExpiryTime;
+};
+
+inline HRESULT GetCurrentProcessPath(wil::unique_cotaskmem_string& processName)
+{
+    return wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
+};

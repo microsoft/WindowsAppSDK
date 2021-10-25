@@ -30,10 +30,11 @@ static std::wstring g_test_ddlmPackagePublisherId;
 namespace MddCore
 {
 // Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSdk/issues/567
-void FailFastIfElevated()
+HRESULT FailIfElevated()
 {
-    FAIL_FAST_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                        "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
+    RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
+                     "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
+    return S_OK;
 }
 }
 
@@ -43,7 +44,7 @@ STDAPI MddBootstrapInitialize(
     PACKAGE_VERSION minVersion) noexcept try
 {
     // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    MddCore::FailFastIfElevated();
+    THROW_IF_FAILED(MddCore::FailIfElevated());
 
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());

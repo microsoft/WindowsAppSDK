@@ -331,6 +331,7 @@
     <ClCompile Include="Test_Win32_FullLifecycle_FilePathLifetime_Frameworks_2.cpp" />
     <ClCompile Include="Test_Win32_FullLifecycle_ProcessLifetime_Frameworks_2.cpp" />
     <ClCompile Include="Test_Win32_FullLifecycle_RegistryLifetime_Frameworks_2.cpp" />
+    <ClCompile Include="Test_Win32_WinRTReentrancy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -345,6 +346,12 @@
     <ProjectReference Include="..\..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
       <Project>{f76b776e-86f5-48c5-8fc7-d2795ecc9746}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Test.DynamicDependency.Widgets">
+      <HintPath>$(OutDir)\..\Framework.Widgets\Microsoft.Test.DynamicDependency.Widgets.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

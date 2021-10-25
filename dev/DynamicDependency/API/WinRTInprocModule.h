@@ -98,7 +98,7 @@ public:
 private:
     void Load()
     {
-        auto lock{ std::unique_lock<std::mutex>(m_lock) };
+        auto lock{ std::unique_lock<std::recursive_mutex>(m_lock) };
 
         if (!m_dll)
         {
@@ -118,7 +118,7 @@ private:
     std::wstring m_path;
     std::unordered_map<std::wstring, MddCore::WinRT::ThreadingModel> m_inprocServers;
 
-    std::mutex m_lock;
+    std::recursive_mutex m_lock;
     wil::unique_hmodule m_dll;
 
     typedef HRESULT(__stdcall* DllGetActivationFactory)(HSTRING, IActivationFactory**);

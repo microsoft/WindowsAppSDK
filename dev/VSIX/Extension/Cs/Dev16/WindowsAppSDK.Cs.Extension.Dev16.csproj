@@ -26,6 +26,8 @@
     <UICulture>en-US</UICulture>
     <!-- This MUST match VSPackage.PackageGuidString -->
     <PackageGuidString>{B14EB1D0-DD99-4930-A232-23275B4F8ED6}</PackageGuidString>
+    <!-- Dev16 templates should target .NET 5 -->
+    <DotNetVersion>net5.0</DotNetVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
@@ -48,7 +50,7 @@
     <Content Include="$(RepoRoot)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">
+    <Content Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>

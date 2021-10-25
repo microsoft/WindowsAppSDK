@@ -165,6 +165,15 @@ int main()
             succeeded = true;
         }
     }
+    else if (kind == ExtendedActivationKind::Push)
+    {
+        if (args.Data() != nullptr)
+        {
+            // Signal event that the was correctly activated through push.
+            SignalPhase(c_testPushPhaseEventName);
+            succeeded = true;
+        }
+    }
 
     if (!succeeded)
     {

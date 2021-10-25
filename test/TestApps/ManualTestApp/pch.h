@@ -15,3 +15,5 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
+
+#include "resource.h"

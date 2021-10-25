@@ -78,7 +78,7 @@ private:
     }
 
 private:
-    static std::mutex s_lock;
+    static std::recursive_mutex s_lock;
     static MddCore::PackageGraph s_packageGraph;
     static volatile ULONG s_generationId;
 };

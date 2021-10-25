@@ -37,6 +37,7 @@
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_SDK_BuildTools)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_Windows_CppWinRT)\*.nupkg" />
     <ContentNugetPackages Include="$(PkgMicrosoft_WindowsAppSDK)\*.nupkg" />
+    <ContentNugetPackages Include="$(PkgMicrosoft_Windows_ImplementationLibrary)\*.nupkg" />
     <Content Include="@(ContentNugetPackages)">
       <IncludeInVSIX>true</IncludeInVSIX>
       <VSIXSubPath>Packages</VSIXSubPath>
@@ -48,7 +49,7 @@
     <Content Include="$(RepoRoot)LICENSE">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Condition="'$(Deployment)'=='Standalone'" Include="ExtensionPack.vsext">
+    <Content Include="ExtensionPack.vsext">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>
@@ -68,6 +69,9 @@
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="[$(WindowsAppSDKVersion)]" GeneratePathProperty="true">
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.ImplementationLibrary" Version="[$(WILVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$(WindowsSDKBuildToolsVersion)]" GeneratePathProperty="true">

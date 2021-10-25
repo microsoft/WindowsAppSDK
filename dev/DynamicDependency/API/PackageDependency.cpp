@@ -5,8 +5,6 @@
 
 #include "pch.h"
 
-#include "utf8.h"
-
 #include "PackageDependency.h"
 
 namespace JSON = winrt::Windows::Data::Json;
@@ -64,7 +62,7 @@ std::wstring MddCore::PackageDependency::ToJSON() const
 
 std::string MddCore::PackageDependency::ToJSONUtf8() const
 {
-    return to_utf8(ToJSON());
+    return Microsoft::Utf8::ToUtf8(ToJSON());
 }
 
 MddCore::PackageDependency MddCore::PackageDependency::FromJSON(const winrt::hstring& json)
@@ -84,7 +82,7 @@ MddCore::PackageDependency MddCore::PackageDependency::FromJSON(const winrt::hst
 
 MddCore::PackageDependency MddCore::PackageDependency::FromJSON(PCSTR jsonUtf8)
 {
-    return FromJSON(utf8_to_hstring(jsonUtf8));
+    return FromJSON(Microsoft::Utf8::ToHString(jsonUtf8));
 }
 
 bool MddCore::PackageDependency::IsExpired() const

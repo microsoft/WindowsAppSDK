@@ -131,4 +131,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="1001" xml:space="preserve">
+    <value>Puste okno (WinUI 3 na pulpicie)</value>
+  </data>
+  <data name="1002" xml:space="preserve">
+    <value>[Eksperymentalne] Puste okno (WinUI 3 na pulpicie)</value>
+  </data>
+  <data name="1003" xml:space="preserve">
+    <value>Puste okno dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1005" xml:space="preserve">
+    <value>Pusta strona (WinUI 3)</value>
+  </data>
+  <data name="1006" xml:space="preserve">
+    <value>[Eksperymentalne] Pusta strona (WinUI 3)</value>
+  </data>
+  <data name="1007" xml:space="preserve">
+    <value>Pusta strona dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1009" xml:space="preserve">
+    <value>Słownik zasobów (WinUI 3)</value>
+  </data>
+  <data name="1010" xml:space="preserve">
+    <value>[Eksperymentalne] Słownik zasobów (WinUI 3)</value>
+  </data>
+  <data name="1011" xml:space="preserve">
+    <value>Pusta kolekcja kluczy zasobów XAML dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1013" xml:space="preserve">
+    <value>Plik zasobów (resw)</value>
+  </data>
+  <data name="1014" xml:space="preserve">
+    <value>[Eksperymentalne] Plik zasobów (resw)</value>
+  </data>
+  <data name="1015" xml:space="preserve">
+    <value>Plik do przechowywania ciągów i zasobów warunkowych dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1017" xml:space="preserve">
+    <value>Kontrolka niestandardowa (WinUI 3)</value>
+  </data>
+  <data name="1018" xml:space="preserve">
+    <value>[Eksperymentalne] Kontrolka niestandardowa (WinUI 3)</value>
+  </data>
+  <data name="1019" xml:space="preserve">
+    <value>Kontrolka niestandardowa dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1021" xml:space="preserve">
+    <value>Kontrolka użytkownika (WinUI 3)</value>
+  </data>
+  <data name="1022" xml:space="preserve">
+    <value>[Eksperymentalne] Kontrolka użytkownika (WinUI 3)</value>
+  </data>
+  <data name="1023" xml:space="preserve">
+    <value>Kontrolka użytkownika dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1025" xml:space="preserve">
+    <value>Biblioteka klas (WinUI 3 na pulpicie)</value>
+  </data>
+  <data name="1026" xml:space="preserve">
+    <value>[Eksperymentalne] Biblioteka klas (WinUI 3 na pulpicie)</value>
+  </data>
+  <data name="1027" xml:space="preserve">
+    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (dll) dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+  </data>
+  <data name="1029" xml:space="preserve">
+    <value>Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 in Desktop)</value>
+  </data>
+  <data name="1030" xml:space="preserve">
+    <value>[Eksperymentalne] Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 in Desktop)</value>
+  </data>
+  <data name="1031" xml:space="preserve">
+    <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
+  </data>
+  <data name="1033" xml:space="preserve">
+    <value>Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
+  </data>
+  <data name="1034" xml:space="preserve">
+    <value>[Eksperymentalne] Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
+  </data>
+  <data name="1035" xml:space="preserve">
+    <value>Szablon projektu służący do tworzenia aplikacji klasycznej opartej na bibliotece interfejsu użytkownika systemu Windows (WinUI 3) wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>Pusta aplikacja (WinUI 3 na platformie UWP)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[Eksperymentalne] Pusta aplikacja (WinUI 3 na platformie UWP)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>Projekt służący do tworzenia aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>Biblioteka klas (WinUI 3 na platformie UWP)</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>[Eksperymentalne] Biblioteka klas (WinUI 3 na platformie UWP)</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (dll) dla aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Składnik środowiska wykonawczego systemu Windows (WinUI 3 na platformie UWP)</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>[Eksperymentalne] składnik środowisko wykonawcze systemu Windows (WinUI 3 na platformie UWP)</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>Projekt służący do tworzenia zarządzanego składnika środowiska wykonawczego systemu Windows dla aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
+  </data>
 </root>

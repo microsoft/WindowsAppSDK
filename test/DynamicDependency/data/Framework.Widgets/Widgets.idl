@@ -1,0 +1,23 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Test.DynamicDependency.Widgets
+{
+    runtimeclass Widget1
+    {
+        Widget1();
+
+        Int32 Value;
+
+        static Widget1 GetStatic();
+    };
+
+    runtimeclass Widget2
+    {
+        Widget2();
+
+        Widget1 GetWidget1();
+
+        static Widget1 GetStaticWidget1();
+    };
+}

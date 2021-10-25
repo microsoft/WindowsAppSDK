@@ -46,7 +46,6 @@
     <RootNamespace>DynamicDependency.DataStore</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>DynamicDependency.DataStore</ProjectName>
-    <UseUnicrt>true</UseUnicrt>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
     <CppWinRTOptimized>true</CppWinRTOptimized>

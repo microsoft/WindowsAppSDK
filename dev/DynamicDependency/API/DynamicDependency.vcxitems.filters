@@ -41,8 +41,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MddCore.Architecture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PackageGraphManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DataStore.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)utf8.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdepednency.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddWinRT.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTInprocModule.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WinRTModuleManager.h" />
@@ -50,6 +48,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MddLifetimeManagementTest.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)appmodel_packageinfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)winrt_msixdynamicdependency.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)M.AM.DynamicDependency.idl" />

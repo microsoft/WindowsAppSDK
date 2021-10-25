@@ -41,6 +41,9 @@
     <ClCompile Include="MockRawNotification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LRPTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -48,11 +51,8 @@
   <ItemGroup>
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TargetDir)..\PushNotificationsTestApp\PushNotificationsTestApp.exe">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>

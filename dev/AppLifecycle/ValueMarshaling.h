@@ -19,8 +19,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     inline std::wstring GenerateEncodedLaunchUri(std::wstring const& appUserModelId, std::wstring const& contractId)
     {
-        // Example: ms-encodedlaunch://App/?ContractId=Windows.File&Verb=open&File=%1
-        winrt::Windows::Foundation::Uri uri{ wil::str_printf<std::wstring>(L"%s://%s?%s=%s",
+        // Example: ms-encodedlaunch:App/?ContractId=Windows.File&Verb=open&File=%1
+        winrt::Windows::Foundation::Uri uri{ wil::str_printf<std::wstring>(L"%s:%s?%s=%s",
             c_encodedLaunchSchemeName, appUserModelId.c_str(), c_contractIdKeyName, contractId.c_str()).c_str() };
         return uri.AbsoluteUri().c_str();
     }

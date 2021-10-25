@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#include <TerminalVelocityFeatures-PushNotifications.h>
+
 namespace Microsoft.Windows.PushNotifications
 {
-    [experimental]
+    [feature(Feature_PushNotifications)]
     // Event args for the Push payload.
     runtimeclass PushNotificationReceivedEventArgs
     {
@@ -21,7 +23,7 @@ namespace Microsoft.Windows.PushNotifications
         Boolean Handled;
     };
 
-    [experimental]
+    [feature(Feature_PushNotifications)]
     [flags]
     enum PushNotificationRegistrationActivators
     {
@@ -31,7 +33,7 @@ namespace Microsoft.Windows.PushNotifications
         ProtocolActivator = 0x4, // Registers an application with the PushNotificationsLongRunningTask to be activated via protocol
     };
 
-    [experimental]
+    [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationActivationInfo
     {
         // Initialize using a Registration option and optionally defined parameters like manifest defined activatorId
@@ -52,7 +54,7 @@ namespace Microsoft.Windows.PushNotifications
         void SetConditions(Windows.ApplicationModel.Background.IBackgroundCondition[] conditions);
     };
 
-    [experimental]
+    [feature(Feature_PushNotifications)]
     enum PushNotificationChannelStatus
     {
         InProgress, // The request is in progress and there is no retry operation
@@ -62,7 +64,7 @@ namespace Microsoft.Windows.PushNotifications
     };
 
     // The PushNotificationChannel Progress result
-    [experimental]
+    [feature(Feature_PushNotifications)]
     struct PushNotificationCreateChannelStatus
     {
         // Either InProgress or InProgressRetry status
@@ -75,11 +77,9 @@ namespace Microsoft.Windows.PushNotifications
         UInt32 retryCount;
     };
 
-    [experimental]
+    [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationChannel
     {
-        PushNotificationChannel(Windows.Networking.PushNotifications.PushNotificationChannel channel);
-
         // The Channel Uri for app to Post a notification to.
         Windows.Foundation.Uri Uri { get; };
 
@@ -93,7 +93,7 @@ namespace Microsoft.Windows.PushNotifications
         event Windows.Foundation.TypedEventHandler<PushNotificationChannel, PushNotificationReceivedEventArgs> PushReceived;
     }
 
-    [experimental]
+    [feature(Feature_PushNotifications)]
     runtimeclass PushNotificationCreateChannelResult
     {
         PushNotificationCreateChannelResult(
@@ -111,7 +111,7 @@ namespace Microsoft.Windows.PushNotifications
         PushNotificationChannelStatus Status { get; };
     };
 
-    [experimental]
+    [feature(Feature_PushNotifications)]
     static runtimeclass PushNotificationManager
     {
         // Register an activator using an ActivationInfo context and cache the flag for unregister

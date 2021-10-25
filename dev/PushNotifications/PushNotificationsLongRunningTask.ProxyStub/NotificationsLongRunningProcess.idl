@@ -1,0 +1,42 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+#include "../PushNotifications-Constants.h"
+
+[object]
+[uuid(PUSHNOTIFICATIONS_FOREGROUNDSINK_CLSID_UUID)]
+[pointer_default(unique)]
+interface IWpnForegroundSink : IUnknown
+{
+    HRESULT InvokeAll([in] ULONG length, [in, size_is(length)] byte* data, [out] BOOL* foregroundHandled);
+};
+
+[object]
+[uuid(PUSHNOTIFICATIONS_LRP_CLSID_UUID)]
+[pointer_default(unique)]
+interface INotificationsLongRunningPlatform : IUnknown
+{
+    HRESULT RegisterLongRunningActivator([in] LPCWSTR processName);
+
+    HRESULT UnregisterLongRunningActivator([in] LPCWSTR processName);
+
+    HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
+    
+    HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
+
+    HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
+};
+
+[uuid(PUSHNOTIFICATIONS_LIBID_UUID)]
+[version(1.0)]
+library NotificationsLongRunningPlatformLibrary
+{
+    [uuid(PUSHNOTIFICATIONS_IMPL_CLSID_UUID)]
+    coclass NotificationsLongRunningPlatform
+    {
+        [default] interface INotificationsLongRunningPlatform;
+    };
+};

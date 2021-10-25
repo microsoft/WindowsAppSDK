@@ -6,7 +6,7 @@
   IgnorableNamespaces="uap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Test"
+    Name="Microsoft.WindowsAppRuntime.1.0-Test"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="4.1.1967.333" />
 

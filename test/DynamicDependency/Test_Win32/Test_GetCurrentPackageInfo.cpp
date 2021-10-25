@@ -17,7 +17,7 @@ namespace Test::DynamicDependency
     {
     public:
         BEGIN_TEST_CLASS(GetCurrentPackageInfoTests)
-            //TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
             //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
         END_TEST_CLASS()
@@ -29,6 +29,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_FrameworkWidgets();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_FrameworkMathAdd();

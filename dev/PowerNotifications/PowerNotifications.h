@@ -253,7 +253,8 @@ namespace winrt::Microsoft::Windows::System::Power
                 auto& eventObj{ fn.event() };
                 std::scoped_lock<std::mutex> lock(m_mutex);
                 eventObj.remove(token);
-                if (RegisteredForEvents(eventObj))
+                // If that was the last registration, remove the OS registration
+                if (!RegisteredForEvents(eventObj))
                 {
                     fn.unregisterListener();
                 }

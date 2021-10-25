@@ -3,12 +3,23 @@
 
 #pragma once
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.h"
+#include <NotificationsLongRunningProcess_h.h>
+#include "winrt/Windows.Networking.PushNotifications.h"
+#include <frameworkudk/pushnotificationsRT.h>
+#include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel>
+    typedef winrt::Windows::Foundation::TypedEventHandler<
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel,
+        winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> PushNotificationEventHandler;
+
+    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener>
     {
         PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
+
+        PushNotificationChannel(struct ChannelDetails const& channelInfo) : m_channelInfo(channelInfo) {};
+
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
         void Close();
@@ -16,14 +27,21 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         winrt::event_token PushReceived(winrt::Windows::Foundation::TypedEventHandler<Microsoft::Windows::PushNotifications::PushNotificationChannel, Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler);
         void PushReceived(winrt::event_token const& token) noexcept;
 
-    private:
-        const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        // IWpnForegroundSink
+        HRESULT __stdcall InvokeAll(_In_ ULONG length, _In_ byte* payload, _Out_ BOOL* foregroundHandled) noexcept;
 
-    };
-}
-namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
-{
-    struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, implementation::PushNotificationChannel>
-    {
+        // INotificationHandler
+        HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
+
+    private:
+        bool IsPackagedAppScenario();
+        bool IsBackgroundTaskBuilderAvailable();
+
+        const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
+        const struct ChannelDetails m_channelInfo{};
+
+        winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
+        ULONG m_foregroundHandlerCount = 0;
+        wil::srwlock m_lock;
     };
 }

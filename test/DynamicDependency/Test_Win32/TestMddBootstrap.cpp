@@ -10,16 +10,10 @@ namespace TP = ::Test::Packages;
 
 namespace Test::DynamicDependency
 {
-    class BootstrapTests
+    class BootstrapFixtures
     {
     public:
-        BEGIN_TEST_CLASS(BootstrapTests)
-            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
-            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
-        END_TEST_CLASS()
-
-        TEST_CLASS_SETUP(Setup)
+        static bool Setup()
         {
             // We need to find Microsoft.WindowsAppRuntime.Bootstrap.dll.
             // Normally it's colocated with the application (i.e. same dir as the exe)
@@ -36,6 +30,7 @@ namespace Test::DynamicDependency
             TP::RemovePackage_DynamicDependencyLifetimeManager();
             TP::RemovePackage_DynamicDependencyDataStore();
             TP::RemovePackage_WindowsAppRuntimeFramework();
+            TP::RemovePackage_FrameworkWidgets();
             TP::RemovePackage_FrameworkMathMultiply();
             TP::RemovePackage_FrameworkMathAdd();
             TP::AddPackage_WindowsAppRuntimeFramework();
@@ -46,7 +41,7 @@ namespace Test::DynamicDependency
             return true;
         }
 
-        TEST_CLASS_CLEANUP(Cleanup)
+        static bool Cleanup()
         {
             m_bootstrapDll.reset();
 
@@ -54,6 +49,56 @@ namespace Test::DynamicDependency
             TP::RemovePackage_WindowsAppRuntimeFramework();
 
             return true;
+        }
+
+    private:
+        static wil::unique_hmodule m_bootstrapDll;
+    };
+
+    wil::unique_hmodule Test::DynamicDependency::BootstrapFixtures::m_bootstrapDll;
+
+    class ElevatedBootstrapTests
+    {
+    public:
+        BEGIN_TEST_CLASS(ElevatedBootstrapTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            TEST_METHOD_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_METHOD(Initialize_Elevated)
+        {
+            BootstrapFixtures::Setup();
+            auto cleanup = wil::scope_exit([&]{
+                BootstrapFixtures::Cleanup();
+            });
+
+            VERIFY_ARE_EQUAL(S_OK, MddBootstrapTestInitialize(Test::Packages::DynamicDependencyLifetimeManager::c_PackageNamePrefix, Test::Packages::DynamicDependencyLifetimeManager::c_PackagePublisherId));
+
+            // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+            const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
+            const PACKAGE_VERSION minVersion{};
+            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+        }
+    };
+
+    class BootstrapTests
+    {
+    public:
+        BEGIN_TEST_CLASS(BootstrapTests)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup)
+        {
+            return BootstrapFixtures::Setup();
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup)
+        {
+            return BootstrapFixtures::Cleanup();
         }
 
         TEST_METHOD(Initialize_DDLMNotFound)
@@ -185,10 +230,5 @@ namespace Test::DynamicDependency
                 VERIFY_ARE_EQUAL(0u, bufferLength);
             }
         }
-
-    private:
-        static wil::unique_hmodule m_bootstrapDll;
     };
 }
-
-wil::unique_hmodule Test::DynamicDependency::BootstrapTests::m_bootstrapDll;

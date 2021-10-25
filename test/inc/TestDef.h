@@ -17,6 +17,7 @@ static const std::wstring c_testFilePhaseEventName = L"WindowsAppRuntimeTestFile
 static const std::wstring c_testStartupPhaseEventName = L"WindowsAppRuntimeTestStartupPhaseEventName";
 static const std::wstring c_testInstanceRedirectedPhaseEventName = L"WindowsAppRuntimeTestInstanceRedirectedPhaseEventName";
 
+static const std::wstring c_testPushPhaseEventName = L"WindowsAppRuntimeTestPushPhaseEventName";
 inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
 inline IID c_comServerId = winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"); // Value from PushNotificationsTestAppPackage ComActivator in appxmanifest.
 inline IID c_fakeComServerId = winrt::guid("00000000-0000-0000-0000-000000000001");

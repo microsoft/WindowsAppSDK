@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "..\WindowsAppRuntime_Insights\WindowsAppRuntimeInsights.h"
+#include <WindowsAppRuntimeInsights.h>
 #include <wrl\wrappers\corewrappers.h>
 
 DECLARE_TRACELOGGING_CLASS(PushNotificationTelemetryProvider,
@@ -21,8 +21,8 @@ class PushNotificationTelemetry : public wil::TraceLoggingProvider
 public:
     DEFINE_EVENT_METHOD(ChannelRequestedByApi)(
         winrt::hresult hr,
-        bool isAppPackaged,
-        const winrt::guid& remoteId) noexcept try
+        const winrt::guid& remoteId,
+        bool usingLegacyImplementation) noexcept try
     {
         if (c_maxEventLimit >= UpdateLogEventCount())
         {
@@ -31,9 +31,10 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingBool(isAppPackaged, "IsAppPackaged"),
-                TraceLoggingWideString(to_hstring(remoteId).data(), "RemoteId"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                TraceLoggingGuid(remoteId, "RemoteId"),
+                TraceLoggingBool(usingLegacyImplementation, "usingLegacyImplementation"),
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -48,7 +49,8 @@ public:
                 TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
                 _GENERIC_PARTB_FIELDS_ENABLED,
                 TraceLoggingHexUInt32(hr, "OperationResult"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -66,7 +68,8 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -85,7 +88,8 @@ public:
                 TraceLoggingHexUInt32(hr, "OperationResult"),
                 TraceLoggingHexUInt32(static_cast<std::underlying_type_t<RegistrationActivators>>(activators),
                     "RegistrationActivators"),
-                TraceLoggingWideString(GetAppUserModelId(), "AppUserModelId"));
+                TraceLoggingBool(IsPackagedApp(), "IsAppPackaged"),
+                TraceLoggingWideString(GetAppName(), "AppName"));
         }
     }
     CATCH_LOG()
@@ -116,21 +120,61 @@ private:
         return m_eventCount;
     }
 
-    wchar_t m_appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-
-    wchar_t* GetAppUserModelId()
+    inline bool IsPackagedApp()
     {
-        if (m_appUserModelId[0] == '\0')
+        static const bool isPackagedApp = AppModel::Identity::IsPackagedProcess();
+
+        return isPackagedApp;
+    }
+
+    inline const wchar_t* GetAppName()
+    {
+        static const std::wstring appName = IsPackagedApp() ? GetAppNamePackaged() : GetAppNameUnpackaged();
+
+        return appName.c_str();
+    }
+
+    std::wstring GetAppNamePackaged() noexcept
+    {
+        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
+
+        UINT32 appUserModelIdSize = ARRAYSIZE(appUserModelId);
+        auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId);
+        if (result != ERROR_SUCCESS)
         {
-            UINT32 appUserModelIdSize = ARRAYSIZE(m_appUserModelId);
-            auto result = GetCurrentApplicationUserModelId(&appUserModelIdSize, m_appUserModelId);
-            if (result != ERROR_SUCCESS)
-            {
-                wcscpy_s(m_appUserModelId, L"AppUserModelId not found");
-                LOG_WIN32(result);
-            }
+            wcscpy_s(appUserModelId, L"AppUserModelId not found");
+            LOG_WIN32(result);
         }
 
-        return m_appUserModelId;
+        return appUserModelId;
+    }
+
+    PCWSTR CensorFilePath(PCWSTR path) noexcept
+    {
+        if (path)
+        {
+            path = !PathIsFileSpecW(path) ? PathFindFileNameW(path) : path;
+        }
+
+        return path;
+    }
+
+    std::wstring GetAppNameUnpackaged()
+    {
+        std::wstring appName;
+
+        wil::unique_cotaskmem_string processName;
+        auto result = wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
+        if (result == ERROR_SUCCESS)
+        {
+            appName = CensorFilePath(processName.get());
+        }
+        else
+        {
+            appName = L"ModuleFileName not found";
+            LOG_WIN32(result);
+        }
+
+        return appName;
     }
 };

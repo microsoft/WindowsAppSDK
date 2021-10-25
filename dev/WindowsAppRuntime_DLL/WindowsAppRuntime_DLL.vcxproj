@@ -45,7 +45,6 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Microsoft.WindowsAppRuntime</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <UseUnicrt>true</UseUnicrt>
     <CppWinRTModernIDL>true</CppWinRTModernIDL>
     <CppWinRTFastAbi>true</CppWinRTFastAbi>
     <CppWinRTOptimized>true</CppWinRTOptimized>
@@ -178,7 +177,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)appmodel\identity;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)appmodel\identity;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -194,10 +193,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -213,10 +215,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -232,10 +237,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -251,10 +259,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -274,10 +285,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -297,10 +311,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -320,10 +337,13 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(ProjectDir)..\WindowsAppRuntime_Insights;$(SolutionDir)common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -343,6 +363,9 @@
       <ModuleDefinitionFile>WindowsAppRuntime.def</ModuleDefinitionFile>
       <DelayLoadDLLs>Microsoft.Internal.FrameworkUdk.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)dev\Common</AdditionalIncludeDirectories>
+    </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -373,28 +396,34 @@
     <ProjectReference Include="..\DynamicDependencyDataStore\DynamicDependency.DataStore.ProxyStub\DynamicDependency.DataStore.ProxyStub.vcxproj">
       <Project>{1a41bb90-cc34-4edd-9a27-50714cdbc169}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\PushNotifications\PushNotificationsLongRunningTask.ProxyStub\PushNotificationsLongRunningTask.ProxyStub.vcxproj">
+      <Project>{bf3fced0-cadb-490a-93a7-4d90e1f45ab0}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\PushNotifications\PushNotificationsLongRunningTask\PushNotificationsLongRunningTask.vcxproj">
       <Project>{1307dd1b-bbe8-4cd0-b1a0-0db6d61eeaa0}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" />
-    <Import Project="..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" />
+    <Import Project="..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets" Condition="Exists('..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
     <Import Project="..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.Common.1.1.0-beta-21055-01\build\Microsoft.SourceLink.Common.targets')" />
     <Import Project="..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\..\packages\Microsoft.Build.Tasks.Git.1.1.0-beta-20204-02\build\Microsoft.Build.Tasks.Git.targets')" />
     <Import Project="..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\..\packages\Microsoft.SourceLink.GitHub.1.1.0-beta-20204-02\build\Microsoft.SourceLink.GitHub.targets')" />
   </ImportGroup>
+  <Target Name="MakeStrippedMetadata" AfterTargets="CppWinRTMergeProjectWinMDInputs" BeforeTargets="ClCompile">
+    <PropertyGroup>
+      <_MdMergeParameters>-v @(CppWinRTMdMergeMetadataDirectories->'-metadata_dir "%(RelativeDir)."', ' ')</_MdMergeParameters>
+      <_MdMergeParameters>$(_MdMergeParameters) -o "$(OutDir)StrippedWinMD" @(CppWinRTMdMergeInputs->'-i "%(Identity)"', ' ') -partial -n:9 -createPublicMetadata -transformExperimental:transform</_MdMergeParameters>
+    </PropertyGroup>
+    <Exec Command="$(MdMergePath)mdmerge $(_MdMergeParameters)" />
+  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.amd64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.amd64fre.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.arm64fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.arm64fre.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.x86fre.10.0.22453.1006-210916-1712.ni-release-svc-reunion2110\build\native\Microsoft.FrameworkUdk.x86fre.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.FrameworkUdk.0.9.0-CI-22467.1006.211007-1159.14\build\native\Microsoft.FrameworkUdk.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Windows.ImplementationLibrary.1.0.210930.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />

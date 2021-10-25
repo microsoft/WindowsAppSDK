@@ -9,6 +9,7 @@ using namespace winrt;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 
@@ -16,6 +17,7 @@ using namespace std::chrono;
 
 HWND g_window = NULL;
 wchar_t g_windowClass[] = L"TestWndClass"; // the main window class name
+IVector<AppInstance> g_instances;
 
 ATOM _RegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
@@ -82,8 +84,12 @@ IAsyncAction WaitForActivations()
 
 void OnActivated(const winrt::Windows::Foundation::IInspectable&, const AppActivationArguments& args)
 {
-    auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
-    wprintf(L"Activated via redirection with args: %s\n", launchArgs.Arguments().c_str());
+    if (args.Kind() == ExtendedActivationKind::Launch)
+    {
+        auto launchArgs = args.Data().as<ILaunchActivatedEventArgs>();
+        wprintf(L"Activated via redirection with args: %s\n", launchArgs.Arguments().c_str());
+    }
+
     SetForegroundWindow(g_window);
 }
 
@@ -93,21 +99,46 @@ int main()
 
     THROW_IF_FAILED(BootstrapInitialize());
 
+    bool isSingleInstanced = false;
+    std::wstring key{ L"derp.txt" };
     AppInstance::Activated_revoker token;
 
-    AppInstance keyInstance = AppInstance::FindOrRegisterForKey(L"derp.txt");
-    if (!keyInstance.IsCurrent())
+    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    if (args.Kind() == ExtendedActivationKind::File)
     {
-        keyInstance.RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs()).get();
+        auto fileArgs = args.Data().as<winrt::Windows::ApplicationModel::Activation::FileActivatedEventArgs>();
+        key = fileArgs.Files().GetAt(0).Path();
+        isSingleInstanced = true;
+    }
+
+    if (args.Kind() == ExtendedActivationKind::Launch)
+    {
+        auto launchArgs = args.Data().as<winrt::Windows::ApplicationModel::Activation::LaunchActivatedEventArgs>();
+        std::wstring cmdLine{ launchArgs.Arguments() };
+        auto c_testFileExtension{ L".alt" };
+        if (cmdLine.rfind(L"/reg") != 0)
+        {
+            ActivationRegistrationManager::RegisterForFileTypeActivation({ c_testFileExtension },
+                L"logo", L"Windows App SDK AppLifecycle Test File", { L"open" }, L"");
+        }
+        else if (cmdLine.rfind(L"/unreg") != 0)
+        {
+            ActivationRegistrationManager::UnregisterForFileTypeActivation({ c_testFileExtension }, L"");
+        }
+    }
+
+    AppInstance keyInstance = AppInstance::FindOrRegisterForKey(key.c_str());
+    if (isSingleInstanced && !keyInstance.IsCurrent())
+    {
+        keyInstance.RedirectActivationToAsync(args).get();
     }
     else
     {
         AppInstance thisInstance = AppInstance::GetCurrent();
-        token = thisInstance.Activated(
-            auto_revoke, [&thisInstance](
-                const auto& sender, const AppActivationArguments& args)
-            { OnActivated(sender, args); }
-        );
+        token = thisInstance.Activated(auto_revoke, [&thisInstance](const auto& sender, const AppActivationArguments& args)
+            {
+                OnActivated(sender, args);
+            });
 
         auto hInstance = GetModuleHandle(NULL);
         _RegisterClass(hInstance);
@@ -136,6 +167,22 @@ int main()
     return 0;
 }
 
+void RunGetInstancesTest()
+{
+    g_instances = AppInstance::GetInstances();
+}
+
+void RunRegisterKeyTest()
+{
+    auto instance = AppInstance::FindOrRegisterForKey(L"foo");
+    THROW_IF_NULL_ALLOC(instance);
+}
+
+void RunUnregisterKeyTest()
+{
+    AppInstance::GetCurrent().UnregisterKey();
+}
+
 ATOM _RegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEX wcex = {};
@@ -149,13 +196,14 @@ ATOM _RegisterClass(HINSTANCE hInstance)
     wcex.hInstance = hInstance;
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     wcex.lpszClassName = g_windowClass;
+    wcex.lpszMenuName = MAKEINTRESOURCE(IDM_FILE_MENU);
 
     return RegisterClassEx(&wcex);
 }
 
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    g_window = CreateWindow(g_windowClass, L"ContainerWindowingTestApp", WS_OVERLAPPEDWINDOW,
+    g_window = CreateWindow(g_windowClass, L"App Lifecycle Manual Test Application", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
     if (!g_window)
@@ -175,6 +223,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDM_FILE_EXIT:
+            PostQuitMessage(0);
+            break;
+
+        case IDM_FILE_GETINSTANCES:
+            RunGetInstancesTest();
+            break;
+
+        case IDM_FILE_REGISTERINSTANCE:
+            RunRegisterKeyTest();
+            break;
+
+        case IDM_FILE_UNREGISTERINSTANCE:
+            RunUnregisterKeyTest();
+            break;
+        }
+        break;
+
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);

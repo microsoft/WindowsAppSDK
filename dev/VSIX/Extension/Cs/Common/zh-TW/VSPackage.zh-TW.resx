@@ -131,4 +131,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="1001" xml:space="preserve">
+    <value>空白視窗 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1002" xml:space="preserve">
+    <value>[實驗性] 空白視窗 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1003" xml:space="preserve">
+    <value>使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式空白視窗。</value>
+  </data>
+  <data name="1005" xml:space="preserve">
+    <value>空白頁 (WinUI 3)</value>
+  </data>
+  <data name="1006" xml:space="preserve">
+    <value>[實驗性] 空白頁 (WinUI 3)</value>
+  </data>
+  <data name="1007" xml:space="preserve">
+    <value>使用 Windows UI 程式庫 (WinUI 3) 的應用程式空白頁面。</value>
+  </data>
+  <data name="1009" xml:space="preserve">
+    <value>資源字典 (WinUI 3)</value>
+  </data>
+  <data name="1010" xml:space="preserve">
+    <value>[實驗性] 資源字典 (WinUI 3)</value>
+  </data>
+  <data name="1011" xml:space="preserve">
+    <value>使用 Windows UI 程式庫 (WinUI 3) 之應用程式的 XAML 資源空白金鑰集合。</value>
+  </data>
+  <data name="1013" xml:space="preserve">
+    <value>資源檔 (.resw)</value>
+  </data>
+  <data name="1014" xml:space="preserve">
+    <value>[實驗性] 資源檔 (.resw)</value>
+  </data>
+  <data name="1015" xml:space="preserve">
+    <value>檔案，可儲存使用 Windows UI 程式庫 (WinUI 3) 之應用程式的字串和條件式資源。</value>
+  </data>
+  <data name="1017" xml:space="preserve">
+    <value>自訂控制項 (WinUI 3)</value>
+  </data>
+  <data name="1018" xml:space="preserve">
+    <value>[實驗性] 自訂控制項 (WinUI 3)</value>
+  </data>
+  <data name="1019" xml:space="preserve">
+    <value>使用 Windows UI 程式庫 (WinUI 3) 的應用程式自訂控制項。</value>
+  </data>
+  <data name="1021" xml:space="preserve">
+    <value>使用者控制項 (WinUI 3)</value>
+  </data>
+  <data name="1022" xml:space="preserve">
+    <value>[實驗性] 使用者控制項 (WinUI 3)</value>
+  </data>
+  <data name="1023" xml:space="preserve">
+    <value>使用 Windows UI 程式庫 (WinUI 3) 的應用程式使用者控制項。</value>
+  </data>
+  <data name="1025" xml:space="preserve">
+    <value>類別庫 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1026" xml:space="preserve">
+    <value>[實驗性] 類別庫 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1027" xml:space="preserve">
+    <value>專案，可用於建立使用 Windows UI 程式庫 (WinUI 3) 之傳統型應用程式的受管理類別庫 (.dll)。</value>
+  </data>
+  <data name="1029" xml:space="preserve">
+    <value>空白應用程式，使用 WAP 封裝 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1030" xml:space="preserve">
+    <value>[實驗性] 空白應用程式，使用 WAP 封裝 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1031" xml:space="preserve">
+    <value>專案範本，用於建立使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式。會包含 Windows 應用程式封裝 (WAP) 專案，以建立 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
+  </data>
+  <data name="1033" xml:space="preserve">
+    <value>空白應用程式，已封裝 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1034" xml:space="preserve">
+    <value>[實驗性] 空白應用程式，已封裝 (桌面中的 WinUI 3)</value>
+  </data>
+  <data name="1035" xml:space="preserve">
+    <value>專案範本，用於建立使用 Windows UI 程式庫 (WinUI 3) 的傳統型應用程式以及 MSIX 套件，以便透過 Microsoft Store 側載或散佈。</value>
+  </data>
+  <data name="1037" xml:space="preserve">
+    <value>空白應用程式 (UWP 中的 WinUI 3)</value>
+  </data>
+  <data name="1038" xml:space="preserve">
+    <value>[實驗性] 空白應用程式 (UWP 中的 WinUI 3)</value>
+  </data>
+  <data name="1039" xml:space="preserve">
+    <value>專案，用於建立使用 Windows UI 程式庫 (WinUI 3) 的通用 Windows 平台 (UWP) 應用程式。需要 Windows 應用程式 SDK 實驗性支援。</value>
+  </data>
+  <data name="1041" xml:space="preserve">
+    <value>類別庫 (UWP 中的 WinUI 3)</value>
+  </data>
+  <data name="1042" xml:space="preserve">
+    <value>[實驗性] 類別庫 (UWP 中的 WinUI 3)</value>
+  </data>
+  <data name="1043" xml:space="preserve">
+    <value>專案，用於建立使用 Windows UI 程式庫 (WinUI 3) 之通用 Windows 平台 (UWP) 應用程式的受管理類別庫 (.dll)。需要 Windows 應用程式 SDK 實驗性支援。</value>
+  </data>
+  <data name="1045" xml:space="preserve">
+    <value>Windows 執行階段元件 (UWP 中的 WinUI 3)</value>
+  </data>
+  <data name="1046" xml:space="preserve">
+    <value>[實驗性]UWP) 中的 Windows 執行階段元件 (WinUI 3</value>
+  </data>
+  <data name="1047" xml:space="preserve">
+    <value>專案，用於建立使用 Windows UI 程式庫 (WinUI 3) 之通用 Windows 平台 (UWP) 應用程式的受管理 Windows 執行階段元件。需要 Windows 應用程式 SDK 實驗性支援。</value>
+  </data>
 </root>

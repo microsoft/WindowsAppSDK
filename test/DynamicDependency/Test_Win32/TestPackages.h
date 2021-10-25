@@ -15,6 +15,13 @@ namespace Test::Packages::FrameworkMathMultiply
     constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Math.Multiply_1.2.3.4_neutral__8wekyb3d8bbwe";
 }
 
+namespace Test::Packages::FrameworkWidgets
+{
+    constexpr PCWSTR c_PackageDirName = L"Framework.Widgets";
+    constexpr PCWSTR c_PackageFamilyName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_8wekyb3d8bbwe";
+    constexpr PCWSTR c_PackageFullName = L"WindowsAppRuntime.Test.DynDep.Fwk.Widgets_1.2.3.4_neutral__8wekyb3d8bbwe";
+}
+
 #define TEST_PACKAGE_DDLM_NAMEPREFIX    L"WindowsAppRuntime.Test.DDLM"
 #define TEST_PACKAGE_DDLM_VERSION       L"4.1.1967.333"
 #if defined(_M_X64)
@@ -173,6 +180,10 @@ namespace Test::Packages
     void AddPackage_FrameworkMathMultiply();
 
     void RemovePackage_FrameworkMathMultiply();
+
+    void AddPackage_FrameworkWidgets();
+
+    void RemovePackage_FrameworkWidgets();
 
     void AddPackage_DynamicDependencyDataStore();
 

@@ -4,6 +4,7 @@
 #include <ActivationRegistrationManager.h>
 #include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.cpp>
 
+#include "AppLifecycleTelemetry.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
@@ -15,13 +16,24 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::Foundation;
 
-    std::wstring GenerateCommandLine(std::wstring const& modulePath)
+    std::wstring GenerateCommandLine(std::wstring const& modulePath, std::wstring const& argumentData)
     {
         std::wstring exePath{ modulePath.empty() ? GetModulePath() : modulePath };
 
-        // Example: C:\some\path\App.exe ----ms-protocol:
-        return wil::str_printf<std::wstring>(L"%s %s%s%s", exePath.c_str(), c_argumentPrefix,
-            c_protocolArgumentString, c_argumentSuffix);
+        // Example: C:\some\path\App.exe "----ms-protocol:myscheme:some=data&some=other"
+        return wil::str_printf<std::wstring>(L"%s \"%s%s%s%s\"", exePath.c_str(), c_argumentPrefix,
+            c_msProtocolArgumentString, c_argumentSuffix, argumentData.c_str());
+    }
+
+    void ActivationRegistrationManager::ReportFeatureUsage()
+    {
+        static bool reported{ false };
+
+        if (!reported)
+        {
+            AppLifecycleTelemetry::ActivationRegistrationManager();
+            reported = true;
+        }
     }
 
     void ActivationRegistrationManager::RegisterForFileTypeActivation(
@@ -45,7 +57,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             for (auto verb : supportedVerbs)
             {
                 auto args = winrt::make<FileActivatedEventArgs>(verb.c_str(), c_commandLineArgumentFormat, true).as<IInternalValueMarshalable>();
-                auto command = GenerateCommandLine(exePath.c_str()) + args->Serialize().AbsoluteUri().c_str();
+                auto command = GenerateCommandLine(exePath.c_str(), args->Serialize().AbsoluteUri().c_str());
                 RegisterVerb(progId, verb.c_str(), command);
             }
 
@@ -76,7 +88,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         // Pass a value serialized version of the arguments on the command-line.
         auto args = winrt::make<StartupActivatedEventArgs>(taskId.c_str()).as<IInternalValueMarshalable>();
-        auto command = GenerateCommandLine(exePath.c_str()) + args->Serialize().AbsoluteUri().c_str();
+        auto command = GenerateCommandLine(exePath.c_str(), args->Serialize().AbsoluteUri().c_str());
 
         // Name: taskId
         // Value: commandLine
@@ -144,7 +156,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         RegisterProgId(progId.c_str(), L"", appUserModelId.c_str(), displayName.c_str(),
             logo.c_str());
 
-        auto command = GenerateCommandLine(exePath.c_str()) + c_commandLineArgumentFormat;
+        auto command = GenerateCommandLine(exePath.c_str(), c_commandLineArgumentFormat);
         RegisterVerb(progId.c_str(), c_openVerbName, command);
 
         RegisterApplication(appId.c_str());

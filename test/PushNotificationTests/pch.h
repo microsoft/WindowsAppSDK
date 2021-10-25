@@ -20,6 +20,7 @@
 #include <string>
 
 #include <wil/result_macros.h>
+#include <wil/com.h>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
