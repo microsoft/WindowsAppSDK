@@ -432,7 +432,8 @@ namespace UndockedRegFreeWinRT
         UINT32 dwPackagesCount = 0;
         UINT32 dwBufferLength = 0;
 
-        const UINT32 filter = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET;
+        const UINT32 filter = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET |
+                              PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC;
         hr = HRESULT_FROM_WIN32(GetCurrentPackageInfo(filter, &dwBufferLength, nullptr, &dwPackagesCount));
         // Only find the type if the it is an unpackaged app. Packaged apps can have their exe on their package graph,
         // which will allow type resolution against adjacent WinMDs.
