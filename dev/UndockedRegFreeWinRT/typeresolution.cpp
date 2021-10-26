@@ -428,20 +428,50 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        HRESULT hr = S_OK;
-        UINT32 dwPackagesCount = 0;
-        UINT32 dwBufferLength = 0;
-
-        const UINT32 filter = PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET |
-                              PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC;
-        hr = HRESULT_FROM_WIN32(GetCurrentPackageInfo(filter, &dwBufferLength, nullptr, &dwPackagesCount));
-        // Only find the type if the it is an unpackaged app. Packaged apps can have their exe on their package graph,
-        // which will allow type resolution against adjacent WinMDs.
-        if (hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE))
+        // Walk the package graph looking for the requested metadata
+        const uint32_t filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET |
+                               PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC };
+        uint32_t bufferLength{};
+        uint32_t packagesCount{};
+        bool processHasStaticPackageGraph{};
+        HRESULT hr{ HRESULT_FROM_WIN32(GetCurrentPackageInfo(filter, &bufferLength, nullptr, &packagesCount)) };
+        if (SUCCEEDED(hr))
         {
-            PCWSTR exeDir = nullptr;  // Never freed; owned by process global.
-            RETURN_IF_FAILED(GetProcessExeDir(&exeDir));
+            // The process has a package graph. Walk it looking for the requested metadata
+            auto buffer{ wil::make_unique_nothrow<BYTE[]>(bufferLength) };
+            RETURN_IF_NULL_ALLOC(buffer);
+            RETURN_IF_WIN32_ERROR(GetCurrentPackageInfo(filter, &bufferLength, buffer.get(), &packagesCount));
+            const auto packageInfos{ reinterpret_cast<PACKAGE_INFO*>(buffer.get()) };
+            for (uint32_t index=0; index < packagesCount; ++index)
+            {
+                const auto& packageInfo{ packageInfos[index] };
+                HRESULT hrFindType{ FindTypeInDirectoryWithNormalization(pMetaDataDispenser, pszFullName,
+                                packageInfo.path, phstrMetaDataFilePath, ppMetaDataImport, pmdTypeDef) };
+                if (SUCCEEDED(hrFindType))
+                {
+                    return hrFindType;
+                }
 
+                // Keep track if we find any Static entries in the package graph
+                if (WI_IsFlagSet(packageInfo.flags, PACKAGE_PROPERTY_STATIC))
+                {
+                    processHasStaticPackageGraph = true;
+                }
+            }
+        }
+
+        // Not found in the package graph.
+
+        // Unpackaged apps may have metadata next to their executable.
+        //
+        // Packaged apps have metadata in their root directory which is
+        // in the package graph and thus already checked.
+        //
+        // NOTE: Only packaged apps have Static entries in their package graph.
+        if ((hr == HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE)) && processHasStaticPackageGraph)
+        {
+            PCWSTR exeDir{};  // Never freed; owned by process global.
+            RETURN_IF_FAILED(GetProcessExeDir(&exeDir));
             hr = FindTypeInDirectoryWithNormalization(
                 pMetaDataDispenser,
                 pszFullName,
@@ -449,20 +479,18 @@ namespace UndockedRegFreeWinRT
                 phstrMetaDataFilePath,
                 ppMetaDataImport,
                 pmdTypeDef);
-
             if (hr == RO_E_METADATA_NAME_NOT_FOUND)
             {
                 // For compatibility purposes, if we fail to find the type in the unpackaged location, we should return
                 // HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE) instead of a "not found" error. This preserves the
                 // behavior that existed before unpackaged type resolution was implemented.
-                hr = HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
+                return HRESULT_FROM_WIN32(APPMODEL_ERROR_NO_PACKAGE);
             }
-            return hr;
+            RETURN_HR(hr);
         }
-        else
-        {
-            return RO_E_METADATA_NAME_NOT_FOUND;
-        }
+
+        // Not found
+        return RO_E_METADATA_NAME_NOT_FOUND;
     }
 
     //
