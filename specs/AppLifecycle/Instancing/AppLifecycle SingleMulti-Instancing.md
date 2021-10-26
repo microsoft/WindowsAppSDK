@@ -45,9 +45,11 @@ class, but with some key differences:
 -   **Platform**: GetInstances returns only the instances that the app explicitly registered for
     potential redirection.
 -   **Windows App SDK**: GetInstances returns all running instances of the app, including the current instance.
-    There is no guaranteed ordering of instances in the list. In the scenario where the user has multiple
-    versions of the same app running, separate lists are maintained for each version. In the scenario
-    where there are multiple user sessions active, separate lists are maintained per user also.
+    Only instances that are using the AppInstance API are included in the list. If you want the current
+    instance to be included in the list, call AppInstance.GetCurrent. Note that there is no guaranteed
+    ordering of instances in the list. In the scenario where the user has multiple instances of the same
+    app running, separate lists are maintained for each version. In the scenario where there are multiple
+    user sessions active, separate lists are maintained per user also.
 
 ### Registering Keys
 
