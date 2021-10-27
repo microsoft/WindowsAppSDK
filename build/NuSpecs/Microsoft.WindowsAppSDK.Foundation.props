@@ -16,7 +16,7 @@
   -->
   <Import Project="$(MSBuildThisFileDirectory)MrtCore.props" />
 
-  <ItemGroup Condition="'$(AppxPackage)' != 'true'">
+  <ItemGroup Condition="'$(AppxPackage)' != 'true' and '$(_WindowsAppSDKFoundationPlatform)' != 'AnyCPU'">
     <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\runtimes\lib\native\$(_WindowsAppSDKFoundationPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.dll"/>
   </ItemGroup>
 
