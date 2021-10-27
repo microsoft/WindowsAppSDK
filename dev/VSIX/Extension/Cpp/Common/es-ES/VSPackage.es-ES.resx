@@ -185,12 +185,6 @@
   <data name="1023" xml:space="preserve">
     <value>Control de usuario para aplicaciones basadas en la Biblioteca de interfaz de usuario de Windows (WinUI 3).</value>
   </data>
-  <data name="1025" xml:space="preserve">
-    <value>Aplicación en blanco, empaquetada con WAP (WinUI 3 en escritorio)</value>
-  </data>
-  <data name="1026" xml:space="preserve">
-    <value>[Experimental] Aplicación en blanco, empaquetada con WAP (WinUI 3 en escritorio)</value>
-  </data>
   <data name="1027" xml:space="preserve">
     <value>Plantilla de proyecto para crear una aplicación de escritorio basada en la Biblioteca de interfaz de usuario de Windows (WinUI 3). Se incluye un proyecto de paquete de aplicación de Windows (WAP) para crear un paquete MSIX para la carga lateral o distribución mediante Microsoft Store.</value>
   </data>

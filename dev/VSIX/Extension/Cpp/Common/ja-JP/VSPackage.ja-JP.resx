@@ -185,12 +185,6 @@
   <data name="1023" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づくアプリのユーザー コントロール。</value>
   </data>
-  <data name="1025" xml:space="preserve">
-    <value>空のアプリ、WAP とパッケージ化 (デスクトップの WinUI 3)</value>
-  </data>
-  <data name="1026" xml:space="preserve">
-    <value>[試験段階] 空のアプリ、WAP とパッケージ化 (デスクトップの WinUI 3)</value>
-  </data>
   <data name="1027" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートです。Microsoft Store を介してサイドローディングまたは配布するための MSIX パッケージを作成するために Windows アプリケーション パッケージ (WAP) プロジェクトが含まれています。</value>
   </data>

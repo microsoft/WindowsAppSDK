@@ -185,12 +185,6 @@
   <data name="1023" xml:space="preserve">
     <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı denetimi.</value>
   </data>
-  <data name="1025" xml:space="preserve">
-    <value>Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
-  </data>
-  <data name="1026" xml:space="preserve">
-    <value>[Deneysel] Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
-  </data>
   <data name="1027" xml:space="preserve">
     <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu. Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Windows Uygulama Paketleme (WAP) projesi dahildir.</value>
   </data>

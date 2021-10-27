@@ -194,12 +194,6 @@
   <data name="1027" xml:space="preserve">
     <value>Projet de création d’une bibliothèque de classes managées (.dll) pour les applications de bureau basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
-  <data name="1029" xml:space="preserve">
-    <value>Application vide, empaquetée avec WAP (WinUI 3 sur le Bureau)</value>
-  </data>
-  <data name="1030" xml:space="preserve">
-    <value>[Expérimental] Application vide, empaquetée avec WAP (WinUI 3 sur le Bureau)</value>
-  </data>
   <data name="1031" xml:space="preserve">
     <value>Modèle de projet pour la création d’une application de bureau basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Un projet d’empaquetage d’application Windows (WAP) est inclus pour créer un package MSIX pour le chargement indépendant ou la distribution via le Microsoft Store.</value>
   </data>
