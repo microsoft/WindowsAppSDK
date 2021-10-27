@@ -186,10 +186,10 @@
     <value>Kontrolka użytkownika dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Pusta aplikacja, spakowana za pomocą protokołu WAP (WinUI 3 na pulpicie)</value>
+    <value>Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Eksperymentalne] Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 in Desktop)</value>
+    <value>[Eksperymentalne] Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
