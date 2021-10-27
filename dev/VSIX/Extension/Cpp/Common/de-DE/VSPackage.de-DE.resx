@@ -150,10 +150,10 @@
     <value>Eine leere Seite für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Ressourcenwörterbuch (WinUI 3)</value>
+    <value>Ressourcenverzeichnis (WinUI 3)</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Experimentell] Ressourcenwörterbuch (WinUI 3)</value>
+    <value>[Experimentell] Ressourcenverzeichnis (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
     <value>Eine leere, schlüsselgesteuerte Sammlung von XAML-Ressourcen für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
@@ -185,14 +185,8 @@
   <data name="1023" xml:space="preserve">
     <value>Ein Benutzersteuerelement für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
-  <data name="1025" xml:space="preserve">
-    <value>Leere App, verpackt mit WAP (WinUI 3 in Desktop)</value>
-  </data>
-  <data name="1026" xml:space="preserve">
-    <value>[Experimentell] Leere App, verpackt mit WAP (WinUI 3 in Desktop)</value>
-  </data>
   <data name="1027" xml:space="preserve">
-    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert. Ein Paketerstellungsprojekt für Windows-Anwendungen (Windows Application Packaging, WAP) ist enthalten, um ein MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store zu erstellen.</value>
+    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert. Ein WAP-Projekt (Paketerstellungsprojekt für Windows-Anwendungen) ist enthalten, um ein MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store zu erstellen.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Leere App, verpackt (WinUI 3 in Desktop)</value>

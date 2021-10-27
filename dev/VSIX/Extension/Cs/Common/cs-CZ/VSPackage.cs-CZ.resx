@@ -194,12 +194,6 @@
   <data name="1027" xml:space="preserve">
     <value>Projekt pro vytvoření spravované knihovny tříd (.dll) pro desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
   </data>
-  <data name="1029" xml:space="preserve">
-    <value>Prázdná aplikace, zabalená s WAP (WinUI 3 v desktopu)</value>
-  </data>
-  <data name="1030" xml:space="preserve">
-    <value>[Experimentální] Prázdná aplikace, zabalená s WAP (WinUI 3 v desktopu)</value>
-  </data>
   <data name="1031" xml:space="preserve">
     <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3). K vytvoření balíčku MSIX pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store je zahrnutý projekt WAP (vytváření balíčku aplikace Windows).</value>
   </data>

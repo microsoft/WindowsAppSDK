@@ -135,7 +135,7 @@
     <value>빈 창(데스크탑의 WinUI 3)</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[실험] 빈 창(데스크톱의 WinUI 3)</value>
+    <value>[실험적] 빈 창(데스크톱의 WinUI 3)</value>
   </data>
   <data name="1003" xml:space="preserve">
     <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 앱의 빈 창입니다.</value>
@@ -144,10 +144,10 @@
     <value>빈 페이지(WinUI 3)</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[실험] 빈 페이지(WinUI 3)</value>
+    <value>[실험적] 빈 페이지(WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3) 기반 앱의 빈 페이지입니다.</value>
+    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱의 빈 페이지입니다.</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>리소스 사전(WinUI 3)</value>
@@ -165,7 +165,7 @@
     <value>[실험] 리소스 파일(.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱에 대한 문자열 및 조건부 리소스를 저장하기 위한 파일입니다.</value>
+    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱용 문자열 및 조건부 리소스를 저장하기 위한 파일입니다.</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>사용자 지정 컨트롤(WinUI 3)</value>
@@ -180,19 +180,13 @@
     <value>사용자 컨트롤(WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[실험] 사용자 제어(WinUI 3)</value>
+    <value>[실험적] 사용자 컨트롤(WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
     <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱용 사용자 컨트롤입니다.</value>
   </data>
-  <data name="1025" xml:space="preserve">
-    <value>새 앱, WAP로 패키지됨(데스크톱의 WinUI 3)</value>
-  </data>
-  <data name="1026" xml:space="preserve">
-    <value>[실험적] 새 앱, WAP로 패키지됨(데스크톱의 WinUI 3)</value>
-  </data>
   <data name="1027" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 데스크톱 앱을 만들기 위한 프로젝트 템플릿입니다. Microsoft Store를 통해 테스트용으로 로드하거나 배포할 MSIX 패키지를 만들기 위해 WAP(Windows 애플리케이션 패키징) 프로젝트가 포함되어 있습니다.</value>
+    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 앱을 만들기 위한 프로젝트 템플릿입니다. Microsoft Store를 통해 테스트용으로 로드하거나 배포하기 위한 MSIX 패키지를 만들기 위해 WAP(Windows 애플리케이션 패키징) 프로젝트가 포함되어 있습니다.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>빈 앱, 패키지됨(데스크톱의 WinUI 3)</value>
@@ -201,24 +195,24 @@
     <value>[실험적] 빈 앱, 패키지됨(데스크톱의 WinUI 3)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Microsoft Store를 통해 테스트용으로 로드하거나 배포하기 위한 MSIX 패키지와 함께 Windows UI 라이브러리(WinUI 3)를 기반으로 데스크톱 앱을 만들기 위한 프로젝트 템플릿입니다.</value>
+    <value>Microsoft Store를 통해 테스트용으로 로드하거나 배포하기 위한 MSIX 패키지와 함께 Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 앱을 만들기 위한 프로젝트 템플릿입니다.</value>
   </data>
   <data name="1033" xml:space="preserve">
     <value>Windows 런타임 구성 요소(WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[실험] Windows 런타임 구성 요소(WinUI 3)</value>
+    <value>[실험적] Windows 런타임 구성 요소(WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 데스크톱 및 유니버설 Windows 플랫폼(UWP) 앱 두 가지 모두를 위한 C++/WinRT Windows 런타임 구성 요소(.winmd)를 만들기 위한 프로젝트입니다.</value>
+    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 데스크톱 및 유니버설 Windows 플랫폼(UWP) 앱 두 가지 모두를 위한 C++/WinRT Windows 런타임 구성 요소(.winmd)를 만들기 위한 프로젝트입니다.</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>빈 앱(UWP의 WinUI 3)</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[실험] 빈 앱(UWP의 WinUI 3)</value>
+    <value>[실험적] 빈 앱(UWP의 WinUI 3)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 유니버설 Windows 플랫폼(UWP) 앱을 만들기 위한 프로젝트입니다. Windows 앱 SDK 실험 지원이 필요합니다.</value>
+    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 유니버설 Windows 플랫폼(UWP) 앱을 만들기 위한 프로젝트입니다. Windows 앱 SDK 실험적 지원이 필요합니다.</value>
   </data>
 </root>
