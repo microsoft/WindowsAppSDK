@@ -113,8 +113,9 @@ Notes:
   if an app that has done so is now uninstalled.
 - We won’t track changes that are made outside the API; and we won’t track
   uninstall of unpackaged apps.
-- When a packaged app is uninstalled, any variable it created will be deleted,
-  regardless of any other changes made to that variable during its lifetime.
+- When a packaged app is uninstalled, a variable it created will be deleted,
+  unless another packaged app also wrote to that variable (and that other app
+  has not yet been uninstalled) - in which case the previous value is restored.
 - If a variable was not created via the new API, then it will not be deleted
   when a packaged app is uninstalled – instead, the last change made by that app
   (via the new API) will be reverted.
