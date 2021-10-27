@@ -46,13 +46,19 @@ TARGET_PROXYSTUB_FILE=$(TARGET_PROXYSTUB_DIR)\$(TARGET_PROXYSTUB).dll
 !MESSAGE $(TARGET_PROXYSTUB_FILE)
 !ENDIF
 
+DDLM_SHADOW=DynamicDependencyLifetimeManagerShadow
+DDLM_SHADOW_EXE=$(DDLM_SHADOW)
+DDLM_SHADOW_EXE_DIR=$(OutDir)..\$(DDLM_SHADOW)\$(DDLM_SHADOW_EXE)
+DDLM_SHADOW_EXE_FILE=$(DDLM_SHADOW_EXE_DIR)\$(DDLM_SHADOW_EXE).exe
+
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
 OutMsix=$(TargetDir)\$(TargetName)
 
 !IFDEF VERBOSE
-!MESSAGE Workdir           =$(WorkDir)
-!MESSAGE OutMsix           =$(OutMsix)
+!MESSAGE Workdir              =$(WorkDir)
+!MESSAGE OutMsix              =$(OutMsix)
+!MESSAGE DDLM_SHADOW_EXE_FILE =$(DDLM_SHADOW_EXE_FILE)
 !ENDIF
 
 MAKE_APPXMANIFEST_FROM_TEMPLATE=$(SolutionDir)tools\MakeAppxManifestFromTemplate.cmd
@@ -67,6 +73,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(ProjectDir)Assets\* $(WorkDir)\Assets\* >NUL
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL
     @copy /Y $(TARGET_PROXYSTUB_FILE) $(WorkDir) >NUL
+    @copy /Y $(DDLM_SHADOW_EXE_FILE) $(WorkDir) >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS) /o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
