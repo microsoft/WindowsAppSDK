@@ -428,14 +428,13 @@ namespace UndockedRegFreeWinRT
         _COM_Outptr_opt_result_maybenull_ IMetaDataImport2** ppMetaDataImport,
         _Out_opt_ mdTypeDef* pmdTypeDef)
     {
-        // Walk the package graph looking for the requested metadata
-        const uint32_t filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET |
-                               PACKAGE_FILTER_STATIC | PACKAGE_FILTER_DYNAMIC };
+        // Walk the dynamic package graph looking for the requested metadata
+        const uint32_t filter{ PACKAGE_FILTER_HEAD | PACKAGE_FILTER_DIRECT | PACKAGE_FILTER_IS_IN_RELATED_SET | PACKAGE_FILTER_DYNAMIC };
         uint32_t bufferLength{};
         uint32_t packagesCount{};
         bool processHasStaticPackageGraph{};
         HRESULT hr{ HRESULT_FROM_WIN32(GetCurrentPackageInfo(filter, &bufferLength, nullptr, &packagesCount)) };
-        if (SUCCEEDED(hr))
+        if (hr == HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
         {
             // The process has a package graph. Walk it looking for the requested metadata
             auto buffer{ wil::make_unique_nothrow<BYTE[]>(bufferLength) };
