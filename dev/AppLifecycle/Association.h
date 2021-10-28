@@ -64,4 +64,5 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         AssociationType type);
     void UnregisterAssociationHandler(const std::wstring& handlerAppId, const std::wstring& association,
         AssociationType type);
+    void NotifyShellAssocChanged();
 }

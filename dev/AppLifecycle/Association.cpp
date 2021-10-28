@@ -461,4 +461,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             }
         }
     }
+
+    void NotifyShellAssocChanged()
+    {
+        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+    }
 }
