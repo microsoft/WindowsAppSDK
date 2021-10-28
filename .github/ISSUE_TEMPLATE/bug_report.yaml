@@ -32,6 +32,17 @@ body:
       description: If applicable, add screenshots here to help explain your problem
   - type: dropdown
     attributes:
+      label: IDE
+      description: Which Visual Studio versions did you use?
+      multiple: true
+      options:
+        - "Visual Studio 2022-preview"
+        - "Visual Studio 2022"
+        - "Visual Studio 2019"
+        - "Visual Studio 2017"
+        - "Other"
+  - type: dropdown
+    attributes:
       label: NuGet package version
       options:
         - "Microsoft.WindowsAppSDK 1.0.0-preview3"
