@@ -26,20 +26,41 @@ inline wil::unique_hkey GetKeyForTrackingChange(PCWSTR subKey)
     return keyToTrackChanges;
 }
 
-inline wil::unique_hkey GetKeyForPathTrackingChange(std::wstring packageFullName)
+inline wil::unique_hkey GetKeyForPathTrackingChange(bool isUser, std::wstring packageFullName)
 {
-    auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(
-    L"Software\\ChangeTracker\\%ws\\%ws\\", L"PATH", packageFullName.c_str()) };
+    std::wstring scope{};
 
-    return GetKeyForTrackingChange(subKey.get());
+    if (isUser)
+    {
+        scope = L"user";
+    }
+    else
+    {
+        scope = L"machine";
+    }
+
+    std::filesystem::path subKey = std::filesystem::path{L"Software\\ChangeTracker"}
+    / c_PathName / packageFullName / scope;
+
+    return GetKeyForTrackingChange(subKey.c_str());
 }
 
-inline wil::unique_hkey GetKeyForPathExtTrackingChange(std::wstring packageFullName)
+inline wil::unique_hkey GetKeyForPathExtTrackingChange(bool isUser, std::wstring packageFullName)
 {
-    auto subKey{ wil::str_printf<wil::unique_cotaskmem_string>(
-    L"Software\\ChangeTracker\\%ws\\%ws\\", L"PATHEXT", packageFullName.c_str()) };
+    std::wstring scope{};
 
-    return GetKeyForTrackingChange(subKey.get());
+    if (isUser)
+    {
+        scope = L"user";
+    }
+    else
+    {
+        scope = L"machine";
+    }
+    std::filesystem::path subKey = std::filesystem::path{ L"Software\\ChangeTracker" }
+    / c_PathExtName / packageFullName / scope;
+
+    return GetKeyForTrackingChange(subKey.c_str());
 }
 
 inline wil::unique_hkey GetKeyForEVTrackingChange(bool isUser, std::wstring packageFullName, PCWSTR EVKeyName)
