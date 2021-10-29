@@ -14,9 +14,14 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     //     eventname = event name signaling we should quit. Syntax: "<processid>;<packagefullname>;<uniqueid>"
 
     // Parse the command line
-    const auto eventName{ GetCommandLineW() };
-    RETURN_HR_IF_NULL(E_INVALIDARG, eventName);
-    RETURN_HR_IF(E_INVALIDARG, *eventName == '\0');
+    const auto commandLine{ GetCommandLineW() };
+    RETURN_HR_IF_NULL(E_INVALIDARG, commandLine);
+    int argc{};
+    PWSTR* argv{ CommandLineToArgvW(commandLine, &argc) };
+    RETURN_HR_IF_NULL(E_INVALIDARG, argv);
+    wil::unique_hlocal argvBuffer{ argv };
+    RETURN_HR_IF(E_INVALIDARG, argc < 2);
+    PCWSTR eventName{ argv[1] };
     PWSTR endPtr{};
     uint32_t callerProcessId{ wcstoul(eventName, &endPtr, 10) };
     // We'll never have ProcessId=0

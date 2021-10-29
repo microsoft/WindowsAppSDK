@@ -26,5 +26,6 @@
 
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
+#include <iswindowsversion.h>
 
 #include "wil_msixdynamicdependency.h"

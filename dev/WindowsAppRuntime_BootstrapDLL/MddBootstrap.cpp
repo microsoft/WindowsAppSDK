@@ -10,9 +10,12 @@
 
 #include "IDynamicDependencyLifetimeManager.h"
 
+#include <filesystem>
+
 wil::unique_cotaskmem_ptr<BYTE[]> GetFrameworkPackageInfoForPackage(PCWSTR packageFullName, const PACKAGE_INFO*& frameworkPackageInfo);
 DLL_DIRECTORY_COOKIE AddFrameworkToPath(PCWSTR path);
 void RemoveFrameworkFromPath(PCWSTR frameworkPath);
+bool IsLifetimeManagerViaEnumeration();
 void CreateLifetimeManager(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -133,6 +136,12 @@ STDAPI_(void) MddBootstrapShutdown() noexcept
     g_packageDependencyId.reset();
 
     g_windowsAppRuntimeDll.reset();
+
+    if (g_endTheLifetimeManagerEvent)
+    {
+        g_endTheLifetimeManagerEvent.SetEvent();
+        g_endTheLifetimeManagerEvent.reset();
+    }
 
     if (g_lifetimeManager)
     {
@@ -273,6 +282,27 @@ void RemoveFrameworkFromPath(PCWSTR frameworkPath)
     }
 }
 
+bool IsLifetimeManagerViaEnumeration()
+{
+    // AppExtension enumerates appextensions on <=19H1 only if the caller declares a matching AppExtensionHost.
+    // To workaround on older systems we'll fallback to a more complex but functionally equivalent solution.
+    if (!WindowsVersion::IsWindows10_20H1OrGreater())
+    {
+        // Windows version < 20H1. Enumeration is required
+        return true;
+    }
+
+    // Enable the Enumeration-style LifetimeManager if the environment variable
+    // MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ENUMERATION is defined (for testing scenarios)
+    if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ENUMERATION", nullptr, 0) > 0)
+    {
+        return true;
+    }
+
+    // Use the AppExtension-style LifetimeManager
+    return false;
+}
+
 void CreateLifetimeManager(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
@@ -281,15 +311,13 @@ void CreateLifetimeManager(
     wil::unique_event& endTheLifetimeManagerEvent,
     wil::unique_cotaskmem_string& ddlmPackageFullName)
 {
-    // AppExtension enumerates appextensions on <=19H1 only if the caller declares a matching AppExtensionHost.
-    // To workaround on older systems we'll fallback to a more complex but functionally equivalent solution.
-    if (getenv("DDLMEnum") == nullptr) //TODO Change to...?
+    if (IsLifetimeManagerViaEnumeration())
     {
-        CreateLifetimeManagerViaAppExtension(majorMinorVersion, versionTag, minVersion, lifetimeManager, ddlmPackageFullName);
+        CreateLifetimeManagerViaEnumeration(majorMinorVersion, versionTag, minVersion, endTheLifetimeManagerEvent, ddlmPackageFullName);
     }
     else
     {
-        CreateLifetimeManagerViaEnumeration(majorMinorVersion, versionTag, minVersion, endTheLifetimeManagerEvent, ddlmPackageFullName);
+        CreateLifetimeManagerViaAppExtension(majorMinorVersion, versionTag, minVersion, lifetimeManager, ddlmPackageFullName);
     }
 }
 
@@ -331,7 +359,7 @@ void CreateLifetimeManagerViaEnumeration(
     GUID uniqueId{};
     THROW_IF_FAILED(CoCreateGuid(&uniqueId));
     const auto c_uniqueIdAsString{ winrt::to_hstring(uniqueId) };
-    auto eventName{ wil::str_printf<wil::unique_cotaskmem_string>(L"%u;%s;%u;%s", GetCurrentProcessId(), packageFullName.c_str(), c_uniqueIdAsString.c_str()) };
+    auto eventName{ wil::str_printf<wil::unique_cotaskmem_string>(L"%u;%s;%s", GetCurrentProcessId(), packageFullName.c_str(), c_uniqueIdAsString.c_str()) };
     wil::unique_event event;
     event.create(wil::EventOptions::ManualReset, eventName.get());
 
@@ -340,10 +368,8 @@ void CreateLifetimeManagerViaEnumeration(
     PCWSTR c_packageRelativeApplicationId{ L"DDLM" };
     THROW_IF_WIN32_ERROR(FormatApplicationUserModelId(packageFamilyName.c_str(), c_packageRelativeApplicationId, &lifetimeManagerApplicationUserModelIdLength, lifetimeManagerApplicationUserModelId));
 
-    //TODO: Perhaps use CLSCTX_INPROC_SERVER? We have to live long enough for that to get arguments
-    //TODO: Change com_ptr_nothrow to com_ptr
     wil::com_ptr_nothrow<IApplicationActivationManager> aam{
-        wil::CoCreateInstance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_LOCAL_SERVER)
+        wil::CoCreateInstance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, /*CLSCTX_LOCAL_SERVER*/CLSCTX_INPROC_SERVER)
     };
     auto arguments{ eventName.get() };
     ACTIVATEOPTIONS c_options{ AO_NOERRORUI | AO_NOSPLASHSCREEN };
@@ -502,7 +528,7 @@ void FindDDLMViaEnumeration(
 
     winrt::Windows::Management::Deployment::PackageManager packageManager;
     winrt::hstring currentUser;
-    const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Framework };
+    const auto c_packageTypes{ winrt::Windows::Management::Deployment::PackageTypes::Main };
     for (auto package : packageManager.FindPackagesForUserWithPackageTypes(currentUser, c_packageTypes))
     {
         // Check the package identity against the package identity test qualifiers (if any)
@@ -534,8 +560,51 @@ void FindDDLMViaEnumeration(
             continue;
         }
 
+        // Is this DDLM in the major.minor release?
+        //
+        // NOTE: Package.InstalledLocation.Path can be expensive as it has to create
+        //       a StorageFolder just to get the path as a string. We'd like to use
+        //       Package.EffectivePath but that didn't exist until 20H1 and we need
+        //       to work down to RS5. So instead we'll use GetPackagePathByFullName()
+        //       as that exists since Win81 (and can be significantly faster than
+        //       Package.InstalledLocation).
+        const auto packageFullName{ packageId.FullName() };
+        wil::unique_cotaskmem_string packagePathBufferDynamic;
+        uint32_t packagePathLength{};
+        const auto rc{ GetPackagePathByFullName(packageFullName.c_str(), &packagePathLength, nullptr) };
+        if (rc != ERROR_INSUFFICIENT_BUFFER)
+        {
+            THROW_HR_MSG(HRESULT_FROM_WIN32(rc), "Enumeration: %ls", packageFullName.c_str());
+        }
+        auto packagePath{ wil::make_cotaskmem_string_nothrow(nullptr, packagePathLength) };
+        THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName.c_str(), &packagePathLength, packagePath.get()));
+        auto fileSpec{ std::filesystem::path(packagePath.get()) };
+        fileSpec /= L"Microsoft.WindowsAppRuntime.Release=*";
+        //
+        WIN32_FIND_DATA findFileData{};
+        wil::unique_hfind hfind{ FindFirstFile(fileSpec.c_str(), &findFileData) };
+        if (!hfind)
+        {
+            // The package's release version couldn't be determined. Skip it
+            (void)LOG_LAST_ERROR_MSG("Enumeration: FindFirst(%ls)", fileSpec.c_str());
+            continue;
+        }
+        uint16_t releaseMajorVersion{};
+        uint16_t releaseMinorVersion{};
+        if (swscanf_s(findFileData.cFileName, L"Microsoft.WindowsAppRuntime.Release=%hu.%hu", &releaseMajorVersion, &releaseMinorVersion) != 2)
+        {
+            // These aren't the droids you're looking for...
+            (void)LOG_LAST_ERROR_MSG("Enumeration: FindFirst(%ls) found %ls", fileSpec.c_str(), findFileData.cFileName);
+            continue;
+        }
+        if ((releaseMajorVersion != majorVersion) || (releaseMinorVersion != minorVersion))
+        {
+            // The package's minor release version doesn't match the expected value. Skip it
+            continue;
+        }
+
         // Does the version meet the minVersion criteria?
-        const auto& packageVersion{ packageId.Version() };
+        auto packageVersion{ packageId.Version() };
         PACKAGE_VERSION version{};
         version.Major = packageVersion.Major;
         version.Minor = packageVersion.Minor;

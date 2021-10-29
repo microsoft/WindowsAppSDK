@@ -50,6 +50,10 @@ DDLM_SHADOW=DynamicDependencyLifetimeManagerShadow
 DDLM_SHADOW_EXE=$(DDLM_SHADOW)
 DDLM_SHADOW_EXE_DIR=$(OutDir)$(DDLM_SHADOW_EXE)
 DDLM_SHADOW_EXE_FILE=$(DDLM_SHADOW_EXE_DIR)\$(DDLM_SHADOW_EXE).exe
+DDLM_SHADOW_EXE_PDB=$(DDLM_SHADOW_EXE_DIR)\$(DDLM_SHADOW_EXE).pdb
+
+VERSIONINFO_DIR=$(ProjectDir)
+VERSIONINFO_FILE=$(VERSIONINFO_DIR)Microsoft.WindowsAppRuntime.Release=4.1.0
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix
@@ -59,6 +63,7 @@ OutMsix=$(TargetDir)\$(TargetName)
 !MESSAGE Workdir              =$(WorkDir)
 !MESSAGE OutMsix              =$(OutMsix)
 !MESSAGE DDLM_SHADOW_EXE_FILE =$(DDLM_SHADOW_EXE_FILE)
+!MESSAGE DDLM_SHADOW_EXE_PDB  =$(DDLM_SHADOW_EXE_PDB)
 !ENDIF
 
 MAKE_APPXMANIFEST_FROM_TEMPLATE=$(SolutionDir)tools\MakeAppxManifestFromTemplate.cmd
@@ -74,6 +79,8 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(TARGET_EXE_FILE) $(WorkDir) >NUL
     @copy /Y $(TARGET_PROXYSTUB_FILE) $(WorkDir) >NUL
     @copy /Y $(DDLM_SHADOW_EXE_FILE) $(WorkDir) >NUL
+    @copy /Y $(DDLM_SHADOW_EXE_PDB) $(WorkDir) >NUL
+    @copy /Y $(VERSIONINFO_FILE) $(WorkDir) >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS) /o /h SHA256 /d $(WorkDir) /p $(OutMsix)
     @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
 
