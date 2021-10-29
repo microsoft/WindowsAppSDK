@@ -192,7 +192,7 @@
     <value>[Experimental] Aplicativo em Branco, Empacotado com WAP (WinUI 3 na Área de Trabalho)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Um modelo de projeto para criar um Aplicativo para desktop com base na Biblioteca de Interface do Usuário do Windows (WinUI 3). Um projeto wap (empacotamento de aplicativos) do Windows é incluído para criar um pacote MSIX para sideload ou distribuição por meio do Microsoft Store.</value>
+    <value>Um modelo de projeto para criar um Aplicativo para desktop com base na Biblioteca de Interface do Usuário do Windows (WinUI 3). Um projeto wap (empacotamento de aplicativo) do Windows é incluído para criar um pacote MSIX para sideload ou distribuição por meio do Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Aplicativo em Branco, Empacotado (WinUI 3 no Desktop)</value>
