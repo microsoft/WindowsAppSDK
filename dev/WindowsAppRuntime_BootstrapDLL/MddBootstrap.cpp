@@ -354,7 +354,7 @@ void CreateLifetimeManagerViaEnumeration(
     std::wstring packageFullName;
     FindDDLMViaEnumeration(majorMinorVersion, versionTag, minVersion, packageFamilyName, packageFullName);
 
-    // Create the named event to signal to the lifetime manager it's time to quit
+    // Create the named event used later to signal to the lifetime manager it's time to quit
     // The named event has the syntax: "<processid>;<packagefullname>;<uniqueid>"
     GUID uniqueId{};
     THROW_IF_FAILED(CoCreateGuid(&uniqueId));
@@ -369,7 +369,7 @@ void CreateLifetimeManagerViaEnumeration(
     THROW_IF_WIN32_ERROR(FormatApplicationUserModelId(packageFamilyName.c_str(), c_packageRelativeApplicationId, &lifetimeManagerApplicationUserModelIdLength, lifetimeManagerApplicationUserModelId));
 
     wil::com_ptr_nothrow<IApplicationActivationManager> aam{
-        wil::CoCreateInstance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, /*CLSCTX_LOCAL_SERVER*/CLSCTX_INPROC_SERVER)
+        wil::CoCreateInstance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_INPROC_SERVER)
     };
     auto arguments{ eventName.get() };
     ACTIVATEOPTIONS c_options{ AO_NOERRORUI | AO_NOSPLASHSCREEN };
