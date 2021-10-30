@@ -53,7 +53,7 @@ DDLM_SHADOW_EXE_FILE=$(DDLM_SHADOW_EXE_DIR)\$(DDLM_SHADOW_EXE).exe
 DDLM_SHADOW_EXE_PDB=$(DDLM_SHADOW_EXE_DIR)\$(DDLM_SHADOW_EXE).pdb
 
 VERSIONINFO_DIR=$(ProjectDir)
-VERSIONINFO_FILE=$(VERSIONINFO_DIR)Microsoft.WindowsAppRuntime.Release=4.1.0
+VERSIONINFO_FILE=$(VERSIONINFO_DIR)Microsoft.WindowsAppRuntime.Release!4.1.0
 
 TargetDir=$(OutDir)$(TargetName)
 WorkDir=$(TargetDir)\msix

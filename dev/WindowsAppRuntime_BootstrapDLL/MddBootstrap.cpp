@@ -579,7 +579,7 @@ void FindDDLMViaEnumeration(
         auto packagePath{ wil::make_cotaskmem_string_nothrow(nullptr, packagePathLength) };
         THROW_IF_WIN32_ERROR(GetPackagePathByFullName(packageFullName.c_str(), &packagePathLength, packagePath.get()));
         auto fileSpec{ std::filesystem::path(packagePath.get()) };
-        fileSpec /= L"Microsoft.WindowsAppRuntime.Release=*";
+        fileSpec /= L"Microsoft.WindowsAppRuntime.Release!*";
         //
         WIN32_FIND_DATA findFileData{};
         wil::unique_hfind hfind{ FindFirstFile(fileSpec.c_str(), &findFileData) };
@@ -591,7 +591,7 @@ void FindDDLMViaEnumeration(
         }
         uint16_t releaseMajorVersion{};
         uint16_t releaseMinorVersion{};
-        if (swscanf_s(findFileData.cFileName, L"Microsoft.WindowsAppRuntime.Release=%hu.%hu", &releaseMajorVersion, &releaseMinorVersion) != 2)
+        if (swscanf_s(findFileData.cFileName, L"Microsoft.WindowsAppRuntime.Release!%hu.%hu", &releaseMajorVersion, &releaseMinorVersion) != 2)
         {
             // These aren't the droids you're looking for...
             (void)LOG_LAST_ERROR_MSG("Enumeration: FindFirst(%ls) found %ls", fileSpec.c_str(), findFileData.cFileName);
