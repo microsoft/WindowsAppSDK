@@ -1025,11 +1025,12 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
     /// Generates a matching font set based on the requested inputs, ordered so that nearer matches are earlier.
     /// </summary>
     /// <param name="familyName">Font family name. This can be a typographic family name, weight/stretch/style
-    /// family name, or GDI (RBIZ) family name.</param>
-    /// <param name="fontAxisValues">List of font axis values.</param>
+    /// family name, GDI (RBIZ) family name, or full name.</param>
+    /// <param name="fontAxisValues">Array of font axis values.</param>
     /// <param name="fontAxisValueCount">Number of font axis values.</param>
     /// <param name="allowSimulations">Specify TRUE to automatically apply algorithmic emboldening or slant to
-    /// matching fonts if necessary to match the specified axis values.</param>
+    /// matching fonts if necessary to match the specified axis values. No simulations are applied if this
+    /// parameter is false.</param>
     /// <param name="matchingFonts">Receives a pointer to a newly-created font set, which contains a prioritized 
     /// list of fonts that match the specified inputs.</param>
     /// <returns>
