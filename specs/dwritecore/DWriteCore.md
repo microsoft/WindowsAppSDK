@@ -78,33 +78,268 @@ with interoperability issues.
 New APIs introduced by DWriteCore include:
 
  - The exported function is renamed `DWriteCoreCreateFactory` to avoid a naming collision with the
-   `DWriteCreateFactory` function exported by the Windows DLL (DWrite.dll).
- - A new DWRITE_FACTORY_TYPE enumeration for creating an isolated factory object
+   `DWriteCreateFactory` function exported by the system version of DirectWrite (DWrite.dll)
+ - A new `DWRITE_FACTORY_TYPE` enumeration value for creating an isolated factory object
  - A new method for getting pixel data from a bitmap render target
+ - New methods for selecting fonts from a font set
 
-The new DWRITE_FACTORY_TYPE_ISOLATED2 enum value complements the existing factory types. It is similar to
-DWRITE_FACTORY_TYPE_ISOLATED, but is more locked down in two ways. First, it only caches data in-process, and
+# Factory Creation
+
+The new `DWRITE_FACTORY_TYPE_ISOLATED2` enum value complements the existing factory types. It is similar to
+`DWRITE_FACTORY_TYPE_ISOLATED`, but is more locked down in two ways. First, it only caches data in-process, and
 will not attempt to either read from or write to a cross-process font cache or persisted cache file. Second,
 a restricted factory only enumerates well-known fonts in the system font collection. The well-known-fonts
 restriction enables DWriteCore to efficiently construct the system font collection without depending on a
 cross-process or persistent cache. An example use case for the new factory type would be a web browser
 rendering process with very limited permissions.
 
-A _bitmap render target_ (IDWriteBitmapRenderTarget) is an API object that encapsulates a system memory bitmap
+# Text Rendering
+
+A _bitmap render target_ (`IDWriteBitmapRenderTarget`) is an API object that encapsulates a system memory bitmap
 and enables rendering glyphs to the bitmap. On Windows, the object encapsulates a GDI memory DC with a GDI
 device-dependent bitmap (DIB) selected into it. However, on non-Windows platforms, there is no GDI DC,
 and the bitmap is just a system memory array. DWriteCore introduces a new version of the bitmap render target
 interface that an application can use to access the bitmap data without going through GDI.
 
+# Font Selection
+
+The new `IDWriteFontSet4` interface exposes new methods for selecting fonts from a font set. The new methods
+make it possible to transition to the _typographic font family model_ while maintaining compatibility with
+existing applications, documents, and fonts.
+
+Font selection (sometimes called font matching or font mapping) is the process of selecting the available
+fonts that best match input parameters passed in by an application. The input parameters are sometimes
+referred to collectively as a _logical font_. A font selection algorithm matches the logical font (the
+"font you want") to an available _physical font_ (the "font you have").
+
+A _font family_ is a named group of fonts that share a common design but may differ in attributes such as
+weight or italic. A _font family model_ defines what attributes may be used to differentiate fonts within
+a family. The new _typographic font family model_ has many advantages over the two previous font family
+models used on Windows. Unfortunately, changing font family models creates many opportunities for confusion
+and incompatibilities. The methods exposed by the `IDWriteFontSet4` interface use a hybrid approach that
+offers the advantages of the typographic font family model while mitigating compatibility issues.
+
+The following sections compare the older font family models with the typographic font family model,
+explain compatibility challenges posed by different font family models, and finally explains how the
+hybrid font selection model used by DirectWrite overcomes those challenges.
+
+## RBIZ Font Family Model
+
+The font family model used by GDI is sometimes called the "four-font model" or "RBIZ" model. Each font
+family in this model typically has at most four fonts. The "RBIZ" label comes from the naming convention
+used for some font files, for example:
+
+File Name       | Font Style
+----------------|-------------
+verdana.ttf     | Regular
+verdanab.ttf    | Bold
+verdanai.ttf    | Italic
+verdanaz.ttf    | Bold Italic
+
+With GDI, the input parameters used to select a font are defined by the `LOGFONT` structure, which
+includes family name (`lfFaceName`), weight (`lfWeight`) and italic (`lfItalic`) fields.
+
+The `lfItalic` field is a BOOL so it can only be TRUE or FALSE. The `lfWeight` field can technically be
+any weight in the range `FW_THIN` (100) to `FW_BLACK` (900), but is typically either `FW_NORMAL` (400)
+or `FW_BOLD` (700). For historical reasons, fonts designed for the RBIZ model always always have one of 
+these two weights.
+
+To understand why, it helps to think of fonts as evolving in an ecosystem that also includes
+applications. Popular application user interfaces include an italic button (to turn italic on and off)
+and a bold button (to toggle between normal and bold weight). This user interface design made sense at
+a time when computer font families rarely had more than two weights. However, a side effect was that
+subsequent fonts could only have two weights within an RBIZ family if they wanted to work with
+existing applications.
+
+Suppose you wanted to add a heavier "Black" weight to the Arial font family. Logically, this font is
+part of the Arial family, so you might expect to select it by setting `lfFaceName` to "Arial" and 
+`lfWeight` to `FW_BLACK`. However, there is no way for an application user to choose between three
+weights using a two-state bold button. The solution is to give the new font a different family name,
+so the user can select it by choosing "Arial Black" from the list of font families.
+
+Likewise, there is no way to choose from among different widths in the same font family if your only
+affordances are bold and italic buttons, so the narrow versions of Arial must be given different
+family names in the RBIZ model. Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes
+in the RBIZ model even though typographically these all belong in one family.
+
+From these examples, one can see how the limitations of a font family model can affect how fonts are
+grouped into families. Since font families are identified by name, this means the same font can have
+different family names depending on which font family model you're using.
+
+DirectWrite does not directly support the RBIZ font family model, but it does provide methods of
+converting to and from the RBIZ model, such as `IDWriteGdiInterop::CreateFontFromLOGFONT` and
+`IDWriteGdiInterop::ConvertFontToLOGFONT`. You can also get the RBIZ family name of a font by calling
+its `GetInformationalStrings` method and specifying `DWRITE_INFORMATIONAL_STRING_WIN32_FAMILY_NAMES`.
+
+## Weight-Stretch-Style Font Family Model
+
+The weight-stretch-style font family model is the original font family model used by DirectWrite before
+the typographic font family model was introduced. It is also known as weight-width-slope (WWS). In the
+WWS model, fonts within the same family can be differented by three properties: weight (`DWRITE_FONT_WEIGHT`),
+stretch (`DWRITE_FONT_STRETCH`), and style (`DWRITE_FONT_STYLE`).
+
+The WWS model is more flexible than the RBIZ model in two ways. First, fonts in the same family can
+be differentiated by stretch (or width). Second, there can be more than two weights in the same family.
+This flexibility is sufficient to allow all the variants of Arial to be included in the same WWS family.
+The following examples demonstrate how the RBIZ and WWS font family models compare:
+
+File Name       | RBIZ Family Name      | WWS FamilyName    | Weight    | Stretch   | Style
+----------------|-----------------------|-------------------|-----------|-----------|---------
+arial.ttf       | Arial                 | Arial             | 400       | 5         | 0
+arialbd.ttf     | Arial                 | Arial             | 700       | 5         | 0
+ariblk.ttf      | Arial Black           | Arial             | 900       | 5         | 0
+ARIALN.TTF      | Arial Narrow          | Arial             | 400       | 3         | 0
+
+Nevertheless, the weight-stretch-style model is not open-ended. If two fonts have the same weight,
+stretch, and style but differ in some other way (e.g., optical size), they cannot be included in the
+same WWS font family. This brings us to the typographic font family model.
+
+## Typographic Font Family Model
+
+Unlike its predecessors, the typographic font family model is open-ended. It supports any number of axes
+of variation within a font family.
+
+If you think of font selection parameters as coordinates in a design space, the weight-stretch-style
+model defines a three-dimensional coordinate system with weight, stretch, and style as the axes. Each
+font in a WWS family must have a unique location defined by those three properties. To select a font,
+one specifies a WWS family name and weight, stretch, and style parameters.
+
+By contrast, the typographic font family model has an N-dimensional design space. A font designer can 
+define any number of design axes, each identified by a four-character _axis tag_. A given font’s location 
+in the N-dimensional design space is defined by an array of _axis values_, where each axis value comprises 
+an axis tag and a floating-point value. To select a font, one specifies a typographic family name and an 
+array of axis values.
+
+Although the number of font axes is open-ended, there are a few registered axes with standard meanings,
+and the weight, stretch, and style values can be mapped to registered axis values. `DWRITE_FONT_WEIGHT`
+can be mapped to a "wght" (`DWRITE_FONT_AXIS_TAG_WEIGHT`) axis value. `DWRITE_FONT_STRETCH` can be mapped
+to a "wdth" (`DWRITE_FONT_AXIS_TAG_WIDTH`) axis value. `DWRITE_FONT_STYLE` can be mapped to a combination
+of "ital" and "slnt" (`DWRITE_FONT_AXIS_TAG_ITALIC` and `DWRITE_FONT_AXIS_TAG_SLANT`) axis values. 
+
+Another registered axis is "opsz" (`DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE`). An optical font family such as
+Sitka includes fonts that differ along the "opsz" axis, meaning they are designed to be used at different
+point sizes. The WWS font family model does not have an optical size axis, so the Sitka font family must
+be split into multiple WWS font families: "Sitka Small", "Sitka Text", "Sitka Subheading", and so on. Each
+WWS font family corresponds to a different optical size, and it's left to the user to specify the right
+WWS family name for a given font size. With the typographic font family model, the user can simply choose
+"Sitka", and the application can automatically set the "opsz" axis value based on the font size.
+
+Advantages of the typographic font family model are:
+
+  - Fonts can be grouped into families as intended by the designer, rather than being split into
+    subfamilies due to limitations of the font family model.
+
+  - An application can automatically select the correct "opsz" axis value based on the font size
+    rather than exposing different optical sizes to the user as different font families.
+
+  - Arbitrary instances of variable fonts can be selected. For example, if a variable font supports
+    weights in the range 100-900, the typographic model can select _any_ weight in this range. The
+    older font family models can only choose the nearest weight from among the named instances defined
+    by the font.
+
+However, migrating to the typographic font family model raises potential compatibility issues. The
+next section describes these issues and how they are mitigated by the hybrid font selection model.
+
+## Hybrid Font Selection Model
+
+The hybrid font selection model combines aspects of the typographic font family model. This preserves
+the advantages of the typographic model while mitigating potential potential compatibility issues that
+arise when adopting the typographic font family model in its pure form. These issues include:
+
+  - Some older fonts cannot be selected unambiguously using only the typographic family name and
+    axis values. This is because the OpenType font specification supported the concept of typographic
+    family name (aka. preferred family name) long before OpenType 1.8 introduced axis values and
+    variable fonts.
+
+  - Existing documents might refer to fonts by WWS family name or RBIZ family name. Users might also 
+    expect to use WWS and RBIZ family names. For example, a document might specify "Sitka Subheading" 
+    (a WWS family name) instead of "Sitka" (a typographic family name).
+    
+  - A library or framework might adopt the typographic font family model to take advantage of automatic
+    optical sizing, but not provide an API for specifing arbitrary axis values. Even if a new API is
+    provided, the framework might need to work with existing applications that specify WWS family names
+    and weight, stretch, and style parameters.
+
+To illustrate the font compatibility issue, suppose the following fonts all have the typographic
+family name "Legacy":
+
+File                    | WWS Family   | Weight    | Stretch   | Style
+------------------------|--------------|-----------|-----------|--------
+Legacy-Regular.ttf      | Legacy       | 400       | 5         | 0
+Legacy-Bold.ttf         | Legacy       | 700       | 5         | 0
+Legacy-Black.ttf        | Legacy       | 900       | 5         | 0
+Legacy-Soft.ttf         | Legacy Soft  | 400       | 5         | 0
+Legacy-SoftBold.ttf     | Legacy Soft  | 700       | 5         | 0
+Legacy-SoftBlack.ttf    | Legacy Soft  | 900       | 5         | 0
+
+The "Legacy" typographic family has three weights and each weight has regular and "Soft" variants.
+However, these fonts predate OpenType 1.8, so they do not declare any axes that cannot be derived
+from weight, stretch, and style. In particular, there is no "SOFT" axis. Therefore, it is not
+possible to unambiguously select the above fonts using only the typographic family name and
+axis values.
+
+The hybrid font selection model mitigates this by allowing the specified family name to be _either_
+a typographic family name or a weight-stretch-style name. (It can also be an RBIZ name or full name.)
+In the legacy font scenario, an application can avoid ambiguity by specifying "Legacy" or "Legacy Soft"
+as the family name. These two cases are handled as follows:
+
+  - "Legacy Soft" does not match a typographic family name, so only fonts in the WWS family
+    are considered. These can be differentiated by weight, so ther is no ambiguity.
+
+  - "Legacy" matches both a typographic family and a WWS family. All fonts in the typographic
+    family are considered, but presence in the WWS family is used as a tie-breaker. For example,
+    Legacy-Regular.ttf has the same weight as Legacy-Soft.ttf, but the former is preferred because
+    it is in the "Legacy" WWS family.
+
+Document and application compatibility issues are mitigated by allowing different types of font
+names to be specified and also by providing a method of deriving axis values from weight, stretch,
+and style parameters.
+
+Suppose a document specifies a family name and weight, stretch, and style parameters, but no axis
+values. The application can first map the weight, stretch, style, and font size to axis values by
+calling `IDWriteFontSet4::GetDerivedFontAxisValues`. The application can then pass both the family
+name and axis values to `IDWriteFontSet4::GetMatchingFonts`. `GetMatchingFonts` returns a list of
+matching fonts in priority order, and the result is appropriate whether the specified family name
+is a typographic family name, weight-stretch-style family name, RBIZ family name, or full name.
+If the specified family has an "opsz" axis, the appropriate optical size is automatically selected
+based on the font size.
+
+Suppose a document specifies weight, stretch, and style and _also_ specifies axis values. In this
+case, the explicit axis values can also be passed in to `IDWriteFontSet4::GetDerivedFontAxisValues`,
+and the derived axis values returned by the method will only include font axes that were not
+specified explicitly. Thus, axis values specified explicitly by the document (or application) take
+precedence over axis values derived from weight, stretch, style, and font size.
+
+## Hybrid Font Selection APIs
+
+The hybrid font selection model is implemented by the following `IDWriteFontSet4` methods:
+
+  - The `GetDerivedFontAxisValues` method converts weight, stretch, and style parameters to the
+    corresponding axis values.
+
+  - The `GetMatchingFonts` method returns a prioritized list of matching fonts given a family name
+    and array of axis values. As described above, the family name parameter can be a typographic
+    family name, weight-stretch-style family name, RBIZ family name, or full name. (Full name is
+    allowed because GDI allows font matching by full name.)
+
+The following other DirectWrite APIs also use the hybrid font selection algorithm:
+
+  - [`IDWriteFontCollection2::GetMatchingFonts`](https://docs.microsoft.com/en-us/windows/win32/api/dwrite_3/nf-dwrite_3-idwritefontcollection2-getmatchingfonts)
+
+  - `IDWriteFontFallback1::MapCharacters`
+
+  - `IDWriteTextLayout` if the typographic font family model is enabled by calling 
+    `IDWriteTextLayout4::SetFontAxisValues` or `IDWriteTextLayout4::SetAutomaticFontAxes`
+
 # Examples
 
 ## Creating an isolated factory
 
-An application calls the DWriteCoreCreateFactory function to create a factory object, which is the entry-point
-to all other DirectWrite APIs. An application can specify the new DWRITE_FACTORY_TYPE_ISOLATED2 enum value if it
+An application calls the `DWriteCoreCreateFactory` function to create a factory object, which is the entry-point
+to all other DirectWrite APIs. An application can specify the new `DWRITE_FACTORY_TYPE_ISOLATED2` enum value if it
 wants to minimize interaction between DirectWriteCore and the host system. Specifically, the resulting factory only
 caches data in-process. It neither reads from nor writes to a cross-process cache (e.g., a font cache process) or
-persistent cache (i.e., a file). In addition, the resulting factory's sysetm font collection only includes
+persistent cache (i.e., a file). In addition, the resulting factory's sysetem font collection only includes
 well-known system fonts.
 
 The following example creates an isolated factory.
@@ -120,7 +355,7 @@ HRESULT hr = DWriteCoreCreateFactory(
 
 ## Drawing glyphs to a system memory bitmap
 
-An application creates a bitmap render target by calling [IDWriteGdiInterop::CreateBitmapRenderTarget](https://docs.microsoft.com/windows/win32/api/dwrite/nf-dwrite-idwritegdiinterop-createbitmaprendertarget).
+An application creates a bitmap render target by calling [`IDWriteGdiInterop::CreateBitmapRenderTarget`](https://docs.microsoft.com/windows/win32/api/dwrite/nf-dwrite-idwritegdiinterop-createbitmaprendertarget).
 A bitmap render target encapsulates a bitmap in system memory, and enables rendering glyphs to the bitmap. On Windows,
 the bitmap is actually a GDI DIB selected into a memory HDC, and it is possible to get the bitmap pixels using GDI
 functions. However, DWriteCore introduces a simpler method through the new IDWriteBitmapRenderTarget2 interface.
@@ -170,62 +405,519 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(_In_ IDWriteBitmapRenderTa
 }
 ```
 
-# API Details
+## Using Font Selection APIs
+
+This section shows a complete console application that demonstrates the `IDWriteFontSet4::GetMatchingFonts`
+and `IDWriteFontSet4::GetDerivedFontAxisValues` methods.
+
+The `IDWriteFontSet4::GetMatchingFonts` method returns a list of fonts in priority oder that match the
+specified family name and axis values. The following `MatchAxisValues` function outputs the parameters 
+to `GetMatchingFonts` followed by the first matching font face reference.
 
 ```c++
-/// <summary>
-/// Specifies the type of DirectWrite factory object.
-/// DirectWrite factory contains internal state such as font loader registration and cached font data.
-/// In most cases it is recommended to use the shared factory object, because it allows multiple components
-/// that use DirectWrite to share internal DirectWrite state and reduce memory usage.
-/// However, there are cases when it is desirable to reduce the impact of a component,
-/// such as a plug-in from an untrusted source, on the rest of the process by sandboxing and isolating it
-/// from the rest of the process components. In such cases, it is recommended to use an isolated factory
-/// for the sandboxed component.
-/// </summary>
-enum DWRITE_FACTORY_TYPE
+#include <dwrite_core.h>
+#include <wil/com.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
+// Forward declarations of overloaded operators used by MatchAxisValues to
+// serialize a font face reference.
+std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue);
+std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference);
+std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceReference);
+
+//
+// Outputs the first matching font for the given name and axis values
+// using IDWriteFontSet4::GetMatchingFonts.
+//
+void MatchAxisValues(
+    IDWriteFontSet4* fontSet,
+    _In_z_ WCHAR const* familyName,
+    std::vector<DWRITE_FONT_AXIS_VALUE> const& axisValues
+    )
 {
-    /// <summary>
-    /// This is the recommended value in most cases. The shared factory is a singleton, so mulitiple
-    /// components in a process that create a shared factory share a single instance. This enables
-    /// reuse of cached font data and other state across multiple components. In addition, objects
-    /// created from a shared factory can read from and/or modify a cross-process or persistent cache.
-    /// </summary>
-    DWRITE_FACTORY_TYPE_SHARED,
+    // Write the input parameters.
+    std::wcout << L"GetMatchingFonts(\"" << familyName << L"\", {";
+    for (DWRITE_FONT_AXIS_VALUE axisValue : axisValues)
+    {
+        std::wcout << L' ' << axisValue;
+    }
+    std::wcout << L" }, ...)\n";
 
-    /// <summary>
-    /// Objects created from an isolated factory do not modify internal state or cached data used by
-    /// objects from other factories. However, they may still read from a cross-process or persistent
-    /// cache.
-    /// </summary>
-    DWRITE_FACTORY_TYPE_ISOLATED,
+    // Test GetMatchingFonts with and without simulations allowed.
+    for (bool allowSimulations : { true, false })
+    {
+        std::wcout << (allowSimulations ?
+            L" * allow simulations: " :
+            L" * no simulations:    ");
 
-#if DWRITE_CORE
-    /// <summary>
-    /// Objects created from an "isolated2" factory do not use or modify internal state or cached data
-    /// used by other factories. In addition, the system font collection contains only well-known fonts.
-    /// </summary>
-    // Warning: Make sure any additional new enum values are consistent between different versions of
-    // this header in DWriteCore and the Windows SDK.
-    DWRITE_FACTORY_TYPE_ISOLATED2
-#endif // DWRITE_CORE
-};
+        // Get the matching fonts for the specified family name and axis values.
+        wil::com_ptr<IDWriteFontSet4> matchingFonts;
+        THROW_IF_FAILED(fontSet->GetMatchingFonts(
+            familyName,
+            axisValues.data(),
+            static_cast<UINT32>(axisValues.size()),
+            allowSimulations,
+            &matchingFonts
+        ));
+
+        // Output the first matching font face reference.
+        if (matchingFonts->GetFontCount() != 0)
+        {
+            wil::com_ptr<IDWriteFontFaceReference1> faceReference;
+            THROW_IF_FAILED(matchingFonts->GetFontFaceReference(0, &faceReference));
+            std::wcout << *faceReference;
+        }
+
+        std::wcout << std::endl;
+    }
+
+    std::wcout << L'\n';
+}
+
 ```
 
+If an application is migrating from the weight-stretch-style model, it may have `DWRITE_FONT_WEIGHT`,
+`DWRITE_FONT_STRETCH`, and `DWRITE_FONT_STYLE` parameters instead of (or in addition to) axis values.
+Such an application can use the `IDWriteFontSet4::GetDerivedFontAxisValues` method to map the weight,
+stretch, and style parameters to axis values before calling `GetMatchingFonts`.
+
+The following `MatchFont` function takes font size, weight, stretch, and style parameters in addition
+to axis values. It forwards these parameters to `IDWriteFontSet4::GetDerivedAxisValues` method to compute
+derived axis values. It then combines the input axis values with the derived axis values, and passes them
+to the above `MatchAxisValues` function.
+
 ```c++
-/// <summary>
-/// Creates a factory object that is used for subsequent creation of individual DWriteCore objects.
-/// </summary>
-/// <param name="factoryType">Identifies whether the factory object will be shared or isolated.</param>
-/// <param name="iid">Identifies the DirectWrite factory interface, such as UUIDOF(IDWriteFactory).</param>
-/// <param name="factory">Receives the DirectWrite factory object.</param>
-/// <returns>
-/// Standard HRESULT error code.
-/// </returns>
-/// <remarks>
-/// This is functionally the same as the DWriteCreateFactory function exported by the system version
-/// of DirectWrite. The DWriteCore function has a different name to avoid ambiguity.
-/// </remarks>
+//
+// Outputs the first matching font given both weight-stretch-style parameters
+// and axis values. Calls IDWriteFontSet4::GetDerivedFontAxisValues to map the
+// font size, weight, stretch, and style to axis values.
+//
+void MatchFont(
+    IDWriteFactory7* factory,
+    _In_z_ WCHAR const* familyName,
+    float fontSize,
+    DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT_NORMAL,
+    DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH_NORMAL,
+    DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE_NORMAL,
+    std::vector<DWRITE_FONT_AXIS_VALUE> axisValues = {}
+    )
+{
+    wil::com_ptr<IDWriteFontSet2> fontSet2;
+    THROW_IF_FAILED(factory->GetSystemFontSet(/*includeDownloadableFonts*/ false, &fontSet2));
+
+    wil::com_ptr<IDWriteFontSet4> fontSet;
+    THROW_IF_FAILED(fontSet2->QueryInterface(&fontSet));
+
+    // Get derived axis value from the weight, stretch, style, and font size.
+    // Any axes in the input vector are excluded from the output.
+    DWRITE_FONT_AXIS_VALUE derivedAxisValues[DWRITE_STANDARD_FONT_AXIS_COUNT];
+    UINT32 derivedAxisCount = fontSet->GetDerivedFontAxisValues(
+        axisValues.data(),
+        static_cast<UINT32>(axisValues.size()),
+        fontWeight,
+        fontStretch,
+        fontStyle,
+        fontSize,
+        derivedAxisValues
+        );
+
+    // Append the derived axis values to the vector.
+    axisValues.insert(
+        axisValues.end(),
+        derivedAxisValues, 
+        derivedAxisValues + derivedAxisCount
+        );
+
+    // Pass the combined axis values to the overload of WriteMatchingFont that
+    // just takes axis values.
+    MatchAxisValues(fontSet.get(), familyName, axisValues);
+}
+```
+
+The following function demonstrates the results of font selection for some example inputs:
+
+```c++
+// Outputs the results of some representative font selection cases.
+void TestFontSelection(IDWriteFactory7* factory)
+{
+    // Output:
+    //     GetMatchingFonts("Arial", { wght:900 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
+    //      * allow simulations: ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    //      * no simulations:    ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    // Notes:
+    //   *  GetDerivedAxisValue converts font size in DIPs to opsz axis value in points.
+    //   *  The resulting fonts in this case have no opsz axis.
+    MatchFont(factory, L"Arial", 16.0f, DWRITE_FONT_WEIGHT_BLACK);
+
+    // Output:
+    //     GetMatchingFonts("Arial Black", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
+    //      * allow simulations: ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    //      * no simulations:    ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    // Notes:
+    //   *  "Arial Black" matches the RBIZ family name of ariblk.ttf.
+    //   *  Weight 400 was requested but the matching font (by name) has weight 900.
+    MatchFont(factory, L"Arial Black", 16.0f);
+
+    // Output:
+    //     GetMatchingFonts("Arial", { wght:700 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
+    //      * allow simulations: arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    //      * no simulations:    arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    MatchFont(factory, L"Arial", 16.0f, DWRITE_FONT_WEIGHT_BOLD);
+
+    // Output:
+    //     GetMatchingFonts("Arial Bold", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
+    //      * allow simulations: arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    //      * no simulations:    arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    // Notes:
+    //  *  "Arial Bold" matches the full name of arialbd.ttf.
+    //  *  Weight 400 was requested but the matching font (by name) has weight 700.
+    MatchFont(factory, L"Arial Bold", 16.0f);
+
+    // Output:
+    //     GetMatchingFonts("Centaur", { wght:700 wdth:100 ital:0 slnt:0 }, ...)
+    //      * allow simulations: CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0 BOLDSIM
+    //      * no simulations:    CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0
+    // Notes:
+    //  *  The "Centaur" family has no bold weight, so simulation is applied if allowed.
+    //  *  The wght axis value of the result is the natural weight of the font, but
+    //     IDWriteFontFace::GetWeight() would return bold.
+    MatchFont(factory, L"Centaur", /*ignore size*/ 0.0f, DWRITE_FONT_WEIGHT_BOLD);
+
+    // Output on Windows 10 with static Sitka fonts:
+    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
+    //      * allow simulations: Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    //      * no simulations:    Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    // Output on Windows 11 with variable Sitka fonts:
+    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
+    //      * allow simulations: SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    //      * no simulations:    SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    MatchFont(factory, L"Sitka", 16.0f);
+
+    // Output on Windows 10 with static Sitka fonts:
+    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
+    //      * allow simulations: Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      * no simulations:    Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    // Output on Windows 11 with variable Sitka fonts:
+    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
+    //      * allow simulations: SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      * no simulations:    SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    // Notes:
+    //   *  "Sitka" matches a typographic family name.
+    //   *  The resulting "opsz" value is clamped to the axis range of the matching font.
+    //   *  The "opsz" axis range for the nearest static font ("Sitka Display") is 23.5-27.5.
+    //   *  The "opsz" axis range for the variable Sitka font is 6-27.5 pt.
+    MatchFont(factory, L"Sitka", 32.0f);
+
+    // Output on Windows 10 with static Sitka fonts:
+    //     GetMatchingFonts("Sitka Text", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
+    //      * allow simulations: Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
+    //      * no simulations   : Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
+    // Output on Windows 11 with variable Sitka fonts:
+    //     GetMatchingFonts("Sitka Text", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
+    //      * allow simulations: SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      * no simulations:    SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    // Notes:
+    //   *  "Sitka Text" matches a weight-stretch-style family name.
+    //   *  The resulting "opsz" value is clamped to the axis range of the matching font.
+    //   *  The "opsz" axis range for the static "Sitka Text" font is 9.70-13.5 pt.
+    //   *  The "opsz" axis range for the variable Sitka font is 6-27.5 pt.
+    MatchFont(factory, L"Sitka Text", 32.0f);
+
+    // Output on Windows 10 with static Sitka fonts:
+    //     GetMatchingFonts("Sitka", { wght:700 opsz:72 wdth:100 ital:0 slnt:0 }, ...)
+    //      * allow simulations: SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
+    //      * no simulations:    SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
+    // Output on Windows 11 with variable Sitka fonts:
+    //     GetMatchingFonts("Sitka", { wght:700 opsz:72 wdth:100 ital:0 slnt:0 }, ...)
+    //      * allow simulations: SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
+    //      * no simulations:    SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
+    // Notes:
+    //   *  Explicit "opsz" and "wght" axes take precedence over fontSize and fontWeight.
+    MatchFont(
+        factory, L"Sitka",
+        16.0f, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL,
+        { { DWRITE_FONT_AXIS_TAG_WEIGHT, 700.0f }, { DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE, 72.0f } }
+    );
+}
+```
+
+Following are the implementations of the overloaded operators declared above. These are used
+by MatchAxisValues to output font matching parameters and results.
+
+```c++
+// Output a file name given a font file reference.
+std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference)
+{
+    wil::com_ptr<IDWriteFontFileLoader> loader;
+    THROW_IF_FAILED(fileReference.GetLoader(&loader));
+
+    wil::com_ptr<IDWriteLocalFontFileLoader> localLoader;
+    if (SUCCEEDED(loader->QueryInterface(&localLoader)))
+    {
+        const void* fileKey;
+        UINT32 fileKeySize;
+        THROW_IF_FAILED(fileReference.GetReferenceKey(&fileKey, &fileKeySize));
+
+        WCHAR filePath[MAX_PATH];
+        THROW_IF_FAILED(localLoader->GetFilePathFromKey(fileKey, fileKeySize, filePath, MAX_PATH));
+
+        WCHAR* fileName = wcsrchr(filePath, L'\\');
+        fileName = (fileName != nullptr) ? fileName + 1 : filePath;
+
+        out << fileName;
+    }
+    return out;
+}
+
+// Output a font axis value.
+std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue)
+{
+    UINT32 tagValue = axisValue.axisTag;
+    WCHAR tagChars[5] =
+    {
+        static_cast<WCHAR>(tagValue & 0xFF),
+        static_cast<WCHAR>((tagValue >> 8) & 0xFF),
+        static_cast<WCHAR>((tagValue >> 16) & 0xFF),
+        static_cast<WCHAR>((tagValue >> 24) & 0xFF),
+        '\0'
+    };
+
+    return out << tagChars << L':' << axisValue.value;
+}
+
+// Output a font face reference.
+std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceReference)
+{
+    // Output the font file name.
+    wil::com_ptr<IDWriteFontFile> fileReference;
+    THROW_IF_FAILED(faceReference.GetFontFile(&fileReference));
+    std::wcout << *fileReference;
+
+    // Output the face index if nonzero.
+    UINT32 const faceIndex = faceReference.GetFontFaceIndex();
+    if (faceIndex != 0)
+    {
+        out << L'#' << faceIndex;
+    }
+
+    // Output the axis values.
+    UINT32 const axisCount = faceReference.GetFontAxisValueCount();
+    std::vector<DWRITE_FONT_AXIS_VALUE> axisValues(axisCount);
+    THROW_IF_FAILED(faceReference.GetFontAxisValues(axisValues.data(), axisCount));
+    for (DWRITE_FONT_AXIS_VALUE axisValue : axisValues)
+    {
+        out << L' ' << axisValue;
+    }
+
+    // Output the simulations.
+    DWRITE_FONT_SIMULATIONS simulations = faceReference.GetSimulations();
+    if (simulations & DWRITE_FONT_SIMULATIONS_BOLD)
+    {
+        out << L" BOLDSIM";
+    }
+    if (simulations & DWRITE_FONT_SIMULATIONS_OBLIQUE)
+    {
+        out << L" OBLIQUESIM";
+    }
+
+    return out;
+}
+```
+
+To round out the sample, following are command-line parsing functions and the main function:
+
+```c++
+char const g_usage[] =
+"ParseCmdLine <args>\n"
+"\n"
+" -test             Test sample font selection parameters.\n"
+" <familyname>      Sets the font family name.\n"
+" -size <value>     Sets the font size in DIPs.\n"
+" -bold             Sets weight to bold (700).\n"
+" -weight <value>   Sets a weight in the range 100-900.\n"
+" -italic           Sets style to DWRITE_FONT_STYLE_ITALIC.\n"
+" -oblique          Sets style to DWRITE_FONT_STYLE_OBLIQUE.\n"
+" -stretch <value>  Sets a stretch in the range 1-9.\n"
+" -<axis>:<value>   Sets an axis value (e.g., -opsz:24).\n"
+"\n";
+
+struct CmdArgs
+{
+    std::wstring familyName;
+    float fontSize = 0.0f;
+    DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT_NORMAL;
+    DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH_NORMAL;
+    DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE_NORMAL;
+    std::vector<DWRITE_FONT_AXIS_VALUE> axisValues;
+    bool test = false;
+};
+
+template<typename T>
+_Success_(return)
+bool ParseEnum(_In_z_ WCHAR const* arg, long minValue, long maxValue, _Out_ T* result)
+{
+    WCHAR* endPtr;
+    long value = wcstol(arg, &endPtr, 10);
+    *result = static_cast<T>(value);
+    return value >= minValue && value <= maxValue && *endPtr == L'\0';
+}
+
+_Success_(return)
+bool ParseFloat(_In_z_ WCHAR const* arg, _Out_ float* value)
+{
+    WCHAR* endPtr;
+    *value = wcstof(arg, &endPtr);
+    return *arg != L'\0' && *endPtr == L'\0';
+}
+
+bool ParseCommandLine(int argc, WCHAR** argv, CmdArgs& cmd)
+{
+    for (int argIndex = 1; argIndex < argc; argIndex++)
+    {
+        WCHAR const* arg = argv[argIndex];
+
+        if (*arg != L'-')
+        {
+            if (!cmd.familyName.empty())
+                return false;
+
+            cmd.familyName = argv[argIndex];
+        }
+        else if (!wcscmp(arg, L"-test"))
+        {
+            cmd.test = true;
+        }
+        else if (!wcscmp(arg, L"-size"))
+        {
+            if (++argIndex == argc)
+                return false;
+            if (!ParseFloat(argv[argIndex], &cmd.fontSize))
+                return false;
+        }
+        else if (!wcscmp(arg, L"-bold"))
+        {
+            cmd.fontWeight = DWRITE_FONT_WEIGHT_BOLD;
+        }
+        else if (!wcscmp(arg, L"-weight"))
+        {
+            if (++argIndex == argc)
+                return false;
+            if (!ParseEnum(argv[argIndex], 100, 900, &cmd.fontWeight))
+                return false;
+        }
+        else if (!wcscmp(arg, L"-italic"))
+        {
+            cmd.fontStyle = DWRITE_FONT_STYLE_ITALIC;
+        }
+        else if (!wcscmp(arg, L"-oblique"))
+        {
+            cmd.fontStyle = DWRITE_FONT_STYLE_OBLIQUE;
+        }
+        else if (!wcscmp(arg, L"-stretch"))
+        {
+            if (++argIndex == argc)
+                return false;
+            if (!ParseEnum(argv[argIndex], 1, 9, &cmd.fontStretch))
+                return false;
+        }
+        else if (wcslen(arg) > 5 && arg[5] == L':')
+        {
+            // Example: -opsz:12
+            DWRITE_FONT_AXIS_VALUE axisValue;
+            axisValue.axisTag = DWRITE_MAKE_FONT_AXIS_TAG(arg[1], arg[2], arg[3], arg[4]);
+            if (!ParseFloat(arg + 6, &axisValue.value))
+                return false;
+            cmd.axisValues.push_back(axisValue);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int wmain(int argc, WCHAR** argv)
+{
+    CmdArgs cmd;
+    if (!ParseCommandLine(argc, argv, cmd))
+    {
+        std::cerr << "Invalid command. Type TestFontSelection with no arguments for usage.\n";
+        return 1;
+    }
+
+    if (cmd.familyName.empty() && !cmd.test)
+    {
+        std::cout << g_usage;
+        return 0;
+    }
+
+    wil::com_ptr<IDWriteFactory7> factory;
+    THROW_IF_FAILED(DWriteCoreCreateFactory(
+        DWRITE_FACTORY_TYPE_SHARED,
+        __uuidof(IDWriteFactory7),
+        (IUnknown**)&factory
+    ));
+
+    if (!cmd.familyName.empty())
+    {
+        MatchFont(
+            factory.get(),
+            cmd.familyName.c_str(),
+            cmd.fontSize,
+            cmd.fontWeight,
+            cmd.fontStretch,
+            cmd.fontStyle,
+            std::move(cmd.axisValues)
+        );
+    }
+
+    if (cmd.test)
+    {
+        TestFontSelection(factory.get());
+    }
+}
+
+```
+
+# API Details
+
+## DWRITE_FACTORY_TYPE
+
+The `DWRITE_FACTORY_TYPE` enumeration is passed to the `DWriteCreateFactory` or `DWriteCoreCreateFactory`
+function, and specifies the type of DirectWrite factory to create. The DirectWrite factory contains internal
+state such as font loader registration and cached font data. In most cases it is recommended to use the shared
+factory object, because it allows multiple components that use DirectWrite to share internal DirectWrite state 
+and reduce memory usage. However, there are cases when it is desirable to reduce the impact of a component,
+such as a plug-in from an untrusted source, on the rest of the process by sandboxing and isolating it
+from the rest of the process components. In such cases, it is recommended to use an isolated factory
+for the sandboxed component.
+
+Value                           | Meaning
+--------------------------------|---------------------------------------------------------------------
+`DWRITE_FACTORY_TYPE_SHARED`    | This is the recommended value in most cases. The shared factory is a 
+                                | singleton, so mulitiple components in a process that create a shared 
+                                | factory share a single instance. This enables reuse of cached font data
+                                | and other state across multiple components. In addition, objects
+                                | created from a shared factory can read from and/or modify a cross-process 
+                                | or persistent cache.
+                                |
+`DWRITE_FACTORY_TYPE_ISOLATED`  | Objects created from an isolated factory do not modify internal state 
+                                | or cached data used by objects from other factories. However, they may 
+                                | still read from a cross-process or persistent cache.
+                                |
+`DWRITE_FACTORY_TYPE_ISOLATED2` | Objects created from an "isolated2" factory do not use or modify internal
+*(New to DWriteCore)*           | state or cached data used by other factories. In addition, the system font
+                                | collection contains only well-known fonts.
+
+## DWriteCoreCreateFactory
+
+Creates a DirectWrite factory object that is used for subsequent creation of other DWriteCore objects.
+
+```c++
 EXTERN_C HRESULT DWRITE_EXPORT DWriteCoreCreateFactory(
     _In_ DWRITE_FACTORY_TYPE factoryType,
     _In_ REFIID iid,
@@ -233,31 +925,129 @@ EXTERN_C HRESULT DWRITE_EXPORT DWriteCoreCreateFactory(
 );
 ```
 
-```c++
-#if DWRITE_CORE
+Parameter       | Description
+----------------|------------------------------------------------------------------------------------
+factoryType     | Specifies whether the factory object will be shared or isolated.
+                |
+iid             | Identifies the DirectWrite factory interface, such as UUIDOF(IDWriteFactory).
+                |
+factory         | Receives a pointer to the DirectWrite factory object.
 
-/// <summary>
-/// Contains information about a bitmap associated with an IDWriteBitmapRenderTarget.
-/// The bitmap is top-down with 32-bits per pixel and no padding between scan lines.
-/// </summary>
+The `DWriteCoreCreateFactory` function is functionally equivalent to the `DWriteCreateFactory` function 
+exported by the system version of DirectWrite. The DWriteCore function has a different name to avoid 
+ambiguity.
+
+## DWRITE_BITMAP_DATA_BGRA32 Structure
+
+This structure contains information about a bitmap assocaited with a bitmap render target. The bitmap
+is top-down with 32 bits per pixel and no padding between scan lines.
+
+```c++
 struct DWRITE_BITMAP_DATA_BGRA32
 {
     UINT32 width;
     UINT32 height;
     _Field_size_(width * height) UINT32* pixels;
 };
-
-/// <summary>
-/// Encapsulates a bitmap which can be used for rendering glyphs.
-/// </summary>
-DWRITE_BEGIN_INTERFACE(IDWriteBitmapRenderTarget2, "C553A742-FC01-44DA-A66E-B8B9ED6C3995") : IDWriteBitmapRenderTarget1
-{
-    /// <summary>
-    /// Gets the demensions and a pointer to the system memory bitmap encapsulated by this
-    /// bitmap render target object. The pointer is owned by the render target object, and
-    /// remains valid as long as the object exists.
-    /// </summary>
-    STDMETHOD(GetBitmapData)(_Out_ DWRITE_BITMAP_DATA_BGRA32* bitmapData) PURE;
-};
-#endif // DWRITE_CORE
 ```
+
+## IDWriteBitmapRenderTarget2 Interface
+
+A bitmap render target encapsulates a system memory bitmap and exposes methods for rendering glyphs to
+that bitmap. The version 2 interface exposes a method for getting the underlying bitmap data.
+
+## IDWriteBitmapRenderTarget2::GetBitmapData Method
+
+The `GetBitmapData` method gets the dimensions and a pointer to the system memory bitmap
+encapsulated by the bitmap render target object. The pointer is owned by the render target
+object and remains valid as long as the object exists.
+
+```c++
+HRESULT STDMTEHODCALLTYPE GetBitmapData(_Out_ DWRITE_BITMAP_DATA_BGRA32* bitmapData);
+```
+
+Parameter       | Description
+----------------|------------------------------------------------------------------------------------
+bitmapData      | Pointer to a `DWRITE_BITMAP_DATA_BGRA32` structure that receives information about
+                | the bitmap.
+
+
+## IDWriteFontSet4 Interface
+
+A font set represents a set of available fonts with associated properties. The version 4 interface
+exposes font selection methods that use the typographic font family model but are also compatible
+with earlier font family models.
+
+## IDWriteFontSet4::GetDerivedFontAxisValues
+
+Computes derived font axis values from the specified font weight, stretch, style, and size.
+
+```c++
+UINT32 STDMETHODCALLTYPE IDWriteFontSet4::GetDerivedFontAxisValues(
+    _In_reads_opt_(inputAxisCount) DWRITE_FONT_AXIS_VALUE const* inputAxisValues,
+    UINT32 inputAxisCount,
+    DWRITE_FONT_WEIGHT fontWeight,
+    DWRITE_FONT_STRETCH fontStretch,
+    DWRITE_FONT_STYLE fontStyle,
+    float fontSize,
+    _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* outputAxisValues
+    );
+```
+
+Parameter           | Description
+--------------------|------------------------------------------------------------------------------------
+inputAxisValues     | Pointer to an optional array of input axis values. Any axes present in this array 
+                    | are not included in the output. This is so explicit axis values take precedence 
+                    | over derived axis values.
+                    |
+inputAxisCount      | Size of the array of input axis values.
+                    |
+fontWeight          | Font weight, used to compute "wght" axis value.
+                    |
+fontStretch         | Font stretch, used to compute "wdth" axis value.
+                    |
+fontStyle           | Font style, used to compute "slnt" and "ital" axis values.
+                    |
+fontSize            | Font size in DIPs, used to compute "opsz" axis value. If this parameter is zero,
+                    | no "opsz" axis value is added to the output array.
+                    |
+outputAxisValues    | Pointer to an output array to which derived axis values are written. The size of 
+                    | this array must be at least DWRITE_STANDARD_FONT_AXIS_COUNT (5). The return value 
+                    | is the actual number of axis values written to this array.
+
+Returns the actual number of derived axis values written to the output array.
+
+## IDWriteFontSet4::GetMatchingFonts
+
+Generates a matching font set based on the requested inputs, ordered so that nearer matches are earlier.
+
+```c++
+HRESULT STDMETHODCALLTYPE IDWriteFontSet4::GetMatchingFonts(
+    _In_z_ WCHAR const* familyName,
+    _In_reads_(fontAxisValueCount) DWRITE_FONT_AXIS_VALUE const* fontAxisValues,
+    UINT32 fontAxisValueCount,
+    BOOL allowSimulations,
+    _COM_Outptr_ IDWriteFontSet4** matchingFonts
+    );
+```
+
+Parameter           | Description
+--------------------|------------------------------------------------------------------------------------
+familyName          | Font family name. This can be a typographic family name, weight/stretch/style
+                    | family name, GDI (RBIZ) family name, or a full name.
+                    |
+fontAxisValues      | List of font axis values.
+                    |
+fontAxisValueCount  | Number of font axis values.
+                    |
+allowSimulations    | Specify TRUE to automatically apply algorithmic emboldening or slant to matching
+                    | fonts if necessary to match the specified axis values.
+                    |
+matchingFonts       | Receives a pointer to a newly-created font set, which contains a prioritized list
+                    | of fonts that match the specified inputs.
+
+The return value is a standard HRESULT error code.
+
+This can yield distinct items that were not in the original font set, including items with simulation flags
+(if they would be a closer match to the request) and instances that were not named by the font author.
+Items from the same font resources are collapsed into one, the closest possible match.
