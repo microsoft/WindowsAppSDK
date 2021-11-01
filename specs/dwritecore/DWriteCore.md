@@ -247,13 +247,11 @@ next section describes these issues and how they are mitigated by the hybrid fon
 ## Hybrid Font Selection Model
 
 The hybrid font selection model combines aspects of the weight-stretch-style and typographic font family
-models. This preserves the advantages of the typographic model while mitigating potential potential 
+models. This preserves the advantages of the typographic model while mitigating the following potential 
 compatibility issues:
 
   - Some older fonts cannot be selected unambiguously using only the typographic family name and
-    axis values. This is because the OpenType font specification supported the concept of typographic
-    family name (aka. preferred family name) long before OpenType 1.8 introduced axis values and
-    variable fonts.
+    axis values.
 
   - Existing documents might refer to fonts by WWS family name or RBIZ family name. Users might also 
     expect to use WWS and RBIZ family names. For example, a document might specify "Sitka Subheading" 
@@ -264,8 +262,12 @@ compatibility issues:
     provided, the framework might need to work with existing applications that specify only weight,
     stretch, and style parameters.
 
-To illustrate the font compatibility issue, suppose the following fonts all have the typographic
-family name "Legacy":
+The font compatiblity issue arises because the OpenType font specification supported the concept of
+typographic family names (aka. preferred family names) long before OpenType 1.8 introduced axis values
+and variable fonts. Before OpenType 1.8, the typographic family name simply expressed the designer's
+intent that a set fonts were related, but with no guarantee that those fonts could be programmatically
+differentiated based on their properties. To illustrate this with an example, suppose all of the
+following fonts have the typographic family name "Legacy":
 
 File                    | WWS Family   | Weight    | Stretch   | Style
 ------------------------|--------------|-----------|-----------|--------
