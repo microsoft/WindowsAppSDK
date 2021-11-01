@@ -346,7 +346,7 @@ An application calls the `DWriteCoreCreateFactory` function to create a factory 
 to all other DirectWrite APIs. An application can specify the new `DWRITE_FACTORY_TYPE_ISOLATED2` enum value if it
 wants to minimize interaction between DirectWriteCore and the host system. Specifically, the resulting factory only
 caches data in-process. It neither reads from nor writes to a cross-process cache (e.g., a font cache process) or
-persistent cache (i.e., a file). In addition, the resulting factory's sysetem font collection only includes
+persistent cache (i.e., a file). In addition, the resulting factory's system font collection only includes
 well-known system fonts.
 
 The following example creates an isolated factory.
@@ -415,11 +415,7 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(_In_ IDWriteBitmapRenderTa
 ## Using Font Selection APIs
 
 This section shows a complete console application that demonstrates the `IDWriteFontSet4::GetMatchingFonts`
-and `IDWriteFontSet4::GetDerivedFontAxisValues` methods.
-
-The `IDWriteFontSet4::GetMatchingFonts` method returns a list of fonts in priority oder that match the
-specified family name and axis values. The following `MatchAxisValues` function outputs the parameters 
-to `GetMatchingFonts` followed by a string representation of the first matching font face reference.
+and `IDWriteFontSet4::GetDerivedFontAxisValues` methods. First let's include some headers:
 
 ```c++
 #include <dwrite_core.h>
@@ -427,7 +423,13 @@ to `GetMatchingFonts` followed by a string representation of the first matching 
 #include <iostream>
 #include <string>
 #include <vector>
+```
 
+The `IDWriteFontSet4::GetMatchingFonts` method returns a list of fonts in priority oder that match the
+specified family name and axis values. The following `MatchAxisValues` function outputs the parameters 
+to `GetMatchingFonts` followed by a string representation of the first matching font face reference.
+
+```c++
 // Forward declarations of overloaded output operators used by MatchAxisValues.
 std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue);
 std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference);
