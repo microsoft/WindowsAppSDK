@@ -279,7 +279,7 @@ Legacy-SoftBold.ttf     | Legacy Soft  | 700       | 5         | 0      | Legacy
 Legacy-SoftBlack.ttf    | Legacy Soft  | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
 
 The "Legacy" typographic family has three weights and each weight has regular and "Soft" variants.
-However, these fonts predate OpenType 1.8, so there is no "SOFT" axis, or any other axes that cannot
+However, these fonts predate OpenType 1.8, so there is no "SOFT" axis, or any other axis that cannot
 be derived from weight, stretch, and style. For each weight, there are two fonts with the same axis
 values. Therefore, it is not possible to unambiguously select the above fonts using the typographic
 family name and axis values alone.
