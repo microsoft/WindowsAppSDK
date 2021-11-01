@@ -895,33 +895,62 @@ int wmain(int argc, WCHAR** argv)
 
 ## DWRITE_FACTORY_TYPE
 
-The `DWRITE_FACTORY_TYPE` enumeration is passed to the `DWriteCreateFactory` or `DWriteCoreCreateFactory`
-function, and specifies the type of DirectWrite factory to create. The DirectWrite factory contains internal
-state such as font loader registration and cached font data. In most cases it is recommended to use the shared
-factory object, because it allows multiple components that use DirectWrite to share internal DirectWrite state 
-and reduce memory usage. However, there are cases when it is desirable to reduce the impact of a component,
-such as a plug-in from an untrusted source, on the rest of the process by sandboxing and isolating it
-from the rest of the process components. In such cases, it is recommended to use an isolated factory
-for the sandboxed component.
+```c++
+/// <summary>
+/// Specifies the type of DirectWrite factory object.
+/// DirectWrite factory contains internal state such as font loader registration and cached font data.
+/// In most cases it is recommended to use the shared factory object, because it allows multiple components
+/// that use DirectWrite to share internal DirectWrite state and reduce memory usage.
+/// However, there are cases when it is desirable to reduce the impact of a component,
+/// such as a plug-in from an untrusted source, on the rest of the process by sandboxing and isolating it
+/// from the rest of the process components. In such cases, it is recommended to use an isolated factory for the sandboxed
+/// component.
+/// </summary>
+enum DWRITE_FACTORY_TYPE
+{
+    /// <summary>
+    /// This is the recommended value in most cases. The shared factory is a singleton, so mulitiple
+    /// components in a process that create a shared factory share a single instance. This enables
+    /// reuse of cached font data and other state across multiple components. In addition, objects
+    /// created from a shared factory can read from and/or modify a cross-process or persistent cache.
+    /// </summary>
+    DWRITE_FACTORY_TYPE_SHARED,
 
- -  `DWRITE_FACTORY_TYPE_SHARED`
-    This is the recommended value in most cases. The shared factory is a singleton, so mulitiple components
-    in a process that create a shared factory share a single instance. This enables reuse of cached font data
-    and other state across multiple components. In addition, objects created from a shared factory can read
-    from and/or modify a cross-process or persistent cache.
+    /// <summary>
+    /// Objects created from an isolated factory do not modify internal state or cached data used by
+    /// objects from other factories. However, they may still read from a cross-process or persistent
+    /// cache.
+    /// </summary>
+    DWRITE_FACTORY_TYPE_ISOLATED,
 
-
-Value                           | Meaning
---------------------------------|---------------------------------------------------------------------
-`DWRITE_FACTORY_TYPE_SHARED`    | This is the recommended value in most cases. The shared factory is a singleton, so mulitiple components in a process that create a shared factory share a single instance. This enables reuse of cached font data and other state across multiple components. In addition, objects created from a shared factory can read from and/or modify a cross-process or persistent cache.
-`DWRITE_FACTORY_TYPE_ISOLATED`  | Objects created from an isolated factory do not modify internal state or cached data used by objects from other factories. However, they may still read from a cross-process or persistent cache.
-`DWRITE_FACTORY_TYPE_ISOLATED2` | Objects created from an "isolated2" factory do not use or modify internal state or cached data used by other factories. In addition, the system font collection contains only well-known fonts.
+#if DWRITE_CORE
+    /// <summary>
+    /// Objects created from an "isolated2" factory do not use or modify internal state or cached data
+    /// used by other factories. In addition, the system font collection contains only well-known fonts.
+    /// </summary>
+    // Warning: Make sure any additional new enum values are consistent between different versions of
+    // this header in DWriteCore and the Windows SDK.
+    DWRITE_FACTORY_TYPE_ISOLATED2
+#endif
+};
+```
 
 ## DWriteCoreCreateFactory
 
-Creates a DirectWrite factory object that is used for subsequent creation of other DWriteCore objects.
-
 ```c++
+/// <summary>
+/// Creates a factory object that is used for subsequent creation of individual DWriteCore objects.
+/// </summary>
+/// <param name="factoryType">Identifies whether the factory object will be shared or isolated.</param>
+/// <param name="iid">Identifies the DirectWrite factory interface, such as UUIDOF(IDWriteFactory).</param>
+/// <param name="factory">Receives the DirectWrite factory object.</param>
+/// <returns>
+/// Standard HRESULT error code.
+/// </returns>
+/// <remarks>
+/// This is functionally the same as the DWriteCreateFactory function exported by the system version
+/// of DirectWrite. The DWriteCore function has a different name to avoid ambiguity.
+/// </remarks>
 EXTERN_C HRESULT DWRITE_EXPORT DWriteCoreCreateFactory(
     _In_ DWRITE_FACTORY_TYPE factoryType,
     _In_ REFIID iid,
@@ -929,22 +958,13 @@ EXTERN_C HRESULT DWRITE_EXPORT DWriteCoreCreateFactory(
 );
 ```
 
-Parameter       | Description
-----------------|------------------------------------------------------------------------------------
-factoryType     | Specifies whether the factory object will be shared or isolated.
-iid             | Identifies the DirectWrite factory interface, such as UUIDOF(IDWriteFactory).
-factory         | Receives a pointer to the DirectWrite factory object.
-
-The `DWriteCoreCreateFactory` function is functionally equivalent to the `DWriteCreateFactory` function 
-exported by the system version of DirectWrite. The DWriteCore function has a different name to avoid 
-ambiguity.
-
 ## DWRITE_BITMAP_DATA_BGRA32 Structure
 
-This structure contains information about a bitmap assocaited with a bitmap render target. The bitmap
-is top-down with 32 bits per pixel and no padding between scan lines.
-
 ```c++
+/// <summary>
+/// Contains information about a bitmap associated with an IDWriteBitmapRenderTarget.
+/// The bitmap is top-down with 32-bits per pixel and no padding between scan lines.
+/// </summary>
 struct DWRITE_BITMAP_DATA_BGRA32
 {
     UINT32 width;
@@ -955,101 +975,77 @@ struct DWRITE_BITMAP_DATA_BGRA32
 
 ## IDWriteBitmapRenderTarget2 Interface
 
-A bitmap render target encapsulates a system memory bitmap and exposes methods for rendering glyphs to
-that bitmap. The version 2 interface exposes a method for getting the underlying bitmap data.
-
-## IDWriteBitmapRenderTarget2::GetBitmapData Method
-
-The `GetBitmapData` method gets the dimensions and a pointer to the system memory bitmap
-encapsulated by the bitmap render target object. The pointer is owned by the render target
-object and remains valid as long as the object exists.
-
 ```c++
-HRESULT STDMTEHODCALLTYPE GetBitmapData(_Out_ DWRITE_BITMAP_DATA_BGRA32* bitmapData);
+/// <summary>
+/// Encapsulates a bitmap which can be used for rendering glyphs.
+/// </summary>
+DWRITE_BEGIN_INTERFACE(IDWriteBitmapRenderTarget2, "C553A742-FC01-44DA-A66E-B8B9ED6C3995") : IDWriteBitmapRenderTarget1
+{
+    /// <summary>
+    /// Gets the demensions and a pointer to the system memory bitmap encapsulated by this
+    /// bitmap render target object. The pointer is owned by the render target object, and
+    /// remains valid as long as the object exists.
+    /// </summary>
+    STDMETHOD(GetBitmapData)(_Out_ DWRITE_BITMAP_DATA_BGRA32* bitmapData) PURE;
+};
 ```
-
-Parameter       | Description
-----------------|------------------------------------------------------------------------------------
-bitmapData      | Pointer to a `DWRITE_BITMAP_DATA_BGRA32` structure that receives information about
-                | the bitmap.
-
 
 ## IDWriteFontSet4 Interface
 
-A font set represents a set of available fonts with associated properties. The version 4 interface
-exposes font selection methods that use the typographic font family model but are also compatible
-with earlier font family models.
-
-## IDWriteFontSet4::GetDerivedFontAxisValues
-
-Computes derived font axis values from the specified font weight, stretch, style, and size.
-
 ```c++
-UINT32 STDMETHODCALLTYPE IDWriteFontSet4::GetDerivedFontAxisValues(
-    _In_reads_opt_(inputAxisCount) DWRITE_FONT_AXIS_VALUE const* inputAxisValues,
-    UINT32 inputAxisCount,
-    DWRITE_FONT_WEIGHT fontWeight,
-    DWRITE_FONT_STRETCH fontStretch,
-    DWRITE_FONT_STYLE fontStyle,
-    float fontSize,
-    _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* outputAxisValues
-    );
+DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") : IDWriteFontSet3
+{
+    /// <summary>
+    /// Computes derived font axis values from the specified font weight, stretch, style, and size.
+    /// </summary>
+    /// <param name="inputAxisValues">Pointer to an optional array of input axis values. Any axes present
+    /// in this array are not included in the output. This is so explicit axis values take precedence over 
+    /// derived axis values.</param>
+    /// <param name="inputAxisCount">Size of the array of input axis values.</param>
+    /// <param name="fontWeight">Font weight, used to compute "wght" axis value.</param>
+    /// <param name="fontStretch">Font stretch, used to compute "wdth" axis value.</param>
+    /// <param name="fontStyle">Font style, used to compute "slnt" and "ital" axis values.</param>
+    /// <param name="fontSize">Font size in DIPs, used to compute "opsz" axis value. If this parameter is zero,
+    /// no "opsz" axis value is added to the output array.</param>
+    /// <param name="outputAxisValues">Pointer to an output array to which derived axis values are written.
+    /// The size of this array must be at least DWRITE_STANDARD_FONT_AXIS_COUNT (5). The return value is 
+    /// the actual number of axis values written to this array.</param>
+    /// <returns>Returns the actual number of derived axis values written to the output array.</returns>
+    STDMETHOD_(UINT32, GetDerivedFontAxisValues)(
+        _In_reads_opt_(inputAxisCount) DWRITE_FONT_AXIS_VALUE const* inputAxisValues,
+        UINT32 inputAxisCount,
+        DWRITE_FONT_WEIGHT fontWeight,
+        DWRITE_FONT_STRETCH fontStretch,
+        DWRITE_FONT_STYLE fontStyle,
+        float fontSize,
+        _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* outputAxisValues
+        ) PURE;
+
+    /// <summary>
+    /// Generates a matching font set based on the requested inputs, ordered so that nearer matches are earlier.
+    /// </summary>
+    /// <param name="familyName">Font family name. This can be a typographic family name, weight/stretch/style
+    /// family name, or GDI (RBIZ) family name.</param>
+    /// <param name="fontAxisValues">List of font axis values.</param>
+    /// <param name="fontAxisValueCount">Number of font axis values.</param>
+    /// <param name="allowSimulations">Specify TRUE to automatically apply algorithmic emboldening or slant to
+    /// matching fonts if necessary to match the specified axis values.</param>
+    /// <param name="matchingFonts">Receives a pointer to a newly-created font set, which contains a prioritized 
+    /// list of fonts that match the specified inputs.</param>
+    /// <returns>
+    /// Standard HRESULT error code.
+    /// </returns>
+    /// <remarks>
+    /// This can yield distinct items that were not in the original font set, including items with simulation flags
+    /// (if they would be a closer match to the request) and instances that were not named by the font author.
+    /// Items from the same font resources are collapsed into one, the closest possible match.
+    /// </remarks>
+    STDMETHOD(GetMatchingFonts)(
+        _In_z_ WCHAR const* familyName,
+        _In_reads_(fontAxisValueCount) DWRITE_FONT_AXIS_VALUE const* fontAxisValues,
+        UINT32 fontAxisValueCount,
+        BOOL allowSimulations,
+        _COM_Outptr_ IDWriteFontSet4** matchingFonts
+        ) PURE;
+};
 ```
-
-Parameter           | Description
---------------------|------------------------------------------------------------------------------------
-inputAxisValues     | Pointer to an optional array of input axis values. Any axes present in this array 
-                    | are not included in the output. This is so explicit axis values take precedence 
-                    | over derived axis values.
-                    |
-inputAxisCount      | Size of the array of input axis values.
-                    |
-fontWeight          | Font weight, used to compute "wght" axis value.
-                    |
-fontStretch         | Font stretch, used to compute "wdth" axis value.
-                    |
-fontStyle           | Font style, used to compute "slnt" and "ital" axis values.
-                    |
-fontSize            | Font size in DIPs, used to compute "opsz" axis value. If this parameter is zero,
-                    | no "opsz" axis value is added to the output array.
-                    |
-outputAxisValues    | Pointer to an output array to which derived axis values are written. The size of 
-                    | this array must be at least DWRITE_STANDARD_FONT_AXIS_COUNT (5). The return value 
-                    | is the actual number of axis values written to this array.
-
-Returns the actual number of derived axis values written to the output array.
-
-## IDWriteFontSet4::GetMatchingFonts
-
-Generates a matching font set based on the requested inputs, ordered so that nearer matches are earlier.
-
-```c++
-HRESULT STDMETHODCALLTYPE IDWriteFontSet4::GetMatchingFonts(
-    _In_z_ WCHAR const* familyName,
-    _In_reads_(fontAxisValueCount) DWRITE_FONT_AXIS_VALUE const* fontAxisValues,
-    UINT32 fontAxisValueCount,
-    BOOL allowSimulations,
-    _COM_Outptr_ IDWriteFontSet4** matchingFonts
-    );
-```
-
-Parameter           | Description
---------------------|------------------------------------------------------------------------------------
-familyName          | Font family name. This can be a typographic family name, weight/stretch/style
-                    | family name, GDI (RBIZ) family name, or a full name.
-                    |
-fontAxisValues      | List of font axis values.
-                    |
-fontAxisValueCount  | Number of font axis values.
-                    |
-allowSimulations    | Specify TRUE to automatically apply algorithmic emboldening or slant to matching
-                    | fonts if necessary to match the specified axis values.
-                    |
-matchingFonts       | Receives a pointer to a newly-created font set, which contains a prioritized list
-                    | of fonts that match the specified inputs.
-
-The return value is a standard HRESULT error code.
-
-This can yield distinct items that were not in the original font set, including items with simulation flags
-(if they would be a closer match to the request) and instances that were not named by the font author.
-Items from the same font resources are collapsed into one, the closest possible match.
