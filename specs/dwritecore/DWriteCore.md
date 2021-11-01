@@ -455,8 +455,8 @@ void MatchAxisValues(
     for (bool allowSimulations : { true, false })
     {
         std::wcout << (allowSimulations ?
-            L" - allow simulations: " :
-            L" - no simulations:    ");
+            L" - allow simulations => " :
+            L" - no simulations    => ");
 
         // Get the matching fonts for the specified family name and axis values.
         wil::com_ptr<IDWriteFontSet4> matchingFonts;
@@ -552,8 +552,8 @@ void TestFontSelection(IDWriteFactory7* factory)
 {
     // Output:
     //     GetMatchingFonts("Arial", { wght:900 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations: ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
-    //      - no simulations:    ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    //      - allow simulations => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    //      - no simulations    => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
     // Notes:
     //   *  GetDerivedAxisValue converts font size in DIPs to opsz axis value in points.
     //   *  The resulting fonts in this case have no opsz axis.
@@ -561,8 +561,8 @@ void TestFontSelection(IDWriteFactory7* factory)
 
     // Output:
     //     GetMatchingFonts("Arial Black", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations: ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
-    //      - no simulations:    ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    //      - allow simulations => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
+    //      - no simulations    => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
     // Notes:
     //   *  "Arial Black" matches the RBIZ family name of ariblk.ttf.
     //   *  Weight 400 was requested but the matching font (by name) has weight 900.
@@ -570,14 +570,14 @@ void TestFontSelection(IDWriteFactory7* factory)
 
     // Output:
     //     GetMatchingFonts("Arial", { wght:700 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations: arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
-    //      - no simulations:    arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    //      - allow simulations => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    //      - no simulations    => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
     MatchFont(factory, L"Arial", 16.0f, DWRITE_FONT_WEIGHT_BOLD);
 
     // Output:
     //     GetMatchingFonts("Arial Bold", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations: arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
-    //      - no simulations:    arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    //      - allow simulations => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
+    //      - no simulations    => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
     // Notes:
     //  *  "Arial Bold" matches the full name of arialbd.ttf.
     //  *  Weight 400 was requested but the matching font (by name) has weight 700.
@@ -585,8 +585,8 @@ void TestFontSelection(IDWriteFactory7* factory)
 
     // Output:
     //     GetMatchingFonts("Centaur", { wght:700 wdth:100 ital:0 slnt:0 }, ...)
-    //      - allow simulations: CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0 BOLDSIM
-    //      - no simulations:    CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0
+    //      - allow simulations => CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0 BOLDSIM
+    //      - no simulations    => CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0
     // Notes:
     //  *  The "Centaur" family has no bold weight, so simulation is applied if allowed.
     //  *  The wght axis value of the result is the natural weight of the font, but
@@ -595,22 +595,22 @@ void TestFontSelection(IDWriteFactory7* factory)
 
     // Output on Windows 10 with static Sitka fonts:
     //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations: Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations:    Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    //      - allow simulations => Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    //      - no simulations    => Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
     // Output on Windows 11 with variable Sitka fonts:
     //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations: SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations:    SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    //      - allow simulations => SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
+    //      - no simulations    => SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
     MatchFont(factory, L"Sitka", 16.0f);
 
     // Output on Windows 10 with static Sitka fonts:
     //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations: Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations:    Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      - allow simulations => Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      - no simulations    => Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
     // Output on Windows 11 with variable Sitka fonts:
     //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations: SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations:    SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      - allow simulations => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      - no simulations    => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
     // Notes:
     //   *  "Sitka" matches a typographic family name.
     //   *  The resulting "opsz" value is clamped to the axis range of the matching font.
@@ -620,12 +620,12 @@ void TestFontSelection(IDWriteFactory7* factory)
 
     // Output on Windows 10 with static Sitka fonts:
     //     GetMatchingFonts("Sitka Text", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations: Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations   : Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
+    //      - allow simulations => Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
+    //      - no simulations    => Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
     // Output on Windows 11 with variable Sitka fonts:
     //     GetMatchingFonts("Sitka Text", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations: SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations:    SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      - allow simulations => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
+    //      - no simulations    => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
     // Notes:
     //   *  "Sitka Text" matches a weight-stretch-style family name.
     //   *  The resulting "opsz" value is clamped to the axis range of the matching font.
@@ -635,12 +635,12 @@ void TestFontSelection(IDWriteFactory7* factory)
 
     // Output on Windows 10 with static Sitka fonts:
     //     GetMatchingFonts("Sitka", { wght:700 opsz:72 wdth:100 ital:0 slnt:0 }, ...)
-    //      - allow simulations: SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
-    //      - no simulations:    SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
+    //      - allow simulations => SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
+    //      - no simulations    => SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
     // Output on Windows 11 with variable Sitka fonts:
     //     GetMatchingFonts("Sitka", { wght:700 opsz:72 wdth:100 ital:0 slnt:0 }, ...)
-    //      - allow simulations: SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
-    //      - no simulations:    SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
+    //      - allow simulations => SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
+    //      - no simulations    => SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
     // Notes:
     //   *  Explicit "opsz" and "wght" axes take precedence over fontSize and fontWeight.
     MatchFont(
@@ -652,7 +652,7 @@ void TestFontSelection(IDWriteFactory7* factory)
 ```
 
 Following are the implementations of the overloaded operators declared above. These are used
-by MatchAxisValues to output font matching parameters and results.
+by `MatchAxisValues` to write the input axis values and the resulting font face references:
 
 ```c++
 // Output a file name given a font file reference.
