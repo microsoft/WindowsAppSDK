@@ -912,11 +912,9 @@ Value                           | Meaning
                                 | and other state across multiple components. In addition, objects
                                 | created from a shared factory can read from and/or modify a cross-process 
                                 | or persistent cache.
-                                |
 `DWRITE_FACTORY_TYPE_ISOLATED`  | Objects created from an isolated factory do not modify internal state 
                                 | or cached data used by objects from other factories. However, they may 
                                 | still read from a cross-process or persistent cache.
-                                |
 `DWRITE_FACTORY_TYPE_ISOLATED2` | Objects created from an "isolated2" factory do not use or modify internal
 *(New to DWriteCore)*           | state or cached data used by other factories. In addition, the system font
                                 | collection contains only well-known fonts.
@@ -936,9 +934,7 @@ EXTERN_C HRESULT DWRITE_EXPORT DWriteCoreCreateFactory(
 Parameter       | Description
 ----------------|------------------------------------------------------------------------------------
 factoryType     | Specifies whether the factory object will be shared or isolated.
-                |
 iid             | Identifies the DirectWrite factory interface, such as UUIDOF(IDWriteFactory).
-                |
 factory         | Receives a pointer to the DirectWrite factory object.
 
 The `DWriteCoreCreateFactory` function is functionally equivalent to the `DWriteCreateFactory` function 
