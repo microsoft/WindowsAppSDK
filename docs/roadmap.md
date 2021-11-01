@@ -15,11 +15,11 @@ As a [packaged MSIX desktop app](https://docs.microsoft.com/windows/msix/overvie
 XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Supported | ✅ Supported
 [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | ✅ Supported | ✅ Supported | ✅ Supported |
 [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | ✅ Supported | ✅ Supported | ✅ Supported |
-[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔁 Experimental | ✅ Supported | ✅ Supported |
 [Single-project MSIX](https://docs.microsoft.com/windows/apps/windows-app-sdk/single-project-msix) | ❌ Not Supported | ✅ Supported | ✅ Supported |
-[Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
+[Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔁 Experimental | ✅ Supported |
 [Dynamic dependencies](https://docs.microsoft.com/windows/apps/desktop/modernize/framework-packages/) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 [Elevation support](https://github.com/microsoft/WindowsAppSDK/issues/1407) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 **Deploy options:** |
@@ -34,16 +34,16 @@ As an [unpackaged](https://docs.microsoft.com/windows/apps/windows-app-sdk/deplo
 -- | ---------------------------------- | ------------------------------ | ------------------------------- |
 [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3) | ❌ Not Supported | ✅ Supported<br>(WinUI 3 apps only) | ✅ Supported |
 XAML Islands<br>(Use WinUI 3 in other apps)| ❌ Not Supported | ❌ Not Supported | ✅ Supported
-[Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔄 Experimental | ✅ Supported | ✅ Supported |
-[Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔄 Experimental | ✅ Supported |
-[Dynamic dependencies](https://docs.microsoft.com/windows/apps/desktop/modernize/framework-packages/) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+[Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[App lifecycle](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[Power state notifications](https://github.com/microsoft/WindowsAppSDK/issues/111) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview) | 🔁 Experimental | ✅ Supported | ✅ Supported |
+[Push notifications](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/PushNotifications/PushNotifications-spec.md) | ❌ Not Supported | 🔁 Experimental | ✅ Supported |
+[Dynamic dependencies](https://docs.microsoft.com/windows/apps/desktop/modernize/framework-packages/) | 🔁 Experimental | ✅ Supported | ✅ Supported |
 [Elevation support](https://github.com/microsoft/WindowsAppSDK/issues/1407) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 **Deploy options:**  |
-• [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) | 🔄 Experimental | ✅ Supported | ✅ Supported |
+• [Framework-dependent](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) | 🔁 Experimental | ✅ Supported | ✅ Supported |
 • [Self-contained](https://github.com/microsoft/WindowsAppSDK/issues/1204) | ❌ Not Supported | ❌ Not Supported | ✅ Supported |
 
 ## 2021 Focus Areas
