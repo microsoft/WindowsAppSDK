@@ -155,10 +155,10 @@ Suppose you wanted to add a heavier "Black" weight to the Arial font family. Log
 part of the Arial family, so you might expect to select it by setting `lfFaceName` to "Arial" and 
 `lfWeight` to `FW_BLACK`. However, there is no way for an application user to choose between three
 weights using a two-state bold button. The solution was to give the new font a different family name,
-so the user can select it by choosing "Arial Black" from the list of font families. Likewise, there
+so the user could select it by choosing "Arial Black" from the list of font families. Likewise, there
 is no way to choose from among different widths in the same font family if your only affordances are
-bold and italic buttons, so the narrow versions of Arial must be given different family names in the
-RBIZ model. Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes in the RBIZ model
+bold and italic buttons, so the narrow versions of Arial have different family names in the RBIZ
+model. Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes in the RBIZ model
 even though typographically these all belong in one family.
 
 From these examples, one can see how the limitations of a font family model can affect how fonts are
@@ -205,14 +205,14 @@ of variation within a font family.
 
 If you think of font selection parameters as coordinates in a design space, the weight-stretch-style
 model defines a three-dimensional coordinate system with weight, stretch, and style as the axes. Each
-font in a WWS family must have a unique location defined by those three properties. To select a font,
-one specifies a WWS family name and weight, stretch, and style parameters.
+font in a WWS family must have a unique location defined by its coordinates along those three axes. To
+select a font, one specifies a WWS family name and weight, stretch, and style parameters.
 
 By contrast, the typographic font family model has an N-dimensional design space. A font designer can 
 define any number of design axes, each identified by a four-character _axis tag_. A given font’s location 
 in the N-dimensional design space is defined by an array of _axis values_, where each axis value comprises 
 an axis tag and a floating-point value. To select a font, one specifies a typographic family name and an 
-array of axis values.
+array of axis values (`DWRITE_FONT_AXIS_VALUE` structures).
 
 Although the number of font axes is open-ended, there are a few registered axes with standard meanings,
 and the weight, stretch, and style values can be mapped to registered axis values. `DWRITE_FONT_WEIGHT`
@@ -246,9 +246,9 @@ next section describes these issues and how they are mitigated by the hybrid fon
 
 ## Hybrid Font Selection Model
 
-The hybrid font selection model combines aspects of the typographic font family model. This preserves
-the advantages of the typographic model while mitigating potential potential compatibility issues that
-arise when adopting the typographic font family model in its pure form. These issues include:
+The hybrid font selection model combines aspects of the weight-stretch-style and typographic font family
+models. This preserves the advantages of the typographic model while mitigating potential potential 
+compatibility issues:
 
   - Some older fonts cannot be selected unambiguously using only the typographic family name and
     axis values. This is because the OpenType font specification supported the concept of typographic
@@ -261,8 +261,8 @@ arise when adopting the typographic font family model in its pure form. These is
     
   - A library or framework might adopt the typographic font family model to take advantage of automatic
     optical sizing, but not provide an API for specifing arbitrary axis values. Even if a new API is
-    provided, the framework might need to work with existing applications that specify WWS family names
-    and weight, stretch, and style parameters.
+    provided, the framework might need to work with existing applications that specify only weight,
+    stretch, and style parameters.
 
 To illustrate the font compatibility issue, suppose the following fonts all have the typographic
 family name "Legacy":
