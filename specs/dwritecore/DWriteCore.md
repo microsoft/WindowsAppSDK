@@ -893,7 +893,7 @@ int wmain(int argc, WCHAR** argv)
 
 # API Details
 
-## DWRITE_FACTORY_TYPE
+## DWRITE_FACTORY_TYPE Enumeration
 
 ```c++
 /// <summary>
@@ -935,7 +935,7 @@ enum DWRITE_FACTORY_TYPE
 };
 ```
 
-## DWriteCoreCreateFactory
+## DWriteCoreCreateFactory Function
 
 ```c++
 /// <summary>
