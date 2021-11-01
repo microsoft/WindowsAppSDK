@@ -110,18 +110,18 @@ existing applications, documents, and fonts.
 Font selection (sometimes called font matching or font mapping) is the process of selecting the available
 fonts that best match input parameters passed in by an application. The input parameters are sometimes
 referred to collectively as a _logical font_. A font selection algorithm matches the logical font (the
-"font you want") to an available _physical font_ (the "font you have").
+"font you want") to an available _physical font_ (a "font you have").
 
 A _font family_ is a named group of fonts that share a common design but may differ in attributes such as
-weight or italic. A _font family model_ defines what attributes may be used to differentiate fonts within
-a family. The new _typographic font family model_ has many advantages over the two previous font family
-models used on Windows. Unfortunately, changing font family models creates many opportunities for confusion
-and incompatibilities. The methods exposed by the `IDWriteFontSet4` interface use a hybrid approach that
-offers the advantages of the typographic font family model while mitigating compatibility issues.
+weight. A _font family model_ defines what attributes may be used to differentiate fonts within a family.
+The new _typographic font family model_ has many advantages over the two previous font family models used
+on Windows. Unfortunately, changing font family models creates opportunities for confusion and compatibility
+issues. The methods exposed by the `IDWriteFontSet4` interface implement a hybrid approach that offers the
+advantages of the typographic font family model while mitigating compatibility issues.
 
 The following sections compare the older font family models with the typographic font family model,
-explain compatibility challenges posed by different font family models, and finally explains how the
-hybrid font selection model used by DirectWrite overcomes those challenges.
+explain compatibility challenges posed by changing font family models, and finally explains how those
+challenges can be overcome by using the `IDWriteFontSet4` methods.
 
 ## RBIZ Font Family Model
 
@@ -141,7 +141,7 @@ includes family name (`lfFaceName`), weight (`lfWeight`) and italic (`lfItalic`)
 
 The `lfItalic` field is a BOOL so it can only be TRUE or FALSE. The `lfWeight` field can technically be
 any weight in the range `FW_THIN` (100) to `FW_BLACK` (900), but is typically either `FW_NORMAL` (400)
-or `FW_BOLD` (700). For historical reasons, fonts designed for the RBIZ model always always have one of 
+or `FW_BOLD` (700). For historical reasons, fonts designed for the RBIZ model almost always have one of 
 these two weights.
 
 To understand why, it helps to think of fonts as evolving in an ecosystem that also includes
@@ -154,13 +154,12 @@ existing applications.
 Suppose you wanted to add a heavier "Black" weight to the Arial font family. Logically, this font is
 part of the Arial family, so you might expect to select it by setting `lfFaceName` to "Arial" and 
 `lfWeight` to `FW_BLACK`. However, there is no way for an application user to choose between three
-weights using a two-state bold button. The solution is to give the new font a different family name,
-so the user can select it by choosing "Arial Black" from the list of font families.
-
-Likewise, there is no way to choose from among different widths in the same font family if your only
-affordances are bold and italic buttons, so the narrow versions of Arial must be given different
-family names in the RBIZ model. Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes
-in the RBIZ model even though typographically these all belong in one family.
+weights using a two-state bold button. The solution was to give the new font a different family name,
+so the user can select it by choosing "Arial Black" from the list of font families. Likewise, there
+is no way to choose from among different widths in the same font family if your only affordances are
+bold and italic buttons, so the narrow versions of Arial must be given different family names in the
+RBIZ model. Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes in the RBIZ model
+even though typographically these all belong in one family.
 
 From these examples, one can see how the limitations of a font family model can affect how fonts are
 grouped into families. Since font families are identified by name, this means the same font can have
@@ -181,14 +180,19 @@ stretch (`DWRITE_FONT_STRETCH`), and style (`DWRITE_FONT_STYLE`).
 The WWS model is more flexible than the RBIZ model in two ways. First, fonts in the same family can
 be differentiated by stretch (or width). Second, there can be more than two weights in the same family.
 This flexibility is sufficient to allow all the variants of Arial to be included in the same WWS family.
-The following examples demonstrate how the RBIZ and WWS font family models compare:
+The following table compares RBIZ and WWS font properties for a selection of Arial fonts:
 
-File Name       | RBIZ Family Name      | WWS FamilyName    | Weight    | Stretch   | Style
-----------------|-----------------------|-------------------|-----------|-----------|---------
-arial.ttf       | Arial                 | Arial             | 400       | 5         | 0
-arialbd.ttf     | Arial                 | Arial             | 700       | 5         | 0
-ariblk.ttf      | Arial Black           | Arial             | 900       | 5         | 0
-ARIALN.TTF      | Arial Narrow          | Arial             | 400       | 3         | 0
+File Name       | RBIZ Family Name      | lfWeight  | lfItalic  | WWS FamilyName    | Weight    | Stretch   | Style
+----------------|-----------------------|-----------|-----------|-------------------|-----------|-----------|---------
+arial.ttf       | Arial                 | 400       | 0         | Arial             | 400       | 5         | 0
+arialbd.ttf     | Arial                 | 700       | 0         | Arial             | 700       | 5         | 0
+ariblk.ttf      | Arial Black           | 900       | 0         | Arial             | 900       | 5         | 0
+ARIALN.TTF      | Arial Narrow          | 400       | 0         | Arial             | 400       | 3         | 0
+
+As you can see, "Arial Narrow" has the same `lfWeight` and `lfItalic` values as Arial Regular, so it 
+has a different RBIZ family name to avoid ambiguity. "Arial Black" has a different RBIZ family name
+to avoid having more than two weights in the "Arial" family. By contrast, all of these fonts are in
+the same weight-stretch-style family.
 
 Nevertheless, the weight-stretch-style model is not open-ended. If two fonts have the same weight,
 stretch, and style but differ in some other way (e.g., optical size), they cannot be included in the
