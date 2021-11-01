@@ -262,12 +262,12 @@ compatibility issues:
     provided, the framework might need to work with existing applications that specify only weight,
     stretch, and style parameters.
 
-The font compatiblity issue arises because the OpenType font specification supported the concept of
-typographic family names (aka. preferred family names) long before OpenType 1.8 introduced axis values
-and variable fonts. Before OpenType 1.8, the typographic family name simply expressed the designer's
-intent that a set fonts were related, but with no guarantee that those fonts could be programmatically
-differentiated based on their properties. To illustrate this with an example, suppose all of the
-following fonts have the typographic family name "Legacy":
+The compatibility issue with older fonts arises because the concept of typographic family name predates
+the concept of font axis values, which were introduced along with variable fonts in OpenType 1.8. Before
+OpenType 1.8, the typographic family name merely expressed the designer's intent that a set fonts were
+related, but with no guarantee that those fonts could be programmatically differentiated based on their
+properties. To illustrate this with an example, suppose all of the following fonts have the typographic
+family name "Legacy":
 
 File                    | WWS Family   | Weight    | Stretch   | Style
 ------------------------|--------------|-----------|-----------|--------
