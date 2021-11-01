@@ -904,6 +904,13 @@ such as a plug-in from an untrusted source, on the rest of the process by sandbo
 from the rest of the process components. In such cases, it is recommended to use an isolated factory
 for the sandboxed component.
 
+`DWRITE_FACTORY_TYPE_SHARED`
+    This is the recommended value in most cases. The shared factory is a singleton, so mulitiple components
+    in a process that create a shared factory share a single instance. This enables reuse of cached font data
+    and other state across multiple components. In addition, objects created from a shared factory can read
+    from and/or modify a cross-process or persistent cache.
+
+
 Value                           | Meaning
 --------------------------------|---------------------------------------------------------------------
 `DWRITE_FACTORY_TYPE_SHARED`    | This is the recommended value in most cases. The shared factory is a 
