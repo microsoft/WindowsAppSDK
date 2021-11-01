@@ -17,13 +17,13 @@ Plus, **create beautiful, modern apps for Windows 11 that are backwards compatib
 
 ### Use it now!
 
-1.0 Preview 3 is [available to try today](https://docs.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app) and includes unpackaged support including WinUI 3, single-project templates, and more!
+1.0 Preview 3 is [available to try today](https://docs.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app) and includes unpackaged support with WinUI 3, single-project templates, and more!
 
 In production apps, you can [use the 0.8 release](https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#version-08) now!
 
 Some notes about 0.8...
 
-* 0.8 Stable requires using [MSIX](https://docs.microsoft.com/windows/msix/overview), but unpackaged apps can [1.0 Preview 3](https://docs.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)!
+* 0.8 Stable requires using [MSIX](https://docs.microsoft.com/windows/msix/overview), but unpackaged apps can use [1.0 Preview 3](https://docs.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)!
 * 0.8 Stable only includes WinUI 3 / Text rendering / Resource management
 
 ### Roadmap
