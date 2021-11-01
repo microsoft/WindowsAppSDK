@@ -266,31 +266,31 @@ The compatibility issue with older fonts arises because the concept of typograph
 the concept of font axis values, which were introduced along with variable fonts in OpenType 1.8. Before
 OpenType 1.8, the typographic family name merely expressed the designer's intent that a set fonts were
 related, but with no guarantee that those fonts could be programmatically differentiated based on their
-properties. To illustrate this with an example, suppose all of the following fonts have the typographic
-family name "Legacy":
+properties. As a hypothetical example, suppose all of the following fonts have the typographic family
+name "Legacy":
 
-File                    | WWS Family   | Weight    | Stretch   | Style
-------------------------|--------------|-----------|-----------|--------
-Legacy-Regular.ttf      | Legacy       | 400       | 5         | 0
-Legacy-Bold.ttf         | Legacy       | 700       | 5         | 0
-Legacy-Black.ttf        | Legacy       | 900       | 5         | 0
-Legacy-Soft.ttf         | Legacy Soft  | 400       | 5         | 0
-Legacy-SoftBold.ttf     | Legacy Soft  | 700       | 5         | 0
-Legacy-SoftBlack.ttf    | Legacy Soft  | 900       | 5         | 0
+File                    | WWS Family   | Weight    | Stretch   | Style  | Typo Family   | wght  | wdth  | ital  | slnt
+------------------------|--------------|-----------|-----------|--------|---------------|-------|-------|-------|------
+Legacy-Regular.ttf      | Legacy       | 400       | 5         | 0      | Legacy        | 400   | 100   | 0     | 0
+Legacy-Bold.ttf         | Legacy       | 700       | 5         | 0      | Legacy        | 700   | 100   | 0     | 0
+Legacy-Black.ttf        | Legacy       | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
+Legacy-Soft.ttf         | Legacy Soft  | 400       | 5         | 0      | Legacy        | 400   | 100   | 0     | 0
+Legacy-SoftBold.ttf     | Legacy Soft  | 700       | 5         | 0      | Legacy        | 700   | 100   | 0     | 0
+Legacy-SoftBlack.ttf    | Legacy Soft  | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
 
 The "Legacy" typographic family has three weights and each weight has regular and "Soft" variants.
-However, these fonts predate OpenType 1.8, so they do not declare any axes that cannot be derived
-from weight, stretch, and style. In particular, there is no "SOFT" axis. Therefore, it is not
-possible to unambiguously select the above fonts using only the typographic family name and
-axis values.
+However, these fonts predate OpenType 1.8, so there is no "SOFT" axis, or any other axes that cannot
+be derived from weight, stretch, and style. For each weight, there are two fonts with the same axis
+values. Therefore, it is not possible to unambiguously select the above fonts using the typographic
+family name and axis values alone.
 
 The hybrid font selection model mitigates this by allowing the specified family name to be _either_
 a typographic family name or a weight-stretch-style name. (It can also be an RBIZ name or full name.)
-In the legacy font scenario, an application can avoid ambiguity by specifying "Legacy" or "Legacy Soft"
+In the example above, an application can avoid ambiguity by specifying "Legacy" or "Legacy Soft"
 as the family name. These two cases are handled as follows:
 
   - "Legacy Soft" does not match a typographic family name, so only fonts in the WWS family
-    are considered. These can be differentiated by weight, so ther is no ambiguity.
+    are considered. These can be differentiated by weight, so there is no ambiguity.
 
   - "Legacy" matches both a typographic family and a WWS family. All fonts in the typographic
     family are considered, but presence in the WWS family is used as a tie-breaker. For example,
@@ -301,9 +301,9 @@ Document and application compatibility issues are mitigated by allowing differen
 names to be specified and also by providing a method of deriving axis values from weight, stretch,
 and style parameters.
 
-Suppose a document specifies a family name and weight, stretch, and style parameters, but no axis
-values. The application can first map the weight, stretch, style, and font size to axis values by
-calling `IDWriteFontSet4::GetDerivedFontAxisValues`. The application can then pass both the family
+Suppose a document specifies a family name, weight, stretch, and style, but no axis values. The
+application can first map the weight, stretch, style, and font size to axis values by calling the
+`IDWriteFontSet4::GetDerivedFontAxisValues` method. The application can then pass both the family
 name and axis values to `IDWriteFontSet4::GetMatchingFonts`. `GetMatchingFonts` returns a list of
 matching fonts in priority order, and the result is appropriate whether the specified family name
 is a typographic family name, weight-stretch-style family name, RBIZ family name, or full name.
@@ -313,8 +313,8 @@ based on the font size.
 Suppose a document specifies weight, stretch, and style and _also_ specifies axis values. In this
 case, the explicit axis values can also be passed in to `IDWriteFontSet4::GetDerivedFontAxisValues`,
 and the derived axis values returned by the method will only include font axes that were not
-specified explicitly. Thus, axis values specified explicitly by the document (or application) take
-precedence over axis values derived from weight, stretch, style, and font size.
+specified explicitly. The application can then pass the combined axis values (explicit and derived)
+to `IDWriteFontSet4::GetMatchingFonts`.
 
 ## Hybrid Font Selection APIs
 
