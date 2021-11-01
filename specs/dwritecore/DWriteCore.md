@@ -320,8 +320,9 @@ to `IDWriteFontSet4::GetMatchingFonts`.
 
 The hybrid font selection model is implemented by the following `IDWriteFontSet4` methods:
 
-  - The `GetDerivedFontAxisValues` method converts weight, stretch, and style parameters to the
-    corresponding axis values.
+  - The `GetDerivedFontAxisValues` method converts font size, weight, stretch, and style parameters
+    to the corresponding axis values. Any explicit axis values passed in by the client are excluded
+    from the derived axis values.
 
   - The `GetMatchingFonts` method returns a prioritized list of matching fonts given a family name
     and array of axis values. As described above, the family name parameter can be a typographic
@@ -418,7 +419,7 @@ and `IDWriteFontSet4::GetDerivedFontAxisValues` methods.
 
 The `IDWriteFontSet4::GetMatchingFonts` method returns a list of fonts in priority oder that match the
 specified family name and axis values. The following `MatchAxisValues` function outputs the parameters 
-to `GetMatchingFonts` followed by the first matching font face reference.
+to `GetMatchingFonts` followed by a string representation of the first matching font face reference.
 
 ```c++
 #include <dwrite_core.h>
@@ -427,8 +428,7 @@ to `GetMatchingFonts` followed by the first matching font face reference.
 #include <string>
 #include <vector>
 
-// Forward declarations of overloaded operators used by MatchAxisValues to
-// serialize a font face reference.
+// Forward declarations of overloaded output operators used by MatchAxisValues.
 std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue);
 std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference);
 std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceReference);
@@ -476,7 +476,7 @@ void MatchAxisValues(
             std::wcout << *faceReference;
         }
 
-        std::wcout << std::endl;
+        std::wcout << L'\n';
     }
 
     std::wcout << L'\n';
@@ -484,10 +484,11 @@ void MatchAxisValues(
 
 ```
 
-If an application is migrating from the weight-stretch-style model, it may have `DWRITE_FONT_WEIGHT`,
-`DWRITE_FONT_STRETCH`, and `DWRITE_FONT_STYLE` parameters instead of (or in addition to) axis values.
-Such an application can use the `IDWriteFontSet4::GetDerivedFontAxisValues` method to map the weight,
-stretch, and style parameters to axis values before calling `GetMatchingFonts`.
+An application may have weight, stretch, and style parameters instead of (or in addition to) axis values.
+For example, the application might need to work with documents that reference fonts using RBIZ or
+weight-stretch-style parameters. Even if the application adds support for specifying arbitrary axis
+values, it might need to support the older parameters as well. To do so, the application can call the
+`IDWriteFontSet4::GetDerivedFontAxisValues` before calling `IDWriteFontSet4::GetMatchingFonts`.
 
 The following `MatchFont` function takes font size, weight, stretch, and style parameters in addition
 to axis values. It forwards these parameters to `IDWriteFontSet4::GetDerivedAxisValues` method to compute
