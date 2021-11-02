@@ -364,7 +364,7 @@ void CreateLifetimeManagerViaEnumeration(
     event.create(wil::EventOptions::ManualReset, eventName.get());
 
     WCHAR lifetimeManagerApplicationUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH]{};
-    uint32_t lifetimeManagerApplicationUserModelIdLength{ static_cast<uint32_t>(ARRAYSIZE(lifetimeManagerApplicationUserModelId)) };
+    uint32_t lifetimeManagerApplicationUserModelIdLength{ ARRAYSIZE(lifetimeManagerApplicationUserModelId) };
     PCWSTR c_packageRelativeApplicationId{ L"DDLM" };
     THROW_IF_WIN32_ERROR(FormatApplicationUserModelId(packageFamilyName.c_str(), c_packageRelativeApplicationId, &lifetimeManagerApplicationUserModelIdLength, lifetimeManagerApplicationUserModelId));
 
@@ -542,16 +542,16 @@ void FindDDLMViaEnumeration(
         }
         if (CompareStringOrdinal(packageName.c_str(), static_cast<int>(packageNamePrefixLength), packageNamePrefix, static_cast<int>(packageNamePrefixLength), TRUE) != CSTR_EQUAL)
         {
-                // The package's Name prefix doesn't match the expected value. Skip it
-                continue;
+            // The package's Name prefix doesn't match the expected value. Skip it
+            continue;
         }
         if (packageNameSuffixLength > 0)
         {
             const auto offsetToSuffix{ packageNameLength - packageNameSuffixLength };
             if (CompareStringOrdinal(packageName.c_str() + offsetToSuffix, static_cast<int>(packageNameSuffixLength), packageNameSuffix, static_cast<int>(packageNameSuffixLength), TRUE) != CSTR_EQUAL)
             {
-                    // The package's Name suffix doesn't match the expected value. Skip it
-                    continue;
+                // The package's Name suffix doesn't match the expected value. Skip it
+                continue;
             }
         }
         if (CompareStringOrdinal(packageId.PublisherId().c_str(), -1, expectedPublisherId, -1, TRUE) != CSTR_EQUAL)

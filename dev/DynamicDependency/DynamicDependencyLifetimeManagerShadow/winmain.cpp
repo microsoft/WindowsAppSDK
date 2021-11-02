@@ -41,7 +41,7 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     // Wait for our calling process to tell us to quit OR our calling process terminates.
     // Either way, we've served our purpose and should quit.
     HANDLE waitForHandles[]{ endOfTheLine.get(), callerProcessHandle.get() };
-    auto rc{ WaitForMultipleObjects(static_cast<DWORD>(ARRAYSIZE(waitForHandles)), waitForHandles, FALSE, INFINITE) };
+    auto rc{ WaitForMultipleObjects(ARRAYSIZE(waitForHandles), waitForHandles, FALSE, INFINITE) };
     if (rc == WAIT_OBJECT_0)
     {
         (void) LOG_HR_MSG(WINDOWSAPPSDK_DDLM_SHUTDOWN, "DDLM.Shutdown: %ls", eventName);
