@@ -112,7 +112,8 @@ steps:
 
           if (($destinationPaths -ne $null)) {
             foreach ($destPath in $destinationPaths) {
-              Write-Host 'SourcePath:' $srcPath.FullName $destPath.FullName
+              Write-Host 'SourcePath:' $srcPath.FullName
+              Write-Host 'DestinationPath:' $destPath.FullName
               Copy-Item -Force $srcPath.FullName $destPath.FullName
             }
           }
