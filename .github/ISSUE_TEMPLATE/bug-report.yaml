@@ -61,7 +61,7 @@ body:
       description: Please specify project type you have encountered the issue.
       options:
         - label: "Packaged"
-        - label: "UnPackaged"
+        - label: "Unpackaged"
   - type: dropdown
     attributes:
       label: Windows version
