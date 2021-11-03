@@ -18,7 +18,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        . .\eng\common\MaestroHelpers.ps1
+        . .\eng\common\Scripts\MaestroHelpers.ps1
         
         $jsonBase = @{}
 
@@ -90,7 +90,7 @@ steps:
     displayName: 'Post build to Maestro'
     inputs:
       targetType: filePath
-      filePath: eng\common\MaestroPostRequest.ps1
+      filePath: eng\common\Scripts\MaestroPostRequest.ps1
       arguments: -url '$(MaestroUri)' -Token '$(MaestroToken)' -api '/api/builds' -jsonBodyPath '$(Build.SourcesDirectory)\eng\common\maestro-build.json'
  
   - ${{ if eq(parameters.TriggerSubscription, 'true') }}:
@@ -99,7 +99,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          . .\eng\common\MaestroHelpers.ps1
+          . .\eng\common\Scripts\MaestroHelpers.ps1
 
           $repository = '$(Build.Repository.Uri)'
           if (!(IsGitHubRepo($repository)))
@@ -107,13 +107,13 @@ steps:
             # Maestro expects https://dev.azure.com/microsoft/xx/_git/xx
             # But Build.Repository.Uri returns https://microsoft.visualstudio.com/xx/_git/xx
             # So we convert it into the right form here
-            $repository = ConvertToMaestroFriendlyUri $repository
+            $repository = ConvertToMaestroFriendlyAzureDevOpUri $repository
           }
 
           # Get the id of the default channel of this branch
           $api = "/api/default-channels"
           $queryParam = "&repository=" + $repository + "&branch=$(Build.SourceBranch)"
-          $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
+          $response = &".\eng\common\Scripts\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
           $jsonObj = ConvertFrom-Json $response.Content
           $channelId = $jsonObj.channel.id
           if ([string]::IsNullOrEmpty($channelId))
@@ -126,7 +126,7 @@ steps:
             # Get the id of the build posted earlier
             $api = "/api/builds"
             $queryParam = "&repository=" + $repository + "&commit=$(Build.SourceVersion)"
-            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
+            $response = &".\eng\common\Scripts\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParam
             $jsonObj = ConvertFrom-Json $response.Content
             $buildId = $jsonObj.id
             if ([string]::IsNullOrEmpty($buildId))
@@ -139,12 +139,12 @@ steps:
             $api = "/api/channels/" + $channelId + "/builds/" + $buildId
             # buildId may return a space separated numbers if there are more than one build for the same commit
             $api =  $api.Split(" ")[0] 
-            $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
+            $response = &".\eng\common\Scripts\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath ''
 
             # Get the list of subscriptions on the channel
             $api = "/api/subscriptions"
             $queryParams = "&channelId=" + $channelId
-            $response = &".\eng\common\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParams
+            $response = &".\eng\common\Scripts\MaestroGetRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api -queryParameters $queryParams
             $jsonObj = ConvertFrom-Json $response.Content
             foreach ($sub in $jsonObj)
             {
@@ -159,7 +159,7 @@ steps:
                   Write-Host "Triggering subscription on " $id
                   # bar-build-id is always 0
                   $api = "/api/subscriptions/" + $id + "/trigger"
-                  $response = &".\eng\common\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
+                  $response = &".\eng\common\Scripts\MaestroPostRequest.ps1" -url '$(MaestroUri)' -Token '$(MaestroToken)' -api $api  -jsonBodyPath '' -queryParameters '&bar-build-id=0'
                 }
               }
             }
