@@ -430,19 +430,26 @@ specified family name and axis values. The following `MatchAxisValues` function 
 to `GetMatchingFonts` followed by a string representation of the first matching font face reference.
 
 ```c++
+#include <dwrite_core.h>
+#include <wil/com.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
 // Forward declarations of overloaded output operators used by MatchAxisValues.
 std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue);
 std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference);
 std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceReference);
 
 //
-// Outputs the first matching font for the given name and axis values
-// using IDWriteFontSet4::GetMatchingFonts.
+// MatchAxisValues calls IDWriteFontSet4::GetMatchingFonts with the
+// specific parameters and outputs the matching fonts.
 //
 void MatchAxisValues(
     IDWriteFontSet4* fontSet,
     _In_z_ WCHAR const* familyName,
-    std::vector<DWRITE_FONT_AXIS_VALUE> const& axisValues
+    std::vector<DWRITE_FONT_AXIS_VALUE> const& axisValues,
+    bool allowSimulations
     )
 {
     // Write the input parameters.
@@ -451,39 +458,32 @@ void MatchAxisValues(
     {
         std::wcout << L' ' << axisValue;
     }
-    std::wcout << L" }, ...)\n";
+    std::wcout
+        << L" }, "
+        << (allowSimulations ? L"true" : L"false")
+        << L"):\n";
 
-    // Test GetMatchingFonts with and without simulations allowed.
-    for (bool allowSimulations : { true, false })
+    // Get the matching fonts for the specified family name and axis values.
+    wil::com_ptr<IDWriteFontSet4> matchingFonts;
+    THROW_IF_FAILED(fontSet->GetMatchingFonts(
+        familyName,
+        axisValues.data(),
+        static_cast<UINT32>(axisValues.size()),
+        allowSimulations,
+        &matchingFonts
+    ));
+
+    // Output the matching font face references.
+    UINT32 const fontCount = matchingFonts->GetFontCount();
+    for (UINT32 fontIndex = 0; fontIndex < fontCount; fontIndex++)
     {
-        std::wcout << (allowSimulations ?
-            L" - allow simulations => " :
-            L" - no simulations    => ");
-
-        // Get the matching fonts for the specified family name and axis values.
-        wil::com_ptr<IDWriteFontSet4> matchingFonts;
-        THROW_IF_FAILED(fontSet->GetMatchingFonts(
-            familyName,
-            axisValues.data(),
-            static_cast<UINT32>(axisValues.size()),
-            allowSimulations,
-            &matchingFonts
-        ));
-
-        // Output the first matching font face reference.
-        if (matchingFonts->GetFontCount() != 0)
-        {
-            wil::com_ptr<IDWriteFontFaceReference1> faceReference;
-            THROW_IF_FAILED(matchingFonts->GetFontFaceReference(0, &faceReference));
-            std::wcout << *faceReference;
-        }
-
-        std::wcout << L'\n';
+        wil::com_ptr<IDWriteFontFaceReference1> faceReference;
+        THROW_IF_FAILED(matchingFonts->GetFontFaceReference(fontIndex, &faceReference));
+        std::wcout << L"    " << *faceReference << L'\n';
     }
 
-    std::wcout << L'\n';
+    std::wcout << std::endl;
 }
-
 ```
 
 An application might have weight, stretch, and style parameters instead of (or in addition to) axis values.
@@ -498,19 +498,28 @@ derived axis values. It then combines the input axis values with the derived axi
 to the above `MatchAxisValues` function.
 
 ```c++
+struct FontStyleParams
+{
+    FontStyleParams() {}
+    FontStyleParams(DWRITE_FONT_WEIGHT fontWeight) : fontWeight{ fontWeight } {}
+    FontStyleParams(float fontSize) : fontSize{ fontSize } {}
+
+    DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT_NORMAL;
+    DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH_NORMAL;
+    DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE_NORMAL;
+    float fontSize = 0.0f;
+};
+
 //
-// Outputs the first matching font given both weight-stretch-style parameters
-// and axis values. Calls IDWriteFontSet4::GetDerivedFontAxisValues to map the
-// font size, weight, stretch, and style to axis values.
+// MatchFont calls IDWriteFontSet4::GetDerivedFontAxisValues to map the input
+// paramters to axis values and then calls MatchAxisValues.
 //
 void MatchFont(
     IDWriteFactory7* factory,
     _In_z_ WCHAR const* familyName,
-    float fontSize,
-    DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT_NORMAL,
-    DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH_NORMAL,
-    DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE_NORMAL,
-    std::vector<DWRITE_FONT_AXIS_VALUE> axisValues = {}
+    FontStyleParams styleParams = {},
+    std::vector<DWRITE_FONT_AXIS_VALUE> axisValues = {},
+    bool allowSimulations = true
     )
 {
     wil::com_ptr<IDWriteFontSet2> fontSet2;
@@ -520,15 +529,16 @@ void MatchFont(
     THROW_IF_FAILED(fontSet2->QueryInterface(&fontSet));
 
     // Get derived axis value from the weight, stretch, style, and font size.
-    // Any axes in the input vector are excluded from the output.
+    // Any axes in the input vector are excluded from the output. The maximum
+    // number of derived axis values is DWRITE_STANDARD_FONT_AXIS_COUNT.
     DWRITE_FONT_AXIS_VALUE derivedAxisValues[DWRITE_STANDARD_FONT_AXIS_COUNT];
     UINT32 derivedAxisCount = fontSet->GetDerivedFontAxisValues(
         axisValues.data(),
         static_cast<UINT32>(axisValues.size()),
-        fontWeight,
-        fontStretch,
-        fontStyle,
-        fontSize,
+        styleParams.fontWeight,
+        styleParams.fontStretch,
+        styleParams.fontStyle,
+        styleParams.fontSize,
         derivedAxisValues
         );
 
@@ -539,9 +549,8 @@ void MatchFont(
         derivedAxisValues + derivedAxisCount
         );
 
-    // Pass the combined axis values to the overload of WriteMatchingFont that
-    // just takes axis values.
-    MatchAxisValues(fontSet.get(), familyName, axisValues);
+    // Pass the combined axis values (explicit and derived) to MatchAxisValues.
+    MatchAxisValues(fontSet.get(), familyName, axisValues, allowSimulations);
 }
 ```
 
@@ -549,114 +558,105 @@ The following function demonstrates the results of calling the above `MatchFont`
 with some example inputs:
 
 ```c++
-// Outputs the results of some representative font selection cases.
 void TestFontSelection(IDWriteFactory7* factory)
 {
-    // Output:
-    //     GetMatchingFonts("Arial", { wght:900 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
-    //      - no simulations    => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
-    // Notes:
-    //   *  GetDerivedAxisValue converts font size in DIPs to opsz axis value in points.
-    //   *  The resulting fonts in this case have no opsz axis.
-    MatchFont(factory, L"Arial", 16.0f, DWRITE_FONT_WEIGHT_BLACK);
+    // Request "Cambria" with bold weight, with and without allowing simulations.
+    //  - Matches a typographic/WWS family.
+    //  - Result includes all fonts in the family ranked by priority.
+    //  - Useful because Cambria Bold might have fewer glyphs than Cambria Regular.
+    //  - Simulations may be applied if allowed.
+    MatchFont(factory, L"Cambria", DWRITE_FONT_WEIGHT_BOLD);
+    MatchFont(factory, L"Cambria", DWRITE_FONT_WEIGHT_BOLD, {}, /*allowSimulations*/ false);
 
-    // Output:
-    //     GetMatchingFonts("Arial Black", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
-    //      - no simulations    => ariblk.ttf wght:900 wdth:100 ital:0 slnt:0
-    // Notes:
-    //   *  "Arial Black" matches the RBIZ family name of ariblk.ttf.
-    //   *  Weight 400 was requested but the matching font (by name) has weight 900.
-    MatchFont(factory, L"Arial Black", 16.0f);
+    // Request "Cambria Bold".
+    //  - Matches the full name of one static font.
+    MatchFont(factory, L"Cambria Bold");
 
-    // Output:
-    //     GetMatchingFonts("Arial", { wght:700 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
-    //      - no simulations    => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
-    MatchFont(factory, L"Arial", 16.0f, DWRITE_FONT_WEIGHT_BOLD);
+    // Request "Bahnschrift" with bold weight.
+    //  - Matches a typographic/WWS family.
+    //  - Returns an arbitrary instance of the variable font.
+    MatchFont(factory, L"Bahnschrift", DWRITE_FONT_WEIGHT_BOLD);
 
-    // Output:
-    //     GetMatchingFonts("Arial Bold", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
-    //      - no simulations    => arialbd.ttf wght:700 wdth:100 ital:0 slnt:0
-    // Notes:
-    //  *  "Arial Bold" matches the full name of arialbd.ttf.
-    //  *  Weight 400 was requested but the matching font (by name) has weight 700.
-    MatchFont(factory, L"Arial Bold", 16.0f);
+    // Request "Segoe UI Variable" with two different font sizes.
+    //  - Matches a typographic family name only (not a WWS family name).
+    //  - Font size maps to "opsz" axis value (Note conversion from DIPs to points.)
+    //  - Returns an arbitrary instance of the variable font.
+    MatchFont(factory, L"Segoe UI Variable", 16.0f);
+    MatchFont(factory, L"Segoe UI Variable", 32.0f);
 
-    // Output:
-    //     GetMatchingFonts("Centaur", { wght:700 wdth:100 ital:0 slnt:0 }, ...)
-    //      - allow simulations => CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0 BOLDSIM
-    //      - no simulations    => CENTAUR.TTF wght:400 wdth:100 ital:0 slnt:0
-    // Notes:
-    //  *  The "Centaur" family has no bold weight, so simulation is applied if allowed.
-    //  *  The wght axis value of the result is the natural weight of the font, but
-    //     IDWriteFontFace::GetWeight() would return bold.
-    MatchFont(factory, L"Centaur", /*ignore size*/ 0.0f, DWRITE_FONT_WEIGHT_BOLD);
+    // Same as above with an explicit opsz axis value.
+    // The explicit value is used instead of an "opsz" value derived from the font size.
+    MatchFont(factory, L"Segoe UI Variable", 16.0f, { { DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE, 32.0f } });
 
-    // Output on Windows 10 with static Sitka fonts:
-    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations => Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations    => Sitka.ttc#1 opsz:12 wght:400 ital:0 wdth:100 slnt:0
-    // Output on Windows 11 with variable Sitka fonts:
-    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, ...)
-    //      - allow simulations => SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations    => SitkaVF.ttf opsz:12 wght:400 ital:0 wdth:100 slnt:0
-    MatchFont(factory, L"Sitka", 16.0f);
+    // Request "Segoe UI Variable Display".
+    //  - Matches a WWS family (NOT a typographic family).
+    //  - The input "opsz" value is ignored; the optical size of the family is used.
+    MatchFont(factory, L"Segoe UI Variable Display", 16.0f);
 
-    // Output on Windows 10 with static Sitka fonts:
-    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations => Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations    => Sitka.ttc#5 opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    // Output on Windows 11 with variable Sitka fonts:
-    //     GetMatchingFonts("Sitka", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations    => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    // Notes:
-    //   *  "Sitka" matches a typographic family name.
-    //   *  The resulting "opsz" value is clamped to the axis range of the matching font.
-    //   *  The "opsz" axis range for the nearest static font ("Sitka Display") is 23.5-27.5.
-    //   *  The "opsz" axis range for the variable Sitka font is 6-27.5 pt.
-    MatchFont(factory, L"Sitka", 32.0f);
-
-    // Output on Windows 10 with static Sitka fonts:
-    //     GetMatchingFonts("Sitka Text", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations => Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations    => Sitka.ttc#1 opsz:13.5 wght:400 ital:0 wdth:100 slnt:0
-    // Output on Windows 11 with variable Sitka fonts:
-    //     GetMatchingFonts("Sitka Text", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, ...)
-    //      - allow simulations => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    //      - no simulations    => SitkaVF.ttf opsz:24 wght:400 ital:0 wdth:100 slnt:0
-    // Notes:
-    //   *  "Sitka Text" matches a weight-stretch-style family name.
-    //   *  The resulting "opsz" value is clamped to the axis range of the matching font.
-    //   *  The "opsz" axis range for the static "Sitka Text" font is 9.70-13.5 pt.
-    //   *  The "opsz" axis range for the variable Sitka font is 6-27.5 pt.
-    MatchFont(factory, L"Sitka Text", 32.0f);
-
-    // Output on Windows 10 with static Sitka fonts:
-    //     GetMatchingFonts("Sitka", { wght:700 opsz:72 wdth:100 ital:0 slnt:0 }, ...)
-    //      - allow simulations => SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
-    //      - no simulations    => SitkaB.ttc#5 opsz:72 wght:700 ital:0 wdth:100 slnt:0
-    // Output on Windows 11 with variable Sitka fonts:
-    //     GetMatchingFonts("Sitka", { wght:700 opsz:72 wdth:100 ital:0 slnt:0 }, ...)
-    //      - allow simulations => SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
-    //      - no simulations    => SitkaVF.ttf opsz:27.5 wght:700 ital:0 wdth:100 slnt:0
-    // Notes:
-    //   *  Explicit "opsz" and "wght" axes take precedence over fontSize and fontWeight.
-    MatchFont(
-        factory, L"Sitka",
-        16.0f, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL,
-        { { DWRITE_FONT_AXIS_TAG_WEIGHT, 700.0f }, { DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE, 72.0f } }
-    );
+    // Request "Segoe UI Variable Display Bold".
+    //  - Matches the full name of a variable font instance.
+    //  - All input axes are ignored; the axis values of the matching font are used.
+    MatchFont(factory, L"Segoe UI Variable Display Bold", 16.0f);
 }
+```
+
+The above `TestFontSelection` function produces the following output:
+
+```
+GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, true):
+    cambriab.ttf wght:700 wdth:100 ital:0 slnt:0
+    cambria.ttc wght:400 wdth:100 ital:0 slnt:0 BOLDSIM
+    cambriaz.ttf wght:700 wdth:100 ital:1 slnt:-12.4
+    cambriai.ttf wght:400 wdth:100 ital:1 slnt:-12.4 BOLDSIM
+
+GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, false):
+    cambriab.ttf wght:700 wdth:100 ital:0 slnt:0
+    cambriaz.ttf wght:700 wdth:100 ital:1 slnt:-12.4
+    cambria.ttc wght:400 wdth:100 ital:0 slnt:0
+    cambriai.ttf wght:400 wdth:100 ital:1 slnt:-12.4
+
+GetMatchingFonts("Cambria Bold", { wght:400 wdth:100 ital:0 slnt:0 }, true):
+    cambriab.ttf wght:700 wdth:100 ital:0 slnt:0
+
+GetMatchingFonts("Bahnschrift", { wght:700 wdth:100 ital:0 slnt:0 }, true):
+    bahnschrift.ttf wght:700 wdth:100 ital:0 slnt:0
+
+GetMatchingFonts("Segoe UI Variable", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, true):
+    SegUIVar.ttf opsz:12 wght:400 wdth:100 ital:0 slnt:0
+
+GetMatchingFonts("Segoe UI Variable", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, true):
+    SegUIVar.ttf opsz:24 wght:400 wdth:100 ital:0 slnt:0
+
+GetMatchingFonts("Segoe UI Variable", { opsz:32 wght:400 wdth:100 ital:0 slnt:0 }, true):
+    SegUIVar.ttf opsz:32 wght:400 wdth:100 ital:0 slnt:0
+
+GetMatchingFonts("Segoe UI Variable Display", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, true):
+    SegUIVar.ttf opsz:36 wght:400 wdth:100 ital:0 slnt:0
+
+GetMatchingFonts("Segoe UI Variable Display Bold", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, true):
+    SegUIVar.ttf opsz:36 wght:700 wdth:100 ital:0 slnt:0
 ```
 
 Following are the implementations of the overloaded operators declared above. These are used
 by `MatchAxisValues` to write the input axis values and the resulting font face references:
 
 ```c++
+// Output a font axis value.
+std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue)
+{
+    UINT32 tagValue = axisValue.axisTag;
+    WCHAR tagChars[5] =
+    {
+        static_cast<WCHAR>(tagValue & 0xFF),
+        static_cast<WCHAR>((tagValue >> 8) & 0xFF),
+        static_cast<WCHAR>((tagValue >> 16) & 0xFF),
+        static_cast<WCHAR>((tagValue >> 24) & 0xFF),
+        '\0'
+    };
+
+    return out << tagChars << L':' << axisValue.value;
+}
+
 // Output a file name given a font file reference.
 std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference)
 {
@@ -679,22 +679,6 @@ std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference)
         out << fileName;
     }
     return out;
-}
-
-// Output a font axis value.
-std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue)
-{
-    UINT32 tagValue = axisValue.axisTag;
-    WCHAR tagChars[5] =
-    {
-        static_cast<WCHAR>(tagValue & 0xFF),
-        static_cast<WCHAR>((tagValue >> 8) & 0xFF),
-        static_cast<WCHAR>((tagValue >> 16) & 0xFF),
-        static_cast<WCHAR>((tagValue >> 24) & 0xFF),
-        '\0'
-    };
-
-    return out << tagChars << L':' << axisValue.value;
 }
 
 // Output a font face reference.
@@ -736,7 +720,7 @@ std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceRef
 }
 ```
 
-To round out the sample, following are command-line parsing functions and the main function:
+To round out the sample, following are command-line parsing functions and the `main` function:
 
 ```c++
 char const g_usage[] =
@@ -751,16 +735,15 @@ char const g_usage[] =
 " -oblique          Sets style to DWRITE_FONT_STYLE_OBLIQUE.\n"
 " -stretch <value>  Sets a stretch in the range 1-9.\n"
 " -<axis>:<value>   Sets an axis value (e.g., -opsz:24).\n"
+" -nosim            Disallow font simulations.\n"
 "\n";
 
 struct CmdArgs
 {
     std::wstring familyName;
-    float fontSize = 0.0f;
-    DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT_NORMAL;
-    DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH_NORMAL;
-    DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE_NORMAL;
+    FontStyleParams styleParams;
     std::vector<DWRITE_FONT_AXIS_VALUE> axisValues;
+    bool allowSimulations = true;
     bool test = false;
 };
 
@@ -803,33 +786,33 @@ bool ParseCommandLine(int argc, WCHAR** argv, CmdArgs& cmd)
         {
             if (++argIndex == argc)
                 return false;
-            if (!ParseFloat(argv[argIndex], &cmd.fontSize))
+            if (!ParseFloat(argv[argIndex], &cmd.styleParams.fontSize))
                 return false;
         }
         else if (!wcscmp(arg, L"-bold"))
         {
-            cmd.fontWeight = DWRITE_FONT_WEIGHT_BOLD;
+            cmd.styleParams.fontWeight = DWRITE_FONT_WEIGHT_BOLD;
         }
         else if (!wcscmp(arg, L"-weight"))
         {
             if (++argIndex == argc)
                 return false;
-            if (!ParseEnum(argv[argIndex], 100, 900, &cmd.fontWeight))
+            if (!ParseEnum(argv[argIndex], 100, 900, &cmd.styleParams.fontWeight))
                 return false;
         }
         else if (!wcscmp(arg, L"-italic"))
         {
-            cmd.fontStyle = DWRITE_FONT_STYLE_ITALIC;
+            cmd.styleParams.fontStyle = DWRITE_FONT_STYLE_ITALIC;
         }
         else if (!wcscmp(arg, L"-oblique"))
         {
-            cmd.fontStyle = DWRITE_FONT_STYLE_OBLIQUE;
+            cmd.styleParams.fontStyle = DWRITE_FONT_STYLE_OBLIQUE;
         }
         else if (!wcscmp(arg, L"-stretch"))
         {
             if (++argIndex == argc)
                 return false;
-            if (!ParseEnum(argv[argIndex], 1, 9, &cmd.fontStretch))
+            if (!ParseEnum(argv[argIndex], 1, 9, &cmd.styleParams.fontStretch))
                 return false;
         }
         else if (wcslen(arg) > 5 && arg[5] == L':')
@@ -841,6 +824,10 @@ bool ParseCommandLine(int argc, WCHAR** argv, CmdArgs& cmd)
                 return false;
             cmd.axisValues.push_back(axisValue);
         }
+        else if (!wcscmp(arg, L"-nosim"))
+        {
+            cmd.allowSimulations = false;
+        }
         else
         {
             return false;
@@ -850,7 +837,7 @@ bool ParseCommandLine(int argc, WCHAR** argv, CmdArgs& cmd)
     return true;
 }
 
-int wmain(int argc, WCHAR** argv)
+int __cdecl wmain(int argc, WCHAR** argv)
 {
     CmdArgs cmd;
     if (!ParseCommandLine(argc, argv, cmd))
@@ -877,11 +864,9 @@ int wmain(int argc, WCHAR** argv)
         MatchFont(
             factory.get(),
             cmd.familyName.c_str(),
-            cmd.fontSize,
-            cmd.fontWeight,
-            cmd.fontStretch,
-            cmd.fontStyle,
-            std::move(cmd.axisValues)
+            cmd.styleParams,
+            std::move(cmd.axisValues),
+            cmd.allowSimulations
         );
     }
 
@@ -890,7 +875,6 @@ int wmain(int argc, WCHAR** argv)
         TestFontSelection(factory.get());
     }
 }
-
 ```
 
 # API Details
