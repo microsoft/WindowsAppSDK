@@ -22,6 +22,7 @@
     <MuxCustomBuildTasksPackageVersion>1.0.83-winui3</MuxCustomBuildTasksPackageVersion>
     <DotNetCoreSdkVersion>5.0.402</DotNetCoreSdkVersion>
     <DotNetCoreRuntimeVersion>5.0.11</DotNetCoreRuntimeVersion>
+    <WindowsSdkPackageVersion>10.0.18362.22-preview</WindowsSdkPackageVersion>
     <DetoursVersion>4.0.1</DetoursVersion>
     <CppWinRTVersion>2.0.191217.1</CppWinRTVersion>
     <MicrosoftSourceLinkAzureReposVersion>1.0.0</MicrosoftSourceLinkAzureReposVersion>
