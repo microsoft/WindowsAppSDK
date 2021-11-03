@@ -158,15 +158,379 @@ void DisplayToast(const winrt::Windows::Data::Xml::Dom::XmlDocument& doc)
 }
 ```
 
-## Create a Toast Payload using Preexisting Toast Xml templates
+## Create a Toast Payload using Preexisting Toast XML templates
 
-We will provide a small set of templates that developers can use to compose payloads. The developer can then use the Document Object Model (DOM) to customize the content in the payload. Below is an example of such customization using a simple payload with Image and Text. Here the developer adds an attribute to the image element and sets the text fields in the payload.
+We will provide a set of templates that developers can use to compose payloads. The developer can then use the Document Object Model (DOM) to customize the content in the payload. The templates that we are introducing are as follows:
+
+| Template Name | Scenario Examples | Example |
+| :--- | :---| :--- |
+|BasicToast| Simple alerts | ![BasicToast](images/BasicToast.png) |
+|ToastWithTwoButtons| Quick actions (2 options) such as view more information or remind me later | ![BasicToast](images/ToastWithTwoButtons.png) |
+|ToastWithThreeButtons| Quick actions (3 options) such as view/archive/delete an email | ![BasicToast](images/ToastWithThreeButtons.png) |
+|ToastWithProgressBar| Show the progress of an operation such as downloading music, syncing files, or updating a game| ![BasicToast](images/ToastWithProgressBar.png) |
+|ToastWithAvatarAndProgressBar| Show the progress of an operation such as downloading music, syncing files, or updating a game (with image) | ![BasicToast](images/ToastWithAvatarAndProgressBar.png) |
+|ToastWithAvatar| Simple alerts (with image) such as message or email from an individual or group | ![BasicToast](images/ToastWithAvatar.png) |
+|ToastWithAvatarAndTextBox| Reply to message from an individual or group | ![BasicToast](images/ToastWithAvatarAndTextBox.png) |
+|ToastWithAvatarAndDropdown| Respond to a message from options in a selection menu (with image) | ![BasicToast](images/ToastWithAvatarAndDropdown.png) |
+|ToastWithDropdown| Respond to a message from options in a selection menu | ![BasicToast](images/ToastWithDropdown.png) |
+|ToastWithReminder| Reminder for calendar event, etc that is displayed pre-expanded and stays on the user's screen till dismissed| ![BasicToast](images/ToastWithReminder.png) |
+|ToastWithAlarm| Reminder with alarm audio that is displayed pre-expanded and stays on the user's screen till dismissed| ![BasicToast](images/ToastWithAlarm.png) |
+|ToastWithHeroImage| Captivate user with an image displayed prominently, such as for a news article or other entertainment content| ![BasicToast](images/ToastWithHeroImage.png) |
+|ToastWithInlineImage| Display an inline image that appears when toast is expanded| ![BasicToast](images/ToastWithInlineImage.png) |
+
+The XML for these templates are as follows:
+```xml
+<!-- BasicToast -->
+<toast>
+ 
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+    </binding>
+  </visual>
+  
+</toast>
+
+<!-- ToastWithTwoButtons -->
+<toast>
+  
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+    </binding>
+  </visual>
+
+  <actions>
+ 
+    <action
+        content=""
+        arguments=""
+        activationType=""/>
+ 
+     <action
+        content=""
+        arguments=""
+        activationType=""/>
+ 
+  </actions>
+ 
+</toast>
+
+<!-- ToastWithThreeButtons -->
+<toast>
+  
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+    </binding>
+  </visual>
+
+  <actions>
+ 
+    <action
+        content=""
+        arguments=""
+        activationType=""/>
+ 
+     <action
+        content=""
+        arguments=""
+        activationType=""/>
+ 
+     <action
+        content=""
+        arguments=""
+        activationType=""/>
+
+  </actions>
+ 
+</toast>
+
+<!-- ToastWithProgressBar -->
+<toast>
+  
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+      <progress
+        title="{progressTitle}"
+        value="{progressValue}"
+        valueStringOverride="{progressValueString}"
+        status="{progressStatus}"/>
+    </binding>
+  </visual>
+ 
+  <actions>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+    
+  </actions>
+  
+</toast>
+
+<!-- ToastWithAvatarAndProgressBar -->
+<toast>
+  
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+      <image placement="appLogoOverride" hint-crop="circle" id="1" src=""/>
+      <progress
+        title="{progressTitle}"
+        value="{progressValue}"
+        valueStringOverride="{progressValueString}"
+        status="{progressStatus}"/>
+    </binding>
+  </visual>
+ 
+  <actions>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+    
+  </actions>
+  
+</toast>
+
+<!-- ToastWithAvatar -->
+<toast>
+ 
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+      <image placement="appLogoOverride" hint-crop="circle" id="1" src=""/>
+    </binding>
+  </visual>
+  
+</toast>
+
+<!-- ToastWithAvatarAndTextBox -->
+<toast>
+ 
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+      <image placement="appLogoOverride" hint-crop="circle" id="1" src=""/>
+    </binding>
+  </visual>
+
+    <actions>
+
+        <input id="textBox" type="text" placeHolderContent=""/>
+ 
+        <action
+          content=""
+          imageUri="Assets/Icons/send.png"
+          hint-inputId="textBox"
+          activationType=""
+          arguments=""/>
+ 
+    </actions>
+  
+</toast>
+
+<!-- ToastWithAvatarAndDropdown -->
+<toast>
+ 
+    <visual>
+        <binding template="ToastGeneric">
+          <text id="1"></text>
+          <text id="2"></text>
+          <text id="3"></text>
+          <image placement="appLogoOverride" hint-crop="circle" id="1" src=""/>
+        </binding>
+    </visual>
+ 
+  <actions>
+ 
+    <input id="1" type="selection" defaultInput="1">
+      <selection id="1" content=""/>
+      <selection id="2" content=""/>
+      <selection id="3" content=""/>
+    </input>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+ 
+  </actions>
+ 
+</toast>
+
+<!-- ToastWithDropdown -->
+<toast>
+ 
+    <visual>
+        <binding template="ToastGeneric">
+          <text id="1"></text>
+          <text id="2"></text>
+          <text id="3"></text>
+        </binding>
+    </visual>
+ 
+  <actions>
+ 
+    <input id="1" type="selection" defaultInput="1">
+      <selection id="1" content=""/>
+      <selection id="2" content=""/>
+      <selection id="3" content=""/>
+    </input>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+ 
+    <action
+      activationType=""
+      arguments=""
+      content=""/>
+ 
+  </actions>
+ 
+</toast>
+
+<!-- ToastWithReminder -->
+<toast scenario="reminder">
+  
+  <visual>
+    <binding template="ToastGeneric">
+          <text id="1"></text>
+          <text id="2"></text>
+          <text id="3"></text>
+    </binding>
+  </visual>
+ 
+  <actions>
+    
+    <input id="snoozeTime" type="selection" defaultInput="1">
+      <selection id="1" content=""/>
+      <selection id="2" content=""/>
+      <selection id="3" content=""/>
+    </input>
+ 
+    <action
+      activationType="system"
+      arguments="snooze"
+      hint-inputId="snoozeTime"
+      content=""/>
+ 
+    <action
+      activationType="system"
+      arguments="dismiss"
+      content=""/>
+    
+  </actions>
+  
+</toast>
+
+<!-- ToastWithAlarm -->
+<toast scenario="alarm">
+  
+  <visual>
+    <binding template="ToastGeneric">
+          <text id="1"></text>
+          <text id="2"></text>
+          <text id="3"></text>
+    </binding>
+  </visual>
+ 
+  <actions>
+    
+    <input id="snoozeTime" type="selection" defaultInput="1">
+      <selection id="1" content=""/>
+      <selection id="2" content=""/>
+      <selection id="3" content=""/>
+    </input>
+ 
+    <action
+      activationType="system"
+      arguments="snooze"
+      hint-inputId="snoozeTime"
+      content=""/>
+ 
+    <action
+      activationType="system"
+      arguments="dismiss"
+      content=""/>
+    
+  </actions>
+  
+</toast>
+
+<!-- ToastWithHeroImage -->
+<toast>
+ 
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+      <image placement="hero" id="1" src=""/>
+    </binding>
+  </visual>
+  
+</toast>
+
+<!-- ToastWithInlineImage -->
+<toast>
+ 
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+      <image placement="hero" id="1" src=""/>
+    </binding>
+  </visual>
+  
+</toast>
+
+```
+
+
+Below is an example of such customization using a simple payload with Image and Text. Here the developer adds an attribute to the image element and sets the text fields in the payload.
 
 ```cpp
 // Uses an API template to Compose and Display a toast
 void CreateToastPayload()
 {
-    auto doc = ToastNotificationManager::GetXmlTemplateContent(ToastTemplateType::ToastImageAndText01);
+    auto doc = ToastNotificationManager::GetXmlTemplateContent(ToastTemplateType::ToastWithAvatar);
 
     auto images = doc.GetElementsByTagName(L"image");
     auto srcAttribute = doc.CreateAttribute(L"src");
@@ -444,14 +808,19 @@ namespace Microsoft.Windows.ToastNotifications
     // Some basic predefined Toast Payload Templates
     enum ToastTemplateType
     {
-        ToastImageAndText01,
-        ToastImageAndText02,
-        ToastImageAndText03,
-        ToastImageAndText04,
-        ToastText01,
-        ToastText02,
-        ToastText03,
-        ToastText04,
+        BasicToast,
+        ToastWithTwoButtons,
+        ToastWithThreeButtons,
+        ToastWithProgressBar,
+        ToastWithAvatarAndProgressBar,
+        ToastWithAvatar,
+        ToastWithAvatarAndTextBox,
+        ToastWithAvatarAndDropdown,
+        ToastWithDropdown,
+        ToastWithReminder,
+        ToastWithAlarm,
+        ToastWithHeroImage,
+        ToastWithInlineImage,
     };
 
     [experimental]
@@ -559,7 +928,7 @@ namespace Microsoft.Windows.ToastNotifications
         // Gets an instance of ToastHistory
         static ToastNotificationHistory History{ get; };
 
-        // Gets an Xml Payload based ona predefined Toast Template
+        // Gets an Xml Payload based on a predefined Toast Template
         static Windows.Data.Xml.Dom.XmlDocument GetXmlTemplateContent(ToastTemplateType type);
     };
 }
