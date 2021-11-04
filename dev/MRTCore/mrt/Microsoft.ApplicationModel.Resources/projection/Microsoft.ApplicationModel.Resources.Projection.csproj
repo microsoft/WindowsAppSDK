@@ -18,6 +18,7 @@
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.ApplicationModel.Resources</CSWinRTIncludes>
     <CSWinRTWindowsMetadata>10.0.18362.0</CSWinRTWindowsMetadata>
+    <WindowsSdkPackageVersion>10.0.18362.22-preview</WindowsSdkPackageVersion>
     <NoWarn>MSB3271</NoWarn>
   </PropertyGroup>
 
