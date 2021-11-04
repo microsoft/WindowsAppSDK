@@ -140,14 +140,14 @@ verdanaz.ttf    | Bold Italic
 With GDI, the input parameters used to select a font are defined by the `LOGFONT` structure, which
 includes family name (`lfFaceName`), weight (`lfWeight`) and italic (`lfItalic`) fields. The `lfItalic` 
 field is either TRUE or FALSE. GDI allows the `lfWeight` field to be any value in the range `FW_THIN`
-(100) to `FW_BLACK` (900), but for historical reasons fonts have long been designed such that thare
+(100) to `FW_BLACK` (900), but for historical reasons fonts have long been designed such that there
 are no more than two weights in the same GDI font family.
 
 Popular application user interfaces from early on included an italic button (to turn italic on and
 off) and a bold button (to toggle between normal and bold weights). The use of these two buttons to
-select fonts within a family assumes the RBIZ model. Even though GDI itself supports more than two
-weights, application compatibility led font developers to set the GDI family name (OpenType name ID 1)
-in a way that was consistent with the RBIZ model.
+select fonts within a family assumes the RBIZ model. Therefore, even though GDI itself supports more 
+than two weights, application compatibility led font developers to set the GDI family name (OpenType
+name ID 1) in a way that was consistent with the RBIZ model.
 
 For example, suppose you wanted to add a heavier "Black" weight to the Arial font family. Logically,
 this font is part of the Arial family, so you might expect to select it by setting `lfFaceName` to
