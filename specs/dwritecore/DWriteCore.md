@@ -430,12 +430,6 @@ specified family name and axis values. The following `MatchAxisValues` function 
 to `GetMatchingFonts` followed by a string representation of the first matching font face reference.
 
 ```c++
-#include <dwrite_core.h>
-#include <wil/com.h>
-#include <iostream>
-#include <string>
-#include <vector>
-
 // Forward declarations of overloaded output operators used by MatchAxisValues.
 std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue);
 std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference);
