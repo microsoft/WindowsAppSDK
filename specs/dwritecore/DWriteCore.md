@@ -97,7 +97,7 @@ rendering process with very limited permissions.
 
 A _bitmap render target_ (`IDWriteBitmapRenderTarget`) is an API object that encapsulates a system memory bitmap
 and enables rendering glyphs to the bitmap. On Windows, the object encapsulates a GDI memory DC with a GDI
-device-dependent bitmap (DIB) selected into it. However, on non-Windows platforms, there is no GDI DC,
+device-independent bitmap (DIB) selected into it. However, on non-Windows platforms, there is no GDI DC,
 and the bitmap is just a system memory array. DWriteCore introduces a new version of the bitmap render target
 interface that an application can use to access the bitmap data without going through GDI.
 
@@ -109,7 +109,8 @@ existing applications, documents, and fonts.
 
 Font selection (sometimes called font matching or font mapping) is the process of selecting the available
 fonts that best match input parameters passed in by an application. The input parameters are sometimes
-referred to collectively as a _logical font_. A font selection algorithm matches the logical font (the
+referred to collectively as a _logical font_. A logical font includes a font family name plus other attributes
+indicating a particular font within the family. A font selection algorithm matches the logical font (the
 "font you want") to an available _physical font_ (a "font you have").
 
 A _font family_ is a named group of fonts that share a common design but may differ in attributes such as
@@ -125,9 +126,9 @@ challenges can be overcome by using the `IDWriteFontSet4` methods.
 
 ## RBIZ Font Family Model
 
-The font family model used by GDI is sometimes called the "four-font model" or "RBIZ" model. Each font
-family in this model typically has at most four fonts. The "RBIZ" label comes from the naming convention
-used for some font files, for example:
+The de facto font family model used in the GDI application ecosystem is sometimes called the "four-font
+model" or "RBIZ" model. Each font family in this model typically has at most four fonts. The "RBIZ"
+label comes from the naming convention used for some font files, for example:
 
 File Name       | Font Style
 ----------------|-------------
@@ -137,29 +138,26 @@ verdanai.ttf    | Italic
 verdanaz.ttf    | Bold Italic
 
 With GDI, the input parameters used to select a font are defined by the `LOGFONT` structure, which
-includes family name (`lfFaceName`), weight (`lfWeight`) and italic (`lfItalic`) fields.
+includes family name (`lfFaceName`), weight (`lfWeight`) and italic (`lfItalic`) fields. The `lfItalic` 
+field is either TRUE or FALSE. GDI allows the `lfWeight` field to be any value in the range `FW_THIN`
+(100) to `FW_BLACK` (900), but for historical reasons fonts have long been designed such that thare
+are no more than two weights in the same GDI font family.
 
-The `lfItalic` field is a BOOL so it can only be TRUE or FALSE. The `lfWeight` field can technically be
-any weight in the range `FW_THIN` (100) to `FW_BLACK` (900), but is typically either `FW_NORMAL` (400)
-or `FW_BOLD` (700). For historical reasons, fonts designed for the RBIZ model almost always have one of 
-these two weights.
+Popular application user interfaces from early on included an italic button (to turn italic on and
+off) and a bold button (to toggle between normal and bold weights). The use of these two buttons to
+select fonts within a family assumes the RBIZ model. Even though GDI itself supports more than two
+weights, application compatibility led font developers to set the GDI family name (OpenType name ID 1)
+in a way that was consistent with the RBIZ model.
 
-To understand why, it helps to think of fonts as evolving in an ecosystem that also includes
-applications. Popular application user interfaces include an italic button (to turn italic on and off)
-and a bold button (to toggle between normal and bold weight). This user interface design made sense at
-a time when computer font families rarely had more than two weights. However, a side effect was that
-subsequent fonts could only have two weights within an RBIZ family if they wanted to work with
-existing applications.
-
-Suppose you wanted to add a heavier "Black" weight to the Arial font family. Logically, this font is
-part of the Arial family, so you might expect to select it by setting `lfFaceName` to "Arial" and 
-`lfWeight` to `FW_BLACK`. However, there is no way for an application user to choose between three
-weights using a two-state bold button. The solution was to give the new font a different family name,
-so the user could select it by choosing "Arial Black" from the list of font families. Likewise, there
-is no way to choose from among different widths in the same font family if your only affordances are
-bold and italic buttons, so the narrow versions of Arial have different family names in the RBIZ
-model. Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes in the RBIZ model
-even though typographically these all belong in one family.
+For example, suppose you wanted to add a heavier "Black" weight to the Arial font family. Logically,
+this font is part of the Arial family, so you might expect to select it by setting `lfFaceName` to
+"Arial" and `lfWeight` to `FW_BLACK`. However, there is no way for an application user to choose 
+between three weights using a two-state bold button. The solution was to give the new font a different
+family name, so the user could select it by choosing "Arial Black" from the list of font families.
+Likewise, there is no way to choose from among different widths in the same font family using only bold
+and italic buttons, so the narrow versions of Arial have different family names in the RBIZ model.
+Thus we have "Arial", "Arial Black", and "Arial Narrow" font familes in the RBIZ model even though
+typographically these all belong in one family.
 
 From these examples, one can see how the limitations of a font family model can affect how fonts are
 grouped into families. Since font families are identified by name, this means the same font can have
@@ -178,9 +176,10 @@ WWS model, fonts within the same family can be differented by three properties: 
 stretch (`DWRITE_FONT_STRETCH`), and style (`DWRITE_FONT_STYLE`).
 
 The WWS model is more flexible than the RBIZ model in two ways. First, fonts in the same family can
-be differentiated by stretch (or width). Second, there can be more than two weights in the same family.
-This flexibility is sufficient to allow all the variants of Arial to be included in the same WWS family.
-The following table compares RBIZ and WWS font properties for a selection of Arial fonts:
+be differentiated by stretch (or width) as well as weight and style. Second, there can be more than two
+weights in the same family. This flexibility is sufficient to allow all the variants of Arial to be
+included in the same WWS family. The following table compares RBIZ and WWS font properties for a
+selection of Arial fonts:
 
 File Name       | RBIZ Family Name      | lfWeight  | lfItalic  | WWS FamilyName    | Weight    | Stretch   | Style
 ----------------|-----------------------|-----------|-----------|-------------------|-----------|-----------|---------
@@ -237,8 +236,8 @@ Advantages of the typographic font family model are:
     rather than exposing different optical sizes to the user as different font families.
 
   - Arbitrary instances of variable fonts can be selected. For example, if a variable font supports
-    weights in the range 100-900, the typographic model can select _any_ weight in this range. The
-    older font family models can only choose the nearest weight from among the named instances defined
+    weights in the continuous range 100-900, the typographic model can select _any_ weight in this range.
+    The older font family models can only choose the nearest weight from among the named instances defined
     by the font.
 
 However, migrating to the typographic font family model raises potential compatibility issues. The
@@ -279,15 +278,15 @@ Legacy-SoftBold.ttf     | Legacy Soft  | 700       | 5         | 0      | Legacy
 Legacy-SoftBlack.ttf    | Legacy Soft  | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
 
 The "Legacy" typographic family has three weights and each weight has regular and "Soft" variants.
-However, these fonts predate OpenType 1.8, so there is no "SOFT" axis, or any other axis that cannot
-be derived from weight, stretch, and style. For each weight, there are two fonts with the same axis
-values. Therefore, it is not possible to unambiguously select the above fonts using the typographic
-family name and axis values alone.
+If these were new fonts, they could be implemented as declaring a SOFT design axis. However, these fonts
+predate OpenType 1.8, so their only design axes are those derived from weight, stretch, and style. For
+each weight, this font family has two fonts with identical axis values, so it is not possible to 
+unambiguously select a font in this family using axis values alone.
 
 The hybrid font selection model mitigates this by allowing the specified family name to be _either_
-a typographic family name or a weight-stretch-style name. (It can also be an RBIZ name or full name.)
-In the example above, an application can avoid ambiguity by specifying "Legacy" or "Legacy Soft"
-as the family name. These two cases are handled as follows:
+a typographic family name or a WWS family name. (It can also be an RBIZ name or full name.) In the
+example above, an application can avoid ambiguity by specifying "Legacy" or "Legacy Soft" as the
+family name. These two cases are handled as follows:
 
   - "Legacy Soft" does not match a typographic family name, so only fonts in the WWS family
     are considered. These can be differentiated by weight, so there is no ambiguity.
@@ -301,20 +300,18 @@ Document and application compatibility issues are mitigated by allowing differen
 names to be specified and also by providing a method of deriving axis values from weight, stretch,
 and style parameters.
 
-Suppose a document specifies a family name, weight, stretch, and style, but no axis values. The
-application can first map the weight, stretch, style, and font size to axis values by calling the
-`IDWriteFontSet4::GetDerivedFontAxisValues` method. The application can then pass both the family
-name and axis values to `IDWriteFontSet4::GetMatchingFonts`. `GetMatchingFonts` returns a list of
-matching fonts in priority order, and the result is appropriate whether the specified family name
-is a typographic family name, weight-stretch-style family name, RBIZ family name, or full name.
-If the specified family has an "opsz" axis, the appropriate optical size is automatically selected
-based on the font size.
+Suppose an application has family name, weight, stretch, style, and font size parameters. For
+example, these might come from a document's backing store. The application can first pass the
+weight, stretch, style, and font size to the `IDWriteFontSet4::GetDerivedFontAxisValues` method
+to map the input parameters to _derived axis values_. If the application also has explicit axis
+values, it should pass these to `GetDerivedAxisValues` as well. The derived axis values will
+not include any axes there were passed in explicitly. This ensures that explicit axes take
+precedence over derived axis values.
 
-Suppose a document specifies weight, stretch, and style and _also_ specifies axis values. In this
-case, the explicit axis values can also be passed in to `IDWriteFontSet4::GetDerivedFontAxisValues`,
-and the derived axis values returned by the method will only include font axes that were not
-specified explicitly. The application can then pass the combined axis values (explicit and derived)
-to `IDWriteFontSet4::GetMatchingFonts`.
+Once the application has axis values (derived, explicit, or both), it can pass the family name
+and axis values to the `IDWriteFontSet4::GetMatchingFonts` method. This method returns an
+`IDWriteFontSet4` representing a list of matching fonts in priority order. The specified family
+name can be a typographic family name, WWS family name, RBIZ family name, or full name.
 
 ## Hybrid Font Selection APIs
 
@@ -326,8 +323,8 @@ The hybrid font selection model is implemented by the following `IDWriteFontSet4
 
   - The `GetMatchingFonts` method returns a prioritized list of matching fonts given a family name
     and array of axis values. As described above, the family name parameter can be a typographic
-    family name, weight-stretch-style family name, RBIZ family name, or full name. (Full name is
-    allowed because GDI allows font matching by full name.)
+    family name, WWS family name, RBIZ family name, or full name. (Full name is allowed because
+    GDI allows font matching by full name.)
 
 The following other DirectWrite APIs also use the hybrid font selection algorithm:
 
