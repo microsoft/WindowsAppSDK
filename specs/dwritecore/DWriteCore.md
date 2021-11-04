@@ -425,9 +425,9 @@ and `IDWriteFontSet4::GetDerivedFontAxisValues` methods. First let's include som
 #include <vector>
 ```
 
-The `IDWriteFontSet4::GetMatchingFonts` method returns a list of fonts in priority oder that match the
+The `IDWriteFontSet4::GetMatchingFonts` method returns a list of fonts in priority order that match the
 specified family name and axis values. The following `MatchAxisValues` function outputs the parameters 
-to `GetMatchingFonts` followed by a string representation of the first matching font face reference.
+to `GetMatchingFonts` and the list of matching fonts in the returned font set.
 
 ```c++
 // Forward declarations of overloaded output operators used by MatchAxisValues.
@@ -486,8 +486,8 @@ weight-stretch-style parameters. Even if the application adds support for specif
 values, it might need to support the older parameters as well. To do so, the application can call the
 `IDWriteFontSet4::GetDerivedFontAxisValues` before calling `IDWriteFontSet4::GetMatchingFonts`.
 
-The following `MatchFont` function takes font size, weight, stretch, and style parameters in addition
-to axis values. It forwards these parameters to `IDWriteFontSet4::GetDerivedAxisValues` method to compute
+The following `MatchFont` function takes weight, stretch, style, and font size parameters in addition to
+axis values. It forwards these parameters to the `IDWriteFontSet4::GetDerivedAxisValues` method to compute
 derived axis values. It then combines the input axis values with the derived axis values, and passes them
 to the above `MatchAxisValues` function.
 
@@ -594,7 +594,7 @@ void TestFontSelection(IDWriteFactory7* factory)
 }
 ```
 
-The above `TestFontSelection` function produces the following output:
+Following is the output of the above `TestFontSelection` function:
 
 ```
 GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, true):
