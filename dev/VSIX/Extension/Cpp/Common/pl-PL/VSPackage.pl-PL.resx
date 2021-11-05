@@ -185,6 +185,9 @@
   <data name="1023" xml:space="preserve">
     <value>Kontrolka użytkownika dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
+  <data name="1025" xml:space="preserve">
+    <value>Pusta aplikacja, spakietyzowana za pomocą projektu pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
+  </data>
   <data name="1026" xml:space="preserve">
     <value>[Eksperymentalne] Pusta aplikacja spakowana z projekt pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
   </data>

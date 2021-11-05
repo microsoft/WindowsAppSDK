@@ -194,6 +194,9 @@
   <data name="1027" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリ用のマネージド クラス ライブラリ (.dll) を作成するためのプロジェクトです。</value>
   </data>
+  <data name="1029" xml:space="preserve">
+    <value>空白のアプリ、Windows アプリケーション パッケージ プロジェクトでパッケージ化 (デスクトップの WinUI 3)</value>
+  </data>
   <data name="1030" xml:space="preserve">
     <value>[試験段階]空のアプリ、Windows アプリケーション パッケージ プロジェクトでパッケージ化 (デスクトップの WinUI 3)</value>
   </data>
