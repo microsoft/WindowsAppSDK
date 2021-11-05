@@ -67,9 +67,16 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         std::hash<std::wstring> hasher;
         auto hash = hasher(seed);
-;
+        uint64_t hash64 = static_cast<uint64_t>(hash);
+
+        // Simulate a larger hash on 32bit platforms to keep the id length consistent.
+        if constexpr (sizeof(size_t) < sizeof(uint64_t))
+        {
+            hash64 = (static_cast<uint64_t>(hash) << 32) | static_cast<uint64_t>(hash);
+        }
+
         wchar_t hashString[17]{}; // 16 + 1 characters for 64bit value represented as a string with a null terminator.
-        THROW_IF_FAILED(StringCchPrintf(hashString, _countof(hashString), L"%I64x", hash));
+        THROW_IF_FAILED(StringCchPrintf(hashString, _countof(hashString), L"%I64x", hash64));
 
         std::wstring result{ c_progIdPrefix };
         result += hashString;
