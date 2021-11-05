@@ -194,6 +194,9 @@
   <data name="1027" xml:space="preserve">
     <value>Projekt służący do tworzenia zarządzanej biblioteki klas (dll) dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
+  <data name="1029" xml:space="preserve">
+    <value>Pusta aplikacja, spakietyzowana za pomocą projektu pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
+  </data>
   <data name="1030" xml:space="preserve">
     <value>[Eksperymentalne] Pusta aplikacja spakowana z projekt pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
   </data>
