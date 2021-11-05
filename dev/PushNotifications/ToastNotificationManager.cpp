@@ -76,13 +76,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void ToastNotificationManager::RegisterActivator(winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color)
     {
-        auto notificationPlatform{ wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER) };
-
         wil::unique_cotaskmem_string processName;
         THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
-        wil::unique_cotaskmem_string unpackagedAppUserModelId;
-        THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), GUID_NULL, &unpackagedAppUserModelId));
 
         GUID guidReference;
         THROW_IF_FAILED(CoCreateGuid(&guidReference));
@@ -90,7 +85,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         wil::unique_cotaskmem_string guidStr;
         THROW_IF_FAILED(StringFromCLSID(guidReference, &guidStr));
 
-        RegisterAssets(unpackagedAppUserModelId.get(), displayName, iconUri, color, guidStr);
+        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(L"D13419AE-3F6E-4872-B84A-F37C728B906D", GUID_NULL));
+
+        RegisterAssets(L"D13419AE-3F6E-4872-B84A-F37C728B906D", displayName, iconUri, color, guidStr);
         RegisterComServer(processName, guidStr);
         return;
     }    

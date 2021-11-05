@@ -7,7 +7,7 @@
 #include <winrt/Windows.UI.h>
 #include <MddBootstrap.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
-
+#include "winrt/Windows.UI.Notifications.h";
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
@@ -16,7 +16,7 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::UI;
-
+using namespace winrt::Windows::UI::Notifications;
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
     // To obtain an AAD RemoteIdentifier for your app,
@@ -112,52 +112,61 @@ int main()
     else
     {
         PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
-        PushNotificationManager::RegisterActivator(info);
+        // PushNotificationManager::RegisterActivator(info);
     }
 
-    std::wstring uriToLaunch{ L"http://www.bing.com" };
+    std::wstring uriToLaunch{ L"C:\\Users\\purifoypaul\\Desktop\\Work\\ProjectReunionReset4\\test\\TestApps\\PushNotificationsDemoApp\\WindowsSecurityIcon.png"};
     winrt::Windows::Foundation::Uri appUri{ uriToLaunch };
-    ToastNotificationManager::RegisterActivator(L"MyApp", appUri, winrt::Windows::UI::Colors::AliceBlue());
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
-    auto kind = args.Kind();
-    if (kind == ExtendedActivationKind::Push)
-    {
-        PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
+    winrt::Microsoft::Windows::PushNotifications::ToastNotificationManager::RegisterActivator(L"Push Notifications App", appUri, winrt::Windows::UI::Colors::LimeGreen());
 
-        // Call GetDeferral to ensure that code runs in low power
-        auto deferral = pushArgs.GetDeferral();
+    winrt::Windows::UI::Notifications::ToastNotificationManager toastManager{};
+    ToastNotifier toastNotifier{ toastManager.CreateToastNotifier(L"D13419AE-3F6E-4872-B84A-F37C728B906D") };
+    auto temp = ToastTemplateType::ToastText01;
+    auto toastXml{ toastManager.GetTemplateContent(temp) };
+    winrt::Windows::UI::Notifications::ToastNotification toast { toastXml };
+    toastNotifier.Show(toast);
 
-        auto payload = pushArgs.Payload();
+    //auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    //auto kind = args.Kind();
+    //if (kind == ExtendedActivationKind::Push)
+    //{
+    //    PushNotificationReceivedEventArgs pushArgs = args.Data().as<PushNotificationReceivedEventArgs>();
 
-        // Do stuff to process the raw payload
-        std::string payloadString(payload.begin(), payload.end());
-        printf("Push notification content received from BACKGROUND: %s\n", payloadString.c_str());
-        printf("Press 'Enter' to exit the App.");
+    //    // Call GetDeferral to ensure that code runs in low power
+    //    auto deferral = pushArgs.GetDeferral();
 
-        // Call Complete on the deferral when finished processing the payload.
-        // This removes the override that kept the app running even when the system was in a low power mode.
-        deferral.Complete();
-        std::cin.ignore();
-    }
-    else if (kind == ExtendedActivationKind::Launch)
-    {
-        PushNotificationChannel channel = RequestChannel();
-        printf("Press 'Enter' at any time to exit App.");
-        std::cin.ignore();
-    }
-    else if (kind == ExtendedActivationKind::ToastNotification)
-    {
-        printf("ToastNotification received!");
-        printf("Press 'Enter' at any time to exit App.");
-        std::cin.ignore();
-    }
+    //    auto payload = pushArgs.Payload();
 
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
-    {
-        // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
-    }
+    //    // Do stuff to process the raw payload
+    //    std::string payloadString(payload.begin(), payload.end());
+    //    printf("Push notification content received from BACKGROUND: %s\n", payloadString.c_str());
+    //    printf("Press 'Enter' to exit the App.");
 
+    //    // Call Complete on the deferral when finished processing the payload.
+    //    // This removes the override that kept the app running even when the system was in a low power mode.
+    //    deferral.Complete();
+    //    std::cin.ignore();
+    //}
+    //else if (kind == ExtendedActivationKind::Launch)
+    //{
+    //    PushNotificationChannel channel = RequestChannel();
+    //    printf("Press 'Enter' at any time to exit App.");
+    //    std::cin.ignore();
+    //}
+    //else if (kind == ExtendedActivationKind::ToastNotification)
+    //{
+    //    printf("ToastNotification received!");
+    //    printf("Press 'Enter' at any time to exit App.");
+    //    std::cin.ignore();
+    //}
+
+    //if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    //{
+    //    // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
+    //    PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+    //}
+
+    std::cin.ignore();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();
