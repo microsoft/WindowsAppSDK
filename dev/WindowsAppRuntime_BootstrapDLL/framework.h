@@ -5,6 +5,7 @@
 
 #include <unknwn.h>
 #include <appmodel.h>
+#include <shobjidl.h>
 
 #include <thread>
 #include <mutex>
@@ -21,8 +22,10 @@
 
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
+#include <winrt/Windows.Management.Deployment.h>
 
 #include <appmodel.identity.h>
 #include <security.integritylevel.h>
+#include <iswindowsversion.h>
 
 #include "wil_msixdynamicdependency.h"
