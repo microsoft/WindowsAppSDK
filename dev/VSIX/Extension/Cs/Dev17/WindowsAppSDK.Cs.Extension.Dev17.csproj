@@ -25,6 +25,8 @@
     <TargetVsixContainerName>$(AssemblyName).$(Deployment).vsix</TargetVsixContainerName>
     <!-- This MUST match VSPackage.PackageGuidString -->
     <PackageGuidString>{B0F1BA01-DE66-4EF9-9C8B-DBB99FB4DA4B}</PackageGuidString>
+    <!-- Dev17 templates should target .NET 5 -->
+    <DotNetVersion>net6.0</DotNetVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
