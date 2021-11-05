@@ -79,13 +79,13 @@ New APIs introduced by DWriteCore include:
 
  - The exported function is renamed `DWriteCoreCreateFactory` to avoid a naming collision with the
    `DWriteCreateFactory` function exported by the system version of DirectWrite (DWrite.dll)
- - A new `DWRITE_FACTORY_TYPE` enumeration value for creating an isolated factory object
+ - A new `DWRITE_FACTORY_TYPE` enumerator for creating an isolated factory object
  - A new method for getting pixel data from a bitmap render target
  - New methods for selecting fonts from a font set
 
 # Factory Creation
 
-The new `DWRITE_FACTORY_TYPE_ISOLATED2` enum value complements the existing factory types. It is similar to
+The new `DWRITE_FACTORY_TYPE_ISOLATED2` enumerator complements the existing factory types. It is similar to
 `DWRITE_FACTORY_TYPE_ISOLATED`, but is more locked down in two ways. First, it only caches data in-process, and
 will not attempt to either read from or write to a cross-process font cache or persisted cache file. Second,
 a restricted factory only enumerates well-known fonts in the system font collection. The well-known-fonts
@@ -181,14 +181,15 @@ weights in the same family. This flexibility is sufficient to allow all the vari
 included in the same WWS family. The following table compares RBIZ and WWS font properties for a
 selection of Arial fonts:
 
-File Name       | RBIZ Family Name      | lfWeight  | lfItalic  | WWS FamilyName    | Weight    | Stretch   | Style
-----------------|-----------------------|-----------|-----------|-------------------|-----------|-----------|---------
-arial.ttf       | Arial                 | 400       | 0         | Arial             | 400       | 5         | 0
-arialbd.ttf     | Arial                 | 700       | 0         | Arial             | 700       | 5         | 0
-ariblk.ttf      | Arial Black           | 900       | 0         | Arial             | 900       | 5         | 0
-ARIALN.TTF      | Arial Narrow          | 400       | 0         | Arial             | 400       | 3         | 0
+Full Name           | RBIZ Family Name      | lfWeight  | lfItalic  | WWS FamilyName    | Weight    | Stretch   | Style
+--------------------|-----------------------|-----------|-----------|-------------------|-----------|-----------|---------
+Arial               | Arial                 | 400       | 0         | Arial             | 400       | 5         | 0
+Arial Bold          | Arial                 | 700       | 0         | Arial             | 700       | 5         | 0
+Arial Black         | Arial Black           | 900       | 0         | Arial             | 900       | 5         | 0
+Arial Narrow        | Arial Narrow          | 400       | 0         | Arial             | 400       | 3         | 0
+Arial Narrow Bold   | Arial Narrow          | 700       | 0         | Arial             | 700       | 3         | 0
 
-As you can see, "Arial Narrow" has the same `lfWeight` and `lfItalic` values as Arial Regular, so it 
+As you can see, "Arial Narrow" has the same `lfWeight` and `lfItalic` values as "Arial", so it 
 has a different RBIZ family name to avoid ambiguity. "Arial Black" has a different RBIZ family name
 to avoid having more than two weights in the "Arial" family. By contrast, all of these fonts are in
 the same weight-stretch-style family.
@@ -268,14 +269,14 @@ related, but with no guarantee that those fonts could be programmatically differ
 properties. As a hypothetical example, suppose all of the following fonts have the typographic family
 name "Legacy":
 
-File                    | WWS Family   | Weight    | Stretch   | Style  | Typo Family   | wght  | wdth  | ital  | slnt
+Full Name               | WWS Family   | Weight    | Stretch   | Style  | Typo Family   | wght  | wdth  | ital  | slnt
 ------------------------|--------------|-----------|-----------|--------|---------------|-------|-------|-------|------
-Legacy-Regular.ttf      | Legacy       | 400       | 5         | 0      | Legacy        | 400   | 100   | 0     | 0
-Legacy-Bold.ttf         | Legacy       | 700       | 5         | 0      | Legacy        | 700   | 100   | 0     | 0
-Legacy-Black.ttf        | Legacy       | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
-Legacy-Soft.ttf         | Legacy Soft  | 400       | 5         | 0      | Legacy        | 400   | 100   | 0     | 0
-Legacy-SoftBold.ttf     | Legacy Soft  | 700       | 5         | 0      | Legacy        | 700   | 100   | 0     | 0
-Legacy-SoftBlack.ttf    | Legacy Soft  | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
+Legacy                  | Legacy       | 400       | 5         | 0      | Legacy        | 400   | 100   | 0     | 0
+Legacy Bold             | Legacy       | 700       | 5         | 0      | Legacy        | 700   | 100   | 0     | 0
+Legacy Black            | Legacy       | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
+Legacy Soft             | Legacy Soft  | 400       | 5         | 0      | Legacy        | 400   | 100   | 0     | 0
+Legacy Soft Bold        | Legacy Soft  | 700       | 5         | 0      | Legacy        | 700   | 100   | 0     | 0
+Legacy Soft Black       | Legacy Soft  | 900       | 5         | 0      | Legacy        | 900   | 100   | 0     | 0
 
 The "Legacy" typographic family has three weights and each weight has regular and "Soft" variants.
 If these were new fonts, they could be implemented as declaring a SOFT design axis. However, these fonts
@@ -293,7 +294,7 @@ family name. These two cases are handled as follows:
 
   - "Legacy" matches both a typographic family and a WWS family. All fonts in the typographic
     family are considered, but presence in the WWS family is used as a tie-breaker. For example,
-    Legacy-Regular.ttf has the same weight as Legacy-Soft.ttf, but the former is preferred because
+    Legacy Bold has the same weight as Legacy Soft Bold, but the former is preferred because
     it is in the "Legacy" WWS family.
 
 Document and application compatibility issues are mitigated by allowing different types of font
@@ -323,12 +324,13 @@ The hybrid font selection model is implemented by the following `IDWriteFontSet4
 
   - The `GetMatchingFonts` method returns a prioritized list of matching fonts given a family name
     and array of axis values. As described above, the family name parameter can be a typographic
-    family name, WWS family name, RBIZ family name, or full name. (Full name is allowed because
-    GDI allows font matching by full name.)
+    family name, WWS family name, RBIZ family name, or full name. (The full name identifies a 
+    particular font style, such as "Arial Bold Italic". `GetMatchingFonts` supports matching by
+    full name for greater comaptibiltiy with GDI, which also allows it.)
 
 The following other DirectWrite APIs also use the hybrid font selection algorithm:
 
-  - [`IDWriteFontCollection2::GetMatchingFonts`](https://docs.microsoft.com/en-us/windows/win32/api/dwrite_3/nf-dwrite_3-idwritefontcollection2-getmatchingfonts)
+  - [`IDWriteFontCollection2::GetMatchingFonts`](https://docs.microsoft.com/windows/win32/api/dwrite_3/nf-dwrite_3-idwritefontcollection2-getmatchingfonts)
 
   - `IDWriteFontFallback1::MapCharacters`
 
@@ -1024,6 +1026,28 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
         UINT32 fontAxisValueCount,
         BOOL allowSimulations,
         _COM_Outptr_ IDWriteFontSet4** matchingFonts
+        ) PURE;
+};
+```
+
+## IDWriteFactory7 Interface
+
+```c++
+DWRITE_BEGIN_INTERFACE(IDWriteFactory8, "202D44F0-84AC-4D6F-B8D0-704B27675CAA") : IDWriteFactory7
+{
+    /// <summary>
+    /// Releases recently used font objects and font file streams that that may be cached by the
+    /// factory object. An application might call this method to ensure file handles are closed
+    /// before uninstalling a font.
+    /// </summary>
+    /// <remarks>
+    /// This method does not release fonts to which the application still holds references. For
+    /// example, an application might hold a font references through an IDWriteFontFace object
+    /// or indirectly through an IDWriteTextLayout object.
+    /// This method only releases fonts cached by the current factory. It does not affect other
+    /// factories or other processes.
+    /// </remarks>
+    STDMETHOD_(void, ReleaseUnreferencedFonts)(
         ) PURE;
 };
 ```
