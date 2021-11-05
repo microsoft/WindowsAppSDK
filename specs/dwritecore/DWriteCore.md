@@ -82,6 +82,7 @@ New APIs introduced by DWriteCore include:
  - A new `DWRITE_FACTORY_TYPE` enumerator for creating an isolated factory object
  - A new method for getting pixel data from a bitmap render target
  - New methods for selecting fonts from a font set
+ - A new factory method to release unreferenced fonts
 
 # Factory Creation
 
@@ -176,10 +177,10 @@ WWS model, fonts within the same family can be differented by three properties: 
 stretch (`DWRITE_FONT_STRETCH`), and style (`DWRITE_FONT_STYLE`).
 
 The WWS model is more flexible than the RBIZ model in two ways. First, fonts in the same family can
-be differentiated by stretch (or width) as well as weight and style. Second, there can be more than two
-weights in the same family. This flexibility is sufficient to allow all the variants of Arial to be
-included in the same WWS family. The following table compares RBIZ and WWS font properties for a
-selection of Arial fonts:
+be differentiated by stretch (or width) as well as weight and style (regular, italic or oblique). Second,
+there can be more than two weights in the same family. This flexibility is sufficient to allow all the
+variants of Arial to be included in the same WWS family. The following table compares RBIZ and WWS font
+properties for a selection of Arial fonts:
 
 Full Name           | RBIZ Family Name      | lfWeight  | lfItalic  | WWS FamilyName    | Weight    | Stretch   | Style
 --------------------|-----------------------|-----------|-----------|-------------------|-----------|-----------|---------
