@@ -194,6 +194,9 @@
   <data name="1027" xml:space="preserve">
     <value>Projekt służący do tworzenia zarządzanej biblioteki klas (dll) dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
+  <data name="1030" xml:space="preserve">
+    <value>[Eksperymentalne] Pusta aplikacja spakowana z projekt pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
+  </data>
   <data name="1031" xml:space="preserve">
     <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
