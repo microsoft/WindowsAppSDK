@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include <pch.h>
-
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX                       L"Microsoft.WindowsAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX                   L"Microsoft.WinAppRuntime"
+#define WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX                   L"MicrosoftCorporationII.WinAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID                       L"8wekyb3d8bbwe"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DELIMETER                    L"_"
 #define WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER             L"."
@@ -36,7 +36,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // All supported SubTypeNames.
     static PackageIdentifier c_subTypeNames[] =
     {
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_DDLMPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DDLM, PackageVersionType::Framework },
     };
@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     // All packages that the DeploymentAPI will attempt check and deploy from the framework.
     static PackageIdentifier c_targetPackages[] =
     {
-        { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
     };
 }
