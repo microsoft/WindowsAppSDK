@@ -186,10 +186,10 @@
     <value>Ein Benutzersteuerelement für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Leere App, paketiert mit WAP (WinUI 3 in Desktop)</value>
+    <value>Leere App, verpackt mit Paketerstellungsprojekt für Windows-Anwendungen (WinUI 3 in Desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimentell] Leere App, paketiert mit WAP (WinUI 3 in Desktop)</value>
+    <value>[Experimentell] Leere App, verpackt mit Paketerstellungsprojekt für Windows-Anwendungen (WinUI 3 in Desktop)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert. Ein WAP-Projekt (Paketerstellungsprojekt für Windows-Anwendungen) ist enthalten, um ein MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store zu erstellen.</value>

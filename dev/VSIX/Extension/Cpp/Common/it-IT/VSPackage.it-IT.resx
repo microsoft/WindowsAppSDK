@@ -186,10 +186,10 @@
     <value>Un controllo utente per le app basato sulla libreria dell'interfaccia utente di Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>App vuota, pacchetto con WAP (WinUI 3 su desktop)</value>
+    <value>App vuota, in pacchetto con Progetto di creazione pacchetti per applicazioni Windows (WinUI 3 in desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Sperimentale] App vuota, in pacchetto con WAP (WinUI 3 in desktop)</value>
+    <value>[Sperimentale] App vuota, in pacchetto con Progetto di creazione pacchetti per applicazioni Windows (WinUI 3 in desktop)</value>
   </data>
   <data name="1027" xml:space="preserve">
     <value>Modello di progetto per la creazione di un'app desktop basata sulla libreria dell'interfaccia utente di Windows (WinUI 3). È incluso un progetto WAP (Progetto di creazione pacchetti per applicazioni Windows) per la creazione di un pacchetto MSIX per il trasferimento locale o la distribuzione tramite il Microsoft Store.</value>
