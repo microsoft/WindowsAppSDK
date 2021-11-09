@@ -115,7 +115,7 @@ int main()
         // PushNotificationManager::RegisterActivator(info);
     }
 
-    std::wstring uriToLaunch{ L"C:\\Users\\purifoypaul\\Desktop\\Work\\ProjectReunionReset4\\test\\TestApps\\PushNotificationsDemoApp\\WindowsSecurityIcon.png"};
+    std::wstring uriToLaunch{ L"C:\\Windows\\System32\\WindowsSecurityIcon.png"};
     winrt::Windows::Foundation::Uri appUri{ uriToLaunch };
     winrt::Microsoft::Windows::PushNotifications::ToastNotificationManager::RegisterActivator(L"Push Notifications App", appUri, winrt::Windows::UI::Colors::LimeGreen());
 
