@@ -12,7 +12,7 @@ inline bool IsExportPresent(
     PCWSTR filename,
     PCSTR functionName)
 {
-    wil::unique_hmodule dll{ LoadLibraryExW(filename, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
+    wil::unique_hmodule dll{ LoadLibraryExW(filename, nullptr, 0) };
     if (dll)
     {
         auto function{ GetProcAddress(dll.get(), functionName) };
