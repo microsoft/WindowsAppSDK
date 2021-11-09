@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <assert.h>
 #include <unknwn.h>
+#include <ShlObj_core.h>
 #include <ShObjIdl_core.h>
 #include <shlguid.h>
 #include <shlwapi.h>

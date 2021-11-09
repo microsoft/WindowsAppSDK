@@ -27,7 +27,6 @@
   <TemplateContent PreferedSolutionConfiguration="Debug|Win32">
     <Project File="ProjectTemplate.vcxproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.filters">ProjectTemplate.vcxproj.filters</ProjectItem>
-      <ProjectItem ReplaceParameters="true" TargetFileName="$projectname$.vcxproj.user">ProjectTemplate.vcxproj.user_template</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.cpp">pch.cpp</ProjectItem>
       <ProjectItem ReplaceParameters="false" TargetFileName="pch.h">pch.h</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="app.manifest">app.manifest</ProjectItem>
@@ -66,11 +65,13 @@
       <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <package id="Microsoft.Windows.SDK.BuildTools" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.Windows.ImplementationLibrary" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
     <Assets>
       <Asset Type="Microsoft.Windows.CppWinRT.nupkg" Source="File" Path="Microsoft.Windows.CppWinRT.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
       <Asset Type="Microsoft.Windows.SDK.BuildTools.nupkg" Source="File" Path="Microsoft.Windows.SDK.BuildTools.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
       <Asset Type="Microsoft.WindowsAppSDK.nupkg" Source="File" Path="Microsoft.WindowsAppSDK.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
+      <Asset Type="Microsoft.Windows.ImplementationLibrary.nupkg" Source="File" Path="Microsoft.Windows.ImplementationLibrary.FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries.nupkg" VsixSubPath="Packages" />
     </Assets>
   </WizardData>
 </VSTemplate>

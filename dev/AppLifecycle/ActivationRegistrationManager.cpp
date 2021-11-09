@@ -63,6 +63,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             RegisterAssociationHandler(appId, fileType.c_str(), type);
         }
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::RegisterForProtocolActivation(hstring const& schemeName,
@@ -73,6 +76,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         RegisterForProtocolActivationInternal(schemeName.c_str(), L"", logo.c_str(),
             displayName.c_str(), exePath.c_str());
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::RegisterForStartupActivation(hstring const& taskId,
@@ -112,6 +118,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             UnregisterAssociationHandler(appId, fileType.c_str(), type);
             UnregisterProgId(progId);
         }
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::UnregisterForProtocolActivation(hstring const& schemeName,
@@ -125,6 +134,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto progId = ComputeProgId(appId, type);
         UnregisterAssociationHandler(appId, schemeName.c_str(), type);
         UnregisterProgId(progId);
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::UnregisterForStartupActivation(hstring const& taskId)

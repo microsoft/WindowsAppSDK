@@ -142,25 +142,23 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             m_instanceHandle.reset(OpenProcess(SYNCHRONIZE, FALSE, processId));
 
             // Create a monitor thread to handle cleaning up this instance if the backing process terminates.
-            auto onInstanceTerminated = [weak_this]
+            auto onInstanceTerminated = [](_In_ void* context, _In_ BOOLEAN /*reason*/) -> void
             {
-                auto strong_this{ weak_this.get() };
-                if (strong_this)
-                {
-                    strong_this->OnInstanceTerminated();
-                }
+                uint32_t processId{ static_cast<uint32_t>(reinterpret_cast<size_t>(context)) };
+                GetCurrent().as<AppInstance>()->RemoveInstance(processId);
             };
 
-            m_terminationWatcher.create(m_instanceHandle.get(), onInstanceTerminated);
+            THROW_IF_WIN32_BOOL_FALSE(RegisterWaitForSingleObject(&m_terminationWatcherWaitHandle, m_instanceHandle.get(), onInstanceTerminated,
+                reinterpret_cast<void*>(static_cast<size_t>(m_processId)), INFINITE, WT_EXECUTEONLYONCE));
         }
 
         m_redirectionArgs.Init(m_processName + L"_RedirectionQueue");
     }
 
-    void AppInstance::OnInstanceTerminated()
+    void AppInstance::RemoveInstance(uint32_t processId)
     {
         auto releaseOnExit = m_dataMutex.acquire();
-        m_instances.Remove(m_processId);
+        m_instances.Remove(processId);
     }
 
     GUID AppInstance::DequeueRedirectionRequestId()
@@ -338,8 +336,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void AppInstance::UnregisterKey()
     {
         auto releaseOnExit = m_dataMutex.acquire();
-        m_key.Reset();
-        m_keyCreationMutex.reset();
+        if (m_isCurrent)
+        {
+            m_key.Reset();
+            m_keyCreationMutex.reset();
+        }
     }
 
     AppLifecycle::AppActivationArguments AppInstance::GetActivatedEventArgs()
@@ -429,7 +430,12 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     hstring AppInstance::Key()
     {
-        return winrt::hstring(m_key.Get());
+        if (m_key.IsValid())
+        {
+            return winrt::hstring(m_key.Get());
+        }
+
+        return winrt::hstring(L"");
     }
 
 
