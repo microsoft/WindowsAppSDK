@@ -292,11 +292,24 @@ bool IsLifetimeManagerViaEnumeration()
         return true;
     }
 
-    // Enable the Enumeration-style LifetimeManager if the environment variable
-    // MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ENUMERATION is defined (for testing scenarios)
-    if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ENUMERATION", nullptr, 0) > 0)
+    // Select the LifetimeManager implementation if the environment variable
+    // MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ALGORITHM is defined (for testing scenarios)
+    // where:
+    //     envvar=0 => Enumeration
+    //     envvar=1 => AppExtension
     {
-        return true;
+        WCHAR value[1 + 1]{};
+        if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ALGORITHM", value, ARRAYSIZE(value)) > 0)
+        {
+            if (*value == L'0')
+            {
+                return true;
+            }
+            else if (*value == L'1')
+            {
+                return false;
+            }
+        }
     }
 
     // Use the AppExtension-style LifetimeManager

@@ -8,42 +8,32 @@
 
 namespace WindowsVersion
 {
-VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(
-    const WORD majorVersion,
-    const WORD minorVersion,
-    const WORD servicePackMajor,
-    const WORD buildNumber)
+inline bool IsExportPresent(
+    PCWSTR filename,
+    PCSTR functionName)
 {
-    OSVERSIONINFOEXW osvi{ sizeof(osvi) };
-    osvi.dwMajorVersion = majorVersion;
-    osvi.dwMinorVersion = minorVersion;
-    osvi.wServicePackMajor = servicePackMajor;
-    osvi.dwBuildNumber = buildNumber;
-
-    const DWORDLONG c_conditionMask{
-        VerSetConditionMask(
-            VerSetConditionMask(
-                VerSetConditionMask(
-                    VerSetConditionMask(
-                        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-                    VER_MINORVERSION, VER_GREATER_EQUAL),
-                VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL),
-            VER_BUILDNUMBER, VER_GREATER_EQUAL)
-    };
-
-    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_BUILDNUMBER, c_conditionMask) != FALSE;
+    wil::unique_hmodule dll{ LoadLibraryExW(filename, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH) };
+    if (dll)
+    {
+        auto function{ GetProcAddress(dll.get(), functionName) };
+        if (function)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
-VERSIONHELPERAPI IsWindows10_19H1OrGreater()
+inline bool IsWindows10_19H1OrGreater()
 {
-    const WORD c_win10_19h1_build{ 18362 };
-    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_win10_19h1_build);
+    // GetPackageInfo2() added to kernelbase.dll in NTDDI_WIN10_19H1 (aka 19H1)
+    return IsExportPresent(L"kernelbase.dll", "GetPackageInfo2");
 }
 
-VERSIONHELPERAPI IsWindows10_20H1OrGreater()
+inline bool IsWindows10_20H1OrGreater()
 {
-    const WORD c_win10_20h1_build{ 19041 };
-    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_win10_20h1_build);
+    // GetPackageInfo3() added to kernelbase.dll in NTDDI_WIN10_VB (aka 20H1)
+    return IsExportPresent(L"kernelbase.dll", "GetPackageInfo3");
 }
 }
 
