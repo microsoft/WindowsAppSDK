@@ -299,7 +299,7 @@ bool IsLifetimeManagerViaEnumeration()
     //     envvar=1 => AppExtension
     {
         WCHAR value[1 + 1]{};
-        if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ALGORITHM", value, ARRAYSIZE(value)) > 0)
+        if (GetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_DDLM_ALGORITHM", value, ARRAYSIZE(value)) == 1)
         {
             if (*value == L'0')
             {
