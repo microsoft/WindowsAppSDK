@@ -3,6 +3,7 @@
 #include <pch.h>
 
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX                       L"Microsoft.WindowsAppRuntime"
+#define WINDOWSAPPRUNTIME_PACKAGE_NAME_ALT_PREFIX                   L"MicrosoftCorporationII.WinAppRuntime"
 #define WINDOWSAPPRUNTIME_PACKAGE_PUBLISHERID                       L"8wekyb3d8bbwe"
 #define WINDOWSAPPRUNTIME_PACKAGE_NAME_DELIMETER                    L"_"
 #define WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DELIMETER             L"."
@@ -19,21 +20,22 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
 
     struct PackageIdentifier
     {
+        std::wstring prefix;
         std::wstring identifier;
     };
 
     // All supported SubTypeNames.
-    static PackageIdentifier c_subTypeNames[] =
+    static const PackageIdentifier c_subTypeNames[] =
     {
-        { WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN },
-        { WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON },
-        { WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DDLM },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_ATLPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_ALTPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_DDLM },
     };
 
     // All packages that the DeploymentAPI will attempt check and deploy from the framework.
-    static PackageIdentifier c_targetPackages[] =
+    static const PackageIdentifier c_targetPackages[] =
     {
-        { WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN },
-        { WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_ALTPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN },
+        { WINDOWSAPPRUNTIME_PACKAGE_NAME_ALTPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON },
     };
 }
