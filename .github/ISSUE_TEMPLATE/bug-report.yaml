@@ -32,29 +32,20 @@ body:
       description: If applicable, add screenshots here to help explain your problem
   - type: dropdown
     attributes:
-      label: IDE
-      description: Which IDE do you use?
-      multiple: true
-      options:
-        - "Visual Studio 2022-preview"
-        - "Visual Studio 2022"
-        - "Visual Studio 2019"
-        - "Visual Studio 2017"
-        - "Other"
-  - type: dropdown
-    attributes:
       label: NuGet package version
+      description: Specify the version of Windows App SDK (or Project Reunion) you're using.
       options:
-        - "Microsoft.WindowsAppSDK 1.0.0-preview3"
-        - "Microsoft.WindowsAppSDK 1.0.0-preview2"
-        - "Microsoft.WindowsAppSDK 1.0.0-preview1"
-        - "Microsoft.WindowsAppSDK 1.0.0-experimental1"
-        - "Microsoft.ProjectReunion 0.8.5"
-        - "Microsoft.ProjectReunion 0.8.4"
-        - "Microsoft.ProjectReunion 0.8.3"
-        - "Microsoft.ProjectReunion 0.8.2"
-        - "Microsoft.ProjectReunion 0.8.1"
-        - "Microsoft.ProjectReunion 0.8.0"
+        - "1.0.0-preview3"
+        - "1.0.0-preview2"
+        - "1.0.0-preview1"
+        - "1.0.0-experimental1"
+        - "0.8.5"
+        - "0.8.4"
+        - "0.8.3"
+        - "0.8.2"
+        - "0.8.1"
+        - "0.8.0"
+        - "0.5"
   - type: dropdown
     attributes:
       label: Packaging type
@@ -80,6 +71,17 @@ body:
         - "April 2018 Update (17134)"
         - "Fall Creators Update (16299)"
         - "Creators Update (15063)"
+  - type: dropdown
+    attributes:
+      label: IDE
+      description: Which IDE are you using?
+      multiple: true
+      options:
+        - "Visual Studio 2022-preview"
+        - "Visual Studio 2022"
+        - "Visual Studio 2019"
+        - "Visual Studio 2017"
+        - "Other"
   - type: textarea
     attributes:
       label: Additional context
