@@ -55,10 +55,11 @@ body:
         - "Microsoft.ProjectReunion 0.8.2"
         - "Microsoft.ProjectReunion 0.8.1"
         - "Microsoft.ProjectReunion 0.8.0"
-  - type: checkboxes
+  - type: dropdown
     attributes:
-      label: Project type
-      description: Please specify project type you have encountered the issue.
+      label: Packaging type
+      description: Please specify the packaging type you're using when you encountered the issue.
+      multiple: true
       options:
         - label: "Packaged"
         - label: "Unpackaged"
