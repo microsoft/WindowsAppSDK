@@ -224,7 +224,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
             auto packagePath{ frameworkPath };
             packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
             packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
-            
+
             // Deploy package.
             RETURN_IF_FAILED(AddPackage(packagePath));
         }
@@ -276,7 +276,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                     continue;
                 }
             }
- 
+
             return hstring(currentPackageInfo.Package(i).packageFullName);
         }
 
