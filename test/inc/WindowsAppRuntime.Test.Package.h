@@ -9,6 +9,8 @@
 #include <WindowsAppRuntime.Test.FileSystem.h>
 
 #include <WexTestClass.h>
+#include <winrt/Windows.Management.Core.h>
+#include <winrt/Windows.Management.Deployment.h>
 
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION_MAJOR      4

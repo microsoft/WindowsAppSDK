@@ -7,7 +7,14 @@
 #include <winrt/Windows.UI.h>
 #include <MddBootstrap.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
-#include "winrt/Windows.UI.Notifications.h";
+#include "winrt/Windows.UI.Notifications.h"
+#include "WindowsAppRuntime.Test.Bootstrap.h"
+#include "winrt/Microsoft.Windows.ApplicationModel.DynamicDependency.h"
+#include "winrt/Microsoft.Windows.ApplicationModel.WindowsAppRuntime.h"
+#include <winrt/Windows.Management.Core.h>
+#include <winrt/Windows.Management.Deployment.h>
+
+using namespace winrt::Windows::Management::Deployment;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
@@ -95,10 +102,7 @@ int main()
 {
     if (!Test::AppModel::IsPackagedProcess())
     {
-        // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
-        const UINT32 c_Version_MajorMinor{ 0x00040001 };
-        const PACKAGE_VERSION minVersion{};
-        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+        Test::Bootstrap::SetupBootstrap();
     }
 
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))

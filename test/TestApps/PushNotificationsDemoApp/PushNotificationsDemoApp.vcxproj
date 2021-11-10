@@ -240,6 +240,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Windows.ApplicationModel.DynamicDependency">
+      <HintPath>..\..\..\BuildOutput\Debug\x64\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Microsoft.Windows.ApplicationModel.WindowsAppRuntime">
+      <HintPath>..\..\..\BuildOutput\Debug\x64\WindowsAppRuntime_DLL\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
     <Reference Include="Microsoft.Windows.AppLifecycle">
       <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
