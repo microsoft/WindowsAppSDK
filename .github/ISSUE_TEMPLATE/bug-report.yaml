@@ -61,8 +61,8 @@ body:
       description: Please specify the packaging type you're using when you encountered the issue.
       multiple: true
       options:
-        - label: "Packaged"
-        - label: "Unpackaged"
+        - "Packaged (MSIX)"
+        - "Unpackaged"
   - type: dropdown
     attributes:
       label: Windows version
