@@ -73,7 +73,7 @@ Bridge).
 Phase 2 (Windows App SDK V1): WNS Push APIs will support unpackaged Win32 scenarios.
 
 Link to the official Windows App SDK timeline can be found
-[here](https://github.com/microsoft/WindowsAppSDK/blob/main/docs/roadmap.md).
+[here](TODO-PRODUCTBOARD-LINK).
 
 # Examples
 
