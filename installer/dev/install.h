@@ -4,6 +4,14 @@
 
 namespace WindowsAppRuntimeInstaller {
 
+    enum class Options
+    {
+        InstallPackages = 0x0001,
+        InstallLicenses = 0x0002,
+        Quiet           = 0x0004,
+    };
+    DEFINE_ENUM_FLAG_OPERATORS(Options)
+
     struct PackageProperties
     {
         wil::unique_cotaskmem_string fullName;
@@ -13,5 +21,7 @@ namespace WindowsAppRuntimeInstaller {
         bool isFramework{};
     };
 
-    HRESULT DeployPackages(const bool quiet) noexcept;
+    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options) noexcept;
+
+    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options) noexcept;
 }

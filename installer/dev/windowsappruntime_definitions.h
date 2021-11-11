@@ -78,6 +78,15 @@
     #define WAR_MAIN_ARM64_PATH "..\\test\\testpackages\\main_arm64.msix"
 #endif
 
+// license Main
+#define WAR_MAIN_LICENSE_ID L"WAR_MAINPACKAGE_LICENSE"
+#define WAR_MAIN_LICENSE_RCID WAR_MAINPACKAGE_LICENSE
+#define WAR_MAIN_LICENSE_TYPE L"LICENSE"
+#define WAR_MAIN_LICENSE_RCTYPE LICENSE
+#ifndef WAR_MAIN_LICENSE_PATH
+    #define WAR_MAIN_LICENSE_PATH "..\\test\\testpackages\\main_license.xml"
+#endif
+
 // x86 Singleton
 #define WAR_SINGLETON_X86_ID L"WAR_SINGLETONPACKAGE_X86"
 #define WAR_SINGLETON_X86_RCID WAR_SINGLETONPACKAGE_X86
@@ -106,6 +115,15 @@
 #define WAR_SINGLETON_ARM64_BEHAVIOR DeploymentBehavior::Default
 #ifndef WAR_SINGLETON_ARM64_PATH
     #define WAR_SINGLETON_ARM64_PATH "..\\test\\testpackages\\singleton_arm64.msix"
+#endif
+
+// license Singleton
+#define WAR_SINGLETON_LICENSE_ID L"WAR_SINGLETONPACKAGE_LICENSE"
+#define WAR_SINGLETON_LICENSE_RCID WAR_SINGLETONPACKAGE_LICENSE
+#define WAR_SINGLETON_LICENSE_TYPE L"LICENSE"
+#define WAR_SINGLETON_LICENSE_RCTYPE LICENSE
+#ifndef WAR_SINGLETON_LICENSE_PATH
+    #define WAR_SINGLETON_LICENSE_PATH "..\\test\\testpackages\\singleton_license.xml"
 #endif
 
 // x86 DDLM
@@ -178,6 +196,18 @@
 
 #define WAR_DDLM_ARM64_LISTENTRY { WAR_DDLM_ARM64_ID, WAR_DDLM_ARM64_TYPE, WAR_DDLM_ARM64_BEHAVIOR },
 #define WAR_DDLM_ARM64_RCENTRY WAR_DDLM_ARM64_RCID WAR_DDLM_ARM64_RCTYPE WAR_DDLM_ARM64_PATH
+
+// License Inclusion
+
+// NOTE: We default to assuming a Main license file and no Singleton license file for inner-loop purposes.
+//       The build pipeline will define expected values in windowsappruntime_definitions_override.h for official builds.
+
+#define WAR_MAIN_LICENSE_LISTENTRY { WAR_MAIN_LICENSE_ID, WAR_MAIN_LICENSE_TYPE },
+#define WAR_MAIN_LICENSE_RCENTRY WAR_MAIN_LICENSE_RCID WAR_MAIN_LICENSE_RCTYPE WAR_MAIN_LICENSE_PATH
+
+#undef WAR_SINGLETON_LICENSE_LISTENTRY
+#undef WAR_SINGLETON_LICENSE_RCENTRY
+
 
 // This is defined in the vcxproj based on existence of the header in the same directory.
 // It is defined in both the c compiler preprocessor definitions and the resource compiler preprocessor definitions.

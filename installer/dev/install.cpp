@@ -172,8 +172,10 @@ namespace WindowsAppRuntimeInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options options)
     {
+        const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
@@ -228,16 +230,45 @@ namespace WindowsAppRuntimeInstaller {
             }
             LOG_IF_FAILED(hrProvisionResult);
         }
-
-        return;
     }
 
-    HRESULT DeployPackages(bool quiet) noexcept try
+    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options) noexcept try
     {
-        for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
         {
-            DeployPackageFromResource(package, quiet);
+            for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
+            {
+                DeployPackageFromResource(package, options);
+            }
         }
+
+        RETURN_IF_FAILED(InstallLicenses(options));
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    void InstallLicenseFromResource(const WindowsAppRuntimeInstaller::ResourceLicenseInfo& resource, const WindowsAppRuntimeInstaller::Options options)
+    {
+        const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+
+        if (!quiet)
+        {
+            std::wcout << "TODO InstallLicense: Id=" << resource.id << " ResourceType=" << resource.resourceType << std::endl;
+        }
+    }
+
+    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options) noexcept try
+    {
+#if defined(WAR_PROCESS_LICENSES)
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
+        {
+            for (const auto& license : WindowsAppRuntimeInstaller::c_licenses)
+            {
+                InstallLicenseFromResource(license, options);
+            }
+        }
+#endif
 
         return S_OK;
     }

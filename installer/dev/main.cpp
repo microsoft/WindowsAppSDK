@@ -9,14 +9,31 @@ int wmain(int argc, wchar_t *argv[])
 {
     init_apartment();
 
-    bool quiet = false;
+    auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
+                  WindowsAppRuntimeInstaller::Options::InstallLicenses };
 
     for (int i = 1; i < argc; ++i)
     {
         auto arg = std::wstring_view(argv[i]);
-        if ((arg == L"-q") || (arg == L"--quiet"))
+        if (arg == L"--license")
         {
-            quiet = true;
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::InstallLicenses);
+        }
+        if (arg == L"--license-")
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::InstallLicenses);
+        }
+        else if (arg == L"--msix")
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::InstallPackages);
+        }
+        else if (arg == L"--msix-")
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::InstallPackages);
+        }
+        else if ((arg == L"-q") || (arg == L"--quiet"))
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::Quiet);
         }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
@@ -31,16 +48,16 @@ int wmain(int argc, wchar_t *argv[])
         }
     }
 
-    const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::DeployPackages(quiet) };
-    if (!quiet)
+    const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::DeployPackages(options) };
+    if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::Quiet))
     {
         if (SUCCEEDED(deployPackagesResult))
         {
-            std::wcout << "All packages were installed successfully." << std::endl;
+            std::wcout << "All install operations successful." << std::endl;
         }
         else
         {
-            std::wcerr << "One or more packages failed to install. Result: 0x" << std::hex << deployPackagesResult << std::endl;
+            std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
         }
     }
 

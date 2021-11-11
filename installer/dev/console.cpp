@@ -6,8 +6,12 @@ void ShowHelp()
     std::wcout << L"Installs Microsoft Windows App SDK." << std::endl;
     std::wcout << L"  " << wil::GetModuleFileNameW(nullptr).get() << std::endl;
     std::wcout << "Command line parameters: " << std::endl;
-    std::wcout << "  [-q] or [--quiet] : Runs the installer with no user interaction and suppresses all text output." << std::endl;
-    std::wcout << "  [-?] or [--help] : Show help information." << std::endl;
+    std::wcout << "  --license    Install licenses" << std::endl;
+    std::wcout << "  --license-   Do not install licenses" << std::endl;
+    std::wcout << "  --msix       Install MSIX packages" << std::endl;
+    std::wcout << "  --msix-      Do not install MSIX packages" << std::endl;
+    std::wcout << "  -q, --quiet  Perform no user interaction and suppress all text output" << std::endl;
+    std::wcout << "  -?, --help   Show help information" << std::endl;
     std::wcout << std::endl;
     std::wcout << "Consult the Windows App SDK documentation for additional guidance on installation and command line syntax." << std::endl;
     std::wcout << "Documentation URI: https://aka.ms/ProjectReunionInstaller" << std::endl;
