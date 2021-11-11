@@ -39,7 +39,7 @@ App type |       0.8    |       1.0 (Q4 2021)     |  Future  |
 
 *\*\* - WinUI 3 in 0.8 and 1.0 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
 
-See our [full roadmap](docs/roadmap.md) for more details.
+To see our full roadmap and features that are under consideration (or to submit feature requests), [visit our productboard portal](TODO-PRODUCTBOARD-LINK).
 
 
 
