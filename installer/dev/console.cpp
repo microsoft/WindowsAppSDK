@@ -5,11 +5,9 @@ void ShowHelp()
 {
     std::wcout << L"Installs Microsoft Windows App SDK." << std::endl;
     std::wcout << L"  " << wil::GetModuleFileNameW(nullptr).get() << std::endl;
-    std::wcout << "Command line parameters: " << std::endl;
+    std::wcout << "Command line parameters (append - to disable)" << std::endl;
     std::wcout << "  --license    Install licenses" << std::endl;
-    std::wcout << "  --license-   Do not install licenses" << std::endl;
     std::wcout << "  --msix       Install MSIX packages" << std::endl;
-    std::wcout << "  --msix-      Do not install MSIX packages" << std::endl;
     std::wcout << "  -q, --quiet  Perform no user interaction and suppress all text output" << std::endl;
     std::wcout << "  -?, --help   Show help information" << std::endl;
     std::wcout << std::endl;

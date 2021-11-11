@@ -35,6 +35,10 @@ int wmain(int argc, wchar_t *argv[])
         {
             WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::Quiet);
         }
+        else if ((arg == L"-q-") || (arg == L"--quiet-"))
+        {
+            WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::Quiet);
+        }
         else if ((arg == L"-?") || (arg == L"--help"))
         {
             ShowHelp();
