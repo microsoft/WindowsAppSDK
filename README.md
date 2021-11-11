@@ -39,7 +39,7 @@ App type |       0.8    |       1.0 (Q4 2021)     |  Future  |
 
 *\*\* - WinUI 3 in 0.8 and 1.0 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
 
-To see our full roadmap and features that are under consideration (or to submit feature requests), [visit our productboard portal](TODO-PRODUCTBOARD-LINK).
+To see our full roadmap and features that are under consideration (or to submit feature requests), [visit our productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk).
 
 
 
@@ -61,7 +61,7 @@ this is the exception and not the norm, and provide reasonable fallbacks when po
 * [More details about the Windows App SDK](https://github.com/microsoft/WindowsAppSDK/blob/master/docs/README.md) -
 More on what the project is and how we're approaching the work.
 * [Video on Windows App SDK](https://techcommunity.microsoft.com/t5/video-hub/enterprise-development-futures-project-reunion/m-p/2177278) - Learn about the Windows App SDK in a 22 minute video!
-* [Roadmap](docs/roadmap.md) - Where we're going!
+* [Roadmap + vote on features](https://portal.productboard.com/winappsdk/1-windows-app-sdk) - See what we're planning and influence what we build!
 * [Contributor guide](docs/contributor-guide.md) - How to contribute to the Windows App SDK.
 * [FAQ](docs/faq.md) - Frequently asked questions about the Windows App SDK.
 * [Developer docs](https://aka.ms/windowsappsdkdocs) - Microsoft documentation covering a wide range of Windows App SDK topics.
