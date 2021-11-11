@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
+
 #include "pch.h"
 #include "packages.h"
 
@@ -9,6 +13,7 @@ namespace WindowsAppRuntimeInstaller {
         InstallPackages = 0x0001,
         InstallLicenses = 0x0002,
         Quiet           = 0x0004,
+        DryRun          = 0x0008,
     };
     DEFINE_ENUM_FLAG_OPERATORS(Options)
 
@@ -21,7 +26,9 @@ namespace WindowsAppRuntimeInstaller {
         bool isFramework{};
     };
 
-    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options) noexcept;
+    HRESULT Deploy(const WindowsAppRuntimeInstaller::Options options) noexcept;
 
-    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options) noexcept;
+    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options);
+
+    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options);
 }

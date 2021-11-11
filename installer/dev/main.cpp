@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 #include "console.h"
 #include "install.h"
 #include "resource.h"
@@ -15,11 +18,15 @@ int wmain(int argc, wchar_t *argv[])
     for (int i = 1; i < argc; ++i)
     {
         auto arg = std::wstring_view(argv[i]);
-        if (arg == L"--license")
+        if (arg == L"--dry-run")
+        {
+            WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::DryRun);
+        }
+        else if (arg == L"--license")
         {
             WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::InstallLicenses);
         }
-        if (arg == L"--license-")
+        else if (arg == L"--license-")
         {
             WI_ClearFlag(options, WindowsAppRuntimeInstaller::Options::InstallLicenses);
         }
@@ -52,7 +59,7 @@ int wmain(int argc, wchar_t *argv[])
         }
     }
 
-    const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::DeployPackages(options) };
+    const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
     if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::Quiet))
     {
         if (SUCCEEDED(deployPackagesResult))

@@ -1,4 +1,7 @@
-﻿#include "pch.h"
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 #include "packages.h"
 #include "install.h"
 
@@ -202,6 +205,12 @@ namespace WindowsAppRuntimeInstaller {
             std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
+        // DryRun = Don't do the work
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
+        {
+            return;
+        }
+
         // Write the package to a temp file. The PackageManager APIs require a Uri.
         wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
         ULARGE_INTEGER streamSize{};
@@ -232,7 +241,15 @@ namespace WindowsAppRuntimeInstaller {
         }
     }
 
-    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options) noexcept try
+    HRESULT Deploy(const WindowsAppRuntimeInstaller::Options options) noexcept try
+    {
+        RETURN_IF_FAILED(DeployPackages(options));
+        RETURN_IF_FAILED(InstallLicenses(options));
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
     {
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
         {
@@ -246,7 +263,6 @@ namespace WindowsAppRuntimeInstaller {
 
         return S_OK;
     }
-    CATCH_RETURN()
 
     void InstallLicenseFromResource(const WindowsAppRuntimeInstaller::ResourceLicenseInfo& resource, const WindowsAppRuntimeInstaller::Options options)
     {
@@ -254,11 +270,19 @@ namespace WindowsAppRuntimeInstaller {
 
         if (!quiet)
         {
-            std::wcout << "TODO InstallLicense: Id=" << resource.id << " ResourceType=" << resource.resourceType << std::endl;
+            std::wcout << "Installing license: " << resource.id << std::endl;
         }
+
+        // DryRun = Don't the work
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
+        {
+            return;
+        }
+
+        //TODO
     }
 
-    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options) noexcept try
+    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
 #if defined(WAR_PROCESS_LICENSES)
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
@@ -269,8 +293,6 @@ namespace WindowsAppRuntimeInstaller {
             }
         }
 #endif
-
         return S_OK;
     }
-    CATCH_RETURN()
 }
