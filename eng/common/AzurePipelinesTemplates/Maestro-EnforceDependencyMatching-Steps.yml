@@ -1,0 +1,108 @@
+# Please see https://www.osgwiki.com/wiki/Windows_App_SDK_-_How_to_build_and_use_the_pipelines
+# for information on how to use the pipelines
+parameters:
+# The "Extract Nuspec and Enforce versions" task will fail if it see a mismatch
+# that is on this EnforcementList
+# Syntax
+# EnforcementList: |
+#   Microsoft.ProjectReunion.InteractiveExperiences.TransportPackage
+#   Microsoft.ProjectReunion.WinUI.TransportPackage
+#   Microsoft.ProjectReunion.Foundation.TransportPackage
+- name: EnforcementList
+  type: string
+  default: ''
+steps:
+- task: PowerShell@2
+  name: ConvertVersionDetailsToPackageConfig
+  displayName: "Convert VersionDetails To PackageConfig"
+  inputs:
+    filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+    arguments: -versionDetailsPath '$(Build.SourcesDirectory)\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\eng\common\packages.config'
+
+- task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+  displayName: RestoreNuGetPackages
+  inputs:
+    restoreSolution: eng/common/packages.config
+    feedsToUse: config
+    nugetConfigPath: eng/common/nuget.config
+    restoreDirectory: packages
+
+- task: PowerShell@2
+  displayName: Extract Nuspec and Enforce versions 
+  inputs:
+    targetType: 'inline'
+    script: |
+      $enforcementSet = @{}
+      '${{ parameters.EnforcementList }}'.split([Environment]::NewLine) | ForEach {
+        if ($_ -ne '')
+        {
+          $enforcementSet[$_] = $true
+          Write-Host "Enforcing $_"
+        }
+      }
+
+      [xml]$versionDetails = Get-Content -Path '$(Build.SourcesDirectory)\eng\Version.Details.xml'
+      $directory = "$(Build.SourcesDirectory)/eng/common/packages"
+
+      # Set up Map from the dependencies to its versions to reference later
+      $dependenciesMap = @{}
+      foreach ($dependency in $versionDetails.Dependencies.ProductDependencies.Dependency)
+      {
+        $id = $dependency.name
+        $version = $dependency.version
+        $dependenciesMap[$id] = $version
+      }
+
+      $seen = @{}
+      $files = Get-ChildItem $directory
+      foreach ($file in $files) # Iterate through each package we restored in the directory
+      {
+        Write-Host $file.FullName
+        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
+
+        # Extract nupkg to access the nuspec
+        # The files in this directory does not contain the nuspec by default
+        foreach ($nupkgPath in $nupkgPaths)
+        {
+          $rename = $nupkgPath.Name + ".zip"
+          Rename-Item $nupkgPath.FullName $rename
+          $renamedFilePath = $nupkgPath.FullName + ".zip"
+          $dest = $file.FullName + "/contents"
+          Expand-Archive $renamedFilePath -Destination $dest
+        }
+        
+        $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
+        foreach ($nuspecPath in $nuspecPaths)
+        {
+          # When Nuget restore the packages, the packages directory can have
+          # two of the same package in the directory, one with the version,
+          # and one without. This "seen" set prevents the scripts from looking at it twice
+          if (-not $seen.Contains($nuspecPath.Name.ToLower()))
+          {
+            $seen[$nuspecPath.Name.ToLower()] = $true
+            Write-Host "Found Nuspecs"
+            Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
+            [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
+            foreach ($group in $nuspec.package.metadata.dependencies.group)
+            {
+              foreach ($dependency in $group.dependency)
+              {
+                $id = $dependency.id
+                # WinUI encapsulated their versions with brackets so we have to sanitize it
+                $version = $dependency.version.trim("[]")
+
+                Write-Host "  Checking $id : $version"
+                if (($null -ne $dependenciesMap[$id]) -and ($dependenciesMap[$id] -ne $version))
+                {
+                  Write-Host "$id has version mismatched in $nuspecPath"
+                  if ($enforcementSet.Contains($id))
+                  {
+                    Write-Host "##vso[task.complete result=Failed;]DONE"
+                  }
+                }
+              }
+            }
+            Write-Host ""
+          }
+        }
+      }

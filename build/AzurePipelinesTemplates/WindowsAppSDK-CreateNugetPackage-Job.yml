@@ -174,10 +174,10 @@ jobs:
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
   - ${{ if eq(parameters.publishToMaestro, 'true') }}:
-    - template: ..\..\eng\common\Maestro-PublishBuildToMaestro.yml
+    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
       parameters:
-        AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersion: $(packageVersion)
+        AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+        AssetVersions: $(packageVersion)
         TriggerSubscription: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishPGONuGet-Job.yml
