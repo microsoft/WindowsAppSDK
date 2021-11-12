@@ -1,6 +1,11 @@
-﻿#include "pch.h"
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#include "pch.h"
 #include "packages.h"
 #include "install.h"
+
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 using namespace winrt;
 using namespace Windows::ApplicationModel;
@@ -8,8 +13,8 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace WindowsAppRuntimeInstaller {
-
+namespace WindowsAppRuntimeInstaller
+{
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
         PackageManager packageManager;
@@ -172,8 +177,10 @@ namespace WindowsAppRuntimeInstaller {
         return outstream;
     }
 
-    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const bool quiet)
+    void DeployPackageFromResource(const WindowsAppRuntimeInstaller::ResourcePackageInfo& resource, const WindowsAppRuntimeInstaller::Options options)
     {
+        const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
@@ -200,6 +207,12 @@ namespace WindowsAppRuntimeInstaller {
             std::wcout << "Deploying package: " << packageProperties->fullName.get() << std::endl;
         }
 
+        // DryRun = Don't do the work
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
+        {
+            return;
+        }
+
         // Write the package to a temp file. The PackageManager APIs require a Uri.
         wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
         ULARGE_INTEGER streamSize{};
@@ -213,7 +226,8 @@ namespace WindowsAppRuntimeInstaller {
         auto hrAddResult = AddPackage(packageUri, packageProperties);
         if (!quiet)
         {
-            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << std::endl;
+            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
+            ShowErrorMessage(hrAddResult);
         }
         THROW_IF_FAILED(hrAddResult);
 
@@ -224,22 +238,87 @@ namespace WindowsAppRuntimeInstaller {
             auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
             if (!quiet)
             {
-                std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << std::endl;
+                std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << " ";
+                ShowErrorMessage(hrProvisionResult);
             }
             LOG_IF_FAILED(hrProvisionResult);
         }
-
-        return;
     }
 
-    HRESULT DeployPackages(bool quiet) noexcept try
+    HRESULT Deploy(const WindowsAppRuntimeInstaller::Options options) noexcept try
     {
-        for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
-        {
-            DeployPackageFromResource(package, quiet);
-        }
-
+        RETURN_IF_FAILED(DeployPackages(options));
+        RETURN_IF_FAILED(InstallLicenses(options));
         return S_OK;
     }
     CATCH_RETURN()
+
+    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
+    {
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
+        {
+            for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
+            {
+                DeployPackageFromResource(package, options);
+            }
+        }
+        return S_OK;
+    }
+
+    HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
+    {
+#if defined(WAR_PROCESS_LICENSES)
+        const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
+        {
+            Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
+            for (const auto& license : WindowsAppRuntimeInstaller::c_licenses)
+            {
+                if (!quiet)
+                {
+                    std::wcout << "Installing license: " << license.id << std::endl;
+                }
+
+                // DryRun = Don't the work
+                if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
+                {
+                    continue;
+                }
+
+                // Install the license
+                auto thisModule{ reinterpret_cast<HINSTANCE>(&__ImageBase) };
+                const auto hr{ licenseInstaller.InstallLicense(thisModule, license.id) };
+                if (!quiet)
+                {
+                    std::wcout << "Install result : 0x" << std::hex << hr << " ";
+                    ShowErrorMessage(hr);
+                }
+                RETURN_IF_FAILED_MSG(hr, "License:%ls", license.id.c_str());
+            }
+        }
+#endif
+        return S_OK;
+    }
+
+    void ShowErrorMessage(const HRESULT hr)
+    {
+        if (SUCCEEDED(hr))
+        {
+            std::wcout << std::endl;
+            return;
+        }
+
+        PWSTR message{};
+        if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                          nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) == 0)
+        {
+            std::wcout << "Error " << hr << " (0x" << std::hex << hr << ") in FormatMessage()" << std::endl;
+        }
+        else
+        {
+            std::wcout << message;
+            LocalFree(message);
+        }
+    }
 }
