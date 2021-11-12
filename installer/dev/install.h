@@ -31,4 +31,6 @@ namespace WindowsAppRuntimeInstaller {
     HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options);
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options);
+
+    void ShowErrorMessage(const HRESULT hr);
 }

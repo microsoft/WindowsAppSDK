@@ -5,14 +5,16 @@
 #include "packages.h"
 #include "install.h"
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 using namespace winrt;
 using namespace Windows::ApplicationModel;
 using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-namespace WindowsAppRuntimeInstaller {
-
+namespace WindowsAppRuntimeInstaller
+{
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
         PackageManager packageManager;
@@ -224,7 +226,8 @@ namespace WindowsAppRuntimeInstaller {
         auto hrAddResult = AddPackage(packageUri, packageProperties);
         if (!quiet)
         {
-            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << std::endl;
+            std::wcout << "Package deployment result : 0x" << std::hex << hrAddResult << " ";
+            ShowErrorMessage(hrAddResult);
         }
         THROW_IF_FAILED(hrAddResult);
 
@@ -235,7 +238,8 @@ namespace WindowsAppRuntimeInstaller {
             auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
             if (!quiet)
             {
-                std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << std::endl;
+                std::wcout << "Provisioning result : 0x" << std::hex << hrProvisionResult << " ";
+                ShowErrorMessage(hrProvisionResult);
             }
             LOG_IF_FAILED(hrProvisionResult);
         }
@@ -258,41 +262,63 @@ namespace WindowsAppRuntimeInstaller {
                 DeployPackageFromResource(package, options);
             }
         }
-
-        RETURN_IF_FAILED(InstallLicenses(options));
-
         return S_OK;
-    }
-
-    void InstallLicenseFromResource(const WindowsAppRuntimeInstaller::ResourceLicenseInfo& resource, const WindowsAppRuntimeInstaller::Options options)
-    {
-        const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
-
-        if (!quiet)
-        {
-            std::wcout << "Installing license: " << resource.id << std::endl;
-        }
-
-        // DryRun = Don't the work
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
-        {
-            return;
-        }
-
-        //TODO
     }
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
 #if defined(WAR_PROCESS_LICENSES)
+        const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
+
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
         {
+            Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
             for (const auto& license : WindowsAppRuntimeInstaller::c_licenses)
             {
-                InstallLicenseFromResource(license, options);
+                if (!quiet)
+                {
+                    std::wcout << "Installing license: " << license.id << std::endl;
+                }
+
+                // DryRun = Don't the work
+                if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
+                {
+                    continue;
+                }
+
+                // Install the license
+                auto thisModule{ reinterpret_cast<HINSTANCE>(&__ImageBase) };
+                const auto hr{ licenseInstaller.InstallLicense(thisModule, license.id) };
+                if (!quiet)
+                {
+                    std::wcout << "Install result : 0x" << std::hex << hr << " ";
+                    ShowErrorMessage(hr);
+                }
+                RETURN_IF_FAILED_MSG(hr, "License:%ls", license.id.c_str());
             }
         }
 #endif
         return S_OK;
+    }
+
+    void ShowErrorMessage(const HRESULT hr)
+    {
+        if (SUCCEEDED(hr))
+        {
+            std::wcout << std::endl;
+            return;
+        }
+
+        PWSTR message{};
+        if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                          nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) == 0)
+        {
+            std::wcout << "Error " << hr << " (0x" << std::hex << hr << ") in FormatMessage()" << std::endl;
+        }
+        else
+        {
+            std::wcout << message;
+            LocalFree(message);
+        }
     }
 }
