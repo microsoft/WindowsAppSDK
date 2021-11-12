@@ -18,6 +18,7 @@ using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::Activation;
+using winrt::Windows::ApplicationModel::Core::AppRestartFailureReason;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
@@ -331,6 +332,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         return s_current->FindForKey(key.c_str());
+    }
+
+    AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
+    {
+
     }
 
     void AppInstance::UnregisterKey()
