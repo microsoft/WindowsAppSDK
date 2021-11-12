@@ -69,7 +69,6 @@ More on what the project is and how we're approaching the work.
 
 ### Contributing
 
-[![Feature Proposals](https://img.shields.io/github/issues/microsoft/windowsappsdk/feature%20proposal)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+proposal%22)
 [![Bugs](https://img.shields.io/github/issues/microsoft/windowsappsdk/bug)](https://github.com/microsoft/WindowsAppSDK/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
 
 _We want to hear from you!_
@@ -87,9 +86,8 @@ points if there's a gist or existing repo we can look at with you.
    you might start a Discussion issue to see if others are interested in a cool new idea
    you've been thinking about that isn't quite ready to be filed as a more formal Feature Proposal.
 
-3. **[Make a feature proposal](https://github.com/microsoft/WindowsAppSDK/issues/new?assignees=&labels=feature+proposal&template=feature-proposal.md&title=)**<br>
-   What components do you want to see in the Windows App SDK? For example you can propose a new API on an existing type, or an idea for a new API.
-   It's fine if you don't have all the details: you can start with a summary and rationale.
+3. **[Vote on or suggest features](https://portal.productboard.com/winappsdk/1-windows-app-sdk)**<br>
+   What components or features do you want to see in the Windows App SDK? Tell us on our [productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk)!
 
 **Over time, we will add Windows App SDK code into this repo and provide code contribution/developer guidelines.**
 
