@@ -115,6 +115,7 @@
     <ClInclude Include="install.h" />
     <ClInclude Include="packages.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="WindowsAppRuntime-License.h" />
     <ClInclude Include="windowsappruntime_definitions.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
