@@ -20,6 +20,13 @@ foreach ($dependency in $buildConfig.Dependencies.ProductDependencies.Dependency
     $ver = $dependency.version
     Write-Host "id: " $name
     Write-Host "ver: " $ver
+
+    if ($name -eq "Microsoft.WindowsAppSDK.AppLicensingInternal.TransportPackage")
+    {
+        Write-Host "##vso[task.setvariable variable=AppLicensingInternalPackageName;]$name"
+        Write-Host "##vso[task.setvariable variable=AppLicensingInternalPackageVersion;]$ver"
+    }
+
     $packagesText += '	<package id="' + $name + '" version="' + $ver + '" targetFramework="native" />
 '
     }
