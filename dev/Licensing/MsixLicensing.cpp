@@ -9,6 +9,8 @@
 STDAPI MsixInstallLicenses() noexcept try
 {
     //TODO
+    // FOREACH file IN pkgdir\MSIX\*-license.xml
+    //  InstallLicenseFile(file)
     return S_OK;
 }
 CATCH_RETURN();
