@@ -91,7 +91,7 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
       workingDirectory: '$(Build.SourcesDirectory)'
-      
+
   - task: powershell@2
     displayName: 'Create EnvironmentManager TerminalVelocity features'
     inputs:
@@ -99,14 +99,14 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
       workingDirectory: '$(Build.SourcesDirectory)'
-      
+
   - task: powershell@2
     name: UpdateTraceloggingConfig
     inputs:
       targetType: 'inline'
       script: |
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-        
+
         if (($srcPath -ne $null)){
           $destinationPath = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
@@ -115,6 +115,17 @@ steps:
             Copy-Item -Force $srcPath.FullName $destinationPath.FullName
           }
         }
+
+  # Copy license installation header into the correct source location.
+  - task: CopyFiles@2
+    displayName: 'Extract license header to source location'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\$(Build.Repository.Name)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+      Contents: |
+        *.h
+      TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
+      flattenFolders: false
+      overWrite: true
 
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
