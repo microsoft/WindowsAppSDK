@@ -116,6 +116,7 @@
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
     <Import Project="..\PowerNotifications\PowerNotifications.vcxitems" Label="Shared" />
     <Import Project="..\Deployment\Deployment.vcxitems" Label="Deployment" />
+    <Import Project="..\Licensing\Licensing.vcxitems" Label="Shared" />
     <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
   </ImportGroup>
