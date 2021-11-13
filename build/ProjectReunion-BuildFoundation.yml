@@ -102,6 +102,7 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
@@ -165,6 +166,7 @@ jobs:
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries'
