@@ -209,7 +209,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         auto licensePath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
         licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
         auto licenseFilespec{ licensePath };
-        licenseFilespec /= L"*-license.xml";
+        licenseFilespec /= L"*_license.xml";
 
         // Deploy the licenses (if any)
         ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
