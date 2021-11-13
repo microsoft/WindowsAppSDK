@@ -8,6 +8,8 @@
 #include <TerminalVelocityFeatures-DeploymentAPI.h>
 #include <Microsoft.Windows.ApplicationModel.WindowsAppRuntime.DeploymentManager.g.cpp>
 
+#include "WindowsAppRuntime-License.h"
+
 namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implementation
 {
 
@@ -85,7 +87,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         }
 
         std::wstring frameworkPackageFullName{ packageFullName };
-        auto deployPackagesResult{ DeployPackages(frameworkPackageFullName) };
+        auto deployPackagesResult{ Deploy(frameworkPackageFullName) };
         DeploymentStatus status{};
         if (SUCCEEDED(deployPackagesResult))
         {
@@ -193,23 +195,68 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     CATCH_RETURN()
 
     // Deploys all of the packages carried by the specified framework.
-    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName) try
+    HRESULT DeploymentManager::Deploy(const std::wstring& frameworkPackageFullName) try
     {
-        auto frameworkPath = std::filesystem::path(GetPackagePath(frameworkPackageFullName));
+        RETURN_IF_FAILED(InstallLicenses(frameworkPackageFullName));
+        RETURN_IF_FAILED(DeployPackages(frameworkPackageFullName));
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    HRESULT DeploymentManager::InstallLicenses(const std::wstring& frameworkPackageFullName)
+    {
+        // Build path for licenses
+        auto licensePath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
+        licensePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
+        auto licenseFilespec{ licensePath };
+        licenseFilespec /= L"*-license.xml";
+
+        // Deploy the licenses (if any)
+        ::Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
+        WIN32_FIND_DATA findFileData{};
+        wil::unique_hfind hfind{ FindFirstFileW(licenseFilespec.c_str(), &findFileData) };
+        if (!hfind)
+        {
+            const auto lastError{ GetLastError() };
+            RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(lastError), (lastError != ERROR_FILE_NOT_FOUND) && (lastError != ERROR_PATH_NOT_FOUND),
+                             "FindFirstFile:%ls", licenseFilespec.c_str());
+            return S_OK;
+        }
+        for (;;)
+        {
+            // Install the license file
+            auto licenseFilename{ licensePath };
+            licenseFilename /= findFileData.cFileName;
+            RETURN_IF_FAILED_MSG(licenseInstaller.InstallLicenseFile(licenseFilename.c_str()),
+                                 "LicenseFile:%ls", licenseFilename.c_str());
+
+            // Next! (if any)
+            if (!FindNextFileW(hfind.get(), &findFileData))
+            {
+                const auto lastError{ GetLastError() };
+                RETURN_HR_IF(HRESULT_FROM_WIN32(lastError), lastError != ERROR_NO_MORE_FILES);
+                break;
+            }
+        }
+        return S_OK;
+    }
+
+    HRESULT DeploymentManager::DeployPackages(const std::wstring& frameworkPackageFullName)
+    {
+        const auto frameworkPath{ std::filesystem::path(GetPackagePath(frameworkPackageFullName)) };
         for (const auto& package : c_targetPackages)
         {
             // Build path for the packages.
             auto packagePath{ frameworkPath };
             packagePath /= WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FOLDER;
             packagePath /= package.identifier + WINDOWSAPPRUNTIME_FRAMEWORK_PACKAGE_FILE_EXTENSION;
-            
+
             // Deploy package.
             RETURN_IF_FAILED(AddPackage(packagePath));
         }
 
         return S_OK;
     }
-    CATCH_RETURN()
 
     hstring DeploymentManager::GetCurrentFrameworkPackageFullName()
     {
@@ -254,7 +301,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
                     continue;
                 }
             }
- 
+
             return hstring(currentPackageInfo.Package(i).packageFullName);
         }
 
