@@ -35,6 +35,21 @@ public:
     {
         return S_OK;
     }
+
+    HRESULT InstallLicenseFile(const std::wstring& /*licenseFilename*/)
+    {
+        return S_OK;
+    }
+
+    HRESULT InstallLicenseFile(PCWSTR /*licenseFilename*/)
+    {
+        return S_OK;
+    }
+
+    HRESULT InstallLicenseFiles(size_t /*licenseCount*/, PCWSTR* /*licenseFilenames*/)
+    {
+        return S_OK;
+    }
 };
 }
 
