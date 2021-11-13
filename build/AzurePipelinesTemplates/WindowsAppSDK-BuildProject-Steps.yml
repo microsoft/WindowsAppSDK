@@ -6,6 +6,10 @@ parameters:
   channel: 'experimental'
 
 steps:
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: 'Internal-ReleaseSigned'
+      
   # Restore transport package dependencies. This is only enbaled in release-signed builds.
   - task: PowerShell@2
     name: ConvertVersionDetailsToPackageConfig
