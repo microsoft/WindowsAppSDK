@@ -143,15 +143,16 @@ steps:
         }
 
   # Copy MSIX license installation header into the correct source location.
-  - task: CopyFiles@2
-    displayName: 'Extract license header to source location'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
-      Contents: |
-        *.h
-      TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
-      flattenFolders: false
-      overWrite: true
+  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    - task: CopyFiles@2
+      displayName: 'Extract license header to source location'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+        Contents: |
+          *.h
+        TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
+        flattenFolders: false
+        overWrite: true
 
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
