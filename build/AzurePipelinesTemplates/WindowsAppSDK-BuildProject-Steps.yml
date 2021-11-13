@@ -8,7 +8,7 @@ parameters:
 steps:
   - task: NuGetAuthenticate@0
     inputs:
-      nuGetServiceConnections: 'Internal-ReleaseSigned'
+      nuGetServiceConnections: 'ProjectReunionInternal'
       
   # Restore transport package dependencies. This is only enbaled in release-signed builds.
   - task: PowerShell@2
