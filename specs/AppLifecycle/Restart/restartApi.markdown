@@ -28,18 +28,11 @@ goals of this specific API are the following:
 
 Addressing the gaps that exist today: at a high-level, Win32 apps can
 register with the OS to restart in update/hang/reboot scenarios but
-cannot restart immediately on-command with specific arguments/state. UWP
-apps can restart on-command with command-line restart arguments but
-cannot register with the OS Restart Manager for update/hang/reboot
-scenarios. These are the gaps we need to address.
+cannot restart immediately on-command with specific arguments/state. This applies to packaged (Centennial) and unpackaged apps. These are the gaps we need to address.
 
 ### Reunion Restart API components 
 
-1.  Expose a new function: **RegisterForRestart**, which allows any app (win32/packaged win32, UWP, WinUI apps)
-    to register itself for restart if it was running when a system
-    update occurs or if an app hangs/crashes unexpectedly.
-
-2.  Expose a new function: **RequestRestartNow** function to enable any
+1.  Expose a new function: **RequestRestartNow** function to enable any
     app (win32/packaged win32, UWP, WinUI apps) to terminate and restart itself on command, and to provide an
     arbitrary command-line string for the restarted instance.
 
@@ -280,53 +273,6 @@ string launchArguments);</td>
 
 ### New API Details
 
-#### RegisterForRestart
-
-<table>
-<colgroup>
-<col style="width: 40%" />
-<col style="width: 51%" />
-<col style="width: 8%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>New API </th>
-<th>Description</th>
-<th>Priority</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>static bool RegisterForRestart(string restartArguments, RestartContext context)</td>
-<td><p>Equivalent to the Win32 RegisterApplicationRestart function.</p>
-<p>restartArguments is the same as the pwzCommandline parameter in the Win32 RegisterApplicationRestart. It is a string of command-line arguments which will be passed as restart arguments.</p>
-<p>restartArguments become the restarted/new instance’s LaunchActivatedEventArgs.</p></td>
-<td>P3</td>
-</tr>
-<tr class="even">
-<td>[Flags] enum RestartContext</td>
-<td><p>The values passed for RestartContext indicate which cases</p>
-<p>the app <em>should be restarted.<br />
-<br />
-</em>The possible cases are the same as dwFlag values listed above in Win32’s RegisterApplicationRestart<strong>:</strong></p>
-<ul>
-<li><p>-1: ALL</p></li>
-<li><p>1: CRASH</p></li>
-<li><p>2: HANG</p></li>
-<li><p>4: PATCH</p></li>
-<li><p>8: REBOOT</p></li>
-</ul>
-<p>[Flags] enum RestartContext { All = -1, Crash = 1, Hang = 2, Patch = 4, Reboot = 8 }</p></td>
-<td>P3</td>
-</tr>
-<tr class="odd">
-<td>static bool UnregisterForRestart()</td>
-<td>Equivalent to the Win32 UnregisterApplicationRestart function.</td>
-<td>P3</td>
-</tr>
-</tbody>
-</table>
-
 #### RequestRestartNow
 
 <table>
@@ -362,40 +308,6 @@ string launchArguments);</td>
 </table>
 
 ### API Sample Code
-
-#### RegisterForRestart Sample
-```c#
-public class App {
-
-        // App was just launched
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
-        {
-            // If the application was terminated for example and has now been restarted
-            if (args != NULL)
-            {
-                if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    Telemetry::WriteLine("Restart activated: " + args.Arguments);
-                }
-            }
-        }
-
-        // We want to register the app for restart if termination happens only after crash
-        protected bool restartOnUpdate(){
-            bool result = AppLifecycle::RegisterForRestart("args for new instance", RestartContext::Crash);
-            Telemetry::WriteLine("RegisterForRestart: Restart Context: " + RestartContext::Crash.ToString() 
-            + ". Result: " + result ? "success" : "fail");
-
-            // Do normal app behavior
-        }
-
-        // We want to unregister for post-crash restarts
-        protected bool removeRestartOnUpdate(){
-            bool result = AppLifecycle::UnregisterForRestart();
-            Telemetry::WriteLine("UnregisterForRestart: Result: " + result ? "success" : "fail");
-        }
-}
-```
 
 ### RequestRestartNow Sample
 
@@ -440,7 +352,6 @@ Event Name: **AppRestart**
 
 | Metadata                | Description                                                                                       | Data type |
 |-------------------------|---------------------------------------------------------------------------------------------------|-----------|
-| RestartContext          | Reason for an App to register for restart and then attempt to restart                             | Enum      |
 | AppRestartFailureReason | Reason an app restart failed. This will be collected when an app requests a restart now but fails | Enum      |
 | AppName                 | Name of the app which restarted                                                                   | String    |
 | AppType                 | UWP App or Centennial App or Win32 app                                                            | String    |
