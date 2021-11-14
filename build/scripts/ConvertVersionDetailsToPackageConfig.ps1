@@ -11,7 +11,7 @@ $packagesText =
 @"
 <?xml version="1.0" encoding="utf-8"?>
 <packages>
-	<!-- Transport packages from the feeder repo's -->
+	<!-- Transport packages from the feeder repositories -->
 
 "@
 foreach ($dependency in $buildConfig.Dependencies.ProductDependencies.Dependency)

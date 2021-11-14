@@ -4,9 +4,9 @@ parameters:
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
   artifactName: 'drop'
   channel: 'experimental'
-  enableLicenseInstall: false 
-  # lincense installation assets are only accessible in internal builds, but are only 
-  # needed in release-signed stable builds. Only enble this functionality in the private 
+  enableLicenseInstall: false
+  # license installation assets are only accessible in internal builds, but are only
+  # needed in release-signed stable builds. Only enble this functionality in the private
   # pipeline builds. Otherwise, defautl to an inert placeholder implementation.
 
 
@@ -15,7 +15,7 @@ steps:
     - task: NuGetAuthenticate@0
       inputs:
         nuGetServiceConnections: 'ProjectReunionInternal'
-        
+
     # Restore transport package dependencies. This is only enbaled in release-signed builds.
     - task: PowerShell@2
       name: ConvertVersionDetailsToPackageConfig
