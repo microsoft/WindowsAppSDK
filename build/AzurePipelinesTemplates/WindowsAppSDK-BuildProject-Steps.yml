@@ -29,7 +29,7 @@ steps:
       inputs:
         restoreSolution: build/packages.config
         feedsToUse: config
-        nugetConfigPath: build/nuget.config
+        nugetConfigPath: build/licensing.nuget.config
         restoreDirectory: packages
 
   - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
