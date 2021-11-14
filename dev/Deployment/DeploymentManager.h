@@ -20,7 +20,9 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
         static HRESULT VerifyPackage(const std::wstring& packageFamilyName, const PACKAGE_VERSION targetVersion);
         static std::wstring GetPackagePath(std::wstring const& packageFullName);
         static HRESULT AddPackage(const std::filesystem::path& packagePath);
+        static HRESULT Deploy(const std::wstring& frameworkPackageFullName);
         static HRESULT DeployPackages(const std::wstring& frameworkPackageFullName);
+        static HRESULT InstallLicenses(const std::wstring& frameworkPackageFullName);
         static hstring GetCurrentFrameworkPackageFullName();
     };
 }

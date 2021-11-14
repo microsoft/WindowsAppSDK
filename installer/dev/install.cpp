@@ -247,23 +247,18 @@ namespace WindowsAppRuntimeInstaller
 
     HRESULT Deploy(const WindowsAppRuntimeInstaller::Options options) noexcept try
     {
-        RETURN_IF_FAILED(DeployPackages(options));
+        // Install licenses before packages as we stop on first error. If something
+        // does go wrong better to have all licenses and some packages than all
+        // packages and some licenses, as the latter is harder to detect something
+        // is wrong (there's lots of ways to tell if a package is present or not
+        // but very few to determine if licenses are present). So worst case,
+        // it's easier (for tools and people) to see 'incomplete packages' and
+        // know what to do about it than for 'incomplete licenses'.
         RETURN_IF_FAILED(InstallLicenses(options));
+        RETURN_IF_FAILED(DeployPackages(options));
         return S_OK;
     }
     CATCH_RETURN()
-
-    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
-    {
-        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
-        {
-            for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
-            {
-                DeployPackageFromResource(package, options);
-            }
-        }
-        return S_OK;
-    }
 
     HRESULT InstallLicenses(const WindowsAppRuntimeInstaller::Options options)
     {
@@ -298,6 +293,18 @@ namespace WindowsAppRuntimeInstaller
             }
         }
 #endif
+        return S_OK;
+    }
+
+    HRESULT DeployPackages(const WindowsAppRuntimeInstaller::Options options)
+    {
+        if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallPackages))
+        {
+            for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
+            {
+                DeployPackageFromResource(package, options);
+            }
+        }
         return S_OK;
     }
 
