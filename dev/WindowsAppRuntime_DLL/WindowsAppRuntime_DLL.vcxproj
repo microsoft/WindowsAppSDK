@@ -115,6 +115,7 @@
     <Import Project="..\Common\Common.vcxitems" Label="Shared" />
     <Import Project="..\PowerNotifications\PowerNotifications.vcxitems" Label="Shared" />
     <Import Project="..\Deployment\Deployment.vcxitems" Label="Deployment" />
+    <Import Project="..\Licensing\Licensing.vcxitems" Label="Shared" />
     <Import Project="..\EnvironmentManager\API\Microsoft.Process.Environment.vcxitems" Label="EnvironmentManager" />
     <Import Project="..\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems" Label="ChangeTracker" />
   </ImportGroup>
@@ -177,7 +178,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(SolutionDir)appmodel\identity;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -199,7 +200,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -221,7 +222,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -243,7 +244,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -265,7 +266,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -291,7 +292,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -317,7 +318,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -343,7 +344,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory);$(OutDir)..\DynamicDependency.DataStore.ProxyStub;$(OutDir)..\PushNotificationsLongRunningTask.ProxyStub;$(RepoRoot)\dev\WindowsAppRuntime_Insights;$(RepoRoot)dev\licensing;$(RepoRoot)\dev\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
