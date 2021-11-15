@@ -5,3 +5,6 @@ EXPORTS
     MddBootstrapInitialize
     MddBootstrapShutdown
     MddBootstrapTestInitialize
+
+    WindowsAppRuntime_InstallLicenses
+    WindowsAppRuntime_InstallLicensesInPackage

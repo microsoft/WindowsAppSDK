@@ -465,6 +465,7 @@
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapTest.h" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapAutoInitializer.cs" />
     <PublicHeaders Include="$(MSBuildThisFileDirectory)MddBootstrapAutoInitializer.cpp" />
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)WindowsAppRuntime-Licensing.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager\IDynamicDependencyLifetimeManager.vcxproj">
