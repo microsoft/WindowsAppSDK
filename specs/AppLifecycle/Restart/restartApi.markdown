@@ -32,8 +32,8 @@ cannot restart immediately on-command with specific arguments/state. This applie
 
 ### Reunion Restart API components 
 
-1.  Expose a new function: **RequestRestartNow** function to enable any
-    app (win32/packaged win32, UWP, WinUI apps) to terminate and restart itself on command, and to provide an
+1.  Expose a new function: **RequestRestartNow** function to enable any packaged or unpackaged Win32
+    app to terminate and restart itself on command, and to provide an
     arbitrary command-line string for the restarted instance.
 
 
