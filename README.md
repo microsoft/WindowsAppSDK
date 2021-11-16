@@ -17,23 +17,15 @@ Plus, **create beautiful, modern apps for Windows 11 that are backwards compatib
 
 ### Use it now!
 
-1.0 Preview 3 is [available to try today](https://docs.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app) and includes unpackaged support with WinUI 3, single-project templates, and more!
-
-In production apps, you can [use the 0.8 release](https://docs.microsoft.com/windows/apps/windows-app-sdk/stable-channel#version-08) now!
-
-Some notes about 0.8...
-
-* 0.8 Stable requires using [MSIX](https://docs.microsoft.com/windows/msix/overview), but unpackaged apps can use [1.0 Preview 3](https://docs.microsoft.com/windows/apps/winui/winui3/create-your-first-winui3-app)!
-* 0.8 Stable only includes WinUI 3 / Text rendering / Resource management
+1.0 is [available today](https://docs.microsoft.com/windows/apps/windows-app-sdk/) and includes unpackaged support with WinUI 3, single-project templates, and more!
 
 ### Roadmap
 
 Here's a snippet of what's currently available and what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*:
 
-App type |          1.0 (Q4 2021)     |  1.1 (Q2 2022)  |
+App type |          1.0     |  1.1 (Q2 2022)  |
 --        |  ------------------------ |   -----  |
-[Packaged MSIX](https://docs.microsoft.com/windows/msix/overview) apps<br>(WinUI 3, WPF, etc) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔁 [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  |
-[Unpackaged](https://docs.microsoft.com/windows/apps/windows-app-sdk/deploy-unpackaged-apps) apps<br>(WinUI 3, WPF, etc) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔁 [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  |
+Desktop apps<br>(WinUI 3, WPF, etc) |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>🔁 [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  |  ✅ [WinUI 3](https://github.com/microsoft/microsoft-ui-xaml/blob/master/docs/roadmap.md#winui-3)\*\*<br>✅ [Text rendering](https://docs.microsoft.com/windows/apps/windows-app-sdk/dwritecore)<br>✅ [Resource management](https://docs.microsoft.com/windows/apps/windows-app-sdk/mrtcore/mrtcore-overview)<br>✅ [App lifecycle](https://docs.microsoft.com/windows/apps/develop/app-lifecycle-and-system-services)<br>✅ [Windowing](https://docs.microsoft.com/windows/apps/windows-app-sdk/windowing/windowing-overview)<br>✅ [Push Notifications](https://docs.microsoft.com/windows/apps/windows-app-sdk/notifications/push/)  |
 
 ✅ Supported | 🔁 Experimental
 
