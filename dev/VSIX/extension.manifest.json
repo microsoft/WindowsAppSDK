@@ -1,6 +1,6 @@
 {
     "$schema": "http://json.schemastore.org/vsix-publish",
-    "categories": [ "Other", "Templates" ],
+    "categories": [ "Other" ],
     "identity": {
         "internalName": "[ReplaceInternalName]"
     },
