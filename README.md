@@ -21,7 +21,7 @@ Plus, **create beautiful, modern apps for Windows 11 that are backwards compatib
 
 ### Roadmap
 
-Here's a snippet of what's currently available and what we intend to deliver in 2021 *(times/features/releases are tentative and subject to change)*:
+Here's a snippet of what's currently available and what we intend to deliver in 2022 *(times/features/releases are tentative and subject to change)*:
 
 App type |          1.0     |  1.1 (Q2 2022)  |
 --        |  ------------------------ |   -----  |
