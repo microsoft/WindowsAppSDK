@@ -5,6 +5,6 @@
         "internalName": "[ReplaceInternalName]"
     },
     "overview": "overview-stable.md",
-    "publisher": "Microsoft",
+    "publisher": "ProjectReunion",
     "repo": "https://github.com/microsoft/WindowsAppSDK"
 }
