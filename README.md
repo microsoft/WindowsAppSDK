@@ -29,7 +29,7 @@ Desktop apps<br>(WinUI 3, WPF, etc) |  ✅ [WinUI 3](https://github.com/microsof
 
 ✅ Supported | 🔁 Experimental
 
-*\*\* - WinUI 3 in 1.0 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
+*\*\* - WinUI 3 in 1.0 and 1.1 is only supported for use by full WinUI 3 apps. You'll be able to use WinUI 3 in WPF/WinForms/other apps in a future release via XAML Islands.*
 
 To see our full roadmap and features that are under consideration (or to submit feature requests), [visit our productboard portal](https://portal.productboard.com/winappsdk/1-windows-app-sdk).
 
