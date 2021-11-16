@@ -4,7 +4,7 @@
     "identity": {
         "internalName": "[ReplaceInternalName]"
     },
-    "overview": "[ReplaceOverview]",
+    "overview": "overview-stable.md",
     "publisher": "Microsoft",
     "repo": "https://github.com/microsoft/WindowsAppSDK"
 }
