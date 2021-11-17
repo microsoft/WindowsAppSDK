@@ -334,9 +334,48 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current->FindForKey(key.c_str());
     }
 
-    AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
+    AppRestartFailureReason AppInstance::RestartNow(hstring const& arguments)
     {
+        // Use DuplicateHandle to get a real handle from the pseudo-handle returned by GetCurrentProcess().  A real handle
+        // is required in order for it to be inherited 
+        wil::unique_handle parentHandle;
+        THROW_IF_WIN32_BOOL_FALSE(DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), wil::out_param(parentHandle), PROCESS_QUERY_INFORMATION | SYNCHRONIZE, TRUE, 0));
 
+        // Calculate the path to the restart agent as being in the same directory as the current module.
+        wchar_t modulePath[MAX_PATH];
+        GetModuleFileName(NULL, modulePath, MAX_PATH);
+
+        std::wstring modulePathView(modulePath);
+        auto directory = modulePathView.substr(0, modulePathView.find_last_of(L'\\'));
+
+        wchar_t exePath[MAX_PATH];
+        THROW_IF_FAILED(PathCchCombine(exePath, MAX_PATH, directory.c_str(), L"Restarter.exe"));
+
+        // c:\currentdirectory\restartagent.exe <inherited handle id of calling process>
+        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"%s %d", exePath, parentHandle.get());
+
+        // Explicitly inherit the current process handle to the restart agent.
+        SIZE_T attributeListSize{ 0 };
+        THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, 1, 0, &attributeListSize));
+        THROW_LAST_ERROR_IF(GetLastError() != ERROR_INSUFFICIENT_BUFFER);
+
+        wil::unique_process_heap_ptr<PROC_THREAD_ATTRIBUTE_LIST> attributeList(reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST> (HeapAlloc(GetProcessHeap(), 0, size)));
+        THROW_IF_NULL_ALLOC(attributeList);
+
+        THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList, 1, 0, &attributeListSize));
+        auto freeAttributeList = wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList); })
+
+        constexpr auto handlesToInheritCount = 1;
+        HANDLE* handlesToInherit = parentHandle.get();
+        THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, handlesToInherit, handlesToInheritCount * sizeof(HANDLE), nullptr, nullptr));
+
+        STARTUPINFOEX info{};
+        info.StartupInfo = *lpStartupInfo;
+        info.StartupInfo.cb = sizeof(info);
+        info.lpAttributeList = attributeList;
+
+        PROCESS_INFORMATION processInfo{};
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &info.StartupInfo, processInfo));
     }
 
     void AppInstance::UnregisterKey()
