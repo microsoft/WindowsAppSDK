@@ -2,9 +2,22 @@
 
 # Background
 
-Toast Notifications are UI popups that are added that contain rich text, controls and images to display a message to the user. They are developer driven and originate from a target application that is installed by a user on the local device. It is not sufficient for a toast popup on the screen to simply be displayed to the user, it also needs to be actionable. For example, the user should be able to click on a toast popup to launch an app in the correct context. For example, a news article related toast is expected to launch the News app along  with the article in question in the foreground. Another actionable scenario is for the user to actually interact with the contents of the toast popup like a UI control button. For example, a messaging app like Teams that displays a message from another user could have a "Respond To" textbox and button so that the user can directly respond to the message in the popup without having to launch the application. This scenario triggers a background process on behalf of the application (with no UI) which inturn processes the "Reply To" message and forwards the response to the other device.
+Toast Notifications are UI popups that are added that contain rich text, controls and images to
+display a message to the user. They are developer driven and originate from a target application
+that is installed by a user on the local device. It is not sufficient for a toast popup on the
+screen to simply be displayed to the user, it also needs to be actionable. For example, the user
+should be able to click on a toast popup to launch an app in the correct context. For example, a
+news article related toast is expected to launch the News app along with the article in question in
+the foreground. Another actionable scenario is for the user to actually interact with the contents
+of the toast popup like a UI control button. For example, a messaging app like Teams that displays a
+message from another user could have a "Respond To" textbox and button so that the user can directly
+respond to the message in the popup without having to launch the application. This scenario triggers
+a background process on behalf of the application (with no UI) which inturn processes the "Reply To"
+message and forwards the response to the other device.
 
-Toast messages could have a local or cloud based origin. In the case of local toasts, the message always originates from the app installed on the device. For cloud toasts, the message always originates from a remote application service that targets the locally installed app in question. 
+Toast messages could have a local or cloud based origin. In the case of local toasts, the message
+always originates from the app installed on the device. For cloud toasts, the message always
+originates from a remote application service that targets the locally installed app in question.
 
 Here is a visual representation of a Simple Toast with no interactive controls:
 
@@ -20,34 +33,60 @@ Here is a visual representation of a Toast with a Message "Reply To" option:
 
 For more details see:
 
-
 -   [Toast Notification WinRT APIs](https://docs.microsoft.com/en-us/uwp/api/Windows.UI.Notifications.ToastNotification?view=winrt-20348)
-    Defines all the API constructs that we have for Toast Notifications in WinRT today using the Legacy Windows SDK.
+    Defines all the API constructs that we have for Toast Notifications in WinRT today using the
+    Windows SDK.
 -   [Toast Notification UX Guidance using Toolkit](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/toast-ux-guidance)
     Defines the UX Guidance for developers who want to display toasts using the toolkit libraries.
 -   [Sending Local Toasts using C# using Toolkit](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=uwp)
-    Defines how an app developer can send interactive toasts to the user and setup activation handlers for these toasts using the Toolkit libraries.
+    Defines how an app developer can send interactive toasts to the user and setup activation
+    handlers for these toasts using the Toolkit libraries.
 
 ## The problems today
 
-**Cloud Toast integration with Windows SDK**: While we support Push scenarios for Raw notification on behalf of unpackaged applications in the Windows SDK 1.0, we do not support Cloud Toasts. We need to fill this gap for 1.1 and beyond.
+**Cloud Toast integration with Windows SDK**: While we support Push scenarios for Raw notification
+on behalf of unpackaged applications in the Windows SDK 1.0, we do not support Cloud Toasts. We need
+to fill this gap for 1.1 and beyond.
 
-**API fragmentation**: There are too many API technologies that are published today to simply Display toasts and setup their activation handlers: Windows Legacy SDK, Win32 Toast Activations via the Nitro Model and the Windows Toolkit which is a Nuget library. It gets overwhelming for a developer who does not understand all these technologies to ramp up and get toast support working for their app. 
+**API fragmentation**: There are too many API technologies that are published today to simply
+Display toasts and setup their activation handlers: Windows SDK, Win32 Toast Activations via the
+Nitro Model and the Windows Toolkit which is a Nuget library. It gets overwhelming for a developer
+who does not understand all these technologies to ramp up and get toast support working for their
+app.
 
-**Support and Troubleshooting Toast Issues**: Because of the API fragmentation mentioned above, it is also very difficult to diagnose issues when developers hit them and a large portion of developer cycles are spent dignosing and troubleshooting problems in various API stacks instead of a single stack.
+**Support and Troubleshooting Toast Issues**: Because of the API fragmentation mentioned above, it
+is also very difficult to diagnose issues when developers hit them and a large portion of developer
+cycles are spent dignosing and troubleshooting problems in various API stacks instead of a single
+stack.
 
-**Activation**: Setting up activation handlers using Background Toast Triggers is challenging for developers because we don't have downlevel support for all OS SKUs. Moreover, the steps for setting up activation handlers vary greatly for different app types MSIX Vs Unpackaged Vs UWP. We will need to abstract away the activation technology and simplify this process for developers for all supported downlevel OS SKUs. 
+**Registration**: The Windows SDK today provides AppId overloads to developers who can specify their
+own Identifier for Unpackaged apps. The platform is currently designed to create an explicit
+Registration for this overloaded AppId which causes all sorts of problems (string size limits being
+hit, Personally Identifiable Information stored as part of AppIds, Registrations tagged with
+incorrect App Type etc). The WinApp SDK hopes to get rid of the AppId overloads in the Public APIs
+with the goal of specifying the correct AppId delegated to the Win App SDK Framework instead.
 
-**Toast Composition**: There are well known gaps in the Legacy Windows SDK today in the area of composing the Toast content. The Windows Toolkit gets around this limitation by providing a well-defined object model to compose toasts but all developers don't use the Toolkit.
+**Activation**: Setting up activation handlers using Background Toast Triggers is challenging for
+developers because we don't have downlevel support for all OS SKUs. Moreover, the steps for setting
+up activation handlers vary greatly for different app types MSIX Vs Unpackaged Vs UWP. We will need
+to abstract away the activation technology and simplify this process for developers for all
+supported downlevel OS SKUs.
+
+**Toast Composition**: There are well known gaps in the Windows SDK today in the area of composing
+the Toast content. The Windows Toolkit gets around this limitation by providing a well-defined
+object model to compose toasts but all developers don't use the Toolkit. We will provide well
+defined Toast templates as part of our API constructs with a plan to build a Windows Toolkit like
+ToastBuilder model in the near future.
 
 # Description
 
-At a high level, we need to provide a way for all Win32 applications to display toasts irrespective of their app type. This includes unpackaged apps and packaged win32
-(MSIX Desktop Bridge, MSIX Win32App, Sparse Signed Packages). Moreover, all Toast scenarios should
-adhere to OS resource management policies like Power Saver, Network Attribution (amount of data an
-app uses), enterprise group policies, etc. The Windows App SDK Push component will abstract away the
-complexities of dealing with Toast delivery and toast related activations as much as
-possible freeing the developer to focus on other app related challenges.
+At a high level, we need to provide a way for all Win32 applications to display toasts irrespective
+of their app type. This includes unpackaged apps and packaged win32 (MSIX Desktop Bridge, MSIX
+Win32App, Sparse Signed Packages). Moreover, all Toast scenarios should adhere to OS resource
+management policies like Power Saver, Network Attribution (amount of data an app uses), enterprise
+group policies, etc. The Windows App SDK Push component will abstract away the complexities of
+dealing with Toast delivery and toast related activations as much as possible freeing the developer
+to focus on other app related challenges.
 
 We will prioritize the following feature set for Toast Notifications in Windows App SDK:
 
@@ -55,33 +94,38 @@ We will prioritize the following feature set for Toast Notifications in Windows 
 -   Toast Registrations for Packaged apps
 -   Cloud sourced Toasts for Unpackaged Win32 apps.
 -   Cloud sourced Toasts for Packaged Win32 apps.
--   Local Toast delivery and CRUD operations for Packaged Win32 apps.
--   Local Toasts delivery and CRUD operations for unpackaged Win32 apps.
+-   Local Toast delivery and Create/Update/Delete support for Packaged Win32 apps.
+-   Local Toasts delivery and Create/Update/Delete support for unpackaged Win32 apps.
 
-The following feature set will not be prioritized for the next release but will be prioritized for the second half of 2022:
+The following feature set will not be prioritized for the future include:
 
 -   Object Model to compose Toasts without having to rely on Xml templates.
--   Support for Granular toasts and toast collections.
+-   Support for toast collections.
 
 # Examples
 
 ## Packaged App Toast Registration
 
-This scenario is specifically geared towards Packaged apps that need to send a toast. An app Developer Registers their app for Toast Notifications and sets it up for background\foreground activation. 
+This scenario is specifically geared towards Packaged apps that need to send a toast. An app
+Developer Registers their app for Toast Notifications and sets it up for background\foreground
+activation. Adding a ToastActivated event handler signals that the app is ready to accept and handle
+an action in the Foreground where the user clicks on a Toast in the action centre or a UI element in
+the toast body (like a Button). The developer can inturn run some business logic in their app in
+response to the Toast Action.
 
 ```cpp
 int main()
 {
-    auto activationInfo = ToastActivationInfo::CreateToastActivationInfoFromGuid(winrt::guid(c_comServerId));
-    ToastNotificationManager::RegisterActivator(activationInfo);
+    auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid(c_comServerId));
+    ToastNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
     if (kind == ExtendedActivationKind::Launch)
     {
-        // App is launched in FG. So intercept toast activators via FG event
-        const auto token = ToastNotificationManager::ToastActivated([](const auto&, ToastActivatedEventArgs const& toastActivatedEventArgs)
+        // App is launched in Foreground. So intercept toast activators via Foreground event
+        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, ToastActivatedEventArgs const& toastActivatedEventArgs)
         {
                 ProcessToastArgs(toastActivatedEventArgs);
         });
@@ -89,7 +133,7 @@ int main()
         // App does Foreground Stuff Here
 
         // Cleanup
-        ToastNotificationManager::ToastActivated(token);
+        ToastNotificationManager::Default().ToastActivated(token);
     }
     else if (kind == ExtendedActivationKind::ToastNotification)
     {
@@ -103,17 +147,18 @@ int main()
 
 ## Unpackaged app Toast Registration
 
-Similarly unpackaged apps can also Register themselves to send and act as targets for toast notifications.
+Similar to packaged apps, unpackaged apps can also Register themselves to send toasts and act as
+targets for toast activation events. There is one basic difference in the REgistration for
+Unpackaged apps versus their packaged counterparts: they will need to specify their own friendly App
+DisplayName and IconUri since they don't have an app manifest file that contains the same.
 
 ```cpp
 int main()
 {
-    ToastAssets assets = winrt::make<ToastAssets>(
-        L"SampleApp",
-        L"c:\test\icon.png",
-        Windows::UI::Colors::LightGray());
-    auto activationInfo = ToastActivationInfo::CreateToastActivationInfoFromToastAssets(assets);
-    ToastNotificationManager::RegisterActivator(activationInfo);
+        Uri absoluteFilePath(L"c:\\test\\icon.png");
+    ToastAssets assets(L"SampleApp", absoluteFilePath);
+    auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
+    ToastNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -121,7 +166,7 @@ int main()
     if (kind == ExtendedActivationKind::Launch)
     {
         // App is launched in FG. So intercept toast activators via FG event
-        const auto token = ToastNotificationManager::ToastActivated([](const auto&, ToastActivatedEventArgs const& toastActivatedEventArgs)
+        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, ToastActivatedEventArgs const& toastActivatedEventArgs)
             {
                 ProcessToastArgs(toastActivatedEventArgs);
             });
@@ -129,7 +174,7 @@ int main()
         // App does Foreground Stuff Here
 
         // Cleanup
-        ToastNotificationManager::ToastActivated(token);
+        ToastNotificationManager::Default().ToastActivated(token);
     }
     else if (kind == ExtendedActivationKind::ToastNotification)
     {
@@ -143,46 +188,53 @@ int main()
 
 ## Displaying a Toast
 
-The app will need to display a toast to the user. To do this we recommend that the developer always sets a tag and group field so that similar toasts can replace it in the future. They also have the option to delete the toast automatically from ActionCentre on subsequent reboots by setting the ExpiresOnReboot property to true.
+The app will need to display a toast to the user. In addition, the developer can set a tag and group
+field for the toast which allows the app to replace the notification with an updated version.
+Finally, the ExpiresOnReboot property ensures that the notification is automatically deleted from
+the Action Centre on device reboots.
 
 ```cpp
 // Display a toast with tag and group
 void DisplayToast(const winrt::Windows::Data::Xml::Dom::XmlDocument& doc)
 {
-    ToastNotification toast = winrt::make<ToastNotification>(doc);
+    ToastNotification toast(doc);
     // Setting Tag, Group and ExpiresOnReboot properties are optional
     toast.Tag(L"Tag");
     toast.Group(L"Group");
     toast.ExpiresOnReboot(true);
-    ToastNotificationManager::ShowToast(toast);
+    ToastNotificationManager::Default().ShowToast(toast);
 }
 ```
 
 ## Create a Toast Payload using Preexisting Toast XML templates
 
-We will provide a set of templates that developers can use to compose payloads. The developer can then use the Document Object Model (DOM) to customize the content in the payload. The templates that we are introducing are as follows:
+We will provide a set of templates that developers can use to compose payloads. The developer can
+then use the Document Object Model (DOM) to customize the content in the payload. The templates that
+we are introducing are as follows:
 
-| Template Name | Scenario Examples | Example |
-| :--- | :---| :--- |
-|BasicToast| Simple alerts | ![BasicToast](images/BasicToast.png) |
-|ToastWithTwoButtons| Quick actions (2 options) such as view more information or remind me later | ![BasicToast](images/ToastWithTwoButtons.png) |
-|ToastWithThreeButtons| Quick actions (3 options) such as view/archive/delete an email | ![BasicToast](images/ToastWithThreeButtons.png) |
-|ToastWithProgressBar| Show the progress of an operation such as downloading music, syncing files, or updating a game| ![BasicToast](images/ToastWithProgressBar.png) |
-|ToastWithAvatarAndProgressBar| Show the progress of an operation such as downloading music, syncing files, or updating a game (with image) | ![BasicToast](images/ToastWithAvatarAndProgressBar.png) |
-|ToastWithAvatar| Simple alerts (with image) such as message or email from an individual or group | ![BasicToast](images/ToastWithAvatar.png) |
-|ToastWithAvatarAndTextBox| Reply to message from an individual or group | ![BasicToast](images/ToastWithAvatarAndTextBox.png) |
-|ToastWithAvatarAndDropdown| Respond to a message from options in a selection menu (with image) | ![BasicToast](images/ToastWithAvatarAndDropdown.png) |
-|ToastWithDropdown| Respond to a message from options in a selection menu | ![BasicToast](images/ToastWithDropdown.png) |
-|ToastWithReminder| Reminder for calendar event, etc that is displayed pre-expanded and stays on the user's screen till dismissed| ![BasicToast](images/ToastWithReminder.png) |
-|ToastWithAlarm| Reminder with alarm audio that is displayed pre-expanded and stays on the user's screen till dismissed| ![BasicToast](images/ToastWithAlarm.png) |
-|ToastWithHeroImage| Captivate user with an image displayed prominently, such as for a news article or other entertainment content| ![BasicToast](images/ToastWithHeroImage.png) |
-|ToastWithInlineImage| Display an inline image that appears when toast is expanded| ![BasicToast](images/ToastWithInlineImage.png) |
+| Template Name                  | Scenario Examples                                                                                             | Example                                                  |
+| :----------------------------- | :------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------- |
+| BasicToast                     | Simple alerts                                                                                                 | ![BasicToast](images/BasicToast.png)                     |
+| ToastWithTwoButtons            | Quick actions (2 options) such as view more information or remind me later                                    | ![BasicToast](images/ToastWithTwoButtons.png)            |
+| ToastWithThreeButtons          | Quick actions (3 options) such as view/archive/delete an email                                                | ![BasicToast](images/ToastWithThreeButtons.png)          |
+| ToastWithThreeButtonsWithIcons | Quick actions with icons (3 options) such as view/archive/delete an email                                     | ![BasicToast](images/ToastWithThreeButtonsWithIcons.png) |
+| ToastWithProgressBar           | Show the progress of an operation such as downloading music, syncing files, or updating a game                | ![BasicToast](images/ToastWithProgressBar.png)           |
+| ToastWithAvatarAndProgressBar  | Show the progress of an operation such as downloading music, syncing files, or updating a game (with image)   | ![BasicToast](images/ToastWithAvatarAndProgressBar.png)  |
+| ToastWithAvatar                | Simple alerts (with image) such as message or email from an individual or group                               | ![BasicToast](images/ToastWithAvatar.png)                |
+| ToastWithAvatarAndTextBox      | Reply to message from an individual or group                                                                  | ![BasicToast](images/ToastWithAvatarAndTextBox.png)      |
+| ToastWithAvatarAndDropdown     | Respond to a message from options in a selection menu (with image)                                            | ![BasicToast](images/ToastWithAvatarAndDropdown.png)     |
+| ToastWithDropdown              | Respond to a message from options in a selection menu                                                         | ![BasicToast](images/ToastWithDropdown.png)              |
+| ToastWithReminder              | Reminder for calendar event, etc that is displayed pre-expanded and stays on the user's screen till dismissed | ![BasicToast](images/ToastWithReminder.png)              |
+| ToastWithAlarm                 | Reminder with alarm audio that is displayed pre-expanded and stays on the user's screen till dismissed        | ![BasicToast](images/ToastWithAlarm.png)                 |
+| ToastWithHeroImage             | Captivate user with an image displayed prominently, such as for a news article or other entertainment content | ![BasicToast](images/ToastWithHeroImage.png)             |
+| ToastWithInlineImage           | Display an inline image that appears when toast is expanded                                                   | ![BasicToast](images/ToastWithInlineImage.png)           |
 
 The XML for these templates are as follows:
+
 ```xml
 <!-- BasicToast -->
 <toast>
- 
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -190,12 +242,12 @@ The XML for these templates are as follows:
       <text id="3"></text>
     </binding>
   </visual>
-  
+
 </toast>
 
 <!-- ToastWithTwoButtons -->
 <toast>
-  
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -205,24 +257,24 @@ The XML for these templates are as follows:
   </visual>
 
   <actions>
- 
+
     <action
         content=""
         arguments=""
         activationType=""/>
- 
+
      <action
         content=""
         arguments=""
         activationType=""/>
- 
+
   </actions>
- 
+
 </toast>
 
 <!-- ToastWithThreeButtons -->
 <toast>
-  
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -232,29 +284,63 @@ The XML for these templates are as follows:
   </visual>
 
   <actions>
- 
+
     <action
         content=""
         arguments=""
         activationType=""/>
- 
+
      <action
         content=""
         arguments=""
         activationType=""/>
- 
+
      <action
         content=""
         arguments=""
         activationType=""/>
 
   </actions>
- 
+
+</toast>
+
+<!-- ToastWithThreeButtonsWithIcons -->
+<toast>
+
+  <visual>
+    <binding template="ToastGeneric">
+      <text id="1"></text>
+      <text id="2"></text>
+      <text id="3"></text>
+    </binding>
+  </visual>
+
+  <actions>
+
+    <action
+        content=""
+        arguments=""
+        activationType=""
+        imageUri=""/>
+
+     <action
+        content=""
+        arguments=""
+        activationType=""
+        imageUri=""/>
+
+     <action
+        content=""
+        arguments=""
+        activationType=""
+        imageUri=""/>
+
+  </actions>
 </toast>
 
 <!-- ToastWithProgressBar -->
 <toast>
-  
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -267,26 +353,26 @@ The XML for these templates are as follows:
         status="{progressStatus}"/>
     </binding>
   </visual>
- 
+
   <actions>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
-    
+
   </actions>
-  
+
 </toast>
 
 <!-- ToastWithAvatarAndProgressBar -->
 <toast>
-  
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -300,26 +386,26 @@ The XML for these templates are as follows:
         status="{progressStatus}"/>
     </binding>
   </visual>
- 
+
   <actions>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
-    
+
   </actions>
-  
+
 </toast>
 
 <!-- ToastWithAvatar -->
 <toast>
- 
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -328,12 +414,12 @@ The XML for these templates are as follows:
       <image placement="appLogoOverride" hint-crop="circle" id="1" src=""/>
     </binding>
   </visual>
-  
+
 </toast>
 
 <!-- ToastWithAvatarAndTextBox -->
 <toast>
- 
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -346,21 +432,20 @@ The XML for these templates are as follows:
     <actions>
 
         <input id="textBox" type="text" placeHolderContent=""/>
- 
+
         <action
-          content=""
-          imageUri="Assets/Icons/send.png"
+          content="send"
           hint-inputId="textBox"
           activationType=""
           arguments=""/>
- 
+
     </actions>
-  
+
 </toast>
 
 <!-- ToastWithAvatarAndDropdown -->
 <toast>
- 
+
     <visual>
         <binding template="ToastGeneric">
           <text id="1"></text>
@@ -369,32 +454,32 @@ The XML for these templates are as follows:
           <image placement="appLogoOverride" hint-crop="circle" id="1" src=""/>
         </binding>
     </visual>
- 
+
   <actions>
- 
+
     <input id="1" type="selection" defaultInput="1">
       <selection id="1" content=""/>
       <selection id="2" content=""/>
       <selection id="3" content=""/>
     </input>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
- 
+
   </actions>
- 
+
 </toast>
 
 <!-- ToastWithDropdown -->
 <toast>
- 
+
     <visual>
         <binding template="ToastGeneric">
           <text id="1"></text>
@@ -402,32 +487,32 @@ The XML for these templates are as follows:
           <text id="3"></text>
         </binding>
     </visual>
- 
+
   <actions>
- 
+
     <input id="1" type="selection" defaultInput="1">
       <selection id="1" content=""/>
       <selection id="2" content=""/>
       <selection id="3" content=""/>
     </input>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
- 
+
     <action
       activationType=""
       arguments=""
       content=""/>
- 
+
   </actions>
- 
+
 </toast>
 
 <!-- ToastWithReminder -->
 <toast scenario="reminder">
-  
+
   <visual>
     <binding template="ToastGeneric">
           <text id="1"></text>
@@ -435,33 +520,33 @@ The XML for these templates are as follows:
           <text id="3"></text>
     </binding>
   </visual>
- 
+
   <actions>
-    
+
     <input id="snoozeTime" type="selection" defaultInput="1">
       <selection id="1" content=""/>
       <selection id="2" content=""/>
       <selection id="3" content=""/>
     </input>
- 
+
     <action
       activationType="system"
       arguments="snooze"
       hint-inputId="snoozeTime"
       content=""/>
- 
+
     <action
       activationType="system"
       arguments="dismiss"
       content=""/>
-    
+
   </actions>
-  
+
 </toast>
 
 <!-- ToastWithAlarm -->
 <toast scenario="alarm">
-  
+
   <visual>
     <binding template="ToastGeneric">
           <text id="1"></text>
@@ -469,33 +554,33 @@ The XML for these templates are as follows:
           <text id="3"></text>
     </binding>
   </visual>
- 
+
   <actions>
-    
+
     <input id="snoozeTime" type="selection" defaultInput="1">
       <selection id="1" content=""/>
       <selection id="2" content=""/>
       <selection id="3" content=""/>
     </input>
- 
+
     <action
       activationType="system"
       arguments="snooze"
       hint-inputId="snoozeTime"
       content=""/>
- 
+
     <action
       activationType="system"
       arguments="dismiss"
       content=""/>
-    
+
   </actions>
-  
+
 </toast>
 
 <!-- ToastWithHeroImage -->
 <toast>
- 
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -504,12 +589,12 @@ The XML for these templates are as follows:
       <image placement="hero" id="1" src=""/>
     </binding>
   </visual>
-  
+
 </toast>
 
 <!-- ToastWithInlineImage -->
 <toast>
- 
+
   <visual>
     <binding template="ToastGeneric">
       <text id="1"></text>
@@ -518,28 +603,27 @@ The XML for these templates are as follows:
       <image placement="hero" id="1" src=""/>
     </binding>
   </visual>
-  
+
 </toast>
 
 ```
 
-
-Below is an example of such customization using a simple payload with Image and Text. Here the developer adds an attribute to the image element and sets the text fields in the payload.
+Below is an example of such customization using a simple payload with Image and Text. Here the
+developer adds an attribute to the image element and sets the text fields in the payload.
 
 ```cpp
 // Uses an API template to Compose and Display a toast
 void CreateToastPayload()
 {
-    auto doc = ToastNotificationManager::GetXmlTemplateContent(ToastTemplateType::ToastWithAvatar);
-
-    auto images = doc.GetElementsByTagName(L"image");
+    auto doc = ToastNotificationManager::Default().GetXmlTemplateContent(ToastTemplateType::ToastWithAvatar);
     auto srcAttribute = doc.CreateAttribute(L"src");
     srcAttribute.Value(L"images/toastImageAndText.png");
+    auto images = doc.GetElementsByTagName(L"image");
     images.GetAt(0).Attributes().SetNamedItem(srcAttribute);
 
     auto textNodes = doc.GetElementsByTagName(L"text");
 
-    for (auto textNode : textNodes)
+    for (auto&& textNode : textNodes)
     {
         textNode.AppendChild(doc.CreateTextNode(L"This is some notification text!"));
     }
@@ -550,9 +634,11 @@ void CreateToastPayload()
 
 ## Processing a Toast Activation
 
-The app will need to process the activator in response to a User activating the toast. 2 common scenarios here are 
-1) Have the app launch in the foreground in a specific UI context OR 
-2) Have the app process a toast action (like a button press in the toast body) in the background. 
+The app will need to process the activator in response to a User activating the toast. 2 common
+scenarios here are
+
+1. Have the app launch in the foreground in a specific UI context OR
+2. Have the app process a toast action (like a button press in the toast body) in the background.
 
 ```cpp
 //<toast launch="action=openThread&amp;threadId=92187">
@@ -588,22 +674,23 @@ void ProcessToastArgs(ToastActivatedEventArgs const& toastActivatedEventArgs)
     {
         // The user clicked on the reply button on the toast. So query the input field
         auto input = toastActivatedEventArgs.UserInput();
-        auto replyBoxText = input.Lookup(L"textBox");
+        auto replyBoxText = input.Lookup(L"ReplyBox");
 
         // Process the reply text
         ProcessReply(replyBoxText);
     }
 }
 ```
+
 ## Processing Toast History
 
 The ToastHistory component is always used to perform Delete and Get operations on behalf of the app.
 
 ```cpp
 // Get a List of all toasts from the Action Centre
-winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IVectorView<ToastNotification> > GetToastListASync()
+winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IVector<ToastNotification> > GetToastListASync()
 {
-    auto toastHistory = ToastNotificationManager::History();
+    auto toastHistory = ToastNotificationManager::Default().History();
     auto toasts = co_await toastHistory.GetAllAsync();
     co_return toasts;
 }
@@ -611,7 +698,7 @@ winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IV
 // Remove a prior toast using tag and group
 winrt::Windows::Foundation::IAsyncAction RemoveToast(const winrt::hstring& tag, const winrt::hstring& group)
 {
-    auto toastHistory = ToastNotificationManager::History();
+    auto toastHistory = ToastNotificationManager::Default().History();
     co_await toastHistory.RemoveWithTagGroupAsync(tag, group);
 }
 ```
@@ -631,7 +718,7 @@ void SendUpdatableToastWithProgress()
     winrt::hstring tag = L"weekly-playlist";
     winrt::hstring group = L"downloads";
 
-    const winrt::hstring payload = L"<toast launch=\"action = viewDownload &amp; downloadId = 9438108\">"
+    winrt::hstring payload = L"<toast launch=\"action = viewDownload &amp; downloadId = 9438108\">"
                                 L"<visual>"
                                     L"<binding template = \"ToastGeneric\">"
                                         L"<text>Downloading this week's new music...</text>"
@@ -644,22 +731,22 @@ void SendUpdatableToastWithProgress()
                                 L"</visual>"
                             L"</toast>";
 
-    winrt::Windows::Data::Xml::Dom::XmlDocument doc = winrt::make<winrt::Windows::Data::Xml::Dom::XmlDocument>();
+    XmlDocument doc;
     doc.LoadXml(payload);
-    ToastNotification toast = winrt::make<ToastNotification>(doc);
+    ToastNotification toast(doc);
     toast.Tag(tag);
     toast.Group(group);
 
     // Assign initial values for first toast progress UI
-    ToastProgressData data = winrt::make<ToastProgressData>();
+    ToastProgressData data;
     data.Title(L"Weekly playlist"); // Binds to {progressTitle} in xml payload
     data.Value(0.6); // Binds to {progressValue} in xml payload
     data.ValueStringOverride(L"15/26 songs"); // Binds to {progressValueString} in xml payload
     data.Status(L"Downloading..."); // Binds to {progressStatus} in xml payload
-    data.SequenceNumber(1); // The sequence number has to be incremental for the platform to render progress
+    data.SequenceNumber(1);
 
     toast.ProgressData(data);
-    ToastNotificationManager::ShowToast(toast);
+    ToastNotificationManager::Default().ShowToast(toast);
 }
 
 // Send subsequent progress updates
@@ -670,12 +757,12 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
 
     // Assign new values
     // Note that you only need to assign values that changed. In this example we don't assign progressStatus since we don't need to change it
-    ToastProgressData data = winrt::make<ToastProgressData>();
+    ToastProgressData data;
     data.Value(0.7); // Binds to {progressValue} in xml payload
     data.ValueStringOverride(L"18/26 songs"); // Binds to {progressValueString} in xml payload
     data.SequenceNumber(2);
 
-    auto result = co_await ToastNotificationManager::UpdateToastProgressDataAsync(data, tag, group);
+    auto result = co_await ToastNotificationManager::Default().UpdateToastProgressDataAsync(data, tag, group);
     if (result != ToastProgressResult::Succeeded)
     {
         LOG_HR_MSG(E_UNEXPECTED, "Toast Progress Update Failed!");
@@ -687,11 +774,13 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
 
 ## Registration
 
-The developer should always call the Toast Registration API first to register the current process as the Activator target.
+The developer should always call the Toast Registration API first to register the current process as
+the Activator target.
 
 ## Foreground API calls
 
-The developer should always subscribe to toast activation foreground events to intercept toasts if the app happens to be running in the foreground.
+The developer should always subscribe to toast activation foreground events to intercept toasts if
+the app happens to be running in the foreground.
 
 ## Manifest Registration
 
@@ -720,23 +809,17 @@ would need to be pre-set to a well-known string that defines Toast Activation Tr
 namespace Microsoft.Windows.ToastNotifications
 {
     [experimental]
-    // The Shell asset details for Unpackaged App Registrations 
+    // The Shell asset details for Unpackaged App Registrations
     runtimeclass ToastAssets
     {
-        // Initialize using Shell assets like DisplayName, iconPath and icon Background color
-        ToastAssets(String displayName, String iconPath, Windows.UI.Colors iconBackgroundColor);
-
         // Initialize using Shell assets like DisplayName and iconPath
-        ToastAssets(String displayName, String iconPath);
+        ToastAssets(String displayName, Windows.Foundation.Uri iconPath);
 
-        // The App friendly DisplayName for the toast in Action Centre 
+        // The App friendly DisplayName for the toast in Action Centre
         String DisplayName { get; };
 
         // The full file path for the icon image
-        String IconPath { get; };
-
-        // The icon color
-        Windows.UI.Colors IconBackgroundColor{ get; };
+        Windows.Foundation.Uri IconPath { get; };
     }
 
     [experimental]
@@ -744,10 +827,10 @@ namespace Microsoft.Windows.ToastNotifications
     runtimeclass ToastActivationInfo
     {
         // Initialize using a manifest defined COM Activator Id. Only applicable to Packaged Win32 applications
-        static ToastActivationInfo CreateToastActivationInfoFromGuid(Guid taskClsid);
+        static ToastActivationInfo CreateFromActivationGuid(Guid taskClsid);
 
         // Initialize using Toast Assets. Only applicable to Unpackaged Win32 applications which need to specify their own assets like DisplayName and Icon.
-        static ToastActivationInfo CreateToastActivationInfoFromToastAssets(ToastAssets assets);
+        static ToastActivationInfo CreateFromToastAssets(ToastAssets assets);
 
         // The CLSID associated with the Client COM server that Windows App SDK will activate
         Guid TaskClsid{ get; };
@@ -775,7 +858,7 @@ namespace Microsoft.Windows.ToastNotifications
         ToastProgressData();
 
         // Gets or sets the sequence number of this notification data.
-        // When multiple ToastProgressData objects are received, the system displays the data with the greatest non-zero number. 
+        // When multiple ToastProgressData objects are received, the system displays the data with the greatest non-zero number.
         UInt32 SequenceNumber;
 
         // Gets/Sets the value for the title. Binds to {progressTitle} in progress xml tag.
@@ -792,7 +875,6 @@ namespace Microsoft.Windows.ToastNotifications
     };
 
     [experimental]
-    [flags]
     // The Toast User Setting or Toast Group Policy Setting
     enum ToastNotificationSetting
     {
@@ -804,7 +886,6 @@ namespace Microsoft.Windows.ToastNotifications
     };
 
     [experimental]
-    [flags]
     // Some basic predefined Toast Payload Templates
     enum ToastTemplateType
     {
@@ -824,7 +905,6 @@ namespace Microsoft.Windows.ToastNotifications
     };
 
     [experimental]
-    [flags]
     // The Result for a Toast Progress related operation
     enum ToastProgressResult
     {
@@ -834,7 +914,6 @@ namespace Microsoft.Windows.ToastNotifications
     };
 
     [experimental]
-    [flags]
     enum ToastPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
@@ -855,7 +934,7 @@ namespace Microsoft.Windows.ToastNotifications
         String Group;
 
         // A unique identifier for the Toast generated by the platform.
-        UInt32 ToastIdentifier;
+        UInt32 ToastId;
 
         // The notification Xml Payload
         Windows.Data.Xml.Dom.XmlDocument Payload{ get; };
@@ -874,7 +953,7 @@ namespace Microsoft.Windows.ToastNotifications
         ToastPriority Priority;
 
         // Gets or sets whether a toast's pop-up UI is displayed on the user's screen.
-        Boolean SuppressPopup;
+        Boolean SuppressDisplay;
     };
 
     [experimental]
@@ -891,50 +970,58 @@ namespace Microsoft.Windows.ToastNotifications
         Windows.Foundation.IAsyncAction RemoveWithTagGroupAsync(String tag, String group);
 
         // Remove all toasts for a specific group
-        Windows.Foundation.IAsyncAction RemoveGroupAllAsync(String group);
+        Windows.Foundation.IAsyncAction RemoveGroupAsync(String group);
 
         // Removes all the toasts for the App from Action Centre
         Windows.Foundation.IAsyncAction RemoveAllAsync();
 
         // Gets all the toasts for the App from Action Centre
-        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVectorView<ToastNotification> > GetAllAsync();
+        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<ToastNotification> > GetAllAsync();
     };
 
     [experimental]
     // The manager class which encompasses all Toast API Functionality
-    static runtimeclass ToastNotificationManager
+    runtimeclass ToastNotificationManager
     {
+        // Gets a Default instance of a ToastNotificationManager
+        static ToastNotificationManager Default{ get; };
+
         // Register an activator using an ActivationInfo context and caches the token for unregister
-        static void RegisterActivator(ToastActivationInfo details);
+        void RegisterActivator(ToastActivationInfo details);
 
         // Unregisters the activator and removes the cached Registration token.
-        static void UnregisterActivator();
+        void UnregisterActivator();
 
         // Event handler for Toast Activations
-        static event Windows.Foundation.EventHandler<ToastActivatedEventArgs> ToastActivated;
+        event Windows.Foundation.EventHandler<ToastActivatedEventArgs> ToastActivated;
 
         // Displays the Toast in Action Centre
-        static void ShowToast(ToastNotification toast);
+        void ShowToast(ToastNotification toast);
 
         // Updates the Toast for a Progress related operation using Tag and Group
-        static Windows.Foundation.IAsyncOperation<ToastProgressResult> UpdateToastProgressDataAsync(ToastProgressData data, String tag, String group);
+        Windows.Foundation.IAsyncOperation<ToastProgressResult> UpdateToastProgressDataAsync(ToastProgressData data, String tag, String group);
 
         // Updates the Toast for a Progress related operation using Tag
-        static Windows.Foundation.IAsyncOperation<ToastProgressResult> UpdateToastProgressDataAsync(ToastProgressData data, String tag);
+        Windows.Foundation.IAsyncOperation<ToastProgressResult> UpdateToastProgressDataAsync(ToastProgressData data, String tag);
 
         // Get the Toast Setting status for the app
-        static Windows.Foundation.IAsyncOperation<ToastNotificationSetting> Setting{ get; };
+        ToastNotificationSetting Setting{ get; };
 
         // Gets an instance of ToastHistory
-        static ToastNotificationHistory History{ get; };
+        ToastNotificationHistory History{ get; };
 
-        // Gets an Xml Payload based on a predefined Toast Template
-        static Windows.Data.Xml.Dom.XmlDocument GetXmlTemplateContent(ToastTemplateType type);
+        // Gets an Xml Payload based ona predefined Toast Template
+        Windows.Data.Xml.Dom.XmlDocument GetXmlTemplateContent(ToastTemplateType type);
     };
 }
 ```
 
 # Appendix
 
--   To support cloud toasts, the developer will need to Register the Toast Activator APIs in addition to the Push Activator registrations that are already being done. The Windows SDK will inturn figure out the complexity of mapping cloud based toasts with a specific Push Identifier to it's corresponding Toast Identifier.
--   Since building Toast XML payloads during runtime is non-trivial, we encourage developers to utilize the windows developer toolkit, more specifically the ToastContentBuilder APIs to construct the xml payload.
+-   To support cloud toasts, the developer will need to Register the Toast Activator APIs in
+    addition to the Push Activator registrations that are already being done. The Windows SDK will
+    inturn figure out the complexity of mapping cloud based toasts with a specific Push Identifier
+    to it's corresponding Toast Identifier.
+-   Since building Toast XML payloads during runtime is non-trivial, we encourage developers to
+    utilize the windows developer toolkit, more specifically the ToastContentBuilder APIs to
+    construct the xml payload.
