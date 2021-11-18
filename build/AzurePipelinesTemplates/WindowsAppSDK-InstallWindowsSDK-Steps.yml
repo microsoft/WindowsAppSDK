@@ -14,6 +14,6 @@ steps:
     inputs:
       targetType: filePath
       filePath: build\Install-WindowsSdkISO.ps1
-      arguments: ${{ parameters.sdkVersion }}
+      arguments: ${{ parameters.sdkVersion2 }}
     displayName: 'Install Insider SDK (${{ parameters.sdkVersion2 }})'
 
