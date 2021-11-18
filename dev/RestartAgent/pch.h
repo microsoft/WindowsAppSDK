@@ -9,3 +9,5 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
+
+#include <AppModel.Identity.h>
