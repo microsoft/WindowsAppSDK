@@ -1,5 +1,5 @@
 parameters:
-  sdkVersion: 18362
+  sdkVersion: 17763
 
 steps:
   - task: powershell@2
