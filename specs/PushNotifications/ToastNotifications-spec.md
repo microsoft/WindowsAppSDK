@@ -109,7 +109,7 @@ The following feature set will not be prioritized for the future include:
 This scenario is specifically geared towards Packaged apps that need to send a toast. An app
 Developer Registers their app for Toast Notifications and sets it up for background\foreground
 activation. Adding a ToastActivated event handler signals that the app is ready to accept and handle
-an action in the Foreground where the user clicks on a Toast in the action centre or a UI element in
+an action in the foreground where the user clicks on a Toast in the action centre or a UI element in
 the toast body (like a Button). The developer can inturn run some business logic in their app in
 response to the Toast Action.
 
@@ -148,14 +148,14 @@ int main()
 ## Unpackaged app Toast Registration
 
 Similar to packaged apps, unpackaged apps can also Register themselves to send toasts and act as
-targets for toast activation events. There is one basic difference in the REgistration for
+targets for toast activation events. There is one basic difference in the Registration for
 Unpackaged apps versus their packaged counterparts: they will need to specify their own friendly App
 DisplayName and IconUri since they don't have an app manifest file that contains the same.
 
 ```cpp
 int main()
 {
-        Uri absoluteFilePath(L"c:\\test\\icon.png");
+    Uri absoluteFilePath(L"c:\\test\\icon.png");
     ToastAssets assets(L"SampleApp", absoluteFilePath);
     auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
     ToastNotificationManager::Default().RegisterActivator(activationInfo);
@@ -1018,10 +1018,9 @@ namespace Microsoft.Windows.ToastNotifications
 
 # Appendix
 
--   To support cloud toasts, the developer will need to Register the Toast Activator APIs in
+-   To support cloud toasts, the developer will need to register the Toast Activator in
     addition to the Push Activator registrations that are already being done. The Windows SDK will
-    inturn figure out the complexity of mapping cloud based toasts with a specific Push Identifier
-    to it's corresponding Toast Identifier.
+    inturn figure out the complexity of mapping cloud based toasts to the correct Toast Activator.
 -   Since building Toast XML payloads during runtime is non-trivial, we encourage developers to
     utilize the windows developer toolkit, more specifically the ToastContentBuilder APIs to
-    construct the xml payload.
+    construct the xml payload in the short term. Alternatively they can also use the ToastTemplates that WinAppSDK will provide to build their own toasts.
