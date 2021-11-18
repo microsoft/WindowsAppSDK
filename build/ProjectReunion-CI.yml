@@ -7,7 +7,7 @@ variables:
 jobs:
 - job: CredScan
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   steps:
   # Scans the root source folder for security vulnerability
   - task: CredScan@2
@@ -34,7 +34,7 @@ jobs:
 
 - job: Build
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
