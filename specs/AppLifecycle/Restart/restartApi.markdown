@@ -186,9 +186,7 @@ string launchArguments);</td>
 When an application calls RequestRestartNow, the mechanism for restart will be as follows:
 1. Application calls RequestRestartNow API.
 2. The API will CreateProcess with the Agent (a helper EXE in the framework package containing the API) and will then wait for an an acknowledgment (ACK) from the Agent.
-3. The Agent will get the executable path of the application and signal an ACK to the API. The Agent will then wait for termination of the application.
-4. The API will terminate the application.
-5. The Agent will CreateProcess with the application (restarted).
+3. The Agent will get the executable path of the application and signal an ACK to the API. The Agent will then then terminate the application and then CreateProcess with the application (restarted).
 
 ## Examples and Scenarios
 
