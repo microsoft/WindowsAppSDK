@@ -18,13 +18,13 @@
 
 This spec addresses the **Restart APIs** in the AppLifecycle component. At a high-level, Win32 apps can
 register with the OS to restart in update/hang/reboot scenarios but cannot restart immediately on-command 
-with specific arguments/state. This applies to packaged (Centennial) and unpackaged apps. This API will address
+with specific arguments/state. This applies to packaged (Desktop Bridge/Centennial) and unpackaged apps. This API will address
 these gaps and provide the ability for any Win32 app to restart immediately.
 
 ## Description
 
 The goal of this feature is the new function: **RequestRestartNow**, which will enable any packaged or unpackaged Win32
-app to terminate and restart itself on command, and to provide an arbitrary command-line string for the restarted instance.
+app (including Console, WinMain, Windows Forms, WPF and WinUI) to terminate and restart itself on command, and to provide an arbitrary command-line string for the restarted instance.
 
 # API
 
@@ -176,7 +176,8 @@ string launchArguments);</td>
 </ul>
 <p>Returns a failure reason for why the restart didn’t successfully complete (AppRestartFailureReason).
 <ul>
-<li>This API does not require for the app to be in foreground, and so AppRestartFailureReason::NotInForeground will never be returned </li>
+<li>This API leverages an existing Enum (AppRestartFailureReason), but not all return values are relevant.</li>
+<li>This API does not require for the app to be in foreground, and so AppRestartFailureReason::NotInForeground will never be returned</li>
 </ul>
 </p></td>
 </tr>
@@ -191,40 +192,46 @@ When an application calls RequestRestartNow, the mechanism for restart will be a
 ## Examples and Scenarios
 
 ```c#
-public class App {
-       // Let's assume this method is run when an app updates assets.
-       // The new assets have downloaded and installed, and now the app has to request a restart immediately
-       protected void updateInstallComplete(){
-           // Checking if the assets have updated successfully and there are no pending updates
-           if (!CheckForUpdate()){
-               AppRestartFailureReason result = AppLifecycle::RequestRestartNow("args for new instance");
-               switch (result){
-                    case AppRestartFailureReason::RestartPending:
-                        // An example of how to handle this case is updating a progress bar to the user
-                        // indicating immediate restart
-                        UpdateProgressBar();
-                        break;
-                    case AppRestartFailureReason::Other:
-                        // In this case, a dialog box will appear informing of an error requesting restart
-                        ShowErrorMessage();
-                        break;
-               }
-           }
-       } 
+public class App 
+{
+    // Let's assume this method is run when an app updates assets.
+    // The new assets have downloaded and installed, and now the app has to request a restart immediately
+    protected void UpdateInstallComplete()
+    {
+        // Checking if the assets have updated successfully and there are no pending updates
+        if (!CheckForUpdate())
+        {
+            AppRestartFailureReason result = AppLifecycle::RequestRestartNow("args for new instance");
+            switch (result)
+            {
+                case AppRestartFailureReason::RestartPending:
+                    // An example of how to handle this case is updating a progress bar to the user
+                    // indicating immediate restart
+                    UpdateProgressBar();
+                    break;
+                case AppRestartFailureReason::Other:
+                    // In this case, a dialog box will appear informing of an error requesting restart
+                    ShowErrorMessage();
+                    break;
+            }
+        }
+    } 
 
     // In this scenario, assume the app encounters an error during initialization.
-    // The app displays an error dialogue, and after the user clicks OK on the dialog the app must restart immediately.
+    // The app displays an error dialog, and after the user clicks OK on the dialog the app must restart immediately.
     // This scenario simply displays logging for these use cases
-    protected void handleInitializationError(){
-        AppRestartFailureReason result = AppLifecycle::RequestRestartNow("args for new instance");
-        switch (result){
-            case AppRestartFailureReason::RestartPending:
-                Telemetry::WriteLine("Restart request successful.");
-                break;
-            case AppRestartFailureReason::Other:
-                Telemetry::WriteLine("Failure restarting.");
-                break;
-        }
+    protected void HandleInitializationError()
+    {
+        AppRestartFailureReason result = AppLifecycle::RequestRestartNow("args for new instance");
+        switch (result)
+        {
+            case AppRestartFailureReason::RestartPending:
+                Telemetry::WriteLine("Restart request successful.");
+                break;
+            case AppRestartFailureReason::Other:
+                Telemetry::WriteLine("Failure restarting.");
+                break;
+        }
     }
 }
 ```
