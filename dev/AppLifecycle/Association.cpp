@@ -15,24 +15,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return (extension.at(0) == L'.');
     }
 
-    std::wstring GetFullIdentityString()
-    {
-        std::wstring identityString;
-        WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH+1];
-        UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
-        if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
-        {
-            identityString = idNameBuffer;
-        }
-
-        return identityString;
-    }
-
-    bool HasIdentity()
-    {
-        return !(GetFullIdentityString()).empty();
-    }
-
     std::wstring GetModulePath()
     {
         std::wstring path(100, L'?');

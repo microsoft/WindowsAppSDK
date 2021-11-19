@@ -20,6 +20,8 @@ using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using winrt::Windows::ApplicationModel::Core::AppRestartFailureReason;
 
+using namespace AppModel::Identity;
+
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
@@ -353,7 +355,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             PROCESS_QUERY_INFORMATION | SYNCHRONIZE, TRUE, 0));
 
         // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
-        auto cmdLine = wil::str_printf<wil::unique_process_heap_string>(L"%s %d %s", exePath, parentHandle.get(), arguments.get());
+        auto cmdLine = wil::str_printf<wil::unique_process_heap_string>(L"%s %d %s", exePath, parentHandle.get(), arguments.c_str());
 
         // Explicitly inherit the current process handle to the restart agent.
         SIZE_T attributeListSize{ 0 };
@@ -407,7 +409,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         // For packaged, try to get platform args first.
-        if (HasIdentity())
+        if (IsPackagedProcess())
         {
             if (auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs())
             {
