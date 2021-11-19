@@ -344,7 +344,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto directory = modulePathView.substr(0, modulePathView.find_last_of(L'\\'));
 
         wchar_t exePath[MAX_PATH];
-        THROW_IF_FAILED(PathCchCombine(exePath, MAX_PATH, directory.c_str(), L"Restarter.exe"));
+        THROW_IF_FAILED(PathCchCombine(exePath, MAX_PATH, directory.c_str(), L"RestartAgent.exe"));
 
         // Use DuplicateHandle to get a real handle from the pseudo-handle returned by GetCurrentProcess().  A real handle
         // is required in order for it to be inherited 
@@ -352,8 +352,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         THROW_IF_WIN32_BOOL_FALSE(DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), wil::out_param(parentHandle), 
             PROCESS_QUERY_INFORMATION | SYNCHRONIZE, TRUE, 0));
 
-        // c:\currentdirectory\restartagent.exe <inherited handle id of calling process>
-        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"%s %d", exePath, parentHandle.get());
+        // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
+        auto cmdLine = wil::str_printf<wil::unique_process_heap_string>(L"%s %d %s", exePath, parentHandle.get(), arguments.get());
 
         // Explicitly inherit the current process handle to the restart agent.
         SIZE_T attributeListSize{ 0 };
@@ -374,8 +374,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         STARTUPINFOEX info{};
         info.StartupInfo.cb = sizeof(info);
         info.lpAttributeList = attributeList.get();
-
-        arguments; // TODO: Handle arguments correctly.
         
         PROCESS_INFORMATION processInfo{};
         THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, 

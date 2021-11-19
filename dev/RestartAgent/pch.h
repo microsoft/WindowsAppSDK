@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <Windows.h>
+#include <shellapi.h>
 #include <MddBootstrap.h>
 #include <wil/cppwinrt.h>
 #include <wil/resource.h>
