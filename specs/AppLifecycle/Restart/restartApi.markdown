@@ -226,7 +226,7 @@ public class App {
             case AppRestartFailureReason::Other:
                 Telemetry::WriteLine("Failure restarting.");
                 break;
-           }
+        }
     }
 }
 ```
