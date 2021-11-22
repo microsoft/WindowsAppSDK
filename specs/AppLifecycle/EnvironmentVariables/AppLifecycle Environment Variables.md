@@ -139,8 +139,7 @@ Notes:
 When uninstalling a package, environment cleanup and restoration is triggered.
 
 1. Any variables created by the app are deleted, unless another packaged app
-   has also modified that variable, in which case the previous value is restored
-   instead.
+   has also modified that variable.
 3. Where a variable was not originally created by the app, but was last modified
    by the app, its value will be restored to the last value set by another app.
 3. Variable changes made by mechanisms other than using these APIs (eg, 
