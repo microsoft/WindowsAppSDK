@@ -199,12 +199,12 @@ function Test-DevTestPfx
     $pfx = Join-Path $root 'temp\MSTest.pfx'
     if (Test-Path -Path $pfx -PathType Leaf)
     {
-        Write-Host 'Test temp\MSTest.pfx...OK'
+        Write-Host "Test $pfx...OK"
         return $true
     }
     else
     {
-        Write-Host 'Test temp\MSTest.pfx...Not Found'
+        Write-Host "Test $pfx...Not Found"
         $global:issues += 1
         return $false
     }
@@ -220,22 +220,49 @@ function Repair-DevTestPfx
         New-Item -Path $temp -ItemType Directory -Force
     }
 
-    $spfx = Join-Path $root 'build\MSTest.spfx'
+    # Create and install test certificate (if necessary)
+    $cer = Join-Path $temp 'MSTest.cer'
     $pfx = Join-Path $temp 'MSTest.pfx'
-    $args = " -decode $spfx $pfx"
-    if ($Verbose -eq $true)
+    $pvk = Join-Path $temp 'MSTest.pvk'
+    if (-not(Test-Path -Path $pfx -PathType Leaf))
     {
-        $args = " -v $args"
+        $programfilesx86 = ${Env:ProgramFiles(x86)}
+        $windows10kits = Join-Path ${programfilesx86} "Windows Kits\10\bin"
+        $kits = Get-ChildItem $windows10kits -Filter "10.0.*" -Directory
+        $newestkit = ($kits | Sort-Object -Descending)[0]
+        $kitpath = Join-Path $newestkit.FullName $(Get-CpuArchitecture)
+        $makecert = Join-Path $kitpath 'makecert.exe'
+        $args = ' /n "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" /r /h 0 /eku "1.3.6.1.5.5.7.3.3,1.3.6.1.4.1.311.10.3.13" /m 12 /sv ' + "$pvk $cer"
+        if ($Verbose -eq $true)
+        {
+            Write-Host "$makecert $args"
+        }
+        $output = Run-Process $makecert $args
+        if (-not([string]::IsNullOrEmpty($output)) -and -not $output.StartsWith("Succeeded"))
+        {
+            Write-Host $output
+        }
+
+        $pvk2pfx= Join-Path $kitpath 'pvk2pfx.exe'
+        $args = " /pvk $pvk /spc $cer /pfx $pfx -f"
+        if ($Verbose -eq $true)
+        {
+            Write-Host "$pvk2pfx $args"
+        }
+        $output = Run-Process $pvk2pfx $args
+        if (-not([string]::IsNullOrEmpty($output)))
+        {
+            Write-Host $output
+        }
     }
-    $output = Run-Process 'certutil.exe' $args
+
     if (Test-Path -Path $pfx -PathType Leaf)
     {
-        Write-Host 'Create temp\MSTest.pfx...OK'
+        Write-Host "Create $pfx...OK"
     }
     else
     {
-        Write-Host 'Create temp\MSTest.pfx...Errpr'
-        Write-Verbose $output
+        Write-Host "Create $pfx...Error"
         $global:issues += 1
     }
 }
@@ -296,7 +323,7 @@ function Repair-DevTestCert
     }
 
     $root = Get-ProjectRoot
-    $cert = Join-Path $root 'build\MSTest.cer'
+    $cert = Join-Path $root 'temp\MSTest.cer'
     $args = " -addstore TrustedPeople $cert"
     $output = Run-Process 'certutil.exe' $args
     $success = $output | Select-String -Pattern 'CertUtil: -addstore' -SimpleMatch -Quiet

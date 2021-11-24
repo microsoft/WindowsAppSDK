@@ -91,7 +91,7 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
       workingDirectory: '$(Build.SourcesDirectory)'
-      
+
   - task: powershell@2
     displayName: 'Create EnvironmentManager TerminalVelocity features'
     inputs:
@@ -99,14 +99,14 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
       workingDirectory: '$(Build.SourcesDirectory)'
-      
+
   - task: powershell@2
     name: UpdateTraceloggingConfig
     inputs:
       targetType: 'inline'
       script: |
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-        
+
         if (($srcPath -ne $null)){
           $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
@@ -131,7 +131,7 @@ steps:
   - task: CmdLine@2
     displayName: 'Install Test Certificate'
     inputs:
-      script: 'certutil.exe -addstore TrustedPeople MSTest.cer'
+      script: 'certutil.exe -addstore TrustedPeople ..\temp\MSTest.cer'
       workingDirectory: '$(Build.SourcesDirectory)\build'
 
   - task: powershell@2
