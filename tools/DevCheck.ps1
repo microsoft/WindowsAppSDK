@@ -86,6 +86,30 @@ function Get-ProjectRoot
     return Split-Path -Path $PSScriptRoot -Parent
 }
 
+function Get-TempPath
+{
+    $root = Get-ProjectRoot
+    $temp = Join-Path $root 'temp'
+    if (-not(Test-Path -Path $temp -PathType Container))
+    {
+        Write-Host 'Creating $temp...'
+        New-Item -Path $temp -ItemType Directory -Force
+    }
+    return $temp
+}
+
+function Get-UserPath
+{
+    $root = Get-ProjectRoot
+    $user = Join-Path $root '.user'
+    if (-not(Test-Path -Path $user -PathType Container))
+    {
+        Write-Host 'Creating $user...'
+        New-Item -Path $user -ItemType Directory -Force
+    }
+    return $user
+}
+
 function Get-CpuArchitecture
 {
     $architecture = $(Get-WmiObject Win32_Processor).Architecture
@@ -195,8 +219,8 @@ function Test-DevTestPfx
         return $false
     }
 
-    $root = Get-ProjectRoot
-    $pfx = Join-Path $root 'temp\MSTest.pfx'
+    $temp = Get-TempPath
+    $pfx = Join-Path $temp 'MSTest.pfx'
     if (Test-Path -Path $pfx -PathType Leaf)
     {
         Write-Host "Test $pfx...OK"
@@ -212,15 +236,8 @@ function Test-DevTestPfx
 
 function Repair-DevTestPfx
 {
-    $root = Get-ProjectRoot
-    $temp = Join-Path $root 'temp'
-    if (-not(Test-Path -Path $temp -PathType Container))
-    {
-        Write-Host 'Creating $temp...'
-        New-Item -Path $temp -ItemType Directory -Force
-    }
-
     # Create and install test certificate (if necessary)
+    $temp = Get-TempPath
     $cer = Join-Path $temp 'MSTest.cer'
     $pfx = Join-Path $temp 'MSTest.pfx'
     $pvk = Join-Path $temp 'MSTest.pvk'
@@ -277,8 +294,8 @@ function Test-DevTestCert
     #
     # That 3535... value is the 'Thumbprint' property
 
-    $root = Get-ProjectRoot
-    $path = Join-Path $root 'temp\MSTest.pfx'
+    $temp = Get-TempPath
+    $path = Join-Path $temp 'MSTest.pfx'
     $pfx = Get-PfxCertificate -FilePath $path
     $thumbprint = $pfx.Thumbprint
 
@@ -322,8 +339,8 @@ function Repair-DevTestCert
         return
     }
 
-    $root = Get-ProjectRoot
-    $cert = Join-Path $root 'temp\MSTest.cer'
+    $temp = Get-TempPath
+    $cert = Join-Path $temp 'MSTest.cer'
     $args = " -addstore TrustedPeople $cert"
     $output = Run-Process 'certutil.exe' $args
     $success = $output | Select-String -Pattern 'CertUtil: -addstore' -SimpleMatch -Quiet
