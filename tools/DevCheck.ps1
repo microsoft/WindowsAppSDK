@@ -17,7 +17,7 @@
     Run as if it's the first time (ignore any previous cached artifacts from previous runs).
 
 .PARAMETER CheckAll
-    Check all. IF not specified this is set to true if all other -Check... options are false
+    Check all. If not specified this is set to true if all other -Check... options are false
 
 .PARAMETER CheckTAEFService
     Check the TAEF service
@@ -37,6 +37,9 @@
 .PARAMETER Offline
     Do not access the network
 
+.PARAMETER RemoveAll
+    Remove all.
+
 .PARAMETER RemoveTestCert
     Remove the Test certificate (i.e. undoc CheckTestCert)
 
@@ -52,6 +55,10 @@
 
 Param(
     [String]$CertPassword=$null,
+
+    [String]$CertPasswordFile=$null,
+
+    [String]$CertPasswordUser=$true,
 
     [Switch]$CheckAll=$false,
 
@@ -69,6 +76,8 @@ Param(
 
     [Switch]$Offline=$false,
 
+    [Switch]$RemoveAll=$false,
+
     [Switch]$RemoveTestCert=$false,
 
     [Switch]$RemoveTestPfx=$false,
@@ -78,7 +87,8 @@ Param(
 
 $global:issues = 0
 
-if (($CheckTestPfx -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckVisualStudio -eq $false))
+$remove_any = ($RemoveAll -eq $true) -or ($RemoveTestCert -eq $true) -or ($RemoveTestCert -eq $true)
+if (($remove_any -eq $false) -And ($CheckTAEFService -eq $false) -And ($CheckTestCert -eq $false) -And ($CheckTestPfx -eq $false) -And ($CheckVisualStudio -eq $false))
 {
     $CheckAll = $true
 }
@@ -252,7 +262,7 @@ function Test-DevTestPfx
     $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
     if (-not(Test-Path -Path $cert_path))
     {
-        Write-Host 'Test certificate for $pfx_thumbprint...Not Found'
+        Write-Host "Test certificate for $pfx_thumbprint...Not Found"
         $global:issues += 1
         return $false
     }
@@ -287,22 +297,41 @@ function Repair-DevTestPfx
         return $false
     }
 
+    $user = Get-UserPath
+    $pwd_file = Join-Path $user 'winappsdk.certificate.test.pwd'
+
     # -CertPassword <password> is a required parameter for this work
     $password = ''
     if (-not [string]::IsNullOrEmpty($CertPassword))
     {
-        $password = ConvertTo-SecureString -String $CertPassword -Force -AsPlainText
+        $password_plaintext = $CertPassword
+    }
+    elseif (-not [string]::IsNullOrEmpty($CertPasswordFile))
+    {
+        if (-not(Test-Path -Path $CertPasswordFile -PathType Leaf))
+        {
+            Write-Host "Test certificate file $CertPasswordFile...Not Found"
+            $global:issues += 1
+            return $false
+        }
+        $password = Get-Content -Path $CertPasswordFile -Encoding utf8
+    }
+    elseif (($CertPasswordUser -eq $true) -and (Test-Path -Path $pwd_file -PathType Leaf))
+    {
+        $password = Get-Content -Path $pwd_file -Encoding utf8
     }
     elseif ($NoInteractive -eq $false)
     {
-        $password = Read-Host -Prompt 'Enter test certificate password' -AsSecureString
+        $password_plaintext = Read-Host -Prompt 'Enter test certificate password'
     }
-    if ($password.Length -eq 0)
+    if ([string]::IsNullOrEmpty($password_plaintext))
     {
-        Write-Host "Test certificate .pfx...password parameter (-CertPassword <password>) or prompting required"
+        Write-Host "Test certificate .pfx...password parameter (-CertPassword | -CertPasswordFile | -CertPasswordUser) or prompting required"
         $global:issues += 1
         return $false
     }
+    $password = ConvertTo-SecureString -String $password_plaintext -Force -AsPlainText
+    Set-Content -Path $pwd_file -Value $password_plaintext -Force
 
     # Prepare to record the pfx for the certificate
     $user = Get-UserPath
@@ -323,7 +352,7 @@ function Repair-DevTestPfx
 
     # Save the thumbprint
     $thumbprint = $cert.Thumbprint
-    Set-Content -Path $cert_thumbprint -Value $thumbprint -Encoding utf8 -Force
+    Set-Content -Path $cert_thumbprint -Value $thumbprint -Force
 
     # Export the certificate
     $cer = Join-Path $user 'winappsdk.certificate.test.cer'
@@ -336,7 +365,7 @@ function Repair-DevTestPfx
     Remove-Item -Path $cert_personal -DeleteKey
 
     $ok = $true
-    foreach ($f in $cer,$pfx,$cert_thumbprint)
+    foreach ($f in $cer,$pfx,$pwd_file,$cert_thumbprint)
     {
         if (Test-Path -Path $f -PathType Leaf)
         {
@@ -358,9 +387,10 @@ function Remove-DevTestPfx
     $user = Get-UserPath
     $cer = Join-Path $user 'winappsdk.certificate.test.cer'
     $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
+    $pwd_file = Join-Path $user 'winappsdk.certificate.test.pwd'
     $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
 
-    foreach ($f in $cer,$pfx,$pfx_thumbprint)
+    foreach ($f in $cer,$pfx,$pwd_file,$pfx_thumbprint)
     {
         if (Test-Path -Path $f -PathType Leaf)
         {
@@ -578,12 +608,12 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     }
 }
 
-if ($RemoveTestCert -ne $false)
+if (($RemoveAll -ne $false) -Or ($RemoveTestCert -ne $false))
 {
     $test = Remove-DevTestCert
 }
 
-if ($RemoveTestPfx -ne $false)
+if (($RemoveAll -ne $false) -Or ($RemoveTestPfx -ne $false))
 {
     $test = Remove-DevTestPfx
 }
