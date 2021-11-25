@@ -10,6 +10,9 @@
     * Test certificate to sign test MSIX packages is installed
     * Visual Studio 2019 is installed and properly configured
 
+.PARAMETER CertPassword
+    Password for new certificates
+
 .PARAMETER Clean
     Run as if it's the first time (ignore any previous cached artifacts from previous runs).
 
@@ -28,6 +31,9 @@
 .PARAMETER CheckVisualStudio
     Check Visual Studio
 
+.PARAMETER NoInteractive
+    Run in non-interactive mode (fail if any need for user input)
+
 .PARAMETER Offline
     Do not access the network
 
@@ -39,6 +45,8 @@
 #>
 
 Param(
+    [String]$CertPassword=$null,
+
     [Switch]$CheckAll=$false,
 
     [Switch]$CheckTestPfx=$false,
@@ -50,6 +58,8 @@ Param(
     [Switch]$CheckVisualStudio=$false,
 
     [Switch]$Clean=$false,
+
+    [Switch]$NoInteractive=$false,
 
     [Switch]$Offline=$false,
 
@@ -219,114 +229,152 @@ function Test-DevTestPfx
         return $false
     }
 
-    $temp = Get-TempPath
-    $pfx = Join-Path $temp 'MSTest.pfx'
-    if (Test-Path -Path $pfx -PathType Leaf)
+    $user = Get-UserPath
+    $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
+    if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
-        Write-Host "Test $pfx...OK"
-        return $true
-    }
-    else
-    {
-        Write-Host "Test $pfx...Not Found"
+        Write-Host 'Test certificate thumbprint $pfx_thumbprint...Not Found'
         $global:issues += 1
         return $false
     }
+
+    $thumbprint = Get-Content -Path $pfx_thumbprint -Encoding utf8
+    $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
+    if (-not(Test-Path -Path $cert_path))
+    {
+        Write-Host 'Test certificate for $pfx_thumbprint...Not Found'
+        $global:issues += 1
+        return $false
+    }
+
+    $cert = Get-ChildItem $cert_path
+    $expiration = $cert.NotAfter
+    $now = Get-Date
+    if ($expiration -lt $now)
+    {
+        Write-Host "Test certificate for $pfx_thumbprint...Expired ($expiration)"
+        $global:issues += 1
+        return $false
+    }
+    elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
+    {
+        Write-Host "Test certificate for $pfx_thumbprint...Expires soon ($expiration)"
+        $global:issues += 1
+        return $true
+    }
+
+    Write-Host "Test certificate for $pfx_thumbprint...OK"
+    return $true
 }
 
 function Repair-DevTestPfx
 {
-    # Create and install test certificate (if necessary)
-    $temp = Get-TempPath
-    $cer = Join-Path $temp 'MSTest.cer'
-    $pfx = Join-Path $temp 'MSTest.pfx'
-    $pvk = Join-Path $temp 'MSTest.pvk'
-    if (-not(Test-Path -Path $pfx -PathType Leaf))
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
     {
-        $programfilesx86 = ${Env:ProgramFiles(x86)}
-        $windows10kits = Join-Path ${programfilesx86} "Windows Kits\10\bin"
-        $kits = Get-ChildItem $windows10kits -Filter "10.0.*" -Directory
-        $newestkit = ($kits | Sort-Object -Descending)[0]
-        $kitpath = Join-Path $newestkit.FullName $(Get-CpuArchitecture)
-        $makecert = Join-Path $kitpath 'makecert.exe'
-        $args = ' /n "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" /r /h 0 /eku "1.3.6.1.5.5.7.3.3,1.3.6.1.4.1.311.10.3.13" /m 12 /sv ' + "$pvk $cer"
-        if ($Verbose -eq $true)
-        {
-            Write-Host "$makecert $args"
-        }
-        $output = Run-Process $makecert $args
-        if (-not([string]::IsNullOrEmpty($output)) -and -not $output.StartsWith("Succeeded"))
-        {
-            Write-Host $output
-        }
-
-        $pvk2pfx= Join-Path $kitpath 'pvk2pfx.exe'
-        $args = " /pvk $pvk /spc $cer /pfx $pfx -f"
-        if ($Verbose -eq $true)
-        {
-            Write-Host "$pvk2pfx $args"
-        }
-        $output = Run-Process $pvk2pfx $args
-        if (-not([string]::IsNullOrEmpty($output)))
-        {
-            Write-Host $output
-        }
-    }
-
-    if (Test-Path -Path $pfx -PathType Leaf)
-    {
-        Write-Host "Create $pfx...OK"
-    }
-    else
-    {
-        Write-Host "Create $pfx...Error"
+        Write-Host "Test certificate .pfx...Access Denied. Run from an admin prompt"
         $global:issues += 1
+        return $false
     }
+
+    # -CertPassword <password> is a required parameter for this work
+    $password = ''
+    if (-not [string]::IsNullOrEmpty($CertPassword))
+    {
+        $password = ConvertTo-SecureString -String $CertPassword -Force -AsPlainText
+    }
+    elseif ($NoInteractive -eq $false)
+    {
+        $password = Read-Host -Prompt 'Enter test certificate password' -AsSecureString
+    }
+    if ($password.Length -eq 0)
+    {
+        Write-Host "Test certificate .pfx...password parameter (-CertPassword <password>) or prompting required"
+        $global:issues += 1
+        return $false
+    }
+
+    # Prepare to record the pfx for the certificate
+    $user = Get-UserPath
+    $cert_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
+
+    # Create the certificate
+    $cert_path = "cert:\CurrentUser\My"
+    $now = Get-Date
+    $expiration = $now.AddMonths(3)
+    $subject = 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'
+    $friendly_name = "Microsoft.WindowsAppSDK Test Certificate Create=$now"
+    $key_friendly_name = "Microsoft.WindowsAppSDK Test PrivateKey Create=$now"
+    $key_description = "Microsoft.WindowsAppSDK Test PrivateKey Create=$now"
+    $eku_oid = '2.5.29.37'
+    $eku_value = '1.3.6.1.5.5.7.3.3,1.3.6.1.4.1.311.10.3.13'
+    $eku = "$eku_oid={text}$eku_value"
+    $cert = New-SelfSignedCertificate -CertStoreLocation $cert_path -NotAfter $expiration -Subject $subject -FriendlyName $friendly_name -KeyFriendlyName $key_friendly_name -KeyDescription $key_description -TextExtension $eku
+
+    # Save the thumbprint
+    $thumbprint = $cert.Thumbprint
+    Set-Content -Path $cert_thumbprint -Value $thumbprint -Encoding utf8 -Force
+
+    # Export the certificate
+    $cer = Join-Path $user 'winappsdk.certificate.test.cer'
+    $export_cer = Export-Certificate -Cert $cert -FilePath $cer -Force
+    $cert_personal = "cert:\CurrentUser\My\$thumbprint"
+    $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
+    $export_pfx = Export-PfxCertificate -Cert $cert_personal -FilePath $pfx -Password $password
+
+    # Delete the personal certiicate
+    Remove-Item -Path $cert_personal -DeleteKey
+
+    $ok = $true
+    foreach ($f in $cer,$pfx,$cert_thumbprint)
+    {
+        if (Test-Path -Path $f -PathType Leaf)
+        {
+            Write-Host "Create $f...OK"
+        }
+        else
+        {
+            Write-Host "Create $f...Error"
+            $global:issues += 1
+            $ok = $false
+        }
+    }
+
+    return $ok
 }
 
 function Test-DevTestCert
 {
-    # To manually determine the thumbprint of a *.cer file
-    #     certutil.exe -dump filename.cer
-    # and look for the sha256 hash e.g.
-    #
-    #   Cert Hash(sha1): 353556c5bf55045aa2375207d291e6bcd30b524b
-    #
-    # That 3535... value is the 'Thumbprint' property
-
-    $temp = Get-TempPath
-    $path = Join-Path $temp 'MSTest.pfx'
-    $pfx = Get-PfxCertificate -FilePath $path
-    $thumbprint = $pfx.Thumbprint
+    $user = Get-UserPath
+    $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
+    $thumbprint = Get-Content -Path $pfx_thumbprint -Encoding utf8
 
     $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
     if (-not(Test-Path -Path $cert_path))
     {
-        Write-Host 'Test certificate...Not Found'
+        Write-Host "Test certificate $pfx_thumbprint thumbprint $thumbprint...Not Found"
         $global:issues += 1
+        return $false
     }
-    else
+
+    $cert = Get-ChildItem -Path $cert_path
+    $expiration = $cert.NotAfter
+    $now = Get-Date
+    if ($expiration -lt $now)
     {
-        $cert = Get-ChildItem -Path $cert_path
-        $expiration = $cert.NotAfter
-        $now = Get-Date
-        if ($expiration -lt $now)
-        {
-            Write-Host "Test certificate...Expired ($expiration)"
-            $global:issues += 1
-        }
-        elseif ($expiration -lt ($now + (New-TimeSpan -Days 30)))
-        {
-            Write-Host "Test certificate...Expires soon ($expiration)"
-            $global:issues += 1
-        }
-        else
-        {
-            Write-Host "Test certificate...OK"
-            return $true
-        }
+        Write-Host "Test certificate $thumbprint...Expired ($expiration)"
+        $global:issues += 1
+        return $false
     }
-    return $false
+    elseif ($expiration -lt ($now + (New-TimeSpan -Days 14)))
+    {
+        Write-Host "Test certificate $thumbprint...Expires soon ($expiration)"
+        $global:issues += 1
+        return $false
+    }
+
+    Write-Host "Test certificate $thumbprint...OK"
+    return $true
 }
 
 function Repair-DevTestCert
@@ -339,21 +387,15 @@ function Repair-DevTestCert
         return
     }
 
-    $temp = Get-TempPath
-    $cert = Join-Path $temp 'MSTest.cer'
-    $args = " -addstore TrustedPeople $cert"
-    $output = Run-Process 'certutil.exe' $args
-    $success = $output | Select-String -Pattern 'CertUtil: -addstore' -SimpleMatch -Quiet
-    if ($success -eq $true)
-    {
-        Write-Host "Install test certificate...OK"
-    }
-    else
-    {
-        Write-Host "Install test certificate...Error"
-        Write-Verbose $output
-        $global:issues += 1
-    }
+    $user = Get-UserPath
+    $cer = Join-Path $user 'winappsdk.certificate.test.cer'
+    $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
+    $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
+    $thumbprint = Get-Content -Path $pfx_thumbprint -Encoding utf8
+
+    $cert_path = "cert:\LocalMachine\TrustedPeople"
+    $x509certificates = Import-Certificate -FilePath $cer -CertStoreLocation $cert_path
+    Write-Host "Install test certificate $cer...OK"
 }
 
 function Test-TAEFService
@@ -447,7 +489,12 @@ if (($CheckAll -ne $false) -Or ($CheckTestPfx -ne $false))
     $test = Test-DevTestPfx
     if ($test -ne $true)
     {
-        Repair-DevTestPfx
+        $test = Repair-DevTestPfx
+        if ($test -ne $true)
+        {
+            Write-Output "Fatal error. Aborting..."
+            Exit 1
+        }
     }
 }
 
