@@ -45,8 +45,10 @@ REM SET SignCert=136020001
 REM SET SignPublisher=CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US
 REM SET SignFile=%OutMsix%
 REM SimpleSign.exe -i:%SignFile% -c:%SignCert% -s:"%SignPublisher%"
-ECHO signtool.exe sign /a /v /fd SHA256 /f %ProjectDir%temp\MSTest.pfx %OutMsix%
-signtool.exe sign /a /v /fd SHA256 /f %SolutionDir%temp\MSTest.pfx %OutMsix%
+SET PFX_PASSWORD_FILE=%SolutionDir%.user\winappsdk.certificate.test.pwd
+SET /P PFX_PASSWORD=< %PFX_PASSWORD_FILE%
+ECHO signtool.exe sign /a /v /fd SHA256 /f %ProjectDir%.user\winappsdk.certificate.test.pfx /p ...%PFX_PASSWORD_FILE%... %OutMsix%
+signtool.exe sign /a /v /fd SHA256 /f %SolutionDir%.user\winappsdk.certificate.test.pfx /p "%PFX_PASSWORD%" %OutMsix%
 IF ERRORLEVEL 1 ECHO Error %ERRORLEVEL%
 
 :TheEnd
