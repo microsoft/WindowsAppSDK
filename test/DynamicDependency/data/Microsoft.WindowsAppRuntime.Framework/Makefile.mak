@@ -41,7 +41,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $(WorkDir)\Microsoft.WindowsAppRuntime.pdb
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir).user\winappsdk.certificate.test.pfx $(OutMsix)
 
 build: $(OutMsix)
 

@@ -44,7 +44,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(OutDir)Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix $(WorkDir)\MSIX\Main.msix
     @copy /Y $(OutDir)Deployment.WindowsAppRuntime.Test.Singleton\Deployment.WindowsAppRuntime.Test.Singleton.msix $(WorkDir)\MSIX\Singleton.msix
     @makeappx.exe pack $(MAKEAPPX_OPTS)/o /h SHA256 /d $(WorkDir) /p $(OutMsix)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir)temp\MSTest.pfx $(OutMsix)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir).user\winappsdk.certificate.test.pfx $(OutMsix)
 
 build: $(OutMsix)
 
