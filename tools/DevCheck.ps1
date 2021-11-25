@@ -37,6 +37,12 @@
 .PARAMETER Offline
     Do not access the network
 
+.PARAMETER RemoveTestCert
+    Remove the Test certificate (i.e. undoc CheckTestCert)
+
+.PARAMETER RemoveTestPfx
+    Remove the MSIX Test signing certificate (i.e. undoc CheckTestPfx)
+
 .PARAMETER Verbose
     Display detailed information
 
@@ -49,11 +55,11 @@ Param(
 
     [Switch]$CheckAll=$false,
 
-    [Switch]$CheckTestPfx=$false,
-
     [Switch]$CheckTAEFService=$false,
 
     [Switch]$CheckTestCert=$false,
+
+    [Switch]$CheckTestPfx=$false,
 
     [Switch]$CheckVisualStudio=$false,
 
@@ -62,6 +68,10 @@ Param(
     [Switch]$NoInteractive=$false,
 
     [Switch]$Offline=$false,
+
+    [Switch]$RemoveTestCert=$false,
+
+    [Switch]$RemoveTestPfx=$false,
 
     [Switch]$Verbose=$false
 )
@@ -343,6 +353,24 @@ function Repair-DevTestPfx
     return $ok
 }
 
+function Remove-DevTestPfx
+{
+    $user = Get-UserPath
+    $cer = Join-Path $user 'winappsdk.certificate.test.cer'
+    $pfx = Join-Path $user 'winappsdk.certificate.test.pfx'
+    $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
+
+    foreach ($f in $cer,$pfx,$pfx_thumbprint)
+    {
+        if (Test-Path -Path $f -PathType Leaf)
+        {
+            Remove-Item -Path $f -Force
+            Write-Host "Remove test certificate $f...OK"
+        }
+    }
+    return $true
+}
+
 function Test-DevTestCert
 {
     $user = Get-UserPath
@@ -396,6 +424,36 @@ function Repair-DevTestCert
     $cert_path = "cert:\LocalMachine\TrustedPeople"
     $x509certificates = Import-Certificate -FilePath $cer -CertStoreLocation $cert_path
     Write-Host "Install test certificate $cer...OK"
+}
+
+function Remove-DevTestCert
+{
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Remove test certificate...Access Denied. Run from an admin prompt"
+        $global:issues += 1
+        return $false
+    }
+
+    $user = Get-UserPath
+    $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
+    if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
+    {
+        Write-Host 'Remove test certificate $pfx_thumbprint...OK (Not Found)'
+        return $true
+    }
+
+    $thumbprint = Get-Content -Path $pfx_thumbprint -Encoding utf8
+    $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
+    if (-not(Test-Path -Path $cert_path))
+    {
+        Write-Host 'Remove test certificate for $thumbprint...OK (Not Found)'
+        return $true
+    }
+    Remove-Item -Path $cert_path -DeleteKey
+    Write-Host "Remove test certificate for $thumbprint...OK"
+    return $true
 }
 
 function Test-TAEFService
@@ -518,6 +576,16 @@ if (($CheckAll -ne $false) -Or ($CheckTAEFService -ne $false))
     {
         $test = Start-TAEFService
     }
+}
+
+if ($RemoveTestCert -ne $false)
+{
+    $test = Remove-DevTestCert
+}
+
+if ($RemoveTestPfx -ne $false)
+{
+    $test = Remove-DevTestPfx
 }
 
 if ($global:issues -eq 0)
