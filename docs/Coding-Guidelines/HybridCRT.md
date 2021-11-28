@@ -55,9 +55,9 @@ Windows App SDK uses the hybrid CRT for all PE files.
 TL;DR Do nothing and all projects use it. If you create a new *.vcxproj delete any `<RuntimeLibrary>` tags.
 
 Windows App SDK defines the rules for Visual Studio in
-[https://github.com/microsoft/WindowsAppSDK/HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
+[HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props).
 This is imported by
-[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/Directory.Build.props) so all
+[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/blob/main/Directory.Build.props) so all
 projects in the directory tree get this support.
 
 If new projects are created DO NOT specify `<RuntimeLibrary>` in *.vcxproj as that's unnecessary and
@@ -115,7 +115,7 @@ The steps involved:
 
 ### Directory.Build.props
 
-[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/Directory.Build.props) in the
+[Directory.Build.props](https://github.com/microsoft/WindowsAppSDK/blob/main/Directory.Build.props) in the
 repository root imports
 [HybridCRT.props](https://github.com/microsoft/WindowsAppSDK/blob/main/HybridCRT.props) to apply to
 all projects in the repository via this statement:
