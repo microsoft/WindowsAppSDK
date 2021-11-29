@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)PushNotifications.idl" />
+    <Midl Include="$(MSBuildThisFileDirectory)ToastNotifications.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.cpp" />
