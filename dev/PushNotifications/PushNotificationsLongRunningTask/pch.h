@@ -34,6 +34,7 @@
 
 // LRP files
 #include "ForegroundSinkManager.h"
+#include "ToastRegistrationManager.h"
 #include "PlatformLifetimeManager.h"
 #include "NotificationListener.h"
 #include "NotificationListenerManager.h"

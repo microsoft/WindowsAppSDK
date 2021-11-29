@@ -5,7 +5,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/base.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
-
+#include <iostream>
 namespace winrt
 {
     using namespace Microsoft::Windows::PushNotifications;
@@ -31,10 +31,12 @@ HRESULT __stdcall ToastActivationCallback::Activate(
 
     if (GetToastHandleCount())
     {
+        std::cout << "Foreground set" << std::endl;
         GetToastHandlers()(*this, activatedEventArgs);
     }
     else
     {
+        std::cout << "Background set" << std::endl;
         appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
         SetEvent(GetWaitHandleForArgs().get());
     }

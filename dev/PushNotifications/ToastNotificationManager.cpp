@@ -3,6 +3,14 @@
 #include "Microsoft.Windows.PushNotifications.ToastNotificationManager.g.cpp"
 #include "ToastActivationCallback.h"
 #include "externs.h"
+#include <iostream>
+#include <frameworkudk/pushnotifications.h>
+#include "PushNotificationUtility.h"
+#include <winrt/Windows.Foundation.h>
+#include "winrt/Windows.UI.h"
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/base.h>
+#include <winrt/Windows.ApplicationModel.Core.h>
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
@@ -18,22 +26,122 @@ int& GetToastHandleCount()
     return g_toastHandlerCount;
 }
 
+namespace winrt
+{
+    using namespace winrt::Windows::UI;
+    using namespace winrt::Windows::Foundation;
+    using namespace Windows::ApplicationModel::Core;
+}
+
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     static wil::unique_com_class_object_cookie s_toastcomActivatorRegistration;
 
-    void ToastNotificationManager::RegisterActivator(winrt::guid const& taskClsid)
+    void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color, wil::unique_cotaskmem_string const& clsid)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
+        wil::unique_hkey hKey;
+        std::wstring subKey{ L"Software\\Classes\\AppUserModelId\\" + appId };
+        THROW_IF_FAILED(RegCreateKeyEx(
+            HKEY_CURRENT_USER,
+            subKey.c_str(),
+            0,
+            nullptr,
+            REG_OPTION_NON_VOLATILE,
+            KEY_ALL_ACCESS,
+            nullptr,
+            &hKey,
+            nullptr));
+
+        RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
+        RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()), REG_EXPAND_SZ, iconUri.AbsoluteUri().size() * sizeof(wchar_t));
+
+        WCHAR buffer[24];
+        wsprintf(buffer, L"%X%X%X%X", color.A, color.R, color.G, color.B);
+        RegisterValue(hKey, L"IconBackgroundColor", reinterpret_cast<const BYTE*>(buffer), REG_SZ, sizeof(buffer));
+
+        std::wstring wideStringClsid{ clsid.get() };
+        RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
+        return;
+    }
+
+    void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
+    {
+        wil::unique_hkey hKey;
+        std::wstring wideStringClsid = { clsid.get() };
+        std::wstring subKey{ L"Software\\Classes\\CLSID\\" + wideStringClsid + L"\\LocalServer32" };
+        THROW_IF_FAILED(RegCreateKeyEx(
+            HKEY_CURRENT_USER,
+            subKey.c_str(),
+            0,
+            nullptr,
+            REG_OPTION_NON_VOLATILE,
+            KEY_ALL_ACCESS,
+            nullptr,
+            &hKey,
+            nullptr));
+
+        std::wstring comRegistrationExeString{ L"\"" };
+        comRegistrationExeString.append(processName.get());
+        comRegistrationExeString.append(L"\" ");
+        comRegistrationExeString.append(L"----ToastActivated:");
+        RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
+    }
+
+    void ToastNotificationManager::RegisterActivator(winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color)
+    {
+        // winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+        // appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+        wil::unique_cotaskmem_string processName;
+        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+
+        std::wstring appId{ RetrieveToastGuid() };
+        THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appId.c_str(), GUID_NULL));
+
+        auto appProperties { winrt::}
+        if (!winrt::CoreApplication::Properties().HasKey(COM_ACTIVATOR_KEY))
+        {
+            GUID comActivatorGuid;
+            THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
+
+            wil::unique_cotaskmem_string comActivatorGuidString;
+            THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
+
+            auto appProperties = winrt::Windows::ApplicationModel::Core::CoreApplication::Properties();
+            appProperties.Insert(COM_ACTIVATOR_KEY, comActivatorGuid);
+
+            RegisterAssets(appId, displayName, iconUri, color, comActivatorGuidString);
+            RegisterComServer(processName, comActivatorGuidString);
+        }
 
         GetWaitHandleForArgs().create();
 
         THROW_IF_FAILED(::CoRegisterClassObject(
-            taskClsid,
+            comActivatorGuid,
             winrt::make<ToastActivationCallback_factory>().get(),
             CLSCTX_LOCAL_SERVER,
             REGCLS_MULTIPLEUSE,
             &s_toastcomActivatorRegistration));
+
+        return;
+    }
+    
+    void ToastNotificationManager::RegisterActivator(winrt::guid const& taskClsid)
+    {
+
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
+
+            GetWaitHandleForArgs().create();
+
+            THROW_IF_FAILED(::CoRegisterClassObject(
+                taskClsid,
+                winrt::make<ToastActivationCallback_factory>().get(),
+                CLSCTX_LOCAL_SERVER,
+                REGCLS_MULTIPLEUSE,
+                &s_toastcomActivatorRegistration));
+        }
     }
 
     void ToastNotificationManager::UnRegisterActivator()

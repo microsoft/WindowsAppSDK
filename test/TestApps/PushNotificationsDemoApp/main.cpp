@@ -6,6 +6,8 @@
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include <MddBootstrap.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
+#include "winrt/Windows.UI.Notifications.h"
+#include <winrt/Windows.UI.h>
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
@@ -15,6 +17,8 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::UI;
+using namespace winrt::Windows::UI::Notifications;
 
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
@@ -52,7 +56,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         auto channelExpiry = result.Channel().ExpirationTime();
 
         // Register Push Event for Foreground
-       /* winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+       winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
             {
                 auto payload = args.Payload();
 
@@ -60,7 +64,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
                 std::string payloadString(payload.begin(), payload.end());
                 std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
                 args.Handled(true);
-            }); */
+            });
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
@@ -92,12 +96,24 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    //PushNotificationActivationInfo info(
-    //    PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
-    //    winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2")); // same clsid as app manifest
 
-    //PushNotificationManager::RegisterActivator(info);
-    ToastNotificationManager::RegisterActivator(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
+
+    if (!Test::AppModel::IsPackagedProcess())
+    {
+        // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+        const UINT32 c_Version_MajorMinor{ 0x00040001 };
+        const PACKAGE_VERSION minVersion{};
+        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+    }
+
+    //ToastNotificationManager::RegisterActivator(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
+    std::wstring uriToLaunch{ L"C:\\Windows\\System32\\WindowsSecurityIcon.png" };
+    winrt::Windows::Foundation::Uri appUri{ uriToLaunch };
+    winrt::Microsoft::Windows::PushNotifications::ToastNotificationManager::RegisterActivator(L"Push Notifications App", appUri, winrt::Windows::UI::Colors::LimeGreen());
+
+    PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator); // same clsid as app manifest
+
+    // PushNotificationManager::RegisterActivator(info);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -124,7 +140,7 @@ int main()
     {
         PushNotificationChannel channel = RequestChannel();
 
-        winrt::event_token token = ToastNotificationManager::ToastActivated([](const auto&, ToastActivatedEventArgs const& toastArgs)
+        winrt::event_token token = winrt::Microsoft::Windows::PushNotifications::ToastNotificationManager::ToastActivated([](const auto&, winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs const& toastArgs)
         {
                 printf("ToastActivation received foreground!\n");
                 winrt::hstring arguments = toastArgs.Arguments();
@@ -143,7 +159,7 @@ int main()
     {
         printf("ToastActivation received background!\n");
         printf("Press 'Enter' at any time to exit App.\n\n");
-        ToastActivatedEventArgs toastArgs = args.Data().as<ToastActivatedEventArgs>();
+        winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs toastArgs = args.Data().as<winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs>();
 
         winrt::hstring arguments = toastArgs.Arguments();
         std::wcout << arguments.c_str() << std::endl << std::endl;
@@ -154,7 +170,7 @@ int main()
             std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
         }
 
-        winrt::event_token token = ToastNotificationManager::ToastActivated([](const auto&, ToastActivatedEventArgs const& toastArgs)
+        winrt::event_token token = winrt::Microsoft::Windows::PushNotifications::ToastNotificationManager::ToastActivated([](const auto&, winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs const& toastArgs)
             {
                 printf("ToastActivation received foreground!\n");
                 winrt::hstring arguments = toastArgs.Arguments();
