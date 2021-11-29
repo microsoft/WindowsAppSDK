@@ -125,6 +125,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         return registeredGuidBuffer;
     }
+
     void ToastNotificationManager::RegisterActivator(winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color)
     {
         wil::unique_cotaskmem_string processName;
