@@ -3,14 +3,6 @@ variables:
 - template: WindowsAppSDK-Versions.yml
 - template: WindowsAppSDK-CommonVariables.yml
 
-resources:
-  repositories:
-  - repository: ProjectReunionInternal
-    type: git
-    endpoint: 'PRInternalGitConnection'
-    name: ProjectReunion/ProjectReunionInternal
-    ref: main
-
 parameters:
   - name: "ReleaseSigning"
     type: boolean
@@ -23,6 +15,16 @@ parameters:
     default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
 
 jobs:
+- job: IntegrationTest
+  condition: succeeded()
+  pool: $(ProjectReunionBuildPool)
+  steps:
+  - checkout: git://ProjectReunion/ProjectReunionInternal
+
+  - script: |
+      dir /s
+  displayName: 'dir'
+  
 - job: CredScan
   pool: $(ProjectReunionBuildPool)
   steps:
