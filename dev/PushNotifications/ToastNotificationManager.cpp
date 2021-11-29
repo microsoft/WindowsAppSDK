@@ -11,6 +11,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/base.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
+#include <winrt/Windows.Storage.h>
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::PushNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
@@ -87,10 +88,45 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
     }
 
+    std::wstring RetrieveComActivatorGuid(std::wstring const& appId)
+    {
+        wil::unique_hkey hKey;
+        std::wstring subKey{ L"Software\\Classes\\AppUserModelId\\" + appId };
+
+        THROW_IF_FAILED(RegCreateKeyEx(
+            HKEY_CURRENT_USER,
+            subKey.c_str(),
+            0,
+            nullptr,
+            REG_OPTION_NON_VOLATILE,
+            KEY_ALL_ACCESS,
+            nullptr,
+            &hKey,
+            nullptr));
+
+        WCHAR registeredGuidBuffer[GUID_LENGTH + 4]; // GUID length + '{' + '}' + '\0'
+        DWORD bufferLength = sizeof(registeredGuidBuffer);
+        HRESULT status = RegGetValueW(
+            hKey.get(),
+            nullptr,
+            L"CustomActivator",
+            RRF_RT_REG_SZ,
+            nullptr,
+            &registeredGuidBuffer,
+            &bufferLength);
+
+        if (status == ERROR_FILE_NOT_FOUND)
+        {
+            return L"";
+        }
+        else
+        {
+            THROW_HR_IF(status, FAILED_WIN32(status));
+        }
+        return registeredGuidBuffer;
+    }
     void ToastNotificationManager::RegisterActivator(winrt::hstring const& displayName, winrt::Uri const& iconUri, winrt::Color const& color)
     {
-        // winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
-        // appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
         wil::unique_cotaskmem_string processName;
         THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
@@ -98,20 +134,23 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         std::wstring appId{ RetrieveToastGuid() };
         THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appId.c_str(), GUID_NULL));
 
-        auto appProperties { winrt::}
-        if (!winrt::CoreApplication::Properties().HasKey(COM_ACTIVATOR_KEY))
+        std::wstring storedComActivatorString { RetrieveComActivatorGuid(appId) };
+
+        GUID comActivatorGuid;
+        if (storedComActivatorString.empty())
         {
-            GUID comActivatorGuid;
             THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
 
             wil::unique_cotaskmem_string comActivatorGuidString;
             THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
 
-            auto appProperties = winrt::Windows::ApplicationModel::Core::CoreApplication::Properties();
-            appProperties.Insert(COM_ACTIVATOR_KEY, comActivatorGuid);
-
             RegisterAssets(appId, displayName, iconUri, color, comActivatorGuidString);
             RegisterComServer(processName, comActivatorGuidString);
+        }
+        else
+        {
+            storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
+            comActivatorGuid = winrt::guid(storedComActivatorString);
         }
 
         GetWaitHandleForArgs().create();
