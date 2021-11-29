@@ -5,4 +5,4 @@ GitHub diff is line oriented. Keeping lines within the preferred limit makes cha
 review. Use a tool like Prettier to bulk-reformat files, or configure your editor's "rulers." If new
 languages become common, we will describe the coding guidelines for such languages here.
 
-**DO** validate that your links work by visiting them.
+**DO** ensure that all links in documentation are correct; click them in the markdown preview view.
