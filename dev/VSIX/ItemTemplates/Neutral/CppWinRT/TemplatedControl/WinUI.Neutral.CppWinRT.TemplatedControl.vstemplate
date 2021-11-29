@@ -33,6 +33,7 @@
     <packages repository="extension" repositoryId="Microsoft.WindowsAppSDK.Cpp">
       <package id="Microsoft.Windows.CppWinRT" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <package id="Microsoft.WindowsAppSDK" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <package id="Microsoft.Windows.ImplementationLibrary" version="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </packages>
   </WizardData>
 </VSTemplate>

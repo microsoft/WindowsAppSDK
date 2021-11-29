@@ -100,6 +100,8 @@ jobs:
 #    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
+    parameters:
+      channel: ${{ variables.channel }}
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
@@ -162,6 +164,7 @@ jobs:
       nugetConfigPath: nuget.config
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
+      channel: ${{ variables.channel }}
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries'

@@ -3,9 +3,9 @@ parameters:
 
 steps:
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.6'
+  displayName: 'Use NuGet 5.11'
   inputs:
-    versionSpec: 5.6
+    versionSpec: 5.11
   continueOnError: true
 
 - task: DownloadBuildArtifacts@0

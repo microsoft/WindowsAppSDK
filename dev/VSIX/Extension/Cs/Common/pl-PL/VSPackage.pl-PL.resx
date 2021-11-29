@@ -192,16 +192,16 @@
     <value>[Eksperymentalne] Biblioteka klas (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (.dll) dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (dll) dla aplikacji klasycznych opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 in Desktop)</value>
+    <value>Pusta aplikacja, spakietyzowana za pomocą projektu pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Eksperymentalne] Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 in Desktop)</value>
+    <value>[Eksperymentalne] Pusta aplikacja spakowana z projekt pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+    <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
     <value>Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
@@ -210,7 +210,7 @@
     <value>[Eksperymentalne] Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Szablon projektu służący do tworzenia aplikacji klasycznej opartej na bibliotece interfejsu użytkownika systemu Windows (WinUI 3) wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+    <value>Szablon projektu służący do tworzenia aplikacji klasycznej opartej na bibliotece interfejsu użytkownika systemu Windows (WinUI 3) wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Pusta aplikacja (WinUI 3 na platformie UWP)</value>
@@ -219,24 +219,24 @@
     <value>[Eksperymentalne] Pusta aplikacja (WinUI 3 na platformie UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projekt służący do tworzenia aplikacji platforma uniwersalna systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu Windows App SDK.</value>
+    <value>Projekt służący do tworzenia aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
   </data>
   <data name="1041" xml:space="preserve">
-    <value>Biblioteka klas (WinUI 3 w platformie UWP)</value>
+    <value>Biblioteka klas (WinUI 3 na platformie UWP)</value>
   </data>
   <data name="1042" xml:space="preserve">
-    <value>[Eksperymentalne] Biblioteka klas (WinUI 3 w platformie UWP)</value>
+    <value>[Eksperymentalne] Biblioteka klas (WinUI 3 na platformie UWP)</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (.dll) dla aplikacji platforma uniwersalna systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu Windows App SDK.</value>
+    <value>Projekt służący do tworzenia zarządzanej biblioteki klas (dll) dla aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>składnik środowisko wykonawcze systemu Windows (WinUI 3 na platformie UWP)</value>
+    <value>Składnik środowiska wykonawczego systemu Windows (WinUI 3 na platformie UWP)</value>
   </data>
   <data name="1046" xml:space="preserve">
-    <value>[Eksperymentalne] składnik środowisko wykonawcze systemu Windows (WinUI 3 na platformie UWP)</value>
+    <value>[Eksperymentalne] Składnik środowiska wykonawczego systemu Windows (WinUI 3 na platformie UWP)</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Projekt służący do tworzenia zarządzanego składnika środowisko wykonawcze systemu Windows (winmd) dla aplikacji platforma uniwersalna systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu Windows App SDK.</value>
+    <value>Projekt służący do tworzenia zarządzanego składnika środowiska wykonawczego systemu Windows dla aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
   </data>
 </root>

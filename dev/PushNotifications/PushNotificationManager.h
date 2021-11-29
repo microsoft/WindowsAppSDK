@@ -21,6 +21,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
     };
 }
+
 namespace winrt::Microsoft::Windows::PushNotifications::factory_implementation
 {
     struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager, implementation::PushNotificationManager>

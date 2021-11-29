@@ -147,6 +147,42 @@ TEST_CLASS_SETUP(Setup)
 }
 ```
 
+## WinRT IDL
+
+Follow the same steps as for C++ with the following additions:
+
+1. Tag APIs in IDL
+2. Transform winmds
+
+This will ensure that your experimental APIs will be tagged with the `[experimental]` attribute in
+the Experimental release channel, and will be removed from the Stable and Preview release channels.
+
+### Step 1. Tag APIs in IDL
+
+After you've created your XML and generated your header, you need to include the header in your IDL
+and put the feature attribute on your APIs. For example:
+
+```cs
+#include <TerminalVelocityFeature-DeploymentAPI.h>
+
+namespace Microsoft.Windows.ApplicationModel
+{
+  [feature(Feature_DeploymentAPI)]
+  runtimeclass DeploymentManager
+  {
+    ...
+  }
+}
+```
+
+### Step 2. Transform WinMDs
+
+This feature attribute be transformed to the experimental attribute in the Experimental release
+channel, and APIs with this feature attribute need to be removed in Stable and Preview release
+channels. See [Experimental APIs](Experimental.md) for details on how to invoke mdmerge to
+accomplish this. If your IDL is authored and implemented in the WindowsAppRuntime_DLL, this step is
+already being done for you (see target "MakeStrippedMetadata" in WindowsAppRuntime_DLL.vcxproj).
+
 # FAQ
 
 ## Why 'TerminalVelocity'?

@@ -1,3 +1,6 @@
+parameters:
+  channel: 'experimental'
+
 steps:
   - template: WindowsAppSDK-BuildProject-Steps.yml
     parameters:
@@ -5,3 +8,4 @@ steps:
       nugetConfigPath: nuget.config
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
+      channel: ${{ parameters.channel }}

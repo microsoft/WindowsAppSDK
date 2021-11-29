@@ -9,6 +9,7 @@ using namespace winrt;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 
@@ -16,6 +17,7 @@ using namespace std::chrono;
 
 HWND g_window = NULL;
 wchar_t g_windowClass[] = L"TestWndClass"; // the main window class name
+IVector<AppInstance> g_instances;
 
 ATOM _RegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
@@ -97,6 +99,7 @@ int main()
 
     THROW_IF_FAILED(BootstrapInitialize());
 
+    bool isSingleInstanced = false;
     std::wstring key{ L"derp.txt" };
     AppInstance::Activated_revoker token;
 
@@ -105,6 +108,7 @@ int main()
     {
         auto fileArgs = args.Data().as<winrt::Windows::ApplicationModel::Activation::FileActivatedEventArgs>();
         key = fileArgs.Files().GetAt(0).Path();
+        isSingleInstanced = true;
     }
 
     if (args.Kind() == ExtendedActivationKind::Launch)
@@ -124,7 +128,7 @@ int main()
     }
 
     AppInstance keyInstance = AppInstance::FindOrRegisterForKey(key.c_str());
-    if (!keyInstance.IsCurrent())
+    if (isSingleInstanced && !keyInstance.IsCurrent())
     {
         keyInstance.RedirectActivationToAsync(args).get();
     }
@@ -163,6 +167,22 @@ int main()
     return 0;
 }
 
+void RunGetInstancesTest()
+{
+    g_instances = AppInstance::GetInstances();
+}
+
+void RunRegisterKeyTest()
+{
+    auto instance = AppInstance::FindOrRegisterForKey(L"foo");
+    THROW_IF_NULL_ALLOC(instance);
+}
+
+void RunUnregisterKeyTest()
+{
+    AppInstance::GetCurrent().UnregisterKey();
+}
+
 ATOM _RegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEX wcex = {};
@@ -176,6 +196,7 @@ ATOM _RegisterClass(HINSTANCE hInstance)
     wcex.hInstance = hInstance;
     wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     wcex.lpszClassName = g_windowClass;
+    wcex.lpszMenuName = MAKEINTRESOURCE(IDM_FILE_MENU);
 
     return RegisterClassEx(&wcex);
 }
@@ -202,6 +223,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDM_FILE_EXIT:
+            PostQuitMessage(0);
+            break;
+
+        case IDM_FILE_GETINSTANCES:
+            RunGetInstancesTest();
+            break;
+
+        case IDM_FILE_REGISTERINSTANCE:
+            RunRegisterKeyTest();
+            break;
+
+        case IDM_FILE_UNREGISTERINSTANCE:
+            RunUnregisterKeyTest();
+            break;
+        }
+        break;
+
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
         EndPaint(hWnd, &ps);

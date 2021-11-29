@@ -43,7 +43,7 @@
     <ProjectGuid>$guid1$</ProjectGuid>
     <TargetPlatformVersion>$targetplatformversion$</TargetPlatformVersion>
     <TargetPlatformMinVersion>$targetplatformminversion$</TargetPlatformMinVersion>
-    <AssetTargetFallback>net5.0-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
+    <AssetTargetFallback>$ext_DotNetVersion$-windows$(TargetPlatformVersion);$(AssetTargetFallback)</AssetTargetFallback>
     <DefaultLanguage>$currentuiculturename$</DefaultLanguage>
     $if$($includeKeyFile$==true)
     <PackageCertificateKeyFile>$projectname$_TemporaryKey.pfx</PackageCertificateKeyFile>

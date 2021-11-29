@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Suggest a feature
+    url: https://portal.productboard.com/winappsdk/1-windows-app-sdk
+    about: Suggest a new feature or idea, or vote on existing ideas
   - name: Question
     url: https://github.com/microsoft/WindowsAppSDK/discussions/new?category=q-a
     about: Ask a question

@@ -186,13 +186,13 @@
     <value>Kontrolka użytkownika dla aplikacji opartych na bibliotece interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Pusta aplikacja, spakowana za pomocą protokołu WAP (WinUI 3 na pulpicie)</value>
+    <value>Pusta aplikacja, spakietyzowana za pomocą projektu pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Eksperymentalne] Pusta aplikacja spakowana za pomocą protokołu WAP (WinUI 3 in Desktop)</value>
+    <value>[Eksperymentalne] Pusta aplikacja spakowana z projekt pakietu aplikacji systemu Windows (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+    <value>Szablon projektu służący do tworzenia aplikacji klasycznej na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Projekt pakietu aplikacji systemu Windows (WAP) jest dołączany w celu utworzenia pakietu MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
@@ -201,16 +201,16 @@
     <value>[Eksperymentalne] Pusta aplikacja, spakowana (WinUI 3 na pulpicie)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Szablon projektu służący do tworzenia aplikacji klasycznej opartej na bibliotece interfejsu użytkownika systemu Windows (WinUI 3) wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem Microsoft Store.</value>
+    <value>Szablon projektu służący do tworzenia aplikacji klasycznej opartej na bibliotece interfejsu użytkownika systemu Windows (WinUI 3) wraz z pakietem MSIX na potrzeby ładowania bezpośredniego lub dystrybucji za pośrednictwem sklepu Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Składnik środowisko wykonawcze systemu Windows (WinUI 3)</value>
+    <value>Składnik środowiska wykonawczego systemu Windows (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Eksperymentalne] Składnik środowisko wykonawcze systemu Windows (WinUI 3)</value>
+    <value>[Eksperymentalne] Składnik środowiska wykonawczego systemu Windows (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Projekt służący do tworzenia składnika środowisko wykonawcze systemu Windows C++/WinRT (winmd) dla aplikacji klasycznych i platforma uniwersalna systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3).</value>
+    <value>Projekt służący do tworzenia składnika środowiska wykonawczego systemu Windows C++/WinRT (winmd) dla aplikacji klasycznych i platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3).</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Pusta aplikacja (WinUI 3 na platformie UWP)</value>
@@ -219,6 +219,6 @@
     <value>[Eksperymentalne] Pusta aplikacja (WinUI 3 na platformie UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projekt służący do tworzenia aplikacji platforma uniwersalna systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu Windows App SDK.</value>
+    <value>Projekt służący do tworzenia aplikacji platformy uniwersalnej systemu Windows (UWP) na podstawie biblioteki interfejsu użytkownika systemu Windows (WinUI 3). Wymaga eksperymentalnej obsługi zestawu SDK do aplikacji systemu Windows.</value>
   </data>
 </root>
