@@ -2,14 +2,14 @@ parameters:
   BuildType: ""
 
 steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal
-
   - task: AzureKeyVault@1
     inputs:
       azureSubscription: 'ProjectReunion Resource Manager'
       KeyVaultName: 'ProjectReunionCerts'
       SecretsFilter: 'TestMSCert'
-      RunAsPreJob: 
+      RunAsPreJob: false
+
+  - checkout: git://ProjectReunion/ProjectReunionInternal
 
   - task: PowerShell@2
     name: CreateCert
