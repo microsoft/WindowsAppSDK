@@ -4,11 +4,31 @@ Param(
     [string]$dependencyVersion
 )
 
-$VersionDetailsPath = "..\..\Version.Details.xml"
-[xml]$VersionDetails = Get-Content -Encoding utf8 -Path $VersionDetailsPath
+Write-Host $dependencyName
+Write-Host $dependencyVersion
 
-$dependency = $buildConfig.Dependencies.ProductDependencies.Dependency | where {$_.name -eq "$dependencyName"}
-$dependency.version = $dependencyVersion
+# Get the root of the repo.
+$scriptFullPath =  (split-path -parent $MyInvocation.MyCommand.Definition)
+$engPath = (split-path -parent (split-path -parent $scriptFullPath))
 
-$VersionDetails.Save($VersionDetailsPath)
-Write-Host "Saved versions back to $VersionDetailsPath"
+Function CheckFile($filename)
+{
+    if(-not (Test-Path $filename))
+    {
+        write-host "File not found: $filename"
+        exit 1
+    }
+}
+
+$configFilename = "$engPath\Version.Details.xml"
+CheckFile $configFilename
+
+# Load the build.config, update the requested version entry, then write it back out
+$xmldoc = [System.Xml.XmlDocument](Get-Content $configFilename)
+Write-Host $xmldoc
+
+$node = $xmldoc.Dependencies.ProductDependencies.Dependency | ?{$_.Name -eq $dependencyName}
+$node.Version = $dependencyVersion
+$xmldoc.Save($configFilename)
+
+Write-Host "Updated $configFilename"
