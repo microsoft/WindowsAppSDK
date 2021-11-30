@@ -174,10 +174,13 @@ string launchArguments);</td>
  <ul>
 <li>When the app is restarted, LaunchActivatedEventArgs.PreviousExecutionState will have the value Terminated so that the app can distinguish between a resume and a restart. </li>
 </ul>
-<p>Returns a failure reason for why the restart didn’t successfully complete (AppRestartFailureReason).
+<p>If the request to restart is successful, the application will be restarted immediately. The user does not have to do anything else/handle a return value in any way.
+
+If the request fails due to a nonfatal reason, a failure reason is returned for why the restart didn’t successfully complete. This method leverages an existing enum (AppRestartFailureReason) which has the following relevant return fields.
 <ul>
-<li>This API leverages an existing Enum (AppRestartFailureReason), but not all return values are relevant.</li>
-<li>This API does not require for the app to be in foreground, and so AppRestartFailureReason::NotInForeground will never be returned</li>
+<li> InvalidUser: Could not restart for the specified user.</li>
+<li> RestartPending: A restart is already in progress.</li>
+<li> Other: Unspecified failure.</li>
 </ul>
 </p></td>
 </tr>
@@ -205,9 +208,8 @@ public class App
             switch (result)
             {
                 case AppRestartFailureReason::RestartPending:
-                    // An example of how to handle this case is updating a progress bar to the user
-                    // indicating immediate restart
-                    UpdateProgressBar();
+                    // In this case the restart could not be completed because another restart is pending and we can try to restart again after a period of time
+                    RetryRestartAfterXSeconds();
                     break;
                 case AppRestartFailureReason::Other:
                     // In this case, a dialog box will appear informing of an error requesting restart
@@ -226,7 +228,10 @@ public class App
         switch (result)
         {
             case AppRestartFailureReason::RestartPending:
-                Telemetry::WriteLine("Restart request successful.");
+                Telemetry::WriteLine("Another restart is currently pending.");
+                break;
+            case AppRestartFailureReason::InvalidUser:
+                Telemetry::WriteLine("Current user is not signed in or not a valid user.");
                 break;
             case AppRestartFailureReason::Other:
                 Telemetry::WriteLine("Failure restarting.");
