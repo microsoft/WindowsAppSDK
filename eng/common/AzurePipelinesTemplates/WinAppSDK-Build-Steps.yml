@@ -11,7 +11,7 @@ steps:
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
 
-  - checkout: git://ProjectReunion/ProjectReunionInternal
+  - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/IntegrationTest
 
   - task: Powershell@2
     name: UpdateVersionDetails
