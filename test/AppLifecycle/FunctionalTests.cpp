@@ -290,5 +290,36 @@ namespace Test::AppLifecycle
             WaitForEvent(protocolActivationEvent, m_failed);
             WaitForEvent(redirectedEvent, m_failed);
         }
+
+        TEST_METHOD(RequestRestart_Win32)
+        {
+            // Create a named event for communicating with test app.
+            auto event{ CreateTestEvent(c_testProtocolPhaseEventName) };
+
+            // Cleanup any leftover data from previous runs i.e. ensure we running with a clean slate
+            try
+            {
+                Execute(L"AppLifecycleTestApp.exe", L"/UnregisterProtocol", g_deploymentDir);
+                WaitForEvent(event, m_failed);
+            }
+            catch (...)
+            {
+                //TODO:Unregister should not fail if ERROR_FILE_NOT_FOUND | ERROR_PATH_NOT_FOUND
+            }
+
+            // Register the protocol
+            Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
+            WaitForEvent(event, m_failed);
+
+            // Launch a URI with the protocol schema and wait for the app to fire the event
+            Uri launchUri{ c_testProtocolScheme + L"://" + c_genericTestMoniker + L"?TestName=" + TESTNAME() };
+            auto launchResult{ Launcher::LaunchUriAsync(launchUri).get() };
+            VERIFY_IS_TRUE(launchResult);
+            WaitForEvent(event, m_failed);
+
+            // Deregister the protocol
+            Execute(L"AppLifecycleTestApp.exe", L"/UnregisterProtocol", g_deploymentDir);
+            WaitForEvent(event, m_failed);
+        }
     };
 }
