@@ -444,7 +444,7 @@ jobs:
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-    - template: ..\eng\common\AzurePipelinesTemplates\WinAppSDK-Build-Steps.yml
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
       parameters:
         BuildType: 'stable'
         TransportPackages: 
