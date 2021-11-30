@@ -13,9 +13,7 @@ parameters:
       Foundation: 
         name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
         version: 1.0.0-stable
-      CsDev16: WindowsAppSDK.Cs.Extension.Dev16.Experimental.vsix
-      CppDev17: WindowsAppSDK.Cpp.Extension.Dev17.Experimental.Standalone.vsix
-      CsDev17: WindowsAppSDK.Cs.Extension.Dev17.Experimental.Standalone.vsix
+
 steps:
   - task: AzureKeyVault@1
     inputs:
@@ -26,9 +24,8 @@ steps:
 
   - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/IntegrationTest
 
-  - ${{ each package  in parameters.TransportPackages }}:
+  - ${{ each package in parameters.TransportPackages }}:
     - task: Powershell@2
-      name: UpdateVersionDetails
       inputs:
         filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\UpdateVersionDetailsConfig.ps1'
         arguments: -dependencyName '${{ package.value.Name }}' -dependencyVersion '${{ package.value.Version }}'
