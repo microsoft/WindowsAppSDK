@@ -19,10 +19,10 @@ jobs:
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   steps:
-  - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+  - template: ..\eng\common\AzurePipelinesTemplates\WinAppSDK-Build-Steps.yml
     parameters:
       BuildType: 'Stable'
-      
+
 
 - job: CredScan
   pool: $(ProjectReunionBuildPool)
