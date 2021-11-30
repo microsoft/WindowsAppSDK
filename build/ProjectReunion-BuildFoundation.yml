@@ -442,7 +442,7 @@ jobs:
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
-    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['packageVersion'] ]
+    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
     - template: ..\eng\common\AzurePipelinesTemplates\WinAppSDK-Build-Steps.yml
       parameters:

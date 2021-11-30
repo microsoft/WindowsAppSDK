@@ -104,6 +104,7 @@ jobs:
   #   displayName: 'build-nupkg.ps1'
 
   - task: PowerShell@2
+    name: SetVersion
     displayName: Update metapackage version
     inputs:
       targetType: 'inline'
