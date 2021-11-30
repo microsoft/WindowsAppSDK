@@ -1,8 +1,21 @@
 parameters:
-  BuildType: ""
-  TransportPackageReplacementName: ""
-  TransportPackageReplacementVersion: ""
-
+  - name: BuildType
+    displayName: "Build Type"
+    type: string
+    default: 'stable'
+    values:
+    - 'stable'
+    - 'experimental'
+  - name: "TransportPackages"
+    displayName: "TransportPackages to replace (name:version)"
+    type: object
+    default:
+      Foundation: 
+        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+        version: 1.0.0-stable
+      CsDev16: WindowsAppSDK.Cs.Extension.Dev16.Experimental.vsix
+      CppDev17: WindowsAppSDK.Cpp.Extension.Dev17.Experimental.Standalone.vsix
+      CsDev17: WindowsAppSDK.Cs.Extension.Dev17.Experimental.Standalone.vsix
 steps:
   - task: AzureKeyVault@1
     inputs:
@@ -13,20 +26,12 @@ steps:
 
   - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/IntegrationTest
 
-  - task: Powershell@2
-    name: UpdateVersionDetails
-    inputs:
-      filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\UpdateVersionDetailsConfig.ps1'
-      arguments: -dependencyName '${{ parameters.TransportPackageReplacementName }}' -dependencyVersion '${{ parameters.TransportPackageReplacementVersion }}'
-
-  # - task: PowerShell@2
-  #   displayName: Debug
-  #   inputs:
-  #     targetType: 'inline'
-  #     script: |
-  #       $VersionDetailsPath = "$(Build.SourcesDirectory)\eng\Version.Details.xml"
-  #       $VersionDetails = Get-Content -Encoding utf8 -Path $VersionDetailsPath
-  #       Write-Host $VersionDetails
+  - ${{ each package  in parameters.TransportPackages }}:
+    - task: Powershell@2
+      name: UpdateVersionDetails
+      inputs:
+        filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\UpdateVersionDetailsConfig.ps1'
+        arguments: -dependencyName '${{ package.value.Name }}' -dependencyVersion '${{ package.value.Version }}'
 
   - task: PowerShell@2
     name: CreateCert
