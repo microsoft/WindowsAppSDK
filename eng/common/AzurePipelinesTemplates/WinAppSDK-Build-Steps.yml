@@ -4,15 +4,29 @@ parameters:
 steps:
   - checkout: git://ProjectReunion/ProjectReunionInternal
 
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: 'ProjectReunion Resource Manager'
+      KeyVaultName: 'ProjectReunionCerts'
+      SecretsFilter: 'TestMSCert'
+      RunAsPreJob: 
+
+  - task: PowerShell@2
+    name: CreateCert
+    displayName: Create MyCert.pfx
+    inputs:
+      targetType: 'inline'
+      script: |
+        $kvSecretBytes = [System.Convert]::FromBase64String("$(TestMSCert)")
+        $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
+        $certCollection.Import($kvSecretBytes,$null,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+        $certificateBytes = $certCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12)
+        $pfxPath = (Join-Path $env:Build_SourcesDirectory 'MyCert.pfx')
+        [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'ProjectReunionInternal'
-
-  - task: PowerShell@2
-    name: DevSetup
-    displayName: DevSetup
-    inputs:
-      filePath: 'DevSetup.ps1'
 
   - task: PowerShell@2
     name: BuildAll
