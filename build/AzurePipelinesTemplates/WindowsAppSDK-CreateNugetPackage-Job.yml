@@ -110,6 +110,7 @@ jobs:
       script: |
         $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
         Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
