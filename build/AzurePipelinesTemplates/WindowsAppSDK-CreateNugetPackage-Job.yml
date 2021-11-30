@@ -8,7 +8,6 @@ parameters:
   primaryBuildArch: x86
   buildFlavor: Release
   prereleaseVersionTag: 'prerelease'
-  publishToMaestro: false
   condition: ''
   buildPool: ''
 
@@ -173,12 +172,6 @@ jobs:
         #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
-  - ${{ if eq(parameters.publishToMaestro, 'true') }}:
-    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
-      parameters:
-        AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersion: $(packageVersion)
-        TriggerSubscription: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishPGONuGet-Job.yml
 #

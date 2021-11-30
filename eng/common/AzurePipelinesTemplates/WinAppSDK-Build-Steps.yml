@@ -1,5 +1,7 @@
 parameters:
   BuildType: ""
+  TransportPackageReplacementName: ""
+  TransportPackageReplacementVersion: ""
 
 steps:
   - task: AzureKeyVault@1
@@ -10,6 +12,21 @@ steps:
       RunAsPreJob: false
 
   - checkout: git://ProjectReunion/ProjectReunionInternal
+
+  - task: Powershell@2
+    name: UpdateVersionDetails
+    inputs:
+      filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\UpdateVersionDetailsConfig.ps1'
+      arguments: -dependencyName '$(TransportPackageReplacementName)' -dependencyVersion '$(TransportPackageReplacementVersion)'
+
+  - task: PowerShell@2
+    displayName: Debug
+    inputs:
+      targetType: 'inline'
+      script: |
+        $VersionDetailsPath = "$(Build.SourcesDirectory)\eng\common\Version.Details.xml"
+        [xml]$VersionDetails = Get-Content -Encoding utf8 -Path $VersionDetailsPath
+        Write-Host $VersionDetails
 
   - task: PowerShell@2
     name: CreateCert
@@ -36,7 +53,7 @@ steps:
       arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none"
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Windows App SDK Packages to NugetPackages'
+    displayName: 'Publish Windows App SDK Packages'
     inputs:
       PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
       artifactName: 'WindowsAppSDKNugetPackage'
