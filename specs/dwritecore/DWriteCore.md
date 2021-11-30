@@ -229,6 +229,154 @@ WWS font family corresponds to a different optical size, and it's left to the us
 WWS family name for a given font size. With the typographic font family model, the user can simply choose
 "Sitka", and the application can automatically set the "opsz" axis value based on the font size.
 
+## Typographic Font Selection and Variable Fonts
+
+The concept of axes of variation is often associated with variable fonts, but it also applies to static
+fonts. The OpenType [STAT (style attributes)](https://docs.microsoft.com/en-us/typography/opentype/spec/stat)
+table declares what design axes a font has and the values of those axes. This table is required for variable
+fonts but is also relevant to static fonts.
+
+The DirectWrite API exposes "wght", "wdth", "ital", and "slnt" axis values for every font, even if they
+are not present in the STAT table or if there is no STAT table. These values are derived from the STAT
+table if possible. Otherwise, they are derived from the font weight, font stretch, and font style.
+
+Font axes may be variable or non-variable. A static font has only non-variable axes whereas a variable font
+may have both. To use a variable font, one must create a variable font _instance_ in which all the variable
+axes have been bound to particular values. The `IDWriteFontFace` interface represents either a static font or
+a particular _instance_ of a variable font. It is possible to create an _arbitrary instance_ of a variable
+font with specified axis values. In addition, a variable font may declare _named instances_ in the `STAT`
+table with predefined combinations of axis values. Named instances enable a variable font to be have much
+like a collection of static fonts. When you enumerate elements of an `IDWriteFontFamily` or `IDWriteFontSet`,
+there is one element for each static font and for each named variable font instance.
+
+The typographic font matching algorithm first selects potential match candates based on the family name.
+If the match candidates include variable fonts, all the match candidates for the same variable font
+are collapsed into one match candidate in which each variable axis is assigned a specific value as
+close as possible to the requested value for that axis. If there is no requested value for a variable
+axis, it is assigned the default value for that axis. The order of the match candidates is then
+determined by comparing their axis values with the requested axis values.
+
+For example, consider the Sitka typographic family in Windows. Sitka is an optical font family,
+meaning it has an "opsz" axis. In Windows 11, Sitka is implemented as two variable fonts with
+the following axis values. Note that the `opsz` and `wght` axes are variable while the other
+axes are non-variable.
+
+File Name           | "opsz"    | "wght"    | "wdth"    | "ital"    | "slnt"
+--------------------|-----------|-----------|-----------|-----------|----------
+SitkaVF.ttf         | 6-27.5    | 400-700   | 100       | 0         | 0
+SitkaVF-Italic.ttf  | 6-27.5    | 400-700   | 100       | 1         | -12
+
+Suppose the requested axis values are `opsz:12 wght:475 wdth:100 ital:0 slnt:0`. For each variable
+font, we create a reference to a variable font _instance_ in which each variable axis is assigned
+a specific value. Namely, the `opsz` and `wght` axes are set to `12` and `475`, respectively.
+This yields the following matching fonts, with the non-italic font ranked first because it's a
+better match for the `ital` and `slnt` axes:
+
+```
+SitkaVF.ttf opsz:12 wght:475 wdth:100 ital:0 slnt0
+SitkaVF-Italic.ttf opsz:12 wght:475 wdth:100 ital:1 slnt:-12
+```
+
+In the above example, the matching fonts are arbitrary variable font instances. There is no named
+instance of Sitka with weight 475. In contrast, the weight-stretch-style matching algorithm only
+returns named instances.
+
+## Font Matching Order
+
+There are different overloaded `GetMatchingFonts` methods for the weight-stretch-style font family
+model and the typographic font family model. In both cases, the output is a list of matching fonts
+in descending order of priority based on how well each candidate font matches the input properties.
+This section describes how the priority is determined.
+
+In the weight-stretch-style model, the input parameters are font weight (`DWRITE_FONT_WEIGHT`),
+font stretch (`DWRITE_FONT_STRETCH`) and font style (`DWRITE_FONT_STYLE`). The algorithm for
+finding the best match was documented in a 2006 white paper titled "WPF Font Selection Model" by
+Mikhail Leonov and David Brown. See the section "Matching a face from the candidate face list."
+This paper was about Windows Presentation Foundation (WPF), but DirectWrite later used the
+same approach.
+
+The algorithm uses the notion of _font attribute vector_, which for a given combination of
+weight, stretch, and style is computed as follows:
+
+```
+FontAttributeVector.X = (stretch - 5) * 1100;
+FontAttributeVector.Y = style * 700;
+FontAttributeVector.Z = (weight - 400) * 5;
+```
+
+Note that each vector coordinate is normalized by subtracting the "normal" value for the
+corresponding attribute and multiplying by a constant. The multipliers compensate for the fact
+that the ranges of input values for weight, stretch, and style are very different. Otherwise,
+weight (100..999) would dominate over style (0..2).
+
+For each match candidate, a vector distance and a dot product are computed between the match
+candidate's font attribute vector and the input font attribute vector. When comparing two match
+candidates, the candidate with the smaller vector distance is the better match. If the distances
+are the same, the candidate with the smaller dot product is a better match. If the dot product
+is also the same, the distances along the X, Y, and Z axes are compared in that order.
+
+Comparing distances is intuitive enough, but using dot product as a secondary measure may
+require some explanation. Suppose the input weight is semibold (600) and two candidate
+weights are black (900) and semilight (300). The distance of each candidate weight from the
+input weight is the same, but the black weight is in the same direction from the origin
+(i.e., 400 or normal), so it will have a smaller dot product.
+
+The typographic matching algorithm is a generalization of the one for weight-stretch-style.
+Each axis value is treated as a coordinate in an N-dimensional font attribute vector. For each
+match candidate, a vector distance and a dot product are computed between the match candidate's
+font attribute vector and the input font attribute vector. The candidate with the smaller vector
+distance is the better match. If the distances are the same, the candidate with the smaller 
+dot product is a better match. If the dot product is also the same, presence in a specified
+weight-stretch-style family can be used as a tie-breaker.
+
+To compute the vector distance and dot product, a match candidate's font attribute vector and
+the input font attribute vector must have the same axes. Therefore, any missing axis value in
+either vector is filled in by substituting the standard value for that axis. Vector coordinates
+are normalized by subtracting the standard (or "normal") value for the corresponding axis and
+multiplying the result by an axis-specific multiplier. Following are the multipliers and 
+standard values for each axis:
+
+Axis    | Multiplier    | Standard Value
+--------|---------------|---------------
+"wght"  | 5             | 400
+"wdth"  | 55            | 100
+"ital"  | 1400          | 0
+"slnt"  | 35            | 0
+"opsz"  | 1             | 12
+other   | 1             | 0
+
+The multipliers are consistent with those used by the weight-stretch-style algorithm, but scaled
+as necessary. For example, normal width is 100, which is equivalent to stretch 5. This yields a
+multiplier of 55 vs. 1100. The legacy style attribute (0..2) entangles italic and obliqueness,
+which in the typographic model are decomposed into an "ital" axis (0..1) and a "slnt" axis
+(-90..90). The chosen multipliers for these two axes give equivalent results to the legacy
+algorithm if we assume a default 20-degree slant for oblique fonts.
+
+## Typographic Font Selection and Optical Size
+
+An application using the typographic font family model can implement optical sizing by specifying
+an `opsz` axis value as a font selection parameter. For example, a word processing application could
+specify an `opsz` axis value equal to the font size in points. In this case, a user could select
+"Sitka" as the font family and the application would automatically select an instance of Sitka
+with the correct `opsz` axis value. Under the WWS model, each optical size is exposed as a different
+family name and it's up to the user to select the right one.
+
+In theory, one could implement automatic optical sizing under the weight-stretch-style model by
+overriding the `opsz` axis value as a separate step _after_ font selection. However, this only works
+if the first matching font is a variable font with a variable `opsz` axis. Specifying `opsz` as a
+font selection parameter works equally well for static fonts. For example, the Sitka font family
+is implemented as variable fonts in Windows 11 but as a collection of static fonts in Windows 10.
+The static fonts have different, non-overlapping `opsz` axis ranges. (These are declared as ranges
+for font selection purposes, but they are not variable axes.) Specifying `opsz` as a font selection
+parameter enables the correct static font for the optical size to be selected.
+
+## Typographic Font Selection Advantages and Compatibility Issues
+
+The typographic font selection model has several advantages over earlier models, but in its
+pure form it has some potential compatibility issues. This section describes the advantages and
+compatibility issues. The next section describes a hybrid font selection model that preserves
+the advantages while mitigating the compatibility issues.
+
 Advantages of the typographic font family model are:
 
   - Fonts can be grouped into families as intended by the designer, rather than being split into
@@ -242,14 +390,7 @@ Advantages of the typographic font family model are:
     The older font family models can only choose the nearest weight from among the named instances defined
     by the font.
 
-However, migrating to the typographic font family model raises potential compatibility issues. The
-next section describes these issues and how they are mitigated by the hybrid font selection model.
-
-## Hybrid Font Selection Model
-
-The hybrid font selection model combines aspects of the weight-stretch-style and typographic font family
-models. This preserves the advantages of the typographic model while mitigating the following potential 
-compatibility issues:
+Compatibility issues with the typographic font selection model are:
 
   - Some older fonts cannot be selected unambiguously using only the typographic family name and
     axis values.
@@ -285,35 +426,56 @@ predate OpenType 1.8, so their only design axes are those derived from weight, s
 each weight, this font family has two fonts with identical axis values, so it is not possible to 
 unambiguously select a font in this family using axis values alone.
 
-The hybrid font selection model mitigates this by allowing the specified family name to be _either_
-a typographic family name or a WWS family name. (It can also be an RBIZ name or full name.) In the
-example above, an application can avoid ambiguity by specifying "Legacy" or "Legacy Soft" as the
-family name. These two cases are handled as follows:
+## Hybrid Font Selection Algorithm
 
-  - "Legacy Soft" does not match a typographic family name, so only fonts in the WWS family
-    are considered. These can be differentiated by weight, so there is no ambiguity.
+The font selection APIs described in the next section use a hybrid font selection algorithm that
+preserves the advantages of typographic font selection while mitigating its compatibilty issues.
 
-  - "Legacy" matches both a typographic family and a WWS family. All fonts in the typographic
-    family are considered, but presence in the WWS family is used as a tie-breaker. For example,
-    Legacy Bold has the same weight as Legacy Soft Bold, but the former is preferred because
-    it is in the "Legacy" WWS family.
+Hybrid font selection provides a bridge from older font family models by enabling font weight,
+font stretch, and font style values to be mapped to corresponding font axis values. This helps
+address document and application compatibility issues.
 
-Document and application compatibility issues are mitigated by allowing different types of font
-names to be specified and also by providing a method of deriving axis values from weight, stretch,
-and style parameters.
+In addition, the hybrid font selection algorithm allows the specified family name to be a 
+typographic family name, weight-stretch-style family name, GDI/RBIZ family name, or a full 
+font name. Matching occurs in one of the following ways, in descending order of priority:
 
-Suppose an application has family name, weight, stretch, style, and font size parameters. For
-example, these might come from a document's backing store. The application can first pass the
-weight, stretch, style, and font size to the `IDWriteFontSet4::GetDerivedFontAxisValues` method
-to map the input parameters to _derived axis values_. If the application also has explicit axis
-values, it should pass these to `GetDerivedAxisValues` as well. The derived axis values will
-not include any axes there were passed in explicitly. This ensures that explicit axes take
-precedence over derived axis values.
+ 1. The name matches a typographic family (e.g., Sitka). Matching occurs within the typographic
+    family and all requested axis values are used. If the name also matches a WWS subfamily
+    (i.e., one smaller than the typographic family) then membership in the WWS subfamily is 
+    used as a tie-breaker.
 
-Once the application has axis values (derived, explicit, or both), it can pass the family name
-and axis values to the `IDWriteFontSet4::GetMatchingFonts` method. This method returns an
-`IDWriteFontSet4` representing a list of matching fonts in priority order. The specified family
-name can be a typographic family name, WWS family name, RBIZ family name, or full name.
+ 2. The name matches a WWS family (e.g., Sitka Text). Matching occurs within the WWS family
+    and requested axis values other than "wght", "wdth", "ital", and "slnt" are ignored.
+
+ 3. The name matches an GDI family (e.g., Bahnschrift Condensed). Matching occurs within 
+    the RBIZ family and requested axis values other than "wght", "ital", and "slnt" are
+    ignored.
+
+ 4. The name matches a full name (e.g., Bahnschrift Bold Condensed). The font matching the
+    full name is returned. Requested axis values are ignored. Matching by full font name
+    is allowed because GDI supports it.
+
+The previous section described an ambiguous typographic family called "Legacy". The hybrid
+algorithm enables the ambiguity to be avoided by specifying either "Legacy" or "Legacy Soft"
+as the family name. If "Legacy Soft" is specified, then there is no ambiguity because matching
+occurs only within the WWS family. If "Legacy" is specfiied then all fonts in the typographic
+family are considered as match candidates, but ambiguity is avoided by using membership in
+the "Legacy" WWS family as a tie-breaker.
+
+Suppose a document specifies a family name and weight, stretch, and style parameters, but no axis
+values. The application can first map the weight, stretch, style, and font size to axis values by
+calling `IDWriteFontSet4::GetDerivedFontAxisValues`. The application can then pass both the family
+name and axis values to `IDWriteFontSet4::GetMatchingFonts`. `GetMatchingFonts` returns a list of
+matching fonts in priority order, and the result is appropriate whether the specified family name
+is a typographic family name, weight-stretch-style family name, RBIZ family name, or full name.
+If the specified family has an "opsz" axis, the appropriate optical size is automatically selected
+based on the font size.
+
+Suppose a document specifies weight, stretch, and style and _also_ specifies axis values. In this
+case, the explicit axis values can also be passed in to `IDWriteFontSet4::GetDerivedFontAxisValues`,
+and the derived axis values returned by the method will only include font axes that were not
+specified explicitly. Thus, axis values specified explicitly by the document (or application) take
+precedence over axis values derived from weight, stretch, style, and font size.
 
 ## Hybrid Font Selection APIs
 
@@ -443,7 +605,7 @@ void MatchAxisValues(
     IDWriteFontSet4* fontSet,
     _In_z_ WCHAR const* familyName,
     std::vector<DWRITE_FONT_AXIS_VALUE> const& axisValues,
-    bool allowSimulations
+    DWRITE_FONT_SIMULATIONS allowedSimulations
     )
 {
     // Write the input parameters.
@@ -452,10 +614,7 @@ void MatchAxisValues(
     {
         std::wcout << L' ' << axisValue;
     }
-    std::wcout
-        << L" }, "
-        << (allowSimulations ? L"true" : L"false")
-        << L"):\n";
+    std::wcout << L" }, " << allowedSimulations << L"):\n";
 
     // Get the matching fonts for the specified family name and axis values.
     wil::com_ptr<IDWriteFontSet4> matchingFonts;
@@ -463,7 +622,7 @@ void MatchAxisValues(
         familyName,
         axisValues.data(),
         static_cast<UINT32>(axisValues.size()),
-        allowSimulations,
+        allowedSimulations,
         &matchingFonts
     ));
 
@@ -513,7 +672,7 @@ void MatchFont(
     _In_z_ WCHAR const* familyName,
     FontStyleParams styleParams = {},
     std::vector<DWRITE_FONT_AXIS_VALUE> axisValues = {},
-    bool allowSimulations = true
+    DWRITE_FONT_SIMULATIONS allowedSimulations = DWRITE_FONT_SIMULATIONS_BOLD | DWRITE_FONT_SIMULATIONS_OBLIQUE
     )
 {
     wil::com_ptr<IDWriteFontSet2> fontSet2;
@@ -544,7 +703,7 @@ void MatchFont(
         );
 
     // Pass the combined axis values (explicit and derived) to MatchAxisValues.
-    MatchAxisValues(fontSet.get(), familyName, axisValues, allowSimulations);
+    MatchAxisValues(fontSet.get(), familyName, axisValues, allowedSimulations);
 }
 ```
 
@@ -560,7 +719,7 @@ void TestFontSelection(IDWriteFactory7* factory)
     //  - Useful because Cambria Bold might have fewer glyphs than Cambria Regular.
     //  - Simulations may be applied if allowed.
     MatchFont(factory, L"Cambria", DWRITE_FONT_WEIGHT_BOLD);
-    MatchFont(factory, L"Cambria", DWRITE_FONT_WEIGHT_BOLD, {}, /*allowSimulations*/ false);
+    MatchFont(factory, L"Cambria", DWRITE_FONT_WEIGHT_BOLD, {}, DWRITE_FONT_SIMULATIONS_NONE);
 
     // Request "Cambria Bold".
     //  - Matches the full name of one static font.
@@ -597,37 +756,37 @@ void TestFontSelection(IDWriteFactory7* factory)
 Following is the output of the above `TestFontSelection` function:
 
 ```
-GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, true):
+GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, 3):
     cambriab.ttf wght:700 wdth:100 ital:0 slnt:0
     cambria.ttc wght:400 wdth:100 ital:0 slnt:0 BOLDSIM
     cambriaz.ttf wght:700 wdth:100 ital:1 slnt:-12.4
     cambriai.ttf wght:400 wdth:100 ital:1 slnt:-12.4 BOLDSIM
 
-GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, false):
+GetMatchingFonts("Cambria", { wght:700 wdth:100 ital:0 slnt:0 }, 0):
     cambriab.ttf wght:700 wdth:100 ital:0 slnt:0
     cambriaz.ttf wght:700 wdth:100 ital:1 slnt:-12.4
     cambria.ttc wght:400 wdth:100 ital:0 slnt:0
     cambriai.ttf wght:400 wdth:100 ital:1 slnt:-12.4
 
-GetMatchingFonts("Cambria Bold", { wght:400 wdth:100 ital:0 slnt:0 }, true):
+GetMatchingFonts("Cambria Bold", { wght:400 wdth:100 ital:0 slnt:0 }, 3):
     cambriab.ttf wght:700 wdth:100 ital:0 slnt:0
 
-GetMatchingFonts("Bahnschrift", { wght:700 wdth:100 ital:0 slnt:0 }, true):
+GetMatchingFonts("Bahnschrift", { wght:700 wdth:100 ital:0 slnt:0 }, 3):
     bahnschrift.ttf wght:700 wdth:100 ital:0 slnt:0
 
-GetMatchingFonts("Segoe UI Variable", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, true):
+GetMatchingFonts("Segoe UI Variable", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, 3):
     SegUIVar.ttf opsz:12 wght:400 wdth:100 ital:0 slnt:0
 
-GetMatchingFonts("Segoe UI Variable", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, true):
+GetMatchingFonts("Segoe UI Variable", { wght:400 wdth:100 ital:0 slnt:0 opsz:24 }, 3):
     SegUIVar.ttf opsz:24 wght:400 wdth:100 ital:0 slnt:0
 
-GetMatchingFonts("Segoe UI Variable", { opsz:32 wght:400 wdth:100 ital:0 slnt:0 }, true):
+GetMatchingFonts("Segoe UI Variable", { opsz:32 wght:400 wdth:100 ital:0 slnt:0 }, 3):
     SegUIVar.ttf opsz:32 wght:400 wdth:100 ital:0 slnt:0
 
-GetMatchingFonts("Segoe UI Variable Display", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, true):
+GetMatchingFonts("Segoe UI Variable Display", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, 3):
     SegUIVar.ttf opsz:36 wght:400 wdth:100 ital:0 slnt:0
 
-GetMatchingFonts("Segoe UI Variable Display Bold", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, true):
+GetMatchingFonts("Segoe UI Variable Display Bold", { wght:400 wdth:100 ital:0 slnt:0 opsz:12 }, 3):
     SegUIVar.ttf opsz:36 wght:700 wdth:100 ital:0 slnt:0
 ```
 
@@ -737,7 +896,7 @@ struct CmdArgs
     std::wstring familyName;
     FontStyleParams styleParams;
     std::vector<DWRITE_FONT_AXIS_VALUE> axisValues;
-    bool allowSimulations = true;
+    DWRITE_FONT_SIMULATIONS allowedSimulations = DWRITE_FONT_SIMULATIONS_BOLD | DWRITE_FONT_SIMULATIONS_OBLIQUE;
     bool test = false;
 };
 
@@ -820,7 +979,7 @@ bool ParseCommandLine(int argc, WCHAR** argv, CmdArgs& cmd)
         }
         else if (!wcscmp(arg, L"-nosim"))
         {
-            cmd.allowSimulations = false;
+            cmd.allowedSimulations = DWRITE_FONT_SIMULATIONS_NONE;
         }
         else
         {
@@ -860,7 +1019,7 @@ int __cdecl wmain(int argc, WCHAR** argv)
             cmd.familyName.c_str(),
             cmd.styleParams,
             std::move(cmd.axisValues),
-            cmd.allowSimulations
+            cmd.allowedSimulations
         );
     }
 
@@ -1008,9 +1167,9 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
     /// family name, GDI (RBIZ) family name, or full name.</param>
     /// <param name="fontAxisValues">Array of font axis values.</param>
     /// <param name="fontAxisValueCount">Number of font axis values.</param>
-    /// <param name="allowSimulations">Specify TRUE to automatically apply algorithmic emboldening or slant to
-    /// matching fonts if necessary to match the specified axis values. No simulations are applied if this
-    /// parameter is false.</param>
+    /// <param name="allowedSimulations">Specifies which simulations (i.e., algorithmic emboldening and/or slant)
+    /// may be applied to matching fonts to better match the specified axis values. No simulations are applied if
+    /// this parameter is DWRITE_FONT_SIMULATIONS_NONE (0).</param>
     /// <param name="matchingFonts">Receives a pointer to a newly-created font set, which contains a prioritized 
     /// list of fonts that match the specified inputs.</param>
     /// <returns>
@@ -1025,7 +1184,7 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
         _In_z_ WCHAR const* familyName,
         _In_reads_(fontAxisValueCount) DWRITE_FONT_AXIS_VALUE const* fontAxisValues,
         UINT32 fontAxisValueCount,
-        BOOL allowSimulations,
+        DWRITE_FONT_SIMULATIONS allowedSimulations,
         _COM_Outptr_ IDWriteFontSet4** matchingFonts
         ) PURE;
 };
