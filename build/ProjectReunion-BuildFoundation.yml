@@ -437,7 +437,7 @@ jobs:
     buildPool: $(ProjectReunionBuildPool)
 
 # Build WinAppSDK
-- job: IntegrationTest
+- job: IntegrationBuild
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
@@ -452,9 +452,19 @@ jobs:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKPackageVersion)
 
-# - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.publishToMaestro, 'true')) }}:
-#   - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
-#     parameters:
-#       AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-#       AssetVersion: $(packageVersion)
-#       TriggerSubscription: true
+# PublishToMaestro
+- ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.publishToMaestro, 'true')) }}:
+  - job: PublishToMaestro
+    dependsOn: 
+    - CreateNugetPackage
+    - IntegrationBuild
+    condition: succeeded()
+    pool: $(ProjectReunionBuildPool)
+    variables:
+      WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+    steps:
+      - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+        parameters:
+          AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+          AssetVersion: $(WindowsAppSDKPackageVersion)
+          TriggerSubscription: true
