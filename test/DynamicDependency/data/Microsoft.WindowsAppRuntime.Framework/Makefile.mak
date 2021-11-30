@@ -37,6 +37,8 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @if not exist $(WorkDir) md $(WorkDir) >NUL
     @copy /Y $(ProjectDir)appxmanifest.xml $(WorkDir)\appxmanifest.xml >NUL
     @copy /Y $(ProjectDir)logo.png $(WorkDir)\logo.png >NUL
+    @copy /Y $(OutDir)RestartAgent\RestartAgent.exe $(WorkDir)\RestartAgent.exe
+    @copy /Y $(OutDir)RestartAgent\RestartAgent.pdb $(WorkDir)\RestartAgent.pdb
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $(WorkDir)\Microsoft.WindowsAppRuntime.dll
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $(WorkDir)\Microsoft.WindowsAppRuntime.pdb
     @copy /Y $(OutDir)WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll $(WorkDir)\Microsoft.Internal.FrameworkUdk.dll

@@ -30,7 +30,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         static Microsoft::Windows::AppLifecycle::AppInstance GetCurrent();
         static winrt::Windows::Foundation::Collections::IVector<Microsoft::Windows::AppLifecycle::AppInstance> GetInstances();
         static Microsoft::Windows::AppLifecycle::AppInstance FindOrRegisterForKey(hstring const& key);
-        static winrt::Windows::ApplicationModel::Core::AppRestartFailureReason RestartNow(hstring const& arguments);
+        static winrt::Windows::ApplicationModel::Core::AppRestartFailureReason RequestRestartNow(hstring const& arguments);
 
         // IAppInstance.
         void UnregisterKey();

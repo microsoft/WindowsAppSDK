@@ -336,7 +336,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current->FindForKey(key.c_str());
     }
 
-    AppRestartFailureReason AppInstance::RestartNow(hstring const& arguments)
+    AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wchar_t modulePath[MAX_PATH];
@@ -380,6 +380,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         PROCESS_INFORMATION processInfo{};
         THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, 
             &info.StartupInfo, &processInfo));
+
+        // TODO: Block on the agent exe here since this API should never return unless there is an error.
 
         // TODO: Propagate real result.
         return AppRestartFailureReason::RestartPending;

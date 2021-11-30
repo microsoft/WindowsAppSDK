@@ -318,11 +318,13 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RequestRestartTest.cpp" />
     <ClCompile Include="SingleInstanceTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RequestRestartTest.h" />
     <ClInclude Include="SingleInstanceTest.h" />
   </ItemGroup>
   <ItemGroup>
