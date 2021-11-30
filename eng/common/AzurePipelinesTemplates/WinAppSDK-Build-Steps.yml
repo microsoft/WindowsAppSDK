@@ -1,17 +1,9 @@
 parameters:
-  AssetName: ''
-  AssetVersion: ''
-  TriggerSubscription: false
-  SignOutput: false
+  BuildType: ""
 
 steps:
   - checkout: git://ProjectReunion/ProjectReunionInternal
 
-  - script: |
-      dir /s
-  displayName: 'dir'
-  
-steps:
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'ProjectReunionInternal'
@@ -27,3 +19,4 @@ steps:
     displayName: BuildAll
     inputs:
       filePath: 'BuildAll.ps1'
+      arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none"

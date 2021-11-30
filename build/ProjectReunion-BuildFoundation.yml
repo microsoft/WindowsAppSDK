@@ -19,16 +19,10 @@ jobs:
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal
-    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
-      parameters:
-        AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersion: $(packageVersion)
-        TriggerSubscription: true
-
-  - script: |
-      dir /s
-  displayName: 'dir'
+  - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+    parameters:
+      BuildType: 'Stable'
+      
 
 - job: CredScan
   pool: $(ProjectReunionBuildPool)
