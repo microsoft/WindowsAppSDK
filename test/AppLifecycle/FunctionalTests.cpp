@@ -319,7 +319,7 @@ namespace Test::AppLifecycle
             auto launchResult{ Launcher::LaunchUriAsync(launchUri).get() };
             VERIFY_IS_TRUE(launchResult);
 
-            // Wait for Restart code path.
+            // Wait for Restart code path in caller.
             WaitForEvent(restartNowEvent, m_failed);
 
             // Wait for the restarted process with args!
