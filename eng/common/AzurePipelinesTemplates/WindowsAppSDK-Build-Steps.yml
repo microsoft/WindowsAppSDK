@@ -40,7 +40,7 @@ steps:
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
 
-  - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/IntegrationTest
+  - checkout: git://ProjectReunion/ProjectReunionInternal
 
   - task: DownloadBuildArtifacts@0
     inputs:
