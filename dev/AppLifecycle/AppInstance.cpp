@@ -339,11 +339,11 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
-        wchar_t modulePath[MAX_PATH];
-        GetModuleFileName(NULL, modulePath, MAX_PATH);
+        wil::unique_hmodule module;
+        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(AppInstance::RequestRestartNow), &module));
 
-        std::wstring modulePathView(modulePath);
-        auto directory = modulePathView.substr(0, modulePathView.find_last_of(L'\\'));
+        auto modulePath = GetModulePath(module.get());
+        auto directory = modulePath.substr(0, modulePath.find_last_of(L'\\'));
 
         wchar_t exePath[MAX_PATH];
         THROW_IF_FAILED(PathCchCombine(exePath, MAX_PATH, directory.c_str(), L"RestartAgent.exe"));
@@ -352,10 +352,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // is required in order for it to be inherited 
         wil::unique_handle parentHandle;
         THROW_IF_WIN32_BOOL_FALSE(DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), wil::out_param(parentHandle), 
-            PROCESS_QUERY_INFORMATION | SYNCHRONIZE, TRUE, 0));
+            PROCESS_QUERY_INFORMATION | SYNCHRONIZE | PROCESS_TERMINATE, TRUE, 0));
 
         // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
-        auto cmdLine = wil::str_printf<wil::unique_process_heap_string>(L"%s %d %s", exePath, parentHandle.get(), arguments.c_str());
+        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %d %s", exePath, parentHandle.get(), arguments.c_str());
 
         // Explicitly inherit the current process handle to the restart agent.
         SIZE_T attributeListSize{ 0 };
@@ -369,7 +369,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto freeAttributeList = wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList.get()); });
 
         size_t handlesToInheritCount{ 1 };
-        HANDLE* handlesToInherit = reinterpret_cast<HANDLE*>(parentHandle.get());
+        HANDLE* handlesToInherit = reinterpret_cast<HANDLE*>(parentHandle.addressof());
         THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, handlesToInherit, 
             handlesToInheritCount * sizeof(HANDLE), nullptr, nullptr));
 
@@ -381,7 +381,16 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, 
             &info.StartupInfo, &processInfo));
 
-        // TODO: Block on the agent exe here since this API should never return unless there is an error.
+        // Close the thread handle immediately, but assign the process handle to an RAII object to handle cleanup for the failure paths.
+        ::CloseHandle(processInfo.hThread);
+        wil::unique_handle processHandle(processInfo.hProcess);
+
+        // This API is designed to only return to the caller on failure, otherwise block until process termination.
+        // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,
+        // it can exit or crash.  This API will be able to detect the failure and return.
+        wil::handle_wait(processInfo.hProcess);
+
+        // TODO: Handle failure path
 
         // TODO: Propagate real result.
         return AppRestartFailureReason::RestartPending;

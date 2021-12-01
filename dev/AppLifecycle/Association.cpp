@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return (extension.at(0) == L'.');
     }
 
-    std::wstring GetModulePath()
+    std::wstring GetModulePath(HMODULE module)
     {
         std::wstring path(100, L'?');
         uint32_t path_size{};
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         do
         {
             path_size = static_cast<uint32_t>(path.size());
-            actual_size = ::GetModuleFileName(nullptr, path.data(), path_size);
+            actual_size = ::GetModuleFileName(module, path.data(), path_size);
 
             if (actual_size + 1 > path_size)
             {

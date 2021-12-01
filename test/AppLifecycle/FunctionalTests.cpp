@@ -48,7 +48,7 @@ namespace Test::AppLifecycle
             m_failed = CreateTestEvent(c_testFailureEventName);
 
             // Deploy packaged app to register handler through the manifest.
-            InstallPackage(c_testVCLibsPackageFile);
+            //InstallPackage(c_testVCLibsPackageFile);
             InstallPackage(c_testPackageFile);
 
             // Write out some test content.
@@ -295,7 +295,7 @@ namespace Test::AppLifecycle
         {
             // Create a named event for communicating with test app.
             auto event{ CreateTestEvent(c_testProtocolPhaseEventName) };
-
+            
             // Cleanup any leftover data from previous runs i.e. ensure we running with a clean slate
             try
             {
@@ -311,12 +311,20 @@ namespace Test::AppLifecycle
             Execute(L"AppLifecycleTestApp.exe", L"/RegisterProtocol", g_deploymentDir);
             WaitForEvent(event, m_failed);
 
+            auto restartNowEvent{ CreateTestEvent(c_testRequestRestartNowPhaseEventName) };
+            auto restartNowRestartedEvent{ CreateTestEvent(c_testRequestRestartNowRestartedPhaseEventName) };
+
             // Launch a URI with the protocol schema and wait for the app to fire the event
             Uri launchUri{ c_testProtocolScheme + L"://" + c_genericTestMoniker + L"?TestName=" + TESTNAME() };
             auto launchResult{ Launcher::LaunchUriAsync(launchUri).get() };
             VERIFY_IS_TRUE(launchResult);
-            WaitForEvent(event, m_failed);
 
+            // Wait for Restart code path.
+            WaitForEvent(restartNowEvent, m_failed);
+
+            // Wait for the restarted process with args!
+            WaitForEvent(restartNowRestartedEvent, m_failed);
+            
             // Deregister the protocol
             Execute(L"AppLifecycleTestApp.exe", L"/UnregisterProtocol", g_deploymentDir);
             WaitForEvent(event, m_failed);

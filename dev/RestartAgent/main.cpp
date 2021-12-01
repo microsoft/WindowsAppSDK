@@ -35,11 +35,11 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     THROW_HR_IF(E_INVALIDARG, startOfHandleArg == std::wstring::npos);
     startOfHandleArg += wcslen(handleArg);
     std::wstring arguments{ cmdLine.substr(startOfHandleArg) };
-    auto newCmdLine = wil::str_printf<wil::unique_process_heap_string>(L"%s %s", callerPath, arguments.c_str());
+    auto newCmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %s", callerPath, arguments.c_str());
 
     PROCESS_INFORMATION processInfo{};
     STARTUPINFO info{};
     info.cb = sizeof(info);
-    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(newCmdLine.get(), callerPath, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &info, &processInfo));
+    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath, newCmdLine.get(), nullptr, nullptr, FALSE, 0, nullptr, nullptr, &info, &processInfo));
     return 0;
 }
