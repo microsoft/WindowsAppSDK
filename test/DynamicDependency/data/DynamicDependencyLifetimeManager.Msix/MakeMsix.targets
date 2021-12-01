@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MakeMsixVerbosity Condition="'$(MakeMsixVerbosity)' == ''">normal</MakeMsixVerbosity>
+    <MakeMsixCommandVerbosity Condition="'$(MakeMsixVerbosity)' == 'high'">-verbose</MakeMsixCommandVerbosity>
+  </PropertyGroup>
+
+  <Target Name="MakeMSIX" Condition="'@(MakeMsixInputs)' != ''">
+    <Message Text="MakeMSIX boo!" Importance="high" />
+    <PropertyGroup>
+      <_MakeMsix_Architecture>Invalid</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'AnyCPU'">neutral</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'x86'">x86</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'Win32'">x86</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'x64'">x64</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'arm'">arm</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'arm32'">arm</_MakeMsix_Architecture>
+      <_MakeMsix_Architecture Condition="'$(Platform)' == 'arm64'">arm64</_MakeMsix_Architecture>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <TargetBasename>$(TargetName->'%(Filename)')</TargetBasename>
+      <TargetExe>$(TargetBasename)</TargetExe>
+      <TargetExeDir>$(OutDir)$(TargetExe)</TargetExeDir>
+      <TargetExeFile>$(TargetExeDir)\$(TargetExe).exe</TargetExeFile>
+      <!-- <Message Text="TargetExeFile=$(TargetExeFile)" Importance="$(MakeMsixVerbosity)" /> -->
+
+      <TargetProxyStub>$(TargetBasename).ProxyStub</TargetProxyStub>
+      <TargetProxyStubDir>$(OutDir)$(TargetProxyStub)</TargetProxyStubDir>
+      <TargetProxyStubFile>$(TargetProxyStubDir)\$(TargetProxyStub).dll</TargetProxyStubFile>
+      <!-- <Message Text="TargetProxyStubFile=$(TargetProxyStubFile)" Importance="$(MakeMsixVerbosity)" /> -->
+
+      <DdlmShadow>DynamicDependencyLifetimeManagerShadow</DdlmShadow>
+      <DdlmShadowExe>$(DdlmShadow)</DdlmShadowExe>
+      <DdlmShadowExeDir>$(OutDir)$(DdlmShadowExe)</DdlmShadowExeDir>
+      <DdlmShadowExeFile>$(DdlmShadowExeDir)\$(DdlmShadowExe).exe</DdlmShadowExeFile>
+      <DdlmShadowExePdb>$(DdlmShadowExeDir)\$(DdlmShadowExe).pdb</DdlmShadowExePdb>
+      <!-- <Message Text="DdlmShadowExeFile=$(DdlmShadowExeFile)" Importance="$(MakeMsixVerbosity)" /> -->
+
+      <VersionInfoDir>$(ProjectDir)</VersionInfoDir>
+      <VersionInfoFile>$(VersionInfoDir)Microsoft.WindowsAppRuntime.Release!4.1.0</VersionInfoFile>
+      <!-- <Message Text="VersionInfoFile=$(VersionInfoFile)" Importance="$(MakeMsixVerbosity)" /> -->
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <MakeMsixTargetDir>$(OutDir)$(TargetName)</MakeMsixTargetDir>
+      <!-- <Message Text="MakeMsixTargetDir=$(MakeMsixTargetDir)" Importance="$(MakeMsixVerbosity)" /> -->
+      <MakeMsixWorkDir>$(MakeMsixTargetDir)\msix</MakeMsixWorkDir>
+      <!-- <Message Text="MakeMsixTargetDir=$(MakeMsixTargetDir)" Importance="$(MakeMsixVerbosity)" /> -->
+      <MakeMsixOutMsix>$(MakeMsixTargetDir)\$(TargetName)</MakeMsixOutMsix>
+      <!-- <Message Text="MakeMsixOutMsix=$(MakeMsixOutMsix)" Importance="$(MakeMsixVerbosity)" /> -->
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <_MakeMsix_MakeAppxManifestFromTemplate>$(SolutionDir)tools\MakeAppxManifestFromTemplate.cmd</_MakeMsix_MakeAppxManifestFromTemplate>
+      <_MakeMsix_MakeAppxManifestFromTemplate_Args>$(ProjectDir)appxmanifest.xml $(MakeMsixWorkDir)\appxmanifest.xml $(_MakeMsix_Architecture)</_MakeMsix_MakeAppxManifestFromTemplate_Args>
+      <_MakeMsix_MakeAppxManifestFromTemplateCommand>$(_MakeMsix_MakeAppxManifestFromTemplate) $(_MakeMsix_MakeAppxManifestFromTemplate_Args)</_MakeMsix_MakeAppxManifestFromTemplateCommand>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(OutDir)$(TargetName)\msix" />
+    <MakeDir Directories="$(OutDir)$(TargetName)\msix\Assets" />
+
+    <Message Text="$(_MakeMsix_MakeAppxManifestFromTemplateCommand)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Exec Command="$(_MakeMsix_MakeAppxManifestFromTemplateCommand)" /> -->
+
+    <Message Text="Copy @(MakeMsixInputs) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="@(MakeMsixInputs)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" /> -->
+
+    <Message Text="Copy $(ProjectDir)Assets\* to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="$(ProjectDir)Assets\*" DestinationFolder="$(MakeMsixWorkDir)Assets" SkipUnchangedFiles="true" /> -->
+
+    <Message Text="Copy $(TargetExeFile) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="$(TargetExeFile)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" /> -->
+
+    <Message Text="Copy $(TargetProxyStubExeFile) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="$(TargetProxyStubExeFile)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" /> -->
+
+    <Message Text="Copy $(DdlmShadowExeFile) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="$(DdlmShadowExeFile)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" /> -->
+    <Message Text="Copy $(DdlmShadowExePdb) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="$(DdlmShadowExePdb)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" /> -->
+
+    <Message Text="Copy $(VersionInfoFile) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Copy SourceFiles="$(VersionInfoFile)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" /> -->
+
+    <Message Text="$(_MakeMsixCommand)" Importance="$(MakeMsixVerbosity)" />
+    <!-- <Exec Command="$(_MakeMsixCommand)" /> -->
+  </Target>
+</Project>
