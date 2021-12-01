@@ -49,15 +49,6 @@ steps:
       itemPattern: |
         **/*.nupkg
 
-  - task: CopyFiles@2
-    displayName: 'Copy installer override header'
-    inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\build\packages\${{ parameters.ArtifactName }}'
-      Contents: |
-        **/*.nupkg
-      TargetFolder: $(Build.SourcesDirectory)\build\packages
-      flattenFolders: false
-
   # Replace the versions in version.details.xml in the ProjectReunionInternal repo
   # Please note, the UpdateVersionDetailsConfig.ps1 that is used is one from the ProjectReunionInternal repo
   - ${{ each package in parameters.TransportPackages }}:
