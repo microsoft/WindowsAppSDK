@@ -8,7 +8,6 @@ parameters:
   primaryBuildArch: x86
   buildFlavor: Release
   prereleaseVersionTag: 'prerelease'
-  publishToMaestro: false
   condition: ''
   buildPool: ''
 
@@ -105,12 +104,14 @@ jobs:
   #   displayName: 'build-nupkg.ps1'
 
   - task: PowerShell@2
+    name: SetVersion
     displayName: Update metapackage version
     inputs:
       targetType: 'inline'
       script: |
         $packageVersion = '$(version).${{ parameters.prereleaseVersionTag }}'
         Write-Host "##vso[task.setvariable variable=packageVersion;]$packageVersion"
+        Write-Host "##vso[task.setvariable variable=packageVersion;isOutput=true;]$packageVersion"
         Write-Host $packageVersion
         [xml]$publicNuspec = Get-Content -Path $(Build.SourcesDirectory)\build\NuSpecs\Microsoft.WindowsAppSDK.Foundation.nuspec
         $publicNuspec.package.metadata.version = $packageVersion
@@ -161,24 +162,6 @@ jobs:
       PathtoPublish: '${{ parameters.fullnupkgdir }}'
       artifactName: 'FullNuget'
 
-  - ${{if parameters.signConfigPattern }}:
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/fullnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fullnuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed'
-        nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
-
-  - ${{ if eq(parameters.publishToMaestro, 'true') }}:
-    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
-      parameters:
-        AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
-        AssetVersion: $(packageVersion)
-        TriggerSubscription: true
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishPGONuGet-Job.yml
 #
