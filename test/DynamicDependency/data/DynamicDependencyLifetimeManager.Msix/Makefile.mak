@@ -82,7 +82,7 @@ $(OutMsix): $(ProjectDir)appxmanifest.xml
     @copy /Y $(DDLM_SHADOW_EXE_PDB) $(WorkDir) >NUL
     @copy /Y $(VERSIONINFO_FILE) $(WorkDir) >NUL
     @makeappx.exe pack $(MAKEAPPX_OPTS) /o /h SHA256 /d $(WorkDir) /p $(OutMsix)
-    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir).user\winappsdk.certificate.test.pfx $(OutMsix)
+    @signtool.exe sign /a $(SIGNTOOL_OPTS) /fd SHA256 /f $(SolutionDir).user\winappsdk.certificate.test.pfx /p "%PFX_PASSWORD%" $(OutMsix)
 
 build: $(OutMsix)
 

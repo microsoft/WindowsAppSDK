@@ -136,7 +136,14 @@
       <Project>{2e5bf0d2-78fa-4b60-a341-f65a0d58bd86}</Project>
     </ProjectReference>
   </ItemGroup>
+  <Target Name="Build" AfterTargets="AfterBuild">
+    <MakeMSIX MakeMsixInputs="@(MakeMsixInputs)" />
+  </Target>
+  <ItemGroup>
+    <MakeMsixInputs Include="$(ProjectDir)Microsoft.WindowsAppRuntime.Release!4.1.0" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(ProjectDir)\MakeMsix.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
