@@ -132,13 +132,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Janela em Branco (WinUI 3 na Área de Trabalho)</value>
+    <value>Janela em Branco (WinUI 3 no Desktop)</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Experimental] Janela em Branco (WinUI 3 na Área de Trabalho)</value>
+    <value>[Experimental] Janela em Branco (WinUI 3 no Desktop)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Uma janela em branco para aplicativos da Área de Trabalho com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Uma janela em branco para Aplicativos para desktop baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>Página em Branco (WinUI 3)</value>
@@ -147,7 +147,7 @@
     <value>[Experimental] Página em Branco (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Uma página em branco para aplicativos com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Uma página em branco para aplicativos baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>Dicionário de Recursos (WinUI 3)</value>
@@ -156,7 +156,7 @@
     <value>[Experimental] Dicionário de Recursos (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Uma coleção vazia de recursos XAML com chave para aplicativos com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Uma coleção vazia e com chave de recursos XAML para aplicativos baseados na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Arquivo de Recursos (.resw)</value>
@@ -165,7 +165,7 @@
     <value>[Experimental] Arquivo de Recursos (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Um arquivo para armazenar cadeia de caracteres e recursos condicionais para aplicativos com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Um arquivo para armazenar a cadeia de caracteres e os recursos condicionais para aplicativos com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Controle Personalizado (WinUI 3)</value>
@@ -174,51 +174,51 @@
     <value>[Experimental] Controle Personalizado (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Um controle personalizado para aplicativos com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Um controle personalizado para aplicativos baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Controle de Usuário (WinUI 3)</value>
+    <value>Controle do Usuário (WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
     <value>[Experimental] Controle de Usuário (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Um controle de usuário para aplicativos com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Um controle de usuário para aplicativos baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Aplicativo em Branco, Empacotado com WAP (WinUI 3 na Área de Trabalho)</value>
+    <value>Aplicativo em Branco, Empacotado com Projeto de Empacotamento de Aplicativo do Windows (WinUI 3 na Área de Trabalho)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimental] Aplicativo em Branco, Empacotado com WAP (WinUI 3 na Área de Trabalho)</value>
+    <value>[Experimental] Aplicativo em Branco, Empacotado com Projeto de Empacotamento de Aplicativo do Windows (WinUI 3 na Área de Trabalho)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Um modelo de projeto para criar um aplicativo da Área de Trabalho com base na Biblioteca de Interface do Usuário do Windows (WinUI 3). Um projeto wap (empacotamento de aplicativo do Windows) está incluído para criar um pacote MSIX para side-loading ou distribuição por meio do Microsoft Store.</value>
+    <value>Um modelo de projeto para criar um Aplicativo para desktop com base na Biblioteca de Interface do Usuário do Windows (WinUI 3). Um projeto wap (empacotamento de aplicativo) do Windows é incluído para criar um pacote MSIX para sideload ou distribuição por meio do Microsoft Store.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Aplicativo em Branco, Empacotado (WinUI 3 na Área de Trabalho)</value>
+    <value>Aplicativo em Branco, Empacotado (WinUI 3 no Desktop)</value>
   </data>
   <data name="1030" xml:space="preserve">
     <value>[Experimental] Aplicativo em Branco, Empacotado (WinUI 3 na Área de Trabalho)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Um modelo de projeto para criar um aplicativo da Área de Trabalho com base na Biblioteca de Interface do Usuário do Windows (WinUI 3) juntamente com um pacote MSIX para side loading ou distribuição por meio do Microsoft Store.</value>
+    <value>Um modelo de projeto para criar um Aplicativo para desktop baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3) juntamente com um pacote MSIX para sideload ou distribuição por meio da Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows Runtime Componente (WinUI 3)</value>
+    <value>Componente do Windows Runtime (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimental] Windows Runtime Componente (WinUI 3)</value>
+    <value>[Experimental] Componente do Windows Runtime (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Um projeto para criar um Componente de Windows Runtime C++/WinRT (.winmd) para aplicativos desktop e Plataforma Universal do Windows (UWP), com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
+    <value>Um projeto para criar um Componente de Windows Runtime C++/WinRT (.winmd) para Aplicativos desktop e Plataforma Universal do Windows (UWP), com base na Biblioteca de Interface do Usuário do Windows (WinUI 3).</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>Aplicativo em Branco (WinUI 3 em UWP)</value>
+    <value>Aplicativo em Branco (WinUI 3 na UWP)</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Experimental] Aplicativo em Branco (WinUI 3 em UWP)</value>
+    <value>[Experimental] Aplicativo em Branco (WinUI 3 na UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Um projeto para criar um Plataforma Universal do Windows (UWP) baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3). Requer suporte experimental do SDK do Aplicativo do Windows.</value>
+    <value>Um projeto para criar um aplicativo da Plataforma Universal do Windows (UWP) baseado na Biblioteca de Interface do Usuário do Windows (WinUI 3). Requer suporte experimental do SDK do Aplicativo Windows.</value>
   </data>
 </root>

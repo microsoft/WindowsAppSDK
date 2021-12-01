@@ -132,93 +132,93 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>桌面)中的空白窗口(WinUI 3</value>
+    <value>空白窗口 (桌面版中的 WinUI 3)</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[实验性]桌面)中的空白窗口(WinUI 3</value>
+    <value>[实验性] 空白窗口 (桌面版中的 WinUI 3)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>基于 Windows UI 库(WinUI 3)的桌面应用的空白窗口。</value>
+    <value>基于 Windows UI 库 (WinUI 3) 的桌面应用的空白窗口。</value>
   </data>
   <data name="1005" xml:space="preserve">
-    <value>WinUI 3)(空白页</value>
+    <value>空白页 (WinUI 3)</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[实验性]WinUI 3)(空白页</value>
+    <value>[实验性] 空白页 (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>基于 Windows UI 库(WinUI 3)的应用的空白页。</value>
+    <value>基于 Windows UI 库 (WinUI 3) 的应用的空白页。</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>资源字典(WinUI 3)</value>
+    <value>资源字典 (WinUI 3)</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[实验性]资源字典(WinUI 3)</value>
+    <value>[实验性] 资源字典 (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>基于 Windows UI 库(WinUI 3)的应用的 XAML 资源的空密钥集合。</value>
+    <value>基于 Windows UI 库 (WinUI 3) 应用的 XAML 资源的空密钥集合。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>资源文件 (.resw)</value>
   </data>
   <data name="1014" xml:space="preserve">
-    <value>[实验性]资源文件 (.resw)</value>
+    <value>[实验性] 资源文件 (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>用于存储基于 Windows UI 库的应用的字符串和条件资源的文件(WinUI 3)。</value>
+    <value>用于存储基于 Windows UI 库 (WinUI 3) 的应用字符串和条件资源文件。</value>
   </data>
   <data name="1017" xml:space="preserve">
-    <value>WinUI 3 (自定义控件)</value>
+    <value>自定义控件 (WinUI 3)</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[实验性]WinUI 3 (自定义控件)</value>
+    <value>[实验性] 自定义控件 (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>基于 Windows UI 库(WinUI 3)的应用的自定义控件。</value>
+    <value>基于 Windows UI 库 (WinUI 3) 的应用的自定义控件。</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>用户控制(WinUI 3)</value>
+    <value>用户控件 (WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[实验性]用户控制(WinUI 3)</value>
+    <value>[实验性] 用户控件 (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>基于 Windows UI 库的应用的用户控件(WinUI 3)。</value>
+    <value>基于 Windows UI 库 (WinUI 3) 的应用的用户控件。</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>空白应用，在桌面)中使用 WAP (WinUI 3 打包</value>
+    <value>空白应用，使用 Windows 应用程序打包项目打包(桌面版中的 WinUI 3)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[实验性]空白应用，在桌面)中使用 WAP (WinUI 3 打包</value>
+    <value>[实验性] 空白应用，使用 Windows 应用程序打包项目打包(桌面版中的 WinUI 3)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>用于基于 Windows UI 库创建桌面应用的项目模板(WinUI 3)。包括 Windows 应用程序打包(WAP)项目，以创建 MSIX 包，以便通过Microsoft Store进行旁加载或分发。</value>
+    <value>用于基于 Windows UI 库 (WinUI 3) 创建桌面应用的项目模板。包含 Windows 应用程序打包 (WAP) 项目，用于创建 MSIX 包，以便通过 Microsoft Store 进行旁加载或分发。</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>空白应用，在桌面)中打包(WinUI 3</value>
+    <value>空白应用，已打包(桌面版中的 WinUI 3)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[实验性]空白应用，在桌面)中打包(WinUI 3</value>
+    <value>[实验性] 空白应用，已打包(桌面版中的 WinUI 3)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>用于基于 Windows UI 库创建桌面应用的项目模板(WinUI 3)以及 MSIX 包，用于通过Microsoft Store进行旁加载或分发。</value>
+    <value>用于基于 Windows UI 库 (WinUI 3) 创建桌面应用的项目模板，以及用于通过 Microsoft Store 旁加载或分发的 MSIX 包。</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows 运行时 WinUI 3)(组件</value>
+    <value>Windows 运行时组件 (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[实验性]Windows 运行时 WinUI 3)(组件</value>
+    <value>[实验性] Windows 运行时组件 (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>用于根据 Windows UI 库(WinUI 3)为桌面和 通用 Windows 平台 (UWP)应用创建 C++/WinRT Windows 运行时组件(.winmd)的项目。</value>
+    <value>用于基于 Windows UI 库 (WinUI 3) 为桌面和通用 Windows 平台 (UWP) 应用创建 C++/WinRT Windows 运行时组件 (.winmd) 的项目。</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>UWP)中的空白应用(WinUI 3</value>
+    <value>空白应用 (UWP 中的 WinUI 3)</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[实验性]UWP)中的空白应用(WinUI 3</value>
+    <value>[实验性] 空白应用 (UWP 中的 WinUI 3)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>用于基于 Windows UI 库(WinUI 3)创建通用 Windows 平台 (UWP)应用的项目。需要 Windows 应用 SDK 实验性支持。</value>
+    <value>用于创建基于 Windows UI 库 (WinUI 3) 的通用 Windows 平台 (UWP) 应用的项目。需要 Windows 应用 SDK 实验性支持。</value>
   </data>
 </root>

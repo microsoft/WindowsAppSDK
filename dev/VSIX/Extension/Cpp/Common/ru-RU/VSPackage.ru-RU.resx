@@ -132,10 +132,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="1001" xml:space="preserve">
-    <value>Пустое окно (WinUI 3 в desktop)</value>
+    <value>Пустое окно (WinUI 3 в "Классическом приложении")</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Экспериментальная функция] Пустое окно (WinUI 3 в desktop)</value>
+    <value>[Экспериментальная версия] Пустое окно (WinUI 3 в "Классическом приложении")</value>
   </data>
   <data name="1003" xml:space="preserve">
     <value>Пустое окно для классических приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
@@ -144,7 +144,7 @@
     <value>Пустая страница (WinUI 3)</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Экспериментальная функция] Пустая страница (WinUI 3)</value>
+    <value>[Экспериментальная версия] Пустая страница (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
     <value>Пустая страница для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
@@ -153,7 +153,7 @@
     <value>Словарь ресурсов (WinUI 3)</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Экспериментальная функция] Словарь ресурсов (WinUI 3)</value>
+    <value>[Экспериментальная версия] Словарь ресурсов (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
     <value>Пустая коллекция ресурсов XAML с ключами для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
@@ -162,7 +162,7 @@
     <value>Файл ресурсов (.resw)</value>
   </data>
   <data name="1014" xml:space="preserve">
-    <value>[Экспериментальная функция] Файл ресурсов (.resw)</value>
+    <value>[Экспериментальная версия] Файл ресурсов (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
     <value>Файл для хранения строковых и условных ресурсов для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
@@ -171,54 +171,54 @@
     <value>Пользовательский элемент управления (WinUI 3)</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[Экспериментальная функция] Пользовательский элемент управления (WinUI 3)</value>
+    <value>[Экспериментальная версия] Пользовательский элемент управления (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Настраиваемый элемент управления для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Пользовательский элемент управления для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Пользовательский элемент управления (WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Экспериментальная функция] Пользовательский элемент управления (WinUI 3)</value>
+    <value>[Экспериментальная версия] Пользовательский элемент управления (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Пользовательский элемент управления для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Элемент управления пользователя для приложений на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Пустое приложение, упакованное с помощью WAP (WinUI 3 в desktop)</value>
+    <value>Пустое приложение, упакованное с помощью проекта упаковки приложений Windows (WinUI 3 на компьютере)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Экспериментальная функция] Пустое приложение, упакованное с помощью WAP (WinUI 3 в desktop)</value>
+    <value>[Экспериментальная функция] Пустое приложение, упакованное с помощью проекта упаковки приложений Windows (WinUI 3 на компьютере)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Шаблон проекта для создания приложения "Рабочий стол" на основе библиотеки пользовательского интерфейса Windows (WinUI 3). Проект упаковки приложений Windows (WAP) включен для создания пакета MSIX для загрузки неопубликоваемых приложений или их распространения через Microsoft Store.</value>
+    <value>Шаблон проекта для создания классического приложения на основе библиотеки пользовательского интерфейса Windows (WinUI 3). Для создания пакета MSIX для загрузки неопубликованного приложения или распространения через Microsoft Store включен проект упаковки приложений Windows (WAP).</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Пустое приложение, упакованное (WinUI 3 в desktop)</value>
+    <value>Пустое приложение, упакованное (WinUI 3 в "Классическом приложении")</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Экспериментальная функция] Пустое приложение, упакованное (WinUI 3 в desktop)</value>
+    <value>[Экспериментальная версия] Пустое приложение, упакованное (WinUI 3 в "Классическом приложении")</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Шаблон проекта для создания приложения "Рабочий стол" на основе библиотеки пользовательского интерфейса Windows (WinUI 3) и пакета MSIX для загрузки или распространения неопубликоваемой Microsoft Store.</value>
+    <value>Шаблон проекта для создания классического приложения на основе библиотеки пользовательского интерфейса Windows (WinUI 3) и пакета MSIX для загрузки неопубликованного приложения или распространения через Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>среда выполнения Windows компонента (WinUI 3)</value>
+    <value>Компонент среды выполнения Windows (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Экспериментальная функция] среда выполнения Windows компонента (WinUI 3)</value>
+    <value>[Экспериментальная версия] Компонент среды выполнения Windows (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Проект по созданию компонента C++/WinRT среда выполнения Windows (.winmd) для классических и универсальная платформа Windows (UWP) на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
+    <value>Проект по созданию компонента среды выполнения Windows (.winmd) C++/WinRT для классических приложений и приложений на универсальной платформе Windows (UWP) на основе библиотеки пользовательского интерфейса Windows (WinUI 3).</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Пустое приложение (WinUI 3 в UWP)</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[Экспериментальная функция] Пустое приложение (WinUI 3 в UWP)</value>
+    <value>[Экспериментальная версия] Пустое приложение (WinUI 3 в UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Проект по созданию приложения универсальная платформа Windows (UWP) на основе библиотеки пользовательского интерфейса Windows (WinUI 3). Требуется экспериментальная поддержка пакета SDK для приложений Windows.</value>
+    <value>Проект по созданию приложения на универсальной платформе Windows (UWP) на основе библиотеки пользовательского интерфейса Windows (WinUI 3). Требуется экспериментальная поддержка Windows App SDK.</value>
   </data>
 </root>

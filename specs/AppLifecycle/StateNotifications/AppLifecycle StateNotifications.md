@@ -60,42 +60,40 @@ its life, perhaps in WinMain - but the AppLifecycle mechanism does not impose an
 this, and the app is free to subscribe or unsubscribe at any time.
 
 ```c++
-int APIENTRY wWinMain(
-    _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
+winrt::event_token batteryToken;
+winrt::event_token powerToken;
+winrt::event_token powerSourceToken;
+winrt::event_token chargeToken;
+winrt::event_token dischargeToken;
+winrt::event_token displayToken;
+winrt::event_token energyToken;
+winrt::event_token powerModeToken;
+winrt::event_token userPresenceToken;
+winrt::event_token systemSuspendToken;
+
+void RegisterPowerManagerCallbacks()
 {
-    // Initialize COM.
-    winrt::init_apartment();
-
-    // Optionally, register callbacks for power/battery state changes.
-    PowerManager::BatteryStatusChanged([](auto&&...)
-        { OnBatteryStatusChanged(); });
-    PowerManager::PowerSupplyStatusChanged([](auto&&...)
-        { OnPowerStatusChanged(); });
-    PowerManager::EnergySaverStatusChanged([](auto&&...)
-        { OnEnergySaverStatusChanged(); });
-    PowerManager::RemainingChargePercentChanged([](auto&&...)
-        { OnRemainingChargePercentChanged(); });
-    PowerManager::RemainingDischargeTimeChanged([](auto&&...)
-        { OnRemainingDischargeTimeChanged(); });
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Standard Win32 window configuration/creation and message pump:
-    // ie, whatever the app would normally do - nothing new here.
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_CLASSIC, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
-    if (!InitInstance(hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
-    MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-    return (int)msg.wParam;
+    // Register callbacks for power/battery state changes.
+    batteryToken = PowerManager::BatteryStatusChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnBatteryStatusChanged(); });
+    powerToken = PowerManager::PowerSupplyStatusChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnPowerSupplyStatusChanged(); });
+    powerSourceToken = PowerManager::PowerSourceKindChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnPowerSourceKindChanged(); });
+    chargeToken = PowerManager::RemainingChargePercentChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnRemainingChargePercentChanged(); });
+    dischargeToken = PowerManager::RemainingDischargeTimeChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnRemainingDischargeTimeChanged(); });
+    displayToken = PowerManager::DisplayStatusChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnDisplayStatusChanged(); });
+    energyToken = PowerManager::EnergySaverStatusChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnEnergySaverStatusChanged(); });
+    powerModeToken = PowerManager::EffectivePowerModeChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnPowerModeChanged(); });
+    userPresenceToken = PowerManager::UserPresenceStatusChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnUserPresenceStatusChanged(); });
+    systemSuspendToken = PowerManager::SystemSuspendStatusChanged([&](
+        const auto&, winrt::Windows::Foundation::IInspectable obj) { OnSystemSuspendStatusChanged(); });
 }
 ```
 
@@ -187,21 +185,19 @@ Use your language's preferred event-registration management system if your app d
 recieve power status notifications during its entire lifecycle.
 
 ```c++
-winrt::event_token s_batteryToken;
-winrt::event_token s_powerToken;
 
-void MyRegisterPowerManagerCallbacks()
+void UnregisterPowerManagerCallbacks()
 {
-    s_batteryToken = PowerManager::BatteryStatusChanged([](IInspectable sender, auto args)
-        { OnBatteryStatusChanged(sender, args); });
-    s_powerToken = PowerManager::PowerSupplyStatusChanged([](IInspectable sender, auto args)
-        { OnPowerSupplyStatusChanged(sender, args); });
-}
-
-void MyUnregisterPowerManagerCallbacks()
-{
-    PowerManager::BatteryStatusChanged(s_batteryToken);
-    PowerManager::PowerSupplyStatusChanged(s_powerToken);
+    PowerManager::BatteryStatusChanged(batteryToken);
+    PowerManager::PowerSupplyStatusChanged(powerToken);
+    PowerManager::PowerSourceKindChanged(powerSourceToken);
+    PowerManager::RemainingChargePercentChanged(chargeToken);
+    PowerManager::RemainingDischargeTimeChanged(dischargeToken);
+    PowerManager::DisplayStatusChanged(displayToken);
+    PowerManager::EnergySaverStatusChanged(energyToken);
+    PowerManager::EffectivePowerModeChanged(powerModeToken);
+    PowerManager::UserPresenceStatusChanged(userPresenceToken);
+    PowerManager::SystemSuspendStatusChanged(systemSuspendToken);
 }
 ```
 
@@ -239,7 +235,7 @@ listed below, along with the proposed mappings to new PowerManager events and en
 | GUID_BATTERY_PERCENTAGE_REMAINING | The remaining battery capacity has changed.                  | `RemainingChargePercent`, `RemainingChargePercentChanged` |
 | GUID_CONSOLE_DISPLAY_STATE        | The current monitor's display state has change. Apps should stop rendering graphics content when the monitor is off to reduce system power consumption. | _Not implemented_                                         |
 | GUID_GLOBAL_USER_PRESENCE         | The user status associated with any session has changed. This notification is only to services and other programs running in session 0. User-mode applications should register for GUID_SESSION_USER_PRESENCE instead. | _Not implemented_                                         |
-| GUID_IDLE_BACKGROUND_TASK         | The system is busy: now is a good time for apps to perform background or idle tasks that would otherwise prevent the computer from entering an idle state. | `SystemIdleStatusChanged` (no property)               |
+| GUID_IDLE_BACKGROUND_TASK         | The system is busy: now is a good time for apps to perform background or idle tasks that would otherwise prevent the computer from entering an idle state. | `SystemIdleStatusChanged` (no property)                   |
 | GUID_MONITOR_POWER_ON             | The monitor has been powered on or off. From Windows 8 and Windows Server 2012, apps should use GUID_CONSOLE_DISPLAY_STATE instead. | _Not implemented_                                         |
 | GUID_POWER_SAVING_STATUS          | Battery saver has been turned on or off.                     | `EnergySaverStatus, EnergySaverStatusChanged`             |
 | GUID_POWERSCHEME_PERSONALITY      | The active power scheme personality has changed. All power schemes map to one of these personalities. | _Not implemented_                                         |

@@ -4,6 +4,7 @@
 #include <ActivationRegistrationManager.h>
 #include <Microsoft.Windows.AppLifecycle.ActivationRegistrationManager.g.cpp>
 
+#include "AppLifecycleTelemetry.h"
 #include "LaunchActivatedEventArgs.h"
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
@@ -22,6 +23,17 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // Example: C:\some\path\App.exe "----ms-protocol:myscheme:some=data&some=other"
         return wil::str_printf<std::wstring>(L"%s \"%s%s%s%s\"", exePath.c_str(), c_argumentPrefix,
             c_msProtocolArgumentString, c_argumentSuffix, argumentData.c_str());
+    }
+
+    void ActivationRegistrationManager::ReportFeatureUsage()
+    {
+        static bool reported{ false };
+
+        if (!reported)
+        {
+            AppLifecycleTelemetry::ActivationRegistrationManager();
+            reported = true;
+        }
     }
 
     void ActivationRegistrationManager::RegisterForFileTypeActivation(
@@ -51,6 +63,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
             RegisterAssociationHandler(appId, fileType.c_str(), type);
         }
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::RegisterForProtocolActivation(hstring const& schemeName,
@@ -61,6 +76,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         RegisterForProtocolActivationInternal(schemeName.c_str(), L"", logo.c_str(),
             displayName.c_str(), exePath.c_str());
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::RegisterForStartupActivation(hstring const& taskId,
@@ -100,6 +118,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             UnregisterAssociationHandler(appId, fileType.c_str(), type);
             UnregisterProgId(progId);
         }
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::UnregisterForProtocolActivation(hstring const& schemeName,
@@ -113,6 +134,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         auto progId = ComputeProgId(appId, type);
         UnregisterAssociationHandler(appId, schemeName.c_str(), type);
         UnregisterProgId(progId);
+
+        // Notify Shell that an association has changed.
+        NotifyShellAssocChanged();
     }
 
     void ActivationRegistrationManager::UnregisterForStartupActivation(hstring const& taskId)

@@ -138,7 +138,7 @@
     <value>[Experimentell] Leeres Fenster (WinUI 3 in Desktop)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Ein leeres Fenster für Desktop-Apps, das auf der Windows UI Library (WinUI 3) basiert.</value>
+    <value>Ein leeres Fenster für Desktop-Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>Leere Seite (WinUI 3)</value>
@@ -147,25 +147,25 @@
     <value>[Experimentell] Leere Seite (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Eine leere Seite für Apps, die auf der Windows UI Library (WinUI 3) basieren.</value>
+    <value>Eine leere Seite für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1009" xml:space="preserve">
-    <value>Ressourcenwörterbuch (WinUI 3)</value>
+    <value>Ressourcenverzeichnis (WinUI 3)</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[Experimentell] Ressourcenwörterbuch (WinUI 3)</value>
+    <value>[Experimentell] Ressourcenverzeichnis (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Eine leere Sammlung von XAML-Ressourcen mit Schlüsseln für Apps, die auf der Windows-Benutzeroberflächenbibliothek (WinUI 3) basieren.</value>
+    <value>Eine leere, schlüsselgesteuerte Sammlung von XAML-Ressourcen für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1013" xml:space="preserve">
-    <value>Ressourcendatei (RESW)</value>
+    <value>Ressourcendatei (.resw)</value>
   </data>
   <data name="1014" xml:space="preserve">
-    <value>[Experimentell] Ressourcendatei (RESW)</value>
+    <value>[Experimentell] Ressourcendatei (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Eine Datei zum Speichern von Zeichenfolgen- und bedingten Ressourcen für Apps basierend auf der Windows-Benutzeroberflächenbibliothek (WinUI 3).</value>
+    <value>Eine Datei zum Speichern von Zeichenfolgen und bedingten Ressourcen für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Benutzerdefiniertes Steuerelement (WinUI 3)</value>
@@ -174,7 +174,7 @@
     <value>[Experimentell] Benutzerdefiniertes Steuerelement (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Ein benutzerdefiniertes Steuerelement für Apps, das auf der Windows UI Library (WinUI 3) basiert.</value>
+    <value>Ein benutzerdefiniertes Steuerelement für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Benutzersteuerelement (WinUI 3)</value>
@@ -183,16 +183,16 @@
     <value>[Experimentell] Benutzersteuerelement (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Ein Benutzersteuerelement für Apps, die auf der Windows UI Library (WinUI 3) basieren.</value>
+    <value>Ein Benutzersteuerelement für Apps, die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Leere App, paketiert mit WAP (WinUI 3 in Desktop)</value>
+    <value>Leere App, verpackt mit Paketerstellungsprojekt für Windows-Anwendungen (WinUI 3 in Desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimentell] Leere App, paketiert mit WAP (WinUI 3 in Desktop)</value>
+    <value>[Experimentell] Leere App, verpackt mit Paketerstellungsprojekt für Windows-Anwendungen (WinUI 3 in Desktop)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows UI Library (WinUI 3) basiert. Ein Windows Application Packaging (WAP)-Projekt ist enthalten, um ein MSIX-Paket für das Querladen oder die Verteilung über die Microsoft Store zu erstellen.</value>
+    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert. Ein WAP-Projekt (Paketerstellungsprojekt für Windows-Anwendungen) ist enthalten, um ein MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store zu erstellen.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Leere App, verpackt (WinUI 3 in Desktop)</value>
@@ -201,16 +201,16 @@
     <value>[Experimentell] Leere App, verpackt (WinUI 3 in Desktop)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows UI Library (WinUI 3) basiert, zusammen mit einem MSIX-Paket zum Querladen oder Verteilen über die Microsoft Store.</value>
+    <value>Eine Projektvorlage zum Erstellen einer Desktop-App, die auf der Windows-UI-Bibliothek (WinUI 3) basiert, zusammen mit einem MSIX-Paket zum Querladen oder Verteilen über den Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>Windows-Runtime Komponente (WinUI 3)</value>
+    <value>Komponente für Windows-Runtime (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimentell] Windows-Runtime Komponente (WinUI 3)</value>
+    <value>[Experimentell] Komponente für Windows-Runtime (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Ein Projekt zum Erstellen einer C++-/WinRT-Windows-Runtime-Komponente (WINMD) für Desktop- und Universelle Windows-Plattform-Apps (UWP), basierend auf der Windows UI Library (WinUI 3).</value>
+    <value>Ein Projekt zum Erstellen einer C++/WinRT-Komponente für Windows-Runtime (WINMD) für Desktop- und UWP-Apps (Universelle Windows-Plattform), die auf der Windows-UI-Bibliothek (WinUI 3) basieren.</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Leere App (WinUI 3 in UWP)</value>
@@ -219,6 +219,6 @@
     <value>[Experimentell] Leere App (WinUI 3 in UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Ein Projekt zum Erstellen einer UWP -App (Universelle Windows-Plattform) basierend auf der Windows-Benutzeroberflächenbibliothek (WinUI 3). Erfordert experimentelle Unterstützung für das Windows App SDK.</value>
+    <value>Ein Projekt zum Erstellen einer UWP-App (Universelle Windows-Plattform), die auf der Windows-UI-Bibliothek (WinUI 3) basiert. Erfordert experimentelle Unterstützung für das Windows App SDK.</value>
   </data>
 </root>

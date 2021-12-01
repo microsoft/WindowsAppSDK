@@ -213,7 +213,8 @@
 
     <PropertyGroup>
       <!-- XSL transform that we want to always run against .vstemplates -->
-      <_UnconditionalVsTemplateXslt><![CDATA[
+      <_UnconditionalVsTemplateXslt>
+            <![CDATA[
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://schemas.microsoft.com/developer/vstemplate/2005">
     <!-- Identity template to copy everything by default -->
     <xsl:template match="@*|node()">
@@ -245,6 +246,9 @@
     <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.SDK.BuildTools']/@version">
         <xsl:attribute name="version">$(WindowsSDKBuildToolsVersion)</xsl:attribute>
     </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.ImplementationLibrary']/@version">
+        <xsl:attribute name="version">$(WILVersion)</xsl:attribute>
+    </xsl:template>
 
     <!-- Update Assets section with actual Nuget package filenames -->
     <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CppWinRT.nupkg']/@Path">
@@ -256,6 +260,9 @@
     <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.SDK.BuildTools.nupkg']/@Path">
         <xsl:attribute name="Path">Microsoft.Windows.SDK.BuildTools.$(WindowsSDKBuildToolsVersion).nupkg</xsl:attribute>
     </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.ImplementationLibrary.nupkg']/@Path">
+        <xsl:attribute name="Path">Microsoft.Windows.ImplementationLibrary.$(WILVersion).nupkg</xsl:attribute>
+    </xsl:template>
 
     <!-- Update custom parameters passed into subtemplates -->
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value">
@@ -266,6 +273,12 @@
     </xsl:template>
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WindowsSDKBuildToolsNupkgVersion$']/@Value">
         <xsl:attribute name="Value">$(WindowsSDKBuildToolsVersion)</xsl:attribute>
+    </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WILVersion$']/@Value">
+        <xsl:attribute name="Value">$(WILVersion)</xsl:attribute>
+    </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$DotNetVersion$']/@Value">
+        <xsl:attribute name="Value">$(DotNetVersion)</xsl:attribute>
     </xsl:template>
 </xsl:stylesheet>
       ]]></_UnconditionalVsTemplateXslt>

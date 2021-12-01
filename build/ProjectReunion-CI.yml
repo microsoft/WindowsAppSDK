@@ -59,6 +59,9 @@ jobs:
     publishDir : $(Build.ArtifactStagingDirectory)
   steps:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
+    parameters:
+      channel: ${{ variables.channel }}
+
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
   - task: BinSkim@3

@@ -138,7 +138,7 @@
     <value>[Experimentální] Prázdné okno (WinUI 3 na ploše)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Prázdné okno pro desktopové aplikace založené na knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Prázdné okno pro desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>Prázdná stránka (WinUI 3)</value>
@@ -147,7 +147,7 @@
     <value>[Experimentální] Prázdná stránka (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Prázdná stránka pro aplikace založené na knihovně uživatelského rozhraní Systému Windows (WinUI 3)</value>
+    <value>Prázdná stránka pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>Slovník prostředků (WinUI 3)</value>
@@ -156,16 +156,16 @@
     <value>[Experimentální] Slovník prostředků (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Prázdná kolekce prostředků XAML s klíči pro aplikace založené na knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Prázdná kolekce prostředků XAML s klíči pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Soubor prostředků (.resw)</value>
   </data>
   <data name="1014" xml:space="preserve">
-    <value>[Experimentální] Soubor prostředků (.resw)</value>
+    <value>[Experimental] Soubor prostředků (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Soubor pro ukládání řetězců a podmíněných prostředků pro aplikace založené na knihovně uživatelského rozhraní systému Windows (WinUI 3)</value>
+    <value>Soubor pro ukládání řetězců a podmíněných prostředků pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Vlastní ovládací prvek (WinUI 3)</value>
@@ -174,7 +174,7 @@
     <value>[Experimentální] Vlastní ovládací prvek (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Vlastní ovládací prvek pro aplikace založené na knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Vlastní ovládací prvek pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Uživatelský ovládací prvek (WinUI 3)</value>
@@ -183,16 +183,16 @@
     <value>[Experimentální] Uživatelský ovládací prvek (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Uživatelský ovládací prvek pro aplikace založené na knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Uživatelský ovládací prvek pro aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3)</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Prázdná aplikace, zabalená s WAP (WinUI 3 v desktopu)</value>
+    <value>Prázdná aplikace zabalená s Projekt vytváření balíčku aplikace Windows (WinUI 3 v desktopové verzi)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Experimentální] Prázdná aplikace, zabalená s WAP (WinUI 3 v desktopu)</value>
+    <value>[Experimentální] Prázdná aplikace zabalená s Projekt vytváření balíčku aplikace Windows (WinUI 3 v desktopu)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Šablona projektu pro vytvoření desktopové aplikace založené na knihovně uživatelského rozhraní Windows (WinUI 3) K vytvoření balíčku MSIX pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store je zahrnutý projekt WAP (Windows Application Packaging).</value>
+    <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3). K vytvoření balíčku MSIX pro instalaci bokem nebo distribuci prostřednictvím Microsoft Store je zahrnutý projekt WAP (vytváření balíčku aplikace Windows).</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Prázdná aplikace, zabalená (WinUI 3 v desktopové verzi)</value>
@@ -201,16 +201,16 @@
     <value>[Experimentální] Prázdná aplikace, zabalená (WinUI 3 v desktopové verzi)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Šablona projektu pro vytvoření desktopové aplikace založené na knihovně uživatelského rozhraní Windows (WinUI 3) spolu s balíčkem MSIX pro zkušební načtení nebo distribuci prostřednictvím Microsoft Store</value>
+    <value>Šablona projektu pro vytvoření desktopové aplikace založené na Knihovně uživatelského rozhraní Windows (WinUI 3) spolu s balíčkem MSIX pro zkušební načtení nebo distribuci prostřednictvím Microsoft Store.</value>
   </data>
   <data name="1033" xml:space="preserve">
-    <value>součást prostředí Windows Runtime (WinUI 3)</value>
+    <value>Součást prostředí Windows Runtime (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[Experimentální] součást prostředí Windows Runtime (WinUI 3)</value>
+    <value>[Experimentální] Součást prostředí Windows Runtime (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Projekt pro vytvoření komponenty prostředí Windows Runtime C++/WinRT (.winmd) pro desktopové i Univerzální platforma Windows (UPW) založené na knihovně uživatelského rozhraní Windows (WinUI 3)</value>
+    <value>Projekt pro vytvoření součásti prostředí Windows Runtime C++/WinRT (.winmd) pro desktopovou i Univerzální platformu Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3).</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Prázdná aplikace (WinUI 3 v UPW)</value>
@@ -219,6 +219,6 @@
     <value>[Experimentální] Prázdná aplikace (WinUI 3 v UPW)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projekt pro vytvoření aplikace pro Univerzální platforma Windows (UPW) založený na knihovně uživatelského rozhraní systému Windows (WinUI 3) Vyžaduje experimentální podporu sady Windows App SDK.</value>
+    <value>Projekt pro vytvoření aplikace Univerzální platformy Windows (UPW) založené na Knihovně uživatelského rozhraní Windows (WinUI 3). Vyžaduje experimentální podporu sady Windows App SDK.</value>
   </data>
 </root>

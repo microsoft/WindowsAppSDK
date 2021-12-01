@@ -174,7 +174,7 @@ jobs:
         publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
 
   - ${{ if eq(parameters.publishToMaestro, 'true') }}:
-    - template: ..\..\eng\common\Maestro-PublishBuildToMaestro.yml
+    - template: ..\..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
       parameters:
         AssetName: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
         AssetVersion: $(packageVersion)

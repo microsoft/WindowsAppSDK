@@ -100,11 +100,14 @@ steps:
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
         
         if (($srcPath -ne $null)){
-          $destinationPath = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
+          $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-          if (($destinationPath -ne $null)){
-            Write-Host 'SourcePath:' $srcPath.FullName $destinationPath.FullName
-            Copy-Item -Force $srcPath.FullName $destinationPath.FullName
+          if (($destinationPaths -ne $null)) {
+            foreach ($destPath in $destinationPaths) {
+              Write-Host 'SourcePath:' $srcPath.FullName
+              Write-Host 'DestinationPath:' $destPath.FullName
+              Copy-Item -Force $srcPath.FullName $destPath.FullName
+            }
           }
         }
 

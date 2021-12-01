@@ -138,7 +138,7 @@
     <value>[Deneysel] Boş Pencere (Masaüstünde WinUI 3)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak Masaüstü uygulamaları için boş bir pencere.</value>
+    <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan Masaüstü uygulamaları için boş bir pencere.</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>Boş Sayfa (WinUI 3)</value>
@@ -147,7 +147,7 @@
     <value>[Deneysel] Boş Sayfa (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak uygulamalar için boş bir sayfa.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için boş bir sayfa.</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>Kaynak Sözlüğü (WinUI 3)</value>
@@ -156,7 +156,7 @@
     <value>[Deneysel] Kaynak Sözlüğü (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için boş, anahtarlı XAML kaynakları koleksiyonu.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için boş bir anahtarlı XAML kaynakları koleksiyonu.</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Kaynak Dosyası (.resw)</value>
@@ -165,7 +165,7 @@
     <value>[Deneysel] Kaynak Dosyası (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak uygulamalar için dize ve koşullu kaynakları depolamaya yönelik bir dosya.</value>
+    <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan uygulamalar için dize ve koşullu kaynakları depolamaya yönelik bir dosya.</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Özel Denetim (WinUI 3)</value>
@@ -174,7 +174,7 @@
     <value>[Deneysel] Özel Denetim (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için özel bir denetim.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir özel denetim.</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Kullanıcı Denetimi (WinUI 3)</value>
@@ -183,16 +183,16 @@
     <value>[Deneysel] Kullanıcı Denetimi (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için kullanıcı denetimi.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı denetimi.</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
+    <value>Boş Uygulama, Paketli Windows Uygulama Paketleme Projesi (Masaüstünde WinUI 3)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Deneysel] Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
+    <value>[Deneysel] Boş Uygulama, Paketli Windows Uygulama Paketleme Projesi (Masaüstünde WinUI 3)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nın (WinUI 3) temel alınarak Masaüstü uygulaması oluşturmaya yönelik proje şablonu. Windows Uygulama Paketleme (WAP) projesi, dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Microsoft Store.</value>
+    <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu. Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Windows Uygulama Paketleme (WAP) projesi dahildir.</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>Boş Uygulama, Paketlenmiş (Masaüstünde WinUI 3)</value>
@@ -201,7 +201,7 @@
     <value>[Deneysel] Boş Uygulama, Paketlenmiş (Masaüstünde WinUI 3)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nın (WinUI 3) yanı sıra dışarıdan yükleme veya dağıtım için bir MSIX paketiyle birlikte masaüstü uygulaması oluşturmaya yönelik proje Microsoft Store.</value>
+    <value>Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi ile birlikte Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu.</value>
   </data>
   <data name="1033" xml:space="preserve">
     <value>Windows Çalışma Zamanı Bileşeni (WinUI 3)</value>
@@ -210,7 +210,7 @@
     <value>[Deneysel] Windows Çalışma Zamanı Bileşeni (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan hem Masaüstü hem de Evrensel Windows Platformu (UWP) uygulamaları için C++/WinRT Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik bir proje.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan, hem Masaüstü hem de Evrensel Windows Platformu (UWP) uygulamaları için bir C++/WinRT Windows Çalışma Zamanı Bileşeni (.winmd) oluşturmaya yönelik proje.</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Boş Uygulama (UWP'de WinUI 3)</value>
@@ -219,6 +219,6 @@
     <value>[Deneysel] Boş Uygulama (UWP'de WinUI 3)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Windows UI Kitaplığı'Evrensel Windows Platformu (WinUI 3) tabanlı bir uygulama (UWP) oluşturma projesi. Windows Uygulama SDK deneysel desteği gerektirir.</value>
+    <value>Windows Kullanıcı Arabirimi (UI) Kitaplığı'nı (WinUI 3) temel alan bir Evrensel Windows Platformu (UWP) uygulaması oluşturmaya yönelik bir proje. Windows Uygulama SDK'sı deneysel desteği gerektirir.</value>
   </data>
 </root>

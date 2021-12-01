@@ -1,0 +1,89 @@
+name: Bug report
+description: File a bug report
+title: "Bug title"
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For bugs related to WinUI, please open a bug on the [Microsoft.UI.Xaml repository](https://github.com/microsoft/microsoft-ui-xaml)
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Describe the bug
+      description: Please enter a short, clear description of the bug.
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: Steps to reproduce the bug
+      description: Please provide any required setup and steps to reproduce the behavior.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: Please provide a description of what you expected to happen
+  - type: textarea
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots here to help explain your problem
+  - type: dropdown
+    attributes:
+      label: NuGet package version
+      description: Specify the version of Windows App SDK (or Project Reunion) you're using.
+      options:
+        - "1.0.0"
+        - "1.0.0-preview3"
+        - "1.0.0-preview2"
+        - "1.0.0-preview1"
+        - "1.0.0-experimental1"
+        - "0.8.5"
+        - "0.8.4"
+        - "0.8.3"
+        - "0.8.2"
+        - "0.8.1"
+        - "0.8.0"
+        - "0.5"
+  - type: dropdown
+    attributes:
+      label: Packaging type
+      description: Please specify the packaging type you're using when you encountered the issue.
+      multiple: true
+      options:
+        - "Packaged (MSIX)"
+        - "Unpackaged"
+  - type: dropdown
+    attributes:
+      label: Windows version
+      description: Which Windows versions did you see the issue on?
+      multiple: true
+      options:
+        - "Insider Build (xxxxx)"
+        - "Windows 11 (22000)"
+        - "May 2021 Update (19043)"
+        - "October 2020 Update (19042)"
+        - "May 2020 Update (19041)"
+        - "November 2019 Update (18363)"
+        - "May 2019 Update (18362)"
+        - "October 2018 Update (17763)"
+        - "April 2018 Update (17134)"
+        - "Fall Creators Update (16299)"
+        - "Creators Update (15063)"
+  - type: dropdown
+    attributes:
+      label: IDE
+      description: Which IDE are you using?
+      multiple: true
+      options:
+        - "Visual Studio 2022-preview"
+        - "Visual Studio 2022"
+        - "Visual Studio 2019"
+        - "Visual Studio 2017"
+        - "Other"
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: Enter any other applicable info here

@@ -135,19 +135,19 @@
     <value>Fenêtre vide (WinUI 3 dans le Bureau)</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[Expérimental] Fenêtre vide (WinUI 3 dans le Bureau)</value>
+    <value>Fenêtre vierge (WinUI 3 dans le Bureau)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Fenêtre vide pour les applications de bureau basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Fenêtre vide pour les applications de bureau basées sur la Bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>Page vierge (WinUI 3)</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[Expérimental] Page vierge (WinUI 3)</value>
+    <value>[Experimental] Page vierge (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Page vierge pour les applications basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Page vide pour les applications basées sur la Bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>Dictionnaire de ressources (WinUI 3)</value>
@@ -156,16 +156,16 @@
     <value>[Expérimental] Dictionnaire de ressources (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Collection de ressources XAML vides à clé pour les applications basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Collection vide et à clé de ressources XAML pour les applications basées sur la Bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>Fichier de ressources (.resw)</value>
   </data>
   <data name="1014" xml:space="preserve">
-    <value>[Expérimental] Fichier de ressources (.resw)</value>
+    <value>[Experimental] Fichier de ressources (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Fichier de stockage de ressources conditionnelles et de chaîne pour les applications basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Fichier de stockage de ressources conditionnelles et de chaîne pour les applications basées sur la Bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>Contrôle personnalisé (WinUI 3)</value>
@@ -174,7 +174,7 @@
     <value>[Expérimental] Contrôle personnalisé (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
-    <value>Contrôle personnalisé pour les applications basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Contrôle personnalisé pour les applications basé sur la Bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1021" xml:space="preserve">
     <value>Contrôle utilisateur (WinUI 3)</value>
@@ -183,22 +183,22 @@
     <value>[Expérimental] Contrôle utilisateur (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Contrôle utilisateur pour les applications basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Contrôle utilisateur pour les applications basé sur la Bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>Bibliothèque de classes (WinUI 3 sur le Bureau)</value>
+    <value>Bibliothèque de classes (WinUI 3 dans desktop)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[Expérimental] Bibliothèque de classes (WinUI 3 sur le Bureau)</value>
+    <value>[Expérimental] Bibliothèque de classes (WinUI 3 dans UWP)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Projet de création d’une bibliothèque de classes managée (.dll) pour les applications de bureau basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
+    <value>Projet de création d’une bibliothèque de classes managées (.dll) pour les applications de bureau basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3).</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Application vide, empaquetée avec WAP (WinUI 3 sur le Bureau)</value>
+    <value>Application vide, empaquetée avec Projet de création de packages d'applications Windows (WinUI 3 sur le Bureau)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Expérimental] Application vide, empaquetée avec WAP (WinUI 3 sur le Bureau)</value>
+    <value>[Expérimental] Application vide, empaquetée avec Projet de création de packages d'applications Windows (WinUI 3 sur le Bureau)</value>
   </data>
   <data name="1031" xml:space="preserve">
     <value>Modèle de projet pour la création d’une application de bureau basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Un projet d’empaquetage d’application Windows (WAP) est inclus pour créer un package MSIX pour le chargement indépendant ou la distribution via le Microsoft Store.</value>
@@ -210,7 +210,7 @@
     <value>[Expérimental] Application vide, empaquetée (WinUI 3 sur le Bureau)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Modèle de projet pour la création d’une application de bureau basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3) ainsi qu’un package MSIX pour le chargement indépendant ou la distribution via le Microsoft Store.</value>
+    <value>Modèle de projet pour la création d’une application de bureau basée sur la Bibliothèque d’interface utilisateur Windows (WinUI 3) ainsi qu’un package MSIX pour le chargement indépendant ou la distribution via le Microsoft Store.</value>
   </data>
   <data name="1037" xml:space="preserve">
     <value>Application vide (WinUI 3 dans UWP)</value>
@@ -219,7 +219,7 @@
     <value>[Expérimental] Application vide (WinUI 3 dans UWP)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Projet de création d’une application plateforme Windows universelle (UWP) basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale du Kit de développement logiciel (SDK) d’application Windows.</value>
+    <value>Projet de création d’une application de plateforme Windows universelle (UWP) basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale de SDK d’application Windows.</value>
   </data>
   <data name="1041" xml:space="preserve">
     <value>Bibliothèque de classes (WinUI 3 dans UWP)</value>
@@ -228,15 +228,15 @@
     <value>[Expérimental] Bibliothèque de classes (WinUI 3 dans UWP)</value>
   </data>
   <data name="1043" xml:space="preserve">
-    <value>Projet de création d’une bibliothèque de classes managée (.dll) pour les applications plateforme Windows universelle (UWP) basées sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale du Kit de développement logiciel (SDK) d’application Windows.</value>
+    <value>Projet de création d’un composant Windows Runtime managé (.dll) pour les applications de plateforme Windows universelle (UWP), basée sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale de SDK d’application Windows.</value>
   </data>
   <data name="1045" xml:space="preserve">
-    <value>composant Windows Runtime (WinUI 3 dans UWP)</value>
+    <value>Composant Windows Runtime (WinUI 3 dans UWP)</value>
   </data>
   <data name="1046" xml:space="preserve">
     <value>[Expérimental] composant Windows Runtime (WinUI 3 dans UWP)</value>
   </data>
   <data name="1047" xml:space="preserve">
-    <value>Projet de création d’un composant Windows Runtime managé (.winmd) pour les applications plateforme Windows universelle (UWP), basé sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale du Kit de développement logiciel (SDK) d’application Windows.</value>
+    <value>Projet de création d’un composant Windows Runtime managé (.winmd) pour les applications de plateforme Windows universelle (UWP), basé sur la bibliothèque d’interface utilisateur Windows (WinUI 3). Nécessite la prise en charge expérimentale du Kit de développement logiciel SDK d’application Windows.</value>
   </data>
 </root>

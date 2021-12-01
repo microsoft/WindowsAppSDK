@@ -135,43 +135,43 @@
     <value>空白のウィンドウ (デスクトップの WinUI 3)</value>
   </data>
   <data name="1002" xml:space="preserve">
-    <value>[試験段階]空白のウィンドウ (デスクトップの WinUI 3)</value>
+    <value>[試験段階] 空白のウィンドウ (デスクトップの WinUI 3)</value>
   </data>
   <data name="1003" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくデスクトップ アプリ用の空白のウィンドウです。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づくデスクトップ アプリの空白のウィンドウです。</value>
   </data>
   <data name="1005" xml:space="preserve">
     <value>空白のページ (WinUI 3)</value>
   </data>
   <data name="1006" xml:space="preserve">
-    <value>[試験段階]空白のページ (WinUI 3)</value>
+    <value>[試験段階] 空白のページ (WinUI 3)</value>
   </data>
   <data name="1007" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリの空白のページです。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリの空白のページ。</value>
   </data>
   <data name="1009" xml:space="preserve">
     <value>リソース ディクショナリ (WinUI 3)</value>
   </data>
   <data name="1010" xml:space="preserve">
-    <value>[試験段階]リソース ディクショナリ (WinUI 3)</value>
+    <value>[試験段階] リソース ディクショナリ (WinUI 3)</value>
   </data>
   <data name="1011" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づく、アプリの XAML リソースの空のキー付きコレクション。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づくアプリの XAML リソースの、空のキー付きコレクションです。</value>
   </data>
   <data name="1013" xml:space="preserve">
     <value>リソース ファイル (.resw)</value>
   </data>
   <data name="1014" xml:space="preserve">
-    <value>[試験段階]リソース ファイル (.resw)</value>
+    <value>[試験段階] リソース ファイル (.resw)</value>
   </data>
   <data name="1015" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいて、アプリの文字列と条件付きリソースを格納するためのファイルです。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づいてアプリの文字列と条件付きリソースを格納するためのファイルです。</value>
   </data>
   <data name="1017" xml:space="preserve">
     <value>カスタム コントロール (WinUI 3)</value>
   </data>
   <data name="1018" xml:space="preserve">
-    <value>[試験段階]カスタム コントロール (WinUI 3)</value>
+    <value>[試験段階] カスタム コントロール (WinUI 3)</value>
   </data>
   <data name="1019" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づくアプリのカスタム コントロール。</value>
@@ -180,19 +180,19 @@
     <value>ユーザー コントロール (WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[試験段階]ユーザー コントロール (WinUI 3)</value>
+    <value>[試験段階] ユーザー コントロール (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
     <value>Windows UI ライブラリ (WinUI 3) に基づくアプリのユーザー コントロール。</value>
   </data>
   <data name="1025" xml:space="preserve">
-    <value>空のアプリ、WAP でパッケージ化 (デスクトップの WinUI 3)</value>
+    <value>空白のアプリ、Windows アプリケーション パッケージ プロジェクトでパッケージ化 (デスクトップの WinUI 3)</value>
   </data>
   <data name="1026" xml:space="preserve">
-    <value>[試験段階]空のアプリ、WAP でパッケージ化 (デスクトップの WinUI 3)</value>
+    <value>[試験段階]空のアプリ、Windows アプリケーション パッケージ プロジェクトでパッケージ化 (デスクトップの WinUI 3)</value>
   </data>
   <data name="1027" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレート。Windows アプリケーション パッケージ (WAP) プロジェクトは、Microsoft Storeを使用してサイドローディングまたは配布するための MSIX パッケージを作成するために含まれています。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートです。Microsoft Store を介してサイドローディングまたは配布するための MSIX パッケージを作成するために Windows アプリケーション パッケージ (WAP) プロジェクトが含まれています。</value>
   </data>
   <data name="1029" xml:space="preserve">
     <value>空のアプリ、パッケージ化 (デスクトップの WinUI 3)</value>
@@ -201,24 +201,24 @@
     <value>[試験段階]空のアプリ、パッケージ化 (デスクトップの WinUI 3)</value>
   </data>
   <data name="1031" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートと、Microsoft Storeを介したサイドローディングまたは配布用の MSIX パッケージ。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づいてデスクトップ アプリを作成するためのプロジェクト テンプレートと、Microsoft Store を介したサイドローディングまたは配布用の MSIX パッケージです。</value>
   </data>
   <data name="1033" xml:space="preserve">
     <value>Windows ランタイム コンポーネント (WinUI 3)</value>
   </data>
   <data name="1034" xml:space="preserve">
-    <value>[試験段階]Windows ランタイム コンポーネント (WinUI 3)</value>
+    <value>[試験段階] Windows ランタイム コンポーネント (WinUI 3)</value>
   </data>
   <data name="1035" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいて、デスクトップ アプリと ユニバーサル Windows プラットフォーム (UWP) アプリの両方の C++/WinRT Windows ランタイム コンポーネント (.winmd) を作成するためのプロジェクトです。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づいて、デスクトップ アプリとユニバーサル Windows プラットフォーム (UWP) アプリの両方の C++/WinRT Windows ランタイム コンポーネント (.winmd) を作成するためのプロジェクトです。</value>
   </data>
   <data name="1037" xml:space="preserve">
-    <value>空のアプリ (UWP での WinUI 3)</value>
+    <value>空のアプリ (UWP の WinUI 3)</value>
   </data>
   <data name="1038" xml:space="preserve">
-    <value>[試験段階]空のアプリ (UWP での WinUI 3)</value>
+    <value>[試験段階] 空のアプリ (UWP の WinUI 3)</value>
   </data>
   <data name="1039" xml:space="preserve">
-    <value>Windows UI ライブラリ (WinUI 3) に基づいてユニバーサル Windows プラットフォーム (UWP) アプリを作成するためのプロジェクトです。Windows アプリ SDK の試験的なサポートが必要です。</value>
+    <value>Windows UI ライブラリ (WinUI 3) に基づいてユニバーサル Windows プラットフォーム (UWP) アプリを作成するためのプロジェクトで、Windows アプリ SDK の試験的なサポートが必要です。</value>
   </data>
 </root>

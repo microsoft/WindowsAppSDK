@@ -6,7 +6,7 @@
 
 #include <appmodel.h>
 
-#include <TerminalVelocityFeatures-DynamicDependency.h>
+#include <stdint.h>
 
 enum class MddCreatePackageDependencyOptions : uint32_t
 {

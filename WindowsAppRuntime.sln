@@ -80,6 +80,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager", "dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.vcxproj", "{2E5BF0D2-78FA-4B60-A341-F65A0D58BD86}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager.Msix", "test\DynamicDependency\data\DynamicDependencyLifetimeManager.Msix\DynamicDependencyLifetimeManager.Msix.vcxproj", "{A7391725-4EF5-438F-8DE1-645423E46955}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B} = {6539E9E1-BF36-40E5-86BC-070E99DB7B7B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManager.ProxyStub", "dev\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.vcxproj", "{8C79C46D-1577-44CA-83DF-88B74C3E4586}"
 EndProject
@@ -243,6 +246,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime_MSIXInstallFromPath", "dev\WindowsAppRuntime_MSIXInstallFromPath\WindowsAppRuntime_MSIXInstallFromPath.vcxproj", "{D45D4170-E055-4926-8B03-04DAA5F02C6C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Widgets", "test\DynamicDependency\data\Framework.Widgets\Framework.Widgets.vcxproj", "{09DDAE21-397F-4263-8561-7F2FF28127CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManagerShadow", "dev\DynamicDependency\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.vcxproj", "{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -921,6 +926,20 @@ Global
 		{09DDAE21-397F-4263-8561-7F2FF28127CF}.Release|x64.Build.0 = Release|x64
 		{09DDAE21-397F-4263-8561-7F2FF28127CF}.Release|x86.ActiveCfg = Release|Win32
 		{09DDAE21-397F-4263-8561-7F2FF28127CF}.Release|x86.Build.0 = Release|Win32
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|ARM64.Build.0 = Debug|ARM64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|x64.ActiveCfg = Debug|x64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|x64.Build.0 = Debug|x64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|x86.ActiveCfg = Debug|Win32
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Debug|x86.Build.0 = Debug|Win32
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|ARM64.ActiveCfg = Release|ARM64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|ARM64.Build.0 = Release|ARM64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x64.ActiveCfg = Release|x64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x64.Build.0 = Release|x64
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x86.ActiveCfg = Release|Win32
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1003,6 +1022,7 @@ Global
 		{E15C3465-9D45-495D-92CE-B91EF45E8623} = {6967798A-AC07-4994-8FE9-DC9442F88E97}
 		{D45D4170-E055-4926-8B03-04DAA5F02C6C} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{09DDAE21-397F-4263-8561-7F2FF28127CF} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
+		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
