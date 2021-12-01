@@ -162,18 +162,6 @@ jobs:
       PathtoPublish: '${{ parameters.fullnupkgdir }}'
       artifactName: 'FullNuget'
 
-  - ${{if parameters.signConfigPattern }}:
-    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
-    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-      displayName: 'NuGet push to ProjectReunion.nuget.internal'
-      inputs:
-        command: 'push'
-        packagesToPush: '$(Build.ArtifactStagingDirectory)/fullnuget/*.nupkg;!$(Build.ArtifactStagingDirectory)/fullnuget/*.symbols.nupkg'
-        verbosityPush: 'Detailed'
-        nuGetFeedType: 'internal'
-        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
-        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
-
 #UNDONE - EHO we need to seed these guid's properly!
 #see, e.g. AzurePipelinesTemplates\WindowsAppSDK-BuildAndPublishPGONuGet-Job.yml
 #

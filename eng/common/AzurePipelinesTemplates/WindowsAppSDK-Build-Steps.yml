@@ -21,6 +21,9 @@ parameters:
     values:
     - 'stable'
     - 'experimental'
+  - name: ArtifactName
+    type: string
+    default: ''
   - name: "TransportPackages"
     displayName: "TransportPackages to replace (name:version)"
     type: object
@@ -38,6 +41,13 @@ steps:
       RunAsPreJob: false
 
   - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/IntegrationTest
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: ${{ parameters.ArtifactName }}
+      downloadPath: '$(Build.SourcesDirectory)\localpackages'
+      itemPattern: |
+        **/*.nupkg
 
   # Replace the versions in version.details.xml in the ProjectReunionInternal repo
   # Please note, the UpdateVersionDetailsConfig.ps1 that is used is one from the ProjectReunionInternal repo
