@@ -80,7 +80,7 @@ steps:
     displayName: BuildAll
     inputs:
       filePath: 'BuildAll.ps1'
-      arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none"
+      arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none" -Platform "x86,x64,arm64" -Configuration "release,debug"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Windows App SDK Packages'
