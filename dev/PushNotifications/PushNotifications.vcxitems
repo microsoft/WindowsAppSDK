@@ -24,6 +24,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationCreateChannelResult.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PushNotificationReceivedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastActivatedEventArgs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastActivationInfo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastAssets.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotification.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationHistory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastProgressData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
@@ -38,5 +45,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationDummyDeferral.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivationInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastAssets.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotification.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationHistory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastProgressData.h" />
   </ItemGroup>
 </Project>
