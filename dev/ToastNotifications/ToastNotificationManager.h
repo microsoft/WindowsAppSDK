@@ -15,7 +15,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         winrt::event_token ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& handler);
 
-        void ToastActivated(winrt::event_token const& token) noexcept;
+        void ToastActivated(winrt::event_token const& token);
 
         void ShowToast(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& toast);
 

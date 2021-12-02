@@ -6,18 +6,25 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
     winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo ToastActivationInfo::CreateFromActivationGuid(winrt::guid const& taskClsid)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF_MSG(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
+
+        return winrt::make<ToastActivationInfo>(taskClsid, nullptr);
     }
+
     winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo ToastActivationInfo::CreateFromToastAssets(winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& assets)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF_MSG(E_NOTIMPL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");
+
+        return winrt::make<ToastActivationInfo>(GUID_NULL, assets);
     }
+
     winrt::guid ToastActivationInfo::TaskClsid()
     {
-        throw hresult_not_implemented();
+        return m_taskClsid;
     }
+
     winrt::Microsoft::Windows::ToastNotifications::ToastAssets ToastActivationInfo::Assets()
     {
-        throw hresult_not_implemented();
+        return m_assets;
     }
 }

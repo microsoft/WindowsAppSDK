@@ -4,19 +4,19 @@
 
 namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveWithIdentiferAsync(uint32_t toastIdentifier)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveWithIdentiferAsync(uint32_t /* toastIdentifier */)
     {
         throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveWithTagAsync(hstring tag)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveWithTagAsync(hstring /* tag */)
     {
         throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveWithTagGroupAsync(hstring tag, hstring group)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveWithTagGroupAsync(hstring /* tag */, hstring /* group */)
     {
         throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveGroupAsync(hstring group)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationHistory::RemoveGroupAsync(hstring /* group */)
     {
         throw hresult_not_implemented();
     }
