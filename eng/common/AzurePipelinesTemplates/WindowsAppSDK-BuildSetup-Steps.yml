@@ -1,0 +1,57 @@
+# Parameters:
+#   ArtifactName
+#     Name of the Artifact where the Transport package for the build lives
+#     The transport package will be placed in the packages directory where the build
+#     will utilize on NugetRestore
+#
+#   AzureSubscriptionServiceConnection
+#     Azure service connection name to the ProjectReunionCerts keyvault
+#
+#   NuGetServiceConnectionName
+#     Service connection name to ProjectReunion Internal feed
+#     This is used to download other transport packages
+parameters:
+  - name: ArtifactName
+    type: string
+    default: ''
+  - name: AzureSubscriptionServiceConnection
+    type: string
+    default: 'ProjectReunion Resource Manager'
+  - name: NuGetServiceConnectionName
+    type: string
+    default: 'ProjectReunionInternal'
+
+steps:
+  - checkout: git://ProjectReunion/ProjectReunionInternal
+
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: $(AzureSubscriptionServiceConnection)
+      KeyVaultName: 'ProjectReunionCerts'
+      SecretsFilter: 'TestMSCert'
+      RunAsPreJob: false
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: ${{ parameters.ArtifactName }}
+      downloadPath: '$(Build.SourcesDirectory)\build\packages'
+      itemPattern: |
+        **/*.nupkg
+
+  # Setup for MyCert.pfx
+  - task: PowerShell@2
+    name: CreateCert
+    displayName: Create MyCert.pfx
+    inputs:
+      targetType: 'inline'
+      script: |
+        $kvSecretBytes = [System.Convert]::FromBase64String("$(TestMSCert)")
+        $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
+        $certCollection.Import($kvSecretBytes,$null,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+        $certificateBytes = $certCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12)
+        $pfxPath = (Join-Path $env:Build_SourcesDirectory 'MyCert.pfx')
+        [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
+
+  - task: NuGetAuthenticate@0
+    inputs:
+      nuGetServiceConnections: $(NuGetServiceConnectionName)

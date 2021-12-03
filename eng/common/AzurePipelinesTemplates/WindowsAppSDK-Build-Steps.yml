@@ -7,6 +7,9 @@
 # - This yml template can only be called in the "microsoft" AzureDevOps 
 # - Access to ProjectReunionCerts keyvault
 # - Access to ProjectReunion Internal feed
+#
+# The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+# will facilitate setting up the requirements to sucessfully run this template. 
 # 
 # The intended use of this yml template is for the feeder repos' pipeline to build the WinAppSDK package
 # with the latest versions from ProjectReunionInternal with the latest version of the transport package it 
@@ -21,9 +24,6 @@ parameters:
     values:
     - 'stable'
     - 'experimental'
-  - name: ArtifactName
-    type: string
-    default: ''
   - name: "TransportPackages"
     displayName: "TransportPackages to replace (name:version)"
     type: object
@@ -33,22 +33,6 @@ parameters:
         version: 1.0.0-stable
 
 steps:
-  - task: AzureKeyVault@1
-    inputs:
-      azureSubscription: 'ProjectReunion Resource Manager'
-      KeyVaultName: 'ProjectReunionCerts'
-      SecretsFilter: 'TestMSCert'
-      RunAsPreJob: false
-
-  - checkout: git://ProjectReunion/ProjectReunionInternal
-
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      artifactName: ${{ parameters.ArtifactName }}
-      downloadPath: '$(Build.SourcesDirectory)\build\packages'
-      itemPattern: |
-        **/*.nupkg
-
   # Replace the versions in version.details.xml in the ProjectReunionInternal repo
   # Please note, the UpdateVersionDetailsConfig.ps1 that is used is one from the ProjectReunionInternal repo
   - ${{ each package in parameters.TransportPackages }}:
@@ -56,24 +40,6 @@ steps:
       inputs:
         filePath: '$(Build.SourcesDirectory)\eng\common\Scripts\UpdateVersionDetailsConfig.ps1'
         arguments: -dependencyName '${{ package.value.Name }}' -dependencyVersion '${{ package.value.Version }}'
-
-  # Setup for MyCert.pfx
-  - task: PowerShell@2
-    name: CreateCert
-    displayName: Create MyCert.pfx
-    inputs:
-      targetType: 'inline'
-      script: |
-        $kvSecretBytes = [System.Convert]::FromBase64String("$(TestMSCert)")
-        $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
-        $certCollection.Import($kvSecretBytes,$null,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
-        $certificateBytes = $certCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12)
-        $pfxPath = (Join-Path $env:Build_SourcesDirectory 'MyCert.pfx')
-        [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
-
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'ProjectReunionInternal'
 
   - task: PowerShell@2
     name: BuildAll
