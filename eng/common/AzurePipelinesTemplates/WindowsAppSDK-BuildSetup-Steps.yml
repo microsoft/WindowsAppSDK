@@ -29,7 +29,7 @@ steps:
 
   - task: AzureKeyVault@1
     inputs:
-      azureSubscription: $(AzureSubscriptionServiceConnection)
+      azureSubscription: ${{ parameters.AzureSubscriptionServiceConnection }}
       KeyVaultName: 'ProjectReunionCerts'
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
@@ -57,4 +57,4 @@ steps:
 
   - task: NuGetAuthenticate@0
     inputs:
-      nuGetServiceConnections: $(NuGetServiceConnectionName)
+      nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}
