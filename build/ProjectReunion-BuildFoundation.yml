@@ -444,7 +444,7 @@ jobs:
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-    - template: ..\..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
       parameters:
         ArtifactName: 'FullNuget'
 
