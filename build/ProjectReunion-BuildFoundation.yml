@@ -447,6 +447,7 @@ jobs:
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
       parameters:
         ArtifactName: 'FullNuget'
+        RefBranch: 'main'
 
     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
       parameters:

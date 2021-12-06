@@ -13,6 +13,9 @@
 #   NuGetServiceConnectionName
 #     Service connection name to ProjectReunion Internal feed
 #     This is used to download other transport packages
+#
+#   RefBranch
+#     The branch of the ProjectReunionInternal repository
 parameters:
   - name: ArtifactName
     type: string
@@ -23,9 +26,12 @@ parameters:
   - name: NuGetServiceConnectionName
     type: string
     default: 'ProjectReunionInternal'
+  - name: RefBranch
+    type: string
+    default: 'main'
 
 steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal
+  - checkout: git://ProjectReunion/ProjectReunionInternal@${{ parameters.RefBranch }}
 
   - task: AzureKeyVault@1
     inputs:
