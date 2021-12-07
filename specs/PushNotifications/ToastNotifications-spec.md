@@ -21,24 +21,24 @@ originates from a remote application service that targets the locally installed 
 
 Here is a visual representation of a Simple Toast with no interactive controls:
 
-![Toast Simple](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/images/send-toast-02.png)
+![Toast Simple](https://docs.microsoft.com/windows/apps/design/shell/tiles-and-notifications/images/send-toast-02.png)
 
 Here is a visual representation of a Toast with simple button controls:
 
-![Toast Interactive 1](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/images/adaptivetoasts-structure.jpg)
+![Toast Interactive 1](https://docs.microsoft.com/windows/apps/design/shell/tiles-and-notifications/images/adaptivetoasts-structure.jpg)
 
 Here is a visual representation of a Toast with a Message "Reply To" option:
 
-![Toast Interactive 2](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/images/toast-notification.png)
+![Toast Interactive 2](https://docs.microsoft.com/windows/apps/design/shell/tiles-and-notifications/images/toast-notification.png)
 
 For more details see:
 
--   [Toast Notification WinRT APIs](https://docs.microsoft.com/en-us/uwp/api/Windows.UI.Notifications.ToastNotification?view=winrt-20348)
+-   [Toast Notification WinRT APIs](https://docs.microsoft.com//uwp/api/Windows.UI.Notifications.ToastNotification?view=winrt-20348)
     Defines all the API constructs that we have for Toast Notifications in WinRT today using the
     Windows SDK.
--   [Toast Notification UX Guidance using Toolkit](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/toast-ux-guidance)
+-   [Toast Notification UX Guidance using Toolkit](https://docs.microsoft.com/windows/apps/design/shell/tiles-and-notifications/toast-ux-guidance)
     Defines the UX Guidance for developers who want to display toasts using the toolkit libraries.
--   [Sending Local Toasts using C# using Toolkit](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=uwp)
+-   [Sending Local Toasts using C# using Toolkit](https://docs.microsoft.com/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=uwp)
     Defines how an app developer can send interactive toasts to the user and setup activation
     handlers for these toasts using the Toolkit libraries.
 
@@ -116,7 +116,7 @@ response to the Toast Action.
 ```cpp
 int main()
 {
-    auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid(c_comServerId));
+     auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid(c_comServerId));
     ToastNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -125,7 +125,7 @@ int main()
     if (kind == ExtendedActivationKind::Launch)
     {
         // App is launched in Foreground. So intercept toast activators via Foreground event
-        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, ToastActivatedEventArgs const& toastActivatedEventArgs)
+        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, const ToastActivatedEventArgs& toastActivatedEventArgs)
         {
                 ProcessToastArgs(toastActivatedEventArgs);
         });
@@ -155,7 +155,7 @@ DisplayName and IconUri since they don't have an app manifest file that contains
 ```cpp
 int main()
 {
-    Uri absoluteFilePath(L"c:\\test\\icon.png");
+    Uri absoluteFilePath(LR"(C:\test\icon.png)");
     ToastAssets assets(L"SampleApp", absoluteFilePath);
     auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
     ToastNotificationManager::Default().RegisterActivator(activationInfo);
@@ -166,7 +166,7 @@ int main()
     if (kind == ExtendedActivationKind::Launch)
     {
         // App is launched in FG. So intercept toast activators via FG event
-        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, ToastActivatedEventArgs const& toastActivatedEventArgs)
+        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, const ToastActivatedEventArgs& toastActivatedEventArgs)
             {
                 ProcessToastArgs(toastActivatedEventArgs);
             });
@@ -613,6 +613,7 @@ developer adds an attribute to the image element and sets the text fields in the
 
 ```cpp
 // Uses an API template to Compose and Display a toast
+// Uses an API template to Compose and Display a toast
 void CreateToastPayload()
 {
     auto doc = ToastNotificationManager::Default().GetXmlTemplateContent(ToastTemplateType::ToastWithAvatar);
@@ -663,7 +664,7 @@ scenarios here are
 const winrt::hstring c_toastLaunchAction = L"action=openThread&amp;threadId=92187";
 const winrt::hstring c_toastReplyButtonAction = L"action=reply&amp;threadId=92187";
 
-void ProcessToastArgs(ToastActivatedEventArgs const& toastActivatedEventArgs)
+void ProcessToastArgs(const ToastActivatedEventArgs& toastActivatedEventArgs)
 {
     if (toastActivatedEventArgs.ActivationArgs() == c_toastLaunchAction)
     {
@@ -688,7 +689,7 @@ The ToastHistory component is always used to perform Delete and Get operations o
 
 ```cpp
 // Get a List of all toasts from the Action Centre
-winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IVector<ToastNotification> > GetToastListASync()
+winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IVector<ToastNotification>> GetToastListASync()
 {
     auto toastHistory = ToastNotificationManager::Default().History();
     auto toasts = co_await toastHistory.GetAllAsync();
@@ -707,7 +708,7 @@ winrt::Windows::Foundation::IAsyncAction RemoveToast(const winrt::hstring& tag, 
 
 Sometimes a developer would like to show progress bar related updates in a toast:
 
-![Toast Progress](https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/images/toast-progressbar-annotated.png)
+![Toast Progress](https://docs.microsoft.com/windows/apps/design/shell/tiles-and-notifications/images/toast-progressbar-annotated.png)
 
 To accomplish that, the developer will need to use the ToastProgressData construct.
 
@@ -718,18 +719,18 @@ void SendUpdatableToastWithProgress()
     winrt::hstring tag = L"weekly-playlist";
     winrt::hstring group = L"downloads";
 
-    winrt::hstring payload = L"<toast launch=\"action = viewDownload &amp; downloadId = 9438108\">"
-                                L"<visual>"
-                                    L"<binding template = \"ToastGeneric\">"
-                                        L"<text>Downloading this week's new music...</text>"
-                                        L"<progress"
-                                            L"title = \"{progressTitle}\""
-                                            L"value = \"{progressValue}\""
-                                            L"valueStringOverride = \"{progressValueString}\""
-                                            L"status = \"{progressStatus}\" />"
-                                    L"</binding>"
-                                L"</visual>"
-                            L"</toast>";
+    winrt::hstring payload = LR"(<toast launch="action = viewDownload &amp; downloadId = 9438108">
+                                <visual>
+                                   <binding template = "ToastGeneric">
+                                        <text>Downloading this week's new music...</text>
+                                        <progress
+                                            title = "{progressTitle}
+                                            value = "{progressValue}"
+                                            valueStringOverride = "{progressValueString}"
+                                            status = "{progressStatus}" />
+                                    </binding>
+                                </visual>
+                            </toast>)";
 
     XmlDocument doc;
     doc.LoadXml(payload);
@@ -809,17 +810,17 @@ would need to be pre-set to a well-known string that defines Toast Activation Tr
 namespace Microsoft.Windows.ToastNotifications
 {
     [experimental]
-    // The Shell asset details for Unpackaged App Registrations
+    // The Shell asset details for Unpackaged App Registrations 
     runtimeclass ToastAssets
     {
         // Initialize using Shell assets like DisplayName and iconPath
-        ToastAssets(String displayName, Windows.Foundation.Uri iconPath);
+        ToastAssets(String displayName, Windows.Foundation.Uri iconUri);
 
-        // The App friendly DisplayName for the toast in Action Centre
+        // The App friendly DisplayName for the toast in Action Centre 
         String DisplayName { get; };
 
         // The full file path for the icon image
-        Windows.Foundation.Uri IconPath { get; };
+        Windows.Foundation.Uri IconUri { get; };
     }
 
     [experimental]
@@ -858,7 +859,7 @@ namespace Microsoft.Windows.ToastNotifications
         ToastProgressData();
 
         // Gets or sets the sequence number of this notification data.
-        // When multiple ToastProgressData objects are received, the system displays the data with the greatest non-zero number.
+        // When multiple ToastProgressData objects are received, the system displays the data with the greatest non-zero number. 
         UInt32 SequenceNumber;
 
         // Gets/Sets the value for the title. Binds to {progressTitle} in progress xml tag.
@@ -934,7 +935,7 @@ namespace Microsoft.Windows.ToastNotifications
         String Group;
 
         // A unique identifier for the Toast generated by the platform.
-        UInt32 ToastId;
+        UInt32 Id;
 
         // The notification Xml Payload
         Windows.Data.Xml.Dom.XmlDocument Payload{ get; };
@@ -943,7 +944,7 @@ namespace Microsoft.Windows.ToastNotifications
         ToastProgressData ProgressData;
 
         // Gets or sets the time after which a toast notification should not be displayed.
-        Windows.Foundation.DateTime ExpirationTime;
+        Windows.Foundation.DateTime Expiration;
 
         // Indicates whether the toast will remain in the Action Center after a reboot.
         Boolean ExpiresOnReboot;
@@ -995,7 +996,7 @@ namespace Microsoft.Windows.ToastNotifications
         // Event handler for Toast Activations
         event Windows.Foundation.EventHandler<ToastActivatedEventArgs> ToastActivated;
 
-        // Displays the Toast in Action Centre
+        // Displays the Toast in Action Center
         void ShowToast(ToastNotification toast);
 
         // Updates the Toast for a Progress related operation using Tag and Group
@@ -1010,7 +1011,7 @@ namespace Microsoft.Windows.ToastNotifications
         // Gets an instance of ToastHistory
         ToastNotificationHistory History{ get; };
 
-        // Gets an Xml Payload based ona predefined Toast Template
+        // Gets an Xml Payload based on a predefined Toast Template
         Windows.Data.Xml.Dom.XmlDocument GetXmlTemplateContent(ToastTemplateType type);
     };
 }
@@ -1020,7 +1021,7 @@ namespace Microsoft.Windows.ToastNotifications
 
 -   To support cloud toasts, the developer will need to register the Toast Activator in
     addition to the Push Activator registrations that are already being done. The Windows SDK will
-    inturn figure out the complexity of mapping cloud based toasts to the correct Toast Activator.
--   Since building Toast XML payloads during runtime is non-trivial, we encourage developers to
-    utilize the windows developer toolkit, more specifically the ToastContentBuilder APIs to
-    construct the xml payload in the short term. Alternatively they can also use the ToastTemplates that WinAppSDK will provide to build their own toasts.
+    in turn figure out the complexity of mapping cloud based toasts to the correct Toast Activator.
+-   Since building Toast XML payloads at runtime is non-trivial, we encourage developers to
+    utilize the [Windows Community Toolkit](https://docs.microsoft.com/windows/communitytoolkit/), specifically the [ToastContentBuilder](https://docs.microsoft.com/dotnet/api/microsoft.toolkit.uwp.notifications.toastcontentbuilder) APIs to
+    construct the XML payload in the short term. Alternatively, they can also use the ToastTemplates that the Windows App SDK will provide to build their own toasts.
