@@ -84,6 +84,13 @@ jobs:
       artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
       downloadPath: $(testPayloadDir)
 
+  # Download the Push Notifications test binaries
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: Binaries'
+    inputs:
+      artifactName: 'pushnotifications_test_binaries_$(buildPlatform)'
+      downloadPath: $(testPayloadDir)
+
   # Publish the full testPayloadDir contents.
   # This is not required, but can be useful for debugging purposes.
   - task: PublishBuildArtifacts@1
@@ -133,14 +140,14 @@ jobs:
   #     targetType: filePath
   #     filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
   #     arguments: -TestFilePattern 'mrtcore_test_binaries_x64\MrtCoreManagedTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreManagedTest.proj' -WorkItemPrefix 'MrtCore-MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreManagedTest.$(buildPlatform).$(buildConfiguration)'
-
+  
   # Discover the TAEF Push Notifications test binaries to run and generate the Helix Work Items for them.
   - task: powershell@2
     displayName: 'Discover Push Notifications UnitTests'
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\PushNotificationTests\PushNotificationTests.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\PushNotificationTests.proj' -WorkItemPrefix 'PushNotificationTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'PushNotificationTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'pushnotifications_test_binaries_$(buildPlatform)\Notifications.PushNotificationTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\Notifications.PushNotificationTests.proj' -WorkItemPrefix 'Notifications.PushNotificationTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'Notifications.PushNotificationTests.$(buildPlatform).$(buildConfiguration)'
 
   # Publish the generated test work items (*.proj file) as Pipeline artifact(s).
   # This is not required, but it is useful for debugging purposes to see what tests were discovered.
