@@ -22,6 +22,8 @@ using winrt::Windows::ApplicationModel::Core::AppRestartFailureReason;
 
 using namespace AppModel::Identity;
 
+using namespace std::filesystem;
+
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     static PCWSTR c_pushPayloadAttribute{ L"-Payload:" };
@@ -336,17 +338,45 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current->FindForKey(key.c_str());
     }
 
-    AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
+    std::wstring AppInstance::GenerateRestartAgentPath()
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wil::unique_hmodule module;
         THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(AppInstance::RequestRestartNow), &module));
 
         auto modulePath = GetModulePath(module.get());
-        auto directory = modulePath.substr(0, modulePath.find_last_of(L'\\'));
+        path fullPath = modulePath.substr(0, modulePath.find_last_of(L'\\'));
+        fullPath /= c_restartAgentFilename;
+        return fullPath;
+    }
 
-        wchar_t exePath[MAX_PATH];
-        THROW_IF_FAILED(PathCchCombine(exePath, MAX_PATH, directory.c_str(), L"RestartAgent.exe"));
+    AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
+    {
+        // Report feature usage.
+        static bool featureUsageReported{ false };
+        if (!featureUsageReported)
+        {
+            AppLifecycleTelemetry::RequestRestartNow();
+            featureUsageReported = true;
+        }
+
+        // For packaged, redirect to the already existing API.
+        if (IsPackagedProcess())
+        {
+            return winrt::Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(arguments).get();
+        }
+
+        // Only one restart can happen at a time.
+        auto mutexName = wil::str_printf<std::wstring>(L"%s_RequestRestartNowInProgress", ComputeAppId().c_str());
+        wil::unique_mutex restartMutex;
+
+        restartMutex.create(mutexName.c_str(), CREATE_MUTEX_INITIAL_OWNER, MUTEX_ALL_ACCESS);
+        if (GetLastError() == ERROR_ALREADY_EXISTS)
+        {
+            return AppRestartFailureReason::RestartPending;
+        }
+
+        auto releaseOnExit{ restartMutex.ReleaseMutex_scope_exit() };
 
         // Use DuplicateHandle to get a real handle from the pseudo-handle returned by GetCurrentProcess().  A real handle
         // is required in order for it to be inherited 
@@ -354,10 +384,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         THROW_IF_WIN32_BOOL_FALSE(DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), wil::out_param(parentHandle), 
             PROCESS_QUERY_INFORMATION | SYNCHRONIZE | PROCESS_TERMINATE, TRUE, 0));
 
-        // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
-        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %d %s", exePath, parentHandle.get(), arguments.c_str());
+        auto exePath = GenerateRestartAgentPath();
 
-        // Explicitly inherit the current process handle to the restart agent.
+        // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
+        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %d %s", exePath.c_str(), parentHandle.get(), arguments.c_str());
+
+        // Launch the restart agent and explicitly inherit the current process' handle to it.  This allows the restart agent to
+        // sniff out the exact path of the caller executable in a sane way.
         SIZE_T attributeListSize{ 0 };
         THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, 1, 0, &attributeListSize));
         THROW_LAST_ERROR_IF(GetLastError() != ERROR_INSUFFICIENT_BUFFER);
@@ -378,7 +411,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         info.lpAttributeList = attributeList.get();
         
         PROCESS_INFORMATION processInfo{};
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath, cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, 
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath.c_str(), cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, 
             &info.StartupInfo, &processInfo));
 
         // Close the thread handle immediately, but assign the process handle to an RAII object to handle cleanup for the failure paths.
@@ -390,10 +423,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // it can exit or crash.  This API will be able to detect the failure and return.
         wil::handle_wait(processInfo.hProcess);
 
-        // TODO: Handle failure path
-
-        // TODO: Propagate real result.
-        return AppRestartFailureReason::RestartPending;
+        // We should never reach here if the API succeeds, as the agent should have terminated the current process.
+        return AppRestartFailureReason::Other;
     }
 
     void AppInstance::UnregisterKey()

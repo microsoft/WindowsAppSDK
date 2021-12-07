@@ -11,8 +11,9 @@
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
-    static const PCWSTR c_requestPacketNameFormat = L"%s_RedirectionRequest_%s";
-    static const PCWSTR c_activatedEventNameSuffix = L"_ActivatedEvent";
+    static PCWSTR c_requestPacketNameFormat = L"%s_RedirectionRequest_%s";
+    static PCWSTR c_activatedEventNameSuffix = L"_ActivatedEvent";
+    static PCWSTR c_restartAgentFilename{ L"RestartAgent.exe" };
 
     struct AppInstance : AppInstanceT<AppInstance>
     {
@@ -44,6 +45,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         uint32_t ProcessId() { return m_processId; }
 
     private:
+        static std::wstring GenerateRestartAgentPath();
         winrt::Windows::Foundation::IAsyncAction QueueRequest(Microsoft::Windows::AppLifecycle::AppActivationArguments args);
         void RemoveInstance(uint32_t processId);
         void ProcessRedirectionRequests();
