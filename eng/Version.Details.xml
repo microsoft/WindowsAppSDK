@@ -3,5 +3,9 @@
   <ProductDependencies>
   </ProductDependencies>
   <ToolsetDependencies>
+    <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="0.0.1">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
+      <Sha>placeholder</Sha>
+    </Dependency>
   </ToolsetDependencies>
 </Dependencies>
