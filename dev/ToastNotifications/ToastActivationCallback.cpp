@@ -28,15 +28,15 @@ HRESULT __stdcall ToastActivationCallback::Activate(
         userInput.Insert(data[i].Key, data[i].Value);
     }
 
-    auto appProperties = winrt::CoreApplication::Properties();
     winrt::ToastActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::ToastNotifications::implementation::ToastActivatedEventArgs>(invokedArgs, userInput);
 
-    if (GetToastHandleCount())
+    if (GetToastHandleCount() > 0)
     {
         GetToastHandlers()(*this, activatedEventArgs);
     }
     else
     {
+        auto appProperties = winrt::CoreApplication::Properties();
         appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
         SetEvent(GetWaitHandleForArgs().get());
     }

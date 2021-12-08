@@ -23,7 +23,7 @@ struct ToastActivationCallback_factory : winrt::implements<ToastActivationCallba
     }
     CATCH_RETURN()
 
-        STDMETHODIMP LockServer(BOOL fLock) noexcept final
+    STDMETHODIMP LockServer(BOOL fLock) noexcept final
     {
         if (fLock)
         {

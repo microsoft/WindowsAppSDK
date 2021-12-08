@@ -251,7 +251,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeMa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotifications", "dev\ToastNotifications\ToastNotifications.vcxitems", "{53A85993-86AA-4818-AE5C-D5FB6FA71C89}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationTests", "ToastNotificationTests\ToastNotificationTests.vcxproj", "{E977B1BD-00DC-4085-A105-E0A18E0183D7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationTests", "test\ToastNotificationTests\ToastNotificationTests.vcxproj", "{E977B1BD-00DC-4085-A105-E0A18E0183D7}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

@@ -20,7 +20,7 @@ std::wstring RetrieveUnpackagedToastGuid()
     THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
     std::wstring wideStringProcessName{ processName.get() };
-    std::wstring subKey{ L"Software\\Classes\\AppUserModelId\\" + ConvertPathToKey(wideStringProcessName) };
+    std::wstring subKey{ c_appIdentifierPath + ConvertPathToKey(wideStringProcessName) };
 
     wil::unique_hkey hKey;
     THROW_IF_FAILED(RegCreateKeyEx(
@@ -34,7 +34,7 @@ std::wstring RetrieveUnpackagedToastGuid()
         &hKey,
         nullptr));
 
-    WCHAR registeredGuidBuffer[GUID_LENGTH + 4]; // GUID length + '{' + '}' + '\0'
+    WCHAR registeredGuidBuffer[GUID_LENGTH + 3]; // GUID length + '{' + '}' + '\0'
     DWORD bufferLength = sizeof(registeredGuidBuffer);
     HRESULT status = RegGetValueW(
         hKey.get(),
@@ -47,13 +47,13 @@ std::wstring RetrieveUnpackagedToastGuid()
 
     if (status == ERROR_FILE_NOT_FOUND)
     {
-        GUID guidReference;
-        THROW_IF_FAILED(CoCreateGuid(&guidReference));
+        GUID newToastGuid;
+        THROW_IF_FAILED(CoCreateGuid(&newToastGuid));
 
-        wil::unique_cotaskmem_string guidStr;
-        THROW_IF_FAILED(StringFromCLSID(guidReference, &guidStr));
+        wil::unique_cotaskmem_string newToastGuidString;
+        THROW_IF_FAILED(StringFromCLSID(newToastGuid, &newToastGuidString));
 
-        std::wstring guidWideStr{ guidStr.get() };
+        std::wstring guidWideStr{ newToastGuidString.get() };
         RegisterValue(hKey, L"ToastGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
         return guidWideStr;
     }
@@ -69,7 +69,7 @@ std::wstring RetrieveToastGuid()
     if (AppModel::Identity::IsPackagedProcess())
     {
         wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
+        UINT32 appUserModelIdSize{ APPLICATION_USER_MODEL_ID_MAX_LENGTH };
 
         THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
         return appUserModelId;
@@ -80,10 +80,10 @@ std::wstring RetrieveToastGuid()
     }
 }
 
-void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Uri const& iconUri, wil::unique_cotaskmem_string const& clsid)
+void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& activationInfo, wil::unique_cotaskmem_string const& clsid)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ appIdentifierPath + appId };
+    std::wstring subKey{ c_appIdentifierPath + appId };
 
     THROW_IF_FAILED(RegCreateKeyEx(
         HKEY_CURRENT_USER,
@@ -96,20 +96,18 @@ void RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName
         &hKey,
         nullptr));
 
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()), REG_EXPAND_SZ, iconUri.AbsoluteUri().size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(activationInfo.DisplayName().c_str()), REG_EXPAND_SZ, activationInfo.DisplayName().size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(activationInfo.IconPath().AbsoluteUri().c_str()), REG_EXPAND_SZ, activationInfo.IconPath().AbsoluteUri().size() * sizeof(wchar_t));
 
     std::wstring wideStringClsid{ clsid.get() };
     RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
-
-    return;
 }
 
 void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
 {
     wil::unique_hkey hKey;
-    std::wstring wideStringClsid = { clsid.get() };
-    std::wstring subKey{ clsIdPath + wideStringClsid + L"\\LocalServer32" };
+    std::wstring subKey{ c_clsIdPath + clsid.get() + L"\\LocalServer32" };
+
     THROW_IF_FAILED(RegCreateKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
@@ -132,7 +130,7 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
 void UnRegisterComServer(std::wstring const& clsid)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ clsIdPath + clsid + L"\\LocalServer32" };
+    std::wstring subKey{ c_clsIdPath + clsid + L"\\LocalServer32" };
 
     THROW_IF_FAILED(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
@@ -144,7 +142,7 @@ void UnRegisterComServer(std::wstring const& clsid)
 void UnRegisterAppIdentifierFromRegistry(std::wstring const& appIdentifier)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ appIdentifierPath + appIdentifier };
+    std::wstring subKey{ c_appIdentifierPath + appIdentifier };
 
     THROW_IF_FAILED(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
@@ -156,7 +154,7 @@ void UnRegisterAppIdentifierFromRegistry(std::wstring const& appIdentifier)
 std::wstring RetrieveComActivatorGuid(std::wstring const& appId)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ appIdentifierPath + appId };
+    std::wstring subKey{ c_appIdentifierPath + appId };
 
     THROW_IF_FAILED(RegCreateKeyEx(
         HKEY_CURRENT_USER,
