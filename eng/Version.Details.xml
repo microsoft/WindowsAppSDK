@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Test.Package" Version="0.0.1">
-      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
-      <Sha>placeholder</Sha>
-    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <!-- <Dependency Name="Microsoft.DotNet.Arcade.Sdk" Version="0.0.1">
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.0.0-20211208.2-CI">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
-      <Sha>placeholder</Sha>
-    </Dependency> -->
+      <Sha>4aca9667c547d389569c4f57a997afc6392839d6</Sha>
+    </Dependency>
   </ToolsetDependencies>
 </Dependencies>
