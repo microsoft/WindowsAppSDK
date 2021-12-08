@@ -746,7 +746,7 @@ void SendUpdatableToastWithProgress()
     data.Status(L"Downloading..."); // Binds to {progressStatus} in xml payload
     data.SequenceNumber(1);
 
-    toast.ProgressData(data);
+    toast.Progress(data);
     ToastNotificationManager::Default().ShowToast(toast);
 }
 
@@ -941,7 +941,7 @@ namespace Microsoft.Windows.ToastNotifications
         Windows.Data.Xml.Dom.XmlDocument Payload{ get; };
 
         // Gets or sets additional information about the toast progress.
-        ToastProgressData ProgressData;
+        ToastProgressData Progress;
 
         // Gets or sets the time after which a toast notification should not be displayed.
         Windows.Foundation.DateTime Expiration;
