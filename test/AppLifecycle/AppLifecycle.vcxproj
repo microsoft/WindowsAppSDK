@@ -244,7 +244,6 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="FunctionalTests.cpp" />
-    <ClCompile Include="APITests.cpp" />
     <ClCompile Include="Shared.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -262,7 +261,6 @@
   </PropertyGroup>
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
-    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msix" TreatOutputAsContent="true" />
     <!--<CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />-->
   </ItemGroup>
