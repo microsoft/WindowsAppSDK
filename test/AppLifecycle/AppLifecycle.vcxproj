@@ -262,7 +262,6 @@
   <ItemGroup>
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe" DestinationFolders="$(TargetDir)" TreatOutputAsContent="true" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" DestinationFolders="$(TargetDir)" DestinationFileName="AppLifecycleTestPackage.msix" TreatOutputAsContent="true" />
-    <!--<CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />-->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dev\WindowsAppRuntime_BootstrapDLL\WindowsAppRuntime_BootstrapDLL.vcxproj">
