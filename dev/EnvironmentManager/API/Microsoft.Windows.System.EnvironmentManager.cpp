@@ -29,8 +29,6 @@ namespace winrt::Microsoft::Windows::System::implementation
 
     Microsoft::Windows::System::EnvironmentManager EnvironmentManager::GetForUser()
     {
-        MessageBoxEx(NULL, L"In here", L"In here", 0, 0);
-        __debugbreak();
         EnvironmentManagerInsights::LogMessage(L"Making EM for User");
 
         Microsoft::Windows::System::EnvironmentManager environmentManager{ nullptr };
