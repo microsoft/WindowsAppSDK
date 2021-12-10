@@ -22,7 +22,13 @@ version.details.xml entry for 'Microsoft.DotNet.Arcade.Sdk' is used.
 WindowsAppSDK's Maestro also makes use of eng/common but the contents in this directory are completely 
 different from that of dotnets. We use eng/common to store our yml templates and scripts that facilitates
 the functions of Maestro between our repositories such as publishing to maestro or building WindowsAppSDk
-for integration testing purposes. 
+for integration testing purposes. Furthermore, instead of 'Microsoft.DotNet.Arcade.Sdk', 
+WinAppSDK's Maestro looks for 'Microsoft.WinAppSDK.EngCommon' to see whether eng/common needs to be updated.
+
+To bring in updates to Eng/Common, an entry for 'Microsoft.WinAppSDK.EngCommon' is needed in the 
+msbuild-sdks section of global.json at the root level directory and also version.details.xml
+in ToolsetDependencies section where the uri will point to the ProjectReunionInternal repository.
+Detail information in **Steps to onboard new repository to WindowsAppSDK Maestro**
 
 **Coherency Updates are Disabled**
 Coherency updates requires Maestro to travel down levels in the dependency tree. 
