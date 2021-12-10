@@ -88,7 +88,7 @@ jobs:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
     inputs:
-      artifactName: 'pushnotifications_test_binaries_$(buildPlatform)'
+      artifactName: 'windowsappsdk_binaries$(buildPlatform)'
       downloadPath: $(testPayloadDir)
 
   # Publish the full testPayloadDir contents.
@@ -147,7 +147,7 @@ jobs:
     inputs:
       targetType: filePath
       filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'pushnotifications_test_binaries_$(buildPlatform)\Notifications.PushNotificationTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\Notifications.PushNotificationTests.proj' -WorkItemPrefix 'Notifications.PushNotificationTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'Notifications.PushNotificationTests.$(buildPlatform).$(buildConfiguration)'
+      arguments: -TestFilePattern 'windowsappsdk_binaries$(buildPlatform)\Notifications.PushNotificationTests\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\Notifications.PushNotificationTests.proj' -WorkItemPrefix 'Notifications.PushNotificationTests.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'Notifications.PushNotificationTests.$(buildPlatform).$(buildConfiguration)'
 
   # Publish the generated test work items (*.proj file) as Pipeline artifact(s).
   # This is not required, but it is useful for debugging purposes to see what tests were discovered.
