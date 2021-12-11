@@ -30,6 +30,10 @@ msbuild-sdks section of global.json at the root level directory and also version
 in ToolsetDependencies section where the uri will point to the ProjectReunionInternal repository.
 Detail information in **Steps to onboard new repository to WindowsAppSDK Maestro**
 
+To makes updates to Eng/Common, please do not make them in the non parent repo. Our parent repo for eng/common
+is the ProjectReunionInternal repository.
+To publish changes, please run the Maestro-UpdateEngCommon pipeline on the main branch. 
+
 **Coherency Updates are Disabled**
 Coherency updates requires Maestro to travel down levels in the dependency tree. 
 Since our instance of Maestro does not have permissions to every single repository that the 
@@ -61,20 +65,26 @@ You may need to restart your command window if this is the first dotnet tool you
 You can invoke the tool using the following command: darc
 Tool 'microsoft.dotnet.darc' (version '1.1.0-beta.19081.1') was successfully installed.
 ```
-After your darc client is installed, you should be able to launch darc by simply typing in 'darc' in your command line.
+After your darc client is installed, you should be able to launch darc by simply typing in 'darc' 
+in your command line.
 If not, you may need to restart.
 
 3) Call 'darc authenticate' with your darc client
-This will open up a notepad where you'll be able to set build_asset_registry_base_uri and provide a PAT in three different ways (BAR, Github, AzureDevOps). 
-Only one PAT token is needed and I using setting bar_password
+This will open up a notepad where you'll be able to set build_asset_registry_base_uri and provide
+three different PATs (BAR, Github, AzureDevOps). 
+Each respective PAT is required to make configuration changes to AzureDevOps or Github repo
+For BAR:
 Create a new tokens at https://reunion-maestro-prod.westus2.cloudapp.azure.com/Account/Tokens
 Copy the new token and paste it to bar_password
 
-build_asset_registry_base_uri will be pointed at the dotnet's maestro uri. We want this to point to WindowsAppSDK's Maestro Uri.
+build_asset_registry_base_uri will be pointed at the dotnet's maestro uri. We want this to point to 
+WindowsAppSDK's Maestro Uri.
 build_asset_registry_base_uri=https://reunion-maestro-prod.westus2.cloudapp.azure.com/
 
-Once these steps are done and you are ready to use the darc client to configure your branches, channels, and subscriptions,
-you may refer https://github.com/dotnet/arcade/blob/main/Documentation/Darc.md for more in-depth information on how to use it. 
+Once these steps are done and you are ready to use the darc client to configure your branches, 
+channels, and subscriptions.
+You may refer https://github.com/dotnet/arcade/blob/main/Documentation/Darc.md for more in-depth 
+information on how to use it. 
 
 ## Steps to onboard new repository to WindowsAppSDK Maestro
 Initial onboarding requirements
@@ -94,4 +104,6 @@ Add global.json to root level directory with the following contents.
 Add (or copy) the Versions.props and Version.Details.xml files to your eng\ folder.
 Copy the contents of eng\common to your repository.
 This folder contains reunion's template that publishes the build to Maestro: Maestro-PublishBuildToMaestro.yml
-Add ProjectReunionInternal feed and any other feeds that the repository restores NuGet packages from (This is how your repository will transfer packages between other repository once it recieves a version update from Maestro)
+Add ProjectReunionInternal feed and any other feeds that the repository restores NuGet packages
+from (This is how your repository will transfer packages between other repository once it recieves 
+a version update from Maestro)
