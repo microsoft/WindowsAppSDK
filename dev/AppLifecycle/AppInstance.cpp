@@ -344,10 +344,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         wil::unique_hmodule module;
         THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(AppInstance::RequestRestartNow), &module));
 
-        auto modulePath = GetModulePath(module.get());
-        path fullPath = modulePath.substr(0, modulePath.find_last_of(L'\\'));
-        fullPath /= c_restartAgentFilename;
-        return fullPath;
+        path modulePath = wil::GetModuleFileNameW<std::wstring>(module.get());
+        return modulePath.parent_path() / c_restartAgentFilename;
     }
 
     AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
@@ -410,13 +408,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         info.StartupInfo.cb = sizeof(info);
         info.lpAttributeList = attributeList.get();
         
-        PROCESS_INFORMATION processInfo{};
-        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath.c_str(), cmdLine.get(), nullptr, nullptr, TRUE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, 
+        wil::unique_process_information processInfo;
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath.c_str(), cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
             &info.StartupInfo, &processInfo));
 
-        // Close the thread handle immediately, but assign the process handle to an RAII object to handle cleanup for the failure paths.
-        ::CloseHandle(processInfo.hThread);
-        wil::unique_handle processHandle(processInfo.hProcess);
+        // Transfer foreground rights to the new process before resuming it.
+        AllowSetForegroundWindow(processInfo.dwProcessId);
+        ResumeThread(processInfo.hThread);
 
         // This API is designed to only return to the caller on failure, otherwise block until process termination.
         // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,

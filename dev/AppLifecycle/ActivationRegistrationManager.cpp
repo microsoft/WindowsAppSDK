@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     std::wstring GenerateCommandLine(std::wstring const& modulePath, std::wstring const& argumentData)
     {
-        std::wstring exePath{ modulePath.empty() ? GetModulePath() : modulePath };
+        std::wstring exePath{ modulePath.empty() ? wil::GetModuleFileNameW<std::wstring>(nullptr) : modulePath };
 
         // Example: C:\some\path\App.exe "----ms-protocol:myscheme:some=data&some=other"
         return wil::str_printf<std::wstring>(L"%s \"%s%s%s%s\"", exePath.c_str(), c_argumentPrefix,
