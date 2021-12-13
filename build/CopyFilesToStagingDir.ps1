@@ -110,7 +110,7 @@ PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.l
 # MSIX Framework package - DLLs/EXEs
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb $NugetDir\runtimes\win10-$Platform\native
-PublishFile $FullBuildOutput\RestartAgent\RestartAgent.dll $NugetDir\runtimes\win10-$Platform\native
+PublishFile $FullBuildOutput\RestartAgent\RestartAgent.exe $NugetDir\runtimes\win10-$Platform\native
 PublishFile $FullBuildOutput\RestartAgent\RestartAgent.pdb $NugetDir\runtimes\win10-$Platform\native
 #
 # MSIX Main package
