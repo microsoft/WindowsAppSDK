@@ -456,6 +456,14 @@ jobs:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKPackageVersion)
 
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
+  parameters:
+    name: 'RunTestsInHelix'
+    dependsOn:
+      - IntegrationBuild
+      - BuildMRT
+    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+
 # Publish
 - job: Publish
   dependsOn: 

@@ -1,0 +1,162 @@
+# We build the integration tests separately and then publish them as a pipeline artifact so that we can run
+# them in both Helix and in the 1ES Hosted Pool (which runs directly in the pipeline).
+
+parameters:
+- name: jobName
+  type: string
+  default: BuildTests
+- name: buildPlatforms
+  type: object
+  default:
+  - x86
+  - x64
+  - arm64
+- name: buildConfigurations
+  type: object
+  default:
+  - Debug
+  - Release
+# Note: For arm64 we build the tests, but we don't run them, as we can't natively run arm64 in the CI pipeline.
+- name: conditionForDiscoverTests
+  type: string
+  default: and(succeeded(), ne(variables['buildPlatform'], 'arm64'))
+- name: ArtifactName
+  type: string
+  default: ''
+- name: AzureSubscriptionServiceConnection
+  type: string
+  default: 'ProjectReunion Resource Manager'
+- name: NuGetServiceConnectionName
+  type: string
+  default: 'ProjectReunionInternal'
+
+jobs:
+- job: ${{ parameters.jobName }}
+  pool: 'ProjectReunionESPool'
+  timeoutInMinutes: 120
+  strategy:
+    maxParallel: 10
+    matrix:
+      ${{ each platform in parameters.buildPlatforms }}:
+        ${{ each config in parameters.buildConfigurations }}:
+          ${{ config }}_${{ platform }}:
+              buildPlatform: ${{ platform }}
+              buildConfiguration: ${{ config }}
+  variables:
+    # Sample apps build output
+    AppPackagesRootDir: $(Build.SourcesDirectory)\Artifacts\AppPackages
+    AppPackagesDir: $(AppPackagesRootDir)\$(buildConfiguration)\$(buildPlatform)\
+
+    testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Tests\
+    helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
+
+    winUIHelixPipelineScripts: packages\Microsoft.Internal.WinUI.Helix\$(WinUIHelixVersion)\scripts\pipeline
+
+  steps:
+  - checkout: git://ProjectReunion/ProjectReunionInternal
+
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: ${{ parameters.AzureSubscriptionServiceConnection }}
+      KeyVaultName: 'ProjectReunionCerts'
+      SecretsFilter: 'TestMSCert'
+      RunAsPreJob: false
+
+  - powershell: |
+      $kvSecretBytes = [System.Convert]::FromBase64String("$(TestMSCert)")
+      $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
+      $certCollection.Import($kvSecretBytes,$null,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+      $certificateBytes = $certCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12)
+      $pfxPath = $env:Build_SourcesDirectory + "\MyCert.pfx"
+      [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
+    displayName: Create MyCert.pfx
+
+  - task: powershell@2
+    displayName: DownloadDotNetRuntimeInstaller.ps1
+    inputs:
+      targetType: filePath
+      filePath: $(Build.SourcesDirectory)\build\Scripts\DownloadDotNetRuntimeInstaller.ps1
+      arguments: -Platform $(buildPlatform) -OutputDirectory $(testPayloadDir)
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: NugetPackages
+      downloadPath: '$(Build.SourcesDirectory)\localpackages'
+      itemPattern: |
+        **/*.nupkg
+
+  - task: NuGetAuthenticate@0
+
+  # The next two task is an attempt to resolve the 401 issues on Nuget restore
+  - task: BatchScript@1
+    displayName: Set NuGet environment variables
+    inputs:
+      filename: '$(Build.SourcesDirectory)\build\Scripts\setnugetenvvars.cmd'
+      modifyEnvironment: true
+
+  # In the microsoft.visualstudio.com account, 'NuGetCommand' is ambiguous so the specific task guid must be used instead
+  # (https://developercommunity.visualstudio.com/solutions/310937/view.html)
+  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+    displayName: 'NuGet clear http-cache cache'
+    inputs:
+      command: 'custom'
+      arguments: 'locals http-cache -clear'
+
+  - task: PowerShell@2
+    displayName: Update Microsoft.Internal.WinUI.Helix version in package.config
+    inputs:
+      filePath: 'build\Scripts\UpdatePackageConfig.ps1'
+      arguments: -PackageName 'Microsoft.Internal.WinUI.Helix' -PackageVersion '$(WinUIHelixVersion)' -FileName '$(Build.SourcesDirectory)\build\Helix\packages.config'
+
+  - task: PowerShell@2
+    displayName: Update Microsoft.Internal.WinUI.Helix version in csproj
+    inputs:
+      filePath: 'build\Scripts\UpdateCsprojNupkgVersion.ps1'
+      arguments: -PackageName 'Microsoft.Internal.WinUI.Helix' -PackageVersion '$(WinUIHelixVersion)' -FileName '$(Build.SourcesDirectory)\test\WindowsAppSDK.TestCommon\WindowsAppSDK.TestCommon.csproj'
+
+  - template: WindowsAppSDK-BuildTestProject-Steps.yml
+    parameters:
+      displayName: WindowsAppSDK.Test
+      solutionPath: WindowsAppSDK.Test.sln
+      additionalMsBuildArgs: /p:AppxPackageDir=$(AppPackagesDir) /p:WindowsAppSDKPackageVersion=$(WindowsAppSDKPackageVersion) /p:WindowsAppSDKSelfContained=$(WindowsAppSDKSelfContained)
+      SelfContainedSuffix: $(SelfContainedSuffix)
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish AppPackages'
+    condition: always()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)\Artifacts\AppPackages
+      artifactName: AppPackages$(SelfContainedSuffix)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish BuildOutput
+    condition: always()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)\BuildOutput
+      artifactName: Tests$(SelfContainedSuffix)
+
+  # Discover the tests to run and generate the Helix Work Items.
+  # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
+  - task: powershell@2
+    displayName: 'Discover tests'
+    condition: ${{ parameters.conditionForDiscoverTests }}
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'WindowsAppSDK.Test.*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj'
+
+  - task: powershell@2
+    displayName: 'DynamicDependencies: Discover tests'
+    condition: ${{ parameters.conditionForDiscoverTests }}
+    inputs:
+      targetType: filePath
+      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
+      arguments: -TestFilePattern 'GetCurrentPackageInfo\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-Tests.proj' -WorkItemPrefix 'DynamicDependencies.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.$(buildPlatform).$(buildConfiguration)'
+
+  # Publish the generated TestWorkItems.proj as a Pipeline artifact
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish test work items'
+    condition: ${{ parameters.conditionForDiscoverTests }}
+    inputs:
+      PathtoPublish: $(helixWorkItemsDir)
+      artifactName: 'HelixWorkItems$(SelfContainedSuffix)'
