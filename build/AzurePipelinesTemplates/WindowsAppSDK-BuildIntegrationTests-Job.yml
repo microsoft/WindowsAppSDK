@@ -1,24 +1,8 @@
+parameters:
+  - name: NuGetServiceConnectionName
+    type: string
+    default: 'ProjectReunionInternal'
 
-
-# This yml template checkouts the ProjectReunionInternal repository and builds the 
-# WindowsAppSDK based on the version.details.xml of the checkouted repository.
-# This versions provided in "TransportPackages" parameter of the yml will replace the 
-# versions in the checkouted version.details.xml based on the name.
-# 
-# Requirements:
-# - This yml template can only be called in the "microsoft" AzureDevOps 
-# - Access to ProjectReunionCerts keyvault
-# - Access to ProjectReunion Internal feed
-# - Only the ProjectReunionInternal repository is checkout in the job
-#
-# The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
-# will facilitate setting up the requirements to sucessfully run this template. 
-# 
-# The intended use of this yml template is for the feeder repos' pipeline to build the WinAppSDK package
-# with the latest versions from ProjectReunionInternal with the latest version of the transport package it 
-# has just built
-#
-# The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
 jobs:
 - job: BuildIntegrationTest
   condition: succeeded()
@@ -27,6 +11,10 @@ jobs:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
     - checkout: git://ProjectReunion/ProjectReunionInternal@user/ejohn/testAll
+
+    - task: NuGetAuthenticate@0
+      inputs:
+        nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}
 
     - task: DownloadPipelineArtifact@2
       displayName: 'Download Installer x64 for Download Center'
