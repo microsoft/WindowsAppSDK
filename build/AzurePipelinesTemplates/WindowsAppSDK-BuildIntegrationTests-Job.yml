@@ -34,8 +34,8 @@ parameters:
       Foundation: 
         name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
         version: 1.0.0-stable
-
-# Publish
+        
+jobs:
 - job: BuildIntegrationTest
   dependsOn: 
   - CreateNugetPackage
