@@ -54,7 +54,7 @@ jobs:
           $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
           foreach ($file in $files) # Iterate through each package we restored in the directory
           {
-            Write-Host $file.FullName
+            Write-Host "file:" $file.FullName
             $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
 
             # Extract nupkg to access the nuspec
@@ -72,9 +72,9 @@ jobs:
             foreach ($nuspecPath in $nuspecPaths)
             {
               Write-Host "Found Nuspecs"
-              Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
+              Write-Host "Comparing dependencies in " $nuspecPath.Name
               [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
-              if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
+              if ($nuspec.package.metadata.id -eq 'Microsoft.WindowsAppSDK')
               {
                 $version = $nuspec.package.metadata.version
                 Write-Host "Found " $version
