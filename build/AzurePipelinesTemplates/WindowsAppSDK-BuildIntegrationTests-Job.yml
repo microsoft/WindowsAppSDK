@@ -82,52 +82,52 @@ jobs:
       itemPattern: |
         **/*.nupkg
 
-- task: PowerShell@2
-  displayName: Extract WindowsAppSDKVersion
-  inputs:
-    targetType: 'inline'
-    script: |
-      $seen = @{}
-      $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
-      foreach ($file in $files) # Iterate through each package we restored in the directory
-      {
-        Write-Host $file.FullName
-        $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
+  - task: PowerShell@2
+    displayName: Extract WindowsAppSDKVersion
+    inputs:
+      targetType: 'inline'
+      script: |
+        $seen = @{}
+        $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
+        foreach ($file in $files) # Iterate through each package we restored in the directory
+        {
+          Write-Host $file.FullName
+          $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
 
-        # Extract nupkg to access the nuspec
-        # The files in this directory does not contain the nuspec by default
-        foreach ($nupkgPath in $nupkgPaths)
-        {
-          $rename = $nupkgPath.Name + ".zip"
-          Rename-Item $nupkgPath.FullName $rename
-          $renamedFilePath = $nupkgPath.FullName + ".zip"
-          $dest = $file.FullName + "/contents"
-          Expand-Archive $renamedFilePath -Destination $dest
-        }
-        
-        $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
-        foreach ($nuspecPath in $nuspecPaths)
-        {
-          # When Nuget restore the packages, the packages directory can have
-          # two of the same package in the directory, one with the version,
-          # and one without. This "seen" set prevents the scripts from looking at it twice
-          if (-not $seen.Contains($nuspecPath.Name.ToLower()))
+          # Extract nupkg to access the nuspec
+          # The files in this directory does not contain the nuspec by default
+          foreach ($nupkgPath in $nupkgPaths)
           {
-            $seen[$nuspecPath.Name.ToLower()] = $true
-            Write-Host "Found Nuspecs"
-            Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
-            [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
-            if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
+            $rename = $nupkgPath.Name + ".zip"
+            Rename-Item $nupkgPath.FullName $rename
+            $renamedFilePath = $nupkgPath.FullName + ".zip"
+            $dest = $file.FullName + "/contents"
+            Expand-Archive $renamedFilePath -Destination $dest
+          }
+          
+          $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
+          foreach ($nuspecPath in $nuspecPaths)
+          {
+            # When Nuget restore the packages, the packages directory can have
+            # two of the same package in the directory, one with the version,
+            # and one without. This "seen" set prevents the scripts from looking at it twice
+            if (-not $seen.Contains($nuspecPath.Name.ToLower()))
             {
-              $version = $nuspec.package.metadata.version
-              Write-Host "Found " $version
-              Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
-              Exit 0
+              $seen[$nuspecPath.Name.ToLower()] = $true
+              Write-Host "Found Nuspecs"
+              Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
+              [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
+              if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
+              {
+                $version = $nuspec.package.metadata.version
+                Write-Host "Found " $version
+                Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
+                Exit 0
+              }
             }
           }
         }
-      }
-      Exit 1
+        Exit 1
 
   - task: NuGetAuthenticate@0
 
