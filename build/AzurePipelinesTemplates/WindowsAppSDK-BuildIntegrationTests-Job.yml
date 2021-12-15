@@ -25,7 +25,7 @@ jobs:
         runVersion: 'specific'
         pipelineId: 42815501
         artifactName: WindowsAppSDKNugetPackage
-        path: '$(Build.SourcesDirectory)\build\packages'
+        path: '$(Build.SourcesDirectory)\temp'
 
     # - task: DownloadBuildArtifacts@0
     #   inputs:
@@ -39,7 +39,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $files = Get-ChildItem $(Build.SourcesDirectory)\build\packages
+          $files = Get-ChildItem $(Build.SourcesDirectory)\temp
           foreach ($file in $files) # Iterate through each package we restored in the directory
           {
             Write-Host "file:" $file.FullName
@@ -49,10 +49,11 @@ jobs:
             # The files in this directory does not contain the nuspec by default
             foreach ($nupkgPath in $nupkgPaths)
             {
+              Copy-Item $nupkgPath.FullName -Destination $(Build.SourcesDirectory)\build\packages
+
+              $rename = $nupkgPath.Name + ".zip"
+              Rename-Item $nupkgPath.FullName $rename
               $renamedFilePath = $nupkgPath.FullName + ".zip"
-              Write-Host "FullName:" $nupkgPath.FullName 
-              Write-Host "renamedFilePath:" $renamedFilePath
-              Copy-Item $nupkgPath.FullName -Destination $renamedFilePath
               $dest = $file.FullName + "/contents"
               Expand-Archive $renamedFilePath -Destination $dest
             }
