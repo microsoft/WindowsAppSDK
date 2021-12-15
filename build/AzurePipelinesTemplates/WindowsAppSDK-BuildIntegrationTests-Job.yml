@@ -25,12 +25,12 @@ jobs:
         runVersion: 'specific'
         pipelineId: 42815501
         artifactName: WindowsAppSDKNugetPackage
-        path: '$(Build.SourcesDirectory)\build\packages'
+        path: '$(Build.SourcesDirectory)\localpackages'
 
     # - task: DownloadBuildArtifacts@0
     #   inputs:
     #     artifactName: WindowsAppSDKNugetPackage
-    #     downloadPath: '$(Build.SourcesDirectory)\build\packages'
+    #     downloadPath: '$(Build.SourcesDirectory)\localpackages'
     #     itemPattern: |
     #       **/*.nupkg
 
@@ -39,7 +39,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $files = Get-ChildItem $(Build.SourcesDirectory)\build\packages
+          $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
           foreach ($file in $files) # Iterate through each package we restored in the directory
           {
             Write-Host "file:" $file.FullName
