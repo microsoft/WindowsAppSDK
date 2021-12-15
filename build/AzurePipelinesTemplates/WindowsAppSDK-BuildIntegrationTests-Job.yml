@@ -19,22 +19,6 @@
 # has just built
 #
 # The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
-parameters:
-  - name: BuildType
-    displayName: "Build Type"
-    type: string
-    default: 'stable'
-    values:
-    - 'stable'
-    - 'experimental'
-  - name: "TransportPackages"
-    displayName: "TransportPackages to replace (name:version)"
-    type: object
-    default:
-      Foundation: 
-        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-        version: 1.0.0-stable
-        
 jobs:
 - job: BuildIntegrationTest
   dependsOn: 

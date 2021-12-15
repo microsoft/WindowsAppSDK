@@ -457,9 +457,6 @@ jobs:
 #             Version: $(WindowsAppSDKPackageVersion)
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildIntegrationTests-Job.yml
-  parameters:
-    jobName: 'RunIntegrationTests'
-    dependsOn: 'IntegrationBuild'
 
 # # Publish
 # - job: Publish
