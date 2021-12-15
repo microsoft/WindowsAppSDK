@@ -21,9 +21,6 @@
 # The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
 jobs:
 - job: BuildIntegrationTest
-  dependsOn: 
-  - CreateNugetPackage
-  - IntegrationBuild
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
