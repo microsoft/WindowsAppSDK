@@ -36,46 +36,28 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationManager ToastNotificationManager::Default()
     {
-        throw hresult_not_implemented();
+        // how does this return default object??
+        return winrt::make<ToastNotificationManager>();
     }
 
     void ToastNotificationManager::RegisterActivator(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const&  details)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
 
-        GUID comActivatorGuid = GUID_NULL;
+        std::wstring storedComActivatorString{ nullptr };
         if (!AppModel::Identity::IsPackagedProcess())
         {
-            wil::unique_cotaskmem_string processName;
-            THROW_IF_FAILED(GetCurrentProcessPath(processName));
-
-            std::wstring appIdentifier{ RetrieveToastGuid() };
+            std::wstring appIdentifier{ RetrieveAppId() };
             THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), GUID_NULL));
 
-            std::wstring storedComActivatorString{ RetrieveComActivatorGuid(appIdentifier) };
-
-            if (storedComActivatorString.empty())
-            {
-                THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
-
-                // StringFromCLSID returns GUID String with braces.
-                wil::unique_cotaskmem_string comActivatorGuidString;
-                THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
-
-                RegisterAssets(appIdentifier, details.Assets(), comActivatorGuidString);
-                RegisterComServer(processName, comActivatorGuidString);
-            }
-            else
-            {
-                // Remove braces around the guid string
-                storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
-                comActivatorGuid = winrt::guid(storedComActivatorString);
-            }
+            storedComActivatorString = RegisterComActivatorGuidAndAssets(appIdentifier, details);
+            // Remove braces around the guid string
+            storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
         }
 
         THROW_IF_FAILED(::CoRegisterClassObject(
-            AppModel::Identity::IsPackagedProcess()?details.TaskClsid(): reinterpret_cast<winrt::guid&>(comActivatorGuid),
-            winrt::make<ToastActivationCallback_factory>().get(),
+            AppModel::Identity::IsPackagedProcess() ? details.TaskClsid() : winrt::guid(storedComActivatorString),
+            winrt::make<ToastActivationCallbackFactory>().get(),
             CLSCTX_LOCAL_SERVER,
             REGCLS_MULTIPLEUSE,
             &s_toastcomActivatorRegistration));
@@ -91,8 +73,8 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         if (!AppModel::Identity::IsPackagedProcess())
         {
-            std::wstring appIdentifier{ RetrieveToastGuid() };
-            std::wstring storedComActivatorString{ RetrieveComActivatorGuid(appIdentifier) };
+            std::wstring appIdentifier{ RetrieveAppId() };
+            std::wstring storedComActivatorString{ RegisterComActivatorGuidAndAssets(appIdentifier, nullptr) };
 
             UnRegisterComServer(storedComActivatorString);
             UnRegisterAppIdentifierFromRegistry(appIdentifier);

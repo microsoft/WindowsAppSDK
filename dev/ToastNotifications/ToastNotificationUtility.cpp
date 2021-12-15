@@ -14,7 +14,7 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
-std::wstring RetrieveUnpackagedToastGuid()
+std::wstring RetrieveUnpackagedAppId()
 {
     wil::unique_cotaskmem_string processName;
     THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -64,7 +64,7 @@ std::wstring RetrieveUnpackagedToastGuid()
     return registeredGuidBuffer;
 }
 
-std::wstring RetrieveToastGuid()
+std::wstring RetrieveAppId()
 {
     if (AppModel::Identity::IsPackagedProcess())
     {
@@ -76,7 +76,7 @@ std::wstring RetrieveToastGuid()
     }
     else
     {
-        return RetrieveUnpackagedToastGuid();
+        return RetrieveUnpackagedAppId();
     }
 }
 
@@ -106,7 +106,7 @@ void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastN
 void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ c_clsIdPath + clsid.get() + L"\\LocalServer32" };
+    std::wstring subKey{ c_clsIdPath + clsid.get() + LR"(\LocalServer32)" };
 
     THROW_IF_FAILED(RegCreateKeyEx(
         HKEY_CURRENT_USER,
@@ -119,10 +119,7 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
         &hKey,
         nullptr));
 
-    std::wstring comRegistrationExeString{ L"\"" };
-    comRegistrationExeString.append(processName.get());
-    comRegistrationExeString.append(L"\" ");
-    comRegistrationExeString.append(L"----ToastActivated:");
+    std::wstring comRegistrationExeString{ c_quote + processName.get() + c_quote + c_toastActivatedArgument };
 
     RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
 }
@@ -130,7 +127,7 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
 void UnRegisterComServer(std::wstring const& clsid)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ c_clsIdPath + clsid + L"\\LocalServer32" };
+    std::wstring subKey{ c_clsIdPath + clsid + LR"(\LocalServer32)" };
 
     THROW_IF_FAILED(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
@@ -151,10 +148,10 @@ void UnRegisterAppIdentifierFromRegistry(std::wstring const& appIdentifier)
         0));
 }
 
-std::wstring RetrieveComActivatorGuid(std::wstring const& appId)
+std::wstring RegisterComActivatorGuidAndAssets(std::wstring const& appIdentifier, winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
 {
     wil::unique_hkey hKey;
-    std::wstring subKey{ c_appIdentifierPath + appId };
+    std::wstring subKey{ c_appIdentifierPath + appIdentifier };
 
     THROW_IF_FAILED(RegCreateKeyEx(
         HKEY_CURRENT_USER,
@@ -180,11 +177,25 @@ std::wstring RetrieveComActivatorGuid(std::wstring const& appId)
 
     if (status == ERROR_FILE_NOT_FOUND)
     {
-        return L"";
+        wil::unique_cotaskmem_string processName;
+        THROW_IF_FAILED(GetCurrentProcessPath(processName));
+
+        GUID comActivatorGuid = GUID_NULL;
+        THROW_IF_FAILED(CoCreateGuid(&comActivatorGuid));
+
+        // StringFromCLSID returns GUID String with braces.
+        wil::unique_cotaskmem_string comActivatorGuidString;
+        THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
+
+        RegisterAssets(appIdentifier, details.Assets(), comActivatorGuidString);
+        RegisterComServer(processName, comActivatorGuidString);
+
+        return comActivatorGuidString.get();
     }
     else
     {
         THROW_HR_IF(status, FAILED_WIN32(status));
     }
+
     return registeredGuidBuffer;
 }

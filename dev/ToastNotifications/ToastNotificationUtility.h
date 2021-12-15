@@ -6,9 +6,10 @@
 #include <winrt/Windows.Foundation.h>
 #include <ToastActivatedEventArgs.h>
 
-const std::wstring c_appIdentifierPath = L"Software\\Classes\\AppUserModelId\\";
-const std::wstring c_clsIdPath = L"Software\\Classes\\CLSID\\";
-
+const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
+const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
+const std::wstring c_quote{ LR"(")" };
+const std::wstring c_toastActivatedArgument{ L" ----ToastActivated:" };
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers();
 int& GetToastHandleCount();
@@ -34,7 +35,7 @@ inline void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const
 
 std::wstring RetrieveUnpackagedToastGuid();
 
-std::wstring RetrieveToastGuid();
+std::wstring RetrieveAppId();
 
 void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& activationInfo, wil::unique_cotaskmem_string const& clsid);
 
@@ -44,4 +45,4 @@ void UnRegisterComServer(std::wstring const& clsid);
 
 void UnRegisterAppIdentifierFromRegistry(std::wstring const& appIdentifier);
 
-std::wstring RetrieveComActivatorGuid(std::wstring const& appId);
+std::wstring RegisterComActivatorGuidAndAssets(std::wstring const& appIdentifier, winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details);

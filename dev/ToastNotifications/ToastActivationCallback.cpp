@@ -20,7 +20,7 @@ HRESULT __stdcall ToastActivationCallback::Activate(
     LPCWSTR /* appUserModelId */,
     LPCWSTR invokedArgs,
     [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
-    [[maybe_unused]] ULONG dataCount)
+    [[maybe_unused]] ULONG dataCount) noexcept try
 {
     winrt::IMap<winrt::hstring, winrt::hstring> userInput{ winrt::single_threaded_map<winrt::hstring, winrt::hstring>() };
     for (unsigned long i = 0; i < dataCount; i++)
@@ -43,3 +43,4 @@ HRESULT __stdcall ToastActivationCallback::Activate(
 
     return S_OK;
 }
+CATCH_RETURN()

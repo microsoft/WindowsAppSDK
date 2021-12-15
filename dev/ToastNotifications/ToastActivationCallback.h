@@ -11,10 +11,10 @@ struct ToastActivationCallback : winrt::implements<ToastActivationCallback, INot
         LPCWSTR appUserModelId,
         LPCWSTR invokedArgs,
         [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
-        [[maybe_unused]] ULONG dataCount);
+        [[maybe_unused]] ULONG dataCount) noexcept;
 };
 
-struct ToastActivationCallback_factory : winrt::implements<ToastActivationCallback_factory, IClassFactory>
+struct ToastActivationCallbackFactory : winrt::implements<ToastActivationCallbackFactory, IClassFactory>
 {
     STDMETHODIMP CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final try
     {
