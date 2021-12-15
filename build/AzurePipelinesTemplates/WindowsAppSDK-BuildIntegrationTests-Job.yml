@@ -49,6 +49,7 @@ jobs:
             # The files in this directory does not contain the nuspec by default
             foreach ($nupkgPath in $nupkgPaths)
             {
+              Write-Host "nupkgPath:" $nupkgPath.FullName
               Copy-Item $nupkgPath.FullName -Destination $(Build.SourcesDirectory)\build\packages
 
               $rename = $nupkgPath.Name + ".zip"
