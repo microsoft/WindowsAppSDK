@@ -50,6 +50,8 @@ jobs:
             foreach ($nupkgPath in $nupkgPaths)
             {
               $renamedFilePath = $nupkgPath.FullName + ".zip"
+              Write-Host "FullName:" $nupkgPath.FullName 
+              Write-Host "renamedFilePath:" $renamedFilePath
               Copy-Item $nupkgPath.FullName -Destination $renamedFilePath
               $dest = $file.FullName + "/contents"
               Expand-Archive $renamedFilePath -Destination $dest
