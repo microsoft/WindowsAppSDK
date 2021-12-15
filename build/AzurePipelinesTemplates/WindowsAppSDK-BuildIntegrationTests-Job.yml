@@ -26,10 +26,14 @@ parameters:
 - name: NuGetServiceConnectionName
   type: string
   default: 'ProjectReunionInternal'
+- name: dependsOn
+  type: string
+  default: ''
 
 jobs:
 - job: ${{ parameters.jobName }}
   pool: 'ProjectReunionESPool'
+  dependsOn: ${{ parameters.dependsOn }}
   timeoutInMinutes: 120
   strategy:
     maxParallel: 10
