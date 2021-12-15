@@ -37,12 +37,12 @@ jobs:
         runVersion: 'specific'
         pipelineId: 42815501
         artifactName: WindowsAppSDKNugetPackage
-        path: '$(Build.SourcesDirectory)\localpackages'
+        path: '$(Build.SourcesDirectory)\build\packages'
 
     # - task: DownloadBuildArtifacts@0
     #   inputs:
     #     artifactName: WindowsAppSDKNugetPackage
-    #     downloadPath: '$(Build.SourcesDirectory)\localpackages'
+    #     downloadPath: '$(Build.SourcesDirectory)\build\packages'
     #     itemPattern: |
     #       **/*.nupkg
 
@@ -51,7 +51,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
+          $files = Get-ChildItem $(Build.SourcesDirectory)\build\packages
           foreach ($file in $files) # Iterate through each package we restored in the directory
           {
             Write-Host "file:" $file.FullName
@@ -86,14 +86,9 @@ jobs:
           Exit 1
 
     - task: PowerShell@2
-      name: BuildAll
-      displayName: BuildAll
+      name: TestAll
+      displayName: TestAll
       inputs:
-        filePath: 'BuildAll.ps1'
-        arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none" -Platform "x86,x64,arm64" -Configuration "release,debug"
+        filePath: 'TestAll.ps1'
+        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -YamlStep "BuildTests" -Checkpoint "none" -Platform "x86,x64,arm64" -Configuration "release,debug"
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Windows App SDK Packages'
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
-        artifactName: 'WindowsAppSDKNugetPackage'
