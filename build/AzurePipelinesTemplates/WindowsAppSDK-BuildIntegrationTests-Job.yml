@@ -51,7 +51,6 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          $seen = @{}
           $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
           foreach ($file in $files) # Iterate through each package we restored in the directory
           {
@@ -72,22 +71,15 @@ jobs:
             $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
             foreach ($nuspecPath in $nuspecPaths)
             {
-              # When Nuget restore the packages, the packages directory can have
-              # two of the same package in the directory, one with the version,
-              # and one without. This "seen" set prevents the scripts from looking at it twice
-              if (-not $seen.Contains($nuspecPath.Name.ToLower()))
+              Write-Host "Found Nuspecs"
+              Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
+              [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
+              if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
               {
-                $seen[$nuspecPath.Name.ToLower()] = $true
-                Write-Host "Found Nuspecs"
-                Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
-                [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
-                if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
-                {
-                  $version = $nuspec.package.metadata.version
-                  Write-Host "Found " $version
-                  Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
-                  Exit 0
-                }
+                $version = $nuspec.package.metadata.version
+                Write-Host "Found " $version
+                Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
+                Exit 0
               }
             }
           }
