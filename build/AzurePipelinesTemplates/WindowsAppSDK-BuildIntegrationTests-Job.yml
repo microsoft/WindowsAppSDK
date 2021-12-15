@@ -73,6 +73,10 @@ jobs:
           }
           Exit 1
 
+    - script: |
+        dir /s $(Build.SourcesDirectory)
+    displayName: 'DEBUG'
+
     - task: PowerShell@2
       name: TestAll
       displayName: TestAll
