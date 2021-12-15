@@ -458,10 +458,7 @@ jobs:
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildIntegrationTests-Job.yml
   parameters:
-    name: 'RunTestsInHelix'
-    dependsOn:
-      - IntegrationBuild
-    condition: in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues')
+    jobName: 'RunIntegrationTests'
 
 # Publish
 - job: Publish
