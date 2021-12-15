@@ -75,7 +75,7 @@ jobs:
 
     - script: |
         dir /s $(Build.SourcesDirectory)
-    displayName: 'DEBUG'
+      displayName: 'DEBUG'
 
     - task: PowerShell@2
       name: TestAll
