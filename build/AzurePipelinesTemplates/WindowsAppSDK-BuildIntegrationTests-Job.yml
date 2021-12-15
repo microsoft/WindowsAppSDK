@@ -1,218 +1,126 @@
-# We build the integration tests separately and then publish them as a pipeline artifact so that we can run
-# them in both Helix and in the 1ES Hosted Pool (which runs directly in the pipeline).
 
+
+# This yml template checkouts the ProjectReunionInternal repository and builds the 
+# WindowsAppSDK based on the version.details.xml of the checkouted repository.
+# This versions provided in "TransportPackages" parameter of the yml will replace the 
+# versions in the checkouted version.details.xml based on the name.
+# 
+# Requirements:
+# - This yml template can only be called in the "microsoft" AzureDevOps 
+# - Access to ProjectReunionCerts keyvault
+# - Access to ProjectReunion Internal feed
+# - Only the ProjectReunionInternal repository is checkout in the job
+#
+# The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+# will facilitate setting up the requirements to sucessfully run this template. 
+# 
+# The intended use of this yml template is for the feeder repos' pipeline to build the WinAppSDK package
+# with the latest versions from ProjectReunionInternal with the latest version of the transport package it 
+# has just built
+#
+# The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
 parameters:
-- name: jobName
-  type: string
-  default: BuildTests
-- name: buildPlatforms
-  type: object
-  default:
-  - x86
-  - x64
-  - arm64
-- name: buildConfigurations
-  type: object
-  default:
-  - Debug
-  - Release
-# Note: For arm64 we build the tests, but we don't run them, as we can't natively run arm64 in the CI pipeline.
-- name: conditionForDiscoverTests
-  type: string
-  default: and(succeeded(), ne(variables['buildPlatform'], 'arm64'))
-- name: AzureSubscriptionServiceConnection
-  type: string
-  default: 'ProjectReunion Resource Manager'
-- name: NuGetServiceConnectionName
-  type: string
-  default: 'ProjectReunionInternal'
-- name: dependsOn
-  type: string
-  default: ''
+  - name: BuildType
+    displayName: "Build Type"
+    type: string
+    default: 'stable'
+    values:
+    - 'stable'
+    - 'experimental'
+  - name: "TransportPackages"
+    displayName: "TransportPackages to replace (name:version)"
+    type: object
+    default:
+      Foundation: 
+        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+        version: 1.0.0-stable
 
-jobs:
-- job: ${{ parameters.jobName }}
-  pool: 'ProjectReunionESPool'
-  dependsOn: ${{ parameters.dependsOn }}
-  timeoutInMinutes: 120
-  strategy:
-    maxParallel: 10
-    matrix:
-      ${{ each platform in parameters.buildPlatforms }}:
-        ${{ each config in parameters.buildConfigurations }}:
-          ${{ config }}_${{ platform }}:
-              buildPlatform: ${{ platform }}
-              buildConfiguration: ${{ config }}
+# Publish
+- job: BuildIntegrationTest
+  dependsOn: 
+  - CreateNugetPackage
+  - IntegrationBuild
+  condition: succeeded()
+  pool: $(ProjectReunionBuildPool)
   variables:
-    # Sample apps build output
-    AppPackagesRootDir: $(Build.SourcesDirectory)\Artifacts\AppPackages
-    AppPackagesDir: $(AppPackagesRootDir)\$(buildConfiguration)\$(buildPlatform)\
-
-    testPayloadDir: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)\Tests\
-    helixWorkItemsDir: $(Build.SourcesDirectory)\build\Helix\GeneratedWorkItems
-
-    winUIHelixPipelineScripts: packages\Microsoft.Internal.WinUI.Helix\$(WinUIHelixVersion)\scripts\pipeline
-
+    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal
+    - checkout: git://ProjectReunion/ProjectReunionInternal@user/ejohn/testAll
 
-  - task: AzureKeyVault@1
-    inputs:
-      azureSubscription: ${{ parameters.AzureSubscriptionServiceConnection }}
-      KeyVaultName: 'ProjectReunionCerts'
-      SecretsFilter: 'TestMSCert'
-      RunAsPreJob: false
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Installer x64 for Download Center'
+      inputs:
+        source: 'specific'
+        project: '$(System.TeamProjectId)'
+        pipeline: '57248'
+        runVersion: 'specific'
+        pipelineId: 42815501
+        artifactName: WindowsAppSDKNugetPackage
+        path: '$(Build.SourcesDirectory)\localpackages'
 
-  - powershell: |
-      $kvSecretBytes = [System.Convert]::FromBase64String("$(TestMSCert)")
-      $certCollection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection
-      $certCollection.Import($kvSecretBytes,$null,[System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
-      $certificateBytes = $certCollection.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12)
-      $pfxPath = $env:Build_SourcesDirectory + "\MyCert.pfx"
-      [System.IO.File]::WriteAllBytes($pfxPath, $certificateBytes)
-    displayName: Create MyCert.pfx
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     artifactName: WindowsAppSDKNugetPackage
+    #     downloadPath: '$(Build.SourcesDirectory)\localpackages'
+    #     itemPattern: |
+    #       **/*.nupkg
 
-  - task: powershell@2
-    displayName: DownloadDotNetRuntimeInstaller.ps1
-    inputs:
-      targetType: filePath
-      filePath: $(Build.SourcesDirectory)\build\Scripts\DownloadDotNetRuntimeInstaller.ps1
-      arguments: -Platform $(buildPlatform) -OutputDirectory $(testPayloadDir)
-
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      artifactName: WindowsAppSDKNugetPackage
-      downloadPath: '$(Build.SourcesDirectory)\localpackages'
-      itemPattern: |
-        **/*.nupkg
-
-  - task: PowerShell@2
-    displayName: Extract WindowsAppSDKVersion
-    inputs:
-      targetType: 'inline'
-      script: |
-        $seen = @{}
-        $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
-        foreach ($file in $files) # Iterate through each package we restored in the directory
-        {
-          Write-Host $file.FullName
-          $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
-
-          # Extract nupkg to access the nuspec
-          # The files in this directory does not contain the nuspec by default
-          foreach ($nupkgPath in $nupkgPaths)
+    - task: PowerShell@2
+      displayName: Extract WindowsAppSDKVersion
+      inputs:
+        targetType: 'inline'
+        script: |
+          $seen = @{}
+          $files = Get-ChildItem $(Build.SourcesDirectory)\localpackages
+          foreach ($file in $files) # Iterate through each package we restored in the directory
           {
-            $rename = $nupkgPath.Name + ".zip"
-            Rename-Item $nupkgPath.FullName $rename
-            $renamedFilePath = $nupkgPath.FullName + ".zip"
-            $dest = $file.FullName + "/contents"
-            Expand-Archive $renamedFilePath -Destination $dest
-          }
-          
-          $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
-          foreach ($nuspecPath in $nuspecPaths)
-          {
-            # When Nuget restore the packages, the packages directory can have
-            # two of the same package in the directory, one with the version,
-            # and one without. This "seen" set prevents the scripts from looking at it twice
-            if (-not $seen.Contains($nuspecPath.Name.ToLower()))
+            Write-Host $file.FullName
+            $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
+
+            # Extract nupkg to access the nuspec
+            # The files in this directory does not contain the nuspec by default
+            foreach ($nupkgPath in $nupkgPaths)
             {
-              $seen[$nuspecPath.Name.ToLower()] = $true
-              Write-Host "Found Nuspecs"
-              Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
-              [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
-              if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
+              $rename = $nupkgPath.Name + ".zip"
+              Rename-Item $nupkgPath.FullName $rename
+              $renamedFilePath = $nupkgPath.FullName + ".zip"
+              $dest = $file.FullName + "/contents"
+              Expand-Archive $renamedFilePath -Destination $dest
+            }
+            
+            $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
+            foreach ($nuspecPath in $nuspecPaths)
+            {
+              # When Nuget restore the packages, the packages directory can have
+              # two of the same package in the directory, one with the version,
+              # and one without. This "seen" set prevents the scripts from looking at it twice
+              if (-not $seen.Contains($nuspecPath.Name.ToLower()))
               {
-                $version = $nuspec.package.metadata.version
-                Write-Host "Found " $version
-                Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
-                Exit 0
+                $seen[$nuspecPath.Name.ToLower()] = $true
+                Write-Host "Found Nuspecs"
+                Write-Host "Comparing dependencies in " $nuspecPath.Name.ToLower()
+                [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
+                if ($nuspec.package.metadata.name -eq 'Microsoft.WindowsAppSDK')
+                {
+                  $version = $nuspec.package.metadata.version
+                  Write-Host "Found " $version
+                  Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
+                  Exit 0
+                }
               }
             }
           }
-        }
-        Exit 1
+          Exit 1
 
-  - task: NuGetAuthenticate@0
+    - task: PowerShell@2
+      name: BuildAll
+      displayName: BuildAll
+      inputs:
+        filePath: 'BuildAll.ps1'
+        arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none" -Platform "x86,x64,arm64" -Configuration "release,debug"
 
-  # The next two task is an attempt to resolve the 401 issues on Nuget restore
-  - task: BatchScript@1
-    displayName: Set NuGet environment variables
-    inputs:
-      filename: '$(Build.SourcesDirectory)\build\Scripts\setnugetenvvars.cmd'
-      modifyEnvironment: true
-
-  # In the microsoft.visualstudio.com account, 'NuGetCommand' is ambiguous so the specific task guid must be used instead
-  # (https://developercommunity.visualstudio.com/solutions/310937/view.html)
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet clear http-cache cache'
-    inputs:
-      command: 'custom'
-      arguments: 'locals http-cache -clear'
-
-  - task: PowerShell@2
-    displayName: Update Microsoft.Internal.WinUI.Helix version in package.config
-    inputs:
-      filePath: 'build\Scripts\UpdatePackageConfig.ps1'
-      arguments: -PackageName 'Microsoft.Internal.WinUI.Helix' -PackageVersion '$(WinUIHelixVersion)' -FileName '$(Build.SourcesDirectory)\build\Helix\packages.config'
-
-  - task: PowerShell@2
-    displayName: Update Microsoft.Internal.WinUI.Helix version in csproj
-    inputs:
-      filePath: 'build\Scripts\UpdateCsprojNupkgVersion.ps1'
-      arguments: -PackageName 'Microsoft.Internal.WinUI.Helix' -PackageVersion '$(WinUIHelixVersion)' -FileName '$(Build.SourcesDirectory)\test\WindowsAppSDK.TestCommon\WindowsAppSDK.TestCommon.csproj'
-
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore WindowsAppSDK.Test'
-    env:
-      NUGET_RESTORE_MSBUILD_ARGS: /p:AppxPackageDir=$(AppPackagesDir) /p:WindowsAppSDKPackageVersion=$(WindowsAppSDKPackageVersion) /p:WindowsAppSDKSelfContained=false
-    inputs:
-      command: 'custom'
-      arguments: 'restore WindowsAppSDK.Test.sln'
-
-  - task: VSBuild@1
-    displayName: Build WindowsAppSDK.Test
-    inputs:
-      solution: WindowsAppSDK.Test.sln
-      platform: $(buildPlatform)
-      configuration: $(buildConfiguration)
-      msbuildArgs: /binaryLogger:$(Build.SourcesDirectory)\WindowsAppSDK.Test.$(buildConfiguration).$(buildPlatform).binlog /restore /p:AppxPackageDir=$(AppPackagesDir) /p:WindowsAppSDKPackageVersion=$(WindowsAppSDKPackageVersion) /p:WindowsAppSDKSelfContained=false
-      logProjectEvents: false
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish WindowsAppSDK.Test binlog'
-    condition: always()
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)\WindowsAppSDK.Test.$(buildConfiguration).$(buildPlatform).binlog
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish AppPackages'
-    condition: always()
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)\Artifacts\AppPackages
-      artifactName: AppPackages
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish BuildOutput
-    condition: always()
-    inputs:
-      PathtoPublish: $(Build.SourcesDirectory)\BuildOutput
-      artifactName: Tests
-
-  # Discover the tests to run and generate the Helix Work Items.
-  # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
-  - task: powershell@2
-    displayName: 'DynamicDependencies: Discover tests'
-    condition: ${{ parameters.conditionForDiscoverTests }}
-    inputs:
-      targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'GetCurrentPackageInfo\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\DynamicDependencies-Tests.proj' -WorkItemPrefix 'DynamicDependencies.$(buildPlatform).$(buildConfiguration)' -TestNamePrefix 'DynamicDependencies.$(buildPlatform).$(buildConfiguration)'
-
-  # Publish the generated TestWorkItems.proj as a Pipeline artifact
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish test work items'
-    condition: ${{ parameters.conditionForDiscoverTests }}
-    inputs:
-      PathtoPublish: $(helixWorkItemsDir)
-      artifactName: 'HelixWorkItems'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Windows App SDK Packages'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)\PackLocation'
+        artifactName: 'WindowsAppSDKNugetPackage'
