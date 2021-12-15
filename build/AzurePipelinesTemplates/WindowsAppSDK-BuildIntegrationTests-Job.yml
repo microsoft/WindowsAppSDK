@@ -39,6 +39,8 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
+          Copy-Item -Path "$(Build.SourcesDirectory)\temp" -Destination "$(Build.SourcesDirectory)\build\packages" -Recurse
+
           $files = Get-ChildItem $(Build.SourcesDirectory)\temp
           foreach ($file in $files) # Iterate through each package we restored in the directory
           {
@@ -50,8 +52,6 @@ jobs:
             foreach ($nupkgPath in $nupkgPaths)
             {
               Write-Host "nupkgPath:" $nupkgPath.FullName
-              Copy-Item $nupkgPath.FullName -Destination $(Build.SourcesDirectory)\build\packages
-
               $rename = $nupkgPath.Name + ".zip"
               Rename-Item $nupkgPath.FullName $rename
               $renamedFilePath = $nupkgPath.FullName + ".zip"
