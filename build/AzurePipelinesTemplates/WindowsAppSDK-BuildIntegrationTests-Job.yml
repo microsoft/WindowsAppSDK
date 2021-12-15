@@ -127,6 +127,7 @@ jobs:
           }
         }
       }
+      Exit 1
 
   - task: NuGetAuthenticate@0
 
@@ -180,14 +181,6 @@ jobs:
 
   # Discover the tests to run and generate the Helix Work Items.
   # You can manually hard-code the work items instead of (or in addition to) using this script, but that can be fragile.
-  - task: powershell@2
-    displayName: 'Discover tests'
-    condition: ${{ parameters.conditionForDiscoverTests }}
-    inputs:
-      targetType: filePath
-      filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
-      arguments: -TestFilePattern 'WindowsAppSDK.Test.*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\TestWorkItems.proj'
-
   - task: powershell@2
     displayName: 'DynamicDependencies: Discover tests'
     condition: ${{ parameters.conditionForDiscoverTests }}
