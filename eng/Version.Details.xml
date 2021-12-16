@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="$(MicrosoftWindowsCsWinRTPackageVersion)">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.3.5">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha></Sha>
     </Dependency>
