@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <MicrosoftWindowsCsWinRTPackageVersion>1.3.5</MicrosoftWindowsCsWinRTPackageVersion>
+    <CsWinRTDependencyDotNetCoreSdkPackageVersion>5.0.302</CsWinRTDependencyDotNetCoreSdkPackageVersion>
+    <CsWinRTDependencyDotNetCoreRuntimePackageVersion>5.0.8</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
+    <CsWinRTDependencyWindowsSdkPackagePackageVersion>10.0.17763.0</CsWinRTDependencyWindowsSdkPackagePackageVersion>
   </PropertyGroup>
-</Project>
+  <!-- These package versions need to stay in sync with what is in packages.config -->
+  <PropertyGroup>
+    <MicrosoftVisualStudioProjectSystemVersion>15.0.737</MicrosoftVisualStudioProjectSystemVersion>
+    <MicrosoftNETCoreUniversalWindowsPlatformVersion>6.2.8</MicrosoftNETCoreUniversalWindowsPlatformVersion>
+    <MicrosoftWindowsSDKContractsVersion>10.0.18362.2004-preview</MicrosoftWindowsSDKContractsVersion>
+    <MicrosoftWindowsSDKUWPManagedVersion>10.0.18362.2004-preview</MicrosoftWindowsSDKUWPManagedVersion>
+    <MicrosoftWindowsSDKNetVersion>10.0.18362.6-preview</MicrosoftWindowsSDKNetVersion>
+    <WindowsSdkNugetPackageVersion>10.0.18362.2004-preview</WindowsSdkNugetPackageVersion>
+    <TaefNugetPackageVersion>10.52.200221001</TaefNugetPackageVersion>
+    <DotNetFrameworkVersion>v4.6.1</DotNetFrameworkVersion>
+    <DotNetTargetFrameworkMoniker>net46</DotNetTargetFrameworkMoniker>
+    <DotNetCoreTargetFrameworkMoniker>net5.0</DotNetCoreTargetFrameworkMoniker>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.18362.0</WindowsTargetPlatformMinVersion>
+    <!-- XeWin10TargetVersion is needed by the Microsoft.Windows.SDK.cpp.targets -->
+    <XeWin10TargetVersion>$(WindowsTargetPlatformVersion)</XeWin10TargetVersion>
+    <WinUIDetailsNugetVersion>0.1.0-ci95</WinUIDetailsNugetVersion>
+    <!-- This value must be kept in sync with packages.x86.config, packages.x64.config and packages.arm64.config -->
+    <CurrentLiftedIXPPackageVersion>10.0.20170.1001-200713-1000.rs-onecore-dep-ixp1</CurrentLiftedIXPPackageVersion>
+    <CurrentWilPackageVersion>1.0.190716.2</CurrentWilPackageVersion>
+    <MuxCustomBuildTasksPackageVersion>1.0.83-winui3</MuxCustomBuildTasksPackageVersion>
+    <DotNetCoreSdkVersion>5.0.302</DotNetCoreSdkVersion>
+    <DotNetCoreRuntimeVersion>5.0.8</DotNetCoreRuntimeVersion>
+    <DetoursVersion>4.0.1</DetoursVersion>
+    <CppWinRTVersion>2.0.210806.1</CppWinRTVersion>
+    <MicrosoftSourceLinkAzureReposVersion>1.0.0</MicrosoftSourceLinkAzureReposVersion>
+    <VCRTForwardersVersion>1.0.6</VCRTForwardersVersion>
+    <WebView2Version>0.9.573-internal</WebView2Version>
+    <VisualStudio166PatchVersion>1.0.6</VisualStudio166PatchVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <WindowsSdkNugetPackageName>Microsoft.Windows.SDK</WindowsSdkNugetPackageName>
+    <WinUIDetailsPackageName>Microsoft.Internal.WinUIDetails</WinUIDetailsPackageName>
+    <LiftedIXPPackageName>CompInproc</LiftedIXPPackageName>
+    <WebView2PackageName>Microsoft.Web.WebView2</WebView2PackageName>
+    <WilPackageName>Microsoft.Windows.ImplementationLibrary</WilPackageName>
+    <MicrosoftCsWinRtPackageName>Microsoft.Windows.CsWinRT</MicrosoftCsWinRtPackageName>
+  </PropertyGroup>
+
+</Project> 
