@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="..\..\..\..\eng\Versions.props"/>
   <PropertyGroup>
     <TargetFramework>net5.0-windows10.0.17763.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
@@ -21,7 +21,7 @@
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.System.Power</CSWinRTIncludes>
-    <CSWinRTWindowsMetadata>$(CsWinRT.Dependency.WindowsSdkPackage)</CSWinRTWindowsMetadata>
+    <CSWinRTWindowsMetadata>$(CsWinRTDependencyWindowsSdkPackagePackageVersion)</CSWinRTWindowsMetadata>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->
