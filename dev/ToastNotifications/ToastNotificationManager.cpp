@@ -82,13 +82,15 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             // TODO: Remove ToastGuid reference from LRP
         }
     }
-    winrt::event_token ToastNotificationManager::ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& /* handler */)
+    winrt::event_token ToastNotificationManager::ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& handler)
     {
-        throw hresult_not_implemented();
+        GetToastHandleCount()++;
+        return GetToastHandlers().add(handler);
     }
-    void ToastNotificationManager::ToastActivated(winrt::event_token const&/* token */)
+    void ToastNotificationManager::ToastActivated(winrt::event_token const& token )
     {
-        throw hresult_not_implemented();
+        GetToastHandleCount()--;
+        GetToastHandlers().remove(token);
     }
     void ToastNotificationManager::ShowToast(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& /* toast */)
     {

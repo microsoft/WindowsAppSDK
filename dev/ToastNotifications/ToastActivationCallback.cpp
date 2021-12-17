@@ -29,7 +29,6 @@ HRESULT __stdcall ToastActivationCallback::Activate(
     }
 
     winrt::ToastActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::ToastNotifications::implementation::ToastActivatedEventArgs>(invokedArgs, userInput);
-
     if (GetToastHandleCount() > 0)
     {
         GetToastHandlers()(*this, activatedEventArgs);
