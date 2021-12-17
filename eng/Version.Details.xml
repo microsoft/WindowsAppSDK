@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <ProductDependencies>
-    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.3.5">
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.4.1">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha></Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdkn" Version="5.0.302">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdkn" Version="5.0.404">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha></Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="5.0.8">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="5.0.13">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha></Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="10.0.17763.0">
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="10.0.18362.0">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha></Sha>
     </Dependency>
