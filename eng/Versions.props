@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MicrosoftWindowsCsWinRTPackageVersion>1.4.1</MicrosoftWindowsCsWinRTPackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkPackageVersion>5.0.402</CsWinRTDependencyDotNetCoreSdkPackageVersion>
+    <CsWinRTDependencyDotNetCoreSdkPackageVersion>5.0.404</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyDotNetCoreRuntimePackageVersion>5.0.13</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
     <CsWinRTDependencyWindowsSdkPackagePackageVersion>10.0.18362.0</CsWinRTDependencyWindowsSdkPackagePackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>5.0.302</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>5.0.404</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
   </PropertyGroup>
 </Project> 
