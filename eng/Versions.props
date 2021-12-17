@@ -5,6 +5,7 @@
     <CsWinRTDependencyDotNetCoreSdkPackageVersion>5.0.404</CsWinRTDependencyDotNetCoreSdkPackageVersion>
     <CsWinRTDependencyDotNetCoreRuntimePackageVersion>5.0.13</CsWinRTDependencyDotNetCoreRuntimePackageVersion>
     <CsWinRTDependencyWindowsSdkPackagePackageVersion>10.0.18362.0</CsWinRTDependencyWindowsSdkPackagePackageVersion>
-    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>5.0.404</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
+    <!-- TODO: Fix DownloadDotNetCoreSdk.ps1 script so we don't need this property -->
+    <CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>$(CsWinRTDependencyDotNetCoreSdkPackageVersion)</CsWinRTDependencyDotNetCoreSdkLkgPackageVersion>
   </PropertyGroup>
 </Project> 
