@@ -88,7 +88,19 @@ information on how to use it.
 
 ## Steps to onboard new repository to WindowsAppSDK Maestro
 Initial onboarding requirements
+These can be done in any particular order. 
 
+** Basic requirements **
+Add (or copy) the Versions.props and Version.Details.xml files to your eng\ folder.
+
+Get access to ProjectReunionInternal feed and any other feeds that the repository restores NuGet packages
+from. ProjectReunionInternal feed is the main feed that WindowsAppSDK repositories uses to restore packages from. 
+
+** Eng/Common Onboarding **
+Copy the contents of eng\common from ProjectReunionInternal to the root of the repository keeping the same folder paths.
+This folder contains reunion's template that publishes the build to Maestro: Maestro-PublishBuildToMaestro.yml
+
+To get automatic updates to eng/common
 Add global.json to root level directory with the following contents.
 ```
 {
@@ -100,10 +112,42 @@ Add global.json to root level directory with the following contents.
   }
 }
 ```
+Add Microsoft.WindowsAppSDK.EngCommon dependency to ToolsetDependencies where the uri is the link to
+ProjectReunionInternal repo
+```
+<ToolsetDependencies>
+  <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.0.0-20211213.0-CI">
+    <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
+    <Sha>c29bc59c779108f3818a0efb0e467c2b4bb6cb47</Sha>
+  </Dependency>
+</ToolsetDependencies>
+```
 
-Add (or copy) the Versions.props and Version.Details.xml files to your eng\ folder.
-Copy the contents of eng\common to your repository.
-This folder contains reunion's template that publishes the build to Maestro: Maestro-PublishBuildToMaestro.yml
-Add ProjectReunionInternal feed and any other feeds that the repository restores NuGet packages
-from (This is how your repository will transfer packages between other repository once it recieves 
-a version update from Maestro)
+** GitHub Repositories **
+Install the github App https://github.com/apps/reunion-maestro on your org/repository
+
+** AzureDevOps Repositories **
+Give reunion-maestro-bot@microsoft.com contributers permissions.
+For automatic completion, in branch securities, "ByPass Policies when completing pull requests" should be allowed.
+
+If the azure devops repositories is in a new organization that has not been onboarded, please contact the 
+ProjectReunionES team to onboard the org to the Maestro service. 
+This involves adding a new entry in the WindowsAppSDK's equivalent of 
+https://github.com/dotnet/arcade-services/blob/main/src/Maestro/SubscriptionActorService/.config/settings.json
+with the PAT from reunion-maestro-bot@microsoft.com
+
+## Creating subscriptions with automatic completions ##
+When adding a new subscription, please include the Merge Policies below with all the ignoreChecks 
+```
+Merge Policies:
+- Name: AllChecksSuccessful
+  Properties:
+    ignoreChecks:
+    - Require a merge strategy
+    - Required reviewers
+    - Minimum number of reviewers
+    - Comment requirements
+    - Work item linking
+```
+Note: At least one required check on the pull request must run successfully for Maestro to auto complete. 
+
