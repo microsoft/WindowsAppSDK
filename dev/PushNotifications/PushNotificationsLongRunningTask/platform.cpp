@@ -20,11 +20,20 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     // This is in case we later realize there are no apps to be tracked in the LRP.
     m_lifetimeManager.Setup();
 
-    m_storage = Storage::ApplicationData::Current().LocalSettings().CreateContainer(
-        L"LRP", Storage::ApplicationDataCreateDisposition::Always);
+    m_rawStorage = Storage::ApplicationData::Current().LocalSettings().CreateContainer(
+        L"Raw", Storage::ApplicationDataCreateDisposition::Always);
+
+    m_toastStorage = Storage::ApplicationData::Current().LocalSettings().CreateContainer(
+        L"Toast", Storage::ApplicationDataCreateDisposition::Always);
 
     m_foregroundSinkManager = std::make_shared<ForegroundSinkManager>();
-    m_notificationListenerManager.Initialize(m_foregroundSinkManager);
+    m_toastRegistrationManager = std::make_shared<ToastRegistrationManager>();
+    for (auto pair : m_toastStorage.Values())
+    {
+        m_toastRegistrationManager->Add(pair.Key().c_str(), pair.Value().as<winrt::hstring>().c_str());
+    }
+
+    m_notificationListenerManager.Initialize(m_foregroundSinkManager, m_toastRegistrationManager);
 
     auto fullTrustApps = GetFullTrustApps();
 
@@ -95,6 +104,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     m_foregroundSinkManager->Remove(appId);
 
     RemoveAppIdentifier(appId);
+    RemoveToastRegistration(processName);
 
     if (m_notificationListenerManager.IsEmpty())
     {
@@ -133,6 +143,28 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
 }
 CATCH_RETURN()
 
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastRegistration(_In_ PCWSTR processName, _In_ PCWSTR toastGuid) noexcept try
+{
+    auto lock{ m_lock.lock_exclusive() };
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    m_toastRegistrationManager->Add(processName, toastGuid);
+    m_toastStorage.Values().Insert(processName, winrt::box_value(toastGuid));
+    return S_OK;
+}
+CATCH_RETURN()
+
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RemoveToastRegistration(_In_ PCWSTR processName) noexcept try
+{
+    auto lock{ m_lock.lock_exclusive() };
+    THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
+
+    m_toastRegistrationManager->Remove(processName);
+    m_toastStorage.Values().Remove(processName);
+    return S_OK;
+}
+CATCH_RETURN()
+
 // Returns a map of key-value pairs, where key is appId and value is processName.
 // It should only be called by Initialize(), which already acquired a lock.
 std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFullTrustApps()
@@ -144,7 +176,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
     PushNotifications_GetFullTrustApplicationsWithChannels(appIds.addressof(), appIds.size_address<ULONG>());
 
     // Get list of apps from Storage
-    auto values{ m_storage.Values() };
+    auto values{ m_rawStorage.Values() };
 
     for (size_t i = 0; i < appIds.size(); ++i)
     {
@@ -160,7 +192,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
 
 const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
 {
-    auto values{ m_storage.Values() };
+    auto values{ m_rawStorage.Values() };
 
     for (auto it = values.begin(); it != values.end(); it++)
     {
@@ -177,12 +209,21 @@ const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::w
     wil::unique_cotaskmem_string guidStr;
     THROW_IF_FAILED(StringFromCLSID(guidReference, &guidStr));
 
-    m_storage.Values().Insert(guidStr.get(), winrt::box_value(processName.c_str()));
+    m_rawStorage.Values().Insert(guidStr.get(), winrt::box_value(processName.c_str()));
     return guidStr.get();
 }
 
 void NotificationsLongRunningPlatformImpl::RemoveAppIdentifier(std::wstring const& appId)
 {
-    auto values{ m_storage.Values() };
+    auto values{ m_rawStorage.Values() };
     values.Remove(appId);
 }
+
+void NotificationsLongRunningPlatformImpl::RemoveToastRegistration(std::wstring const& processName)
+{
+    m_toastRegistrationManager->Remove(processName);
+
+    auto values{ m_toastStorage.Values() };
+    values.Remove(processName);
+}
+

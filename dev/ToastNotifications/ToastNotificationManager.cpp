@@ -7,6 +7,7 @@
 #include "ToastActivationCallback.h"
 #include "externs.h"
 #include "ToastNotificationUtility.h"
+#include "PushNotificationUtility.h"
 #include <frameworkudk/pushnotifications.h>
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
@@ -28,6 +29,11 @@ namespace winrt
     using namespace winrt::Windows::UI;
     using namespace winrt::Windows::Foundation;
     using namespace Windows::ApplicationModel::Core;
+}
+
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
 namespace winrt::Microsoft::Windows::ToastNotifications::implementation
@@ -79,7 +85,10 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             UnRegisterComServer(storedComActivatorString);
             UnRegisterAppIdentifierFromRegistry(appIdentifier);
 
-            // TODO: Remove ToastGuid reference from LRP
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+            auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+
         }
     }
     winrt::event_token ToastNotificationManager::ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& /* handler */)
