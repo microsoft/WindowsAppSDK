@@ -38,8 +38,6 @@
 #include <windows.applicationmodel.background.h>
 #include <ShObjIdl_core.h>
 
-#include <winrt/Microsoft.Windows.PushNotifications.h>
-
 namespace TP = ::Test::Packages;
 namespace TAEF = ::Test::TAEF;
 #endif //PCH_H

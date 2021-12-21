@@ -8,6 +8,8 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, !AppModel::Identity::IsPackagedProcess(), "Not applicable for unpackaged applications");
 
+        THROW_HR_IF(E_INVALIDARG, (taskClsid == winrt::guid(GUID_NULL)));
+
         return winrt::make<ToastActivationInfo>(taskClsid);
     }
 

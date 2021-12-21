@@ -44,7 +44,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
 
-        std::wstring storedComActivatorString{ nullptr };
+        std::wstring storedComActivatorString;
         if (!AppModel::Identity::IsPackagedProcess())
         {
             std::wstring appIdentifier{ RetrieveAppId() };
