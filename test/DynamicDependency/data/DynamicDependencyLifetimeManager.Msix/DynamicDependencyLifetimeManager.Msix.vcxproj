@@ -55,17 +55,17 @@
 
 
   <PropertyGroup>
+<!--
     <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
     <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+-->
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
   </PropertyGroup>
-  <ItemDefinitionGroup>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
@@ -79,9 +79,11 @@
   </ItemGroup>
 
 
+<!--DeleteMe
   <PropertyGroup>
     <MakeMsixAssets>true</MakeMsixAssets>
   </PropertyGroup>
+DeleteMe-->
   <PropertyGroup>
     <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
     <TargetBasename>DynamicDependencyLifetimeManager</TargetBasename>
