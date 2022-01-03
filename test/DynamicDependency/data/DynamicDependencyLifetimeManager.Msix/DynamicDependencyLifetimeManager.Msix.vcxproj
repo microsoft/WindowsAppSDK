@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration>Debug</Configuration>
+    <Platform>x64</Platform>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <!-- TODO: Replace relative pathing ..\build\ with $(something)\build -->
+  <Import Project="..\..\..\..\build\EnsureOutputLayout.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -24,101 +31,35 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectName>DynamicDependencyLifetimeManager.Msix</ProjectName>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+  <!-- <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" /> -->
+  <PropertyGroup>
+    <!-- <ConfigurationType>Makefile</ConfigurationType> -->
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <!-- <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" /> -->
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  <ImportGroup Label="PropertySheets">
+    <!-- <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" /> -->
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+
+  <PropertyGroup>
+    <!-- <ProjectDir>.\</ProjectDir> -->
+    <ProjectDir Condition="'$(ProjectDir)' == ''">$(MSBuildProjectDirectory)\</ProjectDir>
+    <!-- <SolutionDir>..\..\..\..\</SolutionDir> -->
+    <SolutionDir Condition="'$(SolutionDir)' == ''">$(RepoRoot)\</SolutionDir>
+  </PropertyGroup>
+
+
+  <PropertyGroup>
     <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
     <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
     <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)DynamicDependencyLifetimeManager.msix</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) Platform=$(Platform) WindowsAppSdkBuildPipeline=$(WindowsAppSdkBuildPipeline) rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <OutDir>$(OutDir)</OutDir>
     <IntDir>$(IntDir)</IntDir>
     <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
@@ -136,14 +77,54 @@
       <Project>{2e5bf0d2-78fa-4b60-a341-f65a0d58bd86}</Project>
     </ProjectReference>
   </ItemGroup>
-  <Target Name="Build" AfterTargets="AfterBuild">
-    <MakeMSIX MakeMsixInputs="@(MakeMsixInputs)" />
-  </Target>
+
+
+  <PropertyGroup>
+    <MakeMsixAssets>true</MakeMsixAssets>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
+    <TargetBasename>DynamicDependencyLifetimeManager</TargetBasename>
+
+    <TargetExe>$(TargetBasename)</TargetExe>
+    <TargetExeDir>$(OutDir)$(TargetExe)</TargetExeDir>
+    <TargetExeFile>$(TargetExeDir)\$(TargetExe).exe</TargetExeFile>
+
+    <TargetExeProxyStub>$(TargetBasename).ProxyStub</TargetExeProxyStub>
+    <TargetExeProxyStubDir>$(OutDir)$(TargetExeProxyStub)</TargetExeProxyStubDir>
+    <TargetExeProxyStubFile>$(TargetExeProxyStubDir)\$(TargetExeProxyStub).dll</TargetExeProxyStubFile>
+
+    <DdlmShadow>DynamicDependencyLifetimeManagerShadow</DdlmShadow>
+    <DdlmShadowExe>$(DdlmShadow)</DdlmShadowExe>
+    <DdlmShadowExeDir>$(OutDir)$(DdlmShadowExe)</DdlmShadowExeDir>
+    <DdlmShadowExeFile>$(DdlmShadowExeDir)\$(DdlmShadowExe).exe</DdlmShadowExeFile>
+    <DdlmShadowExePdb>$(DdlmShadowExeDir)\$(DdlmShadowExe).pdb</DdlmShadowExePdb>
+
+    <VersionInfoDir>$(ProjectDir)</VersionInfoDir>
+    <VersionInfoFile>$(VersionInfoDir)Microsoft.WindowsAppRuntime.Release!4.1.0</VersionInfoFile>
+  </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputs Include="$(ProjectDir)Microsoft.WindowsAppRuntime.Release!4.1.0" />
+    <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />
+    <MakeMsixInputs Include="$(VersionInfoFile)" />
+    <MakeMsixInputs Include="$(TargetExeFile)" />
+    <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />
+    <MakeMsixInputs Include="$(DdlmShadowExeFile)" />
+    <MakeMsixInputs Include="$(DdlmShadowExePdb)" />
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(ProjectDir)\MakeMsix.targets" />
+
+  <Target Name="Build" DependsOnTargets="MakeMSIX">
+    <Message Text="MakeMSIX 6:$(RepoRoot)" Importance="high" />
+    <Message Text="MakeMSIX 6:$(ProjectDir)" Importance="high" />
+    <Message Text="MakeMSIX 6:$(SolutionDir)" Importance="high" />
+  </Target>
+
+
+  <!-- <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" /> -->
+
+  <!-- <Import Project="$(RepoRoot)\build\EnsureOutputLayout.props" /> -->
+  <!-- <Import Project="$(ProjectDir)\MakeMsix.targets" /> -->
+  <Import Project="MakeMsix.targets" />
+
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
