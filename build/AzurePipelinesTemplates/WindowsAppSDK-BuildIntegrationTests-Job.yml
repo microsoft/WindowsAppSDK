@@ -16,23 +16,23 @@ jobs:
       inputs:
         nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}
 
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Installer x64 for Download Center'
-      inputs:
-        source: 'specific'
-        project: '$(System.TeamProjectId)'
-        pipeline: '57248'
-        runVersion: 'specific'
-        pipelineId: 42815501
-        artifactName: WindowsAppSDKNugetPackage
-        path: '$(Build.SourcesDirectory)\temp'
-
-    # - task: DownloadBuildArtifacts@0
+    # - task: DownloadPipelineArtifact@2
+    #   displayName: 'Download Installer x64 for Download Center'
     #   inputs:
+    #     source: 'specific'
+    #     project: '$(System.TeamProjectId)'
+    #     pipeline: '57248'
+    #     runVersion: 'specific'
+    #     pipelineId: 42815501
     #     artifactName: WindowsAppSDKNugetPackage
-    #     downloadPath: '$(Build.SourcesDirectory)\build\packages'
-    #     itemPattern: |
-    #       **/*.nupkg
+    #     path: '$(Build.SourcesDirectory)\temp'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: WindowsAppSDKNugetPackage
+        downloadPath: '$(Build.SourcesDirectory)\temp'
+        itemPattern: |
+          **/*.nupkg
 
     - task: PowerShell@2
       displayName: Extract WindowsAppSDKVersion
