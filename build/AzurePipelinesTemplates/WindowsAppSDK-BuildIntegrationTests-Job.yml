@@ -21,7 +21,9 @@ jobs:
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-    - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/testAll
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+      parameters:
+        ArtifactName: 'FullNuget'
 
     - task: NuGetAuthenticate@0
       inputs:
