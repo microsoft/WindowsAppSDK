@@ -10,7 +10,7 @@ jobs:
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-    - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/testAllUpdate
+    - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/testAll
 
     - task: NuGetAuthenticate@0
       inputs:
