@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Dependencies>
   <ProductDependencies>
+    <Dependency Name="Microsoft.Windows.CsWinRT" Version="1.4.1">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha></Sha>
+    </Dependency>
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdkn" Version="5.0.404">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha></Sha>
+    </Dependency>
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreRuntime" Version="5.0.13">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha></Sha>
+    </Dependency>
+    <Dependency Name="CsWinRT.Dependency.WindowsSdkPackage" Version="10.0.18362.0">
+      <Uri>https://github.com/microsoft/CsWinRT</Uri>
+      <Sha></Sha>
+    </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.0.0-20211213.0-CI">
+      <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
+      <Sha>c29bc59c779108f3818a0efb0e467c2b4bb6cb47</Sha>
+    </Dependency>
   </ToolsetDependencies>
 </Dependencies>
