@@ -437,7 +437,7 @@ jobs:
     buildPool: $(ProjectReunionBuildPool)
 
 # Build WinAppSDK
-- job: WinAppSDK-IntegrationBuild
+- job: WinAppSDKIntegrationBuild
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
@@ -458,7 +458,7 @@ jobs:
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildIntegrationTests-Job.yml
   parameters:
-    jobName: "RunIntegrationTests"
+    jobName: "WinAppSDKIntegrationTests"
     dependsOn: IntegrationBuild
     condition: succeeded()
 
