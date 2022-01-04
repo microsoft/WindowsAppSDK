@@ -15,452 +15,452 @@ parameters:
     default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
 
 jobs:
-- job: CredScan
-  pool: $(ProjectReunionBuildPool)
-  steps:
-  # Scans the root source folder for security vulnerability
-  - task: CredScan@2
-    inputs:
-      toolMajorVersion: 'V2'
+# - job: CredScan
+#   pool: $(ProjectReunionBuildPool)
+#   steps:
+#   # Scans the root source folder for security vulnerability
+#   - task: CredScan@2
+#     inputs:
+#       toolMajorVersion: 'V2'
 
-  # This PostAnalysis will fail the pipeline if CredScan identifies an issue
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: false
-      CodesignValidation: false
-      CredScan: true
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+#   # This PostAnalysis will fail the pipeline if CredScan identifies an issue
+#   - task: PostAnalysis@1
+#     inputs:
+#       AllTools: false
+#       APIScan: false
+#       BinSkim: false
+#       CodesignValidation: false
+#       CredScan: true
+#       FortifySCA: false
+#       FxCop: false
+#       ModernCop: false
+#       PoliCheck: false
+#       RoslynAnalyzers: false
+#       SDLNativeRules: false
+#       Semmle: false
+#       TSLint: false
+#       ToolLogsNotFoundAction: 'Standard'
 
-- job: Build
-  # Skip the build job if we are reusing the output of a previous build.
-  # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
-  pool: $(ProjectReunionBuildPool)
-  timeoutInMinutes: 120
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
-        PGOBuildMode: 'Optimize'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
-        PGOBuildMode: 'Optimize'
-      Release_Arm64:
-        buildPlatform: 'arm64'
-        buildConfiguration: 'Release'
-        normalizedConfiguration: 'fre'
+# - job: Build
+#   # Skip the build job if we are reusing the output of a previous build.
+#   # useBuildOutputFromBuildId variable is set on the Pipeline at Queue time.
+#   condition:
+#     eq(variables['useBuildOutputFromBuildId'],'')
+#   pool: $(ProjectReunionBuildPool)
+#   timeoutInMinutes: 120
+#   strategy:
+#     maxParallel: 10
+#     matrix:
+#       Release_x86:
+#         buildPlatform: 'x86'
+#         buildConfiguration: 'Release'
+#         normalizedConfiguration: 'fre'
+#         PGOBuildMode: 'Optimize'
+#       Release_x64:
+#         buildPlatform: 'x64'
+#         buildConfiguration: 'Release'
+#         normalizedConfiguration: 'fre'
+#         PGOBuildMode: 'Optimize'
+#       Release_Arm64:
+#         buildPlatform: 'arm64'
+#         buildConfiguration: 'Release'
+#         normalizedConfiguration: 'fre'
 
-  variables:
-    buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
-    publishDir : $(Build.ArtifactStagingDirectory)
+#   variables:
+#     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
+#     publishDir : $(Build.ArtifactStagingDirectory)
 
-  steps:
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'TelemetryInternal'
+#   steps:
+#   - task: NuGetAuthenticate@0
+#     inputs:
+#       nuGetServiceConnections: 'TelemetryInternal'
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore of packages'
-    inputs:
-      command: 'custom'
-      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+#   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+#     displayName: 'NuGet restore of packages'
+#     inputs:
+#       command: 'custom'
+#       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
 
-  # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
-#  - task: DownloadPackage@1
-#    displayName: 'Download Microsoft.Telemetry.Inbox.Native'
-#    inputs:
-#      feed: '/3415933f-ac0d-4766-8c0a-3f4c247c25f5'                         # 0
-#      view: 'ef61a1c1-003b-4a27-bde5-beec8301021b'                          # Release
-#      definition: '2fe60c09-c66f-4275-ae2d-f015c7170c72'                    # Microsoft.Telemetry.Inbox.Native
-#      version: '10.0.18362.1-190318-1202.19h1-release.amd64fre'             # latest version
-#      downloadPath: '$(System.DefaultWorkingDirectory)'                     # download and extract to repo root
+#   # Download and extract nuget package with non-stubbed MicrosoftTelemetry.h header
+# #  - task: DownloadPackage@1
+# #    displayName: 'Download Microsoft.Telemetry.Inbox.Native'
+# #    inputs:
+# #      feed: '/3415933f-ac0d-4766-8c0a-3f4c247c25f5'                         # 0
+# #      view: 'ef61a1c1-003b-4a27-bde5-beec8301021b'                          # Release
+# #      definition: '2fe60c09-c66f-4275-ae2d-f015c7170c72'                    # Microsoft.Telemetry.Inbox.Native
+# #      version: '10.0.18362.1-190318-1202.19h1-release.amd64fre'             # latest version
+# #      downloadPath: '$(System.DefaultWorkingDirectory)'                     # download and extract to repo root
 
-  # Replace the stubbed MicrosoftTelemetry.h with the real one
-  # Delete the existing stubbed MicrosoftTelemetry.h first, to ensure that if it is no longer at the expected path that the task, and build, fails
-#  - script: |
-#     del $(System.DefaultWorkingDirectory)\dev\telemetry\MicrosoftTelemetry.h
-#     move /Y $(System.DefaultWorkingDirectory)\build\native\inc\MicrosoftTelemetry.h $(System.DefaultWorkingDirectory)\dev\telemetry\
-#    failOnStderr: true
-#    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
+#   # Replace the stubbed MicrosoftTelemetry.h with the real one
+#   # Delete the existing stubbed MicrosoftTelemetry.h first, to ensure that if it is no longer at the expected path that the task, and build, fails
+# #  - script: |
+# #     del $(System.DefaultWorkingDirectory)\dev\telemetry\MicrosoftTelemetry.h
+# #     move /Y $(System.DefaultWorkingDirectory)\build\native\inc\MicrosoftTelemetry.h $(System.DefaultWorkingDirectory)\dev\telemetry\
+# #    failOnStderr: true
+# #    displayName: 'Replace existing stubbed MicrosoftTelemetry.h header with the real version from the nuget package'
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
-    parameters:
-      channel: ${{ variables.channel }}
+#   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
+#     parameters:
+#       channel: ${{ variables.channel }}
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
+#   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
-# component detection must happen *within* the build task
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+# # component detection must happen *within* the build task
+#   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+#   - task: BinSkim@3
+#     inputs:
+#       InputType: 'Basic'
+#       Function: 'analyze'
+#       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+#       AnalyzeVerbose: true
+#   - task: PostAnalysis@1
+#     inputs:
+#       AllTools: false
+#       APIScan: false
+#       BinSkim: true
+#       BinSkimBreakOn: 'Error'
+#       CodesignValidation: false
+#       CredScan: false
+#       FortifySCA: false
+#       FxCop: false
+#       ModernCop: false
+#       PoliCheck: false
+#       RoslynAnalyzers: false
+#       SDLNativeRules: false
+#       Semmle: false
+#       TSLint: false
+#       ToolLogsNotFoundAction: 'Standard'
 
-- job: BuildAnyCPU
-  # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
-  # Can be expanded to add any other binary as needed
-  condition:
-    eq(variables['useBuildOutputFromBuildId'],'')
-  pool: $(ProjectReunionBuildPool)
-  timeoutInMinutes: 120
-  variables:
-    buildPlatform: 'anycpu'
-    buildConfiguration: 'Release'
-    normalizedConfiguration: 'fre'
-    PGOBuildMode: 'Optimize'
-    buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
-    publishDir : $(Build.ArtifactStagingDirectory)
-    artifactName: 'windowsappsdk_binaries'
-  steps:
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'TelemetryInternal'
+# - job: BuildAnyCPU
+#   # For now, this job just builds Microsoft.WindowsAppRuntime.Bootstrap.Net.dll in AnyCPU
+#   # Can be expanded to add any other binary as needed
+#   condition:
+#     eq(variables['useBuildOutputFromBuildId'],'')
+#   pool: $(ProjectReunionBuildPool)
+#   timeoutInMinutes: 120
+#   variables:
+#     buildPlatform: 'anycpu'
+#     buildConfiguration: 'Release'
+#     normalizedConfiguration: 'fre'
+#     PGOBuildMode: 'Optimize'
+#     buildOutputDir : $(Build.SourcesDirectory)\BuildOutput
+#     publishDir : $(Build.ArtifactStagingDirectory)
+#     artifactName: 'windowsappsdk_binaries'
+#   steps:
+#   - task: NuGetAuthenticate@0
+#     inputs:
+#       nuGetServiceConnections: 'TelemetryInternal'
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore of packages'
-    inputs:
-      command: 'custom'
-      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+#   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+#     displayName: 'NuGet restore of packages'
+#     inputs:
+#       command: 'custom'
+#       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml
-    parameters:
-      solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
-      nugetConfigPath: nuget.config
-      buildOutputDir: $(buildOutputDir)
-      publishDir: $(publishDir)
-      channel: ${{ variables.channel }}
+#   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildProject-Steps.yml
+#     parameters:
+#       solutionPath: 'dev\Bootstrap\CS\Microsoft.WindowsAppRuntime.Bootstrap.Net\Microsoft.WindowsAppRuntime.Bootstrap.Net.csproj'
+#       nugetConfigPath: nuget.config
+#       buildOutputDir: $(buildOutputDir)
+#       publishDir: $(publishDir)
+#       channel: ${{ variables.channel }}
 
-  - task: CopyFiles@2
-    displayName: 'Copy AnyCpu-built binaries'
-    inputs:
-      SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
-      Contents: |
-        Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.17763.0'
-      flattenFolders: false
+#   - task: CopyFiles@2
+#     displayName: 'Copy AnyCpu-built binaries'
+#     inputs:
+#       SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
+#       Contents: |
+#         Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
+#       TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.17763.0'
+#       flattenFolders: false
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
-      artifactName: FullNuget
+#   - task: PublishBuildArtifacts@1
+#     displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
+#     inputs:
+#       PathtoPublish: '$(Build.ArtifactStagingDirectory)\FullNuget'
+#       artifactName: FullNuget
 
-- job: BuildMRT
-  pool: $(ProjectReunionBuildPool)
-  strategy:
-    maxParallel: 10
-    matrix:
-      Release_x86:
-        buildPlatform: 'x86'
-        buildConfiguration: 'Release'
-      Release_x64:
-        buildPlatform: 'x64'
-        buildConfiguration: 'Release'
-      Release_Arm64:
-        buildPlatform: 'ARM64'
-        buildConfiguration: 'Release'
-  steps:
-  - task: NuGetAuthenticate@0
-    inputs:
-      nuGetServiceConnections: 'TelemetryInternal'
+# - job: BuildMRT
+#   pool: $(ProjectReunionBuildPool)
+#   strategy:
+#     maxParallel: 10
+#     matrix:
+#       Release_x86:
+#         buildPlatform: 'x86'
+#         buildConfiguration: 'Release'
+#       Release_x64:
+#         buildPlatform: 'x64'
+#         buildConfiguration: 'Release'
+#       Release_Arm64:
+#         buildPlatform: 'ARM64'
+#         buildConfiguration: 'Release'
+#   steps:
+#   - task: NuGetAuthenticate@0
+#     inputs:
+#       nuGetServiceConnections: 'TelemetryInternal'
 
-  - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
-    displayName: 'NuGet restore of packages'
-    inputs:
-      command: 'custom'
-      arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
+#   - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+#     displayName: 'NuGet restore of packages'
+#     inputs:
+#       command: 'custom'
+#       arguments: 'restore ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages.config -ConfigFile ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\nuget.config -PackagesDirectory ${{ parameters.WindowsAppRuntimeInsightsSourceDirectory }}\packages'
 
-  - template: build-mrt.yml
-    parameters:
-      buildJobName: 'BuildMRTCore'
+#   - template: build-mrt.yml
+#     parameters:
+#       buildJobName: 'BuildMRTCore'
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
+#   - task: BinSkim@3
+#     inputs:
+#       InputType: 'Basic'
+#       Function: 'analyze'
+#       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+#       AnalyzeVerbose: true
+#   - task: PostAnalysis@1
+#     inputs:
+#       AllTools: false
+#       APIScan: false
+#       BinSkim: true
+#       BinSkimBreakOn: 'Error'
+#       CodesignValidation: false
+#       CredScan: false
+#       FortifySCA: false
+#       FxCop: false
+#       ModernCop: false
+#       PoliCheck: false
+#       RoslynAnalyzers: false
+#       SDLNativeRules: false
+#       Semmle: false
+#       TSLint: false
+#       ToolLogsNotFoundAction: 'Standard'
 
-- job: PublishMRT
-  dependsOn:
-    - BuildMRT
-  condition: in(dependencies.BuildMRT.result, 'Succeeded')
-  pool: $(ProjectReunionBuildPool)
-  steps:
-  - template: publish-mrt.yml
+# - job: PublishMRT
+#   dependsOn:
+#     - BuildMRT
+#   condition: in(dependencies.BuildMRT.result, 'Succeeded')
+#   pool: $(ProjectReunionBuildPool)
+#   steps:
+#   - template: publish-mrt.yml
 
-- job: SignBinariesAndPublishSymbols
-  variables:
-    signingPattern: |
-        **/*.winmd
-        **/*.dll
-        **/*.exe
-  dependsOn:
-    - Build
-    - PublishMRT
-  condition: |
-    and
-    (
-      in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
-      in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
-    )
-  pool: $(ProjectReunionBuildPool)
+# - job: SignBinariesAndPublishSymbols
+#   variables:
+#     signingPattern: |
+#         **/*.winmd
+#         **/*.dll
+#         **/*.exe
+#   dependsOn:
+#     - Build
+#     - PublishMRT
+#   condition: |
+#     and
+#     (
+#       in(dependencies.PublishMRT.result, 'Succeeded', 'SucceededWithIssues', 'Skipped'),
+#       in(dependencies.Build.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
+#     )
+#   pool: $(ProjectReunionBuildPool)
 
-  steps:
-  - task: DownloadBuildArtifacts@0
-    condition:
-      eq(variables['useBuildOutputFromBuildId'],'')
-    inputs:
-      artifactName: FullNuget
-      downloadPath: '$(Build.ArtifactStagingDirectory)'
+#   steps:
+#   - task: DownloadBuildArtifacts@0
+#     condition:
+#       eq(variables['useBuildOutputFromBuildId'],'')
+#     inputs:
+#       artifactName: FullNuget
+#       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
-  - task: DownloadBuildArtifacts@0
-    condition:
-      ne(variables['useBuildOutputFromBuildId'],'')
-    inputs:
-      buildType: specific
-      buildVersionToDownload: specific
-      project: $(System.TeamProjectId)
-      pipeline: $(System.DefinitionId)
-      buildId: $(useBuildOutputFromBuildId)
-      artifactName: FullNuget
-      downloadPath: '$(Build.ArtifactStagingDirectory)'
+#   - task: DownloadBuildArtifacts@0
+#     condition:
+#       ne(variables['useBuildOutputFromBuildId'],'')
+#     inputs:
+#       buildType: specific
+#       buildVersionToDownload: specific
+#       project: $(System.TeamProjectId)
+#       pipeline: $(System.DefinitionId)
+#       buildId: $(useBuildOutputFromBuildId)
+#       artifactName: FullNuget
+#       downloadPath: '$(Build.ArtifactStagingDirectory)'
 
-  - task: CmdLine@1
-    displayName: 'Display build machine environment variables'
-    inputs:
-      filename: 'set'
+#   - task: CmdLine@1
+#     displayName: 'Display build machine environment variables'
+#     inputs:
+#       filename: 'set'
 
-  - script: cmd /c dir /s /b $(Build.ArtifactStagingDirectory)
-    displayName: Dump artifact staging directory
+#   - script: cmd /c dir /s /b $(Build.ArtifactStagingDirectory)
+#     displayName: Dump artifact staging directory
 
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
+#   - template: AzurePipelinesTemplates\WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
-  - task: CopyFiles@2
-    displayName: 'Copy symbols to artifact staging directory'
-    condition: always()
-    inputs:
-      sourceFolder: $(Build.ArtifactStagingDirectory)\fullnuget
-      contents: |
-        **\*.pdb
-      targetFolder: $(Build.ArtifactStagingDirectory)\symbols
+#   - task: CopyFiles@2
+#     displayName: 'Copy symbols to artifact staging directory'
+#     condition: always()
+#     inputs:
+#       sourceFolder: $(Build.ArtifactStagingDirectory)\fullnuget
+#       contents: |
+#         **\*.pdb
+#       targetFolder: $(Build.ArtifactStagingDirectory)\symbols
 
-# dump symbols artifact directory - this is normally turned off
-#  - script: |
-#      echo $(Build.ArtifactStagingDirectory)\symbols
-#      dir /s $(Build.ArtifactStagingDirectory)\symbols
+# # dump symbols artifact directory - this is normally turned off
+# #  - script: |
+# #      echo $(Build.ArtifactStagingDirectory)\symbols
+# #      dir /s $(Build.ArtifactStagingDirectory)\symbols
 
-  - task: PublishSymbols@2
-    displayName: 'Publish private symbols to internal server (without source indexing)'
-    inputs:
-      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-      symbolServerType: 'TeamServices'
-    # This ADO task does not support indexing of github sources currently :-(
-      indexSources: false
-      detailedLog: true
-    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
-    # To work around this issue, we just force LIB to be any dir that we know exists.
-    env:
-      LIB: $(Build.SourcesDirectory)
+#   - task: PublishSymbols@2
+#     displayName: 'Publish private symbols to internal server (without source indexing)'
+#     inputs:
+#       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+#       symbolServerType: 'TeamServices'
+#     # This ADO task does not support indexing of github sources currently :-(
+#       indexSources: false
+#       detailedLog: true
+#     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+#     # To work around this issue, we just force LIB to be any dir that we know exists.
+#     env:
+#       LIB: $(Build.SourcesDirectory)
 
-  - task: PublishSymbols@2
-    displayName: 'Publish symbols to public server(without source indexing)'
-    inputs:
-      searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
-      symbolServerType: 'TeamServices'
-    # This ADO task does not support indexing of github sources currently :-(
-      indexSources: false
-      detailedLog: true
-    # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
-    # To work around this issue, we just force LIB to be any dir that we know exists.
-    env:
-      LIB: $(Build.SourcesDirectory)
-      ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
-      ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
+#   - task: PublishSymbols@2
+#     displayName: 'Publish symbols to public server(without source indexing)'
+#     inputs:
+#       searchPattern: '$(Build.ArtifactStagingDirectory)\symbols\**\*.pdb'
+#       symbolServerType: 'TeamServices'
+#     # This ADO task does not support indexing of github sources currently :-(
+#       indexSources: false
+#       detailedLog: true
+#     # There is a bug which causes this task to fail if LIB includes an inaccessible path (even though it does not depend on it).
+#     # To work around this issue, we just force LIB to be any dir that we know exists.
+#     env:
+#       LIB: $(Build.SourcesDirectory)
+#       ArtifactServices_Symbol_AccountName: microsoftpublicsymbols
+#       ArtifactServices_Symbol_PAT: $(WinSDKLab_microsoftpublicsymbols_PAT)
 
-  - task: EsrpCodeSigning@1
-    inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
-      FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      Pattern: $(signingPattern)
-      UseMinimatch: true
-      signConfigType: 'inlineSignParams'
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230012",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-              {
-                "parameterName": "OpusName",
-                "parameterValue": "Microsoft"
-              },
-              {
-                "parameterName": "OpusInfo",
-                "parameterValue": "http://www.microsoft.com"
-              },
-              {
-                "parameterName": "PageHash",
-                "parameterValue": "/NPH"
-              },
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd sha256"
-              },
-              {
-                "parameterName": "TimeStamp",
-                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-              }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: '60'
-      MaxConcurrency: '50'
-      MaxRetryAttempts: '5'
-    condition:
-      eq(${{ parameters.ReleaseSigning }}, true)
+#   - task: EsrpCodeSigning@1
+#     inputs:
+#       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+#       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
+#       Pattern: $(signingPattern)
+#       UseMinimatch: true
+#       signConfigType: 'inlineSignParams'
+#       inlineOperation: |
+#         [
+#           {
+#             "keyCode": "CP-230012",
+#             "operationSetCode": "SigntoolSign",
+#             "parameters": [
+#               {
+#                 "parameterName": "OpusName",
+#                 "parameterValue": "Microsoft"
+#               },
+#               {
+#                 "parameterName": "OpusInfo",
+#                 "parameterValue": "http://www.microsoft.com"
+#               },
+#               {
+#                 "parameterName": "PageHash",
+#                 "parameterValue": "/NPH"
+#               },
+#               {
+#                 "parameterName": "FileDigest",
+#                 "parameterValue": "/fd sha256"
+#               },
+#               {
+#                 "parameterName": "TimeStamp",
+#                 "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+#               }
+#             ],
+#             "toolName": "signtool.exe",
+#             "toolVersion": "6.2.9304.0"
+#           }
+#         ]
+#       SessionTimeout: '60'
+#       MaxConcurrency: '50'
+#       MaxRetryAttempts: '5'
+#     condition:
+#       eq(${{ parameters.ReleaseSigning }}, true)
 
-  - task: EsrpCodeSigning@1
-    inputs:
-      ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
-      FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      Pattern: $(signingPattern)
-      UseMinimatch: true
-      signConfigType: 'inlineSignParams'
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-230072",
-            "operationSetCode": "SigntoolSign",
-            "parameters": [
-              {
-                "parameterName": "OpusName",
-                "parameterValue": "Microsoft"
-              },
-              {
-                "parameterName": "OpusInfo",
-                "parameterValue": "http://www.microsoft.com"
-              },
-              {
-                "parameterName": "PageHash",
-                "parameterValue": "/NPH"
-              },
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd sha256"
-              },
-              {
-                "parameterName": "TimeStamp",
-                "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
-              }
-            ],
-            "toolName": "signtool.exe",
-            "toolVersion": "6.2.9304.0"
-          }
-        ]
-      SessionTimeout: '60'
-      MaxConcurrency: '50'
-      MaxRetryAttempts: '5'
-    condition:
-      eq(${{ parameters.ReleaseSigning }}, false)
+#   - task: EsrpCodeSigning@1
+#     inputs:
+#       ConnectedServiceName: 'Project Reunion ESRP Code Signing Connection'
+#       FolderPath: '$(Build.ArtifactStagingDirectory)\fullnuget'
+#       Pattern: $(signingPattern)
+#       UseMinimatch: true
+#       signConfigType: 'inlineSignParams'
+#       inlineOperation: |
+#         [
+#           {
+#             "keyCode": "CP-230072",
+#             "operationSetCode": "SigntoolSign",
+#             "parameters": [
+#               {
+#                 "parameterName": "OpusName",
+#                 "parameterValue": "Microsoft"
+#               },
+#               {
+#                 "parameterName": "OpusInfo",
+#                 "parameterValue": "http://www.microsoft.com"
+#               },
+#               {
+#                 "parameterName": "PageHash",
+#                 "parameterValue": "/NPH"
+#               },
+#               {
+#                 "parameterName": "FileDigest",
+#                 "parameterValue": "/fd sha256"
+#               },
+#               {
+#                 "parameterName": "TimeStamp",
+#                 "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+#               }
+#             ],
+#             "toolName": "signtool.exe",
+#             "toolVersion": "6.2.9304.0"
+#           }
+#         ]
+#       SessionTimeout: '60'
+#       MaxConcurrency: '50'
+#       MaxRetryAttempts: '5'
+#     condition:
+#       eq(${{ parameters.ReleaseSigning }}, false)
 
-  # Re-publish signed artifacts to the fullnuget artifact.
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: FullNuget'
-    inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
-      artifactName: 'FullNuget'
+#   # Re-publish signed artifacts to the fullnuget artifact.
+#   - task: PublishBuildArtifacts@1
+#     displayName: 'Publish artifact: FullNuget'
+#     inputs:
+#       PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
+#       artifactName: 'FullNuget'
 
-# Create Nuget Package
-- template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
-  parameters:
-    jobName: CreateNugetPackage
-    dependsOn: SignBinariesAndPublishSymbols
-    signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
-    useReleaseTag: '$(WindowsAppSDKFinalRelease)'
-    prereleaseVersionTag: nightly
-    buildPool: $(ProjectReunionBuildPool)
+# # Create Nuget Package
+# - template: AzurePipelinesTemplates\WindowsAppSDK-CreateNugetPackage-Job.yml
+#   parameters:
+#     jobName: CreateNugetPackage
+#     dependsOn: SignBinariesAndPublishSymbols
+#     signConfigPattern: 'Microsoft.WindowsAppSDK*.nupkg'
+#     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
+#     prereleaseVersionTag: nightly
+#     buildPool: $(ProjectReunionBuildPool)
 
-# Build WinAppSDK
-- job: WinAppSDKIntegrationBuild
-  dependsOn: ['CreateNugetPackage']
-  condition: succeeded()
-  pool: $(ProjectReunionBuildPool)
-  variables:
-    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
-  steps:
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
-      parameters:
-        ArtifactName: 'FullNuget'
+# # Build WinAppSDK
+# - job: WinAppSDKIntegrationBuild
+#   dependsOn: ['CreateNugetPackage']
+#   condition: succeeded()
+#   pool: $(ProjectReunionBuildPool)
+#   variables:
+#     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+#   steps:
+#     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+#       parameters:
+#         ArtifactName: 'FullNuget'
 
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
-      parameters:
-        BuildType: 'stable'
-        TransportPackages: 
-          FoundationPackage:
-            Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-            Version: $(WindowsAppSDKPackageVersion)
+#     - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
+#       parameters:
+#         BuildType: 'stable'
+#         TransportPackages: 
+#           FoundationPackage:
+#             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+#             Version: $(WindowsAppSDKPackageVersion)
 
 - template: AzurePipelinesTemplates\WindowsAppSDK-BuildIntegrationTests-Job.yml
   parameters:
     jobName: "WinAppSDKIntegrationTests"
-    dependsOn: WinAppSDKIntegrationBuild
-    condition: succeeded()
+    # dependsOn: WinAppSDKIntegrationBuild
+    # condition: succeeded()
 
 # # Publish
 # - job: Publish

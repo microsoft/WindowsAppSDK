@@ -14,9 +14,9 @@ parameters:
 
 jobs:
 - job: ${{ parameters.jobName }}
-  dependsOn:
-    - ${{ parameters.dependsOn }}
-  condition: ${{ parameters.condition }}
+  # dependsOn:
+  #   - ${{ parameters.dependsOn }}
+  # condition: ${{ parameters.condition }}
   pool: $(ProjectReunionBuildPool)
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
@@ -27,23 +27,23 @@ jobs:
       inputs:
         nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}
 
-    # - task: DownloadPipelineArtifact@2
-    #   displayName: 'Download Installer x64 for Download Center'
-    #   inputs:
-    #     source: 'specific'
-    #     project: '$(System.TeamProjectId)'
-    #     pipeline: '57248'
-    #     runVersion: 'specific'
-    #     pipelineId: 43360849
-    #     artifactName: WindowsAppSDKNugetPackage
-    #     path: '$(Build.SourcesDirectory)\temp'
-
-    - task: DownloadBuildArtifacts@0
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Installer x64 for Download Center'
       inputs:
+        source: 'specific'
+        project: '$(System.TeamProjectId)'
+        pipeline: '57248'
+        runVersion: 'specific'
+        pipelineId: 43396406
         artifactName: WindowsAppSDKNugetPackage
-        downloadPath: '$(Build.SourcesDirectory)\temp'
-        itemPattern: |
-          **/*.nupkg
+        path: '$(Build.SourcesDirectory)\temp'
+
+    # - task: DownloadBuildArtifacts@0
+    #   inputs:
+    #     artifactName: WindowsAppSDKNugetPackage
+    #     downloadPath: '$(Build.SourcesDirectory)\temp'
+    #     itemPattern: |
+    #       **/*.nupkg
 
     - task: PowerShell@2
       displayName: Extract WindowsAppSDKVersion
@@ -94,6 +94,7 @@ jobs:
     - task: PowerShell@2
       name: TestAll
       displayName: TestAll
+      failOnStderr: true
       inputs:
         filePath: 'TestAll.ps1'
         arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none"
