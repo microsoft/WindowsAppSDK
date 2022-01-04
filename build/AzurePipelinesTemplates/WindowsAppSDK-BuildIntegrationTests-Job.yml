@@ -85,5 +85,5 @@ jobs:
       displayName: TestAll
       inputs:
         filePath: 'TestAll.ps1'
-        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -YamlStep "BuildTests" -Checkpoint "none" -Platform "x64" -Configuration "release"
+        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release"
 
