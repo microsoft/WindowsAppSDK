@@ -1,11 +1,22 @@
 parameters:
+  - name: jobName
+    type: string
+    default: ''
+  - name: dependsOn
+    type: string
+    default: ''
+  - name: condition
+    type: string
+    default: ''
   - name: NuGetServiceConnectionName
     type: string
     default: 'ProjectReunionInternal'
 
 jobs:
-- job: BuildIntegrationTest
-  condition: succeeded()
+- job: ${{ parameters.jobName }}
+  dependsOn:
+    - ${{ parameters.dependsOn }}
+  condition: ${{ parameters.condition }}
   pool: $(ProjectReunionBuildPool)
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
@@ -16,23 +27,23 @@ jobs:
       inputs:
         nuGetServiceConnections: ${{ parameters.NuGetServiceConnectionName }}
 
-    - task: DownloadPipelineArtifact@2
-      displayName: 'Download Installer x64 for Download Center'
-      inputs:
-        source: 'specific'
-        project: '$(System.TeamProjectId)'
-        pipeline: '57248'
-        runVersion: 'specific'
-        pipelineId: 43360849
-        artifactName: WindowsAppSDKNugetPackage
-        path: '$(Build.SourcesDirectory)\temp'
-
-    # - task: DownloadBuildArtifacts@0
+    # - task: DownloadPipelineArtifact@2
+    #   displayName: 'Download Installer x64 for Download Center'
     #   inputs:
+    #     source: 'specific'
+    #     project: '$(System.TeamProjectId)'
+    #     pipeline: '57248'
+    #     runVersion: 'specific'
+    #     pipelineId: 43360849
     #     artifactName: WindowsAppSDKNugetPackage
-    #     downloadPath: '$(Build.SourcesDirectory)\temp'
-    #     itemPattern: |
-    #       **/*.nupkg
+    #     path: '$(Build.SourcesDirectory)\temp'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: WindowsAppSDKNugetPackage
+        downloadPath: '$(Build.SourcesDirectory)\temp'
+        itemPattern: |
+          **/*.nupkg
 
     - task: PowerShell@2
       displayName: Extract WindowsAppSDKVersion
@@ -85,5 +96,5 @@ jobs:
       displayName: TestAll
       inputs:
         filePath: 'TestAll.ps1'
-        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release"
+        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none"
 
