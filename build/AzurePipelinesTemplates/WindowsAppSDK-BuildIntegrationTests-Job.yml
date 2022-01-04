@@ -94,8 +94,8 @@ jobs:
     - task: PowerShell@2
       name: TestAll
       displayName: TestAll
-      failOnStderr: true
       inputs:
+        failOnStderr: true
         filePath: 'TestAll.ps1'
         arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none"
 
