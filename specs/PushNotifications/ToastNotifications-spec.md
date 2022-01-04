@@ -116,8 +116,8 @@ response to the Toast Action.
 ```cpp
 int main()
 {
-     auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid(c_comServerId));
-    ToastNotificationManager::Default().RegisterActivator(activationInfo);
+    auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid(c_comServerId));
+    AppNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -125,7 +125,7 @@ int main()
     if (kind == ExtendedActivationKind::Launch)
     {
         // App is launched in Foreground. So intercept toast activators via Foreground event
-        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, const ToastActivatedEventArgs& toastActivatedEventArgs)
+        const auto token = AppNotificationManager::Default().ToastActivated([](const auto&, const ToastActivatedEventArgs& toastActivatedEventArgs)
         {
                 ProcessToastArgs(toastActivatedEventArgs);
         });
@@ -133,7 +133,7 @@ int main()
         // App does Foreground Stuff Here
 
         // Cleanup
-        ToastNotificationManager::Default().ToastActivated(token);
+        AppNotificationManager::Default().ToastActivated(token);
     }
     else if (kind == ExtendedActivationKind::ToastNotification)
     {
@@ -158,7 +158,7 @@ int main()
     Uri absoluteFilePath(LR"(C:\test\icon.png)");
     ToastAssets assets(L"SampleApp", absoluteFilePath);
     auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
-    ToastNotificationManager::Default().RegisterActivator(activationInfo);
+    AppNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
@@ -166,7 +166,7 @@ int main()
     if (kind == ExtendedActivationKind::Launch)
     {
         // App is launched in FG. So intercept toast activators via FG event
-        const auto token = ToastNotificationManager::Default().ToastActivated([](const auto&, const ToastActivatedEventArgs& toastActivatedEventArgs)
+        const auto token = AppNotificationManager::Default().ToastActivated([](const auto&, const ToastActivatedEventArgs& toastActivatedEventArgs)
             {
                 ProcessToastArgs(toastActivatedEventArgs);
             });
@@ -174,7 +174,7 @@ int main()
         // App does Foreground Stuff Here
 
         // Cleanup
-        ToastNotificationManager::Default().ToastActivated(token);
+        AppNotificationManager::Default().ToastActivated(token);
     }
     else if (kind == ExtendedActivationKind::ToastNotification)
     {
@@ -202,7 +202,7 @@ void DisplayToast(const winrt::Windows::Data::Xml::Dom::XmlDocument& doc)
     toast.Tag(L"Tag");
     toast.Group(L"Group");
     toast.ExpiresOnReboot(true);
-    ToastNotificationManager::Default().ShowToast(toast);
+    AppNotificationManager::Default().ShowToast(toast);
 }
 ```
 
@@ -613,10 +613,9 @@ developer adds an attribute to the image element and sets the text fields in the
 
 ```cpp
 // Uses an API template to Compose and Display a toast
-// Uses an API template to Compose and Display a toast
 void CreateToastPayload()
 {
-    auto doc = ToastNotificationManager::Default().GetXmlTemplateContent(ToastTemplateType::ToastWithAvatar);
+    auto doc = AppNotificationManager::Default().GetXmlTemplateContent(ToastTemplateType::ToastWithAvatar);
     auto srcAttribute = doc.CreateAttribute(L"src");
     srcAttribute.Value(L"images/toastImageAndText.png");
     auto images = doc.GetElementsByTagName(L"image");
@@ -683,24 +682,26 @@ void ProcessToastArgs(const ToastActivatedEventArgs& toastActivatedEventArgs)
 }
 ```
 
-## Processing Toast History
+## Processing Active Notifications
 
-The ToastHistory component is always used to perform Delete and Get operations on behalf of the app.
+Active Notifications are payloads that have already been displayed by the app and show up in the
+Action Centre. We can perform a number of operations on these notifications such as retrieval and
+deletion.
 
 ```cpp
 // Get a List of all toasts from the Action Centre
 winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IVector<ToastNotification>> GetToastListASync()
 {
-    auto toastHistory = ToastNotificationManager::Default().History();
-    auto toasts = co_await toastHistory.GetAllAsync();
+    auto activeNotifications = AppNotificationManager::Default().ActiveNotifications();
+    auto toasts = co_await activeNotifications.GetAllAsync();
     co_return toasts;
 }
 
 // Remove a prior toast using tag and group
 winrt::Windows::Foundation::IAsyncAction RemoveToast(const winrt::hstring& tag, const winrt::hstring& group)
 {
-    auto toastHistory = ToastNotificationManager::Default().History();
-    co_await toastHistory.RemoveWithTagGroupAsync(tag, group);
+    auto activeNotifications = AppNotificationManager::Default().ActiveNotifications();
+    co_await activeNotifications.RemoveWithTagGroupAsync(tag, group);
 }
 ```
 
@@ -747,7 +748,7 @@ void SendUpdatableToastWithProgress()
     data.SequenceNumber(1);
 
     toast.Progress(data);
-    ToastNotificationManager::Default().ShowToast(toast);
+    AppNotificationManager::Default().ShowToast(toast);
 }
 
 // Send subsequent progress updates
@@ -763,7 +764,7 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
     data.ValueStringOverride(L"18/26 songs"); // Binds to {progressValueString} in xml payload
     data.SequenceNumber(2);
 
-    auto result = co_await ToastNotificationManager::Default().UpdateToastProgressDataAsync(data, tag, group);
+    auto result = co_await AppNotificationManager::Default().UpdateToastProgressDataAsync(data, tag, group);
     if (result != ToastProgressResult::Succeeded)
     {
         LOG_HR_MSG(E_UNEXPECTED, "Toast Progress Update Failed!");
@@ -799,7 +800,6 @@ would need to be pre-set to a well-known string that defines Toast Activation Tr
   </com:Extension>
 </Extensions>
 ```
-
 # API Details
 
 ```c#
@@ -807,16 +807,16 @@ would need to be pre-set to a well-known string that defines Toast Activation Tr
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.Windows.ToastNotifications
+namespace Microsoft.Windows.AppNotifications
 {
     [experimental]
-    // The Shell asset details for Unpackaged App Registrations 
+    // The Shell asset details for Unpackaged App Registrations
     runtimeclass ToastAssets
     {
         // Initialize using Shell assets like DisplayName and iconPath
         ToastAssets(String displayName, Windows.Foundation.Uri iconUri);
 
-        // The App friendly DisplayName for the toast in Action Centre 
+        // The App friendly DisplayName for the toast in Action Centre
         String DisplayName { get; };
 
         // The full file path for the icon image
@@ -859,7 +859,7 @@ namespace Microsoft.Windows.ToastNotifications
         ToastProgressData();
 
         // Gets or sets the sequence number of this notification data.
-        // When multiple ToastProgressData objects are received, the system displays the data with the greatest non-zero number. 
+        // When multiple ToastProgressData objects are received, the system displays the data with the greatest non-zero number.
         UInt32 SequenceNumber;
 
         // Gets/Sets the value for the title. Binds to {progressTitle} in progress xml tag.
@@ -959,7 +959,7 @@ namespace Microsoft.Windows.ToastNotifications
 
     [experimental]
     // Supports Toast related operations for all prior displayed Toasts in Action Centre
-    runtimeclass ToastNotificationHistory
+    runtimeclass ActiveNotifications
     {
         // Removes a specific toast with a specific toastIdentifier from Action Centre
         Windows.Foundation.IAsyncAction RemoveWithIdentiferAsync(UInt32 toastIdentifier);
@@ -981,11 +981,11 @@ namespace Microsoft.Windows.ToastNotifications
     };
 
     [experimental]
-    // The manager class which encompasses all Toast API Functionality
-    runtimeclass ToastNotificationManager
+    // The manager class which encompasses all App Notification API Functionality
+    runtimeclass AppNotificationManager
     {
-        // Gets a Default instance of a ToastNotificationManager
-        static ToastNotificationManager Default{ get; };
+        // Gets a Default instance of a AppNotificationManager
+        static AppNotificationManager Default{ get; };
 
         // Register an activator using an ActivationInfo context and caches the token for unregister
         void RegisterActivator(ToastActivationInfo details);
@@ -1008,20 +1008,24 @@ namespace Microsoft.Windows.ToastNotifications
         // Get the Toast Setting status for the app
         ToastNotificationSetting Setting{ get; };
 
-        // Gets an instance of ToastHistory
-        ToastNotificationHistory History{ get; };
+        // Gets an instance of Active Notifications
+        ActiveNotifications ActiveNotifications { get; };
 
         // Gets an Xml Payload based on a predefined Toast Template
         Windows.Data.Xml.Dom.XmlDocument GetXmlTemplateContent(ToastTemplateType type);
     };
 }
+
 ```
 
 # Appendix
 
--   To support cloud toasts, the developer will need to register the Toast Activator in
-    addition to the Push Activator registrations that are already being done. The Windows SDK will
-    in turn figure out the complexity of mapping cloud based toasts to the correct Toast Activator.
--   Since building Toast XML payloads at runtime is non-trivial, we encourage developers to
-    utilize the [Windows Community Toolkit](https://docs.microsoft.com/windows/communitytoolkit/), specifically the [ToastContentBuilder](https://docs.microsoft.com/dotnet/api/microsoft.toolkit.uwp.notifications.toastcontentbuilder) APIs to
-    construct the XML payload in the short term. Alternatively, they can also use the ToastTemplates that the Windows App SDK will provide to build their own toasts.
+-   To support cloud toasts, the developer will need to register the Toast Activator in addition to
+    the Push Activator registrations that are already being done. The Windows SDK will in turn
+    figure out the complexity of mapping cloud based toasts to the correct Toast Activator.
+-   Since building Toast XML payloads at runtime is non-trivial, we encourage developers to utilize
+    the [Windows Community Toolkit](https://docs.microsoft.com/windows/communitytoolkit/),
+    specifically the
+    [ToastContentBuilder](https://docs.microsoft.com/dotnet/api/microsoft.toolkit.uwp.notifications.toastcontentbuilder)
+    APIs to construct the XML payload in the short term. Alternatively, they can also use the
+    ToastTemplates that the Windows App SDK will provide to build their own toasts.
