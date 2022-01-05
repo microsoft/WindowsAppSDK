@@ -437,7 +437,7 @@ jobs:
     buildPool: $(ProjectReunionBuildPool)
 
 # Build WinAppSDK
-- job: WinAppSDKIntegrationBuild
+- job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
@@ -455,12 +455,9 @@ jobs:
           FoundationPackage:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKPackageVersion)
+    
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-IntegrationTest-Steps.yml
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-BuildIntegrationTests-Job.yml
-  parameters:
-    jobName: "WinAppSDKIntegrationTests"
-    dependsOn: WinAppSDKIntegrationBuild
-    condition: succeeded()
 
 # # Publish
 # - job: Publish

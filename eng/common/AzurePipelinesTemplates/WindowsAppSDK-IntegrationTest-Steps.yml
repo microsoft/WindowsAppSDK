@@ -1,0 +1,67 @@
+paramters:
+  - name: TestList
+    displayName: OS Images to Test on
+    type: object
+
+steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      artifactName: WindowsAppSDKNugetPackage
+      downloadPath: '$(Build.SourcesDirectory)\temp'
+      itemPattern: |
+        **/*.nupkg
+
+  - task: PowerShell@2
+    displayName: Extract WindowsAppSDKVersion
+    inputs:
+      targetType: 'inline'
+      script: |
+        Copy-Item -Path "$(Build.SourcesDirectory)\temp" -Destination "$(Build.SourcesDirectory)\PackLocation" -Recurse
+
+        $files = Get-ChildItem $(Build.SourcesDirectory)\temp
+        foreach ($file in $files) # Iterate through each package we restored in the directory
+        {
+          Write-Host "file:" $file.FullName
+          $nupkgPaths = Get-ChildItem $file.FullName -Filter "*.nupkg"
+
+          # Extract nupkg to access the nuspec
+          # The files in this directory does not contain the nuspec by default
+          foreach ($nupkgPath in $nupkgPaths)
+          {
+            Write-Host "nupkgPath:" $nupkgPath.FullName
+            $rename = $nupkgPath.Name + ".zip"
+            Rename-Item $nupkgPath.FullName $rename
+            $renamedFilePath = $nupkgPath.FullName + ".zip"
+            $dest = $file.FullName + "/contents"
+            Expand-Archive $renamedFilePath -Destination $dest
+          }
+          
+          $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
+          foreach ($nuspecPath in $nuspecPaths)
+          {
+            Write-Host "Found Nuspecs"
+            Write-Host "Comparing dependencies in " $nuspecPath.Name
+            [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
+            if ($nuspec.package.metadata.id -eq 'Microsoft.WindowsAppSDK')
+            {
+              $version = $nuspec.package.metadata.version
+              Write-Host "Found " $version
+              Write-Host "##vso[task.setvariable variable=WindowsAppSDKPackageVersion;]$version"
+              Exit 0
+            }
+          }
+        }
+        Exit 1
+
+  - script: |
+      dir /s $(Build.SourcesDirectory)
+    displayName: 'DEBUG'
+
+  - task: PowerShell@2
+    name: TestAll
+    displayName: TestAll
+    inputs:
+      failOnStderr: true
+      filePath: 'TestAll.ps1'
+      arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none" -RunTestMachineSetup
+
