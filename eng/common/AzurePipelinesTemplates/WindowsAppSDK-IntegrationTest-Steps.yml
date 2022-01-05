@@ -1,4 +1,4 @@
-paramters:
+parameters:
   - name: TestList
     displayName: OS Images to Test on
     type: object
