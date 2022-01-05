@@ -99,5 +99,5 @@ jobs:
       inputs:
         failOnStderr: true
         filePath: 'TestAll.ps1'
-        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none"
+        arguments: -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none" -RunTestMachineSetup
 
