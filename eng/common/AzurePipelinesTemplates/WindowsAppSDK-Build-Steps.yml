@@ -46,6 +46,7 @@ steps:
     name: BuildAll
     displayName: BuildAll
     inputs:
+      failOnStderr: true
       filePath: 'BuildAll.ps1'
       arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none" -Platform "x86,x64,arm64" -Configuration "release,debug" -YamlStep "none"
 
