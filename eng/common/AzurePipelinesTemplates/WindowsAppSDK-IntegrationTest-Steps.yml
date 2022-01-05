@@ -2,6 +2,7 @@ parameters:
   - name: TestList
     displayName: OS Images to Test on
     type: object
+    default: ""
 
 steps:
   - task: DownloadBuildArtifacts@0
