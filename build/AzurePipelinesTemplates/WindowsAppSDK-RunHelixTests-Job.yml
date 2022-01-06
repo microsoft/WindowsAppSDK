@@ -92,6 +92,10 @@ jobs:
       SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)'
       Contents: |
         PushNotificationTests\**
+        PowerNotifications\**
+        PushNotificationsLongRunningTask\**
+        DynamicDependencyLifetimeManager\**
+        DynamicDependencyLifetimeManagerShadow\**
       TargetFolder: '$(Agent.TempDirectory)\pushnotification_testbin\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
