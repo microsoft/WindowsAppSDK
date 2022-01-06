@@ -237,7 +237,7 @@ int main() try
 
     ::Test::Bootstrap::SetupBootstrap();
 
-    /*auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
+    auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
     if (kind == winrt::ExtendedActivationKind::Launch)
@@ -247,9 +247,6 @@ int main() try
 
         testResult = runUnitTest(unitTest);
     }
-    */
-
-    testResult = VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged();
 
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure
 }
