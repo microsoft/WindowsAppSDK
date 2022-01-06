@@ -24,6 +24,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         return m_extendedError;
     }
+
+    // Look at me, I've added a comment here...
     PushNotificationChannelStatus PushNotificationCreateChannelResult::Status()
     {
         return m_status;
