@@ -87,6 +87,8 @@ jobs:
   - script: |
       echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
       echo dest: $(Agent.TempDirectory)\pushnotification_testbin\$(buildPlatform)
+      dir D:\WindowsAppSDK\BuildOutput\Release\x64
+      dir D:\WindowsAppSDK\BuildOutput\Release\x64\PushNotificationTests
     displayName: 'Copy push notification tests debug'
 
   # Copy and Publish the test binaries so we can run them in Helix later.
