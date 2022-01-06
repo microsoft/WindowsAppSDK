@@ -84,18 +84,24 @@ jobs:
       artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
       downloadPath: $(testPayloadDir)
 
+  - script: |
+      echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
+      echo dest: $(Agent.TempDirectory)\pushnotification_testbin\$(buildPlatform)
+    displayName: 'Copy push notification tests debug'
+
   # Copy and Publish the test binaries so we can run them in Helix later.
   - task: CopyFiles@2
     displayName: 'copy push notifications test binaries'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
-      SourceFolder: 'D:\a\1\s\BuildOutput\Release\$(buildPlatform)'
+      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)'
       Contents: |
         PushNotificationTests\**
         PowerNotifications\**
         PushNotificationsLongRunningTask\**
         DynamicDependencyLifetimeManager\**
         DynamicDependencyLifetimeManagerShadow\**
+        WindowsAppRuntime_DLL\**
       TargetFolder: '$(Agent.TempDirectory)\pushnotification_testbin\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
