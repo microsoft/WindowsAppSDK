@@ -89,7 +89,7 @@ jobs:
     displayName: 'copy push notifications test binaries'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)'
+      SourceFolder: 'D:\a\1\s\BuildOutput\Release\$(buildPlatform)'
       Contents: |
         PushNotificationTests\**
         PowerNotifications\**
