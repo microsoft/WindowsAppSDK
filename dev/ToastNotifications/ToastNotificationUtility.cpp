@@ -207,7 +207,6 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
     else
     {
         THROW_HR_IF(status, FAILED_WIN32(status));
+        return registeredGuidBuffer;
     }
-
-    return registeredGuidBuffer;
 }

@@ -43,6 +43,7 @@ bool VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged()
 
     return false;
 }
+
 bool VerifyFailedRegisterActivatorUsingNullAssets()
 {
     try
@@ -69,7 +70,7 @@ bool VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged()
     }
     catch (...)
     {
-        return winrt::to_hresult() == E_INVALIDARG;
+        return winrt::to_hresult() == E_POINTER;
     }
 
     return false;
@@ -117,6 +118,74 @@ bool VerifyFailedMultipleRegisterActivatorUsingSameClsid()
     return false;
 }
 
+bool VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged()
+{
+    try
+    {
+        winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+
+        auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+
+        winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
+
+        winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged()
+{
+    try
+    {
+        winrt::ToastAssets assets(L"", winrt::Uri{LR"(C:\Windows\System32\WindowsSecurityIcon.png)"});
+
+        auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged()
+{
+    try
+    {
+        winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ L""});
+
+        auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_POINTER;
+    }
+
+    return false;
+}
+
+bool VerifyFailedToastAssetsWithNullIconPath_Unpackaged()
+{
+    try
+    {
+        winrt::ToastAssets assets(L"ToastNotificationApp", nullptr);
+
+        auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_POINTER;
+    }
+
+    return false;
+}
+
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
     std::string unitTestName = to_string(launchArgs.Arguments());
@@ -138,7 +207,10 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", &VerifyRegisterActivatorandUnRegisterActivatorUsingClsid },
         { "VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", &VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged },
         { "VerifyFailedMultipleRegisterActivatorUsingSameClsid", &VerifyFailedMultipleRegisterActivatorUsingSameClsid },
-        { "VerifyFailedMultipleRegisterActivatorUsingSameClsid_Unpackaged", &VerifyFailedMultipleRegisterActivatorUsingSameClsid }
+        { "VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", &VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged },
+        { "VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged", &VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged },
+        { "VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", &VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged },
+        { "VerifyFailedToastAssetsWithNullIconPath_Unpackaged", &VerifyFailedToastAssetsWithNullIconPath_Unpackaged },
     };
     return switchMapping;
 }
@@ -165,7 +237,7 @@ int main() try
 
     ::Test::Bootstrap::SetupBootstrap();
 
-    auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
+    /*auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
     if (kind == winrt::ExtendedActivationKind::Launch)
@@ -175,6 +247,9 @@ int main() try
 
         testResult = runUnitTest(unitTest);
     }
+    */
+
+    testResult = VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged();
 
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure
 }

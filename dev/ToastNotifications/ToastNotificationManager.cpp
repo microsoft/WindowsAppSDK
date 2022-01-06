@@ -11,16 +11,9 @@
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
-static int g_toastHandlerCount = 0;
-
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers()
 {
     return g_toastHandlers;
-}
-
-int& GetToastHandleCount()
-{
-    return g_toastHandlerCount;
 }
 
 namespace winrt
@@ -44,7 +37,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
 
-        THROW_HR_IF(E_INVALIDARG, (details == nullptr));
+        THROW_HR_IF_NULL(E_INVALIDARG, details);
 
         std::wstring storedComActivatorString;
         if (!AppModel::Identity::IsPackagedProcess())

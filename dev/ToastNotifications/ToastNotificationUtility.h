@@ -12,7 +12,6 @@ const std::wstring c_quote{ LR"(")" };
 const std::wstring c_toastActivatedArgument{ L" ----ToastActivated:" };
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers();
-int& GetToastHandleCount();
 
 inline const int GUID_LENGTH = 36;
 

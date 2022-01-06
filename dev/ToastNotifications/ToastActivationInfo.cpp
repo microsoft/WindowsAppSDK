@@ -17,7 +17,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF_MSG(E_ILLEGAL_METHOD_CALL, AppModel::Identity::IsPackagedProcess(), "Not applicable for packaged applications");
 
-        THROW_HR_IF(E_INVALIDARG, (assets == nullptr));
+        THROW_HR_IF_NULL_MSG(E_POINTER, assets, "Invalid Toast asset parameter");
+
+        THROW_HR_IF_NULL_MSG(E_POINTER, assets.IconPath(), "Invalid Toast asset IconUri");
+
+        THROW_HR_IF_MSG(E_INVALIDARG, (assets.DisplayName().size() == 0), "Displayname string is empty");
 
         return winrt::make<ToastActivationInfo>(assets);
     }

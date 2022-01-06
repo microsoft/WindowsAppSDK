@@ -48,7 +48,7 @@ namespace Test::ToastNotifications
         {
             try
             {
-                // Cleanup previous installations
+                // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
                 TP::RemovePackage(GetTestPackageFullName());
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
@@ -183,19 +183,34 @@ namespace Test::ToastNotifications
             RunTest(L"VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", testWaitTime());
-        }
-
         TEST_METHOD(VerifyFailedMultipleRegisterActivatorUsingSameClsid)
         {
             RunTest(L"VerifyFailedMultipleRegisterActivatorUsingSameClsid", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedMultipleRegisterActivatorUsingSameClsid_Unpackaged)
+        TEST_METHOD(VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged)
         {
-            RunTest(L"VerifyFailedMultipleRegisterActivatorUsingSameClsid", testWaitTime());
+            RunTestUnpackaged(L"VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedToastAssetsWithNullIconPath_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", testWaitTime());
         }
     };
 }

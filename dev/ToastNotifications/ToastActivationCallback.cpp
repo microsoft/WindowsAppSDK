@@ -31,14 +31,16 @@ HRESULT __stdcall ToastActivationCallback::Activate(
     winrt::ToastActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::ToastNotifications::implementation::ToastActivatedEventArgs>(invokedArgs, userInput);
 
     
-    if (GetToastHandleCount() > 0)
+    if (GetToastHandlers())
     {
-        /* Process is already Launched get toast event handlers for the activatedeventargs */
+        /* As the process is already launched, we invoke the foreground toast event handlers with the activatedeventargs */
         GetToastHandlers()(*this, activatedEventArgs);
     }
     else
     {
-        /* Process Launch */
+        /* Activation results in a process launch, we cache the activatedEventArgs in the COM static store
+           and fire an event to let the main thread know that it is okay to infer into AppLifeCycle::GetToastActivatedEventArgs().
+        */
         auto appProperties = winrt::CoreApplication::Properties();
         appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
         SetEvent(GetWaitHandleForArgs().get());
