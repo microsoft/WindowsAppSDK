@@ -24,6 +24,20 @@ parameters:
   - name: TestList
     type: object
     default: ""
+  - name: BuildType
+    displayName: "Build Type"
+    type: string
+    default: 'stable'
+    values:
+    - 'stable'
+    - 'experimental'
+  - name: "TransportPackages"
+    displayName: "TransportPackages to replace (name:version)"
+    type: object
+    default:
+      Foundation: 
+        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+        version: 1.0.0-stable
 
 steps:
   - task: DownloadBuildArtifacts@0
@@ -79,6 +93,7 @@ steps:
     name: TestAll
     displayName: TestAll
     inputs:
+      failOnStderr: true
       filePath: 'TestAll.ps1'
       arguments: > 
         -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"
