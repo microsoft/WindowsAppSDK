@@ -87,8 +87,8 @@ jobs:
   - script: |
       echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
       echo dest: $(Agent.TempDirectory)\pushnotification_testbin\$(buildPlatform)
-      dir $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
-    displayName: 'Copy push notification tests debug'
+      dir $(Build.SourcesDirectory)\BuildOutput /s
+    displayName: 'debug copy push notification tests'
 
   # Copy and Publish the test binaries so we can run them in Helix later.
   - task: CopyFiles@2
