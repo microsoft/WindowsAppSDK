@@ -25,10 +25,6 @@ steps:
     msbuildArgs: /binaryLogger:$(Build.SourcesDirectory)\${{ parameters.displayName }}.$(buildConfiguration).$(buildPlatform).binlog /restore ${{ parameters.additionalMsBuildArgs }}
     logProjectEvents: false
 
-  - script: |
-      dir D:\a\1\s\BuildOutput /s
-    displayName: 'debug dump build dir'
-
 - task: PublishBuildArtifacts@1
   displayName: 'Publish ${{ parameters.displayName }} binlog'
   condition: always()
