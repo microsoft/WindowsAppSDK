@@ -1,13 +1,34 @@
+# This yml template is for running the testAll script in ProjectReunionInternal
+# It downloads the WindowsAppSDK NuGetPackage from WindowsAppSDKNugetPackage (by default)
+#
+# Requirements:
+# - This yml template can only be called from a pipeline in the "microsoft" AzureDevOps 
+# - Only the ProjectReunionInternal repository is checkout in the job
+#
+# The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+# will facilitate setting up the requirements to sucessfully run this template.
+# eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml will build the 
+# WindowsAppSDK Nuget Package for this template to use.
+# 
+# In most cases, WindowsAppSDK-BuildSetup-Steps.yml should be called first,
+# then WindowsAppSDK-Build-Steps.yml, and finally WindowsAppSDK-IntegrationTest-Steps.yml
+#
+# Parameters:
+#   ArtifactName
+#     Name of the Artifact where the WindowsAppSDK NuGetPackage for the build lives
+
 parameters:
+  - name: ArtifactName
+    type: string
+    default: "WindowsAppSDKNugetPackage"
   - name: TestList
-    displayName: OS Images to Test on
     type: object
     default: ""
 
 steps:
   - task: DownloadBuildArtifacts@0
     inputs:
-      artifactName: WindowsAppSDKNugetPackage
+      artifactName: ${{ parameters.ArtifactName }}
       downloadPath: '$(Build.SourcesDirectory)\temp'
       itemPattern: |
         **/*.nupkg
@@ -54,15 +75,10 @@ steps:
         }
         Exit 1
 
-  - script: |
-      dir /s $(Build.SourcesDirectory)
-    displayName: 'DEBUG'
-
   - task: PowerShell@2
     name: TestAll
     displayName: TestAll
     inputs:
-      failOnStderr: true
       filePath: 'TestAll.ps1'
       arguments: > 
         -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"

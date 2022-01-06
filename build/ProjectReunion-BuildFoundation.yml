@@ -444,19 +444,14 @@ jobs:
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
       parameters:
         ArtifactName: 'FullNuget'
-
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
-      parameters:
         BuildType: 'stable'
         TransportPackages: 
           FoundationPackage:
             Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
             Version: $(WindowsAppSDKPackageVersion)
-    
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-IntegrationTest-Steps.yml
 
 
 # # Publish

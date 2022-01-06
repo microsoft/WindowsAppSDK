@@ -1,0 +1,41 @@
+parameters:
+  - name: ArtifactName
+    type: string
+    default: ''
+  - name: AzureSubscriptionServiceConnection
+    type: string
+    default: 'ProjectReunion Resource Manager'
+  - name: NuGetServiceConnectionName
+    type: string
+    default: 'ProjectReunionInternal'
+  - name: BuildType
+    displayName: "Build Type"
+    type: string
+    default: 'stable'
+    values:
+    - 'stable'
+    - 'experimental'
+  - name: "TransportPackages"
+    displayName: "TransportPackages to replace (name:version)"
+    type: object
+    default:
+      Foundation: 
+        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+        version: 1.0.0-stable
+  - name: TestList
+    type: object
+    default: ""
+
+steps:
+  - template: WindowsAppSDK-BuildSetup-Steps.yml
+    parameters:
+      ArtifactName: ${{ parameters.ArtifactName }}
+      AzureSubscriptionServiceConnection: ${{ parameters.AzureSubscriptionServiceConnection }}
+      NuGetServiceConnectionName: ${{ parameters.NuGetServiceConnectionName }}
+
+  - template: WindowsAppSDK-Build-Steps.yml
+    parameters:
+      BuildType:  ${{ parameters.BuildType }}
+      TransportPackages: ${{ parameters.TransportPackages }}
+  
+  - template: WindowsAppSDK-IntegrationTest-Steps.yml
