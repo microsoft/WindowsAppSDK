@@ -8,7 +8,7 @@
     <MakeMsixSigned Condition="'$(MakeMsixSigned)' == ''">true</MakeMsixSigned>
   </PropertyGroup>
 
-  <Target Name="MakeMSIX" Inputs="@(MakeMsixInputs);@(MakeMsixInputAssets)" Outputs="$(OutDir)$(TargetName)\$(TargetName)">
+  <Target Name="MakeMSIX" Inputs="@(MakeMsixInputs);@(MakeMsixInputAssets)" Outputs="$(OutDir)\$(TargetName)">
     <!-- Initial state diagnostics -->
     <Message Text="MakeMSIX Pre: MSBuildProjectName=$(MSBuildProjectName)" Importance="$(MakeMsixVerbosity)" />
     <Message Text="MakeMSIX Pre: ProjectName=$(ProjectName)" Importance="$(MakeMsixVerbosity)" />
@@ -32,6 +32,7 @@
       <TargetName Condition="'$(TargetName)' == ''">$(ProjectName)</TargetName>
     </PropertyGroup>
     <Message Text="MakeMSIX: TargetName=$(TargetName)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: OutDir=$(OutDir)" Importance="$(MakeMsixVerbosity)" />
 
     <PropertyGroup>
       <!-- <TargetBasename>$(TargetName->'%(Filename)')</TargetBasename> -->
@@ -58,7 +59,7 @@
     <Message Text="MakeMSIX: DdlmShadowExeFile=$(DdlmShadowExeFile)" Importance="$(MakeMsixVerbosity)" />
 
     <PropertyGroup>
-      <MakeMsixTargetDir>$(OutDir)$(TargetName)</MakeMsixTargetDir>
+      <MakeMsixTargetDir>$(OutDir)</MakeMsixTargetDir>
       <MakeMsixWorkDir>$(MakeMsixTargetDir)\msix</MakeMsixWorkDir>
       <MakeMsixOutMsix>$(MakeMsixTargetDir)\$(TargetName)</MakeMsixOutMsix>
     </PropertyGroup>
@@ -78,7 +79,9 @@
       <_MakeMsixCommand>$(_MakeMsix_Executable) pack $(_MakeMsix_Parameters) $(_MakeMsix_Options) /d $(MakeMsixWorkDir) /p $(MakeMsixOutMsix)</_MakeMsixCommand>
     </PropertyGroup>
 
-    <MakeDir Directories="$(OutDir)$(TargetName)\msix" />
+    <Message Text="foo1: $(OutDir)\msix" Importance="high" />
+    <Message Text="foo2: $(OutDir)\msix" Importance="high" Condition="!Exists('$(OutDir)\msix')" />
+    <MakeDir Directories="$(OutDir)\msix" Condition="!Exists('$(OutDir)\msix')" />
 
     <Message Text="$(_MakeMsix_MakeAppxManifestFromTemplateCommand)" Importance="$(MakeMsixVerbosity)" />
     <Exec Command="$(_MakeMsix_MakeAppxManifestFromTemplateCommand)" />
@@ -86,8 +89,10 @@
     <Message Text="MakeMSIX: Copy @(MakeMsixInputs) to $(MakeMsixWorkDir)" Importance="$(MakeMsixVerbosity)" />
     <Copy SourceFiles="@(MakeMsixInputs)" DestinationFolder="$(MakeMsixWorkDir)" SkipUnchangedFiles="true" />
 
+    <Message Text="bar1: $(OutDir)\msix\Assets" Importance="high" />
+    <Message Text="bar2: $(OutDir)\msix\Assets" Importance="high" Condition="!Exists('$(OutDir)\msix')" />
     <Message Text="MakeMSIX: Copy @(MakeMsixInputAssets) to $(MakeMsixWorkDir)\Assets" Importance="$(MakeMsixVerbosity)" Condition="'@(MakeMsixInputAssets)' != ''"/>
-    <MakeDir Directories="$(OutDir)$(TargetName)\msix\Assets" Condition="'@(MakeMsixInputAssets)' != ''"/>
+    <MakeDir Directories="$(OutDir)\msix\Assets" Condition="'@(MakeMsixInputAssets)' != '' and !Exists('$(OutDir)\msix\Assets')" />
     <Copy SourceFiles="@(MakeMsixInputAssets)" DestinationFolder="$(MakeMsixWorkDir)\Assets" SkipUnchangedFiles="true" Condition="'@(MakeMsixInputAssets)' != ''"/>
 
 <!--DeleteMe
