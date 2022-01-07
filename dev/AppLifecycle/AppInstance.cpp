@@ -358,13 +358,14 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             featureUsageReported = true;
         }
 
-        // TODO: Redirect UWP requests to CoreApplication::RequestRestartAsync().
-
-        // For packaged, redirect to the already existing API.
-        /*if (IsPackagedProcess())
+        // If a better way of detecting UWP is created in the future, this check should change.
+        if (IsPackagedProcess() && wil::get_token_is_app_container())
         {
+            // For UWP, redirect to the already existing API.  
             return winrt::Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(arguments).get();
-        }*/
+        }
+
+        // Remaining scenarios that flow through this code should be only be win32 (including Desktop Bridge which is packaged).
 
         // Only one restart can happen at a time.
         auto mutexName = wil::str_printf<std::wstring>(L"%s_RequestRestartNowInProgress", ComputeAppId().c_str());
@@ -416,6 +417,9 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         if (IsPackagedProcess())
         {
+            // Desktop Bridge applications by default have their child processes break away from the parent process.  In order to recreate the calling process'
+            // environment correctly, this code must prevent child breakaway semantics when calling the agent.  Additionally the agent must do the same when
+            // restarting the caller.
             DWORD policy = PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE;
             THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
         }
