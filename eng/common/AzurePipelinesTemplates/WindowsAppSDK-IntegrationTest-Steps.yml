@@ -45,7 +45,7 @@ steps:
       artifactName: ${{ parameters.ArtifactName }}
       downloadPath: '$(Build.SourcesDirectory)\temp'
       itemPattern: |
-        **/*.nupkg
+        **/Microsoft.WindowsAppSDK.*.nupkg
 
   - task: PowerShell@2
     displayName: Extract WindowsAppSDKVersion
