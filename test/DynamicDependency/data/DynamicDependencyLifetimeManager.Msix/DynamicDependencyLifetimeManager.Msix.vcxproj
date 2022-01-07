@@ -155,7 +155,7 @@
     <MakeMsixInputs Include="$(DdlmShadowExeFile)" />
     <MakeMsixInputs Include="$(DdlmShadowExePdb)" />
   </ItemGroup>
-  <Import Project="MakeMsix.targets" />
+  <Import Project="$(RepoRoot)\MakeMsix.targets" />
 <!--AddMe:End-->
 
   <ItemDefinitionGroup>
