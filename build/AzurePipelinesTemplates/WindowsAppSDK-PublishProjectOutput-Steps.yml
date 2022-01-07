@@ -2,6 +2,11 @@ parameters:
   artifactName: 'windowsappsdk_binaries'
 
 steps:
+  - script: |
+      echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
+      dir $(Build.SourcesDirectory)\BuildOutput /s
+    displayName: 'debug copy push notification tests'
+
   - task: powershell@2
     displayName: 'Copy files to staging dir'
     inputs:
