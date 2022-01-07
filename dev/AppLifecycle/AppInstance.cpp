@@ -358,11 +358,13 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             featureUsageReported = true;
         }
 
+        // TODO: Redirect UWP requests to CoreApplication::RequestRestartAsync().
+
         // For packaged, redirect to the already existing API.
-        if (IsPackagedProcess())
+        /*if (IsPackagedProcess())
         {
             return winrt::Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(arguments).get();
-        }
+        }*/
 
         // Only one restart can happen at a time.
         auto mutexName = wil::str_printf<std::wstring>(L"%s_RequestRestartNowInProgress", ComputeAppId().c_str());
@@ -387,22 +389,36 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
         auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %d %s", exePath.c_str(), parentHandle.get(), arguments.c_str());
 
-        // Launch the restart agent and explicitly inherit the current process' handle to it.  This allows the restart agent to
-        // sniff out the exact path of the caller executable in a sane way.
         SIZE_T attributeListSize{ 0 };
-        THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, 1, 0, &attributeListSize));
+        auto attributeCount{ 1 };
+
+        if (IsPackagedProcess())
+        {
+            // Packaged scenarios have an additional attribute.
+            attributeCount++;
+        }
+
+        THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
         THROW_LAST_ERROR_IF(GetLastError() != ERROR_INSUFFICIENT_BUFFER);
 
         wil::unique_process_heap_ptr<_PROC_THREAD_ATTRIBUTE_LIST> attributeList(reinterpret_cast<PPROC_THREAD_ATTRIBUTE_LIST> (HeapAlloc(GetProcessHeap(), 0, attributeListSize)));
         THROW_IF_NULL_ALLOC(attributeList);
 
-        THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList.get(), 1, 0, &attributeListSize));
+        THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList.get(), attributeCount, 0, &attributeListSize));
         auto freeAttributeList = wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList.get()); });
 
+        // Launch the restart agent and explicitly inherit the current process' handle to it.  This allows the restart agent to
+        // sniff out the exact path of the caller executable in a sane way.
         size_t handlesToInheritCount{ 1 };
         HANDLE* handlesToInherit = reinterpret_cast<HANDLE*>(parentHandle.addressof());
         THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, handlesToInherit, 
             handlesToInheritCount * sizeof(HANDLE), nullptr, nullptr));
+
+        if (IsPackagedProcess())
+        {
+            DWORD policy = PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE;
+            THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
+        }
 
         STARTUPINFOEX info{};
         info.StartupInfo.cb = sizeof(info);

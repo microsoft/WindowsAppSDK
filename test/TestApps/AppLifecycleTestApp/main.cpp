@@ -6,6 +6,8 @@
 #include "SingleInstanceTest.h"
 #include "RequestRestartTest.h"
 
+using namespace AppModel::Identity;
+
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt;
 using namespace winrt::Windows::Storage;
@@ -135,7 +137,15 @@ int main()
             }
             else if (argument.compare(L"RequestRestartNowCalled") == 0)
             {
-                SignalPhase(c_testRequestRestartNowRestartedPhaseEventName);
+                if (IsPackagedProcess())
+                {
+                    SignalPhase(c_testRequestRestartNowRestartedPhasePackagedEventName);
+                }
+                else
+                {
+                    SignalPhase(c_testRequestRestartNowRestartedPhaseEventName);
+                }
+
                 succeeded = true;
             }
         }

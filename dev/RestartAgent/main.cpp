@@ -34,10 +34,32 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int)
     std::wstring arguments{ cmdLine.substr(startOfHandleArg) };
     auto newCmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %s", callerPath.get(), arguments.c_str());
 
+    SIZE_T attributeListSize{ 0 };
+    auto attributeCount{ 1 };
+    THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
+    THROW_LAST_ERROR_IF(GetLastError() != ERROR_INSUFFICIENT_BUFFER);
+
+    wil::unique_process_heap_ptr<_PROC_THREAD_ATTRIBUTE_LIST> attributeList(reinterpret_cast<PPROC_THREAD_ATTRIBUTE_LIST> (HeapAlloc(GetProcessHeap(), 0, attributeListSize)));
+    THROW_IF_NULL_ALLOC(attributeList);
+
+    THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList.get(), attributeCount, 0, &attributeListSize));
+    auto freeAttributeList = wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList.get()); });
+
+    DWORD policy = PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE;
+    THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
+
+    STARTUPINFOEX info{};
+    info.StartupInfo.cb = sizeof(info);
+
+    if (IsPackagedProcess())
+    {
+        // Currently only packaged scenarios require attributes to be applied.
+        info.lpAttributeList = attributeList.get();
+    }
+
     wil::unique_process_information processInfo{};
-    STARTUPINFO info{};
-    info.cb = sizeof(info);
-    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), newCmdLine.get(), nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &info, &processInfo));
+    THROW_IF_WIN32_BOOL_FALSE(CreateProcess(callerPath.get(), newCmdLine.get(), nullptr, nullptr, FALSE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+        &info.StartupInfo, &processInfo));
 
     // Transfer foreground rights to the new process before resuming it.
     AllowSetForegroundWindow(processInfo.dwProcessId);

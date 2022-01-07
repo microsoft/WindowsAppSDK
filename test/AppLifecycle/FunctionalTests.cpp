@@ -350,7 +350,7 @@ namespace Test::AppLifecycle
             WaitForEvent(event, m_failed);
 
             auto restartNowEvent{ CreateTestEvent(c_testRequestRestartNowPhaseEventName) };
-            auto restartNowRestartedEvent{ CreateTestEvent(c_testRequestRestartNowRestartedPhaseEventName) };
+            auto restartNowRestartedEvent{ CreateTestEvent(c_testRequestRestartNowRestartedPhasePackagedEventName) };
 
             // Launch a URI with the protocol schema and wait for the app to fire the event
             Uri launchUri{ c_testProtocolScheme_Packaged + L"://" + c_genericTestMoniker + L"?TestName=" + TESTNAME() };
