@@ -93,7 +93,6 @@ steps:
     name: TestAll
     displayName: TestAll
     inputs:
-      failOnStderr: true
       filePath: 'TestAll.ps1'
       arguments: > 
         -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"

@@ -25,7 +25,7 @@ parameters:
     default: 'ProjectReunionInternal'
 
 steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal@user/ejohn/testAll
+  - checkout: git://ProjectReunion/ProjectReunionInternal@main
 
   - task: AzureKeyVault@1
     inputs:
