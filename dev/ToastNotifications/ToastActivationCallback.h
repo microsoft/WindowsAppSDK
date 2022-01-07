@@ -18,7 +18,7 @@ struct ToastActivationCallbackFactory : winrt::implements<ToastActivationCallbac
 {
     STDMETHODIMP CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final try
     {
-        RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
+        RETURN_HR_IF_NULL(CLASS_E_NOAGGREGATION, aggregateInterface);
         return winrt::make<ToastActivationCallback>().as(interfaceId, object);
     }
     CATCH_RETURN()

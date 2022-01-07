@@ -29,21 +29,21 @@ std::wstring RetrieveUnpackagedAppId()
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
-        nullptr,
+        nullptr /* lpClass */,
         REG_OPTION_NON_VOLATILE,
         KEY_ALL_ACCESS,
-        nullptr,
+        nullptr /* lpSecurityAttributes */,
         &hKey,
-        nullptr));
+        nullptr /* lpdwDisposition */));
 
     WCHAR registeredGuidBuffer[GUID_LENGTH + 3]; // GUID length + '{' + '}' + '\0'
     DWORD bufferLength = sizeof(registeredGuidBuffer);
     HRESULT status = RegGetValueW(
         hKey.get(),
-        nullptr,
+        nullptr /* lpValue */,
         L"ToastGUID",
         RRF_RT_REG_SZ,
-        nullptr,
+        nullptr /* pdwType */,
         &registeredGuidBuffer,
         &bufferLength);
 
@@ -92,12 +92,12 @@ void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastN
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
-        nullptr,
+        nullptr /* lpClass */,
         REG_OPTION_NON_VOLATILE,
         KEY_ALL_ACCESS,
-        nullptr,
+        nullptr /* lpSecurityAttributes */,
         &hKey,
-        nullptr));
+        nullptr /* lpdwDisposition */));
 
     RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(activationInfo.DisplayName().c_str()), REG_EXPAND_SZ, activationInfo.DisplayName().size() * sizeof(wchar_t));
     RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(activationInfo.IconPath().AbsoluteUri().c_str()), REG_EXPAND_SZ, activationInfo.IconPath().AbsoluteUri().size() * sizeof(wchar_t));
@@ -116,12 +116,12 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
-        nullptr,
+        nullptr /* lpClass */,
         REG_OPTION_NON_VOLATILE,
         KEY_ALL_ACCESS,
-        nullptr,
+        nullptr /* lpSecurityAttributes */,
         &hKey,
-        nullptr));
+        nullptr /* lpdwDisposition */));
 
     std::wstring comRegistrationExeString{ c_quote + processName.get() + c_quote + c_toastActivatedArgument };
 
@@ -169,21 +169,21 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
         HKEY_CURRENT_USER,
         subKey.c_str(),
         0,
-        nullptr,
+        nullptr /* lpClass */,
         REG_OPTION_NON_VOLATILE,
         KEY_ALL_ACCESS,
-        nullptr,
+        nullptr /* lpSecurityAttributes */,
         &hKey,
-        nullptr));
+        nullptr /* lpdwDisposition */));
 
     WCHAR registeredGuidBuffer[GUID_LENGTH + 4]; // GUID length + '{' + '}' + '\0'
     DWORD bufferLength = sizeof(registeredGuidBuffer);
     HRESULT status = RegGetValueW(
         hKey.get(),
-        nullptr,
+        nullptr /* lpValue */,
         L"CustomActivator",
         RRF_RT_REG_SZ,
-        nullptr,
+        nullptr /* pdwType */,
         &registeredGuidBuffer,
         &bufferLength);
 
