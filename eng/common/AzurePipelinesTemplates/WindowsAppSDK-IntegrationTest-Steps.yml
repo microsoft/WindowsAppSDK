@@ -118,5 +118,5 @@ steps:
         }
         catch
         {
-          Write-Host "##vso[task.complete result=Failed;]DONE"
+          Write-Host "##vso[task.complete result=Failed;]DONE"
         }
