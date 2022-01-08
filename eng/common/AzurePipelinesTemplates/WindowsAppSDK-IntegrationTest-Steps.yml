@@ -40,12 +40,22 @@ parameters:
         version: 1.0.0-stable
 
 steps:
-  - task: DownloadBuildArtifacts@0
+  # - task: DownloadBuildArtifacts@0
+  #   inputs:
+  #     artifactName: ${{ parameters.ArtifactName }}
+  #     downloadPath: '$(Build.SourcesDirectory)\temp'
+  #     itemPattern: |
+  #       **/Microsoft.WindowsAppSDK.*.nupkg
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download Installer x64 for Download Center'
     inputs:
-      artifactName: ${{ parameters.ArtifactName }}
-      downloadPath: '$(Build.SourcesDirectory)\temp'
-      itemPattern: |
-        **/Microsoft.WindowsAppSDK.*.nupkg
+      source: 'specific'
+      project: '$(System.TeamProjectId)'
+      pipeline: '57248'
+      runVersion: 'specific'
+      pipelineId: 43555044
+      artifactName: WindowsAppSDKNugetPackage
+      path: '$(Build.SourcesDirectory)\temp'
 
   - task: PowerShell@2
     displayName: Extract WindowsAppSDKVersion
@@ -110,13 +120,10 @@ steps:
       script: |
         try
         {
-          . TestAll.ps1 -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" `
-              -Checkpoint "none" -Platform "x64" `
-              -Configuration "release" `
-              -YamlStep "none" `
-              -RunTestMachineSetup
+          . TestAll.ps1 -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none" -RunTestMachineSetup
         }
         catch
         {
+          Write-Host "##vso[task.complete result=Failed;]DONE"
           Write-Host "##vso[task.complete result=Failed;]DONE"
         }
