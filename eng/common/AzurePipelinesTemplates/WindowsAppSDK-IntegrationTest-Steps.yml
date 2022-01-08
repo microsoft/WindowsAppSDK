@@ -120,7 +120,7 @@ steps:
       script: |
         try
         {
-          . TestAll.ps1 -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none" -RunTestMachineSetup
+          . $(Build.SourcesDirectory)\TestAll.ps1 -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none" -RunTestMachineSetup
         }
         catch
         {
