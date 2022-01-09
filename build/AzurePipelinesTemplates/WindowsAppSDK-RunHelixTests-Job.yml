@@ -145,6 +145,11 @@ jobs:
   #     filePath: $(winUIHelixPipelineScripts)\GenerateHelixWorkItems.ps1
   #     arguments: -TestFilePattern 'mrtcore_test_binaries_x64\MrtCoreManagedTest\*.dll' -TestBinaryDirectoryPath '$(testPayloadDir)' -OutputProjFile '$(helixWorkItemsDir)\MrtCore-MrtCoreManagedTest.proj' -WorkItemPrefix 'MrtCore-MrtCoreManagedTest-$(buildPlatform)-$(buildConfiguration)' -TestNamePrefix 'MrtCore.MrtCoreManagedTest.$(buildPlatform).$(buildConfiguration)'
   
+  - script: |
+    echo TestBinaryDirectoryPath: $(testPayloadDir)
+    echo OutputProjFile: $(helixWorkItemsDir)
+  displayName: 'debug Discover Push Notifications UnitTests'
+
   # Discover the TAEF Push Notifications test binaries to run and generate the Helix Work Items for them.
   - task: powershell@2
     displayName: 'Discover Push Notifications UnitTests'
