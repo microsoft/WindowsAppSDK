@@ -25,8 +25,8 @@ steps:
       artifactName: pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)
 
   - script: |
-      echo source: $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform) /s
-      echo dest: $(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration) /s
+      dir $(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform) /s
+      dir $(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration) /s
     displayName: 'debug copy push notification tests'
 
   - task: powershell@2
