@@ -118,7 +118,7 @@ jobs:
     inputs:
       AllTools: false
       APIScan: false
-      BinSkim: true
+      BinSkim: false
       BinSkimBreakOn: 'Error'
       CodesignValidation: false
       CredScan: false
@@ -220,7 +220,7 @@ jobs:
     inputs:
       AllTools: false
       APIScan: false
-      BinSkim: true
+      BinSkim: false
       BinSkimBreakOn: 'Error'
       CodesignValidation: false
       CredScan: false

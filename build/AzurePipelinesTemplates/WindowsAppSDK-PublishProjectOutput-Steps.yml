@@ -15,11 +15,6 @@ steps:
       SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)'
       Contents: |
         PushNotificationTests\**
-        PowerNotifications\**
-        PushNotificationsLongRunningTask\**
-        DynamicDependencyLifetimeManager\**
-        DynamicDependencyLifetimeManagerShadow\**
-        WindowsAppRuntime_DLL\**
       TargetFolder: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
