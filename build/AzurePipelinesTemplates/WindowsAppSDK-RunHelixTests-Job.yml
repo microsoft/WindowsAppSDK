@@ -92,7 +92,7 @@ jobs:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download: Binaries'
     inputs:
-      artifactName: 'pushnotification_test_binaries_$(buildPlatform)'
+      artifactName: 'pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)'
       downloadPath: $(testPayloadDir)
 
   # Publish the full testPayloadDir contents.

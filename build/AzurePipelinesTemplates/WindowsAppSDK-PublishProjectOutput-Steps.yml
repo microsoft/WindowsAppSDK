@@ -12,17 +12,17 @@ steps:
     displayName: 'copy push notifications test binaries'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)'
+      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\$(buildConfiguration)\$(buildPlatform)'
       Contents: |
         PushNotificationTests\**
-      TargetFolder: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish push notifications test binaries'
     condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)'
-      artifactName: pushnotification_test_binaries_$(buildPlatform)
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration)'
+      artifactName: pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)
 
   - task: powershell@2
     displayName: 'Copy files to staging dir'
