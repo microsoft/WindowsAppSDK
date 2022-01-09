@@ -7,6 +7,28 @@ steps:
       dir $(Build.SourcesDirectory)\BuildOutput /s
     displayName: 'debug copy push notification tests'
 
+  # Copy and Publish the test binaries so we can run them in Helix later.
+  - task: CopyFiles@2
+    displayName: 'copy push notifications test binaries'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)'
+      Contents: |
+        PushNotificationTests\**
+        PowerNotifications\**
+        PushNotificationsLongRunningTask\**
+        DynamicDependencyLifetimeManager\**
+        DynamicDependencyLifetimeManagerShadow\**
+        WindowsAppRuntime_DLL\**
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish push notifications test binaries'
+    condition: and(succeeded(), or(eq(variables['buildPlatform'], 'x86'), eq(variables['buildPlatform'], 'x64')))
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)'
+      artifactName: pushnotification_test_binaries_$(buildPlatform)
+
   - task: powershell@2
     displayName: 'Copy files to staging dir'
     inputs:
