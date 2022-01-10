@@ -88,6 +88,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             wil::unique_cotaskmem_string processName;
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+            notificationPlatform->RemoveToastRegistration(processName.get());
 
         }
     }
