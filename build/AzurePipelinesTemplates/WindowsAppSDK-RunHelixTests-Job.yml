@@ -88,7 +88,6 @@ jobs:
       echo TestBinaryDirectoryPath: $(testPayloadDir)
       echo OutputProjFile: $(helixWorkItemsDir)
       dir $(Build.SourcesDirectory)\BuildOutput /s
-      dir $(testPayloadDir) /s
     displayName: 'debug copy push notification tests'
 
   # Download the Push Notifications test binaries
