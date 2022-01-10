@@ -10,6 +10,11 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Microsoft::Windows::ToastNotifications;
 
+bool BackgroundActivationTest() // Activating application for background test.
+{
+    return true;
+}
+
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
@@ -44,6 +49,14 @@ bool VerifyFailedRegisterActivatorUsingNullAssets()
 
 bool VerifyRegisterActivatorandUnRegisterActivatorUsingClsid()
 {
+    try
+    {
+        ToastNotificationManager::Default().UnregisterActivator();
+    }
+    catch (...)
+    {
+        return false;
+    }
 
     auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("1940DBA9-0F64-4F0D-8A4B-5D207B812E61"));
 
@@ -89,6 +102,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
     static std::map<std::string, bool(*)()> switchMapping = {
         { "VerifyFailedRegisterActivatorUsingNullClsid", &VerifyFailedRegisterActivatorUsingNullClsid },
         { "VerifyFailedRegisterActivatorUsingNullAssets", &VerifyFailedRegisterActivatorUsingNullAssets },
+        { "BackgroundActivationTest", &BackgroundActivationTest},
         { "VerifyRegisterActivatorandUnRegisterActivatorUsingClsid", &VerifyRegisterActivatorandUnRegisterActivatorUsingClsid },
         { "VerifyFailedMultipleRegisterActivatorUsingSameClsid", &VerifyFailedMultipleRegisterActivatorUsingSameClsid }
     };
@@ -117,6 +131,9 @@ int main() try
         });
 
     ::Test::Bootstrap::SetupBootstrap();
+
+    auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("1940dba9-0f64-4f0d-8a4b-5d207b812e61"));
+    ToastNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
