@@ -7,7 +7,7 @@
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-
+    // my code change
     struct PushNotificationManager
     {
         PushNotificationManager() = delete;
