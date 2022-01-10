@@ -99,30 +99,14 @@ steps:
         }
         Exit 1
 
-  # - task: PowerShell@2
-  #   name: TestAll
-  #   displayName: TestAll
-  #   inputs:
-  #     failOnStderr: true
-  #     ignoreLASTEXITCODE: true
-  #     filePath: 'TestAll.ps1'
-  #     arguments: > 
-  #       -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"
-  #       -Checkpoint "none" -Platform "x64" 
-  #       -Configuration "release" 
-  #       -YamlStep "none"
-  #       -RunTestMachineSetup
-
   - task: PowerShell@2
+    name: TestAll
     displayName: TestAll
     inputs:
-      targetType: 'inline'
-      script: |
-        try
-        {
-          . $(Build.SourcesDirectory)\TestAll.ps1 -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)" -Checkpoint "none" -Platform "x64" -Configuration "release" -YamlStep "none"
-        }
-        catch
-        {
-          Write-Host "##vso[task.complete result=Failed;]DONE"
-        }
+      filePath: 'TestAll.ps1'
+      arguments: > 
+        -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"
+        -Checkpoint "none" -Platform "x64" 
+        -Configuration "release" 
+        -YamlStep "none"
+        -RunTestMachineSetup

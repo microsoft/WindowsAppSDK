@@ -25,7 +25,7 @@ parameters:
     default: 'ProjectReunionInternal'
 
 steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal@main
+  - checkout: git://ProjectReunion/ProjectReunionInternal@user/kythant/WriteHostTaskFail
 
   - task: AzureKeyVault@1
     inputs:
