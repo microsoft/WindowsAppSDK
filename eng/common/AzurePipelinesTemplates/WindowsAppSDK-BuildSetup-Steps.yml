@@ -34,13 +34,13 @@ steps:
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
 
-  # - ${{ if ne(parameters.ArtifactName, '') }}:
-  #   - task: DownloadBuildArtifacts@0
-  #     inputs:
-  #       artifactName: ${{ parameters.ArtifactName }}
-  #       downloadPath: '$(Build.SourcesDirectory)\build\packages'
-  #       itemPattern: |
-  #         **/*.nupkg
+  - ${{ if ne(parameters.ArtifactName, '') }}:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: ${{ parameters.ArtifactName }}
+        downloadPath: '$(Build.SourcesDirectory)\build\packages'
+        itemPattern: |
+          **/*.nupkg
 
   # Setup for MyCert.pfx
   - task: PowerShell@2

@@ -33,9 +33,9 @@ steps:
       AzureSubscriptionServiceConnection: ${{ parameters.AzureSubscriptionServiceConnection }}
       NuGetServiceConnectionName: ${{ parameters.NuGetServiceConnectionName }}
 
-  # - template: WindowsAppSDK-Build-Steps.yml
-  #   parameters:
-  #     BuildType:  ${{ parameters.BuildType }}
-  #     TransportPackages: ${{ parameters.TransportPackages }}
+  - template: WindowsAppSDK-Build-Steps.yml
+    parameters:
+      BuildType:  ${{ parameters.BuildType }}
+      TransportPackages: ${{ parameters.TransportPackages }}
   
   - template: WindowsAppSDK-IntegrationTest-Steps.yml

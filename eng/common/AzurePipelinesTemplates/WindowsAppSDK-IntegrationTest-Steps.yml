@@ -40,22 +40,12 @@ parameters:
         version: 1.0.0-stable
 
 steps:
-  # - task: DownloadBuildArtifacts@0
-  #   inputs:
-  #     artifactName: ${{ parameters.ArtifactName }}
-  #     downloadPath: '$(Build.SourcesDirectory)\temp'
-  #     itemPattern: |
-  #       **/Microsoft.WindowsAppSDK.*.nupkg
-  - task: DownloadPipelineArtifact@2
-    displayName: 'Download Installer x64 for Download Center'
+  - task: DownloadBuildArtifacts@0
     inputs:
-      source: 'specific'
-      project: '$(System.TeamProjectId)'
-      pipeline: '57248'
-      runVersion: 'specific'
-      pipelineId: 43555044
-      artifactName: WindowsAppSDKNugetPackage
-      path: '$(Build.SourcesDirectory)\temp'
+      artifactName: ${{ parameters.ArtifactName }}
+      downloadPath: '$(Build.SourcesDirectory)\temp'
+      itemPattern: |
+        **/Microsoft.WindowsAppSDK.*.nupkg
 
   - task: PowerShell@2
     displayName: Extract WindowsAppSDKVersion
