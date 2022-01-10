@@ -11,7 +11,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     struct PushNotificationManager
     {
         PushNotificationManager() = delete;
-
+        // more changes
         static void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
         static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
         static void UnregisterAllActivators();
