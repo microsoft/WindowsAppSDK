@@ -21,23 +21,9 @@ parameters:
   - name: ArtifactName
     type: string
     default: "WindowsAppSDKNugetPackage"
-  - name: TestList
-    type: object
-    default: ""
-  - name: BuildType
-    displayName: "Build Type"
+  - name: TestSelection
     type: string
-    default: 'stable'
-    values:
-    - 'stable'
-    - 'experimental'
-  - name: "TransportPackages"
-    displayName: "TransportPackages to replace (name:version)"
-    type: object
-    default:
-      Foundation: 
-        name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
-        version: 1.0.0-stable
+    default: ""
 
 steps:
   - task: DownloadBuildArtifacts@0
@@ -100,4 +86,4 @@ steps:
         -Configuration "release" 
         -YamlStep "none"
         -RunTestMachineSetup
-        -Name "*Foundation_*"
+        -Name "${{ parameters.TestSelection }}"
