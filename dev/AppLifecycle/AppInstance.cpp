@@ -383,7 +383,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         // is required in order for it to be inherited 
         wil::unique_handle parentHandle;
         THROW_IF_WIN32_BOOL_FALSE(DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), wil::out_param(parentHandle), 
-            PROCESS_QUERY_INFORMATION | SYNCHRONIZE | PROCESS_TERMINATE, TRUE, 0));
+            PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE | PROCESS_TERMINATE, TRUE, 0));
 
         auto exePath = GenerateRestartAgentPath();
 
