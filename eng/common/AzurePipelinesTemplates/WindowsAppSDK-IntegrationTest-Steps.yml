@@ -100,3 +100,4 @@ steps:
         -Configuration "release" 
         -YamlStep "none"
         -RunTestMachineSetup
+        -Name "Foundation_*"
