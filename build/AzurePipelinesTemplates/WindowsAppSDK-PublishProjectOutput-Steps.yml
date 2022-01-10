@@ -5,6 +5,7 @@ steps:
   - script: |
       echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
       echo dest: $(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration)
+      dir $(Build.ArtifactStagingDirectory) /s
     displayName: 'debug copy push notification tests'
 
   # Copy and Publish the test binaries so we can run them in Helix later.
