@@ -14,9 +14,6 @@
 #     Service connection name to ProjectReunion Internal feed
 #     This is used to download other transport packages
 parameters:
-  - name: ArtifactName
-    type: string
-    default: ''
   - name: AzureSubscriptionServiceConnection
     type: string
     default: 'ProjectReunion Resource Manager'
@@ -33,14 +30,6 @@ steps:
       KeyVaultName: 'ProjectReunionCerts'
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
-
-  - ${{ if ne(parameters.ArtifactName, '') }}:
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: ${{ parameters.ArtifactName }}
-        downloadPath: '$(Build.SourcesDirectory)\build\packages'
-        itemPattern: |
-          **/*.nupkg
 
   # Setup for MyCert.pfx
   - task: PowerShell@2

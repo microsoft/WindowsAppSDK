@@ -1,5 +1,7 @@
+# This yml template combines WindowsAppSDK-BuildSetup, WindowsAppSDK-Build, 
+# and WindowsAppSDK-IntegrationTest templatesfor running the testAll script in ProjectReunionInternal
 parameters:
-  - name: ArtifactName
+  - name: TransportPackageArtifactName
     type: string
     default: ''
   - name: AzureSubscriptionServiceConnection
@@ -29,12 +31,12 @@ parameters:
 steps:
   - template: WindowsAppSDK-BuildSetup-Steps.yml
     parameters:
-      ArtifactName: ${{ parameters.ArtifactName }}
       AzureSubscriptionServiceConnection: ${{ parameters.AzureSubscriptionServiceConnection }}
       NuGetServiceConnectionName: ${{ parameters.NuGetServiceConnectionName }}
 
   - template: WindowsAppSDK-Build-Steps.yml
     parameters:
+      TransportPackageArtifactName: ${{ parameters.TransportPackageArtifactName }}
       BuildType:  ${{ parameters.BuildType }}
       TransportPackages: ${{ parameters.TransportPackages }}
   

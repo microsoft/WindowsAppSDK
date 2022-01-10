@@ -14,11 +14,11 @@
 # then WindowsAppSDK-Build-Steps.yml, and finally WindowsAppSDK-IntegrationTest-Steps.yml
 #
 # Parameters:
-#   ArtifactName
+#   WinAppSDkPackageArtifactName
 #     Name of the Artifact where the WindowsAppSDK NuGetPackage for the build lives
 
 parameters:
-  - name: ArtifactName
+  - name: WinAppSDkPackageArtifactName
     type: string
     default: "WindowsAppSDKNugetPackage"
   - name: TestSelection
@@ -28,7 +28,7 @@ parameters:
 steps:
   - task: DownloadBuildArtifacts@0
     inputs:
-      artifactName: ${{ parameters.ArtifactName }}
+      artifactName: ${{ parameters.WinAppSDkPackageArtifactName }}
       downloadPath: '$(Build.SourcesDirectory)\temp'
       itemPattern: |
         **/Microsoft.WindowsAppSDK.*.nupkg
