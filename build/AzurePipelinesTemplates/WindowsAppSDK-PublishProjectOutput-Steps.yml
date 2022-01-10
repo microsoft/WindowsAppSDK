@@ -2,12 +2,6 @@ parameters:
   artifactName: 'windowsappsdk_binaries'
 
 steps:
-  - script: |
-      echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
-      echo dest: $(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration)
-      dir $(Build.ArtifactStagingDirectory) /s
-    displayName: 'debug copy push notification tests'
-
   # Copy and Publish the test binaries so we can run them in Helix later.
   - task: CopyFiles@2
     displayName: 'copy push notifications test binaries'
@@ -24,6 +18,12 @@ steps:
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration)'
       artifactName: pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)
+
+  - script: |
+      echo source: $(Build.SourcesDirectory)\BuildOutput\Release\$(buildPlatform)
+      echo dest: $(Build.ArtifactStagingDirectory)\pushnotification_testbin\$(buildPlatform)\$(buildConfiguration)
+      dir $(Build.ArtifactStagingDirectory) /s
+    displayName: 'debug copy push notification tests'
 
   - task: powershell@2
     displayName: 'Copy files to staging dir'
