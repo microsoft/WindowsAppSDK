@@ -436,7 +436,7 @@ jobs:
     prereleaseVersionTag: nightly
     buildPool: $(ProjectReunionBuildPool)
 
-# Build WinAppSDK
+# Build WinAppSDK and Run Integration Test from TestAll.ps1
 - job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
