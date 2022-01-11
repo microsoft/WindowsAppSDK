@@ -10,7 +10,7 @@
     <ReleaseNotes>https://github.com/microsoft/WindowsAppSDK/releases</ReleaseNotes>
     <Icon>WindowsAppSDK.png</Icon>
     <PreviewImage>WindowsAppSDK.png</PreviewImage>
-    <Tags>WindowsAppSDK, WinUI, XAML, C++, C++/WinRT</Tags>
+    <Tags>WindowsAppSDK, WinAppSDK, WinUI, XAML, C++, C++/WinRT</Tags>
     <Preview>false</Preview>
   </Metadata>
   <Installation AllUsers="true">
