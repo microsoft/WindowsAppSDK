@@ -65,7 +65,8 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         if (!AppModel::Identity::IsPackagedProcess())
         {
-            std::wstring storedComActivatorString{ RegisterComActivatorGuidAndAssets(nullptr /* ToastActivationInfo */)};
+            std::wstring storedComActivatorString;
+            THROW_IF_WIN32_ERROR(GetActivatorGuid(storedComActivatorString));
 
             UnRegisterComServer(storedComActivatorString);
             UnRegisterAppIdentifierFromRegistry();

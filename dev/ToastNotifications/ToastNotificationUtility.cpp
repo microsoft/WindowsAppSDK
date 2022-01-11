@@ -36,7 +36,7 @@ std::wstring RetrieveUnpackagedAppId()
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    WCHAR registeredGuidBuffer[GUID_LENGTH + 3]; // GUID length + '{' + '}' + '\0'
+    WCHAR registeredGuidBuffer[GUID_LENGTH];
     DWORD bufferLength = sizeof(registeredGuidBuffer);
     HRESULT status = RegGetValueW(
         hKey.get(),
@@ -156,15 +156,13 @@ void UnRegisterAppIdentifierFromRegistry()
         0));
 }
 
-std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
+HRESULT GetActivatorGuid(std::wstring& activatorGuid)
 {
     std::wstring appIdentifier{ RetrieveAppId() };
-    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), GUID_NULL));
-
-    wil::unique_hkey hKey;
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
     std::wstring subKey{ c_appIdentifierPath + appIdentifier };
 
+    wil::unique_hkey hKey;
     THROW_IF_FAILED(RegCreateKeyEx(
         HKEY_CURRENT_USER,
         subKey.c_str(),
@@ -176,17 +174,28 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    WCHAR registeredGuidBuffer[GUID_LENGTH + 4]; // GUID length + '{' + '}' + '\0'
-    DWORD bufferLength = sizeof(registeredGuidBuffer);
+    WCHAR activatorGuidBuffer[GUID_LENGTH];
+    DWORD bufferLength = sizeof(activatorGuidBuffer);
     HRESULT status = RegGetValueW(
         hKey.get(),
         nullptr /* lpValue */,
         L"CustomActivator",
         RRF_RT_REG_SZ,
         nullptr /* pdwType */,
-        &registeredGuidBuffer,
+        &activatorGuidBuffer,
         &bufferLength);
 
+    activatorGuid = activatorGuidBuffer;
+    return status;
+}
+
+std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
+{
+    std::wstring appIdentifier{ RetrieveAppId() };
+    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), GUID_NULL));
+
+    std::wstring registeredGuid;
+    HRESULT status = GetActivatorGuid(registeredGuid);
     if (status == ERROR_FILE_NOT_FOUND)
     {
         wil::unique_cotaskmem_string processName;
@@ -206,7 +215,7 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
     }
     else
     {
-        THROW_HR_IF(status, FAILED_WIN32(status));
-        return registeredGuidBuffer;
+        THROW_IF_WIN32_ERROR(status);
+        return registeredGuid;
     }
 }

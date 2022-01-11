@@ -13,7 +13,7 @@ const std::wstring c_toastActivatedArgument{ L" ----ToastActivated:" };
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers();
 
-inline const int GUID_LENGTH = 36;
+inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0
 
 inline std::wstring ConvertPathToKey(std::wstring path)
 {
@@ -43,5 +43,7 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
 void UnRegisterComServer(std::wstring const& clsid);
 
 void UnRegisterAppIdentifierFromRegistry();
+
+HRESULT GetActivatorGuid(std::wstring& activatorGuid);
 
 std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details);
