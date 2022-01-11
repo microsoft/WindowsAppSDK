@@ -156,7 +156,7 @@ void UnRegisterAppIdentifierFromRegistry()
         0));
 }
 
-HRESULT GetActivatorGuid(std::wstring& activatorGuid)
+HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept try
 {
     std::wstring appIdentifier{ RetrieveAppId() };
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
@@ -188,6 +188,7 @@ HRESULT GetActivatorGuid(std::wstring& activatorGuid)
     activatorGuid = activatorGuidBuffer;
     return status;
 }
+CATCH_RETURN()
 
 std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
 {

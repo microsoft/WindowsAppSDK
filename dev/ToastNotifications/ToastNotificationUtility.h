@@ -32,7 +32,7 @@ inline void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const
     THROW_IF_FAILED(RegSetValueExW(hKey.get(), key, 0, valueType, value, size));
 }
 
-std::wstring RetrieveUnpackagedToastGuid();
+std::wstring RetrieveUnpackagedAppId();
 
 std::wstring RetrieveAppId();
 
@@ -44,6 +44,6 @@ void UnRegisterComServer(std::wstring const& clsid);
 
 void UnRegisterAppIdentifierFromRegistry();
 
-HRESULT GetActivatorGuid(std::wstring& activatorGuid);
+HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 
 std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details);
