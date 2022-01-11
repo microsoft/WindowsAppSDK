@@ -39,12 +39,13 @@ parameters:
         version: 1.0.0-stable
 
 steps:
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      artifactName: ${{ parameters.TransportPackageArtifactName }}
-      downloadPath: '$(Build.SourcesDirectory)\build\packages'
-      itemPattern: |
-        **/*.nupkg
+  - ${{ if ne(parameters.TransportPackageArtifactName, '') }}:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: ${{ parameters.TransportPackageArtifactName }}
+        downloadPath: '$(Build.SourcesDirectory)\build\packages'
+        itemPattern: |
+          **/*.nupkg
 
   # Replace the versions in version.details.xml in the ProjectReunionInternal repo
   # Please note, the UpdateVersionDetailsConfig.ps1 that is used is one from the ProjectReunionInternal repo

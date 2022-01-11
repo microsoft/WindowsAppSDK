@@ -26,7 +26,7 @@ parameters:
         version: 1.0.0-stable
   - name: TestSelection
     type: string
-    default: ""
+    default: "*"
 
 steps:
   - template: WindowsAppSDK-BuildSetup-Steps.yml

@@ -23,7 +23,7 @@ parameters:
     default: "WindowsAppSDKNugetPackage"
   - name: TestSelection
     type: string
-    default: ""
+    default: "*"
 
 steps:
   - task: DownloadBuildArtifacts@0
@@ -61,7 +61,7 @@ steps:
           $nuspecPaths = Get-ChildItem $file.FullName -Recurse -Filter "*.nuspec"
           foreach ($nuspecPath in $nuspecPaths)
           {
-            Write-Host "Found Nuspec"
+            Write-Host "Found Nuspecs"
             [xml]$nuspec = Get-Content -Path $nuspecPath.FullName
             if ($nuspec.package.metadata.id -eq 'Microsoft.WindowsAppSDK')
             {
