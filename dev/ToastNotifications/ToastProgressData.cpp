@@ -8,7 +8,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastProgressData::SequenceNumber(uint32_t value)
+    void ToastProgressData::SequenceNumber(uint32_t /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -16,7 +16,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastProgressData::Title(hstring const& value)
+    void ToastProgressData::Title(hstring const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastProgressData::Value(double value)
+    void ToastProgressData::Value(double /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -32,7 +32,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastProgressData::ValueStringOverride(hstring const& value)
+    void ToastProgressData::ValueStringOverride(hstring const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -40,7 +40,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastProgressData::Status(hstring const& value)
+    void ToastProgressData::Status(hstring const& /* value */)
     {
         throw hresult_not_implemented();
     }

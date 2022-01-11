@@ -4,7 +4,7 @@
 
 namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
-    ToastNotification::ToastNotification(winrt::Windows::Data::Xml::Dom::XmlDocument const& payload)
+    ToastNotification::ToastNotification(winrt::Windows::Data::Xml::Dom::XmlDocument const& /* payload */)
     {
         throw hresult_not_implemented();
     }
@@ -12,7 +12,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::Tag(hstring const& value)
+    void ToastNotification::Tag(hstring const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -20,7 +20,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::Group(hstring const& value)
+    void ToastNotification::Group(hstring const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -28,7 +28,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::ToastId(uint32_t value)
+    void ToastNotification::ToastId(uint32_t /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -40,7 +40,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::ProgressData(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& value)
+    void ToastNotification::ProgressData(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::ExpirationTime(winrt::Windows::Foundation::DateTime const& value)
+    void ToastNotification::ExpirationTime(winrt::Windows::Foundation::DateTime const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -56,7 +56,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::ExpiresOnReboot(bool value)
+    void ToastNotification::ExpiresOnReboot(bool /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -64,7 +64,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority const& value)
+    void ToastNotification::Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority const& /* value */)
     {
         throw hresult_not_implemented();
     }
@@ -72,7 +72,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         throw hresult_not_implemented();
     }
-    void ToastNotification::SuppressDisplay(bool value)
+    void ToastNotification::SuppressDisplay(bool /* value */)
     {
         throw hresult_not_implemented();
     }

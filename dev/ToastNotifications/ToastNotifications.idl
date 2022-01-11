@@ -15,7 +15,7 @@ namespace Microsoft.Windows.ToastNotifications
 
         // The full file path for the icon image
         Windows.Foundation.Uri IconPath { get; };
-    }
+    };
 
     [experimental]
     // The Registration Info for Packaged and Unpackaged Toast Activations
@@ -42,7 +42,7 @@ namespace Microsoft.Windows.ToastNotifications
         String ActivationArgs{ get; };
 
         // The data from the input elements of a toast like a TextBox
-        Windows.Foundation.Collections.IMapView<String, String> UserInput{ get; };
+        Windows.Foundation.Collections.IMap<String, String> UserInput{ get; };
     };
 
     [experimental]

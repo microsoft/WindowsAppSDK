@@ -7,9 +7,13 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         ToastAssets() = default;
 
-        ToastAssets(hstring const& displayName, winrt::Windows::Foundation::Uri const& iconPath);
+        ToastAssets(winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconPath) : m_displayName(displayName), m_iconPath(iconPath) {};
         hstring DisplayName();
         winrt::Windows::Foundation::Uri IconPath();
+
+    private:
+        const hstring m_displayName;
+        const winrt::Windows::Foundation::Uri m_iconPath;
     };
 }
 namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation
