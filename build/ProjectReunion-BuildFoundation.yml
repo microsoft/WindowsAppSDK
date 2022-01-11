@@ -458,7 +458,7 @@ jobs:
 - job: Publish
   dependsOn: 
   - CreateNugetPackage
-  - IntegrationBuild
+  - WinAppSDKIntegrationBuildAndTest
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
