@@ -33,7 +33,7 @@ HRESULT __stdcall ToastActivationCallback::Activate(
     
     if (GetToastHandlers())
     {
-        /* As the process is already launched, we invoke the foreground toast event handlers with the activatedeventargs */
+        /* As the process is already launched, we invoke the foreground toast event handlers with the activatedEventArgs */
         GetToastHandlers()(*this, activatedEventArgs);
     }
     else

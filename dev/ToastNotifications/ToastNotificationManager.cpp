@@ -33,9 +33,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         return toastNotificationManager;
     }
 
-    void ToastNotificationManager::RegisterActivator(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const&  details)
+    void ToastNotificationManager::RegisterActivator(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
     {
-        THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "ComActivator already registered.");
+        THROW_HR_IF_MSG(E_INVALIDARG, s_toastcomActivatorRegistration, "Toast activator already registered.");
 
         THROW_HR_IF_NULL(E_INVALIDARG, details);
 
@@ -59,7 +59,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
     void ToastNotificationManager::UnregisterActivator()
     {
-        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_toastcomActivatorRegistration, "ComActivator not registered.");
+        THROW_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), !s_toastcomActivatorRegistration, "Toast activator not registered.");
 
         s_toastcomActivatorRegistration.reset();
 

@@ -59,10 +59,8 @@ std::wstring RetrieveUnpackagedAppId()
         RegisterValue(hKey, L"ToastGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
         return guidWideStr;
     }
-    else
-    {
-        THROW_HR_IF(status, FAILED_WIN32(status));
-    }
+
+    THROW_HR_IF(status, FAILED_WIN32(status));
     return registeredGuidBuffer;
 }
 
@@ -76,10 +74,8 @@ std::wstring RetrieveAppId()
         THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
         return appUserModelId;
     }
-    else
-    {
-        return RetrieveUnpackagedAppId();
-    }
+
+    return RetrieveUnpackagedAppId();
 }
 
 void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& activationInfo, wil::unique_cotaskmem_string const& clsid)
@@ -214,9 +210,7 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
 
         return comActivatorGuidString.get();
     }
-    else
-    {
-        THROW_IF_WIN32_ERROR(status);
-        return registeredGuid;
-    }
+
+    THROW_IF_WIN32_ERROR(status);
+    return registeredGuid;
 }

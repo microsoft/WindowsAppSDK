@@ -13,7 +13,7 @@ const std::wstring c_toastActivatedArgument{ L" ----ToastActivated:" };
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers();
 
-inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0
+inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 
 inline std::wstring ConvertPathToKey(std::wstring path)
 {
@@ -27,9 +27,9 @@ inline std::wstring ConvertPathToKey(std::wstring path)
     return path;
 }
 
-inline void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const BYTE* value, DWORD const& valueType, DWORD const& size)
+inline void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const BYTE* value, DWORD const& valueType, size_t const& size)
 {
-    THROW_IF_FAILED(RegSetValueExW(hKey.get(), key, 0, valueType, value, size));
+    THROW_IF_FAILED(RegSetValueExW(hKey.get(), key, 0, valueType, value, (DWORD) size));
 }
 
 std::wstring RetrieveUnpackagedAppId();

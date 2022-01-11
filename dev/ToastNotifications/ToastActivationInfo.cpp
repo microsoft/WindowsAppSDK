@@ -19,9 +19,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         THROW_HR_IF_NULL_MSG(E_POINTER, assets, "Invalid Toast asset parameter");
 
-        THROW_HR_IF_NULL_MSG(E_POINTER, assets.IconPath(), "Invalid Toast asset IconUri");
+        THROW_HR_IF_NULL_MSG(E_POINTER, assets.IconPath(), "Invalid icon URI");
 
-        THROW_HR_IF_MSG(E_INVALIDARG, (assets.DisplayName().size() == 0), "Displayname string is empty");
+        THROW_HR_IF_MSG(E_INVALIDARG, (assets.DisplayName().size() == 0), "Display name string is empty");
 
         return winrt::make<ToastActivationInfo>(assets);
     }
