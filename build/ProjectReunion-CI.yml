@@ -143,7 +143,7 @@ jobs:
   steps:
   - template: publish-mrt.yml
 
-- template: AzurePipelinesTemplates\WindowsAppSDK-RunMRTHelixTests-Job.yml
+- template: AzurePipelinesTemplates\WindowsAppSDK-RunHelixTests-Job.yml
   parameters:
     name: 'RunTestsInHelix'
     dependsOn:
