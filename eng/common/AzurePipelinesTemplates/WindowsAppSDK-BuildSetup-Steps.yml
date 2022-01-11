@@ -13,25 +13,16 @@
 #   NuGetServiceConnectionName
 #     Service connection name to ProjectReunion Internal feed
 #     This is used to download other transport packages
-#
-#   RefBranch
-#     The branch of the ProjectReunionInternal repository
 parameters:
-  - name: ArtifactName
-    type: string
-    default: ''
   - name: AzureSubscriptionServiceConnection
     type: string
     default: 'ProjectReunion Resource Manager'
   - name: NuGetServiceConnectionName
     type: string
     default: 'ProjectReunionInternal'
-  - name: RefBranch
-    type: string
-    default: 'main'
 
 steps:
-  - checkout: git://ProjectReunion/ProjectReunionInternal@${{ parameters.RefBranch }}
+  - checkout: git://ProjectReunion/ProjectReunionInternal
 
   - task: AzureKeyVault@1
     inputs:
@@ -39,13 +30,6 @@ steps:
       KeyVaultName: 'ProjectReunionCerts'
       SecretsFilter: 'TestMSCert'
       RunAsPreJob: false
-
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      artifactName: ${{ parameters.ArtifactName }}
-      downloadPath: '$(Build.SourcesDirectory)\build\packages'
-      itemPattern: |
-        **/*.nupkg
 
   # Setup for MyCert.pfx
   - task: PowerShell@2
