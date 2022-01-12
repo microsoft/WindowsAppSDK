@@ -79,23 +79,24 @@ jobs:
 
   # Download the MRT Core test binaries
   - task: DownloadBuildArtifacts@0
-    displayName: 'Download: Binaries'
+    displayName: 'Download: MRT Core test binaries'
     inputs:
       artifactName: 'mrtcore_test_binaries_$(buildPlatform)'
+      downloadPath: $(testPayloadDir)
+
+  # Download the Push Notifications test binaries
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download: Push Notifications test binaries'
+    inputs:
+      artifactName: 'pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)'
       downloadPath: $(testPayloadDir)
 
   - script: |
       echo TestBinaryDirectoryPath: $(testPayloadDir)
       echo OutputProjFile: $(helixWorkItemsDir)
+      echo artifactName: pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)
       dir $(Build.SourcesDirectory)\BuildOutput /s
-    displayName: 'debug copy push notification tests'
-
-  # Download the Push Notifications test binaries
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download: Binaries'
-    inputs:
-      artifactName: 'pushnotification_test_binaries_$(buildPlatform)_$(buildConfiguration)'
-      downloadPath: $(testPayloadDir)
+    displayName: 'debug download push notification tests'
 
   # Publish the full testPayloadDir contents.
   # This is not required, but can be useful for debugging purposes.
