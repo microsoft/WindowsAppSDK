@@ -21,6 +21,7 @@
 #include "NotificationsLongRunningProcess_h.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
 #include "PushNotificationUtility.h"
+#include "ToastNotificationUtility.h"
 
 using namespace std::literals;
 
@@ -205,6 +206,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         wil::unique_cotaskmem_string processName;
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                        std::wstring appId{ RetrieveAppId() };
+                        THROW_IF_FAILED(notificationPlatform->AddToastRegistration(processName.get(), appId.c_str()));
                         THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
 
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);

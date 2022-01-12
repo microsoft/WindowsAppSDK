@@ -1,16 +1,24 @@
 ﻿#pragma once
 
 #include <FrameworkUdk/PushNotificationsRT.h>
+#include <FrameworkUdk/ToastNotificationsRT.h>
+#include "ToastRegistrationManager.h"
 
 class NotificationListener : public Microsoft::WRL::RuntimeClass<::ABI::Microsoft::Internal::PushNotifications::INotificationListener>
 {
 public:
-    HRESULT RuntimeClassInitialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::wstring appId, std::wstring processName);
+    HRESULT RuntimeClassInitialize(
+        std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
+        std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
+        std::wstring appId,
+        std::wstring processName);
 
     STDMETHOD(OnRawNotificationReceived)(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
-
+    STDMETHOD(OnToastNotificationReceived)(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,
+        ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties*) noexcept;
 private:
     std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
+    std::shared_ptr<ToastRegistrationManager> m_toastRegistrationManager;
 
     std::wstring m_appId;
     std::wstring m_processName;

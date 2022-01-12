@@ -3,9 +3,10 @@
 using namespace Microsoft::WRL;
 using namespace ::ABI::Microsoft::Internal::PushNotifications;
 
-void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager)
+void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManager> foregroundSinkManager, std::shared_ptr<ToastRegistrationManager> toastRegistrationManager)
 {
     m_foregroundSinkManager = foregroundSinkManager;
+    m_toastRegistrationManager = toastRegistrationManager;
 }
 
 void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::wstring>& appIdList)
@@ -25,7 +26,7 @@ void NotificationListenerManager::AddListener(std::wstring const& appId, std::ws
 
     // Make sure we keep the long running sink up-to-date with wpncore.
     ComPtr<INotificationListener> newListener;
-    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&newListener, m_foregroundSinkManager, appId, processName));
+    THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&newListener, m_foregroundSinkManager, m_toastRegistrationManager, appId, processName));
     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), newListener.Get()));
 
     AgileRef newListenerAsAgile;
