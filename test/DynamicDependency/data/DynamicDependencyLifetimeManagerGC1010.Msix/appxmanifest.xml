@@ -10,10 +10,10 @@
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <Identity
-    Name="WindowsAppRuntime.Test.DDLM.GC-1.0.1.0-###architecture###"
+    Name="WindowsAppRuntime.Test.DDLM.GC-1.0.1.0-x64"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     Version="1.0.1.0"
-    ProcessorArchitecture="###architecture###" />
+    ProcessorArchitecture="x64" />
 
   <Properties>
     <DisplayName>WindowsAppRuntime.Test.DynamicDependency.LifetimeManager (aka Microsoft.WinAppRuntime.DDLM) fake for GC tests v1</DisplayName>
@@ -45,10 +45,10 @@
       </uap:VisualElements>
       <Extensions>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="microsoft.winappruntime.ddlm-4.1-###shortarchitecture###"
-                             Id="ddlm-GC-1.0.1.0-###architecture###"
+          <uap3:AppExtension Name="microsoft.winappruntime.ddlm-4.1-x6"
+                             Id="ddlm-GC-1.0.1.0-x64"
                              PublicFolder="public\ddlm"
-                             DisplayName="Windows App Runtime DynamicDependency LifetimeManager Extension (4.1.* ###architecture###)">
+                             DisplayName="Windows App Runtime DynamicDependency LifetimeManager Extension (4.1.* x64)">
             <uap3:Properties>
               <CLSID>DEADBEEF-DEAD-BEEF-DEAD-BEEFDEADBEEF</CLSID>
             </uap3:Properties>
@@ -62,3 +62,4 @@
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>
+

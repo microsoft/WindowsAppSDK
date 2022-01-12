@@ -63,88 +63,33 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
+  <PropertyGroup>
+    <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
+    <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
+
+    <MakeMsixOutputFilename>Microsoft.WindowsAppRuntime.Test.Framework.msix</MakeMsixOutputFilename>
+
+    <TargetBasename>DynamicDependencyLifetimeManager</TargetBasename>
+
+    <TargetExe>$(TargetBasename)</TargetExe>
+    <TargetExeDir>$(OutDir)$(TargetExe)</TargetExeDir>
+    <TargetExeFile>$(TargetExeDir)\$(TargetExe).exe</TargetExeFile>
+
+    <TargetExeProxyStub>$(TargetBasename).ProxyStub</TargetExeProxyStub>
+    <TargetExeProxyStubDir>$(OutDir)$(TargetExeProxyStub)</TargetExeProxyStubDir>
+    <TargetExeProxyStubFile>$(TargetExeProxyStubDir)\$(TargetExeProxyStub).dll</TargetExeProxyStubFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-    <NMakeBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakeBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) </NMakeBuildCommandLine>
-    <NMakeOutput>$(OutputPath)Deloyment.WindowsAppRuntime.Test.Framework</NMakeOutput>
-    <NMakeCleanCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName) clean</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>nmake /C /f makefile.mak ProjectDir=$(ProjectDir) SolutionDir=$(SolutionDir) OutDir=$(OutDir) TargetName=$(TargetName)  rebuild</NMakeReBuildCommandLine>
-    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <OutDir>$(OutDir)</OutDir>
-    <IntDir>$(IntDir)</IntDir>
-    <NMakeIncludeSearchPath>$(SolutionDir)tools</NMakeIncludeSearchPath>
-  </PropertyGroup>
-  <ItemDefinitionGroup>
-  </ItemDefinitionGroup>
+  <ItemGroup>
+    <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
+    <MakeMsixInputs Include="$(ProjectDir)logo.png" />
+    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
+    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix" /> <!-- TODO: $(WorkDir)\MSIX\Main.msix -->
+    <MakeMsixInputs Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Singleton\Deployment.WindowsAppRuntime.Test.Singleton.msix" /> <!-- TODO: $(WorkDir)\MSIX\Singleton.msix -->
+  </ItemGroup>
+  <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
