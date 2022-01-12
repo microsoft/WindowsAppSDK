@@ -66,7 +66,7 @@ namespace Microsoft.Windows.AppLifecycle
         static AppInstance GetCurrent();
         static Windows.Foundation.Collections.IVector<AppInstance> GetInstances();
         static AppInstance FindOrRegisterForKey(String key);
-        static Windows.ApplicationModel.Core.AppRestartFailureReason RequestRestartNow(String arguments);
+        static Windows.ApplicationModel.Core.AppRestartFailureReason Restart(String arguments);
 
         void UnregisterKey();
         Windows.Foundation.IAsyncAction RedirectActivationToAsync(Microsoft.Windows.AppLifecycle.AppActivationArguments args);

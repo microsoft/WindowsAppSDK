@@ -16,7 +16,7 @@ bool RunRequestRestartTestSucceeded(const AppActivationArguments& args)
     SignalPhase(c_testRequestRestartNowPhaseEventName);
 
     // N.B. This process is terminated by the new instance.
-    AppInstance::RequestRestartNow(L"/RequestRestartNowCalled");
+    AppInstance::Restart(L"/RequestRestartNowCalled");
 
     return true;
 }

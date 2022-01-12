@@ -342,19 +342,19 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     {
         // Calculate the path to the restart agent as being in the same directory as the current module.
         wil::unique_hmodule module;
-        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(AppInstance::RequestRestartNow), &module));
+        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(AppInstance::GenerateRestartAgentPath), &module));
 
         path modulePath = wil::GetModuleFileNameW<std::wstring>(module.get());
         return modulePath.parent_path() / c_restartAgentFilename;
     }
 
-    AppRestartFailureReason AppInstance::RequestRestartNow(hstring const& arguments)
+    AppRestartFailureReason AppInstance::Restart(hstring const& arguments)
     {
         // Report feature usage.
         static bool featureUsageReported{ false };
         if (!featureUsageReported)
         {
-            AppLifecycleTelemetry::RequestRestartNow();
+            AppLifecycleTelemetry::Restart();
             featureUsageReported = true;
         }
 

@@ -16,5 +16,5 @@ public:
     DEFINE_COMPLIANT_MEASURES_EVENT(GetActivatedEventArgs, PDT_ProductAndServiceUsage);
     DEFINE_COMPLIANT_MEASURES_EVENT(RedirectActivationToAsync, PDT_ProductAndServiceUsage);
     DEFINE_COMPLIANT_MEASURES_EVENT(ActivationRegistrationManager, PDT_ProductAndServiceUsage);
-    DEFINE_COMPLIANT_MEASURES_EVENT(RequestRestartNow, PDT_ProductAndServiceUsage);
+    DEFINE_COMPLIANT_MEASURES_EVENT(Restart, PDT_ProductAndServiceUsage);
 };
