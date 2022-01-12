@@ -168,7 +168,7 @@ jobs:
       channel: ${{ variables.channel }}
 
   - task: CopyFiles@2
-    displayName: 'Copy AnyCpu-built binaries'
+    displayName: 'Copy AnyCpu-built binaries to Nuget for staging'
     inputs:
       SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
       Contents: |
@@ -176,12 +176,15 @@ jobs:
       TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.17763.0'
       flattenFolders: false
 
-  - task: powershell@2
-    displayName: 'Copy files to staging dir'
+  # This is purely for the SBOM
+  - task: CopyFiles@2
+    displayName: 'Copy AnyCpu-built binaries to windowsappsdk_binaries'
     inputs:
-      targetType: filePath
-      filePath: build\CopyFilesToStagingDir.ps1
-      arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+      SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
+      Contents: |
+        Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
+      flattenFolders: false
 
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'SBOM Generation Task'
