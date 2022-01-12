@@ -84,11 +84,15 @@
   <ItemGroup>
     <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
     <MakeMsixInputs Include="$(ProjectDir)logo.png" />
-    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
+    <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll"/>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
-    <MakeMsixInputs Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix" /> <!-- TODO: $(WorkDir)\MSIX\Main.msix -->
-    <MakeMsixInputs Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Singleton\Deployment.WindowsAppRuntime.Test.Singleton.msix" /> <!-- TODO: $(WorkDir)\MSIX\Singleton.msix -->
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Main\Deployment.WindowsAppRuntime.Test.Main.msix">
+      <TargetFile>MSIX\Main.msix</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\Deployment.WindowsAppRuntime.Test.Singleton\Deployment.WindowsAppRuntime.Test.Singleton.msix">
+      <TargetFile>MSIX\Singleton.msix</TargetFile>
+    </MakeMsixInputsWithLocations>
   </ItemGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>

@@ -8,12 +8,13 @@
     <MakeMsixSigned Condition="'$(MakeMsixSigned)' == ''">true</MakeMsixSigned>
   </PropertyGroup>
 
-  <Target Name="MakeMSIX" Inputs="@(MakeMsixInputs);@(MakeMsixInputAssets);$(MakeMsixOutputFilename)" Outputs="$(OutDir)$(TargetName)">
+  <Target Name="MakeMSIX" Inputs="@(MakeMsixInputs);@(MakeMsixInputsWithLocations);@(MakeMsixInputAssets);$(MakeMsixOutputFilename)" Outputs="$(OutDir)$(TargetName)">
     <!-- Initial state diagnostics -->
     <Message Text="MakeMSIX Pre: MSBuildProjectName=$(MSBuildProjectName)" Importance="high" />
     <Message Text="MakeMSIX Pre: ProjectName=$(ProjectName)" Importance="high" />
     <Message Text="MakeMSIX Pre: TargetName=$(TargetName)" Importance="high" />
     <Message Text="MakeMSIX Pre: MakeMsixInputs=@(MakeMsixInputs)" Importance="high" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputsWithLocations=@(MakeMsixInputsWithLocations)" Importance="high" />
     <Message Text="MakeMSIX Pre: MakeMsixInputAssets=@(MakeMsixInputAssets)" Importance="high" />
     <Message Text="MakeMSIX Pre: MakeMsixOutputFilename=$(MakeMsixOutputFilename)" Importance="high" />
 
@@ -60,8 +61,14 @@
       <_MakeMsixCommand>$(_MakeMsix_Executable) pack $(_MakeMsix_Parameters) $(_MakeMsix_Options) /d $(_MakeMsix_WorkDir) /p $(_MakeMsix_OutFilename)</_MakeMsixCommand>
     </PropertyGroup>
 
+
     <Message Text="MakeMSIX: Copy @(MakeMsixInputs) to $(_MakeMsix_WorkDir)" Importance="high" />
     <Copy SourceFiles="@(MakeMsixInputs)" DestinationFolder="$(_MakeMsix_WorkDir)" SkipUnchangedFiles="true" />
+
+    <Message Text="pooh: @(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')" Importance="high" />
+    <Copy SourceFiles="@(MakeMsixInputsWithLocations)"
+          DestinationFiles="@(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')"
+          SkipUnchangedFiles="true" />
 
     <Message Text="bar1: $(OutDir)msix\Assets" Importance="high" />
     <Message Text="bar2: $(OutDir)msix\Assets" Importance="high" Condition="!Exists('$(OutDir)msix')" />
