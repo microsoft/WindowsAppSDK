@@ -68,7 +68,7 @@
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
 
-    <MakeMsixOutputFilename>Microsoft.WindowsAppRuntime.Test.Framework.msix</MakeMsixOutputFilename>
+    <MakeMsixOutputFilename>Deployment.WindowsAppRuntime.Test.Framework.msix</MakeMsixOutputFilename>
 
     <TargetBasename>DynamicDependencyLifetimeManager</TargetBasename>
 

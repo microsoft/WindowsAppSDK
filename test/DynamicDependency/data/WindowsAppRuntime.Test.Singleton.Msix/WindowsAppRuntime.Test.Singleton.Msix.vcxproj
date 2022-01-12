@@ -91,7 +91,8 @@
     <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
-    <TargetBasename>DynamicDependency.DataStore</TargetBasename>
+
+    <MakeMsixOutputFilename>Microsoft.WindowsAppRuntime.Test.Singleton.msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
     <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />

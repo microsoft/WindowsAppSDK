@@ -67,6 +67,7 @@
     <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
+
     <TargetBasename>DynamicDependencyLifetimeManager</TargetBasename>
 
     <TargetExe>$(TargetBasename)</TargetExe>

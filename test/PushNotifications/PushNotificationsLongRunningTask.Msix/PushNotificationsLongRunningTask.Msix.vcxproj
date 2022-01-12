@@ -68,9 +68,11 @@
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
 
+    <MakeMsixOutputFilename>PushNotificationsLongRunningTask.msix</MakeMsixOutputFilename>
+
     <TargetBasename>PushNotificationsLongRunningTask</TargetBasename>
 
-    <StartupExe>$(TarggetBasename).StartupTask</StartupExe>
+    <StartupExe>$(TargetBasename).StartupTask</StartupExe>
     <StartupExeDir>$(OutDir)$(StartupExe)</StartupExeDir>
     <StartupExeFile>$(StartupExeDir)\$(StartupExe).exe</StartupExeFile>
 

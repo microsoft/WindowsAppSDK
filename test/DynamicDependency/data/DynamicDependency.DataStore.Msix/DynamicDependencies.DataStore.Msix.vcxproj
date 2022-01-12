@@ -68,6 +68,8 @@
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
 
+    <MakeMsixOutputFilename>DynamicDependency.DataStore.msix</MakeMsixOutputFilename>
+
     <TargetBasename>DynamicDependency.DataStore</TargetBasename>
 
     <TargetExe>$(TargetBasename)</TargetExe>
