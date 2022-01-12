@@ -12,7 +12,7 @@ steps:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'SBOM Generation Task'
     inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}'
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}\sbom\$(buildPlatform)\$(buildConfiguration)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: ${{ parameters.artifactName }}'
