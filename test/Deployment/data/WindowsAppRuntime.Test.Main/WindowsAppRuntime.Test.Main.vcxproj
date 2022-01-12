@@ -90,7 +90,8 @@
   <PropertyGroup>
     <PreNMakeBuildTarget>$(PostBuildDependsOn);MakeMSIX</PreNMakeBuildTarget>
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine>REM Nothing to do!</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>REM TODO Clean then Build</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
 
     <MakeMsixOutputFilename>Deployment.WindowsAppRuntime.Test.Main.msix</MakeMsixOutputFilename>
   </PropertyGroup>
