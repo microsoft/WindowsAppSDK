@@ -25,6 +25,11 @@ steps:
     msbuildArgs: /binaryLogger:$(Build.SourcesDirectory)\${{ parameters.displayName }}.$(buildConfiguration).$(buildPlatform).binlog /restore ${{ parameters.additionalMsBuildArgs }}
     logProjectEvents: false
 
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: 'SBOM Generation Task'
+  inputs:
+    BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish ${{ parameters.displayName }} binlog'
   condition: always()

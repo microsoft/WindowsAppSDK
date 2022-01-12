@@ -9,6 +9,11 @@ steps:
       filePath: build\CopyFilesToStagingDir.ps1
       arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: ${{ parameters.artifactName }}'
     inputs:

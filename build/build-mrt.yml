@@ -233,6 +233,11 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
 
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: 'SBOM Generation Task'
+  inputs:
+    BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw'
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Binaries'
   inputs:
