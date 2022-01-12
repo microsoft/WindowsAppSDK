@@ -9,7 +9,7 @@ steps:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'SBOM Generation Task'
     inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildConfiguration)\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: windowsappsdk_binaries'
