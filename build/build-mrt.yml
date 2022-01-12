@@ -236,7 +236,7 @@ steps:
 - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
   displayName: 'SBOM Generation Task'
   inputs:
-    BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\sbom\$(buildPlatform)\$(buildConfiguration)'
+    BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildConfiguration)'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Binaries'
