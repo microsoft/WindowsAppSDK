@@ -20,3 +20,4 @@ inline HRESULT GetCurrentProcessPath(wil::unique_cotaskmem_string& processName)
 {
     return wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
 };
+
