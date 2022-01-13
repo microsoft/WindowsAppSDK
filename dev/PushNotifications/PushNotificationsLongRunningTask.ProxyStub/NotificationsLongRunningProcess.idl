@@ -29,9 +29,9 @@ interface INotificationsLongRunningPlatform : IUnknown
 
     HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
 
-    HRESULT AddToastRegistration([in] LPCWSTR processName, [in] LPCWSTR appId);
+    HRESULT AddToastRegistrationMapping([in] LPCWSTR processName, [in] LPCWSTR appId);
 
-    HRESULT RemoveToastRegistration([in] LPCWSTR processName);
+    HRESULT RemoveToastRegistrationMapping([in] LPCWSTR processName);
 };
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]

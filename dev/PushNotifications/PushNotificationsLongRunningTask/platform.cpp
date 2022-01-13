@@ -104,7 +104,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     m_foregroundSinkManager->Remove(appId);
 
     RemoveAppIdentifier(appId);
-    RemoveToastRegistration(processName);
+    RemoveToastRegistrationMapping(processName);
 
     if (m_notificationListenerManager.IsEmpty())
     {
@@ -143,7 +143,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
 }
 CATCH_RETURN()
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastRegistration(_In_ PCWSTR processName, _In_ PCWSTR appId) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastRegistrationMapping(_In_ PCWSTR processName, _In_ PCWSTR appId) noexcept try
 {
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
@@ -154,7 +154,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastR
 }
 CATCH_RETURN()
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RemoveToastRegistration(_In_ PCWSTR processName) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RemoveToastRegistrationMapping(_In_ PCWSTR processName) noexcept try
 {
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
@@ -219,10 +219,3 @@ void NotificationsLongRunningPlatformImpl::RemoveAppIdentifier(std::wstring cons
     values.Remove(appId);
 }
 
-void NotificationsLongRunningPlatformImpl::RemoveToastRegistration(std::wstring const& processName)
-{
-    m_toastRegistrationManager->Remove(processName);
-
-    auto values{ m_toastStorage.Values() };
-    values.Remove(processName);
-}

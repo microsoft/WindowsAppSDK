@@ -51,6 +51,13 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             storedComActivatorString = RegisterComActivatorGuidAndAssets(details);
             // Remove braces around the guid string
             storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
+
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+            auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+
+            std::wstring appIdentifier{ appId() };
+            THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), appId.c_str()));
         }
 
         THROW_IF_FAILED(::CoRegisterClassObject(
@@ -80,7 +87,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             wil::unique_cotaskmem_string processName;
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-            THROW_IF_FAILED(notificationPlatform->RemoveToastRegistration(processName.get()));
+            THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(processName.get()));
         }
     }
     winrt::event_token ToastNotificationManager::ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& /* handler */)

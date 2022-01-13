@@ -7,7 +7,7 @@ HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
     std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
     std::wstring appId,
-    std::wstring processName)
+    std::wstring processName) noexcept
 {
     m_foregroundSinkManager = foregroundSinkManager;
     m_toastRegistrationManager = toastRegistrationManager;
