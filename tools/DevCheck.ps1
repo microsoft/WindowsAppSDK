@@ -545,6 +545,14 @@ function Repair-TAEFService
 
 function Start-TAEFService
 {
+    $isadmin = Get-IsAdmin
+    if ($isadmin -eq $false)
+    {
+        Write-Host "Install TAEF service...Access Denied. Run from an admin prompt"
+        $global:issues += 1
+        return
+    }
+
     $ok = Start-Service 'TE.Service'
     $service = Get-Service |Where-Object {$_.Name -eq "TE.Service"}
     if ($service.Status -ne "Running")
