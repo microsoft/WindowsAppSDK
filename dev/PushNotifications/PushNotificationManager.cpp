@@ -208,6 +208,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
                         THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
 
+                        std::wstring appIdentifier{ RetrieveAppId() };
+                        THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), appIdentifier.c_str()));
+
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(

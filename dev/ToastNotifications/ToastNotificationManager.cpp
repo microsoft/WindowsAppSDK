@@ -56,8 +56,8 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
-            std::wstring appIdentifier{ appId() };
-            THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), appId.c_str()));
+            std::wstring appIdentifier{ RetrieveAppId() };
+            THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), appIdentifier.c_str()));
         }
 
         THROW_IF_FAILED(::CoRegisterClassObject(

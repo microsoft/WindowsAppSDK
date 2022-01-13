@@ -30,6 +30,7 @@ private:
 
     std::map<std::wstring, std::wstring> GetFullTrustApps();
     const std::wstring GetAppIdentifier(std::wstring const& processName);
+    const std::wstring BuildAppIdentifier(std::wstring const& processName);
     void RemoveAppIdentifier(std::wstring const& processName);
 
     winrt::Windows::Storage::ApplicationDataContainer m_rawStorage{ nullptr };

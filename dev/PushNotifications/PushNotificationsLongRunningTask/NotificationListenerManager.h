@@ -17,6 +17,7 @@ public:
     void AddListener(std::wstring const& appId, std::wstring const& processName);
     void RemoveListener(std::wstring appId);
 
+    bool HasSinkForAppId(std::wstring const& appId);
     bool IsEmpty();
 
 private:

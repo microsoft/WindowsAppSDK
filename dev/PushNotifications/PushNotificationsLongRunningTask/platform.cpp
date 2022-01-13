@@ -148,6 +148,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastR
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
+    // Don't register unless there is a sink available.
+    if (!m_notificationListenerManager.HasSinkForAppId(processName))
+    {
+        return S_OK;
+    }
     m_toastRegistrationManager->Add(processName, appId);
     m_toastStorage.Values().Insert(processName, winrt::box_value(appId));
     return S_OK;

@@ -45,6 +45,12 @@ void NotificationListenerManager::RemoveListener(std::wstring appId)
     m_notificationListeners.erase(appId);
 }
 
+bool NotificationListenerManager::HasSinkForAppId(std::wstring const& appId)
+{
+    auto it = m_notificationListeners.find(appId);
+    return it != m_notificationListeners.end();
+}
+
 bool NotificationListenerManager::IsEmpty()
 {
     auto lock = m_lock.lock_shared();
