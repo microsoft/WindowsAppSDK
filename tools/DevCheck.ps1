@@ -340,7 +340,7 @@ function Repair-DevTestPfx
     # Create the certificate
     $cert_path = "cert:\CurrentUser\My"
     $now = Get-Date
-    $expiration = $now.AddMonths(3)
+    $expiration = $now.AddMonths(12)
     $subject = 'CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US'
     $friendly_name = "Microsoft.WindowsAppSDK Test Certificate Create=$now"
     $key_friendly_name = "Microsoft.WindowsAppSDK Test PrivateKey Create=$now"
