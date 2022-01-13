@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{53a85993-86aa-4818-ae5c-d5fb6fa71c89}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivatedEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivationCallback.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivationInfo.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastAssets.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotification.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationHistory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationUtility.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastProgressData.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastActivationCallback.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastActivationInfo.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastAssets.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotification.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationHistory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationUtility.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastProgressData.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="$(MSBuildThisFileDirectory)ToastNotifications.idl" />
+  </ItemGroup>
+</Project>

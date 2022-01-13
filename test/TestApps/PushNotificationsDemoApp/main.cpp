@@ -9,6 +9,7 @@
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
+using namespace winrt::Microsoft::Windows::ToastNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
 using namespace winrt::Windows::Foundation;
@@ -99,6 +100,10 @@ int main()
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
 
+    ToastAssets assets(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+    auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
+    ToastNotificationManager::Default().RegisterActivator(activationInfo);
+
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
@@ -153,6 +158,7 @@ int main()
         PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
+    ToastNotificationManager::Default().UnregisterActivator();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();
