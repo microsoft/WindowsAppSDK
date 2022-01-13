@@ -11,8 +11,6 @@
 #
 # The template eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
 # will facilitate setting up the requirements to sucessfully run this template. 
-# In most cases, WindowsAppSDK-BuildSetup-Steps.yml should be called first,
-# then WindowsAppSDK-Build-Steps.yml.
 # 
 # The intended use of this yml template is for the feeder repos' pipeline to build the WinAppSDK package
 # with the latest versions from ProjectReunionInternal with the latest version of the transport package it 
@@ -20,9 +18,6 @@
 #
 # The WindowsAppSDK Nuget package produced will be published to WindowsAppSDKNugetPackage build artifacts 
 parameters:
-  - name: TransportPackageArtifactName
-    type: string
-    default: ''
   - name: BuildType
     displayName: "Build Type"
     type: string
@@ -39,14 +34,6 @@ parameters:
         version: 1.0.0-stable
 
 steps:
-  - ${{ if ne(parameters.TransportPackageArtifactName, '') }}:
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: ${{ parameters.TransportPackageArtifactName }}
-        downloadPath: '$(Build.SourcesDirectory)\build\packages'
-        itemPattern: |
-          **/*.nupkg
-
   # Replace the versions in version.details.xml in the ProjectReunionInternal repo
   # Please note, the UpdateVersionDetailsConfig.ps1 that is used is one from the ProjectReunionInternal repo
   - ${{ each package in parameters.TransportPackages }}:
@@ -60,13 +47,7 @@ steps:
     displayName: BuildAll
     inputs:
       filePath: 'BuildAll.ps1'
-      arguments: >
-        -WindowsAppSDKPackageVersion ""
-        -BuildType ${{ parameters.BuildType }}
-        -Checkpoint "none"
-        -Platform "x86,x64,arm64"
-        -Configuration "release,debug"
-        -YamlStep "none"
+      arguments: -WindowsAppSDKPackageVersion "" -BuildType ${{ parameters.BuildType }} -Checkpoint "none" -Platform "x86,x64,arm64" -Configuration "release,debug"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Windows App SDK Packages'
