@@ -210,6 +210,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppRuntime.Test.Singleton.Msix\WindowsAppRuntime.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentTests", "test\Deployment\DeploymentTests.vcxproj", "{E5659A29-FE68-417B-9BC5-613073DD54DF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentManagerTests", "test\EnvironmentManagerTests\EnvironmentManagerTests.vcxproj", "{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0}"
 EndProject
