@@ -3,6 +3,7 @@
 #include <iostream>
 #include <wil/win32_helpers.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
+#include <chrono>
 
 namespace winrt
 {
@@ -10,6 +11,7 @@ namespace winrt
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Microsoft::Windows::ToastNotifications;
+    using namespace winrt::Windows::Data::Xml::Dom;
 }
 
 bool BackgroundActivationTest() // Activating application for background test.
@@ -209,6 +211,83 @@ bool VerifyToastSettingEnabled()
     return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
 }
 
+bool VerifyToastProperties()
+{
+    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
+
+    winrt::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+    
+    winrt::ToastNotification toast(xmlDocument);
+
+    if (toast.Payload() != xmlDocument)
+    {
+        return false;
+    }
+
+    winrt::hstring tag{ L"tag" };
+    toast.Tag(tag);
+
+    if (toast.Tag() != tag)
+    {
+        return false;
+    }
+
+    winrt::hstring group{ L"group" };
+    toast.Group(group);
+
+    if (toast.Group() != group)
+    {
+        return false;
+    }
+
+    /*
+    * TODO: Uncomment once ToastProgressData has been implemented
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+    toast.ProgressData(progressData);
+
+    auto progressDataFromToast = toast.ProgressData();
+    if (progressDataFromToast != progressData)
+    {
+        return false;
+    }
+    */
+
+    winrt::DateTime expirationTime = winrt::clock::now();
+    expirationTime += winrt::TimeSpan(std::chrono::seconds(10));
+
+    toast.ExpirationTime(expirationTime);
+    if (toast.ExpirationTime() != expirationTime)
+    {
+        return false;
+    }
+
+    toast.Priority(winrt::ToastPriority::High);
+    if (toast.Priority() != winrt::ToastPriority::High)
+    {
+        return false;
+    }
+
+    toast.SuppressDisplay(true);
+    if (!toast.SuppressDisplay())
+    {
+        return false;
+    }
+
+    toast.ExpiresOnReboot(true);
+    if (!toast.ExpiresOnReboot())
+    {
+        return false;
+    }
+
+    return true;
+}
+
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
     std::string unitTestName = to_string(launchArgs.Arguments());
@@ -238,6 +317,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", &VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged },
         { "VerifyFailedToastAssetsWithNullIconPath_Unpackaged", &VerifyFailedToastAssetsWithNullIconPath_Unpackaged },
         { "VerifyToastSettingEnabled", &VerifyToastSettingEnabled },
+        { "VerifyToastProperties", &VerifyToastProperties },
     };
     return switchMapping;
 }

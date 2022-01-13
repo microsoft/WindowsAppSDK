@@ -152,7 +152,7 @@ namespace Test::ToastNotifications
             auto processHandle = RunUnpackaged(L"ToastNotificationsTestApp.exe", testName, GetDeploymentDir());
             VERIFY_IS_TRUE(processHandle.is_valid());
 
-            VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), testWaitTime()));
+            VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), waitTime));
 
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
@@ -232,6 +232,16 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastSettingEnabled)
         {
             RunTest(L"VerifyToastSettingEnabled", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProperties)
+        {
+            RunTest(L"VerifyToastProperties", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProperties_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastProperties", testWaitTime());
         }
     };
 }

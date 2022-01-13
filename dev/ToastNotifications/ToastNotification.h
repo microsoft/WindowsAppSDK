@@ -25,6 +25,26 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         void Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority const& value);
         bool SuppressDisplay();
         void SuppressDisplay(bool value);
+
+    private:
+        winrt::hstring m_tag{};
+
+        winrt::hstring m_group{};
+
+        uint32_t m_toastId = 0;
+
+        winrt::Windows::Data::Xml::Dom::XmlDocument m_payload{};
+
+        winrt::Microsoft::Windows::ToastNotifications::ToastProgressData m_progressData{};
+
+        winrt::Windows::Foundation::DateTime m_expirationTime{};
+
+        bool m_expiresOnReboot = false;
+
+        winrt::Microsoft::Windows::ToastNotifications::ToastPriority m_priority =
+            winrt::Microsoft::Windows::ToastNotifications::ToastPriority::Default;
+
+        bool m_suppressDisplay = false;
     };
 }
 namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation
