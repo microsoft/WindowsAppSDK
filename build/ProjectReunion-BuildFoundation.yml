@@ -436,20 +436,18 @@ jobs:
     prereleaseVersionTag: nightly
     buildPool: $(ProjectReunionBuildPool)
 
-# Build WinAppSDK
-- job: IntegrationBuild
+# Build WinAppSDK and Run Integration Test from TestAll.ps1
+- job: WinAppSDKIntegrationBuildAndTest
   dependsOn: ['CreateNugetPackage']
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
   steps:
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildSetup-Steps.yml
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
       parameters:
-        ArtifactName: 'FullNuget'
-
-    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-Build-Steps.yml
-      parameters:
+        TestSelection: '*Foundation_*'
+        TransportPackageArtifactName: 'FullNuget'
         BuildType: 'stable'
         TransportPackages: 
           FoundationPackage:
@@ -460,7 +458,7 @@ jobs:
 - job: Publish
   dependsOn: 
   - CreateNugetPackage
-  - IntegrationBuild
+  - WinAppSDKIntegrationBuildAndTest
   condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
