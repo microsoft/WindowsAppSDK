@@ -23,7 +23,7 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
     STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName) noexcept;
 
-    STDMETHOD(AddToastRegistration)(_In_ PCWSTR processName, _In_ PCWSTR toastGuid) noexcept;
+    STDMETHOD(AddToastRegistration)(_In_ PCWSTR processName, _In_ PCWSTR appId) noexcept;
 
     STDMETHOD(RemoveToastRegistration)(_In_ PCWSTR processName) noexcept;
 private:

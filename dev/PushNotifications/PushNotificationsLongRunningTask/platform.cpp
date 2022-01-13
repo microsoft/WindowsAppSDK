@@ -143,13 +143,13 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
 }
 CATCH_RETURN()
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastRegistration(_In_ PCWSTR processName, _In_ PCWSTR toastGuid) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastRegistration(_In_ PCWSTR processName, _In_ PCWSTR appId) noexcept try
 {
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    m_toastRegistrationManager->Add(processName, toastGuid);
-    m_toastStorage.Values().Insert(processName, winrt::box_value(toastGuid));
+    m_toastRegistrationManager->Add(processName, appId);
+    m_toastStorage.Values().Insert(processName, winrt::box_value(appId));
     return S_OK;
 }
 CATCH_RETURN()

@@ -10,9 +10,9 @@ class ToastRegistrationManager
 public:
     ToastRegistrationManager() = default;
 
-    void Add(std::wstring const& appId, std::wstring const& toastGuid);
+    void Add(std::wstring const& processName, std::wstring const& appId);
 
-    void Remove(std::wstring const& appId);
+    void Remove(std::wstring const& processName);
 
     std::wstring GetToastRegistration(std::wstring const& processName);
 

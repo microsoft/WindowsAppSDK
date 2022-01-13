@@ -39,10 +39,10 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnToastNotificationReceiv
 {
     auto lock = m_lock.lock_exclusive();
 
-    std::wstring toastGuid{ m_toastRegistrationManager->GetToastRegistration(m_processName) };
+    std::wstring appId{ m_toastRegistrationManager->GetToastRegistration(m_processName) };
 
     DWORD notificationId{ 0 };
-    ToastNotifications_PostToast(toastGuid.c_str(), notificationProperties, notificationTransientProperties, &notificationId);
+    ToastNotifications_PostToast(appId.c_str(), notificationProperties, notificationTransientProperties, &notificationId);
     return S_OK;
 }
 CATCH_RETURN()
