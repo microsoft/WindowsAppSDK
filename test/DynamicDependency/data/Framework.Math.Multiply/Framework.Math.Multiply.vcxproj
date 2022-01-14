@@ -260,12 +260,16 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ItemGroup>
-    <PublicHeaders Include="$(MSBuildThisFileDirectory)Math.Multiply.h" />
-  </ItemGroup>
-  <ItemGroup>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)$(TargetFileName)" />
   </ItemGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
+  <Target Name="MakeNuGet" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)Math.Multiply.h')" Inputs="$(ProjectDir)Math.Multiply.h;$(TargetPathName)" Outputs="$(OutDir)Math.Multiply.h">
+    <Message Text="Make NuGet (sorta) for $(ProjectName)" />
+    <Exec Command="COPY $(ProjectDir)Math.Multiply.h $(OutDir)\Math.Multiply.h" ConsoleToMsBuild="true" IgnoreExitCode="true" />
+  </Target>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)Math.Multiply.h" />
+  </ItemGroup>
 </Project>
