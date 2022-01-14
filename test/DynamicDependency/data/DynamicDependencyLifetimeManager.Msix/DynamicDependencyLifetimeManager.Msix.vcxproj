@@ -92,7 +92,15 @@
   </PropertyGroup>
   <ItemGroup>
     <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />
-    <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
+    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
+      <TargetFile>appxmanifest.xml</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
+      <TargetFile>appxmanifest.xml</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-arm64.xml" Condition="'$(PlatformTarget)' == 'arm64'">
+      <TargetFile>appxmanifest.xml</TargetFile>
+    </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(VersionInfoFile)" />
     <MakeMsixInputs Include="$(TargetExeFile)" />
     <MakeMsixInputs Include="$(TargetExeProxyStubFile)" />
