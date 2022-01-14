@@ -15,6 +15,6 @@ void ToastRegistrationManager::Remove(std::wstring const& appId)
 
 std::wstring ToastRegistrationManager::GetToastRegistration(std::wstring const& processName)
 {
-    auto lock = m_lock.lock_exclusive();
+    auto lock = m_lock.lock_shared();
     return m_registrationMap[processName];
 }
