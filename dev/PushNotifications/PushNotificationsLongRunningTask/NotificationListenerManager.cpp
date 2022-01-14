@@ -22,7 +22,7 @@ void NotificationListenerManager::AddListener(std::wstring const& appId, std::ws
     THROW_HR_IF(E_INVALIDARG, appId.empty());
     THROW_HR_IF(E_INVALIDARG, processName.empty());
 
-    auto lock = m_lock.lock_exclusive();
+    auto lock{ m_lock.lock_exclusive() };
 
     // Make sure we keep the long running sink up-to-date with wpncore.
     ComPtr<INotificationListener> newListener;
@@ -38,7 +38,7 @@ void NotificationListenerManager::RemoveListener(std::wstring appId)
 {
     THROW_HR_IF(E_INVALIDARG, appId.empty());
 
-    auto lock = m_lock.lock_exclusive();
+    auto lock{ m_lock.lock_exclusive() };
 
     LOG_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appId.c_str()));
 
@@ -47,12 +47,13 @@ void NotificationListenerManager::RemoveListener(std::wstring appId)
 
 bool NotificationListenerManager::HasSinkForAppId(std::wstring const& appId)
 {
+    auto lock{ m_lock.lock_shared() };
     auto it = m_notificationListeners.find(appId);
     return it != m_notificationListeners.end();
 }
 
 bool NotificationListenerManager::IsEmpty()
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
     return m_notificationListeners.empty();
 }
