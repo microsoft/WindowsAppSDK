@@ -103,9 +103,6 @@
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Makefile.mak" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
