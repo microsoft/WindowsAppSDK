@@ -70,8 +70,8 @@
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
-    <MakeMsixInputs Include="$(ProjectDir)logo.png" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />

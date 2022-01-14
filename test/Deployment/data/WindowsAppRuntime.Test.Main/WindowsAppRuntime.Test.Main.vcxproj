@@ -96,8 +96,8 @@
     <MakeMsixOutputFilename>Deployment.WindowsAppRuntime.Test.Main.msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />
-    <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
+    <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
   </ItemGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>

@@ -283,8 +283,8 @@
     <Midl Include="Widgets.idl" />
   </ItemGroup>
   <ItemGroup>
-    <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
-    <MakeMsixInputs Include="$(ProjectDir)logo.png" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)$(TargetFileName)" />
   </ItemGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />

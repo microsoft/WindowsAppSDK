@@ -86,8 +86,8 @@
     <TargetExeProxyStubFile>$(TargetExeProxyStubDir)\$(TargetExeProxyStub).dll</TargetExeProxyStubFile>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />
-    <MakeMsixInputs Include="$(ProjectDir)appxmanifest.xml" />
+    <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
     <MakeMsixInputs Include="$(StartupExeFile)" />
     <MakeMsixInputs Include="$(TargetExeFile)" />

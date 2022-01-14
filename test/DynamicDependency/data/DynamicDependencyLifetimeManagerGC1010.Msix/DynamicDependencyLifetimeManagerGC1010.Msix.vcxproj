@@ -72,14 +72,14 @@
     <MakeMsixOutputFilename>DynamicDependencyLifetimeManagerGC1010.msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />
-    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
+    <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-arm64.xml" Condition="'$(PlatformTarget)' == 'arm64'">
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-arm64.xml" Condition="'$(PlatformTarget)' == 'arm64'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(OutDir)..\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe" />

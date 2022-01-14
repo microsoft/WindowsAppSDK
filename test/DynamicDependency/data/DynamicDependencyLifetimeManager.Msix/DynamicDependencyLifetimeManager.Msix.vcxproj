@@ -85,20 +85,19 @@
     <DdlmShadowExeFile>$(DdlmShadowExeDir)\$(DdlmShadowExe).exe</DdlmShadowExeFile>
     <DdlmShadowExePdb>$(DdlmShadowExeDir)\$(DdlmShadowExe).pdb</DdlmShadowExePdb>
 
-    <VersionInfoDir>$(ProjectDir)</VersionInfoDir>
-    <VersionInfoFile>$(VersionInfoDir)Microsoft.WindowsAppRuntime.Release!4.1.0</VersionInfoFile>
+    <VersionInfoFile>$(MSBuildThisFileDirectory)Microsoft.WindowsAppRuntime.Release!4.1.0</VersionInfoFile>
 
     <MakeMsixOutputFilename>DynamicDependencyLifetimeManager.msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
-    <MakeMsixInputAssets Include="$(ProjectDir)\Assets\*" />
-    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
+    <MakeMsixInputAssets Include="$(MSBuildThisFileDirectory)\Assets\*" />
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x86.xml" Condition="'$(PlatformTarget)' == 'x86'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-x64.xml" Condition="'$(PlatformTarget)' == 'x64'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(ProjectDir)appxmanifest-arm64.xml" Condition="'$(PlatformTarget)' == 'arm64'">
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)appxmanifest-arm64.xml" Condition="'$(PlatformTarget)' == 'arm64'">
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(VersionInfoFile)" />
