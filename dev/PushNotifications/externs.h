@@ -22,7 +22,7 @@ inline HRESULT GetCurrentProcessPath(wil::unique_cotaskmem_string& processName)
     return wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, processName);
 };
 
-inline winrt::Windows::Foundation::IInspectable GetArgsFromStore()
+inline winrt::Windows::Foundation::IInspectable GetArgsFromComStore()
 {
     const DWORD receiveArgsTimeoutInMSec{ 2000 };
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));

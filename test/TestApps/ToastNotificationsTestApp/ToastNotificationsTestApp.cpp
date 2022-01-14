@@ -17,6 +17,12 @@ bool BackgroundActivationTest() // Activating application for background test.
     return true;
 }
 
+bool UnregisterBackgroundActivationTest()
+{
+    winrt::ToastNotificationManager::Default().UnregisterActivator();
+    return true;
+}
+
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
@@ -214,6 +220,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
         { "BackgroundActivationTest", &BackgroundActivationTest},
+        { "UnregisterBackgroundActivationTest", &UnregisterBackgroundActivationTest},
         { "VerifyFailedRegisterActivatorUsingNullClsid", &VerifyFailedRegisterActivatorUsingNullClsid },
         { "VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged", &VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged},
         { "VerifyFailedRegisterActivatorUsingNullAssets", &VerifyFailedRegisterActivatorUsingNullAssets },
