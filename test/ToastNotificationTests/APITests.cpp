@@ -215,7 +215,7 @@ namespace Test::ToastNotifications
 
         TEST_METHOD(VerifyToastSettingEnabled_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyToastSettingEnabled_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyToastSettingEnabled", testWaitTime());
         }
 
         TEST_METHOD(VerifyToastSettingEnabled)
