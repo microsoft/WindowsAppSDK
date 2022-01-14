@@ -8,15 +8,22 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         ToastProgressData() = default;
 
         uint32_t SequenceNumber();
-        void SequenceNumber(uint32_t value);
+        void SequenceNumber(uint32_t sequenceNumber);
         hstring Title();
-        void Title(hstring const& value);
+        void Title(hstring const& title);
         double Value();
-        void Value(double value);
+        void Value(double progressValue);
         hstring ValueStringOverride();
-        void ValueStringOverride(hstring const& value);
+        void ValueStringOverride(hstring const& progressvalueString);
         hstring Status();
-        void Status(hstring const& value);
+        void Status(hstring const& progressStatus);
+
+    private:
+        uint32_t m_sequenceNumber;
+        hstring m_title;
+        double m_progressValue;
+        hstring m_progressvalueString;
+        hstring m_progressStatus;
     };
 }
 namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation

@@ -6,42 +6,42 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
     uint32_t ToastProgressData::SequenceNumber()
     {
-        throw hresult_not_implemented();
+        return m_sequenceNumber;
     }
-    void ToastProgressData::SequenceNumber(uint32_t /* value */)
+    void ToastProgressData::SequenceNumber(uint32_t sequenceNumber)
     {
-        throw hresult_not_implemented();
+        m_sequenceNumber = sequenceNumber;
     }
     hstring ToastProgressData::Title()
     {
-        throw hresult_not_implemented();
+        return m_title;
     }
-    void ToastProgressData::Title(hstring const& /* value */)
+    void ToastProgressData::Title(hstring const& title)
     {
-        throw hresult_not_implemented();
+        m_title = title;
     }
     double ToastProgressData::Value()
     {
-        throw hresult_not_implemented();
+        return m_progressValue;
     }
-    void ToastProgressData::Value(double /* value */)
+    void ToastProgressData::Value(double progressValue)
     {
-        throw hresult_not_implemented();
+        m_progressValue = progressValue;
     }
     hstring ToastProgressData::ValueStringOverride()
     {
-        throw hresult_not_implemented();
+        return m_progressvalueString;
     }
-    void ToastProgressData::ValueStringOverride(hstring const& /* value */)
+    void ToastProgressData::ValueStringOverride(hstring const& progressvalueString)
     {
-        throw hresult_not_implemented();
+        m_progressvalueString = progressvalueString;
     }
     hstring ToastProgressData::Status()
     {
-        throw hresult_not_implemented();
+        return m_progressStatus;
     }
-    void ToastProgressData::Status(hstring const& /* value */)
+    void ToastProgressData::Status(hstring const& progressStatus)
     {
-        throw hresult_not_implemented();
+        m_progressStatus = progressStatus;
     }
 }
