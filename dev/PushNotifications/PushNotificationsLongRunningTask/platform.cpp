@@ -70,7 +70,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    const std::wstring appIdentifier = GetAppIdentifier(processName);
+    const std::wstring appIdentifier{ BuildAppIdentifier(processName) };
     THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), remoteId));
 
     wil::unique_cotaskmem_string outAppId = wil::make_unique_string<wil::unique_cotaskmem_string>(appIdentifier.c_str());
@@ -85,7 +85,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterL
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    const std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId{ GetAppIdentifier(processName) };
     m_notificationListenerManager.AddListener(appId, processName);
 
     m_lifetimeManager.Cancel();
@@ -99,7 +99,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    const std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId{ GetAppIdentifier(processName) };
     m_notificationListenerManager.RemoveListener(appId);
     m_foregroundSinkManager->Remove(appId);
 
@@ -120,9 +120,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    const std::wstring appId = GetAppIdentifier(processName);
-
-    m_notificationListenerManager.AddListener(appId, processName);
+    const std::wstring appId{ GetAppIdentifier(processName) };
     m_foregroundSinkManager->Add(appId, sink);
 
     m_lifetimeManager.Cancel();
@@ -136,7 +134,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    const std::wstring appId = GetAppIdentifier(processName);
+    const std::wstring appId{ GetAppIdentifier(processName) };
     m_foregroundSinkManager->Remove(appId);
 
     return S_OK;
@@ -149,7 +147,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastR
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     // Don't register unless there is a sink available.
-    if (!m_notificationListenerManager.HasSinkForProcessName(processName))
+    if (GetAppIdentifier(processName).empty())
     {
         return S_OK;
     }
@@ -205,6 +203,16 @@ const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::w
         {
             return std::wstring{ it.Current().Key().c_str() };
         }
+    }
+    return {};
+}
+
+const std::wstring NotificationsLongRunningPlatformImpl::BuildAppIdentifier(std::wstring const& processName)
+{
+    const std::wstring appId{ GetAppIdentifier(processName) };
+    if (!appId.empty())
+    {
+        return appId;
     }
 
     GUID guidReference;

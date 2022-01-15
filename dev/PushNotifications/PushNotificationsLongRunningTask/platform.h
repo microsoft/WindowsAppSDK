@@ -30,6 +30,7 @@ private:
 
     std::map<std::wstring, std::wstring> GetFullTrustApps();
     const std::wstring GetAppIdentifier(std::wstring const& processName);
+    const std::wstring BuildAppIdentifier(std::wstring const& processName);
     void RemoveAppIdentifier(std::wstring const& processName);
     void RemoveToastHelper(std::wstring const& processName);
 

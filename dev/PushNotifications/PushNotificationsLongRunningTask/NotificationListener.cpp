@@ -3,6 +3,11 @@
 #include "pch.h"
 #include "../PushNotificationUtility.h"
 
+namespace ToastNotifications
+{
+    using namespace ABI::Microsoft::Internal::ToastNotifications;
+}
+
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
     std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
@@ -34,12 +39,14 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnToastNotificationReceived(
-    ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,
-    ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept try
+    ToastNotifications::INotificationProperties* notificationProperties,
+    ToastNotifications::INotificationTransientProperties* notificationTransientProperties) noexcept try
 {
-    auto lock = m_lock.lock_exclusive();
-
-    std::wstring appId{ m_toastRegistrationManager->GetToastRegistration(m_processName) };
+    std::wstring appId;
+    {
+        auto lock{ m_lock.lock_shared() };
+        std::wstring appId{ m_toastRegistrationManager->GetToastRegistration(m_processName) };
+    }
 
     DWORD notificationId{ 0 };
     ToastNotifications_PostToast(appId.c_str(), notificationProperties, notificationTransientProperties, &notificationId);
