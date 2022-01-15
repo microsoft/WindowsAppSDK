@@ -32,6 +32,7 @@ void NotificationListenerManager::AddListener(std::wstring const& appId, std::ws
     AgileRef newListenerAsAgile;
     THROW_IF_FAILED(AsAgile(newListener.Get(), &newListenerAsAgile));
     m_notificationListeners[appId] = newListenerAsAgile;
+    m_processNameAppIdMapping[processName] = appId;
 }
 
 void NotificationListenerManager::RemoveListener(std::wstring appId)
@@ -45,11 +46,12 @@ void NotificationListenerManager::RemoveListener(std::wstring appId)
     m_notificationListeners.erase(appId);
 }
 
-bool NotificationListenerManager::HasSinkForAppId(std::wstring const& appId)
+bool NotificationListenerManager::HasSinkForProcessName(std::wstring const& processName)
 {
     auto lock{ m_lock.lock_shared() };
-    auto it = m_notificationListeners.find(appId);
-    return it != m_notificationListeners.end();
+
+    auto it = m_processNameAppIdMapping.find(processName);
+    return it != m_processNameAppIdMapping.end();
 }
 
 bool NotificationListenerManager::IsEmpty()

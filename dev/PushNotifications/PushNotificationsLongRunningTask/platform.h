@@ -23,15 +23,15 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
     STDMETHOD(UnregisterForegroundActivator)(_In_ PCWSTR processName) noexcept;
 
-    STDMETHOD(AddToastRegistrationMapping)(_In_ PCWSTR processName, _In_ PCWSTR appId) noexcept;
+    STDMETHOD(AddToastRegistrationMapping)(_In_ PCWSTR processName, _In_ PCWSTR toastAppId) noexcept;
 
     STDMETHOD(RemoveToastRegistrationMapping)(_In_ PCWSTR processName) noexcept;
 private:
 
     std::map<std::wstring, std::wstring> GetFullTrustApps();
     const std::wstring GetAppIdentifier(std::wstring const& processName);
-    const std::wstring BuildAppIdentifier(std::wstring const& processName);
     void RemoveAppIdentifier(std::wstring const& processName);
+    void RemoveToastHelper(std::wstring const& processName);
 
     winrt::Windows::Storage::ApplicationDataContainer m_rawStorage{ nullptr };
     winrt::Windows::Storage::ApplicationDataContainer m_toastStorage{ nullptr };

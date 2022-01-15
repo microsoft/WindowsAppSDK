@@ -179,5 +179,45 @@ namespace Test::PushNotifications
             VERIFY_IS_FALSE(isRunning);
         }
 
+        TEST_METHOD(AddToastRegistrationMappingNoSink)
+        {
+            VERIFY_SUCCEEDED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+            auto scopeExit = wil::scope_exit(
+                [&]() { VERIFY_NO_THROW(CoUninitialize()); });
+
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(L"TAEF.exe", L"toastAppId"));
+        }
+
+        TEST_METHOD(RemoveToastRegistrationMappingNoSink)
+        {
+            VERIFY_SUCCEEDED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+            auto scopeExit = wil::scope_exit(
+                [&]() { VERIFY_NO_THROW(CoUninitialize()); });
+
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(L"TAEF.exe"));
+        }
+
+        TEST_METHOD(AddRemoveToastRegistrationMappingWithSink)
+        {
+            VERIFY_SUCCEEDED(::CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
+            auto scopeExit = wil::scope_exit(
+                [&]() { VERIFY_NO_THROW(CoUninitialize()); });
+
+            winrt::com_ptr notificationPlatform{ winrt::try_create_instance<INotificationsLongRunningPlatform>(_uuidof(NotificationsLongRunningPlatform), CLSCTX_ALL) };
+            VERIFY_IS_NOT_NULL(notificationPlatform.get());
+
+            wil::unique_cotaskmem_string unpackagedAumid;
+            VERIFY_NO_THROW(notificationPlatform->RegisterFullTrustApplication(L"TAEF.exe", c_remoteId, &unpackagedAumid));
+            VERIFY_NO_THROW(notificationPlatform->RegisterLongRunningActivator(unpackagedAumid.get()));
+            VERIFY_NO_THROW(notificationPlatform->AddToastRegistrationMapping(L"TAEF.exe", L"toastAppId"));
+            VERIFY_NO_THROW(notificationPlatform->RemoveToastRegistrationMapping(L"TAEF.exe"));
+            VERIFY_NO_THROW(notificationPlatform->UnregisterLongRunningActivator(L"TAEF.exe"));
+        }
     };
 }
