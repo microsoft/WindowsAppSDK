@@ -55,6 +55,7 @@ namespace Test::PushNotifications
 
         TEST_CLASS_SETUP(ClassInit)
         {
+#if 0
             try
             {
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
@@ -69,12 +70,13 @@ namespace Test::PushNotifications
             }
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
-
+#endif
             return true;
         }
 
         TEST_CLASS_CLEANUP(ClassUninit)
         {
+#if 0
             try
             {
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
@@ -88,29 +90,31 @@ namespace Test::PushNotifications
             {
                 return false;
             }
-
+#endif
             return true;
         }
 
         TEST_METHOD_SETUP(MethodInit)
         {
+#if 0
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
-
+#endif
             return true;
         }
 
         TEST_METHOD_CLEANUP(MethodUninit)
         {
+#if 0
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 
             m_processHandle.reset();
-
+#endif
             return true;
         }
 
@@ -287,7 +291,50 @@ namespace Test::PushNotifications
 
         TEST_METHOD(ActivatorTest)
         {
+#if 0
+            try
+            {
+                TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
+                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
+                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
+                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
+                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+            }
+            catch (...)
+            {
+                VERIFY_FAIL();
+            }
+
+            m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
+
             RunTest(L"ActivatorTest", testWaitTime());
+
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
+
+            m_processHandle.reset();
+
+            try
+            {
+                // Remove in reverse order to avoid conflicts between inter-dependent packages.
+                TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
+                TP::RemovePackage_DynamicDependencyLifetimeManager();
+                TP::RemovePackage_DynamicDependencyDataStore();
+                TP::RemovePackage_WindowsAppRuntimeFramework();
+            }
+            catch (...)
+            {
+                VERIFY_FAIL();
+            }
+#endif
         }
 
         TEST_METHOD(ActivatorTest_Unpackaged)
