@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::PushNotifications
                 return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
             }
         }
-        return GetArgsFromStore();
+        return GetArgsFromComStore();
     }
 }
 
@@ -34,6 +34,6 @@ namespace winrt::Microsoft::Windows::ToastNotifications
 {
     static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& uri)
     {
-        return GetArgsFromStore();
+        return GetArgsFromComStore();
     }
 }

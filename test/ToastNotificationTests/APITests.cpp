@@ -166,7 +166,7 @@ namespace Test::ToastNotifications
             auto toastActivationCallback = winrt::create_instance<INotificationActivationCallback>(c_toastComServerId, CLSCTX_ALL);
             VERIFY_SUCCEEDED(toastActivationCallback->Activate(L"AUMID", L"args", nullptr, 0));
 
-            RunTest(L"UnregisterBackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+            RunTest(L"UnregisterBackgroundActivationTest", testWaitTime()); // Need to launch again to unregister activation
         }
 
         TEST_METHOD(VerifyFailedRegisterActivatorUsingNullClsid)
