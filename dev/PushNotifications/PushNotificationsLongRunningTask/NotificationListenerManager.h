@@ -17,14 +17,12 @@ public:
     void AddListener(std::wstring const& appId, std::wstring const& processName);
     void RemoveListener(std::wstring appId);
 
-    bool HasSinkForProcessName(std::wstring const& processName);
     bool IsEmpty();
 
 private:
     wil::srwlock m_lock;
 
     std::map<std::wstring, Microsoft::WRL::AgileRef> m_notificationListeners;
-    std::map<std::wstring, std::wstring> m_processNameAppIdMapping;
     std::shared_ptr<ForegroundSinkManager> m_foregroundSinkManager;
     std::shared_ptr<ToastRegistrationManager> m_toastRegistrationManager;
 };
