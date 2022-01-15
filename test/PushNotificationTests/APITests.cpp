@@ -291,20 +291,19 @@ namespace Test::PushNotifications
 
         TEST_METHOD(ActivatorTest)
         {
-#if 0
             try
             {
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
-                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
-                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
-                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
-                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+//                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
+//                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
+//                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
+//                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {
                 VERIFY_FAIL();
             }
-
+#if 0
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
 
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
