@@ -64,32 +64,6 @@ jobs:
 
   - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
-  - task: BinSkim@3
-    inputs:
-      InputType: 'Basic'
-      Function: 'analyze'
-      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
-      AnalyzeVerbose: true
-    condition: ne(variables['buildConfiguration'], 'Debug')
-
-  - task: PostAnalysis@1
-    inputs:
-      AllTools: false
-      APIScan: false
-      BinSkim: true
-      BinSkimBreakOn: 'Error'
-      CodesignValidation: false
-      CredScan: false
-      FortifySCA: false
-      FxCop: false
-      ModernCop: false
-      PoliCheck: false
-      RoslynAnalyzers: false
-      SDLNativeRules: false
-      Semmle: false
-      TSLint: false
-      ToolLogsNotFoundAction: 'Standard'
-
 - job: BuildMRT
   pool:
     vmImage: 'windows-latest'
@@ -109,6 +83,30 @@ jobs:
   - template: build-mrt.yml
     parameters:
       buildJobName: 'BuildMRTCore'
+
+  - task: BinSkim@3
+    inputs:
+      InputType: 'Basic'
+      Function: 'analyze'
+      AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
+      AnalyzeVerbose: true
+  - task: PostAnalysis@1
+    inputs:
+      AllTools: false
+      APIScan: false
+      BinSkim: true
+      BinSkimBreakOn: 'Error'
+      CodesignValidation: false
+      CredScan: false
+      FortifySCA: false
+      FxCop: false
+      ModernCop: false
+      PoliCheck: false
+      RoslynAnalyzers: false
+      SDLNativeRules: false
+      Semmle: false
+      TSLint: false
+      ToolLogsNotFoundAction: 'Standard'
 
 - job: PublishMRT
   dependsOn:
