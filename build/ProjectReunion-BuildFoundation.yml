@@ -232,7 +232,7 @@ jobs:
     parameters:
       buildJobName: 'BuildMRTCore'
 
-- task: BinSkim@3
+  - task: BinSkim@3
     inputs:
       InputType: 'Basic'
       Function: 'analyze'
