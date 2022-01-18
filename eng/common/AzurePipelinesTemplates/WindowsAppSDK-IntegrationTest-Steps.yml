@@ -86,3 +86,10 @@ steps:
         -YamlStep "none"
         -RunTestMachineSetup
         -Name "${{ parameters.TestSelection }}"
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish test results'
+    condition: succeededOrFailed()
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)\PipelineTestOutput
+      artifactName: TestResults-WindowsAppSDKIntegration
