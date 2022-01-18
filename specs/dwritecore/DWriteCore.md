@@ -79,7 +79,7 @@ New APIs introduced by DWriteCore include:
 
  - The exported function is renamed `DWriteCoreCreateFactory` to avoid a naming collision with the
    `DWriteCreateFactory` function exported by the system version of DirectWrite (DWrite.dll)
- - A new `DWRITE_FACTORY_TYPE` enumerator for creating an isolated factory object
+ - A new `DWRITE_FACTORY_TYPE` value which specifies an isolated factory object
  - A new method for getting pixel data from a bitmap render target
  - New methods for selecting fonts from a font set
  - A new factory method to release unreferenced fonts
@@ -245,11 +245,11 @@ may have both. To use a variable font, one must create a variable font _instance
 axes have been bound to particular values. The `IDWriteFontFace` interface represents either a static font or
 a particular _instance_ of a variable font. It is possible to create an _arbitrary instance_ of a variable
 font with specified axis values. In addition, a variable font may declare _named instances_ in the `STAT`
-table with predefined combinations of axis values. Named instances enable a variable font to be have much
+table with predefined combinations of axis values. Named instances enable a variable font to behave much
 like a collection of static fonts. When you enumerate elements of an `IDWriteFontFamily` or `IDWriteFontSet`,
 there is one element for each static font and for each named variable font instance.
 
-The typographic font matching algorithm first selects potential match candates based on the family name.
+The typographic font matching algorithm first selects potential match candidates based on the family name.
 If the match candidates include variable fonts, all the match candidates for the same variable font
 are collapsed into one match candidate in which each variable axis is assigned a specific value as
 close as possible to the requested value for that axis. If there is no requested value for a variable
@@ -464,7 +464,7 @@ the "Legacy" WWS family as a tie-breaker.
 
 Suppose a document specifies a family name and weight, stretch, and style parameters, but no axis
 values. The application can first map the weight, stretch, style, and font size to axis values by
-calling `IDWriteFontSet4::GetDerivedFontAxisValues`. The application can then pass both the family
+calling `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle`. The application can then pass both the family
 name and axis values to `IDWriteFontSet4::GetMatchingFonts`. `GetMatchingFonts` returns a list of
 matching fonts in priority order, and the result is appropriate whether the specified family name
 is a typographic family name, weight-stretch-style family name, RBIZ family name, or full name.
@@ -472,7 +472,7 @@ If the specified family has an "opsz" axis, the appropriate optical size is auto
 based on the font size.
 
 Suppose a document specifies weight, stretch, and style and _also_ specifies axis values. In this
-case, the explicit axis values can also be passed in to `IDWriteFontSet4::GetDerivedFontAxisValues`,
+case, the explicit axis values can also be passed in to `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle`,
 and the derived axis values returned by the method will only include font axes that were not
 specified explicitly. Thus, axis values specified explicitly by the document (or application) take
 precedence over axis values derived from weight, stretch, style, and font size.
@@ -481,7 +481,7 @@ precedence over axis values derived from weight, stretch, style, and font size.
 
 The hybrid font selection model is implemented by the following `IDWriteFontSet4` methods:
 
-  - The `GetDerivedFontAxisValues` method converts font size, weight, stretch, and style parameters
+  - The `DeriveAxisValuesFromWeightStretchStyle` method converts font size, weight, stretch, and style parameters
     to the corresponding axis values. Any explicit axis values passed in by the client are excluded
     from the derived axis values.
 
@@ -577,7 +577,7 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(_In_ IDWriteBitmapRenderTa
 ## Using Font Selection APIs
 
 This section shows a complete console application that demonstrates the `IDWriteFontSet4::GetMatchingFonts`
-and `IDWriteFontSet4::GetDerivedFontAxisValues` methods. First let's include some headers:
+and `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle` methods. First let's include some headers:
 
 ```c++
 #include <dwrite_core.h>
@@ -593,13 +593,13 @@ to `GetMatchingFonts` and the list of matching fonts in the returned font set.
 
 ```c++
 // Forward declarations of overloaded output operators used by MatchAxisValues.
-std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue);
-std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference);
-std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceReference);
+std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE const& axisValue);
+std::wostream& operator<<(std::wostream& out, IDWriteFontFile* fileReference);
+std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1* faceReference);
 
 //
 // MatchAxisValues calls IDWriteFontSet4::GetMatchingFonts with the
-// specific parameters and outputs the matching fonts.
+// specified parameters and outputs the matching fonts.
 //
 void MatchAxisValues(
     IDWriteFontSet4* fontSet,
@@ -632,7 +632,7 @@ void MatchAxisValues(
     {
         wil::com_ptr<IDWriteFontFaceReference1> faceReference;
         THROW_IF_FAILED(matchingFonts->GetFontFaceReference(fontIndex, &faceReference));
-        std::wcout << L"    " << *faceReference << L'\n';
+        std::wcout << L"    " << faceReference.get() << L'\n';
     }
 
     std::wcout << std::endl;
@@ -643,12 +643,12 @@ An application might have weight, stretch, and style parameters instead of (or i
 For example, the application might need to work with documents that reference fonts using RBIZ or
 weight-stretch-style parameters. Even if the application adds support for specifying arbitrary axis
 values, it might need to support the older parameters as well. To do so, the application can call the
-`IDWriteFontSet4::GetDerivedFontAxisValues` before calling `IDWriteFontSet4::GetMatchingFonts`.
+`IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle` before calling `IDWriteFontSet4::GetMatchingFonts`.
 
 The following `MatchFont` function takes weight, stretch, style, and font size parameters in addition to
-axis values. It forwards these parameters to the `IDWriteFontSet4::GetDerivedAxisValues` method to compute
-derived axis values. It then combines the input axis values with the derived axis values, and passes them
-to the above `MatchAxisValues` function.
+axis values. It forwards these parameters to the `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle` 
+method to compute derived axis values, which are appended to the input axis values. It passes the combined 
+axis values to the above `MatchAxisValues` function.
 
 ```c++
 struct FontStyleParams
@@ -664,8 +664,8 @@ struct FontStyleParams
 };
 
 //
-// MatchFont calls IDWriteFontSet4::GetDerivedFontAxisValues to map the input
-// paramters to axis values and then calls MatchAxisValues.
+// MatchFont calls IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle to convert
+// the input parameters to axis values and then calls MatchAxisValues.
 //
 void MatchFont(
     IDWriteFactory7* factory,
@@ -681,26 +681,30 @@ void MatchFont(
     wil::com_ptr<IDWriteFontSet4> fontSet;
     THROW_IF_FAILED(fontSet2->QueryInterface(&fontSet));
 
-    // Get derived axis value from the weight, stretch, style, and font size.
-    // Any axes in the input vector are excluded from the output. The maximum
-    // number of derived axis values is DWRITE_STANDARD_FONT_AXIS_COUNT.
-    DWRITE_FONT_AXIS_VALUE derivedAxisValues[DWRITE_STANDARD_FONT_AXIS_COUNT];
-    UINT32 derivedAxisCount = fontSet->GetDerivedFontAxisValues(
-        axisValues.data(),
-        static_cast<UINT32>(axisValues.size()),
+    // Ensure the total number of axis values can't overflow a UINT32.
+    size_t const inputAxisCount = axisValues.size();
+    if (inputAxisCount > UINT32_MAX - DWRITE_STANDARD_FONT_AXIS_COUNT)
+    {
+        THROW_HR(E_INVALIDARG);
+    }
+
+    // Reserve space at the end of axisValues vector for the derived axis values.
+    // The maximum number of derived axis values is DWRITE_STANDARD_FONT_AXIS_COUNT.
+    axisValues.resize(inputAxisCount + DWRITE_STANDARD_FONT_AXIS_COUNT);
+
+    // Convert the weight, stretch, style, and font size to derived axis values.
+    UINT32 derivedAxisCount = fontSet->DeriveAxisValuesFromWeightStretchStyle(
+        /*inputAxisValues*/ axisValues.data(),
+        static_cast<UINT32>(inputAxisCount),
         styleParams.fontWeight,
         styleParams.fontStretch,
         styleParams.fontStyle,
         styleParams.fontSize,
-        derivedAxisValues
+        /*out*/ axisValues.data() + inputAxisCount
         );
 
-    // Append the derived axis values to the vector.
-    axisValues.insert(
-        axisValues.end(),
-        derivedAxisValues, 
-        derivedAxisValues + derivedAxisCount
-        );
+    // Resize the vector based on the actual number of derived axis values returned.
+    axisValues.resize(inputAxisCount + derivedAxisCount);
 
     // Pass the combined axis values (explicit and derived) to MatchAxisValues.
     MatchAxisValues(fontSet.get(), familyName, axisValues, allowedSimulations);
@@ -795,7 +799,7 @@ by `MatchAxisValues` to write the input axis values and the resulting font face 
 
 ```c++
 // Output a font axis value.
-std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue)
+std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE const& axisValue)
 {
     UINT32 tagValue = axisValue.axisTag;
     WCHAR tagChars[5] =
@@ -811,17 +815,17 @@ std::wostream& operator<<(std::wostream& out, DWRITE_FONT_AXIS_VALUE axisValue)
 }
 
 // Output a file name given a font file reference.
-std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference)
+std::wostream& operator<<(std::wostream& out, IDWriteFontFile* fileReference)
 {
     wil::com_ptr<IDWriteFontFileLoader> loader;
-    THROW_IF_FAILED(fileReference.GetLoader(&loader));
+    THROW_IF_FAILED(fileReference->GetLoader(&loader));
 
     wil::com_ptr<IDWriteLocalFontFileLoader> localLoader;
     if (SUCCEEDED(loader->QueryInterface(&localLoader)))
     {
         const void* fileKey;
         UINT32 fileKeySize;
-        THROW_IF_FAILED(fileReference.GetReferenceKey(&fileKey, &fileKeySize));
+        THROW_IF_FAILED(fileReference->GetReferenceKey(&fileKey, &fileKeySize));
 
         WCHAR filePath[MAX_PATH];
         THROW_IF_FAILED(localLoader->GetFilePathFromKey(fileKey, fileKeySize, filePath, MAX_PATH));
@@ -835,31 +839,31 @@ std::wostream& operator<<(std::wostream& out, IDWriteFontFile& fileReference)
 }
 
 // Output a font face reference.
-std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1& faceReference)
+std::wostream& operator<<(std::wostream& out, IDWriteFontFaceReference1* faceReference)
 {
     // Output the font file name.
     wil::com_ptr<IDWriteFontFile> fileReference;
-    THROW_IF_FAILED(faceReference.GetFontFile(&fileReference));
-    std::wcout << *fileReference;
+    THROW_IF_FAILED(faceReference->GetFontFile(&fileReference));
+    std::wcout << fileReference.get();
 
     // Output the face index if nonzero.
-    UINT32 const faceIndex = faceReference.GetFontFaceIndex();
+    UINT32 const faceIndex = faceReference->GetFontFaceIndex();
     if (faceIndex != 0)
     {
         out << L'#' << faceIndex;
     }
 
     // Output the axis values.
-    UINT32 const axisCount = faceReference.GetFontAxisValueCount();
+    UINT32 const axisCount = faceReference->GetFontAxisValueCount();
     std::vector<DWRITE_FONT_AXIS_VALUE> axisValues(axisCount);
-    THROW_IF_FAILED(faceReference.GetFontAxisValues(axisValues.data(), axisCount));
-    for (DWRITE_FONT_AXIS_VALUE axisValue : axisValues)
+    THROW_IF_FAILED(faceReference->GetFontAxisValues(axisValues.data(), axisCount));
+    for (DWRITE_FONT_AXIS_VALUE const& axisValue : axisValues)
     {
         out << L' ' << axisValue;
     }
 
     // Output the simulations.
-    DWRITE_FONT_SIMULATIONS simulations = faceReference.GetSimulations();
+    DWRITE_FONT_SIMULATIONS simulations = faceReference->GetSimulations();
     if (simulations & DWRITE_FONT_SIMULATIONS_BOLD)
     {
         out << L" BOLDSIM";
@@ -1146,18 +1150,18 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
     /// <param name="fontStyle">Font style, used to compute "slnt" and "ital" axis values.</param>
     /// <param name="fontSize">Font size in DIPs, used to compute "opsz" axis value. If this parameter is zero,
     /// no "opsz" axis value is added to the output array.</param>
-    /// <param name="outputAxisValues">Pointer to an output array to which derived axis values are written.
+    /// <param name="derivedAxisValues">Pointer to an output array to which derived axis values are written.
     /// The size of this array must be at least DWRITE_STANDARD_FONT_AXIS_COUNT (5). The return value is 
     /// the actual number of axis values written to this array.</param>
     /// <returns>Returns the actual number of derived axis values written to the output array.</returns>
-    STDMETHOD_(UINT32, GetDerivedFontAxisValues)(
+    STDMETHOD_(UINT32, DeriveAxisValuesFromWeightStretchStyle)(
         _In_reads_opt_(inputAxisCount) DWRITE_FONT_AXIS_VALUE const* inputAxisValues,
         UINT32 inputAxisCount,
         DWRITE_FONT_WEIGHT fontWeight,
         DWRITE_FONT_STRETCH fontStretch,
         DWRITE_FONT_STYLE fontStyle,
         float fontSize,
-        _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* outputAxisValues
+        _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* derivedAxisValues
         ) PURE;
 
     /// <summary>
