@@ -23,6 +23,9 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
+namespace ToastABI = ABI::Microsoft::Internal::ToastNotifications;
+namespace CollectionsABI = ABI::Windows::Foundation::Collections;
+
 namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
     static wil::unique_com_class_object_cookie s_toastcomActivatorRegistration;
@@ -104,6 +107,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationHistory ToastNotificationManager::History()
     {
+        std::wstring appId{ RetrieveAppId() };
+        winrt::com_ptr <CollectionsABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection;
+        ToastNotifications_GetHistory(appId.c_str(), toastPropertiesCollection.put());
         throw hresult_not_implemented();
     }
     winrt::Windows::Data::Xml::Dom::XmlDocument ToastNotificationManager::GetXmlTemplateContent(winrt::Microsoft::Windows::ToastNotifications::ToastTemplateType const& /* type */)
