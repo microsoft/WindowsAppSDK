@@ -9,7 +9,7 @@
 const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
 const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
 const std::wstring c_quote{ LR"(")" };
-const std::wstring c_toastActivatedArgument{ L" ----ToastActivated:" };
+const std::wstring c_toastActivatedArgument{ L" ----AppNotificationActivated:" };
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers();
 
