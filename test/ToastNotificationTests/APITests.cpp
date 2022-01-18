@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "NotificationActivationCallback.h"
 #include <TestDef.h>
 
 using namespace WEX::Common;
@@ -156,6 +157,16 @@ namespace Test::ToastNotifications
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
             VERIFY_ARE_EQUAL(exitCode, 0);
+        }
+
+        TEST_METHOD(VerifyBackgroundActivation)
+        {
+            RunTest(L"BackgroundActivationTest", testWaitTime()); // Need to launch one time to enable background activation.
+
+            auto toastActivationCallback = winrt::create_instance<INotificationActivationCallback>(c_toastComServerId, CLSCTX_ALL);
+            VERIFY_SUCCEEDED(toastActivationCallback->Activate(L"AUMID", L"args", nullptr, 0));
+
+            RunTest(L"UnregisterBackgroundActivationTest", testWaitTime()); // Need to launch again to unregister activation
         }
 
         TEST_METHOD(VerifyFailedRegisterActivatorUsingNullClsid)
