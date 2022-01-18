@@ -10,7 +10,6 @@
 #include "ToastNotificationUtility.h"
 #include <frameworkudk/pushnotifications.h>
 #include <frameworkudk/toastnotifications.h>
-
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers()
