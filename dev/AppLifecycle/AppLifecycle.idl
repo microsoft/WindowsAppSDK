@@ -53,7 +53,7 @@ namespace Microsoft.Windows.AppLifecycle
         // Windows.ApplicationModel.Activation.ActivationKind.
 
         Push = 5000,
-        ToastActivation,
+        AppNotification,
     };
 
     runtimeclass AppActivationArguments
