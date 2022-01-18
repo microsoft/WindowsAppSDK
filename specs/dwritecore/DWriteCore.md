@@ -89,8 +89,8 @@ New APIs introduced by DWriteCore include:
 The new `DWRITE_FACTORY_TYPE_ISOLATED2` enumerator complements the existing factory types. It is similar to
 `DWRITE_FACTORY_TYPE_ISOLATED`, but is more locked down in two ways. First, it only caches data in-process, and
 will not attempt to either read from or write to a cross-process font cache or persisted cache file. Second,
-a restricted factory only enumerates well-known fonts in the system font collection. The well-known-fonts
-restriction enables DWriteCore to efficiently construct the system font collection without depending on a
+a `DWRITE_FACTORY_TYPE_ISOLATED2` factory only enumerates well-known fonts in the system font collection. The well-known-fonts
+restriction enables the implementation to efficiently construct the system font collection without depending on a
 cross-process or persistent cache. An example use case for the new factory type would be a web browser
 rendering process with very limited permissions.
 
