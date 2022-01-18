@@ -177,13 +177,13 @@
     <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱용 사용자 지정 컨트롤입니다.</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>사용자 컨트롤(WinUI 3)</value>
+    <value>사용자 정의 컨트롤(WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[실험적] 사용자 컨트롤(WinUI 3)</value>
+    <value>[실험적] 사용자 정의 컨트롤(WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱용 사용자 컨트롤입니다.</value>
+    <value>Windows UI 라이브러리(WinUI 3)를 기반으로 하는 앱용 사용자 정의 컨트롤입니다.</value>
   </data>
   <data name="1025" xml:space="preserve">
     <value>클래스 라이브러리(데스크톱의 WinUI 3)</value>
