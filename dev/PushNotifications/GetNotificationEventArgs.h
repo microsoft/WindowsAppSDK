@@ -29,11 +29,3 @@ namespace winrt::Microsoft::Windows::PushNotifications
         return GetArgsFromComStore();
     }
 }
-
-namespace winrt::Microsoft::Windows::ToastNotifications
-{
-    static winrt::Windows::Foundation::IInspectable Deserialize(winrt::Windows::Foundation::Uri const& /* uri */)
-    {
-        return GetArgsFromComStore();
-    }
-}
