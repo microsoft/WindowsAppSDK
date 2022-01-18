@@ -14,7 +14,7 @@
   <Properties>
     <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallFramework for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Logo>Assets\logo.png</Logo>
+    <Logo>logo.png</Logo>
     <Framework>true</Framework>
   </Properties>
 

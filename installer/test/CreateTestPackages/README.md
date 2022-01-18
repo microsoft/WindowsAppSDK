@@ -18,3 +18,10 @@ specified in a preprocessor macro.
 To save build time and signing complexities, this project only needs to be built when new test
 packages need to be added or generated and added as test collateral. For typical development you
 should only need to build these once.
+
+To build all test packages via the command line:
+
+cd installer\test\CreateTestPackages
+msbuild CreateTestPackages.sln -p:Configuration=Release -p:Platform=x86
+msbuild CreateTestPackages.sln -p:Configuration=Release -p:Platform=x64
+msbuild CreateTestPackages.sln -p:Configuration=Release -p:Platform=arm64
