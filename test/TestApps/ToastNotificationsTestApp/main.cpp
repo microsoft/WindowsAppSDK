@@ -35,6 +35,17 @@ winrt::ToastNotification GetToastNotification()
     return winrt::ToastNotification(xmlDocument);
 }
 
+bool BackgroundActivationTest() // Activating application for background test.
+{
+    return true;
+}
+
+bool UnregisterBackgroundActivationTest()
+{
+    winrt::ToastNotificationManager::Default().UnregisterActivator();
+    return true;
+}
+
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
