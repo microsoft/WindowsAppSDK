@@ -11,8 +11,8 @@ namespace ToastNotifications
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
     std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
-    std::wstring appId,
-    std::wstring processName) noexcept
+    std::wstring const& appId,
+    std::wstring const& processName) noexcept
 {
     m_foregroundSinkManager = foregroundSinkManager;
     m_toastRegistrationManager = toastRegistrationManager;
@@ -45,7 +45,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnToastNotificationReceiv
     std::wstring appId;
     {
         auto lock{ m_lock.lock_shared() };
-        std::wstring appId{ m_toastRegistrationManager->GetToastRegistration(m_processName) };
+        appId = m_toastRegistrationManager->GetToastRegistration(m_processName);
     }
 
     DWORD notificationId{ 0 };

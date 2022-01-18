@@ -10,8 +10,8 @@ public:
     HRESULT RuntimeClassInitialize(
         std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
         std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
-        std::wstring appId,
-        std::wstring processName) noexcept;
+        std::wstring const& appId,
+        std::wstring const& processName) noexcept;
 
     STDMETHOD(OnRawNotificationReceived)(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING correlationVector) noexcept;
     STDMETHOD(OnToastNotificationReceived)(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* notificationProperties,

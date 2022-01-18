@@ -23,15 +23,8 @@ void NotificationsLongRunningPlatformImpl::Initialize()
     m_rawStorage = Storage::ApplicationData::Current().LocalSettings().CreateContainer(
         L"Raw", Storage::ApplicationDataCreateDisposition::Always);
 
-    m_toastStorage = Storage::ApplicationData::Current().LocalSettings().CreateContainer(
-        L"Toast", Storage::ApplicationDataCreateDisposition::Always);
-
     m_foregroundSinkManager = std::make_shared<ForegroundSinkManager>();
     m_toastRegistrationManager = std::make_shared<ToastRegistrationManager>();
-    for (auto pair : m_toastStorage.Values())
-    {
-        m_toastRegistrationManager->Add(pair.Key().c_str(), pair.Value().as<winrt::hstring>().c_str());
-    }
 
     m_notificationListenerManager.Initialize(m_foregroundSinkManager, m_toastRegistrationManager);
 
@@ -152,7 +145,6 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastR
         return S_OK;
     }
     m_toastRegistrationManager->Add(processName, toastAppId);
-    m_toastStorage.Values().Insert(processName, winrt::box_value(toastAppId));
     return S_OK;
 }
 CATCH_RETURN()
@@ -233,6 +225,5 @@ void NotificationsLongRunningPlatformImpl::RemoveAppIdentifier(std::wstring cons
 void NotificationsLongRunningPlatformImpl::RemoveToastHelper(std::wstring const& processName)
 {
     m_toastRegistrationManager->Remove(processName);
-    m_toastStorage.Values().Remove(processName);
 }
 

@@ -35,7 +35,6 @@ private:
     void RemoveToastHelper(std::wstring const& processName);
 
     winrt::Windows::Storage::ApplicationDataContainer m_rawStorage{ nullptr };
-    winrt::Windows::Storage::ApplicationDataContainer m_toastStorage{ nullptr };
 
     wil::srwlock m_lock;
 
