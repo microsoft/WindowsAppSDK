@@ -8,7 +8,7 @@
 #include "externs.h"
 #include "ToastNotificationUtility.h"
 #include <frameworkudk/pushnotifications.h>
-
+#include <frameworkudk/toastnotifications.h>
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers()
@@ -96,7 +96,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting ToastNotificationManager::Setting()
     {
-        throw hresult_not_implemented();
+        std::wstring appId { RetrieveAppId() };
+        DWORD toastNotificationSetting{ 0 };
+        ToastNotifications_QuerySettings(appId.c_str(), &toastNotificationSetting);
+
+        return static_cast<winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting>(toastNotificationSetting);
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationHistory ToastNotificationManager::History()
     {

@@ -186,6 +186,11 @@ bool VerifyFailedToastAssetsWithNullIconPath_Unpackaged()
     return false;
 }
 
+bool VerifyToastSettingEnabled()
+{
+    return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
+}
+
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
     std::string unitTestName = to_string(launchArgs.Arguments());
@@ -211,6 +216,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged", &VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged },
         { "VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", &VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged },
         { "VerifyFailedToastAssetsWithNullIconPath_Unpackaged", &VerifyFailedToastAssetsWithNullIconPath_Unpackaged },
+        { "VerifyToastSettingEnabled", &VerifyToastSettingEnabled },
     };
     return switchMapping;
 }
