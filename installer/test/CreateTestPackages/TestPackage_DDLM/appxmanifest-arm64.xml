@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Test.InstallDDLM"
+    Name="WindowsAppRuntime.Test.InstallerDDLM-arm64"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     ProcessorArchitecture="arm64"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallDDLM for tests</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallerDDLM for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
   </Properties>

@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Test.InstallSingleton"
+    Name="WindowsAppRuntime.Test.InstallerSingleton"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     ProcessorArchitecture="arm64"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallSingleton for tests</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallerSingleton for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
   </Properties>

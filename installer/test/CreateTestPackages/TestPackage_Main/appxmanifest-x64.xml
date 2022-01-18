@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="Microsoft.WindowsAppRuntime.Test.InstallMain"
+    Name="WindowsAppRuntime.Test.InstallerMain"
     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
     ProcessorArchitecture="x64"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallMain for tests</DisplayName>
+    <DisplayName>Microsoft.WindowsAppRuntime.Test.InstallerMain for tests</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>logo.png</Logo>
   </Properties>
