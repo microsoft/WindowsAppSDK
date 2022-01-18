@@ -62,7 +62,7 @@
     <PropertyGroup>
       <_SignMsix_Executable>signtool.exe</_SignMsix_Executable>
       <_SignMsix_Parameters>/fd SHA256</_SignMsix_Parameters>
-      <_SignMsix_UserDir>$(SolutionDir).user\</_SignMsix_UserDir>
+      <_SignMsix_UserDir>$(RepoRoot)\.user\</_SignMsix_UserDir>
       <_SignMsix_PFX>$(_SignMsix_UserDir)winappsdk.certificate.test.pfx</_SignMsix_PFX>
       <_SignMsix_PWD>$(_SignMsix_UserDir)winappsdk.certificate.test.pwd</_SignMsix_PWD>
       <_SignMsix_Password>$([System.IO.File]::ReadAllText('$(_SignMsix_PWD)').TrimEnd())</_SignMsix_Password>
