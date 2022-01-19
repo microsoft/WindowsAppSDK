@@ -1,19 +1,21 @@
-parameters:
-  artifactName: 'windowsappsdk_binaries'
-
 steps:
   - task: powershell@2
     displayName: 'Copy files to staging dir'
     inputs:
       targetType: filePath
       filePath: build\CopyFilesToStagingDir.ps1
-      arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+      arguments: -BuildOutputDir '$(buildOutputDir)' -OverrideDir '$(Build.SourcesDirectory)\build\override' -PublishDir '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries' -NugetDir '$(Build.ArtifactStagingDirectory)\FullNuget' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildConfiguration)\$(buildPlatform)'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: ${{ parameters.artifactName }}'
+    displayName: 'Publish artifact: windowsappsdk_binaries'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\${{ parameters.artifactName }}'
-      artifactName: ${{ parameters.artifactName }}
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries'
+      artifactName: windowsappsdk_binaries
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
