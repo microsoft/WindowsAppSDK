@@ -122,7 +122,7 @@ function Get-TempPath
     $temp = Join-Path $root 'temp'
     if (-not(Test-Path -Path $temp -PathType Container))
     {
-        Write-Host 'Creating $temp...'
+        Write-Host "Creating $temp..."
         New-Item -Path $temp -ItemType Directory -Force
     }
     return $temp
@@ -134,8 +134,8 @@ function Get-UserPath
     $user = Join-Path $root '.user'
     if (-not(Test-Path -Path $user -PathType Container))
     {
-        Write-Host 'Creating $user...'
-        New-Item -Path $user -ItemType Directory -Force
+        Write-Host "Creating $user..."
+        $null = New-Item -Path $user -ItemType Directory -Force
     }
     return $user
 }
@@ -253,7 +253,7 @@ function Test-DevTestPfx
     $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
     if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
     {
-        Write-Host 'Test certificate thumbprint $pfx_thumbprint...Not Found'
+        Write-Host "Test certificate thumbprint $pfx_thumbprint...Not Found"
         $global:issues += 1
         return $false
     }
@@ -468,9 +468,9 @@ function Remove-DevTestCert
 
     $user = Get-UserPath
     $pfx_thumbprint = Join-Path $user 'winappsdk.certificate.test.thumbprint'
-    if (-not(Test-Path -Path $pfx_thumbprint -PathType Leaf))
+    if (-not(Test-Path -Path [System.IO.FileInfo]$pfx_thumbprint -PathType Leaf))
     {
-        Write-Host 'Remove test certificate $pfx_thumbprint...OK (Not Found)'
+        Write-Host "Remove test certificate $pfx_thumbprint...OK (Not Found)"
         return $true
     }
 
@@ -478,7 +478,7 @@ function Remove-DevTestCert
     $cert_path = "cert:\LocalMachine\TrustedPeople\$thumbprint"
     if (-not(Test-Path -Path $cert_path))
     {
-        Write-Host 'Remove test certificate for $thumbprint...OK (Not Found)'
+        Write-Host "Remove test certificate for $thumbprint...OK (Not Found)"
         return $true
     }
     Remove-Item -Path $cert_path -DeleteKey
