@@ -108,6 +108,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\AccessControl\AccessControl.vcxitems" Label="AccessControl" />
     <Import Project="..\AppLifecycle\AppLifecycle.vcxitems" Label="AppLifecycle" />
     <Import Project="..\PushNotifications\PushNotifications.vcxitems" Label="PushNotifications" />
     <Import Project="..\DynamicDependency\API\DynamicDependency.vcxitems" Label="Shared" />

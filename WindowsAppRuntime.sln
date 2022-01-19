@@ -249,6 +249,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Widgets", "test\D
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManagerShadow", "dev\DynamicDependency\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.vcxproj", "{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AccessControl", "AccessControl", "{A06B7FE8-D201-4EA2-BB10-61B4595EC377}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AccessControl", "dev\AccessControl\AccessControl.vcxitems", "{C91BCB93-9ED1-4ACD-85F3-26F9F6AC52E3}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -268,6 +272,7 @@ Global
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{bf055a59-0919-4e34-9b76-dd055495cc5a}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{c62688a1-16a0-4729-b6ed-842f4faa29f3}*SharedItemsImports = 4
+		dev\AccessControl\AccessControl.vcxitems*{c91bcb93-9ed1-4acd-85f3-26f9f6ac52e3}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{d45d4170-e055-4926-8b03-04daa5f02c6c}*SharedItemsImports = 4
 		dev\Deployment\Deployment.vcxitems*{db38fb4d-d04f-4c1d-93e0-f8ae259c5fd6}*SharedItemsImports = 9
 		dev\EnvironmentManager\ChangeTracker\ChangeTracker.vcxitems*{e15c3465-9d45-495d-92ce-b91ef45e8623}*SharedItemsImports = 9
@@ -1023,6 +1028,8 @@ Global
 		{D45D4170-E055-4926-8B03-04DAA5F02C6C} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{09DDAE21-397F-4263-8561-7F2FF28127CF} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
+		{A06B7FE8-D201-4EA2-BB10-61B4595EC377} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{C91BCB93-9ED1-4ACD-85F3-26F9F6AC52E3} = {A06B7FE8-D201-4EA2-BB10-61B4595EC377}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
