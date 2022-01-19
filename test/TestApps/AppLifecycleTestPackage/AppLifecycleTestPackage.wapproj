@@ -58,13 +58,13 @@
     <EntryPointProjectUniqueName>..\AppLifecycleTestApp\AppLifecycleTestApp.vcxproj</EntryPointProjectUniqueName>
     <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <PackageCertificateKeyFile>$(SolutionDir).user\winappsdk.certificate.test.pfx</PackageCertificateKeyFile>
-<_SignMsix_UserDir>$(SolutionDir).user\</_SignMsix_UserDir>
-<_SignMsix_PFX>$(_SignMsix_UserDir)winappsdk.certificate.test.pfx</_SignMsix_PFX>
-<_SignMsix_PWD>$(_SignMsix_UserDir)winappsdk.certificate.test.pwd</_SignMsix_PWD>
-<PackageCertificateKeyFile>$(_SignMsix_PFX)</PackageCertificateKeyFile>
-<PackageCertificatePassword>$([System.IO.File]::ReadAllText('$(_SignMsix_PWD)').TrimEnd())</PackageCertificatePassword>
-<EnableSigningChecks>false</EnableSigningChecks>
+    <PackageCertificateKeyFile>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</PackageCertificateKeyFile>
+    <_SignMsix_UserDir>$(RepoRoot)\.user\</_SignMsix_UserDir>
+    <_SignMsix_PFX>$(_SignMsix_UserDir)winappsdk.certificate.test.pfx</_SignMsix_PFX>
+    <_SignMsix_PWD>$(_SignMsix_UserDir)winappsdk.certificate.test.pwd</_SignMsix_PWD>
+    <PackageCertificateKeyFile>$(_SignMsix_PFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$([System.IO.File]::ReadAllText('$(_SignMsix_PWD)').TrimEnd())</PackageCertificatePassword>
+    <EnableSigningChecks>false</EnableSigningChecks>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
