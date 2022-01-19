@@ -624,7 +624,7 @@ void MatchAxisValues(
 {
     // Write the input parameters.
     std::wcout << L"GetMatchingFonts(\"" << familyName << L"\", {";
-    for (DWRITE_FONT_AXIS_VALUE axisValue : axisValues)
+    for (DWRITE_FONT_AXIS_VALUE const& axisValue : axisValues)
     {
         std::wcout << L' ' << axisValue;
     }
