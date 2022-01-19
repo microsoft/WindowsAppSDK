@@ -463,8 +463,8 @@ family are considered as match candidates, but ambiguity is avoided by using mem
 the "Legacy" WWS family as a tie-breaker.
 
 Suppose a document specifies a family name and weight, stretch, and style parameters, but no axis
-values. The application can first map the weight, stretch, style, and font size to axis values by
-calling `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle`. The application can then pass both the family
+values. The application can first convert the weight, stretch, style, and font size to axis values by
+calling `IDWriteFontSet4::ConvertWeightStretchStyleToFontAxisValues`. The application can then pass both the family
 name and axis values to `IDWriteFontSet4::GetMatchingFonts`. `GetMatchingFonts` returns a list of
 matching fonts in priority order, and the result is appropriate whether the specified family name
 is a typographic family name, weight-stretch-style family name, RBIZ family name, or full name.
@@ -472,7 +472,7 @@ If the specified family has an "opsz" axis, the appropriate optical size is auto
 based on the font size.
 
 Suppose a document specifies weight, stretch, and style and _also_ specifies axis values. In this
-case, the explicit axis values can also be passed in to `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle`,
+case, the explicit axis values can also be passed in to `IDWriteFontSet4::ConvertWeightStretchStyleToFontAxisValues`,
 and the derived axis values returned by the method will only include font axes that were not
 specified explicitly. Thus, axis values specified explicitly by the document (or application) take
 precedence over axis values derived from weight, stretch, style, and font size.
@@ -481,7 +481,7 @@ precedence over axis values derived from weight, stretch, style, and font size.
 
 The hybrid font selection model is implemented by the following `IDWriteFontSet4` methods:
 
-  - The `DeriveAxisValuesFromWeightStretchStyle` method converts font size, weight, stretch, and style parameters
+  - The `ConvertWeightStretchStyleToFontAxisValues` method converts font size, weight, stretch, and style parameters
     to the corresponding axis values. Any explicit axis values passed in by the client are excluded
     from the derived axis values.
 
@@ -577,7 +577,7 @@ DWRITE_BITMAP_DATA_BGRA32 TextRenderer::GetBitmapData(_In_ IDWriteBitmapRenderTa
 ## Using Font Selection APIs
 
 This section shows a complete console application that demonstrates the `IDWriteFontSet4::GetMatchingFonts`
-and `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle` methods. First let's include some headers:
+and `IDWriteFontSet4::ConvertWeightStretchStyleToFontAxisValues` methods. First let's include some headers:
 
 ```c++
 #include <dwrite_core.h>
@@ -643,10 +643,10 @@ An application might have weight, stretch, and style parameters instead of (or i
 For example, the application might need to work with documents that reference fonts using RBIZ or
 weight-stretch-style parameters. Even if the application adds support for specifying arbitrary axis
 values, it might need to support the older parameters as well. To do so, the application can call the
-`IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle` before calling `IDWriteFontSet4::GetMatchingFonts`.
+`IDWriteFontSet4::ConvertWeightStretchStyleToFontAxisValues` before calling `IDWriteFontSet4::GetMatchingFonts`.
 
 The following `MatchFont` function takes weight, stretch, style, and font size parameters in addition to
-axis values. It forwards these parameters to the `IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle` 
+axis values. It forwards these parameters to the `IDWriteFontSet4::ConvertWeightStretchStyleToFontAxisValues` 
 method to compute derived axis values, which are appended to the input axis values. It passes the combined 
 axis values to the above `MatchAxisValues` function.
 
@@ -664,7 +664,7 @@ struct FontStyleParams
 };
 
 //
-// MatchFont calls IDWriteFontSet4::DeriveAxisValuesFromWeightStretchStyle to convert
+// MatchFont calls IDWriteFontSet4::ConvertWeightStretchStyleToFontAxisValues to convert
 // the input parameters to axis values and then calls MatchAxisValues.
 //
 void MatchFont(
@@ -693,7 +693,7 @@ void MatchFont(
     axisValues.resize(inputAxisCount + DWRITE_STANDARD_FONT_AXIS_COUNT);
 
     // Convert the weight, stretch, style, and font size to derived axis values.
-    UINT32 derivedAxisCount = fontSet->DeriveAxisValuesFromWeightStretchStyle(
+    UINT32 derivedAxisCount = fontSet->ConvertWeightStretchStyleToFontAxisValues(
         /*inputAxisValues*/ axisValues.data(),
         static_cast<UINT32>(inputAxisCount),
         styleParams.fontWeight,
@@ -1141,8 +1141,8 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
     /// <summary>
     /// Computes derived font axis values from the specified font weight, stretch, style, and size.
     /// </summary>
-    /// <param name="inputAxisValues">Pointer to an optional array of input axis values. Any axes present
-    /// in this array are not included in the output. This is so explicit axis values take precedence over 
+    /// <param name="inputAxisValues">Pointer to an optional array of input axis values. Axes present
+    /// in this array are excluded from the output. This is so explicit axis values take precedence over 
     /// derived axis values.</param>
     /// <param name="inputAxisCount">Size of the array of input axis values.</param>
     /// <param name="fontWeight">Font weight, used to compute "wght" axis value.</param>
@@ -1150,18 +1150,22 @@ DWRITE_BEGIN_INTERFACE(IDWriteFontSet4, "EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82") 
     /// <param name="fontStyle">Font style, used to compute "slnt" and "ital" axis values.</param>
     /// <param name="fontSize">Font size in DIPs, used to compute "opsz" axis value. If this parameter is zero,
     /// no "opsz" axis value is added to the output array.</param>
-    /// <param name="derivedAxisValues">Pointer to an output array to which derived axis values are written.
+    /// <param name="outputAxisValues">Pointer to an output array to which derived axis values are written.
     /// The size of this array must be at least DWRITE_STANDARD_FONT_AXIS_COUNT (5). The return value is 
     /// the actual number of axis values written to this array.</param>
     /// <returns>Returns the actual number of derived axis values written to the output array.</returns>
-    STDMETHOD_(UINT32, DeriveAxisValuesFromWeightStretchStyle)(
+    /// <remarks>The caller should concatenate the output axis values to the input axis values (if any),
+    /// and pass the combined axis values to the GetMatchingFonts method. This does not result in duplicates
+    /// because the output does not include any axes present in the inputAxisValues array.
+    /// </remarks>
+    STDMETHOD_(UINT32, ConvertWeightStretchStyleToFontAxisValues)(
         _In_reads_opt_(inputAxisCount) DWRITE_FONT_AXIS_VALUE const* inputAxisValues,
         UINT32 inputAxisCount,
         DWRITE_FONT_WEIGHT fontWeight,
         DWRITE_FONT_STRETCH fontStretch,
         DWRITE_FONT_STYLE fontStyle,
         float fontSize,
-        _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* derivedAxisValues
+        _Out_writes_to_(DWRITE_STANDARD_FONT_AXIS_COUNT, return) DWRITE_FONT_AXIS_VALUE* outputAxisValues
         ) PURE;
 
     /// <summary>
