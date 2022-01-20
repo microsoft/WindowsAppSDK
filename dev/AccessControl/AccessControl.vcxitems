@@ -25,4 +25,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GetSecurityDescriptorForAppContainerNames.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Microsoft.Windows.Security.AccessControl.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <PublicHeaders Include="$(MSBuildThisFileDirectory)Security.AccessControl.h" />
+  </ItemGroup>
 </Project>

@@ -14,5 +14,6 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
     const AppContainerNameAndAccess* accessRequests,
     _In_opt_ PSID principal,
     UINT32 principalAccessMask,
-    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
+    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor,
+    _Out_opt_ DWORD* securityDescriptorSize
 );

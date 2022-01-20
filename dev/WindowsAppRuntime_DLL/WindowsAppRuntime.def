@@ -15,3 +15,5 @@ EXPORTS
     MddLifetimeManagementGC
     MddLifetimeManagementTestInitialize
     MddGetGenerationId
+
+    GetSecurityDescriptorForAppContainerNames

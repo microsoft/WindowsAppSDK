@@ -16,10 +16,15 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
     const AppContainerNameAndAccess* accessRequests,
     _In_opt_ PSID principal,
     uint32_t principalAccessMask,
-    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
+    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor,
+    _Out_opt_ DWORD* securityDescriptorLength
 )
 {
     *securityDescriptor = nullptr;
+    if (securityDescriptorLength)
+    {
+        *securityDescriptorLength = 0;
+    }
     try
     {
         vector<EXPLICIT_ACCESS> ea;
@@ -67,11 +72,28 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
         wil::unique_any<PACL, decltype(&::LocalFree), ::LocalFree> acl;
         THROW_IF_WIN32_ERROR(::SetEntriesInAclW(static_cast<uint32_t>(ea.size()), ea.data(), nullptr, &acl));
 
-        auto result = wil::make_unique_hlocal<SECURITY_DESCRIPTOR>();
-        THROW_IF_WIN32_BOOL_FALSE(::InitializeSecurityDescriptor(result.get(), SECURITY_DESCRIPTOR_REVISION));
-        THROW_IF_WIN32_BOOL_FALSE(::SetSecurityDescriptorDacl(result.get(), TRUE, acl.get(), FALSE));
+        auto absoluteSD = wil::make_unique_hlocal<SECURITY_DESCRIPTOR>();
+        THROW_IF_WIN32_BOOL_FALSE(::InitializeSecurityDescriptor(absoluteSD.get(), SECURITY_DESCRIPTOR_REVISION));
+        THROW_IF_WIN32_BOOL_FALSE(::SetSecurityDescriptorDacl(absoluteSD.get(), TRUE, acl.get(), FALSE));
 
-        *securityDescriptor = result.release();
+        DWORD sdLength = 0;
+
+        if (!::MakeSelfRelativeSD(absoluteSD.get(), nullptr, &sdLength))
+        {
+            auto err = ::GetLastError();
+            if (err != ERROR_INSUFFICIENT_BUFFER)
+            {
+                THROW_WIN32(err);
+            }
+        }
+        wil::unique_hlocal_security_descriptor selfRelativeSD{ ::LocalAlloc(LMEM_FIXED, sdLength) };
+        THROW_IF_WIN32_BOOL_FALSE(::MakeSelfRelativeSD(absoluteSD.get(), selfRelativeSD.get(), &sdLength));
+
+        *securityDescriptor = selfRelativeSD.release();
+        if (securityDescriptorLength)
+        {
+            *securityDescriptorLength = sdLength;
+        }
         return S_OK;
     }
     CATCH_RETURN();
