@@ -66,6 +66,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Multiply", "test\DynamicDependency\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj", "{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppRuntime.Framework", "test\DynamicDependency\data\Microsoft.WindowsAppRuntime.Framework\Microsoft.WindowsAppRuntime.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778} = {BC5E5A3E-E733-4388-8B00-F8495DA7C778}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyDataStore", "DynamicDependencyDataStore", "{441A3BB0-7FD2-4902-AEDB-A1C57B528C77}"
 EndProject
@@ -248,6 +251,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Widgets", "test\DynamicDependency\data\Framework.Widgets\Framework.Widgets.vcxproj", "{09DDAE21-397F-4263-8561-7F2FF28127CF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DynamicDependencyLifetimeManagerShadow", "dev\DynamicDependency\DynamicDependencyLifetimeManagerShadow\DynamicDependencyLifetimeManagerShadow.vcxproj", "{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RestartAgent", "dev\RestartAgent\RestartAgent.vcxproj", "{BC5E5A3E-E733-4388-8B00-F8495DA7C778}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -940,6 +949,19 @@ Global
 		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x64.Build.0 = Release|x64
 		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x86.ActiveCfg = Release|Win32
 		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B}.Release|x86.Build.0 = Release|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x64.ActiveCfg = Debug|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x64.Build.0 = Debug|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x86.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x86.Build.0 = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|Any CPU.ActiveCfg = Release|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|ARM64.ActiveCfg = Release|ARM64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|ARM64.Build.0 = Release|ARM64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x64.ActiveCfg = Release|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x64.Build.0 = Release|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x86.ActiveCfg = Release|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1023,6 +1045,7 @@ Global
 		{D45D4170-E055-4926-8B03-04DAA5F02C6C} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
 		{09DDAE21-397F-4263-8561-7F2FF28127CF} = {0C534F12-B076-47E5-A05B-2A711233AC6F}
 		{6539E9E1-BF36-40E5-86BC-070E99DB7B7B} = {6CD01EF6-D4A4-4801-ADCF-344CF87FF942}
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778} = {3DE93B2F-F887-437D-B512-6B1024ABA290}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
