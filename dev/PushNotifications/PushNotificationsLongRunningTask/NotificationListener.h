@@ -4,7 +4,8 @@
 #include <FrameworkUdk/ToastNotificationsRT.h>
 #include "ToastRegistrationManager.h"
 
-class NotificationListener : public Microsoft::WRL::RuntimeClass<::ABI::Microsoft::Internal::PushNotifications::INotificationListener>
+class NotificationListener : public Microsoft::WRL::RuntimeClass<::ABI::Microsoft::Internal::PushNotifications::INotificationListener,
+                                                                    ::ABI::Microsoft::Internal::PushNotifications::INotificationListener2>
 {
 public:
     HRESULT RuntimeClassInitialize(

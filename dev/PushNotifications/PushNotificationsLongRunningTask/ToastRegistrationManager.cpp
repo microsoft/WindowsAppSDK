@@ -1,6 +1,17 @@
 ﻿#pragma once
 #include "pch.h"
 
+ToastRegistrationManager::ToastRegistrationManager()
+{
+    m_toastStorage = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().CreateContainer(
+        L"Toast", winrt::Windows::Storage::ApplicationDataCreateDisposition::Always);
+
+    for (auto pair : m_toastStorage.Values())
+    {
+        Add(pair.Key().c_str(), pair.Value().as<winrt::hstring>().c_str());
+    }
+}
+
 void ToastRegistrationManager::Add(std::wstring const& processName, std::wstring const& toastAppId)
 {
     auto lock = m_lock.lock_exclusive();

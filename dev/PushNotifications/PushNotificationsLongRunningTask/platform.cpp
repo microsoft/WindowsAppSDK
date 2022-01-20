@@ -79,6 +79,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterL
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     const std::wstring appId{ GetAppIdentifier(processName) };
+    if (appId.empty())
+    {
+        return S_OK;
+    }
+
     m_notificationListenerManager.AddListener(appId, processName);
 
     m_lifetimeManager.Cancel();
@@ -114,6 +119,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
     const std::wstring appId{ GetAppIdentifier(processName) };
+    if (appId.empty())
+    {
+        return S_OK;
+    }
+
     m_foregroundSinkManager->Add(appId, sink);
 
     m_lifetimeManager.Cancel();

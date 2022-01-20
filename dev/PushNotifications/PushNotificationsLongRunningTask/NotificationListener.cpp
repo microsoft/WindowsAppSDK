@@ -12,7 +12,7 @@ HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
     std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
     std::wstring const& appId,
-    std::wstring const& processName) noexcept
+    std::wstring const& processName) noexcept try
 {
     m_foregroundSinkManager = foregroundSinkManager;
     m_toastRegistrationManager = toastRegistrationManager;
@@ -22,6 +22,7 @@ HRESULT NotificationListener::RuntimeClassInitialize(
 
     return S_OK;
 }
+CATCH_RETURN();
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector*/) noexcept try
 {
