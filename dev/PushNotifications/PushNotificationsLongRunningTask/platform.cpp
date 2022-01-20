@@ -194,6 +194,7 @@ std::map<std::wstring, std::wstring> NotificationsLongRunningPlatformImpl::GetFu
     return mapOfFullTrustApps;
 }
 
+// Assumes the caller is under lock
 const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::wstring const& processName)
 {
     auto values{ m_rawStorage.Values() };
@@ -209,6 +210,7 @@ const std::wstring NotificationsLongRunningPlatformImpl::GetAppIdentifier(std::w
     return {};
 }
 
+// Assumes the caller is under lock
 const std::wstring NotificationsLongRunningPlatformImpl::BuildAppIdentifier(std::wstring const& processName)
 {
     const std::wstring appId{ GetAppIdentifier(processName) };
