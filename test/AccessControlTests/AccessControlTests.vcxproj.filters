@@ -35,5 +35,12 @@
     <CopyFileToFolders Include="$(TargetDir)..\AccessControlTestApp\AccessControlTestApp.exe" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="AccessControl-AppxManifest.xml">
+      <Filter>Source Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

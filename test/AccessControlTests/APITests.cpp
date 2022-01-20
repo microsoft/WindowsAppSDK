@@ -52,16 +52,17 @@ namespace Test::AccessControl
         BEGIN_TEST_CLASS(APITests)
             TEST_CLASS_PROPERTY(L"Description", L"Windows App SDK AccessControl test")
             TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
-            TEST_CLASS_PROPERTY(L"RunAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"UAP")
+            TEST_CLASS_PROPERTY(L"UAP:AppxManifest", L"AccessControl-AppxManifest.xml")
         END_TEST_CLASS()
 
         TEST_CLASS_SETUP(ClassInit)
         {
             try
             {
-                ::Test::Packages::RemovePackage(GetTestPackageFullName());
                 ::Test::Bootstrap::SetupPackages();
-                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTestApp.msix
             }
             catch (...)
             {
