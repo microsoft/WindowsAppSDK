@@ -56,6 +56,8 @@
           <!-- PowerNotifications -->
           <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
 
+          <!-- AccessControl -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>

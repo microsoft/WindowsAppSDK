@@ -27,7 +27,7 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
     }
     try
     {
-        vector<EXPLICIT_ACCESS> ea;
+        vector<EXPLICIT_ACCESS_W> ea;
         if (accessRequestCount == UINT32_MAX)
         {
             THROW_HR(E_OUTOFMEMORY);
@@ -42,7 +42,7 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
         }
 
         {
-            EXPLICIT_ACCESS entry{};
+            EXPLICIT_ACCESS_W entry{};
             entry.grfAccessMode = GRANT_ACCESS;
             entry.grfAccessPermissions = principalAccessMask;
             entry.grfInheritance = NO_INHERITANCE;
@@ -56,7 +56,7 @@ STDAPI GetSecurityDescriptorForAppContainerNames(
         appSids.reserve(accessRequestCount);
         for (auto const end = accessRequests + accessRequestCount; accessRequests < end; ++accessRequests)
         {
-            EXPLICIT_ACCESS entry{};
+            EXPLICIT_ACCESS_W entry{};
             wil::unique_sid sid;
             THROW_IF_FAILED(::DeriveAppContainerSidFromAppContainerName(accessRequests->appContainerName, &sid));
             entry.grfAccessMode = GRANT_ACCESS;

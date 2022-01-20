@@ -8,10 +8,14 @@ using namespace WEX::Common;
 using namespace WEX::Logging;
 using namespace WEX::TestExecution;
 
-using namespace winrt;
-using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Foundation::Collections;
+namespace winrt
+{
+    using namespace winrt::Windows::ApplicationModel::Activation;
+    using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Foundation::Collections;
+    using namespace Microsoft::Windows::Security::AccessControl;
+}
+
 
 namespace Test::AccessControl
 {
@@ -116,20 +120,46 @@ namespace Test::AccessControl
             return true;
         }
 
+        void WaitForEvent(void* securityDescriptor)
+        {
+            wil::unique_event win32_event;
+            SECURITY_ATTRIBUTES sa{ sizeof(sa), securityDescriptor, FALSE };
+            win32_event.create(wil::EventOptions::None, L"AccessControlTest_Event", &sa);
+
+            VERIFY_IS_TRUE(win32_event.wait(5000));
+        }
+
         TEST_METHOD(FlatAPITest)
         {
             RunTestApp();
 
-            AppContainerNameAndAccess ac[1] = { { GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE} };
+            ::AppContainerNameAndAccess ac[1] = {{GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE}};
             wil::unique_hlocal_security_descriptor sd;
-            DWORD sdLength = 0;
-            THROW_IF_FAILED(::GetSecurityDescriptorForAppContainerNames(1, ac, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd, &sdLength));
+            THROW_IF_FAILED(::GetSecurityDescriptorForAppContainerNames(1, ac, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd, nullptr));
+            WaitForEvent(sd.get());
+        }
 
-            wil::unique_event win32_event;
-            SECURITY_ATTRIBUTES sa{ sizeof(sa), sd.get(), FALSE };
-            win32_event.create(wil::EventOptions::None, L"AccessControlTest_Event", &sa);
+        TEST_METHOD(WinRTStringTest)
+        {
+            RunTestApp();
+            winrt::AppContainerNameAndAccess ac[1] = { {GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE} };
 
-            VERIFY_IS_TRUE(win32_event.wait(5000));
+            auto sdString = winrt::SecurityDescriptorHelpers::GetSddlForAppContainerNames(ac, L"", EVENT_MODIFY_STATE | SYNCHRONIZE);
+
+            wil::unique_hlocal_security_descriptor sd;
+            VERIFY_WIN32_BOOL_SUCCEEDED(
+                ConvertStringSecurityDescriptorToSecurityDescriptorW(
+                    sdString.data(), SDDL_REVISION_1, &sd, nullptr));
+            WaitForEvent(sd.get());
+        }
+
+        TEST_METHOD(WinRTBytesTest)
+        {
+            RunTestApp();
+            winrt::AppContainerNameAndAccess ac[1] = { {GetTestPackageFile(), EVENT_MODIFY_STATE | SYNCHRONIZE} };
+
+            auto sdBytes = winrt::SecurityDescriptorHelpers::GetSecurityDescriptorBytesFromAppContainerNames(ac, L"", EVENT_MODIFY_STATE | SYNCHRONIZE);
+            WaitForEvent(sdBytes.data());
         }
     };
 }
