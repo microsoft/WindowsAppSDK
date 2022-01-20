@@ -133,7 +133,7 @@ int main()
         // Cleanup
         AppNotificationManager::Default().AppNotificationActivated(token);
     }
-    else if (kind == ExtendedActivationKind::ToastNotification)
+    else if (kind == ExtendedActivationKind::AppNotification)
     {
         auto notificationActivatedEventArgs = args.Data().as<AppNotificationActivatedEventArgs>();
         ProcessNotificationArgs(notificationActivatedEventArgs);
@@ -174,7 +174,7 @@ int main()
         // Cleanup
         AppNotificationManager::Default().AppNotificationActivated(token);
     }
-    else if (kind == ExtendedActivationKind::ToastNotification)
+    else if (kind == ExtendedActivationKind::AppNotification)
     {
         auto notificationActivatedEventArgs = args.Data().as<AppNotificationActivatedEventArgs>();
         ProcessNotificationArgs(notificationActivatedEventArgs);
