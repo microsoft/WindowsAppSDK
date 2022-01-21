@@ -25,6 +25,16 @@ bool UnregisterBackgroundActivationTest()
     return true;
 }
 
+winrt::ToastNotification GetToastNotification()
+{
+    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
+
+    winrt::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    return winrt::ToastNotification(xmlDocument);
+}
+
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
@@ -211,16 +221,28 @@ bool VerifyToastSettingEnabled()
     return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
 }
 
-bool VerifyToastProperties()
+bool VerifyToastPayload()
 {
     winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
 
     winrt::XmlDocument xmlDocument{};
     xmlDocument.LoadXml(xmlPayload);
-    
-    winrt::ToastNotification toast(xmlDocument);
+
+    winrt::ToastNotification toast{ xmlDocument };;
 
     if (toast.Payload() != xmlDocument)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastTag()
+{
+    winrt::ToastNotification toast = GetToastNotification();
+
+    if (toast.Tag() != winrt::hstring{ L"" })
     {
         return false;
     }
@@ -233,6 +255,18 @@ bool VerifyToastProperties()
         return false;
     }
 
+    return true;
+}
+
+bool VerifyToastGroup()
+{
+    winrt::ToastNotification toast = GetToastNotification();
+
+    if (toast.Group() != winrt::hstring{ L"" })
+    {
+        return false;
+    }
+
     winrt::hstring group{ L"group" };
     toast.Group(group);
 
@@ -241,8 +275,16 @@ bool VerifyToastProperties()
         return false;
     }
 
+    return true;
+}
+
+bool VerifyToastProgressDataFromToast()
+{
     /*
     * TODO: Uncomment once ToastProgressData has been implemented
+
+    winrt::ToastNotification toast = GetToastNotification();
+
     winrt::ToastProgressData progressData{};
     progressData.Status(L"SomeStatus");
     progressData.Title(L"SomeTitle");
@@ -258,11 +300,35 @@ bool VerifyToastProperties()
     }
     */
 
+    return true;
+}
+
+bool VerifyToastExpirationTime()
+{
+    winrt::ToastNotification toast = GetToastNotification();
+
+    if (toast.ExpirationTime() != winrt::DateTime{})
+    {
+        return false;
+    }
+
     winrt::DateTime expirationTime = winrt::clock::now();
     expirationTime += winrt::TimeSpan(std::chrono::seconds(10));
 
     toast.ExpirationTime(expirationTime);
     if (toast.ExpirationTime() != expirationTime)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastPriority()
+{
+    winrt::ToastNotification toast = GetToastNotification();
+
+    if (toast.Priority() != winrt::ToastPriority::Default)
     {
         return false;
     }
@@ -273,8 +339,32 @@ bool VerifyToastProperties()
         return false;
     }
 
+    return true;
+}
+
+bool VerifyToastSuppressDisplay()
+{
+    winrt::ToastNotification toast = GetToastNotification();
+
+    if (toast.SuppressDisplay())
+    {
+        return false;
+    }
+
     toast.SuppressDisplay(true);
     if (!toast.SuppressDisplay())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastExpiresOnReboot()
+{
+    winrt::ToastNotification toast = GetToastNotification();
+
+    if (toast.ExpiresOnReboot())
     {
         return false;
     }
@@ -317,7 +407,14 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", &VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged },
         { "VerifyFailedToastAssetsWithNullIconPath_Unpackaged", &VerifyFailedToastAssetsWithNullIconPath_Unpackaged },
         { "VerifyToastSettingEnabled", &VerifyToastSettingEnabled },
-        { "VerifyToastProperties", &VerifyToastProperties },
+        { "VerifyToastPayload", &VerifyToastPayload },
+        { "VerifyToastTag", &VerifyToastTag },
+        { "VerifyToastGroup", &VerifyToastGroup },
+        { "VerifyToastProgressDataFromToast", &VerifyToastProgressDataFromToast },
+        { "VerifyToastExpirationTime", &VerifyToastExpirationTime },
+        { "VerifyToastPriority", &VerifyToastPriority },
+        { "VerifyToastSuppressDisplay", &VerifyToastSuppressDisplay },
+        { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
     };
     return switchMapping;
 }
