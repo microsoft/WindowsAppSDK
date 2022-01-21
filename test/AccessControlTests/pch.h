@@ -25,7 +25,6 @@
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Microsoft.Windows.Security.AccessControl.h>
 
 #include <WindowsAppRuntime.Test.Package.h>
 #include <WindowsAppRuntime.Test.TAEF.h>

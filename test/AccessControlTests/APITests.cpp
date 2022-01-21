@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include <Security.AccessControl.h>
+#include <winrt/Microsoft.Windows.Security.AccessControl.h>
 
 using namespace WEX::Common;
 using namespace WEX::Logging;
@@ -34,6 +35,11 @@ namespace Test::AccessControl
             return L"AccessControlTestPackage_1.0.0.0_" WINDOWSAPPRUNTIME_TEST_PACKAGE_DDLM_ARCHITECTURE "8wekyb3d8bbwe";
         }
 
+        static PCWSTR GetTestPackageFamilyName()
+        {
+            return L"AccessControlTestAppPackage_8wekyb3d8bbwe";
+        }
+
         static PCWSTR GetTestPackageAppId()
         {
             return L"AccessControlTestAppPackage_8wekyb3d8bbwe!App";
@@ -59,8 +65,8 @@ namespace Test::AccessControl
         {
             try
             {
-                ::Test::Packages::RemovePackage(GetTestPackageFullName());
-                ::Test::Bootstrap::SetupPackages();
+                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
+                ::Test::Bootstrap::Setup();
                 ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
@@ -85,8 +91,8 @@ namespace Test::AccessControl
                     VERIFY_ARE_EQUAL(exitCode, 0);
                 }
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
-                ::Test::Packages::RemovePackage(GetTestPackageFullName());
-                ::Test::Bootstrap::CleanupPackages();
+                ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
+                ::Test::Bootstrap::Cleanup();
             }
             catch (...)
             {

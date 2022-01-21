@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 #include <wil/win32_helpers.h>
+#include <winrt/Microsoft.Windows.Security.AccessControl.h>
+
+#include <Security.AccessControl.h>
 
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Activation;
@@ -11,10 +14,13 @@ using namespace winrt::Windows::Foundation;
 
 int main() try
 {
-    wil::unique_event win32_event;
+    winrt::init_apartment();
+
     auto packageId = Windows::ApplicationModel::Package::Current().Id();
     auto familyName = packageId.FamilyName();
     std::wcout << L"Family name: " << familyName.data() << L"\n";
+
+    wil::unique_event win32_event;
 
     for (int i = 0; i < 100 && !win32_event.is_valid(); ++i)
     {

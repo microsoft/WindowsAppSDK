@@ -35,5 +35,6 @@
     <CopyFileToFolders Include="$(TargetDir)..\AccessControlTestApp\AccessControlTestApp.exe" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
+    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>
