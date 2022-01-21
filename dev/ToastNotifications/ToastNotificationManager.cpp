@@ -46,7 +46,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         THROW_HR_IF_NULL(E_INVALIDARG, details);
 
         std::wstring storedComActivatorString;
-        if (PushNotificationHelpers::IsPackagedAppScenario())
+        if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
             if (!AppModel::Identity::IsPackagedProcess())
             {
