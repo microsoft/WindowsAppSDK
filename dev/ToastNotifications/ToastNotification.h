@@ -31,7 +31,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         winrt::hstring m_group{};
 
-        uint32_t m_toastId = 0;
+        uint32_t m_toastId{ 0 };
 
         winrt::Windows::Data::Xml::Dom::XmlDocument m_payload{};
 
@@ -39,12 +39,12 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         winrt::Windows::Foundation::DateTime m_expirationTime{};
 
-        bool m_expiresOnReboot = false;
+        bool m_expiresOnReboot{ false };
 
-        winrt::Microsoft::Windows::ToastNotifications::ToastPriority m_priority =
-            winrt::Microsoft::Windows::ToastNotifications::ToastPriority::Default;
+        winrt::Microsoft::Windows::ToastNotifications::ToastPriority m_priority
+            { winrt::Microsoft::Windows::ToastNotifications::ToastPriority::Default };
 
-        bool m_suppressDisplay = false;
+        bool m_suppressDisplay{ false };
     };
 }
 namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation

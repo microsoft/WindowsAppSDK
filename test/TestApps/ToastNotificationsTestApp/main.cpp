@@ -240,7 +240,7 @@ bool VerifyToastPayload()
 
 bool VerifyToastTag()
 {
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     if (toast.Tag() != winrt::hstring{ L"" })
     {
@@ -260,7 +260,7 @@ bool VerifyToastTag()
 
 bool VerifyToastGroup()
 {
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     if (toast.Group() != winrt::hstring{ L"" })
     {
@@ -283,7 +283,7 @@ bool VerifyToastProgressDataFromToast()
     /*
     * TODO: Uncomment once ToastProgressData has been implemented
 
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     winrt::ToastProgressData progressData{};
     progressData.Status(L"SomeStatus");
@@ -305,15 +305,15 @@ bool VerifyToastProgressDataFromToast()
 
 bool VerifyToastExpirationTime()
 {
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     if (toast.ExpirationTime() != winrt::DateTime{})
     {
         return false;
     }
 
-    winrt::DateTime expirationTime = winrt::clock::now();
-    expirationTime += winrt::TimeSpan(std::chrono::seconds(10));
+    winrt::DateTime expirationTime{ winrt::clock::now() };
+    expirationTime += winrt::TimeSpan{ std::chrono::seconds(10) };
 
     toast.ExpirationTime(expirationTime);
     if (toast.ExpirationTime() != expirationTime)
@@ -326,7 +326,7 @@ bool VerifyToastExpirationTime()
 
 bool VerifyToastPriority()
 {
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     if (toast.Priority() != winrt::ToastPriority::Default)
     {
@@ -344,7 +344,7 @@ bool VerifyToastPriority()
 
 bool VerifyToastSuppressDisplay()
 {
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     if (toast.SuppressDisplay())
     {
@@ -362,7 +362,7 @@ bool VerifyToastSuppressDisplay()
 
 bool VerifyToastExpiresOnReboot()
 {
-    winrt::ToastNotification toast = GetToastNotification();
+    winrt::ToastNotification toast{ GetToastNotification() };
 
     if (toast.ExpiresOnReboot())
     {
