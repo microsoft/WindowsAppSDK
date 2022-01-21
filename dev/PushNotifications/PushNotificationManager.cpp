@@ -11,7 +11,6 @@
 #include <winrt/Windows.ApplicationModel.background.h>
 #include <winrt/Windows.Networking.PushNotifications.h>
 #include "PushNotificationBackgroundTask.h"
-#include <winrt/Windows.Foundation.Metadata.h>
 #include <winerror.h>
 #include <algorithm>
 #include "PushNotificationChannel.h"
@@ -475,16 +474,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         PushNotificationTelemetry::ActivatorUnregisteredByApi(S_OK, PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
     }
 
-    static bool HasBackgroundTaskEntryPointClsid() {
-        return Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
-    }
-
-    bool IsBackgroundTaskBuilderAvailable()
-    {
-        static bool hasSetTaskEntrypoint{ HasBackgroundTaskEntryPointClsid() };
-        return hasSetTaskEntrypoint;
-    }
-
     bool PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators const& activators)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
@@ -495,7 +484,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto isProtocolActivatorSet{ WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator) };
 
         THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && isProtocolActivatorSet); // Invalid flag combination
-        if (AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable())
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             if (isProtocolActivatorSet) // ProtocolActivator unsupported if COM activation is available
             {
