@@ -72,6 +72,12 @@
   <ItemGroup>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)RestartAgent\RestartAgent.exe">
+      <TargetFile>RestartAgent.exe</TargetFile>
+    </MakeMsixInputsWithLocations>
+    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)RestartAgent\RestartAgent.exe">
+      <TargetFile>RestartAgent.pdb</TargetFile>
+    </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.pdb" />
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.Internal.FrameworkUdk.dll" />
