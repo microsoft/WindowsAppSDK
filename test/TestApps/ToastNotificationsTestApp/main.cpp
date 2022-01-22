@@ -3,6 +3,7 @@
 #include <iostream>
 #include <wil/win32_helpers.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
+#include <chrono>
 
 namespace winrt
 {
@@ -10,6 +11,7 @@ namespace winrt
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Microsoft::Windows::ToastNotifications;
+    using namespace winrt::Windows::Data::Xml::Dom;
 }
 
 bool BackgroundActivationTest() // Activating application for background test.
@@ -21,6 +23,16 @@ bool UnregisterBackgroundActivationTest()
 {
     winrt::ToastNotificationManager::Default().UnregisterActivator();
     return true;
+}
+
+winrt::ToastNotification GetToastNotification()
+{
+    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
+
+    winrt::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    return winrt::ToastNotification(xmlDocument);
 }
 
 bool VerifyFailedRegisterActivatorUsingNullClsid()
@@ -209,6 +221,163 @@ bool VerifyToastSettingEnabled()
     return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
 }
 
+bool VerifyToastPayload()
+{
+    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
+
+    winrt::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    winrt::ToastNotification toast{ xmlDocument };;
+
+    if (toast.Payload() != xmlDocument)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastTag()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    if (toast.Tag() != winrt::hstring{ L"" })
+    {
+        return false;
+    }
+
+    winrt::hstring tag{ L"tag" };
+    toast.Tag(tag);
+
+    if (toast.Tag() != tag)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastGroup()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    if (toast.Group() != winrt::hstring{ L"" })
+    {
+        return false;
+    }
+
+    winrt::hstring group{ L"group" };
+    toast.Group(group);
+
+    if (toast.Group() != group)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastProgressDataFromToast()
+{
+    /*
+    * TODO: Uncomment once ToastProgressData has been implemented
+
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+    toast.ProgressData(progressData);
+
+    auto progressDataFromToast = toast.ProgressData();
+    if (progressDataFromToast != progressData)
+    {
+        return false;
+    }
+    */
+
+    return true;
+}
+
+bool VerifyToastExpirationTime()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    if (toast.ExpirationTime() != winrt::DateTime{})
+    {
+        return false;
+    }
+
+    winrt::DateTime expirationTime{ winrt::clock::now() };
+    expirationTime += winrt::TimeSpan{ std::chrono::seconds(10) };
+
+    toast.ExpirationTime(expirationTime);
+    if (toast.ExpirationTime() != expirationTime)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastPriority()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    if (toast.Priority() != winrt::ToastPriority::Default)
+    {
+        return false;
+    }
+
+    toast.Priority(winrt::ToastPriority::High);
+    if (toast.Priority() != winrt::ToastPriority::High)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastSuppressDisplay()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    if (toast.SuppressDisplay())
+    {
+        return false;
+    }
+
+    toast.SuppressDisplay(true);
+    if (!toast.SuppressDisplay())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyToastExpiresOnReboot()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    if (toast.ExpiresOnReboot())
+    {
+        return false;
+    }
+
+    toast.ExpiresOnReboot(true);
+    if (!toast.ExpiresOnReboot())
+    {
+        return false;
+    }
+
+    return true;
+}
+
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
     std::string unitTestName = to_string(launchArgs.Arguments());
@@ -238,6 +407,14 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged", &VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged },
         { "VerifyFailedToastAssetsWithNullIconPath_Unpackaged", &VerifyFailedToastAssetsWithNullIconPath_Unpackaged },
         { "VerifyToastSettingEnabled", &VerifyToastSettingEnabled },
+        { "VerifyToastPayload", &VerifyToastPayload },
+        { "VerifyToastTag", &VerifyToastTag },
+        { "VerifyToastGroup", &VerifyToastGroup },
+        { "VerifyToastProgressDataFromToast", &VerifyToastProgressDataFromToast },
+        { "VerifyToastExpirationTime", &VerifyToastExpirationTime },
+        { "VerifyToastPriority", &VerifyToastPriority },
+        { "VerifyToastSuppressDisplay", &VerifyToastSuppressDisplay },
+        { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
     };
     return switchMapping;
 }

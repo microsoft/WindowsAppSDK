@@ -15,5 +15,6 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
 #include <winrt/Microsoft.Windows.ToastNotifications.h>
+#include <winrt/Windows.Data.Xml.Dom.h>
 
 #include <WindowsAppRuntime.Test.Bootstrap.h>

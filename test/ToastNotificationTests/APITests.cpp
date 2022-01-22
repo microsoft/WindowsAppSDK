@@ -152,7 +152,7 @@ namespace Test::ToastNotifications
             auto processHandle = RunUnpackaged(L"ToastNotificationsTestApp.exe", testName, GetDeploymentDir());
             VERIFY_IS_TRUE(processHandle.is_valid());
 
-            VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), testWaitTime()));
+            VERIFY_IS_TRUE(wil::handle_wait(processHandle.get(), waitTime));
 
             DWORD exitCode{};
             VERIFY_WIN32_BOOL_SUCCEEDED(GetExitCodeProcess(processHandle.get(), &exitCode));
@@ -232,6 +232,96 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastSettingEnabled)
         {
             RunTest(L"VerifyToastSettingEnabled", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastPayload)
+        {
+            RunTest(L"VerifyToastPayload", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastPayload_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastPayload", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastTag)
+        {
+            RunTest(L"VerifyToastTag", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastTag_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastTag", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastGroup)
+        {
+            RunTest(L"VerifyToastGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProgressDataFromToast)
+        {
+            RunTest(L"VerifyToastProgressDataFromToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProgressDataFromToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastProgressDataFromToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastExpirationTime)
+        {
+            RunTest(L"VerifyToastExpirationTime", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastExpirationTime_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastExpirationTime", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastPriority)
+        {
+            RunTest(L"VerifyToastPriority", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastPriority_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastPriority", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastSuppressDisplay)
+        {
+            RunTest(L"VerifyToastSuppressDisplay", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastSuppressDisplay_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastSuppressDisplay", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProperties)
+        {
+            RunTest(L"VerifyToastPayload", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastProperties_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastPayload", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastExpiresOnReboot)
+        {
+            RunTest(L"VerifyToastExpiresOnReboot", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyToastExpiresOnReboot_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
         }
     };
 }

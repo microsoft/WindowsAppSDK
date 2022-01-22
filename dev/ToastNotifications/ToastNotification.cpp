@@ -4,76 +4,76 @@
 
 namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
-    ToastNotification::ToastNotification(winrt::Windows::Data::Xml::Dom::XmlDocument const& /* payload */)
+    ToastNotification::ToastNotification(winrt::Windows::Data::Xml::Dom::XmlDocument const& payload)
     {
-        throw hresult_not_implemented();
+        m_payload = payload;
     }
     hstring ToastNotification::Tag()
     {
-        throw hresult_not_implemented();
+        return m_tag;
     }
-    void ToastNotification::Tag(hstring const& /* value */)
+    void ToastNotification::Tag(hstring const& tag)
     {
-        throw hresult_not_implemented();
+        m_tag = tag;
     }
     hstring ToastNotification::Group()
     {
-        throw hresult_not_implemented();
+        return m_group;
     }
-    void ToastNotification::Group(hstring const& /* value */)
+    void ToastNotification::Group(hstring const& group)
     {
-        throw hresult_not_implemented();
+        m_group = group;
     }
     uint32_t ToastNotification::ToastId()
     {
-        throw hresult_not_implemented();
+        return m_toastId;
     }
-    void ToastNotification::ToastId(uint32_t /* value */)
+    void ToastNotification::ToastId(uint32_t toastId)
     {
-        throw hresult_not_implemented();
+        m_toastId = toastId;
     }
     winrt::Windows::Data::Xml::Dom::XmlDocument ToastNotification::Payload()
     {
-        throw hresult_not_implemented();
+        return m_payload;
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastProgressData ToastNotification::ProgressData()
     {
-        throw hresult_not_implemented();
+        return m_progressData;
     }
-    void ToastNotification::ProgressData(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& /* value */)
+    void ToastNotification::ProgressData(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& progressData)
     {
-        throw hresult_not_implemented();
+        m_progressData = progressData;
     }
     winrt::Windows::Foundation::DateTime ToastNotification::ExpirationTime()
     {
-        throw hresult_not_implemented();
+        return m_expirationTime;
     }
-    void ToastNotification::ExpirationTime(winrt::Windows::Foundation::DateTime const& /* value */)
+    void ToastNotification::ExpirationTime(winrt::Windows::Foundation::DateTime const& expirationTime)
     {
-        throw hresult_not_implemented();
+        m_expirationTime = expirationTime;
     }
     bool ToastNotification::ExpiresOnReboot()
     {
-        throw hresult_not_implemented();
+        return m_expiresOnReboot;
     }
-    void ToastNotification::ExpiresOnReboot(bool /* value */)
+    void ToastNotification::ExpiresOnReboot(bool expiresOnReboot)
     {
-        throw hresult_not_implemented();
+        m_expiresOnReboot = expiresOnReboot;
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastPriority ToastNotification::Priority()
     {
-        throw hresult_not_implemented();
+        return m_priority;
     }
-    void ToastNotification::Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority const& /* value */)
+    void ToastNotification::Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority const& priority)
     {
-        throw hresult_not_implemented();
+        m_priority = priority;
     }
     bool ToastNotification::SuppressDisplay()
     {
-        throw hresult_not_implemented();
+        return m_suppressDisplay;
     }
-    void ToastNotification::SuppressDisplay(bool /* value */)
+    void ToastNotification::SuppressDisplay(bool suppressDisplay)
     {
-        throw hresult_not_implemented();
+        m_suppressDisplay = suppressDisplay;
     }
 }
