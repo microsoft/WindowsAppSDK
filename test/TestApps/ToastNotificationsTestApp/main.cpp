@@ -46,6 +46,16 @@ bool UnregisterBackgroundActivationTest()
     return true;
 }
 
+winrt::ToastNotification GetToastNotification()
+{
+    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
+
+    winrt::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    return winrt::ToastNotification(xmlDocument);
+}
+
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
