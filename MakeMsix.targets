@@ -34,18 +34,6 @@
 
     <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
 
-    <PropertyGroup Condition="'$(_Repo_TestCertificatePFX)' == ''">
-      <_Repo_TestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</_Repo_TestCertificatePFX>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(_Repo_TestCertificatePFX)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePFX)'))" />
-    <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' == ''">
-      <_Repo_TestCertificatePWD>$(RepoRoot)\.user\winappsdk.certificate.test.pwd</_Repo_TestCertificatePWD>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(_Repo_TestCertificatePWD)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePWD)'))" />
-    <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' != ''">
-      <_Repo_TestCertificatePassword>$([System.IO.File]::ReadAllText('$(_Repo_TestCertificatePWD)').TrimEnd())</_Repo_TestCertificatePassword>
-    </PropertyGroup>
-
     <!-- Initial state diagnostics -->
     <Message Text="MakeMSIX Pre: MSBuildProjectName=$(MSBuildProjectName)" Importance="low" />
     <Message Text="MakeMSIX Pre: ProjectName=$(ProjectName)" Importance="low" />
@@ -92,21 +80,15 @@
     <Exec Command="$(_MakeMsixCommand)" />
 
     <!-- Sign the MSIX -->
-    <PropertyGroup>
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(_Repo_TestCertificatePFX)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePFX)'))" />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(_Repo_TestCertificatePWD)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePWD)'))" />
+    <PropertyGroup Condition="'$(MakeMsixSigned)' == 'true'">
       <_SignMsix_Executable>signtool.exe</_SignMsix_Executable>
       <_SignMsix_Parameters>/fd SHA256</_SignMsix_Parameters>
-      <_SignMsix_UserDir>$(RepoRoot)\.user\</_SignMsix_UserDir>
-      <_SignMsix_PFX>$(_SignMsix_UserDir)winappsdk.certificate.test.pfx</_SignMsix_PFX>
-      <_SignMsix_PWD>$(_SignMsix_UserDir)winappsdk.certificate.test.pwd</_SignMsix_PWD>
-      <_SignMsix_Password>$([System.IO.File]::ReadAllText('$(_SignMsix_PWD)').TrimEnd())</_SignMsix_Password>
+      <_SignMsixCommand>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_Repo_TestCertificatePFX)" /p "$(_Repo_TestCertificatePassword)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand>
+      <_SignMsixCommand_Redacted>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_Repo_TestCertificatePFX)" /p "$(_Repo_TestCertificatePasswordRedacted)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand_Redacted>
     </PropertyGroup>
-    <Message Text="MakeMSIX: _SignMsix_PWD: '$(_SignMsix_PWD)'" Importance="low" />
-    <Message Text="MakeMSIX: _SignMsix_Password: ...redacted..." Importance="low" />
-    <PropertyGroup>
-      <_SignMsixCommand>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_SignMsix_PFX)" /p "$(_SignMsix_Password)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand>
-      <_SignMsixCommand_Redacted>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_SignMsix_PFX)" /p ...redacted... "$(_MakeMsix_OutFilename)"</_SignMsixCommand_Redacted>
-    </PropertyGroup>
-    <Message Text="MakeMSIX: Sign: $(_SignMsixCommand_Redacted)" Importance="normal" />
+    <Message Text="MakeMSIX: Sign: $(_SignMsixCommand_Redacted)" Importance="normal" Condition="'$(MakeMsixSigned)' == 'true'" />
     <Exec Command="$(_SignMsixCommand)" Condition="'$(MakeMsixSigned)' == 'true'"/>
   </Target>
 </Project>

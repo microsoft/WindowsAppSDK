@@ -47,4 +47,16 @@
 
   <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
   <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
+
+  <!-- Load the test certificate's password (so we do it once for reuse across projects) -->
+  <PropertyGroup Condition="'$(_Repo_TestCertificatePFX)' == ''">
+    <_Repo_TestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</_Repo_TestCertificatePFX>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' == ''">
+    <_Repo_TestCertificatePWD>$(RepoRoot)\.user\winappsdk.certificate.test.pwd</_Repo_TestCertificatePWD>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' != ''">
+    <_Repo_TestCertificatePassword>$([System.IO.File]::ReadAllText('$(_Repo_TestCertificatePWD)').TrimEnd())</_Repo_TestCertificatePassword>
+    <_Repo_TestCertificatePasswordRedacted>...redacted...</_Repo_TestCertificatePasswordRedacted>
+  </PropertyGroup>
 </Project>
