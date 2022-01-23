@@ -267,6 +267,10 @@
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)$(TargetFileName)" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$(RepoTestCertificatePassword)</PackageCertificatePassword>
+  </PropertyGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <Target Name="MakeNuGet" AfterTargets="AfterBuild" Condition="Exists('$(ProjectDir)Math.Multiply.h')" Inputs="$(ProjectDir)Math.Multiply.h;$(TargetPathName)" Outputs="$(OutDir)Math.Multiply.h">
     <Message Text="Make NuGet (sorta) for $(ProjectName)" />

@@ -49,14 +49,14 @@
   <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
 
   <!-- Load the test certificate's password (so we do it once for reuse across projects) -->
-  <PropertyGroup Condition="'$(_Repo_TestCertificatePFX)' == ''">
-    <_Repo_TestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</_Repo_TestCertificatePFX>
+  <PropertyGroup Condition="'$(RepoTestCertificatePFX)' == ''">
+    <RepoTestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</RepoTestCertificatePFX>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' == ''">
-    <_Repo_TestCertificatePWD>$(RepoRoot)\.user\winappsdk.certificate.test.pwd</_Repo_TestCertificatePWD>
+  <PropertyGroup Condition="'$(RepoTestCertificatePWD)' == ''">
+    <RepoTestCertificatePWD>$(RepoRoot)\.user\winappsdk.certificate.test.pwd</RepoTestCertificatePWD>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' != ''">
-    <_Repo_TestCertificatePassword>$([System.IO.File]::ReadAllText('$(_Repo_TestCertificatePWD)').TrimEnd())</_Repo_TestCertificatePassword>
-    <_Repo_TestCertificatePasswordRedacted>...redacted...</_Repo_TestCertificatePasswordRedacted>
+  <PropertyGroup Condition="'$(RepoTestCertificatePWD)' != ''">
+    <RepoTestCertificatePassword>$([System.IO.File]::ReadAllText('$(RepoTestCertificatePWD)').TrimEnd())</RepoTestCertificatePassword>
+    <RepoTestCertificatePasswordRedacted>...redacted...</RepoTestCertificatePasswordRedacted>
   </PropertyGroup>
 </Project>

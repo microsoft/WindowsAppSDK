@@ -106,6 +106,10 @@
     <MakeMsixInputs Include="$(DdlmShadowExeFile)" />
     <MakeMsixInputs Include="$(DdlmShadowExePdb)" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$(RepoTestCertificatePassword)</PackageCertificatePassword>
+  </PropertyGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />

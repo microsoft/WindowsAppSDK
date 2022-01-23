@@ -85,6 +85,10 @@
     <MakeMsixInputs Include="$(OutDir)..\DynamicDependencyLifetimeManager\DynamicDependencyLifetimeManager.exe" />
     <MakeMsixInputs Include="$(OutDir)..\DynamicDependencyLifetimeManager.ProxyStub\DynamicDependencyLifetimeManager.ProxyStub.dll" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$(RepoTestCertificatePassword)</PackageCertificatePassword>
+  </PropertyGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>
     <Xml Include="appxmanifest.xml" />

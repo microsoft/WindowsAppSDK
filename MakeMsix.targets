@@ -9,10 +9,6 @@
 
   <!-- Clean artifacts from the MakeMSIX target -->
   <Target Name="CleanMakeMSIX" AfterTargets="AfterClean">
-<Message Text="aaa $(OutputPath)" Importance="high" />
-<Message Text="bbb $(OutDir)" Importance="high" />
-<Message Text="xxx $(MakeMsixOutputFilename)" Importance="high" />
-<Message Text="yyy $(TargetName)" Importance="high" />
     <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
     <PropertyGroup>
       <_MakeMsix_WorkDir>$(OutDir)msix</_MakeMsix_WorkDir>
@@ -27,10 +23,6 @@
     Inputs="@(MakeMsixInputs);@(MakeMsixInputsWithLocations);@(MakeMsixInputAssets)"
     Outputs="$(OutDir)$(MakeMsixOutputFilename)"
     AfterTargets="AfterBuild">
-<Message Text="aaa $(OutputPath)" Importance="high" />
-<Message Text="bbb $(OutDir)" Importance="high" />
-<Message Text="xxx $(MakeMsixOutputFilename)" Importance="high" />
-<Message Text="yyy $(TargetName)" Importance="high" />
 
     <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
 
@@ -80,13 +72,14 @@
     <Exec Command="$(_MakeMsixCommand)" />
 
     <!-- Sign the MSIX -->
-    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(_Repo_TestCertificatePFX)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePFX)'))" />
-    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(_Repo_TestCertificatePWD)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePWD)'))" />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run 'tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run 'tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePWD)')" Text="$([System.String]::Format('$(ErrorText)', '$(RepoTestCertificatePWD)'))" />
     <PropertyGroup Condition="'$(MakeMsixSigned)' == 'true'">
       <_SignMsix_Executable>signtool.exe</_SignMsix_Executable>
       <_SignMsix_Parameters>/fd SHA256</_SignMsix_Parameters>
-      <_SignMsixCommand>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_Repo_TestCertificatePFX)" /p "$(_Repo_TestCertificatePassword)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand>
-      <_SignMsixCommand_Redacted>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_Repo_TestCertificatePFX)" /p "$(_Repo_TestCertificatePasswordRedacted)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand_Redacted>
+      <_SignMsixCommand>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(RepoTestCertificatePFX)" /p "$(RepoTestCertificatePassword)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand>
+      <_SignMsixCommand_Redacted>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(RepoTestCertificatePFX)" /p "$(RepoTestCertificatePasswordRedacted)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand_Redacted>
     </PropertyGroup>
     <Message Text="MakeMSIX: Sign: $(_SignMsixCommand_Redacted)" Importance="normal" Condition="'$(MakeMsixSigned)' == 'true'" />
     <Exec Command="$(_SignMsixCommand)" Condition="'$(MakeMsixSigned)' == 'true'"/>

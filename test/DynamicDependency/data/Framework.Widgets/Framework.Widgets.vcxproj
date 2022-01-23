@@ -290,5 +290,9 @@
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
     <MakeMsixInputs Include="$(OutDir)$(TargetFileName)" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$(RepoTestCertificatePassword)</PackageCertificatePassword>
+  </PropertyGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
 </Project>

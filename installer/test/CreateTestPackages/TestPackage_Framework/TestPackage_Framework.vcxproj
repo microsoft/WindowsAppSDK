@@ -86,6 +86,10 @@
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
   </ItemGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
+    <PackageCertificatePassword>$(RepoTestCertificatePassword)</PackageCertificatePassword>
+  </PropertyGroup>
   <Import Project="$(RepoRoot)\MakeMsix.targets" />
   <ItemGroup>
     <Xml Include="appxmanifest-x86.xml" />
