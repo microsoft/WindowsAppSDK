@@ -68,14 +68,16 @@
     <NMakeBuildCommandLine>REM Nothing to do!</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>REM TODO Clean then Build</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>REM TODO Clean</NMakeCleanCommandLine>
+
+    <MakeMsixOutputFilename>$(MSBuildProjectName).msix</MakeMsixOutputFilename>
   </PropertyGroup>
   <ItemGroup>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)appxmanifest.xml" />
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
-    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)RestartAgent\RestartAgent.exe">
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.exe">
       <TargetFile>RestartAgent.exe</TargetFile>
     </MakeMsixInputsWithLocations>
-    <MakeMsixInputsWithLocations Include="$(MSBuildThisFileDirectory)RestartAgent\RestartAgent.exe">
+    <MakeMsixInputsWithLocations Include="$(OutDir)..\RestartAgent\RestartAgent.exe">
       <TargetFile>RestartAgent.pdb</TargetFile>
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(OutDir)..\WindowsAppRuntime_DLL\Microsoft.WindowsAppRuntime.dll" />

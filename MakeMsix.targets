@@ -2,32 +2,65 @@
 <!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- Define the property MakeMsixVerbosity=high for additional logging (default=normal) -->
+  <!-- Sign packages by default. Set MakeMsixSigned=false to not sign created packages -->
   <PropertyGroup>
-    <MakeMsixVerbosity Condition="'$(MakeMsixVerbosity)' == ''">normal</MakeMsixVerbosity>
     <MakeMsixSigned Condition="'$(MakeMsixSigned)' == ''">true</MakeMsixSigned>
   </PropertyGroup>
 
+  <!-- Clean artifacts from the MakeMSIX target -->
+  <Target Name="CleanMakeMSIX" AfterTargets="AfterClean">
+<Message Text="aaa $(OutputPath)" Importance="high" />
+<Message Text="bbb $(OutDir)" Importance="high" />
+<Message Text="xxx $(MakeMsixOutputFilename)" Importance="high" />
+<Message Text="yyy $(TargetName)" Importance="high" />
+    <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
+    <PropertyGroup>
+      <_MakeMsix_WorkDir>$(OutDir)msix</_MakeMsix_WorkDir>
+    </PropertyGroup>
+    <RemoveDir Directories="$(_MakeMsix_WorkDir)" Condition="Exists('$(_MakeMsix_WorkDir)')" />
+    <Message Text="Cleaning $(OutDir)$(MakeMsixOutputFilename)" Importance="low"/>
+    <Delete Files="$(OutDir)$(MakeMsixOutputFilename)"/>
+  </Target>
+
+  <!-- Create an MSIX package and optionally sign it-->
   <Target Name="MakeMSIX"
-    Inputs="@(MakeMsixInputs);@(MakeMsixInputsWithLocations);@(MakeMsixInputAssets);$(MakeMsixOutputFilename)"
-    Outputs="$(OutDir)$(TargetName)"
+    Inputs="@(MakeMsixInputs);@(MakeMsixInputsWithLocations);@(MakeMsixInputAssets)"
+    Outputs="$(OutDir)$(MakeMsixOutputFilename)"
     AfterTargets="AfterBuild">
+<Message Text="aaa $(OutputPath)" Importance="high" />
+<Message Text="bbb $(OutDir)" Importance="high" />
+<Message Text="xxx $(MakeMsixOutputFilename)" Importance="high" />
+<Message Text="yyy $(TargetName)" Importance="high" />
+
+    <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
+
+    <PropertyGroup Condition="'$(_Repo_TestCertificatePFX)' == ''">
+      <_Repo_TestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</_Repo_TestCertificatePFX>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(_Repo_TestCertificatePFX)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePFX)'))" />
+    <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' == ''">
+      <_Repo_TestCertificatePWD>$(RepoRoot)\.user\winappsdk.certificate.test.pwd</_Repo_TestCertificatePWD>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(_Repo_TestCertificatePWD)')" Text="$([System.String]::Format('$(ErrorText)', '$(_Repo_TestCertificatePWD)'))" />
+    <PropertyGroup Condition="'$(_Repo_TestCertificatePWD)' != ''">
+      <_Repo_TestCertificatePassword>$([System.IO.File]::ReadAllText('$(_Repo_TestCertificatePWD)').TrimEnd())</_Repo_TestCertificatePassword>
+    </PropertyGroup>
 
     <!-- Initial state diagnostics -->
-    <Message Text="MakeMSIX Pre: MSBuildProjectName=$(MSBuildProjectName)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX Pre: ProjectName=$(ProjectName)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX Pre: TargetName=$(TargetName)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX Pre: MakeMsixInputs=@(MakeMsixInputs)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX Pre: MakeMsixInputsWithLocations=@(MakeMsixInputsWithLocations)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX Pre: MakeMsixInputAssets=@(MakeMsixInputAssets)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX Pre: MakeMsixOutputFilename=$(MakeMsixOutputFilename)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX Pre: MSBuildProjectName=$(MSBuildProjectName)" Importance="low" />
+    <Message Text="MakeMSIX Pre: ProjectName=$(ProjectName)" Importance="low" />
+    <Message Text="MakeMSIX Pre: TargetName=$(TargetName)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputs=@(MakeMsixInputs)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputsWithLocations=@(MakeMsixInputsWithLocations)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputAssets=@(MakeMsixInputAssets)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixOutputFilename=$(MakeMsixOutputFilename)" Importance="low" />
 
     <!-- Ensure MakeMsixOutputFilename is defined (defining it here if necessary, as per Microsoft.Cpp.Default.props line ~189) -->
     <PropertyGroup>
       <MakeMsixOutputFilename Condition="'$(MakeMsixOutputFilename)' == ''">$(ProjectName).msix</MakeMsixOutputFilename>
     </PropertyGroup>
-    <Message Text="MakeMSIX: TargetName=$(MakeMsixOutputFilename)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX: OutDir=$(OutDir)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: TargetName=$(MakeMsixOutputFilename)" Importance="low" />
+    <Message Text="MakeMSIX: OutDir=$(OutDir)" Importance="low" />
 
     <PropertyGroup>
       <_MakeMsix_WorkDir>$(OutDir)msix</_MakeMsix_WorkDir>
@@ -38,24 +71,24 @@
       <_MakeMsix_Parameters>/o /h SHA256</_MakeMsix_Parameters>
       <_MakeMsixCommand>$(_MakeMsix_Executable) pack $(_MakeMsix_Parameters) $(_MakeMsix_Options) /d $(_MakeMsix_WorkDir) /p $(_MakeMsix_OutFilename)</_MakeMsixCommand>
     </PropertyGroup>
-    <Message Text="MakeMSIX: _MakeMsix_WorkDir=$(_MakeMsix_WorkDir)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX: _MakeMsix_OutDir=$(_MakeMsix_OutDir)" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX: _MakeMsix_OutFilename=$(_MakeMsix_OutFilename)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: _MakeMsix_WorkDir=$(_MakeMsix_WorkDir)" Importance="low" />
+    <Message Text="MakeMSIX: _MakeMsix_OutDir=$(_MakeMsix_OutDir)" Importance="low" />
+    <Message Text="MakeMSIX: _MakeMsix_OutFilename=$(_MakeMsix_OutFilename)" Importance="low" />
     <MakeDir Directories="$(_MakeMsix_WorkDir)" Condition="!Exists('$(_MakeMsix_WorkDir)')" />
 
-    <Message Text="MakeMSIX: Copy @(MakeMsixInputs) to $(_MakeMsix_WorkDir)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: Copy @(MakeMsixInputs) to $(_MakeMsix_WorkDir)" Importance="low" />
     <Copy SourceFiles="@(MakeMsixInputs)" DestinationFolder="$(_MakeMsix_WorkDir)" SkipUnchangedFiles="true" />
 
-    <Message Text="MakeMSIX: Copy @(MakeMsixInputsWithLocations) to @(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: Copy @(MakeMsixInputsWithLocations) to @(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')" Importance="low" />
     <Copy SourceFiles="@(MakeMsixInputsWithLocations)"
           DestinationFiles="@(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')"
           SkipUnchangedFiles="true" />
 
-    <Message Text="MakeMSIX: Copy @(MakeMsixInputAssets) to $(_MakeMsix_WorkDir)\Assets" Importance="$(MakeMsixVerbosity)" Condition="'@(MakeMsixInputAssets)' != ''"/>
+    <Message Text="MakeMSIX: Copy @(MakeMsixInputAssets) to $(_MakeMsix_WorkDir)\Assets" Importance="low" Condition="'@(MakeMsixInputAssets)' != ''"/>
     <MakeDir Directories="$(_MakeMsix_WorkDir)\Assets" Condition="'@(MakeMsixInputAssets)' != '' and !Exists('$(_MakeMsix_WorkDir)\Assets')" />
     <Copy SourceFiles="@(MakeMsixInputAssets)" DestinationFolder="$(_MakeMsix_WorkDir)\Assets" SkipUnchangedFiles="true" Condition="'@(MakeMsixInputAssets)' != ''"/>
 
-    <Message Text="MakeMSIX: Command: $(_MakeMsixCommand)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: Command: $(_MakeMsixCommand)" Importance="normal" />
     <Exec Command="$(_MakeMsixCommand)" />
 
     <!-- Sign the MSIX -->
@@ -67,12 +100,13 @@
       <_SignMsix_PWD>$(_SignMsix_UserDir)winappsdk.certificate.test.pwd</_SignMsix_PWD>
       <_SignMsix_Password>$([System.IO.File]::ReadAllText('$(_SignMsix_PWD)').TrimEnd())</_SignMsix_Password>
     </PropertyGroup>
-    <Message Text="MakeMSIX: _SignMsix_PWD: '$(_SignMsix_PWD)'" Importance="$(MakeMsixVerbosity)" />
-    <Message Text="MakeMSIX: _SignMsix_Password: ...redacted..." Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: _SignMsix_PWD: '$(_SignMsix_PWD)'" Importance="low" />
+    <Message Text="MakeMSIX: _SignMsix_Password: ...redacted..." Importance="low" />
     <PropertyGroup>
       <_SignMsixCommand>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_SignMsix_PFX)" /p "$(_SignMsix_Password)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand>
+      <_SignMsixCommand_Redacted>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(_SignMsix_PFX)" /p ...redacted... "$(_MakeMsix_OutFilename)"</_SignMsixCommand_Redacted>
     </PropertyGroup>
-    <Message Text="MakeMSIX: Sign: $(_SignMsixCommand)" Importance="$(MakeMsixVerbosity)" />
+    <Message Text="MakeMSIX: Sign: $(_SignMsixCommand_Redacted)" Importance="normal" />
     <Exec Command="$(_SignMsixCommand)" Condition="'$(MakeMsixSigned)' == 'true'"/>
   </Target>
 </Project>
