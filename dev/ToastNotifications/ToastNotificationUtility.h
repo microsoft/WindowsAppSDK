@@ -4,7 +4,11 @@
 #pragma once
 #include "pch.h"
 #include <winrt/Windows.Foundation.h>
+#include <wrl/implements.h>
+#include <wil/resource.h>
 #include <ToastActivatedEventArgs.h>
+
+#include <FrameworkUdk/toastnotificationsrt.h>
 
 const std::wstring c_appIdentifierPath{ LR"(Software\Classes\AppUserModelId\)" };
 const std::wstring c_clsIdPath{ LR"(Software\Classes\CLSID\)" };
@@ -30,6 +34,12 @@ inline std::wstring ConvertPathToKey(std::wstring path)
 inline void RegisterValue(wil::unique_hkey const& hKey, PCWSTR const& key, const BYTE* value, DWORD const& valueType, size_t const& size)
 {
     THROW_IF_FAILED(RegSetValueExW(hKey.get(), key, 0, valueType, value, (DWORD) size));
+}
+
+inline wil::unique_hstring safe_make_unique_hstring(PCWSTR str)
+{
+    // wil::make_unique_string can't allocate a zero byte memory buffer.
+    return (str == nullptr || wcslen(str) == 0) ? wil::unique_hstring() : wil::make_unique_string<wil::unique_hstring>(str);
 }
 
 std::wstring RetrieveUnpackagedAppId();

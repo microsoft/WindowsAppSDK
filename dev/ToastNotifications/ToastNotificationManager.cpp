@@ -9,6 +9,11 @@
 #include "ToastNotificationUtility.h"
 #include <frameworkudk/pushnotifications.h>
 #include <frameworkudk/toastnotifications.h>
+#include <FrameworkUdk/toastnotificationsrt.h>
+
+#include "NotificationProperties.h"
+#include <NotificationTransientProperties.h>
+
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
 winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>>& GetToastHandlers()
@@ -82,9 +87,21 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         GetToastHandlers().remove(token);
     }
-    void ToastNotificationManager::ShowToast(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& /* toast */)
+    void ToastNotificationManager::ShowToast(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& toast)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, toast.ToastId() != 0);
+
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties
+            = winrt::make_self<NotificationProperties>(toast);
+
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties
+            = winrt::make_self<NotificationTransientProperties>(toast);
+
+        auto toastAppId{ RetrieveUnpackagedAppId() };
+
+        DWORD notificationId = 0;
+        ToastNotifications_PostToast(toastAppId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId);
+        toast.ToastId(notificationId);
     }
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData /* data */, hstring /* tag */, hstring /* group */)
     {
