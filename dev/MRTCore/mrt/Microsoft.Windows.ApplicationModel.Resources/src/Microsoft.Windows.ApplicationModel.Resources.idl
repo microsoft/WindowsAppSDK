@@ -8,6 +8,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
 
     [contract(MrtContract, 1.0)]
     [default_interface]
+    [interface_name("Microsoft.Windows.ApplicationModel.Resources.IResourceLoader", bc3f76bf-da46-54cd-8715-8b8aaf16eaac)]
     runtimeclass ResourceLoader
     {
         ResourceLoader();
@@ -29,6 +30,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     }
 
     [contract(MrtContract, 1.0)]
+    [interface_name("Microsoft.Windows.ApplicationModel.Resources.IResourceManager", ac2291ef-81be-5c99-a0ae-bcee0180b8a8)]
     runtimeclass ResourceManager
     {
         ResourceManager();
@@ -62,6 +64,7 @@ namespace Microsoft.Windows.ApplicationModel.Resources
     }
 
     [contract(MrtContract, 1.0)]
+    [interface_name("Microsoft.Windows.ApplicationModel.Resources.IResourceContext", 96fb48dc-f77d-55ff-af12-34861e3d4939)]
     runtimeclass ResourceContext
     {
         IMap<String, String> QualifierValues { get; };
