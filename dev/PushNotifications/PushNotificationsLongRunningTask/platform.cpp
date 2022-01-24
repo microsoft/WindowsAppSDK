@@ -78,6 +78,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterL
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
+    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
     const std::wstring appId{ GetAppIdentifier(processName) };
     if (appId.empty())
     {
@@ -97,12 +98,16 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     auto lock = m_lock.lock_shared();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
+    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
     const std::wstring appId{ GetAppIdentifier(processName) };
-    m_notificationListenerManager.RemoveListener(appId);
-    m_foregroundSinkManager->Remove(appId);
+    if (!appId.empty())
+    {
+        m_notificationListenerManager.RemoveListener(appId);
+        m_foregroundSinkManager->Remove(appId);
 
-    RemoveAppIdentifier(appId);
-    RemoveToastHelper(processName);
+        RemoveAppIdentifier(appId);
+        RemoveToastHelper(processName);
+    }
 
     if (m_notificationListenerManager.IsEmpty())
     {
@@ -118,6 +123,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::RegisterF
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
+    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
     const std::wstring appId{ GetAppIdentifier(processName) };
     if (appId.empty())
     {
@@ -137,7 +143,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::Unregiste
     auto lock = m_lock.lock_exclusive();
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
+    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
     const std::wstring appId{ GetAppIdentifier(processName) };
+    if (appId.empty())
+    {
+        return S_OK;
+    }
     m_foregroundSinkManager->Remove(appId);
 
     return S_OK;
@@ -149,7 +160,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastR
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    // Don't register unless there is a sink available.
+    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
     if (GetAppIdentifier(processName).empty())
     {
         return S_OK;
