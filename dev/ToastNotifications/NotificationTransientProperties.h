@@ -7,7 +7,7 @@
 
 struct NotificationTransientProperties : winrt::implements<NotificationTransientProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties>
 {
-    NotificationTransientProperties(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& toastNotification);
+    NotificationTransientProperties(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& toastNotification) noexcept;
 
     STDMETHOD(get_OfflineCacheCount)(_Out_ unsigned long long* offlineCacheCount) noexcept;
 

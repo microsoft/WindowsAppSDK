@@ -13,7 +13,12 @@ namespace winrt
     using namespace winrt::Microsoft::Windows::ToastNotifications;
 }
 
-NotificationTransientProperties::NotificationTransientProperties(winrt::ToastNotification const& toastNotification)
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
+
+NotificationTransientProperties::NotificationTransientProperties(winrt::ToastNotification const& toastNotification) noexcept
 {
     m_suppressPopup = toastNotification.SuppressDisplay();
 
@@ -21,7 +26,7 @@ NotificationTransientProperties::NotificationTransientProperties(winrt::ToastNot
 
     if (priority == winrt::Microsoft::Windows::ToastNotifications::ToastPriority::High)
     {
-        m_toastNotificationPriority = ::ABI::Microsoft::Internal::ToastNotifications::ToastNotificationPriority::ToastNotificationPriority_High;
+        m_toastNotificationPriority = ToastABI::ToastNotificationPriority::ToastNotificationPriority_High;
     }
 }
 
@@ -31,12 +36,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_OfflineCac
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_OfflineBundleId(_Out_ HSTRING* offlineBundleId) noexcept try
+STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_OfflineBundleId(_Out_ HSTRING* offlineBundleId) noexcept
 {
     *offlineBundleId = nullptr;
     return S_OK;
 }
-CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_ServerCacheRollover(_Out_ boolean* serverCacheRollover) noexcept
 {
@@ -64,7 +68,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_MessageId(
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_ToastNotificationPriority(_Out_ ::ABI::Microsoft::Internal::ToastNotifications::ToastNotificationPriority* priority) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_ToastNotificationPriority(_Out_ ToastABI::ToastNotificationPriority* priority) noexcept
 {
     auto lock = m_lock.lock_shared();
 
@@ -72,10 +76,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_ToastNotif
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_CorrelationVector(_Out_ HSTRING* correlationVector) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_CorrelationVector(_Out_ HSTRING* correlationVector) noexcept try
 {
     // In the UDK, a null/empty CV will make the UDK to throw.
     // Temporarily return a fixed CV until we address CV properly in the UDK.
     *correlationVector = wil::make_unique_string<wil::unique_hstring>(L"PmvzQKgYek6Sdk/T5sWaqw.0").release();
     return S_OK;
 }
+CATCH_RETURN()

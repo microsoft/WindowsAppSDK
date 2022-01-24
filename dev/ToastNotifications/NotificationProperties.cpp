@@ -13,6 +13,11 @@ namespace winrt
     using namespace winrt::Microsoft::Windows::ToastNotifications;
 }
 
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
+
 namespace Helpers
 {
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
@@ -56,7 +61,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Payload(_Out_ unsigned int* payloadSize, _Out_ byte** payload) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Payload(_Out_ unsigned int* payloadSize, _Out_ byte** payload) noexcept try
 {
     auto lock = m_lock.lock_shared();
 
@@ -69,6 +74,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Payload(_Out_ unsig
     *payload = tempPayload.release();
     return S_OK;
 }
+CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_PayloadSize(_Out_ unsigned int* payloadSize) noexcept
 {
@@ -78,21 +84,23 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_PayloadSize(_Out_ u
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Tag(_Out_ HSTRING* tag) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Tag(_Out_ HSTRING* tag) noexcept try
 {
     auto lock = m_lock.lock_shared();
 
     *tag = safe_make_unique_hstring(m_tag.c_str()).release();
     return S_OK;
 }
+CATCH_RETURN()
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Group(_Out_ HSTRING* group) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Group(_Out_ HSTRING* group) noexcept try
 {
     auto lock = m_lock.lock_shared();
 
     *group = safe_make_unique_hstring(m_group.c_str()).release();
     return S_OK;
 }
+CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Expiry(_Out_ unsigned long long* expiry) noexcept
 {
@@ -124,11 +132,12 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ExpiresOnReboot(_Ou
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_Out_ ABI::Microsoft::Internal::ToastNotifications::IToastProgressData** /*progressData*/) noexcept
+STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_Out_ ToastABI::IToastProgressData** progressData) noexcept
 {
     // TODO: Uncomment once ToastProgressData is implemented
     // auto lock = m_lock.lock_shared();
     // *toastProgressData = m_toastProgressData.get();
+    *progressData = nullptr;
     return S_OK;
 }
 
