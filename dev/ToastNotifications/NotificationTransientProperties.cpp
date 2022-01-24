@@ -74,6 +74,8 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_ToastNotif
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_CorrelationVector(_Out_ HSTRING* correlationVector) noexcept
 {
-    *correlationVector = nullptr;
+    // In the UDK, a null/empty CV will make the UDK to throw.
+    // Temporarily return a fixed CV until we address CV properly in the UDK.
+    *correlationVector = wil::make_unique_string<wil::unique_hstring>(L"PmvzQKgYek6Sdk/T5sWaqw.0").release();
     return S_OK;
 }

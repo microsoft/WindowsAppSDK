@@ -323,5 +323,15 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
         }
+
+        TEST_METHOD(VerifyShowToast)
+        {
+            RunTest(L"VerifyShowToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
+        }
     };
 }
