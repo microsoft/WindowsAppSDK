@@ -90,6 +90,20 @@ steps:
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
 
+- script: |
+    dir /s $(Build.SourcesDirectory)
+
+- task: powershell@2
+  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+  inputs:
+    targetType: filePath
+    filePath: tools\DevCheck.ps1
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- script: |
+    dir /s $(Build.SourcesDirectory)
+
 #  - task: BatchScript@1
 #    displayName: 'Debug'
 #    inputs:
