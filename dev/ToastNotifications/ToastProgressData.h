@@ -17,6 +17,13 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         void ValueStringOverride(hstring const& value);
         hstring Status();
         void Status(hstring const& value);
+
+    private:
+        uint32_t m_sequenceNumber;
+        hstring m_title;
+        double m_progressValue;
+        hstring m_progressvalueString;
+        hstring m_progressStatus;
     };
 }
 namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation

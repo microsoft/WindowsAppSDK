@@ -12,6 +12,7 @@ namespace winrt
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Microsoft::Windows::ToastNotifications;
     using namespace winrt::Windows::Data::Xml::Dom;
+    using namespace winrt::Windows::Foundation;
 }
 
 bool BackgroundActivationTest() // Activating application for background test.
@@ -280,9 +281,6 @@ bool VerifyToastGroup()
 
 bool VerifyToastProgressDataFromToast()
 {
-    /*
-    * TODO: Uncomment once ToastProgressData has been implemented
-
     winrt::ToastNotification toast{ GetToastNotification() };
 
     winrt::ToastProgressData progressData{};
@@ -298,7 +296,6 @@ bool VerifyToastProgressDataFromToast()
     {
         return false;
     }
-    */
 
     return true;
 }
@@ -435,6 +432,172 @@ std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventAr
     return unitTestName;
 }
 
+constexpr auto timeout{ std::chrono::seconds(5) };
+
+winrt::ToastProgressResult progressResultOperationHelper(winrt::IAsyncOperation<winrt::ToastProgressResult> progressResultOperation)
+{
+    if (progressResultOperation.wait_for(timeout) != winrt::AsyncStatus::Completed)
+    {
+        progressResultOperation.Cancel();
+        return winrt::ToastProgressResult::Failed; // timed out or failed
+    }
+
+    return progressResultOperation.GetResults();
+}
+
+bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup()
+{
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    toast.Tag(L"tag");
+    toast.Group(L"Group");
+
+    winrt::ToastNotificationManager::Default().ShowToast(toast);
+
+    if (toast.ToastId() == 0)
+    {
+        return false;
+    }
+
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.10);
+    progressData.ValueStringOverride(L"10%");
+
+    
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"Tag", L"Group");
+    auto progressResult = progressResultOperationHelper(progressResultOperation);
+
+    if (progressResult == winrt::ToastProgressResult::Succeeded)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged()
+{
+    winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+    auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+
+    winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
+
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            winrt::ToastNotificationManager::Default().UnregisterActivator();
+        });
+
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    toast.Tag(L"tag");
+    toast.Group(L"Group");
+
+    winrt::ToastNotificationManager::Default().ShowToast(toast);
+
+    if (toast.ToastId() == 0)
+    {
+        return false;
+    }
+
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"Tag", L"Group");
+    auto progressResult = progressResultOperationHelper(progressResultOperation);
+
+    if (progressResult == winrt::ToastProgressResult::Succeeded)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool VerifyUpdateToastProgressDataUsingValidTagAndNullGroup()
+{
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+    // TODO: PoastToast 
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"Tag");
+    auto progressResult = progressResultOperationHelper(progressResultOperation);
+
+    if (progressResult == winrt::ToastProgressResult::Succeeded)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool VerifyUpdateNotificationDataWithNullTagAndValidGroup()
+{
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+    // TODO: PoastToast 
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"NonExistentGroup");
+    auto progressResult = progressResultOperationHelper(progressResultOperation);
+
+    if (progressResult == winrt::ToastProgressResult::Failed)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
+{
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+    // TODO: PoastToast 
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"NonExistentTag", L"NonExistentGroup");
+    auto progressResult = progressResultOperationHelper(progressResultOperation);
+
+    if (progressResult == winrt::ToastProgressResult::Failed)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool VerifyFailedUpdateNotificationDataWithoutPostToast()
+{
+    winrt::ToastProgressData progressData{};
+    progressData.Status(L"SomeStatus");
+    progressData.Title(L"SomeTitle");
+    progressData.Value(0.14);
+    progressData.ValueStringOverride(L"14%");
+
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"Tag", L"Group");
+    auto progressResult = progressResultOperationHelper(progressResultOperation);
+
+    if (progressResult == winrt::ToastProgressResult::NotificationNotFound)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 std::map<std::string, bool(*)()> const& GetSwitchMapping()
 {
     static std::map<std::string, bool(*)()> switchMapping = {
@@ -462,7 +625,18 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
         { "VerifyShowToast", &VerifyShowToast },
         { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
-    };
+        { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged },
+        { "VerifyUpdateToastProgressDataUsingValidTagAndNullGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingValidTagAndNullGroup },
+        { "VerifyUpdateNotificationDataWithNullTagAndValidGroup_Unpackaged", &VerifyUpdateNotificationDataWithNullTagAndValidGroup },
+        { "VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged", &VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup },
+        { "VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", &VerifyFailedUpdateNotificationDataWithoutPostToast },
+        { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup },
+        { "VerifyUpdateToastProgressDataUsingValidTagAndNullGroup", &VerifyUpdateToastProgressDataUsingValidTagAndNullGroup },
+        { "VerifyUpdateNotificationDataWithNullTagAndValidGroup", &VerifyUpdateNotificationDataWithNullTagAndValidGroup },
+        { "VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup", &VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup },
+        { "VerifyFailedUpdateNotificationDataWithoutPostToast", &VerifyFailedUpdateNotificationDataWithoutPostToast },
+      };
+
     return switchMapping;
 }
 
@@ -504,6 +678,8 @@ int main() try
 
         testResult = runUnitTest(unitTest);
     }
+
+    testResult = VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged();
 
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure
 }
