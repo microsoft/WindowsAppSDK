@@ -61,7 +61,6 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
             std::wstring toastAppId{ RetrieveToastAppId() };
-            THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
             THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
         }
 

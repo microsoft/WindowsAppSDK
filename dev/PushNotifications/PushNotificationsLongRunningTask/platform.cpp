@@ -160,7 +160,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationsLongRunningPlatformImpl::AddToastR
     auto lock{ m_lock.lock_exclusive() };
     THROW_HR_IF(WPN_E_PLATFORM_UNAVAILABLE, m_shutdown);
 
-    // NotificationsLongRunningPlatformImpl::RegisterFullTrustApplication should be called before this or we ignore the call
+    // Don't register unless there is a sink available
     if (GetAppIdentifier(processName).empty())
     {
         return S_OK;

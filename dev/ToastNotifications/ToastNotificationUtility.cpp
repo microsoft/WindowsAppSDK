@@ -188,6 +188,9 @@ CATCH_RETURN()
 
 std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
 {
+    std::wstring toastAppId{ RetrieveToastAppId() };
+    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
+
     std::wstring registeredGuid;
     HRESULT status = GetActivatorGuid(registeredGuid);
     if (status == ERROR_FILE_NOT_FOUND)
@@ -202,7 +205,6 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
         wil::unique_cotaskmem_string comActivatorGuidString;
         THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
 
-        std::wstring toastAppId{ RetrieveToastAppId() };
         RegisterAssets(toastAppId, details.Assets(), comActivatorGuidString);
         RegisterComServer(processName, comActivatorGuidString);
 
