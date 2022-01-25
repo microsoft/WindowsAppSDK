@@ -27,7 +27,7 @@ void NotificationListenerManager::AddListener(std::wstring const& appId, std::ws
     // Make sure we keep the long running sink up-to-date with wpncore.
     ComPtr<INotificationListener> newListener;
     {
-        auto lock{ m_lock.lock_exclusive() };
+        auto lock{ m_lock.lock_shared() };
         THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&newListener, m_foregroundSinkManager, m_toastRegistrationManager, appId, processName));
     }
 

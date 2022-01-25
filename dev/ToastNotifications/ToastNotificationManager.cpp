@@ -48,19 +48,19 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         std::wstring storedComActivatorString;
         if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
+            std::wstring toastAppId{ RetrieveToastAppId() };
             if (!AppModel::Identity::IsPackagedProcess())
             {
+                THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
+
                 storedComActivatorString = RegisterComActivatorGuidAndAssets(details);
                 // Remove braces around the guid string
                 storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
             }
 
-
             wil::unique_cotaskmem_string processName;
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
-
-            std::wstring toastAppId{ RetrieveToastAppId() };
             THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
         }
 
