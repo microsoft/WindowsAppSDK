@@ -15,7 +15,7 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
-std::wstring RetrieveUnpackagedAppId()
+std::wstring RetrieveUnpackagedToastAppId()
 {
     wil::unique_cotaskmem_string processName;
     THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -64,7 +64,7 @@ std::wstring RetrieveUnpackagedAppId()
     return registeredGuidBuffer;
 }
 
-std::wstring RetrieveAppId()
+std::wstring RetrieveToastAppId()
 {
     if (AppModel::Identity::IsPackagedProcess())
     {
@@ -75,7 +75,7 @@ std::wstring RetrieveAppId()
         return appUserModelId;
     }
 
-    return RetrieveUnpackagedAppId();
+    return RetrieveUnpackagedToastAppId();
 }
 
 void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& activationInfo, wil::unique_cotaskmem_string const& clsid)
@@ -137,13 +137,13 @@ void UnRegisterComServer(std::wstring const& clsid)
         0));
 }
 
-void UnRegisterAppIdentifierFromRegistry()
+void UnRegisterToastAppIdentifierFromRegistry()
 {
-    std::wstring appIdentifier{ RetrieveAppId() };
+    std::wstring toastAppId{ RetrieveToastAppId() };
 
     wil::unique_hkey hKey;
     //subKey: \Software\Classes\AppUserModelId\{AppGUID}
-    std::wstring subKey{ c_appIdentifierPath + appIdentifier };
+    std::wstring subKey{ c_appIdentifierPath + toastAppId };
 
     THROW_IF_FAILED(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
@@ -154,9 +154,9 @@ void UnRegisterAppIdentifierFromRegistry()
 
 HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept try
 {
-    std::wstring appIdentifier{ RetrieveAppId() };
+    std::wstring toastAppId{ RetrieveToastAppId() };
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
-    std::wstring subKey{ c_appIdentifierPath + appIdentifier };
+    std::wstring subKey{ c_appIdentifierPath + toastAppId };
 
     wil::unique_hkey hKey;
     THROW_IF_FAILED(RegCreateKeyEx(
@@ -188,9 +188,6 @@ CATCH_RETURN()
 
 std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
 {
-    std::wstring appIdentifier{ RetrieveAppId() };
-    THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(appIdentifier.c_str(), GUID_NULL));
-
     std::wstring registeredGuid;
     HRESULT status = GetActivatorGuid(registeredGuid);
     if (status == ERROR_FILE_NOT_FOUND)
@@ -205,7 +202,8 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
         wil::unique_cotaskmem_string comActivatorGuidString;
         THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
 
-        RegisterAssets(appIdentifier, details.Assets(), comActivatorGuidString);
+        std::wstring toastAppId{ RetrieveToastAppId() };
+        RegisterAssets(toastAppId, details.Assets(), comActivatorGuidString);
         RegisterComServer(processName, comActivatorGuidString);
 
         return comActivatorGuidString.get();
