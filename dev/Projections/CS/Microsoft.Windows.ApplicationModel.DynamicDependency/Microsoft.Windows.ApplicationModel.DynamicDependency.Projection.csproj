@@ -20,7 +20,7 @@
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.DynamicDependency</CSWinRTIncludes>
-    <CSWinRTWindowsMetadata>$(CsWinRTDependencyWindowsSdkPackagePackageVersion)</CSWinRTWindowsMetadata>
+    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
   </PropertyGroup>
 
   <!-- Configure the release build binary to be as required by internal API scanning tools. -->
