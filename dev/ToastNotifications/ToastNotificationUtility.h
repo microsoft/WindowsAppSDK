@@ -42,9 +42,9 @@ inline wil::unique_hstring safe_make_unique_hstring(PCWSTR str)
     return (str == nullptr || wcslen(str) == 0) ? wil::unique_hstring() : wil::make_unique_string<wil::unique_hstring>(str);
 }
 
-std::wstring RetrieveUnpackagedAppId();
+std::wstring RetrieveUnpackagedToastAppId();
 
-std::wstring RetrieveAppId();
+std::wstring RetrieveToastAppId();
 
 void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& activationInfo, wil::unique_cotaskmem_string const& clsid);
 
@@ -52,7 +52,7 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
 
 void UnRegisterComServer(std::wstring const& clsid);
 
-void UnRegisterAppIdentifierFromRegistry();
+void UnRegisterToastAppIdentifierFromRegistry();
 
 HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 

@@ -232,6 +232,7 @@
     <ClCompile Include="platformfactory.cpp" />
     <ClCompile Include="PlatformLifetimeManager.cpp" />
     <ClCompile Include="NotificationListenerManager.cpp" />
+    <ClCompile Include="ToastRegistrationManager.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +243,7 @@
     <ClInclude Include="platformfactory.h" />
     <ClInclude Include="PlatformLifetimeManager.h" />
     <ClInclude Include="NotificationListenerManager.h" />
+    <ClInclude Include="ToastRegistrationManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

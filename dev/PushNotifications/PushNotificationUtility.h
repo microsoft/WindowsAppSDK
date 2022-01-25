@@ -4,7 +4,13 @@
 #pragma once
 #include "pch.h"
 #include  "NotificationsLongRunningProcess_h.h"
+#include <winrt/Windows.Foundation.Metadata.h>
+#include "../Common/AppModel.Identity.h"
 
+namespace winrt
+{
+    using namespace Windows::Foundation;
+}
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 {
     inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
@@ -105,5 +111,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {
         return wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER);
+    }
+
+    inline bool IsBackgroundTaskBuilderAvailable()
+    {
+        static bool hasSetTaskEntrypoint{ winrt::Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid") };
+        return hasSetTaskEntrypoint;
+    }
+
+    inline bool IsPackagedAppScenario()
+    {
+        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
 }
