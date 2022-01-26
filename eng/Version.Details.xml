@@ -23,9 +23,9 @@
     </Dependency>
   </ProductDependencies>
   <ToolsetDependencies>
-    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.0.0-20220114.0-CI">
+    <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.1.0-20220125.0-CI">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
-      <Sha>61330e0ea3df267a2fe535aaf9541cf65b7a05e8</Sha>
+      <Sha>b47c1d3b4a3e2c6b390e93cb133bbd7d83b56ad6</Sha>
     </Dependency>
   </ToolsetDependencies>
 </Dependencies>
