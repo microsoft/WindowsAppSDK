@@ -34,9 +34,6 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     };
 
     bool IsFileExtension(const std::wstring& extension);
-    std::wstring GetFullIdentityString();
-    bool HasIdentity();
-    std::wstring GetModulePath();
     std::wstring ComputeAppId(const std::wstring& customSeed = L"");
     std::wstring ComputeProgId(AssociationType type);
     std::wstring ComputeProgId(const std::wstring& appId, AssociationType type);

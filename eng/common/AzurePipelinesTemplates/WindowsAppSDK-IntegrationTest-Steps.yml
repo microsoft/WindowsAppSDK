@@ -83,9 +83,10 @@ steps:
         -WindowsAppSDKPackageVersion "$(WindowsAppSDKPackageVersion)"
         -Checkpoint "none" -Platform "x64" 
         -Configuration "release" 
-        -YamlStep "none"
+        -YamlStep "all"
         -RunTestMachineSetup
         -Name "${{ parameters.TestSelection }}"
+        -PipelineBuild
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish test results'

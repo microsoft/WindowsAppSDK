@@ -21,3 +21,4 @@
 #include <MddBootstrap.h>
 #include <MddBootstrapTest.h>
 #include <WindowsAppRuntime.Test.AppModel.h>
+#include <AppModel.Identity.h>

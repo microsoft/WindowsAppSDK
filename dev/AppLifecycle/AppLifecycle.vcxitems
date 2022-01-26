@@ -24,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AppActivationArguments.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ActivationRegistrationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AppInstance.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AppLifecycleTelemetry.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Association.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExecuteCommandBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ExtensionContract.h" />

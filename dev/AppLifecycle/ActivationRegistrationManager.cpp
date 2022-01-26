@@ -12,13 +12,15 @@
 #include "ExtensionContract.h"
 #include "EncodedLaunchExecuteCommand.h"
 
+using namespace AppModel::Identity;
+
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
     using namespace winrt::Windows::Foundation;
 
     std::wstring GenerateCommandLine(std::wstring const& modulePath, std::wstring const& argumentData)
     {
-        std::wstring exePath{ modulePath.empty() ? GetModulePath() : modulePath };
+        std::wstring exePath{ modulePath.empty() ? wil::GetModuleFileNameW<std::wstring>(nullptr) : modulePath };
 
         // Example: C:\some\path\App.exe "----ms-protocol:myscheme:some=data&some=other"
         return wil::str_printf<std::wstring>(L"%s \"%s%s%s%s\"", exePath.c_str(), c_argumentPrefix,
@@ -40,7 +42,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         array_view<hstring const> supportedFileTypes, hstring const& logo, hstring const& displayName,
         array_view<hstring const> supportedVerbs, hstring const& exePath)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, !supportedFileTypes.size());
 
         auto appId = ComputeAppId(exePath.c_str());
@@ -71,7 +73,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void ActivationRegistrationManager::RegisterForProtocolActivation(hstring const& schemeName,
         hstring const& logo, hstring const& displayName, hstring const& exePath)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, schemeName.empty());
 
         RegisterForProtocolActivationInternal(schemeName.c_str(), L"", logo.c_str(),
@@ -84,7 +86,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void ActivationRegistrationManager::RegisterForStartupActivation(hstring const& taskId,
         hstring const& exePath)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, taskId.empty());
 
         // Example: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
@@ -106,7 +108,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void ActivationRegistrationManager::UnregisterForFileTypeActivation(array_view<hstring const> fileTypes,
         hstring const& exePath)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, !fileTypes.size());
 
         auto appId = ComputeAppId(exePath.c_str());
@@ -126,7 +128,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
     void ActivationRegistrationManager::UnregisterForProtocolActivation(hstring const& schemeName,
         hstring const& exePath)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, schemeName.empty());
 
         auto appId = ComputeAppId(exePath.c_str());
@@ -141,7 +143,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
     void ActivationRegistrationManager::UnregisterForStartupActivation(hstring const& taskId)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, taskId.empty());
 
         // Example: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run
@@ -156,7 +158,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         std::wstring const& appUserModelId, std::wstring const& logo, std::wstring const& displayName,
         std::wstring const& exePath)
     {
-        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, HasIdentity());
+        THROW_HR_IF(E_ILLEGAL_METHOD_CALL, IsPackagedProcess());
         THROW_HR_IF(E_INVALIDARG, schemeName.empty());
 
         RegisterProtocol(schemeName.c_str());
