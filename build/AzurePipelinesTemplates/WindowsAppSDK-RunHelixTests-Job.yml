@@ -62,6 +62,22 @@ jobs:
 
   - task: NuGetAuthenticate@0
 
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Install test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTestCert
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - template: WindowsAppSDK-BuildSolution-Steps.yml
     parameters:
       displayName: WindowsAppSDK.Helix.Test
@@ -125,7 +141,7 @@ jobs:
       contents: |
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
-      
+
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
@@ -228,3 +244,11 @@ jobs:
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
       artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)
+
+  - task: powershell@2
+    displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
+      workingDirectory: '$(Build.SourcesDirectory)'

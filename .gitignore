@@ -381,6 +381,9 @@ installer/test/testpackages/
 # Local temp storage
 temp/
 
+# Local per-user storage
+.user/
+
 # Build Pipeline override
 build/override/
 

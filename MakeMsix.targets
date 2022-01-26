@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Sign packages by default. Set MakeMsixSigned=false to not sign created packages -->
+  <PropertyGroup>
+    <MakeMsixSigned Condition="'$(MakeMsixSigned)' == ''">true</MakeMsixSigned>
+  </PropertyGroup>
+
+  <!-- Clean artifacts from the MakeMSIX target -->
+  <Target Name="CleanMakeMSIX" AfterTargets="AfterClean">
+    <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
+    <PropertyGroup>
+      <_MakeMsix_WorkDir>$(OutDir)msix</_MakeMsix_WorkDir>
+    </PropertyGroup>
+    <RemoveDir Directories="$(_MakeMsix_WorkDir)" Condition="Exists('$(_MakeMsix_WorkDir)')" />
+    <Message Text="Cleaning $(OutDir)$(MakeMsixOutputFilename)" Importance="low"/>
+    <Delete Files="$(OutDir)$(MakeMsixOutputFilename)"/>
+  </Target>
+
+  <!-- Create an MSIX package and optionally sign it-->
+  <Target Name="MakeMSIX"
+    Inputs="@(MakeMsixInputs);@(MakeMsixInputsWithLocations);@(MakeMsixInputAssets)"
+    Outputs="$(OutDir)$(MakeMsixOutputFilename)"
+    AfterTargets="AfterBuild">
+
+    <Error Condition="'$(MakeMsixOutputFilename)' == ''" Text="MakeMsixOutputFilename property is not defined" />
+
+    <!-- Initial state diagnostics -->
+    <Message Text="MakeMSIX Pre: MSBuildProjectName=$(MSBuildProjectName)" Importance="low" />
+    <Message Text="MakeMSIX Pre: ProjectName=$(ProjectName)" Importance="low" />
+    <Message Text="MakeMSIX Pre: TargetName=$(TargetName)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputs=@(MakeMsixInputs)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputsWithLocations=@(MakeMsixInputsWithLocations)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixInputAssets=@(MakeMsixInputAssets)" Importance="low" />
+    <Message Text="MakeMSIX Pre: MakeMsixOutputFilename=$(MakeMsixOutputFilename)" Importance="low" />
+
+    <!-- Ensure MakeMsixOutputFilename is defined (defining it here if necessary, as per Microsoft.Cpp.Default.props line ~189) -->
+    <PropertyGroup>
+      <MakeMsixOutputFilename Condition="'$(MakeMsixOutputFilename)' == ''">$(ProjectName).msix</MakeMsixOutputFilename>
+    </PropertyGroup>
+    <Message Text="MakeMSIX: TargetName=$(MakeMsixOutputFilename)" Importance="low" />
+    <Message Text="MakeMSIX: OutDir=$(OutDir)" Importance="low" />
+
+    <PropertyGroup>
+      <_MakeMsix_WorkDir>$(OutDir)msix</_MakeMsix_WorkDir>
+      <_MakeMsix_OutDir>$(OutDir)</_MakeMsix_OutDir>
+      <_MakeMsix_OutFilename>$(_MakeMsix_OutDir)$(MakeMsixOutputFilename)</_MakeMsix_OutFilename>
+      <MakeMsixOutputFilename>$(_MakeMsix_OutFilename)</MakeMsixOutputFilename>
+      <_MakeMsix_Executable>makeappx.exe</_MakeMsix_Executable>
+      <_MakeMsix_Parameters>/o /h SHA256</_MakeMsix_Parameters>
+      <_MakeMsixCommand>$(_MakeMsix_Executable) pack $(_MakeMsix_Parameters) $(_MakeMsix_Options) /d $(_MakeMsix_WorkDir) /p $(_MakeMsix_OutFilename)</_MakeMsixCommand>
+    </PropertyGroup>
+    <Message Text="MakeMSIX: _MakeMsix_WorkDir=$(_MakeMsix_WorkDir)" Importance="low" />
+    <Message Text="MakeMSIX: _MakeMsix_OutDir=$(_MakeMsix_OutDir)" Importance="low" />
+    <Message Text="MakeMSIX: _MakeMsix_OutFilename=$(_MakeMsix_OutFilename)" Importance="low" />
+    <MakeDir Directories="$(_MakeMsix_WorkDir)" Condition="!Exists('$(_MakeMsix_WorkDir)')" />
+
+    <Message Text="MakeMSIX: Copy @(MakeMsixInputs) to $(_MakeMsix_WorkDir)" Importance="low" />
+    <Copy SourceFiles="@(MakeMsixInputs)" DestinationFolder="$(_MakeMsix_WorkDir)" SkipUnchangedFiles="true" />
+
+    <Message Text="MakeMSIX: Copy @(MakeMsixInputsWithLocations) to @(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')" Importance="low" />
+    <Copy SourceFiles="@(MakeMsixInputsWithLocations)"
+          DestinationFiles="@(MakeMsixInputsWithLocations->'$(_MakeMsix_WorkDir)\%(TargetFile)')"
+          SkipUnchangedFiles="true" />
+
+    <Message Text="MakeMSIX: Copy @(MakeMsixInputAssets) to $(_MakeMsix_WorkDir)\Assets" Importance="low" Condition="'@(MakeMsixInputAssets)' != ''"/>
+    <MakeDir Directories="$(_MakeMsix_WorkDir)\Assets" Condition="'@(MakeMsixInputAssets)' != '' and !Exists('$(_MakeMsix_WorkDir)\Assets')" />
+    <Copy SourceFiles="@(MakeMsixInputAssets)" DestinationFolder="$(_MakeMsix_WorkDir)\Assets" SkipUnchangedFiles="true" Condition="'@(MakeMsixInputAssets)' != ''"/>
+
+    <Message Text="MakeMSIX: Command: $(_MakeMsixCommand)" Importance="normal" />
+    <Exec Command="$(_MakeMsixCommand)" />
+
+    <!-- Sign the MSIX -->
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePFX)')" Text="$(RepoTestCertificatePFX) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
+    <Error Condition="('$(MakeMsixSigned)' == 'true') and !Exists('$(RepoTestCertificatePWD)')" Text="$(RepoTestCertificatePWD) not found. Run '$(RepoRoot)\tools\DevCheck.cmd' to generate the test certificate." />
+    <PropertyGroup Condition="'$(MakeMsixSigned)' == 'true'">
+      <_SignMsix_Executable>signtool.exe</_SignMsix_Executable>
+      <_SignMsix_Parameters>/fd SHA256</_SignMsix_Parameters>
+      <_SignMsixCommand>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(RepoTestCertificatePFX)" /p "$(RepoTestCertificatePassword)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand>
+      <_SignMsixCommand_Redacted>$(_SignMsix_Executable) sign $(_SignMsix_Parameters) $(_SignMsix_Options) /f "$(RepoTestCertificatePFX)" /p "$(RepoTestCertificatePasswordRedacted)" "$(_MakeMsix_OutFilename)"</_SignMsixCommand_Redacted>
+    </PropertyGroup>
+    <Message Text="MakeMSIX: Sign: $(_SignMsixCommand_Redacted)" Importance="normal" Condition="'$(MakeMsixSigned)' == 'true'" />
+    <Exec Command="$(_SignMsixCommand)" Condition="'$(MakeMsixSigned)' == 'true'"/>
+  </Target>
+</Project>
