@@ -192,7 +192,8 @@ int main()
     std::wcout << L"Press enter to exit the app." << std::endl << std::endl;
     std::cin.ignore();
 
-    toastNotificationManager.UnregisterActivator();
+    // If you want to stop receiving ToastNotifications for the app
+    /* toastNotificationManager.UnregisterActivator(); */
     if (!isPackaged)
     {
         MddBootstrapShutdown();
