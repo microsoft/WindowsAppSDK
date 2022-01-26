@@ -5,6 +5,7 @@
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
+#include <MddBootstrap.h>
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
@@ -106,6 +107,13 @@ int main()
 {
     // Retrieve the app scenario.
     bool isPackaged{ Test::AppModel::IsPackagedProcess() };
+    if (!isPackaged)
+    {
+        // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
+        const UINT32 c_Version_MajorMinor{ 0x00040001 };
+        const PACKAGE_VERSION minVersion{};
+        RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+    }
 
     std::wcout << L"--------------------------------" << std::endl;
     std::wcout << L"- Toast Notifications Demo App -" << std::endl;
@@ -183,5 +191,11 @@ int main()
 
     std::wcout << L"Press enter to exit the app." << std::endl << std::endl;
     std::cin.ignore();
+
+    toastNotificationManager.UnregisterActivator();
+    if (!isPackaged)
+    {
+        MddBootstrapShutdown();
+    }
     return 0;
 }
