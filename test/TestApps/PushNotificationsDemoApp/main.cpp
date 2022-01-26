@@ -15,6 +15,7 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
 
+// irrelevant change
 winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
 {
     // To obtain an AAD RemoteIdentifier for your app,
