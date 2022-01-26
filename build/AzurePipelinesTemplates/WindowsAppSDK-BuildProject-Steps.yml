@@ -7,7 +7,7 @@ parameters:
   enableLicenseInstall: false
   # license installation assets are only accessible in internal builds, but are only
   # needed in release-signed stable builds. Only enble this functionality in the private
-  # pipeline builds. Otherwise, defautl to an inert placeholder implementation.
+  # pipeline builds. Otherwise, default to an inert placeholder implementation.
 
 
 steps:
