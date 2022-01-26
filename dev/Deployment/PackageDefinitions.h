@@ -34,7 +34,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     };
 
     // All supported SubTypeNames.
-    static PackageIdentifier c_subTypeNames[] =
+    static const PackageIdentifier c_subTypeNames[] =
     {
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },
@@ -42,7 +42,7 @@ namespace winrt::Microsoft::Windows::ApplicationModel::WindowsAppRuntime::implem
     };
 
     // All packages that the DeploymentAPI will attempt check and deploy from the framework.
-    static PackageIdentifier c_targetPackages[] =
+    static const PackageIdentifier c_targetPackages[] =
     {
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_MAINPREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_MAIN, PackageVersionType::Versioned },
         { WINDOWSAPPRUNTIME_PACKAGE_NAME_PREFIX, WINDOWSAPPRUNTIME_PACKAGE_SUBTYPENAME_SINGLETON, PackageVersionType::Unversioned },

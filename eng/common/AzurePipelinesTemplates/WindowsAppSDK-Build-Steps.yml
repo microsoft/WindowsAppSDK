@@ -66,7 +66,8 @@ steps:
         -Checkpoint "none"
         -Platform "x86,x64,arm64"
         -Configuration "release,debug"
-        -YamlStep "none"
+        -YamlStep "all"
+        -PipelineBuild
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Windows App SDK Packages'

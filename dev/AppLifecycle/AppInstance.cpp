@@ -18,6 +18,11 @@ using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
 using namespace winrt::Windows::ApplicationModel::Activation;
+using winrt::Windows::ApplicationModel::Core::AppRestartFailureReason;
+
+using namespace AppModel::Identity;
+
+using namespace std::filesystem;
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
@@ -333,6 +338,113 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         return s_current->FindForKey(key.c_str());
     }
 
+    std::wstring AppInstance::GenerateRestartAgentPath()
+    {
+        // Calculate the path to the restart agent as being in the same directory as the current module.
+        wil::unique_hmodule module;
+        THROW_IF_WIN32_BOOL_FALSE(GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<PCWSTR>(AppInstance::GenerateRestartAgentPath), &module));
+
+        path modulePath = wil::GetModuleFileNameW<std::wstring>(module.get());
+        return modulePath.parent_path() / c_restartAgentFilename;
+    }
+
+    AppRestartFailureReason AppInstance::Restart(hstring const& arguments)
+    {
+        // Report feature usage.
+        static bool featureUsageReported{ false };
+        if (!featureUsageReported)
+        {
+            AppLifecycleTelemetry::Restart();
+            featureUsageReported = true;
+        }
+
+        // If a better way of detecting UWP is created in the future, this check should change.
+        if (IsPackagedProcess() && wil::get_token_is_app_container())
+        {
+            // For UWP, redirect to the already existing API.  
+            return winrt::Windows::ApplicationModel::Core::CoreApplication::RequestRestartAsync(arguments).get();
+        }
+
+        // Remaining scenarios that flow through this code should be only be win32 (including Desktop Bridge which is packaged).
+
+        // Only one restart can happen at a time.
+        auto mutexName = wil::str_printf<std::wstring>(L"%s_RequestRestartNowInProgress", ComputeAppId().c_str());
+        wil::unique_mutex restartMutex;
+
+        restartMutex.create(mutexName.c_str(), CREATE_MUTEX_INITIAL_OWNER, MUTEX_ALL_ACCESS);
+        if (GetLastError() == ERROR_ALREADY_EXISTS)
+        {
+            return AppRestartFailureReason::RestartPending;
+        }
+
+        auto releaseOnExit{ restartMutex.ReleaseMutex_scope_exit() };
+
+        // Use DuplicateHandle to get a real handle from the pseudo-handle returned by GetCurrentProcess().  A real handle
+        // is required in order for it to be inherited 
+        wil::unique_handle parentHandle;
+        THROW_IF_WIN32_BOOL_FALSE(DuplicateHandle(GetCurrentProcess(), GetCurrentProcess(), GetCurrentProcess(), wil::out_param(parentHandle), 
+            PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE | PROCESS_TERMINATE, TRUE, 0));
+
+        auto exePath = GenerateRestartAgentPath();
+
+        // c:\currentdirectory\restartagent.exe <inherited handle id of calling process> <custom arguments passed by caller>
+        auto cmdLine = wil::str_printf<wil::unique_cotaskmem_string>(L"\"%s\" %d %s", exePath.c_str(), parentHandle.get(), arguments.c_str());
+
+        SIZE_T attributeListSize{ 0 };
+        auto attributeCount{ 1 };
+
+        if (IsPackagedProcess())
+        {
+            // Packaged scenarios have an additional attribute.
+            attributeCount++;
+        }
+
+        THROW_HR_IF(E_UNEXPECTED, InitializeProcThreadAttributeList(nullptr, attributeCount, 0, &attributeListSize));
+        THROW_LAST_ERROR_IF(GetLastError() != ERROR_INSUFFICIENT_BUFFER);
+
+        wil::unique_process_heap_ptr<_PROC_THREAD_ATTRIBUTE_LIST> attributeList(reinterpret_cast<PPROC_THREAD_ATTRIBUTE_LIST> (HeapAlloc(GetProcessHeap(), 0, attributeListSize)));
+        THROW_IF_NULL_ALLOC(attributeList);
+
+        THROW_IF_WIN32_BOOL_FALSE(InitializeProcThreadAttributeList(attributeList.get(), attributeCount, 0, &attributeListSize));
+        auto freeAttributeList = wil::scope_exit([&] { DeleteProcThreadAttributeList(attributeList.get()); });
+
+        // Launch the restart agent and explicitly inherit the current process' handle to it.  This allows the restart agent to
+        // sniff out the exact path of the caller executable in a sane way.
+        size_t handlesToInheritCount{ 1 };
+        HANDLE* handlesToInherit = reinterpret_cast<HANDLE*>(parentHandle.addressof());
+        THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST, handlesToInherit, 
+            handlesToInheritCount * sizeof(HANDLE), nullptr, nullptr));
+
+        if (IsPackagedProcess())
+        {
+            // Desktop Bridge applications by default have their child processes break away from the parent process.  In order to recreate the calling process'
+            // environment correctly, this code must prevent child breakaway semantics when calling the agent.  Additionally the agent must do the same when
+            // restarting the caller.
+            DWORD policy = PROCESS_CREATION_DESKTOP_APP_BREAKAWAY_OVERRIDE;
+            THROW_IF_WIN32_BOOL_FALSE(UpdateProcThreadAttribute(attributeList.get(), 0, PROC_THREAD_ATTRIBUTE_DESKTOP_APP_POLICY, &policy, sizeof(policy), nullptr, nullptr));
+        }
+
+        STARTUPINFOEX info{};
+        info.StartupInfo.cb = sizeof(info);
+        info.lpAttributeList = attributeList.get();
+        
+        wil::unique_process_information processInfo;
+        THROW_IF_WIN32_BOOL_FALSE(CreateProcess(exePath.c_str(), cmdLine.get(), nullptr, nullptr, TRUE, CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+            &info.StartupInfo, &processInfo));
+
+        // Transfer foreground rights to the new process before resuming it.
+        AllowSetForegroundWindow(processInfo.dwProcessId);
+        ResumeThread(processInfo.hThread);
+
+        // This API is designed to only return to the caller on failure, otherwise block until process termination.
+        // Wait for the agent to exit.  If the agent succeeds, it will terminate this process.  If the agent fails,
+        // it can exit or crash.  This API will be able to detect the failure and return.
+        wil::handle_wait(processInfo.hProcess);
+
+        // We should never reach here if the API succeeds, as the agent should have terminated the current process.
+        return AppRestartFailureReason::Other;
+    }
+
     void AppInstance::UnregisterKey()
     {
         auto releaseOnExit = m_dataMutex.acquire();
@@ -357,7 +469,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         }
 
         // For packaged, try to get platform args first.
-        if (HasIdentity())
+        if (IsPackagedProcess())
         {
             if (auto args = winrt::Windows::ApplicationModel::AppInstance::GetActivatedEventArgs())
             {
