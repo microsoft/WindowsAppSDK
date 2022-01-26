@@ -71,6 +71,7 @@ jobs:
         $xslt.Load('build\TransformAppxManifest.xslt');
         $xslt.Transform($fullpackagePath+'\AppxManifest.xml', $manifestPath+'\Microsoft.WindowsAppSdk.Foundation.manifest');
 
+        #uap10
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.AppLifecycle.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.WindowsAppSDK.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppSDK.xml"
@@ -81,20 +82,34 @@ jobs:
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.Xaml.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.UI.Xaml.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Foundation.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Foundation.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Graphics.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Graphics.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.Resources.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.Resources.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.xml" -Destination "$fullpackagePath\lib\uap10.0\Microsoft.Windows.ApplicationModel.WindowsAppRuntime.xml"
 
+        #uap10.0.17763
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\lib\uap10.0.17763\Microsoft.UI.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\lib\uap10.0.18362\Microsoft.UI.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\sdk\lib\uap10.0.17763\Microsoft.UI.xml"
-        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\sdk\lib\uap10.0.18362\Microsoft.UI.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Foundation.xml" -Destination "$fullpackagePath\lib\uap10.0.17763\Microsoft.Foundation.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Graphics.xml" -Destination "$fullpackagePath\lib\uap10.0.17763\Microsoft.Graphics.xml"
 
+        #uap10.0.18362
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\lib\uap10.0.18362\Microsoft.UI.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Foundation.xml" -Destination "$fullpackagePath\lib\uap10.0.18362\Microsoft.Foundation.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Graphics.xml" -Destination "$fullpackagePath\lib\uap10.0.18362\Microsoft.Graphics.xml"
+
+        #net5.0-windows10.0.17763
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.AppLifecycle.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.AppLifecycle.Projection.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.System.Power.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.System.Power.Projection.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.DynamicDependency.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.DynamicDependency.Projection.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.WindowsAppSDK.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.WindowsAppSDK.Projection.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.WinUI.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.WinUI.xml"
-
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.InteractiveExperiences.Projection.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.InteractiveExperiences.Projection.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.Windows.ApplicationModel.Resources.Projection.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.17763.0\Microsoft.Windows.ApplicationModel.Resources.Projection.xml"
+
+        #net5.0-windows10.0.18362
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.InteractiveExperiences.Projection.xml" -Destination "$fullpackagePath\lib\net5.0-windows10.0.18362.0\Microsoft.InteractiveExperiences.Projection.xml"
+
+        #various sdk
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\sdk\lib\uap10.0.17763\Microsoft.UI.xml"
+        Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.UI.xml" -Destination "$fullpackagePath\sdk\lib\uap10.0.18362\Microsoft.UI.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.InteractiveExperiences.Projection.xml" -Destination "$fullpackagePath\sdk\lib\net5.0-windows10.0.17763.0\Microsoft.InteractiveExperiences.Projection.xml"
         Copy-Item -Path "$targetsFilePath\Intellisense\Microsoft.InteractiveExperiences.Projection.xml" -Destination "$fullpackagePath\sdk\lib\net5.0-windows10.0.18362.0\Microsoft.InteractiveExperiences.Projection.xml"
   
