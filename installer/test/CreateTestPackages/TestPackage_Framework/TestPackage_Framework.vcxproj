@@ -85,6 +85,7 @@
       <TargetFile>appxmanifest.xml</TargetFile>
     </MakeMsixInputsWithLocations>
     <MakeMsixInputs Include="$(MSBuildThisFileDirectory)logo.png" />
+    <MakeMsixInputs Include="$(MSBuildThisFileDirectory)main_license.xml" />
   </ItemGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>$(RepoTestCertificatePFX)</PackageCertificateKeyFile>
@@ -95,6 +96,7 @@
     <Xml Include="appxmanifest-x86.xml" />
     <Xml Include="appxmanifest-x64.xml" />
     <Xml Include="appxmanifest-arm64.xml" />
+    <Xml Include="main_license.xml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.png" />

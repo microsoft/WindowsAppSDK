@@ -102,6 +102,7 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -166,6 +167,7 @@ jobs:
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries to Nuget for staging'
