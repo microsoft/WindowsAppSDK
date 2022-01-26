@@ -51,6 +51,7 @@ namespace Test::ToastNotifications
             {
                 // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
                 TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppRuntimeFramework();
@@ -58,6 +59,7 @@ namespace Test::ToastNotifications
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
+                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs ToastNotificationsTestApp.msix
             }
             catch (...)
@@ -76,6 +78,7 @@ namespace Test::ToastNotifications
             {
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
                 TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppRuntimeFramework();
