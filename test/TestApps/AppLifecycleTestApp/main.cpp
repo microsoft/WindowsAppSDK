@@ -4,6 +4,9 @@
 #include <testdef.h>
 #include "Helpers.h"
 #include "SingleInstanceTest.h"
+#include "RequestRestartTest.h"
+
+using namespace AppModel::Identity;
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt;
@@ -38,6 +41,13 @@ bool ProtocolLaunchSucceeded(const AppActivationArguments& appArgs)
     if ((actualTestName.compare(L"SingleInstanceTest_Win32") == 0 || actualTestName.compare(L"SingleInstanceTest_PackagedWin32") == 0) &&
         SingleInstanceTestSucceeded(appArgs))
     {
+        return true;
+    }
+
+    if ((actualTestName.compare(L"RequestRestart_Win32") == 0 || actualTestName.compare(L"RequestRestart_PackagedWin32") == 0) &&
+        RunRequestRestartTestSucceeded(appArgs))
+    {
+        // N.B. This test is actually terminated by the new process spawned by RunRequestRestartTestSucceeded().  So we don't make it to this code.
         return true;
     }
 
@@ -123,6 +133,19 @@ int main()
 
                 // Signal event that file was unregistered.
                 SignalPhase(c_testStartupPhaseEventName);
+                succeeded = true;
+            }
+            else if (argument.compare(L"RequestRestartNowCalled") == 0)
+            {
+                if (IsPackagedProcess())
+                {
+                    SignalPhase(c_testRequestRestartNowRestartedPhasePackagedEventName);
+                }
+                else
+                {
+                    SignalPhase(c_testRequestRestartNowRestartedPhaseEventName);
+                }
+
                 succeeded = true;
             }
         }
