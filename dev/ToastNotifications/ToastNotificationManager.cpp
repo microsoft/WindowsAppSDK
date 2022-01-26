@@ -117,10 +117,10 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties
             = winrt::make_self<NotificationTransientProperties>(toast);
 
-        auto toastAppId{ RetrieveUnpackagedAppId() };
+        auto toastAppId{ RetrieveAppId() };
 
         DWORD notificationId = 0;
-        ToastNotifications_PostToast(toastAppId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId);
+        THROW_IF_FAILED(ToastNotifications_PostToast(toastAppId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
         toast.ToastId(notificationId);
     }
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData /* data */, hstring /* tag */, hstring /* group */)
