@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Microsoft.UI.Text</name>
+  </assembly>
+  <members>
+    <member name="T:Microsoft.UI.Text.FontWeights">
+      <summary>Provides a set of predefined font weights as static property values.</summary>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.Black">
+      <summary>Specifies a font weight value of 900.</summary>
+      <returns>A FontWeight with a Weight value of 900.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.Bold">
+      <summary>Specifies a font weight value of 700.</summary>
+      <returns>A FontWeight with a Weight value of 700.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.ExtraBlack">
+      <summary>Specifies a font weight value of 950.</summary>
+      <returns>A FontWeight with a Weight value of 950.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.ExtraBold">
+      <summary>Specifies a font weight value of 800.</summary>
+      <returns>A FontWeight with a Weight value of 800.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.ExtraLight">
+      <summary>Specifies a font weight value of 200.</summary>
+      <returns>A FontWeight with a Weight value of 200.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.Light">
+      <summary>Specifies a font weight value of 300.</summary>
+      <returns>A FontWeight with a Weight value of 300.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.Medium">
+      <summary>Specifies a font weight value of 500.</summary>
+      <returns>A FontWeight with a Weight value of 500.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.Normal">
+      <summary>Specifies a font weight value of 400.</summary>
+      <returns>A FontWeight with a Weight value of 400.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.SemiBold">
+      <summary>Specifies a font weight value of 600.</summary>
+      <returns>A FontWeight with a Weight value of 600.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.SemiLight">
+      <summary>Specifies a font weight value of 350.</summary>
+      <returns>A FontWeight with a Weight value of 350.</returns>
+    </member>
+    <member name="P:Microsoft.UI.Text.FontWeights.Thin">
+      <summary>Specifies a font weight value of 100.</summary>
+      <returns>A FontWeight with a Weight value of 100.</returns>
+    </member>
+  </members>
+
+</doc>
+
