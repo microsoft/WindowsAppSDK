@@ -150,6 +150,14 @@ jobs:
     publishDir : $(Build.ArtifactStagingDirectory)
     artifactName: 'windowsappsdk_binaries'
   steps:
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
