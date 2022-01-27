@@ -34,7 +34,5 @@
     <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.appx" />
     <CopyFileToFolders Include="$(TargetDir)..\AccessControlTestApp\AccessControlTestApp.exe" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
-    <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>

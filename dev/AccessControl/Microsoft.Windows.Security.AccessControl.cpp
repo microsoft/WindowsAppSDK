@@ -6,7 +6,9 @@
 
 namespace winrt::Microsoft::Windows::Security::AccessControl::implementation
 {
-    wil::unique_hlocal_security_descriptor GetSecurityDescriptor(array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests, hstring const& principalStringSid, uint32_t principalAccessMask, DWORD* sdLength)
+    wil::unique_hlocal_security_descriptor GetSecurityDescriptor(
+        array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests,
+        hstring const& principalStringSid, uint32_t principalAccessMask, uint32_t* sdLength)
     {
         wil::unique_any_psid sid;
         if (!principalStringSid.empty())
@@ -42,7 +44,7 @@ namespace winrt::Microsoft::Windows::Security::AccessControl::implementation
 
     com_array<uint8_t> SecurityDescriptorHelpers::GetSecurityDescriptorBytesFromAppContainerNames(array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests, hstring const& principalStringSid, uint32_t principalAccessMask)
     {
-        DWORD sdLength = 0;
+        uint32_t sdLength = 0;
         auto sd = GetSecurityDescriptor(accessRequests, principalStringSid, principalAccessMask, &sdLength);
         auto begin = static_cast<uint8_t*>(sd.get());
         return { begin, begin + sdLength };

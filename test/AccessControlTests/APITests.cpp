@@ -67,7 +67,7 @@ namespace Test::AccessControl
             {
                 ::Test::Packages::RemovePackage(GetTestPackageFamilyName());
                 ::Test::Bootstrap::Setup();
-                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+                ::Test::Packages::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs AccessControlTests.msix
             }
             catch (...)
             {
