@@ -30,7 +30,9 @@ namespace winrt::Microsoft::Windows::Security::AccessControl::implementation
         return sd;
     }
 
-    hstring SecurityDescriptorHelpers::GetSddlForAppContainerNames(array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests, hstring const& principalStringSid, uint32_t principalAccessMask)
+    hstring SecurityDescriptorHelpers::GetSddlForAppContainerNames(
+        array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests,
+        hstring const& principalStringSid, uint32_t principalAccessMask)
     {
         auto sd = GetSecurityDescriptor(accessRequests, principalStringSid, principalAccessMask, nullptr);
 
@@ -38,11 +40,15 @@ namespace winrt::Microsoft::Windows::Security::AccessControl::implementation
         DWORD resultLen = 0;
         winrt::check_bool(
             ::ConvertSecurityDescriptorToStringSecurityDescriptorW(
-                sd.get(), SDDL_REVISION_1, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION, &resultStr, &resultLen));
+                sd.get(), SDDL_REVISION_1,
+                OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION,
+                &resultStr, &resultLen));
         return { resultStr.get(), resultLen };
     }
 
-    com_array<uint8_t> SecurityDescriptorHelpers::GetSecurityDescriptorBytesFromAppContainerNames(array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests, hstring const& principalStringSid, uint32_t principalAccessMask)
+    com_array<uint8_t> SecurityDescriptorHelpers::GetSecurityDescriptorBytesFromAppContainerNames(
+        array_view<winrt::Microsoft::Windows::Security::AccessControl::AppContainerNameAndAccess const> accessRequests,
+        hstring const& principalStringSid, uint32_t principalAccessMask)
     {
         uint32_t sdLength = 0;
         auto sd = GetSecurityDescriptor(accessRequests, principalStringSid, principalAccessMask, &sdLength);
