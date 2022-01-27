@@ -67,6 +67,7 @@
     <None Include="BlankApp\Properties\PublishProfiles\WinX64.pubxml" />
     <None Include="BlankApp\Properties\PublishProfiles\WinX86.pubxml" />
     <None Include="BlankApp\ProjectTemplate.csproj" />
+    <None Include="BlankApp\NativeMethods.txt" />
     <None Include="WapProj\WapProjTemplate.wapproj" />
   </ItemGroup>
 </Project>

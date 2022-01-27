@@ -72,6 +72,10 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="[$(WindowsSDKBuildToolsVersion)]" GeneratePathProperty="true">
       <ExcludeAssets>All</ExcludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="[$(CsWin32Version)]" GeneratePathProperty="true">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(ItemTemplatesDir)Desktop\CSharp\BlankWindow\WinUI.Desktop.Cs.BlankWindow.csproj">

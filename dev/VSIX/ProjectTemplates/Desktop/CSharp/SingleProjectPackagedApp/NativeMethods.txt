@@ -1,0 +1,4 @@
+GetDpiForWindow
+SetWindowPos
+HWND_TOP
+SET_WINDOW_POS_FLAGS

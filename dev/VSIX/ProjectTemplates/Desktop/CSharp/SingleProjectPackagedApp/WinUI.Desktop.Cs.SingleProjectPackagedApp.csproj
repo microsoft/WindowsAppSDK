@@ -70,6 +70,7 @@
     </Content>
     <Content Include="App.xaml.cs" />
     <Content Include="MainWindow.xaml.cs" />
+    <Content Include="NativeMethods.txt" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
     <Content Include="Assets\Square150x150Logo.scale-200.png" />

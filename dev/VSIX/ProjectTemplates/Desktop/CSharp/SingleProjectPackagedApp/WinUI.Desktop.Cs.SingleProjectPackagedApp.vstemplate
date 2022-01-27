@@ -29,6 +29,7 @@
     <CustomParameters>
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
+      <CustomParameter Name="$CsWin32Version$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
     </CustomParameters>
     <Project File="ProjectTemplate.csproj" ReplaceParameters="true">
@@ -42,6 +43,7 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml">MainWindow.xaml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cs">MainWindow.xaml.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="Package.appxmanifest">Package-managed.appxmanifest</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="NativeMethods.txt">NativeMethods.txt</ProjectItem>
       <Folder Name="Assets" TargetFolderName="Assets">
         <ProjectItem ReplaceParameters="false" TargetFileName="SplashScreen.scale-200.png">SplashScreen.scale-200.png</ProjectItem>
         <ProjectItem ReplaceParameters="false" TargetFileName="LockScreenLogo.scale-200.png">LockScreenLogo.scale-200.png</ProjectItem>

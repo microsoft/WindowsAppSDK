@@ -30,6 +30,7 @@
       <CustomParameter Name="$WindowsAppSDKNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$WindowsSDKBuildToolsNupkgVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
       <CustomParameter Name="$DotNetVersion$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries"/>
+      <CustomParameter Name="$CsWin32Version$" Value="FIXME-Verify-Directory.Build.Targets-XmlPoke-Queries" />
     </CustomParameters>
     <ProjectCollection>
       <ProjectTemplateLink ProjectName="$projectname$ (Package)" CopyParameters="true">WapProj\WinUI.Desktop.Cs.WapProj.vstemplate</ProjectTemplateLink>

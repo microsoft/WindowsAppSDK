@@ -249,6 +249,9 @@
     <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.ImplementationLibrary']/@version">
         <xsl:attribute name="version">$(WILVersion)</xsl:attribute>
     </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:packages/ns:package[@id='Microsoft.Windows.CsWin32']/@version">
+        <xsl:attribute name="version">$(CsWin32Version)</xsl:attribute>
+    </xsl:template>
 
     <!-- Update Assets section with actual Nuget package filenames -->
     <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CppWinRT.nupkg']/@Path">
@@ -263,6 +266,9 @@
     <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.ImplementationLibrary.nupkg']/@Path">
         <xsl:attribute name="Path">Microsoft.Windows.ImplementationLibrary.$(WILVersion).nupkg</xsl:attribute>
     </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:WizardData/ns:Assets/ns:Asset[@Type='Microsoft.Windows.CsWin32.nupkg']/@Path">
+        <xsl:attribute name="Path">Microsoft.Windows.CsWin32.$(CsWin32Version).nupkg</xsl:attribute>
+    </xsl:template>
 
     <!-- Update custom parameters passed into subtemplates -->
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CppWinRTVersion$']/@Value">
@@ -276,6 +282,9 @@
     </xsl:template>
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$WILVersion$']/@Value">
         <xsl:attribute name="Value">$(WILVersion)</xsl:attribute>
+    </xsl:template>
+    <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$CsWin32Version$']/@Value">
+        <xsl:attribute name="Value">$(CsWin32Version)</xsl:attribute>
     </xsl:template>
     <xsl:template match="/ns:VSTemplate/ns:TemplateContent/ns:CustomParameters/ns:CustomParameter[@Name='$DotNetVersion$']/@Value">
         <xsl:attribute name="Value">$(DotNetVersion)</xsl:attribute>

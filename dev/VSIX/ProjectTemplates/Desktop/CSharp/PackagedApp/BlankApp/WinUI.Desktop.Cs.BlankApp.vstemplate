@@ -36,6 +36,7 @@
       <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml">MainWindow.xaml</ProjectItem>
       <ProjectItem ReplaceParameters="true" TargetFileName="MainWindow.xaml.cs">MainWindow.xaml.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="NativeMethods.txt">NativeMethods.txt</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>
