@@ -66,6 +66,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework.Math.Multiply", "test\DynamicDependency\data\Framework.Math.Multiply\Framework.Math.Multiply.vcxproj", "{66D0D8B1-FAF4-4C6A-8303-07F3BA356FE3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Microsoft.WindowsAppRuntime.Framework", "test\DynamicDependency\data\Microsoft.WindowsAppRuntime.Framework\Microsoft.WindowsAppRuntime.Framework.vcxproj", "{9C1A6C58-52D6-4514-9120-5C339C5DF4BE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778} = {BC5E5A3E-E733-4388-8B00-F8495DA7C778}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicDependencyDataStore", "DynamicDependencyDataStore", "{441A3BB0-7FD2-4902-AEDB-A1C57B528C77}"
 EndProject
@@ -210,6 +213,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowsAppRuntime.Test.Singleton.Msix", "test\DynamicDependency\data\WindowsAppRuntime.Test.Singleton.Msix\WindowsAppRuntime.Test.Singleton.Msix.vcxproj", "{8F2C21F1-47AB-428C-A110-EE33FD7D9493}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeploymentTests", "test\Deployment\DeploymentTests.vcxproj", "{E5659A29-FE68-417B-9BC5-613073DD54DF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnvironmentManagerTests", "test\EnvironmentManagerTests\EnvironmentManagerTests.vcxproj", "{2CD5CD9B-CF45-4FA7-9769-EE4E02426BF0}"
 EndProject
@@ -273,6 +279,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationsTestApp",
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "ToastNotificationsTestAppPackage", "test\TestApps\ToastNotificationsTestAppPackage\ToastNotificationsTestAppPackage.wapproj", "{D6A64926-4988-4C64-A5A8-2C14B1388696}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RestartAgent", "dev\RestartAgent\RestartAgent.vcxproj", "{BC5E5A3E-E733-4388-8B00-F8495DA7C778}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B73AD907-6164-4294-88FB-F3C9C10DA1F1} = {B73AD907-6164-4294-88FB-F3C9C10DA1F1}
+		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Licensing", "Licensing", "{34671779-4A4D-4D0E-B259-CD0F14D4F6D4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Licensing", "dev\Licensing\Licensing.vcxitems", "{885A43FA-052D-4B0D-A2DC-13EE15796435}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\inc\inc.vcxitems*{0a5fee93-48b7-40ec-bb9a-b27d11060da9}*SharedItemsImports = 4
@@ -285,10 +301,12 @@ Global
 		test\inc\inc.vcxitems*{56a1d696-feda-4333-bf37-772ebececb10}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{5b2d17fe-c371-417f-860c-3d32397c2404}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{7c502995-59c3-483b-86ba-815985353633}*SharedItemsImports = 4
+		dev\Licensing\Licensing.vcxitems*{885a43fa-052d-4b0d-a2dc-13ee15796435}*SharedItemsImports = 9
 		test\inc\inc.vcxitems*{8e52d7ea-a200-4a6b-ba74-8efb49468caf}*SharedItemsImports = 4
 		test\inc\inc.vcxitems*{b567fe2e-3a03-48d0-b2b5-760cdec35891}*SharedItemsImports = 9
 		dev\Common\Common.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\DynamicDependency\API\DynamicDependency.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
+		dev\Licensing\Licensing.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\UndockedRegFreeWinRT\UndockedRegFreeWinRT.vcxitems*{b73ad907-6164-4294-88fb-f3c9c10da1f1}*SharedItemsImports = 4
 		dev\PowerNotifications\PowerNotifications.vcxitems*{b75c1b22-553c-40e4-b38e-6ab4d01fdb9d}*SharedItemsImports = 9
@@ -1151,6 +1169,21 @@ Global
 		{D6A64926-4988-4C64-A5A8-2C14B1388696}.Release|x86.ActiveCfg = Release|x86
 		{D6A64926-4988-4C64-A5A8-2C14B1388696}.Release|x86.Build.0 = Release|x86
 		{D6A64926-4988-4C64-A5A8-2C14B1388696}.Release|x86.Deploy.0 = Release|x86
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|ARM.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x64.ActiveCfg = Debug|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x64.Build.0 = Debug|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x86.ActiveCfg = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Debug|x86.Build.0 = Debug|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|Any CPU.ActiveCfg = Release|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|ARM.ActiveCfg = Release|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|ARM64.ActiveCfg = Release|ARM64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|ARM64.Build.0 = Release|ARM64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x64.ActiveCfg = Release|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x64.Build.0 = Release|x64
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x86.ActiveCfg = Release|Win32
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1238,6 +1271,9 @@ Global
 		{E977B1BD-00DC-4085-A105-E0A18E0183D7} = {8630F7AA-2969-4DC9-8700-9B468C1DC21D}
 		{4B30C685-8490-440F-9879-A75D45DAA361} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
 		{D6A64926-4988-4C64-A5A8-2C14B1388696} = {AC5FFC80-92FE-4933-BED2-EC5519AC4440}
+		{BC5E5A3E-E733-4388-8B00-F8495DA7C778} = {3DE93B2F-F887-437D-B512-6B1024ABA290}
+		{34671779-4A4D-4D0E-B259-CD0F14D4F6D4} = {448ED2E5-0B37-4D97-9E6B-8C10A507976A}
+		{885A43FA-052D-4B0D-A2DC-13EE15796435} = {34671779-4A4D-4D0E-B259-CD0F14D4F6D4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B3D7591-CFEC-4762-9A07-ABE99938FB77}
