@@ -16,4 +16,5 @@ EXPORTS
     MddLifetimeManagementTestInitialize
     MddGetGenerationId
 
+    MsixInstallLicenses
     GetSecurityDescriptorForAppContainerNames
