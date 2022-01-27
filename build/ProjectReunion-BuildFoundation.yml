@@ -102,6 +102,7 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -149,6 +150,14 @@ jobs:
     publishDir : $(Build.ArtifactStagingDirectory)
     artifactName: 'windowsappsdk_binaries'
   steps:
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -166,6 +175,7 @@ jobs:
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
   - task: CopyFiles@2
     displayName: 'Copy AnyCpu-built binaries to Nuget for staging'
