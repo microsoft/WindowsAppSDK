@@ -291,35 +291,34 @@ namespace Test::PushNotifications
 
         TEST_METHOD(ActivatorTest)
         {
-#if 0
             try
             {
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
-//                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
-//                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
-//                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
-//                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
+                TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
+                TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
+                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
+                TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs PushNotificationsTestApp.msix
             }
             catch (...)
             {
-//                VERIFY_FAIL();
+                VERIFY_FAIL();
             }
 
             m_testAppLauncher = winrt::create_instance<IApplicationActivationManager>(CLSID_ApplicationActivationManager, CLSCTX_ALL);
+
+#if 0  
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 #endif
+            RunTest(L"ActivatorTest", testWaitTime());
 #if 0
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
-
-            RunTest(L"ActivatorTest", testWaitTime());
-
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
-            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
-
+#endif
             m_processHandle.reset();
 
             try
@@ -335,7 +334,6 @@ namespace Test::PushNotifications
             {
                 VERIFY_FAIL();
             }
-#endif
         }
 
         TEST_METHOD(ActivatorTest_Unpackaged)
