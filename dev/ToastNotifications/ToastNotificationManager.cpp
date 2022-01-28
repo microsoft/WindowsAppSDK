@@ -6,8 +6,10 @@
 #include <winrt/base.h>
 #include "ToastActivationCallback.h"
 #include "externs.h"
+#include "PushNotificationUtility.h"
 #include "ToastNotificationUtility.h"
 #include <frameworkudk/pushnotifications.h>
+#include <frameworkudk/toastnotifications.h>
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
@@ -21,6 +23,11 @@ namespace winrt
     using namespace winrt::Windows::UI;
     using namespace winrt::Windows::Foundation;
     using namespace Windows::ApplicationModel::Core;
+}
+
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
 namespace winrt::Microsoft::Windows::ToastNotifications::implementation
@@ -40,11 +47,22 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         THROW_HR_IF_NULL(E_INVALIDARG, details);
 
         std::wstring storedComActivatorString;
-        if (!AppModel::Identity::IsPackagedProcess())
+        if (!PushNotificationHelpers::IsPackagedAppScenario())
         {
-            storedComActivatorString = RegisterComActivatorGuidAndAssets(details);
-            // Remove braces around the guid string
-            storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
+            std::wstring toastAppId{ RetrieveToastAppId() };
+            if (!AppModel::Identity::IsPackagedProcess())
+            {
+                THROW_IF_FAILED(PushNotifications_RegisterFullTrustApplication(toastAppId.c_str(), GUID_NULL));
+
+                storedComActivatorString = RegisterComActivatorGuidAndAssets(details);
+                // Remove braces around the guid string
+                storedComActivatorString = storedComActivatorString.substr(1, storedComActivatorString.size() - 2);
+            }
+
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+            auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+            THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
         }
 
         THROW_IF_FAILED(::CoRegisterClassObject(
@@ -69,18 +87,21 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
             THROW_IF_WIN32_ERROR(GetActivatorGuid(storedComActivatorString));
 
             UnRegisterComServer(storedComActivatorString);
-            UnRegisterAppIdentifierFromRegistry();
+            UnRegisterToastAppIdentifierFromRegistry();
 
-            // TODO: Remove ToastGuid reference from LRP
+            wil::unique_cotaskmem_string processName;
+            THROW_IF_FAILED(GetCurrentProcessPath(processName));
+            auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
+            THROW_IF_FAILED(notificationPlatform->RemoveToastRegistrationMapping(processName.get()));
         }
     }
-    winrt::event_token ToastNotificationManager::ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& /* handler */)
+    winrt::event_token ToastNotificationManager::ToastActivated(winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs> const& handler)
     {
-        throw hresult_not_implemented();
+        return GetToastHandlers().add(handler);
     }
-    void ToastNotificationManager::ToastActivated(winrt::event_token const&/* token */)
+    void ToastNotificationManager::ToastActivated(winrt::event_token const& token)
     {
-        throw hresult_not_implemented();
+        GetToastHandlers().remove(token);
     }
     void ToastNotificationManager::ShowToast(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& /* toast */)
     {
@@ -96,7 +117,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting ToastNotificationManager::Setting()
     {
-        throw hresult_not_implemented();
+        std::wstring appId { RetrieveToastAppId() };
+        DWORD toastNotificationSetting{ 0 };
+        ToastNotifications_QuerySettings(appId.c_str(), &toastNotificationSetting);
+
+        return static_cast<winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting>(toastNotificationSetting);
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationHistory ToastNotificationManager::History()
     {
