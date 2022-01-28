@@ -91,9 +91,6 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("28C29657-DB85-49D2-9974-C61094CA8280"));
-    ToastNotificationManager::Default().RegisterActivator(activationInfo);
-
     ToastAssets assets(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
     auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
     ToastNotificationManager::Default().RegisterActivator(activationInfo);
