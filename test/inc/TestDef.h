@@ -17,6 +17,10 @@ static const std::wstring c_testFilePhaseEventName = L"WindowsAppRuntimeTestFile
 static const std::wstring c_testStartupPhaseEventName = L"WindowsAppRuntimeTestStartupPhaseEventName";
 static const std::wstring c_testInstanceRedirectedPhaseEventName = L"WindowsAppRuntimeTestInstanceRedirectedPhaseEventName";
 
+static const std::wstring c_testRequestRestartNowPhaseEventName = L"WindowsAppRuntimeTestRequestRestartNowPhaseEventName";
+static const std::wstring c_testRequestRestartNowRestartedPhaseEventName = L"WindowsAppRuntimeTestRequestRestartNowRestartedPhaseEventName";
+static const std::wstring c_testRequestRestartNowRestartedPhasePackagedEventName = L"WindowsAppRuntimeTestRequestRestartNowRestartedPhasePackagedEventName";
+
 static const std::wstring c_testPushPhaseEventName = L"WindowsAppRuntimeTestPushPhaseEventName";
 inline const winrt::hstring c_rawNotificationPayload = L"<toast></toast>";
 inline IID c_remoteId = winrt::guid("A7652901-313C-4EFA-A303-95C371A00DAB");

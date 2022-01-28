@@ -25,9 +25,9 @@ namespace WindowsAppRuntimeInstallerTests
 {
     static const int c_phaseTimeout = (30 * 1000); // 30 seconds
 
-    static const std::wstring c_x86FrameworkName = L"Microsoft.WindowsAppRuntime.Test.InstallFramework_1.0.0.0_x86__8wekyb3d8bbwe";
-    static const std::wstring c_x64FrameworkName = L"Microsoft.WindowsAppRuntime.Test.InstallFramework_1.0.0.0_x64__8wekyb3d8bbwe";
-    static const std::wstring c_arm64FrameworkName = L"Microsoft.WindowsAppRuntime.Test.InstallFramework_1.0.0.0_arm64__8wekyb3d8bbwe";
+    static const std::wstring c_x86FrameworkName = L"WindowsAppRuntime.Test.InstallerFramework_1.0.0.0_x86__8wekyb3d8bbwe";
+    static const std::wstring c_x64FrameworkName = L"WindowsAppRuntime.Test.InstallerFramework_1.0.0.0_x64__8wekyb3d8bbwe";
+    static const std::wstring c_arm64FrameworkName = L"WindowsAppRuntime.Test.InstallerFramework_1.0.0.0_arm64__8wekyb3d8bbwe";
 
     static const std::wstring c_x86MainName = L"WindowsAppRuntime.Test.InstallerMain_1.0.0.0_x86__8wekyb3d8bbwe";
     static const std::wstring c_x64MainName = L"WindowsAppRuntime.Test.InstallerMain_1.0.0.0_x64__8wekyb3d8bbwe";
