@@ -30,8 +30,8 @@ jobs:
 
     # The target queues to run the tests on.
     # Note: %3b is the escape sequence for ';' which is used as the delimiter
-    helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.reunion%3bWindows.10.Amd64.Client19h1.Open.reunion%3bWindows.10.Amd64.Client20h2.Open.reunion'
-    helixTargetQueuesClosed: 'Windows.10.Amd64.ClientRS5.reunion%3bWindows.10.Amd64.Client19h1.reunion%3bWindows.10.Amd64.Client20h2.reunion'
+    helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.reunion%3bWindows.10.Amd64.Client20h2.Open.reunion%3bwindows.10.amd64.client21h1.open.reunion-westus2-v2-rg'
+    helixTargetQueuesClosed: 'windows.10.amd64.client20h2.reunion%3bwindows.10.amd64.clientrs5.reunion%3bwindows.10.amd64.client21h1.reunion-westus2-v2-rg'
 
     # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
     rerunPassesRequiredToAvoidFailure: 8
@@ -61,6 +61,22 @@ jobs:
   - task: NuGetToolInstaller@0
 
   - task: NuGetAuthenticate@0
+
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
+  - task: powershell@2
+    displayName: 'Install test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTestCert
+      workingDirectory: '$(Build.SourcesDirectory)'
 
   - template: WindowsAppSDK-BuildSolution-Steps.yml
     parameters:
@@ -125,7 +141,7 @@ jobs:
       contents: |
         Microsoft.Windows.ApplicationModel.Resources.winmd
       targetFolder: $(testPayloadDir)
-      
+
   # TODO: This test needs to be converted to TAEF to run in Helix.
   # - task: powershell@2
   #   displayName: 'Discover MRT Core Managed tests'
@@ -228,3 +244,11 @@ jobs:
     inputs:
       PathtoPublish: $(helixTestOutputBaseDir)
       artifactName: HelixTestOutput_$(buildPlatform)_$(buildConfiguration)
+
+  - task: powershell@2
+    displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
+      workingDirectory: '$(Build.SourcesDirectory)'
