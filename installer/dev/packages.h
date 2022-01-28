@@ -1,4 +1,8 @@
-﻿#pragma once
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#pragma once
+
 #include "pch.h"
 #include "windowsappruntime_definitions.h"
 
@@ -66,4 +70,31 @@ namespace WindowsAppRuntimeInstaller {
         WAR_DDLM_X86_LISTENTRY
     #endif
     };
+
+    struct ResourceLicenseInfo
+    {
+        std::wstring id;
+        std::wstring resourceType;
+    };
+
+    #if !defined(WAR_PROCESS_LICENSES)
+    #if defined(WAR_MAIN_LICENSE_LISTENTRY) || defined(WAR_SINGLETON_LICENSE_LISTENTRY)
+    #define WAR_PROCESS_LICENSES
+    #else
+    #undef WAR_PROCESS_LICENSES
+    #endif
+    #endif
+
+    #if defined(WAR_PROCESS_LICENSES)
+    static ResourceLicenseInfo c_licenses[] =
+    {
+    #if defined(WAR_MAIN_LICENSE_LISTENTRY)
+        WAR_MAIN_LICENSE_LISTENTRY
+    #endif
+
+    #if defined(WAR_SINGLETON_LICENSE_LISTENTRY)
+        WAR_SINGLETON_LICENSE_LISTENTRY
+    #endif
+    };
+    #endif
 }
