@@ -30,8 +30,8 @@ jobs:
 
     # The target queues to run the tests on.
     # Note: %3b is the escape sequence for ';' which is used as the delimiter
-    helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.reunion%3bWindows.10.Amd64.Client20h2.Open.reunion%3bwindows.10.amd64.client21h1.open.reunion-westus2-v2-rg'
-    helixTargetQueuesClosed: 'windows.10.amd64.client20h2.reunion%3bwindows.10.amd64.clientrs5.reunion%3bwindows.10.amd64.client21h1.reunion-westus2-v2-rg'
+    helixTargetQueuesOpen: 'Windows.10.Amd64.ClientRS5.Open.reunion%3bWindows.10.Amd64.Client20h2.Open.reunion%3bwindows.10.amd64.client21h1.open.reunion
+    helixTargetQueuesClosed: 'windows.10.amd64.client20h2.reunion%3bwindows.10.amd64.clientrs5.reunion%3bwindows.10.amd64.client21h1.reunion'
 
     # When a test fails, it is re-run 10 times. This variable specifies how many times out of 10 it is required to pass
     rerunPassesRequiredToAvoidFailure: 8
