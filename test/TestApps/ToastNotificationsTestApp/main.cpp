@@ -386,6 +386,13 @@ bool VerifyShowToast()
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
     toastNotificationManager.ShowToast(toast);
 
+    if (toast.ToastId() == 0)
+    {
+        return false;
+    }
+
+    // TODO: Verify the toast was posted by calling History APIs.
+
     return true;
 }
 
@@ -405,6 +412,13 @@ bool VerifyShowToast_Unpackaged()
     winrt::ToastNotification toast{ GetToastNotification() };
 
     toastNotificationManager.ShowToast(toast);
+
+    if (toast.ToastId() == 0)
+    {
+        return false;
+    }
+
+    // TODO: Verify the toast was posted by calling History APIs.
 
     return true;
 }

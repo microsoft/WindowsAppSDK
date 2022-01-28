@@ -27,11 +27,8 @@ NotificationProperties::NotificationProperties(winrt::ToastNotification const& t
 {
     // Extract payload and convert it from XML to a byte array
     auto payload = toastNotification.Payload();
-    auto payloadAsHstring = payload.GetXml();
 
-    std::wstring payloadAsStdWstring{ payloadAsHstring };
-
-    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(payloadAsStdWstring);
+    auto payloadAsSimpleString = Helpers::WideStringToUtf8String(payload.GetXml().c_str());
 
     m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
     CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
@@ -41,11 +38,8 @@ NotificationProperties::NotificationProperties(winrt::ToastNotification const& t
     m_tag = toastNotification.Tag();
     m_group = toastNotification.Group();
 
-    auto expiry = toastNotification.ExpirationTime();
-    m_expiry = winrt::clock::to_file_time(expiry);
-
-    auto arrivalTime = winrt::clock::now();
-    m_arrivalTime = winrt::clock::to_file_time(arrivalTime);
+    m_expiry = winrt::clock::to_file_time(toastNotification.ExpirationTime());
+    m_arrivalTime = winrt::clock::to_file_time(winrt::clock::now());
 
     m_expiresOnReboot = toastNotification.ExpiresOnReboot();
 
@@ -120,7 +114,9 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ArrivalTime(_Out_ u
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_BootId(_Out_ unsigned long long* bootId) noexcept
 {
-    *bootId = 0;
+    auto lock = m_lock.lock_shared();
+
+    *bootId = m_bootId;
     return S_OK;
 }
 

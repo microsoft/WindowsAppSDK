@@ -22,9 +22,7 @@ NotificationTransientProperties::NotificationTransientProperties(winrt::ToastNot
 {
     m_suppressPopup = toastNotification.SuppressDisplay();
 
-    auto priority = toastNotification.Priority();
-
-    if (priority == winrt::Microsoft::Windows::ToastNotifications::ToastPriority::High)
+    if (toastNotification.Priority() == winrt::Microsoft::Windows::ToastNotifications::ToastPriority::High)
     {
         m_toastNotificationPriority = ToastABI::ToastNotificationPriority::ToastNotificationPriority_High;
     }

@@ -11,7 +11,6 @@
 #include <frameworkudk/pushnotifications.h>
 #include <frameworkudk/toastnotifications.h>
 #include <FrameworkUdk/toastnotificationsrt.h>
-
 #include "NotificationProperties.h"
 #include <NotificationTransientProperties.h>
 
@@ -117,10 +116,12 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties
             = winrt::make_self<NotificationTransientProperties>(toast);
 
-        auto toastAppId{ RetrieveAppId() };
+        auto toastAppId{ RetrieveToastAppId() };
 
         DWORD notificationId = 0;
         THROW_IF_FAILED(ToastNotifications_PostToast(toastAppId.c_str(), notificationProperties.get(), notificationTransientProperties.get(), &notificationId));
+
+        THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
         toast.ToastId(notificationId);
     }
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData /* data */, hstring /* tag */, hstring /* group */)
@@ -133,7 +134,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting ToastNotificationManager::Setting()
     {
-        std::wstring appId { RetrieveAppId() };
+        std::wstring appId { RetrieveToastAppId() };
         DWORD toastNotificationSetting{ 0 };
         ToastNotifications_QuerySettings(appId.c_str(), &toastNotificationSetting);
 

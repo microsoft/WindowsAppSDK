@@ -44,6 +44,8 @@ private:
     FILETIME m_expiry;
     FILETIME m_arrivalTime;
 
+    unsigned long long m_bootId = 0;
+
     bool m_expiresOnReboot = false;
 
     winrt::com_ptr<ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> m_toastProgressData;
