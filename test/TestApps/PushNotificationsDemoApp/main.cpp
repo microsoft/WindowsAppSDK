@@ -4,6 +4,7 @@
 #include <wil/win32_helpers.h>
 #include <iostream>
 #include <winrt/Windows.ApplicationModel.Background.h>
+#include <MddBootstrap.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
@@ -102,15 +103,7 @@ int main()
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
-
-        ToastAssets assets(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
-        ToastNotificationManager::Default().RegisterActivator(activationInfo);
 	}
-
-    ToastAssets assets(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-    auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
-    ToastNotificationManager::Default().RegisterActivator(activationInfo);
 
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
@@ -166,6 +159,9 @@ int main()
         PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
-    ToastNotificationManager::Default().UnregisterActivator();
+    if (!Test::AppModel::IsPackagedProcess())
+    {
+        MddBootstrapShutdown();
+    }
     return 0;
 }
