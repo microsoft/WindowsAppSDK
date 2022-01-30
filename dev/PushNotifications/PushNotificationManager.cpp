@@ -89,22 +89,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), remoteId, &unpackagedAppUserModelId));
     }
 
-    winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
+    winrt::hresult CreateChannelWithRemoteIdHelper(wil::unique_cotaskmem_string const& appUserModelId, const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
     {
-        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
-
-        THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
-
-        THROW_HR_IF(E_INVALIDARG, (appUserModelIdSize > APPLICATION_USER_MODEL_ID_MAX_LENGTH) || (appUserModelIdSize == 0));
-
         HRESULT operationalCode{};
         ABI::Windows::Foundation::DateTime channelExpiryTime{};
         wil::unique_cotaskmem_string channelId;
         wil::unique_cotaskmem_string channelUri;
 
         THROW_IF_FAILED(PushNotifications_CreateChannelWithRemoteIdentifier(
-            appUserModelId,
+            appUserModelId.get(),
             remoteId,
             &operationalCode,
             &channelId,
@@ -114,7 +107,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_IF_FAILED(operationalCode);
 
         winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
-        channelInfo.appUserModelId = winrt::hstring{ appUserModelId };
+        channelInfo.appUserModelId = winrt::hstring{ appUserModelId.get() };
         channelInfo.channelId = winrt::hstring{ channelId.get() };
         channelInfo.channelUri = winrt::hstring{ channelUri.get() };
 
@@ -157,8 +150,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 {
                     if (IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger))
                     {
+                        auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
                         ChannelDetails channelInfo{};
-                        winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
+                        winrt::hresult hr{ CreateChannelWithRemoteIdHelper(appUserModelId, remoteId, channelInfo) };
 
                         // RemoteId APIs are not applicable for downlevel OS versions.
                         // So we get error E_NOTIMPL and we fallback to calling into
@@ -198,8 +192,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     {
                         wil::unique_cotaskmem_string unpackagedAppUserModelId;
                         RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
-                        PushNotificationChannelManager channelManager{};
-                        winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
+
+                        ChannelDetails channelInfo{};
+                        winrt::hresult hr{ CreateChannelWithRemoteIdHelper(unpackagedAppUserModelId, remoteId, channelInfo) };
 
                         auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
@@ -213,7 +208,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
-                            winrt::make<PushNotificationChannel>(pushChannelReceived),
+                            winrt::make<PushNotificationChannel>(channelInfo),
                             S_OK,
                             PushNotificationChannelStatus::CompletedSuccess);
                     }
