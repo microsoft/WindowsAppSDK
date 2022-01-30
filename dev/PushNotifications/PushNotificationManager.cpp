@@ -49,6 +49,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_pushTriggerRegistration{ nullptr };
     static wil::unique_com_class_object_cookie s_comActivatorRegistration;
     static bool s_protocolRegistration{ false };
+    static winrt::guid s_taskClsid{ GUID_NULL };
     static wil::srwlock s_activatorInfoLock;
 
     inline constexpr auto c_maxBackoff{ 5min };
@@ -200,7 +201,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         wil::unique_cotaskmem_string processName;
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get(), s_taskClsid));
 
                         std::wstring toastAppId{ RetrieveToastAppId() };
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
@@ -269,8 +270,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
+                s_taskClsid = details.TaskClsid();
                 wil::unique_cotaskmem_string unpackagedAppUserModelId;
                 RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
+
+                THROW_IF_FAILED(::CoRegisterClassObject(
+                    s_taskClsid,
+                    winrt::make<PushNotificationBackgroundTaskFactory>().get(),
+                    CLSCTX_LOCAL_SERVER,
+                    REGCLS_MULTIPLEUSE,
+                    &s_comActivatorRegistration));
 
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
