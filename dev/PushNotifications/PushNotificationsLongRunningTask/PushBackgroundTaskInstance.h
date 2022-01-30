@@ -1,11 +1,6 @@
 ﻿#include <winrt/Windows.ApplicationModel.background.h>
 
-struct __declspec(uuid("F4EDE892-2DAB-4CCE-9CA6-DE13FF6A4F48")) IRawSerializer : ::IUnknown
-{
-    virtual void SetRawNotificationPayload(std::wstring const& payload) = 0;
-};
-
-struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance, IRawSerializer>
+struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {
     PushBackgroundTaskInstance() {};
 
