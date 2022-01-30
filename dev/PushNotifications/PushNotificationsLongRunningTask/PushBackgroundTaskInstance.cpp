@@ -51,4 +51,3 @@ winrt::Windows::Foundation::IInspectable PushBackgroundTaskInstance::TriggerDeta
 {
     return winrt::box_value(m_payload);
 }
-

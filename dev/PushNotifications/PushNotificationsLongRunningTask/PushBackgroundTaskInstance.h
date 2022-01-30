@@ -1,9 +1,13 @@
 ﻿#include <winrt/Windows.ApplicationModel.background.h>
 
-struct PushBackgroundTaskInstance : winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance
+struct __declspec(uuid("F4EDE892-2DAB-4CCE-9CA6-DE13FF6A4F48")) IRawSerializer : ::IUnknown
+{
+    virtual void SetRawNotificationPayload(std::wstring const& payload) = 0;
+};
+
+struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance, IRawSerializer>
 {
     PushBackgroundTaskInstance() {};
-    PushBackgroundTaskInstance(std::wstring const& payload): m_payload(payload) {};
 
     winrt::guid InstanceId();
     UINT32 SuspendedCount();
@@ -15,7 +19,21 @@ struct PushBackgroundTaskInstance : winrt::Windows::ApplicationModel::Background
     void Canceled(winrt::event_token const& token) noexcept;
     winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
 
+    void SetRawNotificationPayload(std::wstring const& payload) { m_payload = payload; };
 private:
     std::wstring m_payload;
 };
 
+struct PushBackgroundTaskInstanceFactory : winrt::implements<PushBackgroundTaskInstanceFactory, IClassFactory>
+{
+    HRESULT __stdcall CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final
+    {
+        RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
+        return winrt::make<PushBackgroundTaskInstance>().as(interfaceId, object);
+    }
+
+    HRESULT __stdcall LockServer(BOOL) noexcept final
+    {
+        return S_OK;
+    }
+};
