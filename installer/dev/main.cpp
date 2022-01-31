@@ -12,12 +12,17 @@ int wmain(int argc, wchar_t *argv[])
 {
     init_apartment();
 
+    wil::SetResultLoggingCallback(wilResultLoggingCallback);
+
     auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
                   WindowsAppRuntimeInstaller::Options::InstallLicenses };
+
+    std::stringstream args{};
 
     for (int i = 1; i < argc; ++i)
     {
         auto arg = std::wstring_view(argv[i]);
+
         if (arg == L"--dry-run")
         {
             WI_SetFlag(options, WindowsAppRuntimeInstaller::Options::DryRun);
@@ -57,21 +62,34 @@ int wmain(int argc, wchar_t *argv[])
             ShowHelp();
             return ERROR_BAD_ARGUMENTS;
         }
+
+        // Capture valid arguments only
+        args << argv[i] << " ";
     }
+
+    activity = WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), (UINT32)options);
+    args.clear();
 
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
     if (WI_IsFlagClear(options, WindowsAppRuntimeInstaller::Options::Quiet))
     {
         if (SUCCEEDED(deployPackagesResult))
         {
+            activity.Stop();
             std::wcout << "All install operations successful." << std::endl;
         }
         else
         {
+            activity.Stop(
+                deployPackagesResult,
+                (UINT32)g_installStage,
+                g_currentPackageFullName,
+                g_deploymentErrorExtendedHresult,
+                g_deploymentErrorText,
+                g_deploymentErrorActivityId);
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
         }
     }
-
     return deployPackagesResult;
 }
 
