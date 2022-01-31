@@ -52,8 +52,7 @@ namespace $safeprojectname$
         {
             m_window = new MainWindow();
 
-            var windowNative = m_window.As<IWindowNative>();
-            m_hwnd = new HWND(windowNative.WindowHandle);
+            m_hwnd = (HWND)WinRT.Interop.WindowNative.GetWindowHandle(m_window);
 
             m_window.Activate();
 
@@ -78,14 +77,6 @@ namespace $safeprojectname$
                 HWND_TOP,
                 0, 0, width, height,
                 SET_WINDOW_POS_FLAGS.SWP_NOMOVE);
-        }
-
-        [ComImport]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [Guid("EECDBF0E-BAE9-4CB6-A68E-9598E1CB57BB")]
-        internal interface IWindowNative
-        {
-            IntPtr WindowHandle { get; }
         }
     }
 }
