@@ -115,39 +115,39 @@ int main()
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
     }
 
-    std::wcout << L"--------------------------------" << std::endl;
-    std::wcout << L"- Toast Notifications Demo App -" << std::endl;
-    std::wcout << L"--------------------------------" << std::endl << std::endl;
+    std::wcout << L"--------------------------------\n";
+    std::wcout << L"- Toast Notifications Demo App -\n";
+    std::wcout << L"--------------------------------\n\n";
 
     // Display if app is running as packaged | unpackaged.
-    std::wcout << L"Running as " << (isPackaged ? L"packaged." : L"unpackaged.") << std::endl << std::endl;
+    std::wcout << L"Running as " << (isPackaged ? L"packaged.\n\n" : L"unpackaged.\n\n");
 
     // Grab an instance of ToastNotificationManager
     auto toastNotificationManager{ ToastNotificationManager::Default() };
 
     // Display the current ToastNotificationSetting for the app.
-    std::wcout << L"Printing ToastNotificationSetting for app: " << GetEnumString(toastNotificationManager.Setting()) << std::endl << std::endl;
+    std::wcout << L"Printing ToastNotificationSetting for app: " << GetEnumString(toastNotificationManager.Setting()) << "\n\n";
 
     ToastActivationInfo activationInfo{ nullptr };
     // Create toastActivationInfo depending on packaged | unpackaged scenario.
     if (isPackaged)
     {
-        std::wcout << L"Calling ToastActivationInfo::CreateFromActivationGuid with nitro activation guid..." << std::endl;
+        std::wcout << L"Calling ToastActivationInfo::CreateFromActivationGuid with ToastActivatorCLSID in manifest...\n";
         activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
-        std::wcout << L"Done." << std::endl << std::endl;
+        std::wcout << L"Done.\n\n";
     }
     else
     {
-        std::wcout << L"Calling ToastActivationInfo::CreateFromToastAssets..." << std::endl;
+        std::wcout << L"Calling ToastActivationInfo::CreateFromToastAssets...\n";
         ToastAssets assets(L"ToastNotificationApp", Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
         activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
-        std::wcout << L"Done." << std::endl << std::endl;
+        std::wcout << L"Done.\n\n";
     }
 
     // Registering app for activation
-    std::wcout << L"Calling ToastNotificationManager::RegisterActivator(activationInfo)..." << std::endl;
+    std::wcout << L"Calling ToastNotificationManager::RegisterActivator(activationInfo)...\n";
     toastNotificationManager.RegisterActivator(activationInfo);
-    std::wcout << L"Done." << std::endl << std::endl;
+    std::wcout << L"Done.\n\n";
 
     // Retrieve the activation event args
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -156,7 +156,7 @@ int main()
     // Check if activated from background by ToastActivation
     if (kind == ExtendedActivationKind::AppNotification)
     {
-        std::wcout << L"Activated by ToastActivation from background." << std::endl;
+        std::wcout << L"Activated by ToastActivation from background.\n";
         ToastActivatedEventArgs toastArgs{ args.Data().as<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>() };
         winrt::hstring arguments{ toastArgs.ActivationArgs() };
         std::wcout << arguments.c_str() << std::endl << std::endl;
@@ -164,32 +164,32 @@ int main()
         IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
         for (auto pair : userInput)
         {
-            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
+            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
         }
         std::wcout << std::endl;
     }
 
     // Setting up foreground handler for ToastActivation
-    std::wcout << L"Registering foreground handler to receive ToastActivationEventArgs..." << std::endl;
+    std::wcout << L"Registering foreground handler to receive ToastActivationEventArgs...\n";
     winrt::event_token token = toastNotificationManager.ToastActivated([](const auto&, winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs const& toastArgs)
     {
-        printf("ToastActivation received foreground!\n");
+        std::wcout << L"ToastActivation received foreground!\n";
         winrt::hstring arguments{ toastArgs.ActivationArgs() };
-        std::wcout << arguments.c_str() << std::endl << std::endl;
+        std::wcout << arguments.c_str() << L"\n\n";
 
         IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
         for (auto pair : userInput)
         {
-            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << std::endl;
+            std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
         }
-        std::wcout << std::endl;
+        std::wcout << L"\n";
     });
-    std::wcout << L"Done." << std::endl << std::endl;
+    std::wcout << L"Done.\n\n";
 
-    std::wcout << L"Requesting PushNotificationChannel..." << std::endl << std::endl;
+    std::wcout << L"Requesting PushNotificationChannel...\n\n";
     PushNotificationChannel channel{ RequestChannel() };
 
-    std::wcout << L"Press enter to exit the app." << std::endl << std::endl;
+    std::wcout << L"Press enter to exit the app.\n\n";
     std::cin.ignore();
 
     // If you want to stop receiving ToastNotifications for the app
