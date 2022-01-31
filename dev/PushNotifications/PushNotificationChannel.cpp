@@ -25,6 +25,11 @@ namespace winrt::Microsoft
     using namespace winrt::Microsoft::Windows::PushNotifications;
 }
 
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
+}
+
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
     PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) 
@@ -87,7 +92,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        if (IsPackagedAppScenario())
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             if (m_channel)
             {
@@ -136,7 +141,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        if (IsPackagedAppScenario())
+        if (PushNotificationHelpers::IsPackagedAppScenario())
         {
             if (m_channel)
             {
@@ -197,15 +202,4 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         return S_OK;
     }
     CATCH_RETURN();
-
-    bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
-    {
-        return winrt::Windows::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
-    }
-
-    // Determines if the caller should be treated as packaged app or not.
-    bool PushNotificationChannel::IsPackagedAppScenario()
-    {
-        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
-    }
 }

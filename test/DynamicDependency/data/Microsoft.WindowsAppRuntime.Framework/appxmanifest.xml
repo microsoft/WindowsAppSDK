@@ -77,6 +77,7 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastActivationInfo" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastAssets" ThreadingModel="both" />
             <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastNotificationManager" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastNotification" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
     <Extension Category="windows.activatableClass.inProcessServer">
