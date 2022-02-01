@@ -329,51 +329,40 @@ namespace Test::ToastNotifications
             RunTest(L"VerifyToastExpiresOnReboot", testWaitTime());
         }
 
-     /*   TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup)
         {
             RunTest(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", testWaitTime());
-        } */
+        }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", testWaitTime());
         }
 
-     /*   TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndNullGroup)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup)
         {
-            RunTest(L"VerifyUpdateToastProgressDataUsingValidTagAndNullGroup", testWaitTime());
-        }
-*/
-        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndNullGroup_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndNullGroup_Unpackaged", testWaitTime());
+            RunTest(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", testWaitTime());
         }
 
-  /*      TEST_METHOD(VerifyUpdateNotificationDataWithNullTagAndValidGroup)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged)
         {
-            RunTest(L"VerifyUpdateNotificationDataWithNullTagAndValidGroup", testWaitTime());
-        }
-        */
-
-        TEST_METHOD(VerifyUpdateNotificationDataWithNullTagAndValidGroup_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyUpdateNotificationDataWithNullTagAndValidGroup_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged", testWaitTime());
         }
 
-     /*   TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup)
+        TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup)
         {
             RunTest(L"VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup", testWaitTime());
         }
-        */
+
         TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged", testWaitTime());
         }
 
-     /*   TEST_METHOD(VerifyFailedUpdateNotificationDataWithoutPostToast)
+        TEST_METHOD(VerifyFailedUpdateNotificationDataWithoutPostToast)
         {
             RunTest(L"VerifyFailedUpdateNotificationDataWithoutPostToast", testWaitTime());
-        } */
+        }
 
         TEST_METHOD(VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged)
         {

@@ -13,6 +13,7 @@
 #include <FrameworkUdk/toastnotificationsrt.h>
 #include "NotificationProperties.h"
 #include <NotificationTransientProperties.h>
+#include <ToastProgressDataABI.h>
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
@@ -130,13 +131,19 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
         toast.ToastId(notificationId);
     }
+
+    // API updates notification data when both tag and group are provided or when tag is provided but group is empty.
+    // For other scenarios the API returns ToastProgressResult::Failed.
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData data, hstring tag, hstring group)
     {
         std::wstring appId{ RetrieveToastAppId() };
 
-        auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), reinterpret_cast<::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData*>(winrt::get_abi(data.as<winrt::IToastProgressData>())));
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> toastProgressData
+            = winrt::make_self<ToastProgressDataABI>(data);
 
-        if (hr == S_OK)
+        auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), toastProgressData.get());
+
+        if (SUCCEEDED(hr))
         {
             co_return winrt::ToastProgressResult::Succeeded;
         }
@@ -146,15 +153,18 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         }
 
         co_return winrt::ToastProgressResult::Failed;
-
     }
+
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData data, hstring tag)
     {
         std::wstring appId{ RetrieveToastAppId() };
 
-        auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), nullptr, reinterpret_cast<::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData*>(winrt::get_abi(data.as<winrt::IToastProgressData>())));
+        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> toastProgressData
+            = winrt::make_self<ToastProgressDataABI>(data);
 
-        if (hr == S_OK)
+        auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), nullptr, toastProgressData.get());
+
+        if (SUCCEEDED(hr))
         {
             co_return winrt::ToastProgressResult::Succeeded;
         }
