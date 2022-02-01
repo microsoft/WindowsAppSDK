@@ -45,8 +45,8 @@ For more details see:
 ## The problems today
 
 **Cloud Notifications integration with Windows App SDK**: While we support Push scenarios for Raw notification
-on behalf of unpackaged applications in the Windows App SDK 1.0, we do not support Cloud sourced App Notifications. We need
-to fill this gap for 1.1 and beyond.
+on behalf of unpackaged applications, we do not support Cloud sourced App Notifications. We need
+to fill this feature gap.
 
 **API fragmentation**: There are too many API technologies that are published today to simply
 Display notifications and setup their activation handlers: Windows SDK, Win32 Notification Activations via the
@@ -71,14 +71,9 @@ up activation handlers vary greatly for different app types MSIX Vs Unpackaged V
 to abstract away the activation technology and simplify this process for developers for all
 supported downlevel OS SKUs.
 
-**Notification Composition**: There are well known gaps in the Windows SDK today in the area of composing
-the Notification content via Xml schema. The Windows Toolkit gets around this limitation by providing a well-defined
-object model to compose payloads but all developers don't use the Toolkit. We have a plan to build a Windows Toolkit like
-NotificationBuilder model in the near future for WinAppSdk.
-
 # Description
 
-At a high level, we need to provide a way for all Win32 applications to display app notifications irrespective
+This API enables all Win32 applications to display app notifications irrespective
 of their app type. This includes unpackaged apps and packaged win32 (MSIX Desktop Bridge, MSIX
 Win32App, Sparse Signed Packages). Moreover, all scenarios should adhere to OS resource
 management policies like Power Saver, Network Attribution (amount of data an app uses), enterprise
@@ -86,23 +81,22 @@ group policies, etc. The WinAppSDK will abstract away the complexities of
 dealing with Notification delivery and related activations as much as possible freeing the developer
 to focus on other app related challenges.
 
-We will prioritize the following feature set for Notifications in Windows App SDK:
+The App Notification API does the following:
 
--   App Notification Registrations for Unpackaged apps.
--   App Notification Registrations for Packaged apps
--   Cloud sourced App Notifications for Unpackaged Win32 apps.
--   Cloud sourced App Notifications for Packaged Win32 apps.
--   Local App Notification delivery and Create/Update/Delete support for Packaged Win32 apps.
--   Local App Notification delivery and Create/Update/Delete support for unpackaged Win32 apps.
-
-The following feature set will not be prioritized for the future include:
-
--   Object Model to compose payloads without having to rely on Xml templates.
--   Support for categorizing App Notifications by Collection.
+-   Allow Unpackaged apps to register for notifications.
+-   Allow Packaged apps to register for notifications.
+-   Allow Unpackaged apps to display cloud sourced notifications.
+-   Allow packaged apps to display cloud sourced notifications.
+-   Allow packaged apps to display local notifications
+-   Allow unpackaged apps to display local notifications
+-   Allow packaged apps to Update/Delete their local notifications.
+-   Allow unpackaged apps to Update/Delete their local notifications.
+-   Allow packaged applications to process notification activators.
+-   Allow unpackaged apps to process notification activators.
 
 # Examples
 
-## Packaged App Notification Registration
+## Packaged App Registering and handling a notification
 
 This scenario is specifically geared towards Packaged apps that need to send an app notification. An app
 Developer Registers their app for notifications and sets it up for background\foreground
@@ -112,9 +106,12 @@ the payload body (like a Button). The developer can inturn run some business log
 response to the UI Action.
 
 ```cpp
+
+CLSID const c_comServerId = { 0x43136EB5,0xD36C,0x11CF,{0xAD,0xBC,0x00,0xAA,0x00,0xA8,0x00,0x33} };
+
 int main()
 {
-  auto activationInfo = AppNotificationActivationInfo::CreateFromActivationGuid(winrt::guid(c_comServerId));
+    AppNotificationActivationInfo activationInfo{ winrt::guid(c_comServerId) };
     AppNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -122,10 +119,10 @@ int main()
 
     if (kind == ExtendedActivationKind::Launch)
     {
-        // App is launched in Foreground. So intercept Notification activators via Foreground event
+        // App is launched in Foreground. So intercept toast activators via Foreground event
         const auto token = AppNotificationManager::Default().AppNotificationActivated([](const auto&, const AppNotificationActivatedEventArgs& notificationActivatedEventArgs)
         {
-                ProcessNotificationArgs(notificationActivatedEventArgs);
+            ProcessNotificationArgs(notificationActivatedEventArgs);
         });
 
         // App does Foreground Stuff Here
@@ -143,7 +140,7 @@ int main()
 }
 ```
 
-## Unpackaged app Notification Registration
+## Unpackaged app Registering and handling a notification
 
 Similar to packaged apps, unpackaged apps can also Register to send app notifications and act as
 targets for activation events. There is one basic difference in the Registration for
@@ -153,9 +150,13 @@ DisplayName and IconUri since they don't have an app manifest file that contains
 ```cpp
 int main()
 {
-    Uri absoluteFilePath(LR"(C:\test\icon.png)");
-    AppNotificationAssets assets(L"SampleApp", absoluteFilePath);
-    auto activationInfo = AppNotificationActivationInfo::CreateFromAppNotificationAssets(assets);
+    PCWSTR const c_iconName = L"icon.png";
+    std::filesystem::path binaryPath = wil::GetModuleFileNameW<std::wstring>(nullptr);
+    std::filesystem::path directoryPath = binaryPath.parent_path();
+    std::filesystem::path iconPath = directoryPath / std::filesystem::path(c_iconName);
+
+    Uri iconUri(iconPath.wstring().c_str());
+    AppNotificationActivationInfo activationInfo(L"SampleApp", iconUri);
     AppNotificationManager::Default().RegisterActivator(activationInfo);
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -163,7 +164,7 @@ int main()
 
     if (kind == ExtendedActivationKind::Launch)
     {
-        // App is launched in FG. So intercept notification activators via FG event
+        // App is launched in FG. So intercept toast activators via FG event
         const auto token = AppNotificationManager::Default().AppNotificationActivated([](const auto&, const AppNotificationActivatedEventArgs& notificationActivatedEventArgs)
             {
                 ProcessNotificationArgs(notificationActivatedEventArgs);
@@ -267,7 +268,7 @@ winrt::Windows::Foundation::IAsyncOperation<Windows::Foundation::Collections::IV
 }
 
 // Remove a notification from action centre using tag and group
-winrt::Windows::Foundation::IAsyncAction RemoveNotification(const winrt::hstring& tag, const winrt::hstring& group)
+winrt::Windows::Foundation::IAsyncAction RemoveNotification(const winrt::hstring tag, const winrt::hstring group)
 {
     co_await AppNotificationManager::Default().RemoveWithTagGroupAsync(tag, group);
 }
@@ -288,18 +289,19 @@ void SendUpdatableNotificationWithProgress()
     winrt::hstring tag = L"weekly-playlist";
     winrt::hstring group = L"downloads";
 
-    winrt::hstring payload = LR"(<toast launch="action = viewDownload &amp; downloadId = 9438108">
-                                <visual>
-                                   <binding template = "ToastGeneric">
-                                        <text>Downloading this week's new music...</text>
-                                        <progress
-                                            title = "{progressTitle}
-                                            value = "{progressValue}"
-                                            valueStringOverride = "{progressValueString}"
-                                            status = "{progressStatus}" />
-                                    </binding>
-                                </visual>
-                            </toast>)";
+    winrt::hstring payload =
+    LR"(<toast launch="action = viewDownload &amp; downloadId = 9438108">
+        <visual>
+            <binding template = "ToastGeneric">
+                <text>Downloading this week's new music...</text>
+                <progress
+                    title = "{progressTitle}
+                    value = "{progressValue}"
+                    valueStringOverride = "{progressValueString}"
+                    status = "{progressStatus}" />
+            </binding>
+        </visual>
+    </toast>)";
 
     XmlDocument doc;
     doc.LoadXml(payload);
@@ -333,9 +335,9 @@ winrt::Windows::Foundation::IAsyncAction UpdateProgressAsync()
     data.SequenceNumber(2);
 
     auto result = co_await AppNotificationManager::Default().UpdateProgressDataAsync(data, tag, group);
-    if (result != AppNotificationProgressResult::Succeeded)
+    if (result == AppNotificationProgressResult::AppNotificationNotFound)
     {
-        LOG_HR_MSG(E_UNEXPECTED, "Notification Progress Update Failed!");
+        LOG_HR_MSG(E_NOT_SET, "Toast Progress Update Failed since the previous notification update is missing or has been cleared by the user!");
     }
 }
 ```
@@ -374,40 +376,29 @@ would need to be pre-set to a well-known string that defines Activation Triggers
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+import "..\AppLifecycle\AppLifecycle.idl";
+
 namespace Microsoft.Windows.AppNotifications
 {
-    [experimental]
-    // The Shell asset details for Unpackaged App Registrations 
-    runtimeclass AppNotificationAssets
-    {
-        // Initialize using Shell assets like DisplayName and iconPath
-        AppNotificationAssets(String displayName, Windows.Foundation.Uri iconUri);
-
-        // The App friendly DisplayName for the Notification in Action Centre 
-        String DisplayName { get; };
-
-        // The full file path for the icon image
-        Windows.Foundation.Uri IconUri { get; };
-    }
-
-    [experimental]
     // The Registration Info for Packaged and Unpackaged Notification Activations
     runtimeclass AppNotificationActivationInfo
     {
         // Initialize using a manifest defined COM Activator Id. Only applicable to Packaged Win32 applications
-        static AppNotificationActivationInfo CreateFromActivationGuid(Guid taskClsid);
+        AppNotificationActivationInfo(Guid taskClsid);
 
         // Initialize using Notification Assets. Only applicable to Unpackaged Win32 applications which need to specify their own assets like DisplayName and Icon.
-        static AppNotificationActivationInfo CreateFromAppNotificationAssets(AppNotificationAssets assets);
+        AppNotificationActivationInfo(String displayName, Windows.Foundation.Uri iconUri);
 
         // The CLSID associated with the Client COM server that Windows App SDK will activate
         Guid TaskClsid{ get; };
 
-        // The Shell assets associated with the Unpackaged app
-        AppNotificationAssets Assets{ get; };
-    };
+        // The App friendly DisplayName for the Notification in Action Centre 
+        String DisplayName{ get; };
 
-    [experimental]
+        // The full file path for the icon image
+        Windows.Foundation.Uri IconUri{ get; };
+    }
+
     // Event args for the Notification Activation
     runtimeclass AppNotificationActivatedEventArgs
     {
@@ -416,9 +407,8 @@ namespace Microsoft.Windows.AppNotifications
 
         // The data from the input elements of a Notification like a TextBox
         Windows.Foundation.Collections.IMapView<String, String> UserInput{ get; };
-    };
+    }
 
-    [experimental]
     // Notification Progress Data
     runtimeclass AppNotificationProgressData
     {
@@ -440,9 +430,8 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets/Sets the Value for the Status. Binds to {progressStatus} in progress xml tag
         String Status;
-    };
+    }
 
-    [experimental]
     // The Notification User Setting or Notification Group Policy Setting
     enum AppNotificationSetting
     {
@@ -453,27 +442,22 @@ namespace Microsoft.Windows.AppNotifications
         DisabledByManifest, // Notification is blocked by a setting in the manifest. Only for packaged applications.
     };
 
-    [experimental]
     // The Result for a Notification Progress related operation
     enum AppNotificationProgressResult
     {
         Succeeded, // The progress operation succeeded
-        Failed, // The progress operation failed
         AppNotificationNotFound, // The progress operation failed to find a Notification to process updates
     };
 
-    [experimental]
+    // The Priority of the Notification UI associated with it's popup in the Action Centre
     enum AppNotificationPriority
     {
         Default, // The notification should have default behavior in terms of delivery and display priority during connected standby mode.
         High, // The notification should be treated as high priority. For desktop PCs, this means during connected standby mode the incoming notification can turn on the screen for Surface-like devices if it doesn't have a closed lid detected.
     };
 
-    [experimental]
-    // Represent a Notification Notification construct
     runtimeclass AppNotification
     {
-        // Initialize a new Notification using an XML Payload.
         AppNotification(Windows.Data.Xml.Dom.XmlDocument payload);
 
         // Unique identifier used to replace a notification within a group.
@@ -483,7 +467,7 @@ namespace Microsoft.Windows.AppNotifications
         String Group;
 
         // A unique identifier for the Notification generated by the platform.
-        UInt32 Id;
+        UInt32 Id { get; };
 
         // The notification Xml Payload
         Windows.Data.Xml.Dom.XmlDocument Payload{ get; };
@@ -503,10 +487,10 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets or sets whether a Notification's pop-up UI is displayed on the user's screen.
         Boolean SuppressDisplay;
-    };
+    }
 
-    [experimental]
     // The manager class which encompasses all App Notification API Functionality
+    [experimental]
     runtimeclass AppNotificationManager
     {
         // Gets a Default instance of a AppNotificationManager
@@ -519,7 +503,7 @@ namespace Microsoft.Windows.AppNotifications
         void UnregisterActivator();
 
         // Event handler for Notification Activations
-        event Windows.Foundation.EventHandler<AppNotificationActivatedEventArgs> AppNotificationActivated;
+        event Windows.Foundation.TypedEventHandler<Microsoft.Windows.AppLifecycle.ExtendedActivationKind, AppNotificationActivatedEventArgs> AppNotificationActivated;
 
         // Displays the Notification in Action Center
         void Show(AppNotification notification);
@@ -531,10 +515,10 @@ namespace Microsoft.Windows.AppNotifications
         Windows.Foundation.IAsyncOperation<AppNotificationProgressResult> UpdateProgressDataAsync(AppNotificationProgressData data, String tag);
 
         // Get the Notification Setting status for the app
-        AppNotificationSetting Setting{ get; };
+        AppNotificationSetting Enablement { get; };
 
         // Removes a specific Notification with a specific NotificationIdentifier from Action Centre
-        Windows.Foundation.IAsyncAction RemoveWithIdentiferAsync(UInt32 notificationIdentifier);
+        Windows.Foundation.IAsyncAction RemoveByIdAsync(UInt32 notificationId);
 
         // Removes a Notification having a specific tag
         Windows.Foundation.IAsyncAction RemoveWithTagAsync(String tag);
@@ -550,7 +534,7 @@ namespace Microsoft.Windows.AppNotifications
 
         // Gets all the Notifications for the App from Action Centre
         Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<AppNotification> > GetAllAsync();
-    };
+    }
 }
 
 ```
