@@ -50,7 +50,7 @@
       <com:Extension Category="windows.comServer">
         <com:ComServer>
           <com:ExeServer Executable="ToastNotificationsTestApp\ToastNotificationsTestApp.exe" DisplayName="SampleBackgroundApp" Arguments="----ToastActivated:">
-            <com:Class Id="1940dba9-0f64-4f0d-8a4b-5d207b812e61" DisplayName="Windows App Runtime Toast" />
+            <com:Class Id="1940DBA9-0F64-4F0D-8A4B-5D207B812E61" DisplayName="Windows App Runtime Toast" />
           </com:ExeServer>
         </com:ComServer>
       </com:Extension>
