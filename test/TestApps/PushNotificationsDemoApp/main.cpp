@@ -109,10 +109,6 @@ int main()
         ToastNotificationManager::Default().RegisterActivator(activationInfo);
 	}
 
-    ToastAssets assets(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-    auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
-    ToastNotificationManager::Default().RegisterActivator(activationInfo);
-
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
