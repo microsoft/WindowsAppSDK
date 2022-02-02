@@ -14,6 +14,8 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationProperties.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivatedEventArgs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivationCallback.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastActivationInfo.h" />
@@ -25,6 +27,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastProgressData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationProperties.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)NotificationTransientProperties.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ToastActivationCallback.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ToastActivationInfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ToastAssets.cpp" />
