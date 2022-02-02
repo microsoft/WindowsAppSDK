@@ -10,7 +10,11 @@
     <ProjectGuid>{bc5e5a3e-e733-4388-8b00-f8495da7c778}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>RestartAgent</RootNamespace>
+<<<<<<< HEAD
     <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.20348.0</WindowsTargetPlatformVersion>
+=======
+    <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0</WindowsTargetPlatformVersion>
+>>>>>>> main
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

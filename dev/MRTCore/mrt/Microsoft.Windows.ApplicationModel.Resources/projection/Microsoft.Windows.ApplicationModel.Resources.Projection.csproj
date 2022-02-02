@@ -17,7 +17,8 @@
 
   <PropertyGroup>
     <CSWinRTIncludes>Microsoft.Windows.ApplicationModel.Resources</CSWinRTIncludes>
-    <CSWinRTWindowsMetadata>$(CsWinRTDependencyWindowsSdkPackagePackageVersion)</CSWinRTWindowsMetadata>
+    <CSWinRTWindowsMetadata>10.0.17763.0</CSWinRTWindowsMetadata>
+    <WindowsSdkPackageVersion>10.0.17763.$(CsWinRTDependencyWindowsSdkPackagePackageVersion)</WindowsSdkPackageVersion>
     <NoWarn>MSB3271</NoWarn>
   </PropertyGroup>
 

@@ -68,9 +68,19 @@
     <InstallerPackagesDir>$(RepoRoot)\installer\test\testpackages\</InstallerPackagesDir>
 
     <NMakeBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
+<<<<<<< HEAD
                            @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)framework_$(PlatformTarget).msix
                            @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)framework_$(PlatformTarget).msix >NUL</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
+=======
+                           @ECHO Copy $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml
+                           @COPY /Y $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml >NUL
+                           @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)framework_$(PlatformTarget).msix
+                           @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)framework_$(PlatformTarget).msix >NUL</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>@IF NOT EXIST $(InstallerPackagesDir) MKDIR $(InstallerPackagesDir)
+                             @ECHO Copy $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml
+                             @COPY /Y $(MSBuildThisFileDirectory)main_license.xml $(InstallerPackagesDir)main_license.xml >NUL
+>>>>>>> main
                              @ECHO Copy $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) to $(InstallerPackagesDir)framework_$(PlatformTarget).msix
                              @COPY /Y $(OutDir)$(ProjectName)\$(MakeMsixOutputFilename) $(InstallerPackagesDir)framework_$(PlatformTarget).msix >NUL</NMakeReBuildCommandLine>
   </PropertyGroup>

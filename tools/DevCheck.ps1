@@ -322,7 +322,11 @@ function Repair-DevTestPfx
     }
     elseif ($NoInteractive -eq $false)
     {
+<<<<<<< HEAD
         $password_plaintext = Read-Host -Prompt 'Enter test certificate password'
+=======
+        $password_plaintext = Read-Host -Prompt 'Creating test certificate. Please enter a password'
+>>>>>>> main
     }
     if ([string]::IsNullOrEmpty($password_plaintext))
     {

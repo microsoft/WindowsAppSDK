@@ -17,3 +17,7 @@ EXPORTS
     MddGetGenerationId
 
     MsixInstallLicenses
+<<<<<<< HEAD
+=======
+    GetSecurityDescriptorForAppContainerNames
+>>>>>>> main

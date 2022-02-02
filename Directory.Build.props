@@ -51,6 +51,12 @@
   <!-- Build with the hybrid CRT (Universal CRT + Static VS CRT (for what little the Universal CRT doesn't cover) -->
   <Import Project="$(MSBuildThisFileDirectory)HybridCRT.props" />
 
+<<<<<<< HEAD
+=======
+  <!-- Build with APIscan-friendly compiler+linker options -->
+  <Import Project="$(MSBuildThisFileDirectory)ApiScan.Cpp.props" />
+
+>>>>>>> main
   <!-- Load the test certificate's password (so we do it once for reuse across projects) -->
   <PropertyGroup Condition="'$(RepoTestCertificatePFX)' == ''">
     <RepoTestCertificatePFX>$(RepoRoot)\.user\winappsdk.certificate.test.pfx</RepoTestCertificatePFX>
