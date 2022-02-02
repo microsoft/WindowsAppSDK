@@ -51,6 +51,7 @@ namespace Test::ToastNotifications
             {
                 // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
                 TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppRuntimeFramework();
@@ -58,6 +59,7 @@ namespace Test::ToastNotifications
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
+                TP::AddPackage_PushNotificationsLongRunningTask(); // Installs the PushNotifications long running task.
                 TP::WapProj::AddPackage(TAEF::GetDeploymentDir(), GetTestPackageFile(), L".msix"); // Installs ToastNotificationsTestApp.msix
             }
             catch (...)
@@ -76,6 +78,7 @@ namespace Test::ToastNotifications
             {
                 // Remove in reverse order to avoid conflicts between inter-dependent packages.
                 TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
                 TP::RemovePackage_DynamicDependencyLifetimeManager();
                 TP::RemovePackage_DynamicDependencyDataStore();
                 TP::RemovePackage_WindowsAppRuntimeFramework();
@@ -92,6 +95,7 @@ namespace Test::ToastNotifications
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
             return true;
         }
 
@@ -100,6 +104,7 @@ namespace Test::ToastNotifications
             VERIFY_IS_TRUE(TP::IsPackageRegistered_WindowsAppRuntimeFramework());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyDataStore());
             VERIFY_IS_TRUE(TP::IsPackageRegistered_DynamicDependencyLifetimeManager());
+            VERIFY_IS_TRUE(TP::IsPackageRegistered_PushNotificationsLongRunningTask());
 
             m_processHandle.reset();
             return true;
@@ -322,6 +327,16 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastExpiresOnReboot_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToast)
+        {
+            RunTest(L"VerifyShowToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
         }
     };
 }
