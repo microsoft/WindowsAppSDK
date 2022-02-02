@@ -56,8 +56,8 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
                 auto payload = args.Payload();
 
                 // Do stuff to process the raw payload
-                std::string payloadString(payload.begin(), payload.end());
-                std::cout << "Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
+                std::wstring payloadString(payload.begin(), payload.end());
+                std::wcout << L"Push notification content received from FOREGROUND: " << payloadString << std::endl << std::endl;
                 args.Handled(true);
             });
         // Caller's responsibility to keep the channel alive
@@ -122,7 +122,7 @@ int main()
     }
     else
     {
-        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
+        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator, winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
         PushNotificationManager::RegisterActivator(info);
     }
 

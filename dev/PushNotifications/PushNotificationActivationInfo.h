@@ -9,7 +9,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     struct PushNotificationActivationInfo : PushNotificationActivationInfoT<PushNotificationActivationInfo>
     {
         PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators, winrt::guid const& taskClsid);
-        PushNotificationActivationInfo(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
 
         winrt::guid TaskClsid();
         Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators Activators();

@@ -19,7 +19,7 @@ interface IWpnForegroundSink : IUnknown
 [pointer_default(unique)]
 interface INotificationsLongRunningPlatform : IUnknown
 {
-    HRESULT RegisterLongRunningActivator([in] LPCWSTR processName);
+    HRESULT RegisterLongRunningActivator([in] LPCWSTR processName, [in] GUID comServerClsid);
 
     HRESULT UnregisterLongRunningActivator([in] LPCWSTR processName);
 
