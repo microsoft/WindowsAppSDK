@@ -7,7 +7,7 @@
 #include <appmodel.h>
 
 #include <WindowsAppRuntime.Test.FileSystem.h>
-
+#include <winrt/Windows.Management.Deployment.h>
 #include <WexTestClass.h>
 
 #define WINDOWSAPPRUNTIME_TEST_METADATA_VERSION            0x0004000107AF014DLLu

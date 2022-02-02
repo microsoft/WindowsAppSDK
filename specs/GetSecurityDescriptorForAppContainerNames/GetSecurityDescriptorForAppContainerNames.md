@@ -27,7 +27,7 @@ wil::unique_event CreateShareableEvent(PCWSTR name)
         EVENT_MODIFY_STATE | SYNCHRONIZE}};
 
     THROW_IF_FAILED(GetSecurityDescriptorForAppContainerNames(
-        1, access, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd));
+        1, access, nullptr, EVENT_MODIFY_STATE | SYNCHRONIZE, &sd, nullptr));
 
     SECURITY_ATTRIBUTES sa{};
     sa.nLength = sizeof(sa);
@@ -71,22 +71,23 @@ EventWaitHandle CreateShareableEvent(String name)
 struct AppContainerNameAndAccess
 {
     PCWSTR appContainerName;
-    uint32_t accessMask;
+    UINT32 accessMask;
 };
 
 STDAPI GetSecurityDescriptorForAppContainerNames(
-    uint32_t accessRequestCount,
+    UINT32 accessRequestCount,
     _In_reads_(accessRequestCount)
         const AppContainerNameAndAccess* accessRequests,
     _In_opt_ PSID principal,
-    uint32_t principalAccessMask,
-        _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor
+    UINT32 principalAccessMask,
+    _Outptr_ PSECURITY_DESCRIPTOR* securityDescriptor,
+    _Out_opt_ UINT32* securityDescriptorSize
 )
 ```
 
 If the **principal** parameter is null, the principal of the current thread is used.
 
-If the function succeds, the returned `SECURITY_DESCRIPTOR` must be freed by calling [LocalFree](https://docs.microsoft.com/windows/desktop/api/winbase/nf-winbase-localfree).
+If the function succeds, the `SECURITY_DESCRIPTOR` returned in `securityDescriptor` must be freed by calling [LocalFree](https://docs.microsoft.com/windows/desktop/api/winbase/nf-winbase-localfree).
 
 ## WinRT
 ```c#

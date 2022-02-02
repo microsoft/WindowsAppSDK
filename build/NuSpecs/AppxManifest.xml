@@ -61,6 +61,8 @@
 		  <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastAssets" ThreadingModel="both" />
 		  <ActivatableClass ActivatableClassId="Microsoft.Windows.ToastNotifications.ToastNotificationManager" ThreadingModel="both" />
 
+          <!-- AccessControl -->
+          <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
       </InProcessServer>
     </Extension>
   </Extensions>
