@@ -274,12 +274,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 wil::unique_cotaskmem_string unpackagedAppUserModelId;
                 RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
 
-                THROW_IF_FAILED(::CoRegisterClassObject(
-                    s_taskClsid,
-                    winrt::make<PushNotificationBackgroundTaskFactory>().get(),
-                    CLSCTX_LOCAL_SERVER,
-                    REGCLS_MULTIPLEUSE,
-                    &s_comActivatorRegistration));
+                if (AppModel::Identity::IsPackagedProcess())
+                {
+                    THROW_IF_FAILED(::CoRegisterClassObject(
+                        s_taskClsid,
+                        winrt::make<PushNotificationBackgroundTaskFactory>().get(),
+                        CLSCTX_LOCAL_SERVER,
+                        REGCLS_MULTIPLEUSE,
+                        &s_comActivatorRegistration));
+                }
 
                 {
                     auto lock = s_activatorInfoLock.lock_exclusive();
