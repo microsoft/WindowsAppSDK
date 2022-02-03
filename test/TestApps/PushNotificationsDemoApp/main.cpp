@@ -123,7 +123,7 @@ int main()
     }
     else
     {
-        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator, winrt::guid("ccd2ae3f-764f-4ae3-be45-9804761b28b2"));
+        PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
         PushNotificationManager::RegisterActivator(info);
     }
 
