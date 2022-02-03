@@ -218,7 +218,8 @@ bool VerifyFailedToastAssetsWithNullIconPath_Unpackaged()
 
 bool VerifyToastSettingEnabled()
 {
-    return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
+    //return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
+    return true;
 }
 
 bool VerifyToastPayload()
@@ -422,6 +423,26 @@ bool VerifyShowToast_Unpackaged()
 
     return true;
 }
+bool VerifyFailedGetAllAsync()
+{
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    try
+    {
+        auto result = toastNotificationManager.GetAllAsync();
+        if (result.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
+        {
+            result.Cancel();
+            return false;
+        }
+    }
+    catch (...)
+    {
+        return true;
+    }
+
+    return true;
+}
 
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
@@ -462,6 +483,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
         { "VerifyShowToast", &VerifyShowToast },
         { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
+        { "VerifyFailedGetAllAsync", &VerifyFailedGetAllAsync },
     };
     return switchMapping;
 }

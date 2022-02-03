@@ -152,29 +152,6 @@ namespace Microsoft.Windows.ToastNotifications
     };
 
     [experimental]
-    // Supports Toast related operations for all prior displayed Toasts in Action Centre
-    runtimeclass ToastNotificationHistory
-    {
-        // Removes a specific toast with a specific toastIdentifier from Action Centre
-        Windows.Foundation.IAsyncAction RemoveWithIdentiferAsync(UInt32 toastIdentifier);
-
-        // Removes a toast having a specific tag
-        Windows.Foundation.IAsyncAction RemoveWithTagAsync(String tag);
-
-        // Removes a toast having a specific tag and group
-        Windows.Foundation.IAsyncAction RemoveWithTagGroupAsync(String tag, String group);
-
-        // Remove all toasts for a specific group
-        Windows.Foundation.IAsyncAction RemoveGroupAsync(String group);
-
-        // Removes all the toasts for the App from Action Centre
-        Windows.Foundation.IAsyncAction RemoveAllAsync();
-
-        // Gets all the toasts for the App from Action Centre
-        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<ToastNotification> > GetAllAsync();
-    };
-
-    [experimental]
     // The manager class which encompasses all Toast API Functionality
     runtimeclass ToastNotificationManager
     {
@@ -202,8 +179,23 @@ namespace Microsoft.Windows.ToastNotifications
         // Get the Toast Setting status for the app
         ToastNotificationSetting Setting{ get; };
 
-        // Gets an instance of ToastHistory
-        ToastNotificationHistory History{ get; };
+        // Removes a specific toast with a specific toastIdentifier from Action Centre
+        Windows.Foundation.IAsyncAction RemoveWithIdentiferAsync(UInt32 toastIdentifier);
+
+        // Removes a toast having a specific tag
+        Windows.Foundation.IAsyncAction RemoveWithTagAsync(String tag);
+
+        // Removes a toast having a specific tag and group
+        Windows.Foundation.IAsyncAction RemoveWithTagGroupAsync(String tag, String group);
+
+        // Remove all toasts for a specific group
+        Windows.Foundation.IAsyncAction RemoveGroupAsync(String group);
+
+        // Removes all the toasts for the App from Action Centre
+        Windows.Foundation.IAsyncAction RemoveAllAsync();
+
+        // Gets all the toasts for the App from Action Centre
+        Windows.Foundation.IAsyncOperation<Windows.Foundation.Collections.IVector<ToastNotification> > GetAllAsync();
 
         // Gets an Xml Payload based ona predefined Toast Template
         Windows.Data.Xml.Dom.XmlDocument GetXmlTemplateContent(ToastTemplateType type);

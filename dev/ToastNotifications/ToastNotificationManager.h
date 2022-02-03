@@ -25,7 +25,12 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting Setting();
 
-        winrt::Microsoft::Windows::ToastNotifications::ToastNotificationHistory History();
+        winrt::Windows::Foundation::IAsyncAction RemoveWithIdentiferAsync(uint32_t toastIdentifier);
+        winrt::Windows::Foundation::IAsyncAction RemoveWithTagAsync(hstring tag);
+        winrt::Windows::Foundation::IAsyncAction RemoveWithTagGroupAsync(hstring tag, hstring group);
+        winrt::Windows::Foundation::IAsyncAction RemoveGroupAsync(hstring group);
+        winrt::Windows::Foundation::IAsyncAction RemoveAllAsync();
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>> GetAllAsync();
 
         winrt::Windows::Data::Xml::Dom::XmlDocument GetXmlTemplateContent(winrt::Microsoft::Windows::ToastNotifications::ToastTemplateType const& type);
     };

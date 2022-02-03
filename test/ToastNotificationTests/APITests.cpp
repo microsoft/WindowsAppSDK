@@ -338,5 +338,14 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
         }
+        TEST_METHOD(VerifyFailedGetAllAsync)
+        {
+            RunTest(L"VerifyFailedGetAllAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedGetAllAsync_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedGetAllAsync", testWaitTime());
+        }
     };
 }
