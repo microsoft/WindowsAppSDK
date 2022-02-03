@@ -158,7 +158,12 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveAllAsync()
     {
-        throw hresult_not_implemented();
+        co_await winrt::resume_background();
+
+        std::wstring appId{ RetrieveToastAppId() };
+        auto result{ ToastNotifications_RemoveAllToastsForApp(appId.c_str()) };
+
+        co_return;
     }
     wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long payloadLength, _In_ byte* utf8String)
     {

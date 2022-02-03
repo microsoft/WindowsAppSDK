@@ -218,8 +218,7 @@ bool VerifyFailedToastAssetsWithNullIconPath_Unpackaged()
 
 bool VerifyToastSettingEnabled()
 {
-    //return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
-    return true;
+    return winrt::ToastNotificationManager::Default().Setting() == winrt::ToastNotificationSetting::Enabled;
 }
 
 bool VerifyToastPayload()
@@ -423,9 +422,85 @@ bool VerifyShowToast_Unpackaged()
 
     return true;
 }
+bool VerifyRemoveAllAsync()
+{
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    auto result0 = toastNotificationManager.RemoveAllAsync();
+    if (result0.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        result0.Cancel();
+        return false;
+    }
+
+    winrt::ToastNotification toast1{ GetToastNotification() };
+    toastNotificationManager.ShowToast(toast1);
+
+    winrt::ToastNotification toast2{ GetToastNotification() };
+    toastNotificationManager.ShowToast(toast2);
+
+    winrt::ToastNotification toast3{ GetToastNotification() };
+    toastNotificationManager.ShowToast(toast3);
+
+    auto result1 = toastNotificationManager.GetAllAsync();
+    if (result1.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        result1.Cancel();
+        return false;
+    }
+
+    auto result1a = result1.get();
+    auto size = result1a.Size();
+    if (size != 3)
+    {
+        return false;
+    }
+
+    auto result2 = toastNotificationManager.RemoveAllAsync();
+    if (result2.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        result2.Cancel();
+        return false;
+    }
+
+    //try
+    //{
+        auto result3 = toastNotificationManager.GetAllAsync();
+        if (result3.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
+        {
+            result3.Cancel();
+            return false;
+        }
+
+        return true;
+#if 0
+        auto result3a = result3.get();
+        auto size = result3a.Size();
+        if (size != 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    catch (...)
+    {
+        return true;
+    }
+#endif
+    return true;
+}
+
 bool VerifyFailedGetAllAsync()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    auto result0 = toastNotificationManager.RemoveAllAsync();
+    if (result0.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        result0.Cancel();
+        return false;
+    }
 
     try
     {
@@ -483,6 +558,7 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
         { "VerifyShowToast", &VerifyShowToast },
         { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
+        { "VerifyRemoveAllAsync", &VerifyRemoveAllAsync },
         { "VerifyFailedGetAllAsync", &VerifyFailedGetAllAsync },
     };
     return switchMapping;
