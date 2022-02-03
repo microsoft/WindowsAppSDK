@@ -184,14 +184,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullAssets)
+        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullActivationInfo)
         {
-            RunTest(L"VerifyFailedRegisterActivatorUsingNullAssets", testWaitTime());
+            RunTest(L"VerifyFailedRegisterActivatorUsingNullActivationInfo", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged)
+        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyRegisterActivatorandUnRegisterActivatorUsingClsid)

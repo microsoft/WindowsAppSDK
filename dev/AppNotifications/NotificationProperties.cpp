@@ -3,14 +3,14 @@
 
 #include "pch.h"
 
-#include "ToastNotification.h"
+#include "AppNotification.h"
 #include "NotificationProperties.h"
-#include "ToastNotificationUtility.h"
+#include "AppNotificationUtility.h"
 #include "../PushNotifications/PushNotificationUtility.h"
 
 namespace winrt
 {
-    using namespace winrt::Microsoft::Windows::ToastNotifications;
+    using namespace winrt::Microsoft::Windows::AppNotifications;
 }
 
 namespace ToastABI
@@ -23,7 +23,7 @@ namespace Helpers
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
-NotificationProperties::NotificationProperties(winrt::ToastNotification const& toastNotification)
+NotificationProperties::NotificationProperties(winrt::AppNotification const& toastNotification)
 {
     // Extract payload and convert it from XML to a byte array
     auto payload = toastNotification.Payload();
@@ -33,12 +33,12 @@ NotificationProperties::NotificationProperties(winrt::ToastNotification const& t
     m_payload = wil::unique_cotaskmem_array_ptr<byte>(static_cast<byte*>(CoTaskMemAlloc(payloadAsSimpleString.size())), payloadAsSimpleString.size());
     CopyMemory(m_payload.data(), payloadAsSimpleString.c_str(), payloadAsSimpleString.size());
 
-    m_notificationId = toastNotification.ToastId();
+    m_notificationId = toastNotification.Id();
 
     m_tag = toastNotification.Tag();
     m_group = toastNotification.Group();
 
-    m_expiry = winrt::clock::to_file_time(toastNotification.ExpirationTime());
+    m_expiry = winrt::clock::to_file_time(toastNotification.Expiration());
     m_arrivalTime = winrt::clock::to_file_time(winrt::clock::now());
 
     m_expiresOnReboot = toastNotification.ExpiresOnReboot();
@@ -82,7 +82,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Tag(_Out_ HSTRING* 
 {
     auto lock = m_lock.lock_shared();
 
-    *tag = safe_make_unique_hstring(m_tag.c_str()).release();
+    *tag = Microsoft::Windows::AppNotifications::Helpers::safe_make_unique_hstring(m_tag.c_str()).release();
     return S_OK;
 }
 CATCH_RETURN()
@@ -91,7 +91,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Group(_Out_ HSTRING
 {
     auto lock = m_lock.lock_shared();
 
-    *group = safe_make_unique_hstring(m_group.c_str()).release();
+    *group = Microsoft::Windows::AppNotifications::Helpers::safe_make_unique_hstring(m_group.c_str()).release();
     return S_OK;
 }
 CATCH_RETURN()

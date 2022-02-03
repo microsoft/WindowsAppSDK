@@ -1,22 +1,24 @@
 ﻿#include "pch.h"
-#include <ToastActivationCallback.h>
-#include "ToastActivatedEventArgs.h"
+#include <AppNotificationActivationCallback.h>
+#include "AppNotificationActivatedEventArgs.h"
 #include "externs.h"
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/base.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <iostream>
-#include <ToastNotificationUtility.h>
+#include <AppNotificationUtility.h>
 
 namespace winrt
 {
-    using namespace Microsoft::Windows::ToastNotifications;
+    using namespace Microsoft::Windows::AppNotifications;
     using namespace Windows::ApplicationModel::Core;
     using namespace Windows::Foundation;
     using namespace Windows::Foundation::Collections;
 }
 
-HRESULT __stdcall ToastActivationCallback::Activate(
+using namespace Microsoft::Windows::AppNotifications::Helpers;
+
+HRESULT __stdcall AppNotificationActivationCallback::Activate(
     LPCWSTR /* appUserModelId */,
     LPCWSTR invokedArgs,
     [[maybe_unused]] NOTIFICATION_USER_INPUT_DATA const* data,
@@ -28,13 +30,12 @@ HRESULT __stdcall ToastActivationCallback::Activate(
         userInput.Insert(data[i].Key, data[i].Value);
     }
 
-    winrt::ToastActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::ToastNotifications::implementation::ToastActivatedEventArgs>(invokedArgs, userInput);
+    winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
-    
-    if (GetToastHandlers())
+    if (GetAppNotificationHandlers())
     {
         /* As the process is already launched, we invoke the foreground toast event handlers with the activatedEventArgs */
-        GetToastHandlers()(*this, activatedEventArgs);
+        GetAppNotificationHandlers()(winrt::Microsoft::Windows::AppNotifications::AppNotificationManager::Default(), activatedEventArgs);
     }
     else
     {
