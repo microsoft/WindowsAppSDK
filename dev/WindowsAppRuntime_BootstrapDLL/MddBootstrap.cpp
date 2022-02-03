@@ -56,25 +56,11 @@ MDD_PACKAGEDEPENDENCY_CONTEXT g_packageDependencyContext{};
 static std::wstring g_test_ddlmPackageNamePrefix;
 static std::wstring g_test_ddlmPackagePublisherId;
 
-namespace MddCore
-{
-// Temporary check to prevent accidental misuse and false bug reports until we address Issue #567 https://github.com/microsoft/WindowsAppSdk/issues/567
-HRESULT FailIfElevated()
-{
-    RETURN_HR_IF_MSG(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), Security::IntegrityLevel::IsElevated() || Security::IntegrityLevel::IsElevated(GetCurrentProcessToken()),
-                     "DynamicDependencies Bootstrap doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567");
-    return S_OK;
-}
-}
-
 STDAPI MddBootstrapInitialize(
     UINT32 majorMinorVersion,
     PCWSTR versionTag,
     PACKAGE_VERSION minVersion) noexcept try
 {
-    // Dynamic Dependencies doesn't support elevation. See Issue #567 https://github.com/microsoft/WindowsAppSDK/issues/567
-    THROW_IF_FAILED(MddCore::FailIfElevated());
-
     // Dynamic Dependencies Bootstrap API requires a non-packaged process
     LOG_HR_IF(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), AppModel::Identity::IsPackagedProcess());
 
@@ -310,6 +296,14 @@ bool IsLifetimeManagerViaEnumeration()
                 return false;
             }
         }
+    }
+
+    // Elevated processes MUST use Enumeration.
+    // MediumIL can go either way so we'll favor it too.
+    // AppContainer cannot use Enumeration (unless we have the packageQuery capability, which is uncommon).
+    if (!wil::get_token_is_app_container())
+    {
+        return true;
     }
 
     // Use the AppExtension-style LifetimeManager

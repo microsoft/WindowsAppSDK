@@ -78,7 +78,9 @@ namespace Test::DynamicDependency
             // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
             const UINT32 c_Version_MajorMinor{ Test::Packages::DynamicDependencyLifetimeManager::c_Version_MajorMinor };
             const PACKAGE_VERSION minVersion{};
-            VERIFY_ARE_EQUAL(HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED), MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+            VERIFY_SUCCEEDED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
+
+            MddBootstrapShutdown();
         }
     };
 
