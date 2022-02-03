@@ -91,5 +91,11 @@
             <ActivatableClass ActivatableClassId="Microsoft.Windows.System.EnvironmentManager" ThreadingModel="both" />
         </InProcessServer>
     </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+        <InProcessServer>
+            <Path>Microsoft.WindowsAppRuntime.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.Security.AccessControl.SecurityDescriptorHelpers" ThreadingModel="both" />
+        </InProcessServer>
+    </Extension>
   </Extensions>
 </Package>
