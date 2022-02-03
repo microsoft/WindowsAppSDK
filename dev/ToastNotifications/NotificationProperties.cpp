@@ -7,6 +7,7 @@
 #include "NotificationProperties.h"
 #include "ToastNotificationUtility.h"
 #include "../PushNotifications/PushNotificationUtility.h"
+#include "ToastProgressDataABI.h"
 
 namespace winrt
 {
@@ -44,7 +45,7 @@ NotificationProperties::NotificationProperties(winrt::ToastNotification const& t
     m_expiresOnReboot = toastNotification.ExpiresOnReboot();
 
     // TODO: Uncomment once ToastProgressData is implemented
-    // m_progressData = toastNotification.ProgressData();
+    m_toastProgressData = winrt::make_self<ToastProgressDataABI>(toastNotification.ProgressData());
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out_ unsigned int* notificationId) noexcept
@@ -131,9 +132,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ExpiresOnReboot(_Ou
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_Out_ ToastABI::IToastProgressData** progressData) noexcept
 {
     // TODO: Uncomment once ToastProgressData is implemented
-    // auto lock = m_lock.lock_shared();
-    // *toastProgressData = m_toastProgressData.get();
-    *progressData = nullptr;
+    auto lock = m_lock.lock_shared();
+
+    m_toastProgressData.copy_to(progressData);
+
+    //*progressData = nullptr;
     return S_OK;
 }
 

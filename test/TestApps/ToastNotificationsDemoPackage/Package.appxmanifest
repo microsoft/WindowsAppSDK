@@ -11,7 +11,7 @@
 
 	<Identity
 	  Name="ToastNotificationsWin32App"
-	  Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+	  Publisher="CN=vemancha"
 	  Version="1.0.0.0" />
 
 	<Properties>

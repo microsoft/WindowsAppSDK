@@ -22,7 +22,7 @@ winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows:
     return g_toastHandlers;
 }
 
-namespace abi
+namespace ABI
 {
     using namespace ABI::Microsoft::Internal::ToastNotifications;
 }
