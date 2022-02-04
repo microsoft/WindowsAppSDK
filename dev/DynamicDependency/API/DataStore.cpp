@@ -154,6 +154,9 @@ std::filesystem::path MddCore::DataStore::GetDataStorePathForSystem()
 
 std::filesystem::path MddCore::DataStore::GetDataStorePathForUser()
 {
+    // AppContainer processes MUST use the PackagedCOM data store.
+    // MediumIL can go either way so we'll favor ApplicationDataManager as the more efficient option.
+    // Elevated CANNOT use PackagedCOM so MUST use AppliccationDataManager.
     if (wil::get_token_is_app_container())
     {
         return GetDataStorePathForUserViaCOMDataStore();
