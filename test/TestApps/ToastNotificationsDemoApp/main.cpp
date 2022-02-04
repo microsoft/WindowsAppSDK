@@ -254,23 +254,39 @@ int main()
     toast.Tag(tag);
     toast.Group(group);
 
-    winrt::ToastProgressData toastProgressData1 = GetToastProgressData(L"Downloading...", L"Weekly playlist", 0.6, L"15/26 songs", 1);
+    winrt::ToastProgressData toastProgressData1 = GetToastProgressData(L"Downloading...", L"Weekly playlist", 0.01, L"1/100 songs", 1);
     toast.ProgressData(toastProgressData1);
 
     toastNotificationManager.ShowToast(toast);
 
-
-    Sleep(5000);
-    winrt::ToastProgressData toastProgressData2 = GetToastProgressData(L"Downloading...", L"Weekly playlist", 0.7, L"18/26 songs", 2);
-
+    Sleep(2000);
     std::wcout << L"Update toast Progress data for a given tag and group" << std::endl;
-    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(toastProgressData2, tag, group);
-    auto progressResult = ProgressResultOperationHelper(progressResultOperation);
-
-    if (progressResult == winrt::ToastProgressResult::Succeeded)
+    auto sequenceNumber = 2;
+    for (double i = 0.02; i < 1.01; i += 0.01)
     {
-        std::wcout << L"Update notification data succeeded" << std::endl;
+        auto str = std::to_wstring(static_cast<int>(i * 100));
+        winrt::ToastProgressData toastProgressData2 = GetToastProgressData((static_cast<int>(i) == 1) ? L"Downloaded" : L"Downloading...", L"Weekly playlist", i, str + L"/100 songs", sequenceNumber);
+
+        auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(toastProgressData2, tag, group);
+        auto progressResult = ProgressResultOperationHelper(progressResultOperation);
+
+        if (progressResult == winrt::ToastProgressResult::Succeeded)
+        {
+            std::wcout << L"Update notification data succeeded: " << sequenceNumber << std::endl;
+        }
+        else if (progressResult == winrt::ToastProgressResult::NotificationNotFound)
+        {
+            std::wcout << L"NotificationNotFound: " << sequenceNumber << std::endl;
+        }
+        else if (progressResult == winrt::ToastProgressResult::Failed)
+        {
+            std::wcout << L"Update notification data Failed: " << sequenceNumber << std::endl;
+        }
+
+        sequenceNumber += 1;
     }
+
+
 
     std::wcout << L"Press enter to exit the app.\n\n";
     std::cin.ignore();

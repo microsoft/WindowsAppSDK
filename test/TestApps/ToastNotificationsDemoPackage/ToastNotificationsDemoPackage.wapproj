@@ -47,7 +47,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundlePlatforms>$(Platform)</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>C0BE0F72F7C2AE3A4355591E5CF99FC16F207CEF</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>F1BD03D8EC4D3E44C9D8570FCE4A5C1E3C049E14</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <AppxBundle>Always</AppxBundle>
@@ -80,6 +80,7 @@
     <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Images\StoreLogo.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
+    <None Include="ToastNotificationsDemoPackage_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
   <ItemGroup>
