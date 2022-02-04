@@ -326,7 +326,7 @@ namespace Test::ToastNotifications
 
         TEST_METHOD(VerifyToastExpiresOnReboot_Unpackaged)
         {
-            RunTest(L"VerifyToastExpiresOnReboot", testWaitTime());
+            RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
         }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup)
