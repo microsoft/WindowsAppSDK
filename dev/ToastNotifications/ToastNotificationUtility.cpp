@@ -212,3 +212,28 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
     THROW_IF_WIN32_ERROR(status);
     return registeredGuid;
 }
+
+wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long payloadLength, _In_ byte* utf8String)
+{
+    int size = MultiByteToWideChar(
+        CP_UTF8,
+        0,
+        reinterpret_cast<PCSTR>(utf8String),
+        payloadLength,
+        nullptr,
+        0);
+    THROW_LAST_ERROR_IF(size == 0);
+
+    wil::unique_cotaskmem_string wideString = wil::make_unique_string<wil::unique_cotaskmem_string>(nullptr, size);
+
+    size = MultiByteToWideChar(
+        CP_UTF8,
+        0,
+        reinterpret_cast<PCSTR>(utf8String),
+        payloadLength,
+        wideString.get(),
+        size);
+    THROW_LAST_ERROR_IF(size == 0);
+
+    return wideString;
+}

@@ -57,3 +57,5 @@ void UnRegisterToastAppIdentifierFromRegistry();
 HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept;
 
 std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details);
+
+wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long payloadLength, _In_ byte* utf8String);

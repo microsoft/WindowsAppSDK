@@ -195,12 +195,12 @@ bool VerifyRegisterActivatorandUnRegisterActivatorUsingClsid()
 {
     winrt::ToastNotificationManager::Default().UnregisterActivator();
 
-    auto activationInfo = winrt::ToastActivationInfo::CreateFromActivationGuid(c_toastComServerId);
-
-    winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
-
     try
     {
+        auto activationInfo = winrt::ToastActivationInfo::CreateFromActivationGuid(c_toastComServerId);
+
+        winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
+
         winrt::ToastNotificationManager::Default().UnregisterActivator();
     }
     catch (...)
