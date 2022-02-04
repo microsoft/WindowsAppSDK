@@ -19,11 +19,12 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         void Status(hstring const& value);
 
     private:
-        uint32_t m_sequenceNumber;
+        uint32_t m_sequenceNumber{};
         hstring m_title;
-        double m_progressValue;
+        double m_progressValue{};
         hstring m_progressvalueString;
         hstring m_progressStatus;
+        wil::srwlock m_lock;
     };
 }
 namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation

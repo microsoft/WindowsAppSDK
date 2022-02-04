@@ -22,45 +22,45 @@ ToastProgressDataABI::ToastProgressDataABI(winrt::ToastProgressData const& progr
     m_progressData = progressData;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) ToastProgressDataABI::get_SequenceNumber(_Out_ unsigned int* value)
+STDMETHODIMP ToastProgressDataABI::get_SequenceNumber(_Out_ unsigned int* value)
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *value = m_progressData.SequenceNumber();
 
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) ToastProgressDataABI::get_Title(_Out_ HSTRING* value)
+STDMETHODIMP ToastProgressDataABI::get_Title(_Out_ HSTRING* value)
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *value = safe_make_unique_hstring(m_progressData.Title().c_str()).release();
 
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) ToastProgressDataABI::get_Value(_Out_ double* value)
+STDMETHODIMP ToastProgressDataABI::get_Value(_Out_ double* value)
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *value = m_progressData.Value();
 
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) ToastProgressDataABI::get_ValueStringOverride(_Out_ HSTRING* value)
+STDMETHODIMP ToastProgressDataABI::get_ValueStringOverride(_Out_ HSTRING* value)
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *value = safe_make_unique_hstring(m_progressData.ValueStringOverride().c_str()).release();
 
     return S_OK;
 }
 
-STDMETHODIMP_(HRESULT __stdcall) ToastProgressDataABI::get_Status(_Out_ HSTRING* value)
+STDMETHODIMP ToastProgressDataABI::get_Status(_Out_ HSTRING* value)
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *value = safe_make_unique_hstring(m_progressData.Status().c_str()).release();
 

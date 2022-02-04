@@ -303,7 +303,22 @@ bool VerifyToastProgressDataFromToast()
     toast.ProgressData(progressData);
 
     auto progressDataFromToast = toast.ProgressData();
-    if (progressDataFromToast != progressData)
+    if (progressDataFromToast.Status() != L"SomeStatus")
+    {
+        return false;
+    }
+
+    if (progressDataFromToast.Title() != L"SomeTitle")
+    {
+        return false;
+    }
+
+    if (progressDataFromToast.Value() != 0.14)
+    {
+        return false;
+    }
+
+    if (progressDataFromToast.ValueStringOverride() != L"14%")
     {
         return false;
     }
@@ -443,11 +458,9 @@ std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventAr
     return unitTestName;
 }
 
-constexpr auto timeout{ std::chrono::seconds(5) };
-
 winrt::ToastProgressResult ProgressResultOperationHelper(winrt::IAsyncOperation<winrt::ToastProgressResult> progressResultOperation)
 {
-    if (progressResultOperation.wait_for(timeout) != winrt::AsyncStatus::Completed)
+    if (progressResultOperation.wait_for(std::chrono::seconds(2)) != winrt::AsyncStatus::Completed)
     {
         progressResultOperation.Cancel();
         return winrt::ToastProgressResult::Failed; // timed out or failed
@@ -686,8 +699,6 @@ int main() try
 
         testResult = runUnitTest(unitTest);
     }
-
-   // testResult = VerifyUpdateNotificationDataWithEmptyTagAndValidGroup_Unpackaged();
 
     return testResult ? 0 : 1; // We want 0 to be success and 1 failure
 }
