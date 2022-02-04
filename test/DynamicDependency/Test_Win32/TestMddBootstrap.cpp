@@ -233,4 +233,62 @@ namespace Test::DynamicDependency
             }
         }
     };
+
+    class BootstrapTests_Elevated : BootstrapTests
+    {
+    public:
+        BEGIN_TEST_CLASS(BootstrapTests_Elevated)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Method")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup_Elevated)
+        {
+            return Setup();
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup_Elevated)
+        {
+            return Cleanup();
+        }
+
+        TEST_METHOD(Initialize_DDLMNotFound_Elevated)
+        {
+            Initialize_DDLMNotFound();
+        }
+
+        TEST_METHOD(Initialize_DDLMMinVersionNoMatch_Elevated)
+        {
+            Initialize_DDLMMinVersionNoMatch();
+        }
+
+        TEST_METHOD(Initialize_Elevated)
+        {
+            Initialize();
+        }
+
+        TEST_METHOD(ShutdownWithoutInitialize_Elevated)
+        {
+            ShutdownWithoutInitialize();
+        }
+
+        TEST_METHOD(GetCurrentPackageInfo_NotPackaged_InvalidParameter_Elevated)
+        {
+            GetCurrentPackageInfo_NotPackaged_InvalidParameter();
+        }
+
+        TEST_METHOD(GetCurrentPackageInfo_NotPackaged_Elevated)
+        {
+            GetCurrentPackageInfo_NotPackaged();
+        }
+
+#if defined(TODO_EnableAfterConvertingToTAEF)
+        TEST_METHOD(GetCurrentPackageInfo_Packaged_Elevated)
+        {
+            GetCurrentPackageInfo_Packaged();
+        }
+#endif
+    };
 }
