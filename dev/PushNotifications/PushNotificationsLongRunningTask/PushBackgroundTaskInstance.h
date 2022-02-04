@@ -1,8 +1,11 @@
 ﻿#include <winrt/Windows.ApplicationModel.background.h>
 
+// Mocks IBackgroundTaskInstance to send raw payloads to packaged apps in
+// PushNotificationBackgroundTask::Run by com activation from PushNotificationsLongRunningProcess
 struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {
     PushBackgroundTaskInstance() {};
+    PushBackgroundTaskInstance(winrt::com_ptr<PushRawNotification> rawNotification): m_rawNotification(rawNotification) {};
 
     winrt::guid InstanceId();
     UINT32 SuspendedCount();
@@ -13,10 +16,8 @@ struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance
     winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);
     void Canceled(winrt::event_token const& token) noexcept;
     winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
-
-    void SetRawNotificationPayload(std::wstring const& payload) { m_payload = payload; };
 private:
-    std::wstring m_payload;
+    winrt::com_ptr<PushRawNotification> m_rawNotification{ nullptr };
 };
 
 struct PushBackgroundTaskInstanceFactory : winrt::implements<PushBackgroundTaskInstanceFactory, IClassFactory>

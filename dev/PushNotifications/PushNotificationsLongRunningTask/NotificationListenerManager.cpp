@@ -9,11 +9,12 @@ void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManag
     m_toastRegistrationManager = toastRegistrationManager;
 }
 
+// The mapping setup here is appId -> (processName, comServerClsid)
 void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::pair<std::wstring, winrt::guid>>& appIdList)
 {
     for (auto appData : appIdList)
     {
-        AddListener(appData.first, appData.second.first, appData.second.second);
+        AddListener(appData.first /* appId */, appData.second.first /* processName */, appData.second.second /* comServerClsid */);
     }
 }
 

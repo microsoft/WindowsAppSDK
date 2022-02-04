@@ -44,10 +44,10 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
         else
         {
             std::wstring payloadString(payloadArray.begin(), payloadArray.end());
+            auto pushRawNotification{ winrt::make_self<PushRawNotification>(payloadString) };
+            auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(pushRawNotification) };
 
             auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(m_comServerClsid, CLSCTX_ALL);
-            auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>() };
-            pushBackgroundTaskInstance->SetRawNotificationPayload(payloadString);
             localBackgroundTask.Run(*pushBackgroundTaskInstance);
         }
     };

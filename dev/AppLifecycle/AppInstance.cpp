@@ -491,7 +491,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
                 if (contractArgument == c_pushProtocolArgumentString || contractArgument == c_appNotificationProtocolArgumentString)
                 {
                     // Generate a basic encoded launch Uri for Push/Toast activations
-                    PCWSTR contractId = (contractArgument == c_pushProtocolArgumentString) ? c_pushContractId : c_toastContractId;
+                    PCWSTR contractId = (contractArgument == c_pushProtocolArgumentString) ? c_pushContractId : c_appNotificationContractId;
                     std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", contractId);
 
                     contractArgument = c_msProtocolArgumentString;
