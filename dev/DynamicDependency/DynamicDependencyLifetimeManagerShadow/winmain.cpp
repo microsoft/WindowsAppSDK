@@ -3,8 +3,8 @@
 
 #include "pch.h"
 
-const HRESULT WINDOWSAPPSDK_DDLM_SHUTDOWN{ MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0x8000) };
-const HRESULT WINDOWSAPPSDK_DDLM_CALLER_TERMINATED{ MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0x8001) };
+const HRESULT WINDOWSAPPSDK_DDLM_SHUTDOWN{ MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x8000) };
+const HRESULT WINDOWSAPPSDK_DDLM_CALLER_TERMINATED{ MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x8001) };
 const HRESULT WINDOWSAPPSDK_DDLM_CALLER_NOT_FOUND{ MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0x8002) };
 
 int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*lpCmdLine*/, int /*nCmdShow*/)
@@ -44,10 +44,12 @@ int WINAPI WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, PSTR /*
     auto rc{ WaitForMultipleObjects(ARRAYSIZE(waitForHandles), waitForHandles, FALSE, INFINITE) };
     if (rc == WAIT_OBJECT_0)
     {
+        //TODO:Replace with Telemetry
         (void) LOG_HR_MSG(WINDOWSAPPSDK_DDLM_SHUTDOWN, "DDLM.Shutdown: %ls", eventName);
     }
     else if (rc == WAIT_OBJECT_0 + 1)
     {
+        //TODO:Replace with Telemetry
         (void) LOG_HR_MSG(WINDOWSAPPSDK_DDLM_CALLER_TERMINATED, "DDLM.CallerTerminated: %ls", eventName);
     }
     else if (rc == WAIT_FAILED)
