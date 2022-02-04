@@ -213,27 +213,79 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
     return registeredGuid;
 }
 
-wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long payloadLength, _In_ byte* utf8String)
+wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const byte* utf8String)
 {
-    int size = MultiByteToWideChar(
+    int size{ MultiByteToWideChar(
         CP_UTF8,
         0,
         reinterpret_cast<PCSTR>(utf8String),
-        payloadLength,
+        length,
         nullptr,
-        0);
+        0) };
     THROW_LAST_ERROR_IF(size == 0);
 
-    wil::unique_cotaskmem_string wideString = wil::make_unique_string<wil::unique_cotaskmem_string>(nullptr, size);
+    wil::unique_cotaskmem_string wideString{ wil::make_unique_string<wil::unique_cotaskmem_string>(nullptr, size) };
 
     size = MultiByteToWideChar(
         CP_UTF8,
         0,
         reinterpret_cast<PCSTR>(utf8String),
-        payloadLength,
+        length,
         wideString.get(),
         size);
     THROW_LAST_ERROR_IF(size == 0);
 
     return wideString;
+}
+
+winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties)
+{
+    unsigned int payloadSize{};
+    wil::unique_cotaskmem_array_ptr<byte> payload;
+    properties->get_Payload(&payloadSize, &payload);
+
+    auto wide{ ConvertUtf8StringToWideString(payloadSize, payload.get()) };
+    winrt::hstring xmlPayload{ wide.get() };
+
+    winrt::Windows::Data::Xml::Dom::XmlDocument xmlDocument{};
+    xmlDocument.LoadXml(xmlPayload);
+
+    winrt::Microsoft::Windows::ToastNotifications::ToastNotification notification(xmlDocument);
+
+    wil::unique_hstring tag{};
+    properties->get_Tag(&tag);
+    notification.Tag(wil::str_raw_ptr(tag));
+
+
+    wil::unique_hstring group{};
+    properties->get_Group(&group);
+    notification.Group(wil::str_raw_ptr(group));
+
+    unsigned int notificationId{};
+    properties->get_NotificationId(&notificationId);
+    notification.ToastId(notificationId);
+
+#if 0
+    winrt::com_ptr<ToastABI::IToastProgressData> toastProgressDataActual;
+    VERIFY_SUCCEEDED(actual->get_ToastProgressData(toastProgressDataActual.put()));
+    if (toastProgressDataExpected)
+    {
+        VerifyAreEqualsToastProgressData(toastProgressDataExpected, toastProgressDataActual.get());
+    }
+#endif
+    unsigned long long expiry{};
+    properties->get_Expiry(&expiry);
+    FILETIME expiryFileTime{};
+    expiryFileTime.dwHighDateTime = expiry >> 32;
+    expiryFileTime.dwLowDateTime = static_cast<DWORD>(expiry);
+    auto expiryClock{ winrt::clock::from_file_time(expiryFileTime) };
+    notification.ExpirationTime(expiryClock);
+
+    boolean expiresOnReboot{};
+    properties->get_ExpiresOnReboot(&expiresOnReboot);
+    notification.ExpiresOnReboot(expiresOnReboot);
+
+    // Priority and SupressDisplay are transient values and left to their default.
+
+    return notification;
 }

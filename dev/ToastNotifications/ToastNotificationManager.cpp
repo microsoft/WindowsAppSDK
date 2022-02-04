@@ -140,7 +140,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return static_cast<winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting>(toastNotificationSetting);
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithIdentiferAsync(uint32_t toastIdentifier)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithIdentiferAsync(uint32_t /*toastIdentifier*/)
     {
         throw hresult_not_implemented();
     }
@@ -161,7 +161,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveToastAppId() };
-        auto result{ ToastNotifications_RemoveAllToastsForApp(appId.c_str()) };
+        THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
 
         co_return;
     }
@@ -185,55 +185,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         for (unsigned i = 0; i < count; ++i)
         {
             ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties;
-            auto r = notificationProperties->GetAt(i, &properties);
+            THROW_IF_FAILED(notificationProperties->GetAt(i, &properties));
 
-            unsigned int payloadSize{};
-            wil::unique_cotaskmem_array_ptr<byte> payload;
-            properties->get_Payload(&payloadSize, &payload);
-
-            auto wide{ ConvertUtf8StringToWideString(payloadSize, payload.get()) };
-            hstring xmlPayload{ wide.get() };
-
-            winrt::Windows::Data::Xml::Dom::XmlDocument xmlDocument{};
-            xmlDocument.LoadXml(xmlPayload);
-
-            winrt::Microsoft::Windows::ToastNotifications::ToastNotification notification(xmlDocument);
-
-            wil::unique_hstring tag{};
-            properties->get_Tag(&tag);
-            notification.Tag(wil::str_raw_ptr(tag));
-
-
-            wil::unique_hstring group{};
-            properties->get_Group(&group);
-            notification.Group(wil::str_raw_ptr(group));
-
-            unsigned int notificationId{};
-            properties->get_NotificationId(&notificationId);
-            notification.ToastId(notificationId);
-
-#if 0
-            winrt::com_ptr<ToastABI::IToastProgressData> toastProgressDataActual;
-            VERIFY_SUCCEEDED(actual->get_ToastProgressData(toastProgressDataActual.put()));
-            if (toastProgressDataExpected)
-            {
-                VerifyAreEqualsToastProgressData(toastProgressDataExpected, toastProgressDataActual.get());
-            }
-#endif
-            unsigned long long expiry{};
-            properties->get_Expiry(&expiry);
-            FILETIME expiryFileTime{};
-            expiryFileTime.dwHighDateTime = expiry >> 32;
-            expiryFileTime.dwLowDateTime = expiry;
-            auto expiryClock{ winrt::clock::from_file_time(expiryFileTime) };
-            notification.ExpirationTime(expiryClock);
-
-            boolean expiresOnReboot{};
-            properties->get_ExpiresOnReboot(&expiresOnReboot);
-            notification.ExpiresOnReboot(expiresOnReboot);
-
-
-            // Priority and SupressDisplay are transient values and left to their default.
+            auto notification{ ToastNotificationFromToastProperties(properties) };
 
             result.Append(notification);
         }
