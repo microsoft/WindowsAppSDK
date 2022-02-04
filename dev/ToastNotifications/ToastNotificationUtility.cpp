@@ -256,7 +256,6 @@ winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificati
     properties->get_Tag(&tag);
     notification.Tag(wil::str_raw_ptr(tag));
 
-
     wil::unique_hstring group{};
     properties->get_Group(&group);
     notification.Group(wil::str_raw_ptr(group));
@@ -273,6 +272,7 @@ winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificati
         VerifyAreEqualsToastProgressData(toastProgressDataExpected, toastProgressDataActual.get());
     }
 #endif
+
     unsigned long long expiry{};
     properties->get_Expiry(&expiry);
     FILETIME expiryFileTime{};
@@ -285,7 +285,7 @@ winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificati
     properties->get_ExpiresOnReboot(&expiresOnReboot);
     notification.ExpiresOnReboot(expiresOnReboot);
 
-    // Priority and SupressDisplay are transient values and left to their default.
+    // Priority and SupressDisplay are transient values that do not exist in ToastProperties and thus, are left to their default.
 
     return notification;
 }

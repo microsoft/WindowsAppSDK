@@ -170,29 +170,27 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveToastAppId() };
-        ABI::Windows::Foundation::Collections::IVector<ABI::Microsoft::Internal::ToastNotifications::INotificationProperties*>* notificationProperties;
-        auto status = ToastNotifications_GetHistory(appId.c_str(), &notificationProperties);
-
-        THROW_HR_IF(E_NOT_SET, status != S_OK);
+        ABI::Windows::Foundation::Collections::IVector<ABI::Microsoft::Internal::ToastNotifications::INotificationProperties*>* toastPropertiesCollection;
+        THROW_IF_FAILED(ToastNotifications_GetHistory(appId.c_str(), &toastPropertiesCollection));
 
         unsigned int count{};
-        THROW_HR_IF(E_NOT_SET, notificationProperties->get_Size(&count) !=  0);
+        THROW_IF_FAILED(toastPropertiesCollection->get_Size(&count));
         
         THROW_HR_IF(E_NOT_SET, count == 0);
 
-        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification> result { winrt::single_threaded_vector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>() };
+        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification> toastNotifications { winrt::single_threaded_vector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>() };
 
         for (unsigned i = 0; i < count; ++i)
         {
-            ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties;
-            THROW_IF_FAILED(notificationProperties->GetAt(i, &properties));
+            ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* toastProperties;
+            THROW_IF_FAILED(toastPropertiesCollection->GetAt(i, &toastProperties));
 
-            auto notification{ ToastNotificationFromToastProperties(properties) };
+            auto toastNotification{ ToastNotificationFromToastProperties(toastProperties) };
 
-            result.Append(notification);
+            toastNotifications.Append(toastNotification);
         }
 
-        co_return result;
+        co_return toastNotifications;
     }
     winrt::Windows::Data::Xml::Dom::XmlDocument ToastNotificationManager::GetXmlTemplateContent(winrt::Microsoft::Windows::ToastNotifications::ToastTemplateType const& /* type */)
     {
