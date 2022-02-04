@@ -7,10 +7,10 @@ parameters:
   - name: "ReleaseSigning"
     type: boolean
     default: False
-  - name: "PublishToMaestro"
+  - name: "IgnoreFailures"
     type: boolean
     default: False
-  - name: "IgnoreFailures"
+  - name: "PublishToMaestro"
     type: boolean
     default: False
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
