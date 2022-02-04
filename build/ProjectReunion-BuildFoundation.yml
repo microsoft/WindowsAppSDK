@@ -10,9 +10,6 @@ parameters:
   - name: "PublishToMaestro"
     type: boolean
     default: False
-  - name: "IgnoreFailures"
-    type: boolean
-    default: False
   - name: "WindowsAppRuntimeInsightsSourceDirectory"
     type: string
     default: $(Build.SourcesDirectory)\dev\WindowsAppRuntime_Insights
@@ -494,7 +491,7 @@ jobs:
   dependsOn: 
   - CreateNugetPackage
   - WinAppSDKIntegrationBuildAndTest
-  condition: or(succeeded(), eq(parameters.IgnoreFailures, 'true'))
+  condition: succeeded()
   pool: $(ProjectReunionBuildPool)
   variables:
     WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
