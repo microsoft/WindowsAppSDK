@@ -34,5 +34,9 @@ namespace MddCore
         static std::filesystem::path GetDataStorePathForSystem();
 
         static std::filesystem::path GetDataStorePathForUser();
+        static std::filesystem::path GetDataStorePathForUserViaCOMDataStore();
+        static std::filesystem::path GetDataStorePathForUserViaApplicationDataManager();
+
+        static std::wstring GetWindowsAppRuntimeMainPackageFamilyName();
     };
 }
