@@ -49,5 +49,5 @@ winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral PushBackgro
 
 winrt::Windows::Foundation::IInspectable PushBackgroundTaskInstance::TriggerDetails()
 {
-    return *m_rawNotification.get();
+    return winrt::box_value(m_payload);
 }

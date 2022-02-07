@@ -27,7 +27,7 @@
 #include <winrt/Windows.Networking.PushNotifications.h>
 #include <winrt/Windows.Storage.h>
 #include <wil/com.h>
-#include "PushRawNotification.h"
+
 // UDK/ProxyStub files
 #define MIDL_NS_PREFIX
 #include <FrameworkUdk/PushNotifications.h>

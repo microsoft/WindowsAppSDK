@@ -29,8 +29,17 @@ namespace winrt
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
     auto appProperties = winrt::CoreApplication::Properties();
-    winrt::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
-    appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+    if (PushNotificationHelpers::IsPackagedAppScenario())
+    {
+        winrt::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
+        appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+    }
+    else
+    {
+        winrt::hstring payload{ winrt::unbox_value<winrt::hstring>(taskInstance.TriggerDetails()) };
+        winrt::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload.c_str()) };
+        appProperties.Insert(LRP_ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+    }
 
     SetEvent(GetWaitHandleForArgs().get());
 }

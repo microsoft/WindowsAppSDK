@@ -5,7 +5,7 @@
 struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance, winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance>
 {
     PushBackgroundTaskInstance() {};
-    PushBackgroundTaskInstance(winrt::com_ptr<PushRawNotification> rawNotification): m_rawNotification(rawNotification) {};
+    PushBackgroundTaskInstance(std::wstring const& payload): m_payload(payload) {};
 
     winrt::guid InstanceId();
     UINT32 SuspendedCount();
@@ -17,7 +17,7 @@ struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance
     void Canceled(winrt::event_token const& token) noexcept;
     winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
 private:
-    winrt::com_ptr<PushRawNotification> m_rawNotification{ nullptr };
+    std::wstring m_payload;
 };
 
 struct PushBackgroundTaskInstanceFactory : winrt::implements<PushBackgroundTaskInstanceFactory, IClassFactory>

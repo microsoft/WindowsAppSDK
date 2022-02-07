@@ -9,6 +9,7 @@
 wil::unique_event& GetWaitHandleForArgs();
 
 inline const winrt::hstring ACTIVATED_EVENT_ARGS_KEY = L"GlobalActivatedEventArgs";
+inline const winrt::hstring LRP_ACTIVATED_EVENT_ARGS_KEY = L"LRPActivatedEventArgs";
 
 namespace PushNotificationHelpers
 {
@@ -34,5 +35,12 @@ inline winrt::Windows::Foundation::IInspectable GetArgsFromComStore()
     THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
 
     // If COM static store was uninit, let it throw
-    return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+    if (PushNotificationHelpers::IsPackagedAppScenario())
+    {
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+    }
+    else
+    {
+        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(LRP_ACTIVATED_EVENT_ARGS_KEY);
+    }
 }

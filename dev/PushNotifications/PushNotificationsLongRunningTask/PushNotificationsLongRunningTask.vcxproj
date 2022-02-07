@@ -233,7 +233,6 @@
     <ClCompile Include="PlatformLifetimeManager.cpp" />
     <ClCompile Include="NotificationListenerManager.cpp" />
     <ClCompile Include="PushBackgroundTaskInstance.cpp" />
-    <ClCompile Include="PushRawNotification.cpp" />
     <ClCompile Include="ToastRegistrationManager.cpp" />
     <ClCompile Include="winmain.cpp" />
   </ItemGroup>
@@ -246,7 +245,6 @@
     <ClInclude Include="PlatformLifetimeManager.h" />
     <ClInclude Include="NotificationListenerManager.h" />
     <ClInclude Include="PushBackgroundTaskInstance.h" />
-    <ClInclude Include="PushRawNotification.h" />
     <ClInclude Include="ToastRegistrationManager.h" />
   </ItemGroup>
   <ItemGroup>

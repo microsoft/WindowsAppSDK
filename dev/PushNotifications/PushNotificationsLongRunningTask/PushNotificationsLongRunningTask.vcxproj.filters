@@ -42,9 +42,6 @@
     <ClInclude Include="PushBackgroundTaskInstance.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="PushRawNotification.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -75,9 +72,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PushBackgroundTaskInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PushRawNotification.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
