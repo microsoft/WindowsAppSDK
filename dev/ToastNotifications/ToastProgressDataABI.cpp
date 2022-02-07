@@ -22,7 +22,7 @@ ToastProgressDataABI::ToastProgressDataABI(winrt::ToastProgressData const& progr
     m_progressData = progressData;
 }
 
-STDMETHODIMP ToastProgressDataABI::get_SequenceNumber(_Out_ unsigned int* value)
+STDMETHODIMP ToastProgressDataABI::get_SequenceNumber(_Out_ unsigned int* value) noexcept
 {
     auto lock{ m_lock.lock_shared() };
 
@@ -31,7 +31,7 @@ STDMETHODIMP ToastProgressDataABI::get_SequenceNumber(_Out_ unsigned int* value)
     return S_OK;
 }
 
-STDMETHODIMP ToastProgressDataABI::get_Title(_Out_ HSTRING* value)
+STDMETHODIMP ToastProgressDataABI::get_Title(_Out_ HSTRING* value) noexcept
 {
     auto lock{ m_lock.lock_shared() };
 
@@ -40,7 +40,7 @@ STDMETHODIMP ToastProgressDataABI::get_Title(_Out_ HSTRING* value)
     return S_OK;
 }
 
-STDMETHODIMP ToastProgressDataABI::get_Value(_Out_ double* value)
+STDMETHODIMP ToastProgressDataABI::get_Value(_Out_ double* value) noexcept
 {
     auto lock{ m_lock.lock_shared() };
 
@@ -49,7 +49,7 @@ STDMETHODIMP ToastProgressDataABI::get_Value(_Out_ double* value)
     return S_OK;
 }
 
-STDMETHODIMP ToastProgressDataABI::get_ValueStringOverride(_Out_ HSTRING* value)
+STDMETHODIMP ToastProgressDataABI::get_ValueStringOverride(_Out_ HSTRING* value) noexcept
 {
     auto lock{ m_lock.lock_shared() };
 
@@ -58,7 +58,7 @@ STDMETHODIMP ToastProgressDataABI::get_ValueStringOverride(_Out_ HSTRING* value)
     return S_OK;
 }
 
-STDMETHODIMP ToastProgressDataABI::get_Status(_Out_ HSTRING* value)
+STDMETHODIMP ToastProgressDataABI::get_Status(_Out_ HSTRING* value) noexcept
 {
     auto lock{ m_lock.lock_shared() };
 

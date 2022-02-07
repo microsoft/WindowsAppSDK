@@ -369,6 +369,26 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", testWaitTime());
         }
 
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup)
+        {
+            RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup)
+        {
+            RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
+        }
+
         TEST_METHOD(VerifyShowToast)
         {
             RunTest(L"VerifyShowToast", testWaitTime());

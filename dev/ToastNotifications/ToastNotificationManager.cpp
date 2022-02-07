@@ -131,6 +131,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     // For other scenarios the API throws
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& data, hstring const& tag, hstring const& group)
     {
+        if ((tag == winrt::hstring(L"") && group == winrt::hstring(L"")) || (tag == winrt::hstring(L"") && group != winrt::hstring(L"")))
+        {
+            co_return winrt::ToastProgressResult::NotificationNotFound;
+        }
+
         std::wstring appId{ RetrieveToastAppId() };
 
         winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> toastProgressData{ winrt::make_self<ToastProgressDataABI>(data) };

@@ -9,15 +9,15 @@ struct ToastProgressDataABI : winrt::implements<ToastProgressDataABI, ::ABI::Mic
 {
     ToastProgressDataABI(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& progressData);
 
-    STDMETHOD(get_SequenceNumber)(_Out_ unsigned int* value);
+    STDMETHOD(get_SequenceNumber)(_Out_ unsigned int* value) noexcept;
 
-    STDMETHOD(get_Title)(_Out_ HSTRING* value);
+    STDMETHOD(get_Title)(_Out_ HSTRING* value) noexcept;
 
-    STDMETHOD(get_Value)(_Out_ double* value);
+    STDMETHOD(get_Value)(_Out_ double* value) noexcept;
 
-    STDMETHOD(get_ValueStringOverride)(_Out_ HSTRING* value);
+    STDMETHOD(get_ValueStringOverride)(_Out_ HSTRING* value) noexcept;
 
-    STDMETHOD(get_Status)(_Out_ HSTRING* value);
+    STDMETHOD(get_Status)(_Out_ HSTRING* value) noexcept;
 
 private:
 

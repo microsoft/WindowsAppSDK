@@ -556,6 +556,26 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged()
     return progressResult == winrt::ToastProgressResult::Succeeded;
 }
 
+bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
+{
+    winrt::ToastProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"Group");
+    auto progressResult = ProgressResultOperationHelper(progressResultOperation);
+
+    return progressResult == winrt::ToastProgressResult::NotificationNotFound;
+}
+
+bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
+{
+    winrt::ToastProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+
+    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"");
+    auto progressResult = ProgressResultOperationHelper(progressResultOperation);
+
+    return progressResult == winrt::ToastProgressResult::NotificationNotFound;
+}
+
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
 {
     // Registration happens in main()
@@ -652,10 +672,14 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged },
         { "VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged", &VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged },
         { "VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", &VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged },
+        { "VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup },
+        { "VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup },
         { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup },
         { "VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", &VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup },
         { "VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup", &VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup },
         { "VerifyFailedUpdateNotificationDataWithoutPostToast", &VerifyFailedUpdateNotificationDataWithoutPostToast },
+        { "VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", &VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup },
+        { "VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", &VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup },
       };
 
     return switchMapping;
