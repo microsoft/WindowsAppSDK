@@ -6,6 +6,7 @@
 #include <NotificationsLongRunningProcess_h.h>
 #include "winrt/Windows.Networking.PushNotifications.h"
 #include <frameworkudk/pushnotificationsRT.h>
+#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "externs.h"
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
@@ -16,9 +17,12 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     struct PushNotificationChannel : PushNotificationChannelT<PushNotificationChannel, IWpnForegroundSink, ABI::Microsoft::Internal::PushNotifications::INotificationListener>
     {
-        PushNotificationChannel(winrt::Windows::Networking::PushNotifications::PushNotificationChannel const& channel);
+        PushNotificationChannel(struct ChannelDetails channelInfo)
+        {
+            THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
-        PushNotificationChannel(struct ChannelDetails const& channelInfo) : m_channelInfo(channelInfo) {};
+            std::swap(m_channelInfo, channelInfo);
+        };
 
         winrt::Windows::Foundation::Uri Uri();
         winrt::Windows::Foundation::DateTime ExpirationTime();
@@ -34,14 +38,9 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         HRESULT __stdcall OnRawNotificationReceived(unsigned int payloadLength, _In_ byte* payload, _In_ HSTRING /*correlationVector */) noexcept;
 
     private:
-        bool IsPackagedAppScenario();
-        bool IsBackgroundTaskBuilderAvailable();
-
-        const winrt::Windows::Networking::PushNotifications::PushNotificationChannel m_channel{ nullptr };
-        const struct ChannelDetails m_channelInfo{};
+        struct ChannelDetails m_channelInfo{};
 
         winrt::event<PushNotificationEventHandler> m_foregroundHandlers;
-        ULONG m_foregroundHandlerCount = 0;
         wil::srwlock m_lock;
     };
 }

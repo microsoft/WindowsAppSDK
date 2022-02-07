@@ -105,7 +105,7 @@ void NotificationsLongRunningPlatformImpl::RegisterLongRunningActivatorHelper(PC
         return;
     }
 
-    AddComServerClsid(appId, comServerClsid);
+    m_comServerClsidStorage.Values().Insert(appId, winrt::box_value(comServerClsid));
     m_notificationListenerManager.AddListener(appId, processName, comServerClsid);
 
     m_lifetimeManager.Cancel();
@@ -259,9 +259,4 @@ const std::wstring NotificationsLongRunningPlatformImpl::BuildAppIdentifier(std:
 
     m_rawStorage.Values().Insert(guidStr.get(), winrt::box_value(processName.c_str()));
     return guidStr.get();
-}
-
-void NotificationsLongRunningPlatformImpl::AddComServerClsid(std::wstring const& appId, winrt::guid const& comServerClsid)
-{
-    m_comServerClsidStorage.Values().Insert(appId, winrt::box_value(comServerClsid));
 }

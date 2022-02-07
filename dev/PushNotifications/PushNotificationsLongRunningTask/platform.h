@@ -30,11 +30,10 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
     STDMETHOD(RemoveToastRegistrationMapping)(_In_ PCWSTR processName) noexcept;
 private:
 
-    std::map<std::wstring, std::pair<std::wstring, winrt::guid>> GetFullTrustApps();
+    std::map<std::wstring, std::pair<std::wstring, winrt::guid>> GetFullTrustApps(); // AppId -> (processName, comServerGuid)
     void RegisterLongRunningActivatorHelper(PCWSTR processName, GUID comServerClsid);
     const std::wstring GetAppIdentifier(std::wstring const& processName);
     const std::wstring BuildAppIdentifier(std::wstring const& processName);
-    void AddComServerClsid(std::wstring const& appId, winrt::guid const& comServerClsid);
 
     winrt::Windows::Storage::ApplicationDataContainer m_rawStorage{ nullptr };
     winrt::Windows::Storage::ApplicationDataContainer m_comServerClsidStorage{ nullptr };
