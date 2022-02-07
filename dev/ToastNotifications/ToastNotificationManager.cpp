@@ -140,9 +140,13 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return static_cast<winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting>(toastNotificationSetting);
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithIdentiferAsync(uint32_t /*toastIdentifier*/)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithIdentiferAsync(uint32_t toastIdentifier)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF(E_INVALIDARG, toastIdentifier == 0);
+
+        std::wstring appId{ RetrieveToastAppId() };
+
+        ToastNotifications_RemoveToast(appId.c_str(), toastIdentifier);
     }
     winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithTagAsync(hstring /*tag*/)
     {

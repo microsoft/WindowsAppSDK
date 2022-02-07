@@ -513,6 +513,67 @@ bool VerifyShowToast_Unpackaged()
 
     return true;
 }
+
+bool VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
+{
+    auto removeToastAsync = winrt::ToastNotificationManager::Default().RemoveWithIdentiferAsync(0);
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
+    {
+        removeToastAsync.Cancel();
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
+{
+    return false;
+}
+
+bool VerifyFailedRemoveWithIdentiferAsync()
+{
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    winrt::ToastNotification toast1{ CreateToastNotification(L"Toast1") };
+    toastNotificationManager.ShowToast(toast1);
+
+    winrt::ToastNotification toast2{ CreateToastNotification(L"Toast2") };
+    toastNotificationManager.ShowToast(toast2);
+
+    winrt::ToastNotification toast3{ CreateToastNotification(L"Toast3") };
+    toastNotificationManager.ShowToast(toast3);
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    toastNotificationManager.RemoveWithIdentiferAsync(toast2.ToastId());
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    return !VerifyToastIsActive(toast2.ToastId());
+}
+
+bool VerifyFailedRemoveWithTagAsyncUsingEmptyTag()
+{
+    return false;
+}
+
+bool VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup()
+{
+    return false;
+}
+
+bool VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup()
+{
+    return false;
+}
+
 bool VerifyRemoveAllAsync()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();

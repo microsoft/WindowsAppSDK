@@ -338,6 +338,67 @@ namespace Test::ToastNotifications
         {
             RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
         }
+
+        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier)
+        {
+            RunTest(L"VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier)
+        {
+            RunTest(L"VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsync)
+        {
+            RunTest(L"VerifyFailedRemoveWithIdentiferAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsync_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedRemoveWithIdentiferAsync", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithTagAsyncUsingEmptyTag)
+        {
+            RunTest(L"VerifyFailedRemoveWithTagAsyncUsingEmptyTag", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithTagAsyncUsingEmptyTag_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedRemoveWithTagAsyncUsingEmptyTag", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup)
+        {
+            RunTest(L"VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup)
+        {
+            RunTest(L"VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup", testWaitTime());
+        }
+
         TEST_METHOD(VerifyRemoveAllAsync)
         {
             RunTest(L"VerifyRemoveAllAsync", testWaitTime());
