@@ -399,6 +399,51 @@ bool VerifyToastExpiresOnReboot()
     return true;
 }
 
+bool VerifyShowToast()
+{
+    // Registration happens in main()
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+    toastNotificationManager.ShowToast(toast);
+
+    if (toast.ToastId() == 0)
+    {
+        return false;
+    }
+
+    // TODO: Verify the toast was posted by calling History APIs.
+
+    return true;
+}
+
+bool VerifyShowToast_Unpackaged()
+{
+    winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+    auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+    toastNotificationManager.RegisterActivator(activationInfo);
+
+    auto scope_exit = wil::scope_exit(
+        [&] {
+            toastNotificationManager.UnregisterActivator();
+        });
+
+    winrt::ToastNotification toast{ GetToastNotification() };
+
+    toastNotificationManager.ShowToast(toast);
+
+    if (toast.ToastId() == 0)
+    {
+        return false;
+    }
+
+    // TODO: Verify the toast was posted by calling History APIs.
+
+    return true;
+}
+
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
     std::string unitTestName = to_string(launchArgs.Arguments());
@@ -436,6 +481,8 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastPriority", &VerifyToastPriority },
         { "VerifyToastSuppressDisplay", &VerifyToastSuppressDisplay },
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
+        { "VerifyShowToast", &VerifyShowToast },
+        { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
     };
     return switchMapping;
 }
