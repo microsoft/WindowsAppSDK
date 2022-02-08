@@ -35,27 +35,6 @@ winrt::ToastNotification GetToastNotification()
     return winrt::ToastNotification(xmlDocument);
 }
 
-bool BackgroundActivationTest() // Activating application for background test.
-{
-    return true;
-}
-
-bool UnregisterBackgroundActivationTest()
-{
-    winrt::ToastNotificationManager::Default().UnregisterActivator();
-    return true;
-}
-
-winrt::ToastNotification GetToastNotification()
-{
-    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
-
-    winrt::XmlDocument xmlDocument{};
-    xmlDocument.LoadXml(xmlPayload);
-
-    return winrt::ToastNotification(xmlDocument);
-}
-
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
