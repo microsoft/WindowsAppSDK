@@ -10,11 +10,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return m_sequenceNumber;
     }
-    void ToastProgressData::SequenceNumber(uint32_t value)
+    void ToastProgressData::SequenceNumber(uint32_t sequenceNumber)
     {
         auto lock{ m_lock.lock_shared() };
 
-        m_sequenceNumber = value;
+        m_sequenceNumber = sequenceNumber;
     }
     hstring ToastProgressData::Title()
     {
@@ -22,11 +22,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return m_title;
     }
-    void ToastProgressData::Title(hstring const& value)
+    void ToastProgressData::Title(hstring const& title)
     {
         auto lock{ m_lock.lock_shared() };
 
-        m_title = value;
+        m_title = title;
     }
     double ToastProgressData::Value()
     {
@@ -34,23 +34,23 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return m_progressValue;
     }
-    void ToastProgressData::Value(double value)
+    void ToastProgressData::Value(double progressValue)
     {
         auto lock{ m_lock.lock_shared() };
 
-        m_progressValue = value;
+        m_progressValue = progressValue;
     }
     hstring ToastProgressData::ValueStringOverride()
     {
         auto lock{ m_lock.lock_shared() };
 
-        return m_progressvalueString;
+        return m_progressValueString;
     }
-    void ToastProgressData::ValueStringOverride(hstring const& value)
+    void ToastProgressData::ValueStringOverride(hstring const& progressValueString)
     {
         auto lock{ m_lock.lock_shared() };
 
-        m_progressvalueString = value;
+        m_progressValueString = progressValueString;
     }
     hstring ToastProgressData::Status()
     {
@@ -58,10 +58,10 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return m_progressStatus;
     }
-    void ToastProgressData::Status(hstring const& value)
+    void ToastProgressData::Status(hstring const& progressStatus)
     {
         auto lock{ m_lock.lock_shared() };
 
-        m_progressStatus = value;
+        m_progressStatus = progressStatus;
     }
 }

@@ -22,6 +22,11 @@ winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows:
     return g_toastHandlers;
 }
 
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
+
 namespace winrt
 {
     using namespace winrt::Windows::UI;
@@ -112,11 +117,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, toast.ToastId() != 0);
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties
-            = winrt::make_self<NotificationProperties>(toast);
+        winrt::com_ptr<ToastABI::INotificationProperties> notificationProperties{ winrt::make_self<NotificationProperties>(toast) };
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties
-            = winrt::make_self<NotificationTransientProperties>(toast);
+        winrt::com_ptr<ToastABI::INotificationTransientProperties> notificationTransientProperties{ winrt::make_self<NotificationTransientProperties>(toast) };
 
         auto toastAppId{ RetrieveToastAppId() };
 
@@ -131,14 +134,14 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     // For other scenarios the API throws
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& data, hstring const& tag, hstring const& group)
     {
-        if ((tag == winrt::hstring(L"") && group == winrt::hstring(L"")) || (tag == winrt::hstring(L"") && group != winrt::hstring(L"")))
+        if (tag == winrt::hstring(L""))
         {
             co_return winrt::ToastProgressResult::NotificationNotFound;
         }
 
         std::wstring appId{ RetrieveToastAppId() };
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData> toastProgressData{ winrt::make_self<ToastProgressDataABI>(data) };
+        winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData{ winrt::make_self<ToastProgressDataABI>(data) };
 
         auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), toastProgressData.get());
 
