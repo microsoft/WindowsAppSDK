@@ -144,21 +144,38 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF(E_INVALIDARG, toastIdentifier == 0);
 
-        std::wstring appId{ RetrieveToastAppId() };
+        co_await winrt::resume_background();
 
+        std::wstring appId{ RetrieveToastAppId() };
         ToastNotifications_RemoveToast(appId.c_str(), toastIdentifier);
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithTagAsync(hstring /*tag*/)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithTagAsync(hstring tag)
     {
-        throw hresult_not_implemented();
+        std::wstring _tag{ tag.c_str() };
+
+        co_await winrt::resume_background();
+
+        std::wstring appId{ RetrieveToastAppId() };
+        ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), nullptr);
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithTagGroupAsync(hstring /*tag*/, hstring /*group*/)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithTagGroupAsync(hstring tag, hstring group)
     {
-        throw hresult_not_implemented();
+        std::wstring _tag{ tag.c_str() };
+        std::wstring _group{ group.c_str() };
+
+        co_await winrt::resume_background();
+
+        std::wstring appId{ RetrieveToastAppId() };
+        ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), _group.c_str());
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveGroupAsync(hstring /*group*/)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveGroupAsync(hstring group)
     {
-        throw hresult_not_implemented();
+        std::wstring _group{ group.c_str() };
+
+        co_await winrt::resume_background();
+
+        std::wstring appId{ RetrieveToastAppId() };
+        ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), nullptr, _group.c_str());
     }
     winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveAllAsync()
     {

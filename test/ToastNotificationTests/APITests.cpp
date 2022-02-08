@@ -359,44 +359,44 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsync)
+        TEST_METHOD(VerifyRemoveWithIdentiferAsync)
         {
-            RunTest(L"VerifyFailedRemoveWithIdentiferAsync", testWaitTime());
+            RunTest(L"VerifyRemoveWithIdentiferAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithIdentiferAsync_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithIdentiferAsync_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedRemoveWithIdentiferAsync", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithIdentiferAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithTagAsyncUsingEmptyTag)
+        TEST_METHOD(VerifyRemoveWithTagAsync)
         {
-            RunTest(L"VerifyFailedRemoveWithTagAsyncUsingEmptyTag", testWaitTime());
+            RunTest(L"VerifyRemoveWithTagAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithTagAsyncUsingEmptyTag_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithTagAsync_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedRemoveWithTagAsyncUsingEmptyTag", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithTagAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup)
+        TEST_METHOD(VerifyRemoveWithTagGroupAsync)
         {
-            RunTest(L"VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup", testWaitTime());
+            RunTest(L"VerifyRemoveWithTagGroupAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithTagGroupAsync_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithTagGroupAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup)
+        TEST_METHOD(VerifyRemoveWithGroupAsync)
         {
-            RunTest(L"VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup", testWaitTime());
+            RunTest(L"VerifyRemoveWithGroupAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithGroupAsync_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithGroupAsync", testWaitTime());
         }
 
         TEST_METHOD(VerifyRemoveAllAsync)

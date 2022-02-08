@@ -510,28 +510,54 @@ bool VerifyShowToast_Unpackaged()
     }
 
     return VerifyToastIsActive(toast.ToastId());
-
-    return true;
 }
 
 bool VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
 {
-    auto removeToastAsync = winrt::ToastNotificationManager::Default().RemoveWithIdentiferAsync(0);
-    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
+    try
     {
+        auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithIdentiferAsync(0) };
+        if (removeToastAsync.wait_for(std::chrono::seconds(300)) == winrt::Windows::Foundation::AsyncStatus::Error)
+        {
+            removeToastAsync.GetResults();
+        }
+
         removeToastAsync.Cancel();
         return false;
     }
-
-    return true;
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
 }
 
 bool VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
 {
-    return false;
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    winrt::ToastNotification toast{ CreateToastNotification() };
+    toastNotificationManager.ShowToast(toast);
+    auto id = toast.ToastId();
+    toastNotificationManager.RemoveAllAsync().get();
+
+    try
+    {
+        auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithIdentiferAsync(id) };
+        if (removeToastAsync.wait_for(std::chrono::seconds(300)) == winrt::Windows::Foundation::AsyncStatus::Error)
+        {
+            removeToastAsync.GetResults();
+        }
+
+        removeToastAsync.Cancel();
+        return false;
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_FAIL; // ELx - would expect the operation to report that it couldn't remove the toast but it doesn't. The operation simply fails silently. Is this a bug or the expected behavior?
+    }
 }
 
-bool VerifyFailedRemoveWithIdentiferAsync()
+bool VerifyRemoveWithIdentiferAsync()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
 
@@ -549,7 +575,7 @@ bool VerifyFailedRemoveWithIdentiferAsync()
         return false;
     }
 
-    toastNotificationManager.RemoveWithIdentiferAsync(toast2.ToastId());
+    toastNotificationManager.RemoveWithIdentiferAsync(toast2.ToastId()).get();
 
     if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
     {
@@ -559,19 +585,118 @@ bool VerifyFailedRemoveWithIdentiferAsync()
     return !VerifyToastIsActive(toast2.ToastId());
 }
 
-bool VerifyFailedRemoveWithTagAsyncUsingEmptyTag()
+bool VerifyRemoveWithTagAsync()
 {
-    return false;
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    winrt::ToastNotification toast1{ CreateToastNotification() };
+    toast1.Tag(L"Shared tag");
+    toast1.Group(L"group1");
+    toastNotificationManager.ShowToast(toast1);
+
+    winrt::ToastNotification toast2{ CreateToastNotification() };
+    toast2.Tag(L"Shared tag");
+    toast2.Group(L"group2");
+    toastNotificationManager.ShowToast(toast2);
+
+    winrt::ToastNotification toast3{ CreateToastNotification() };
+    toast3.Tag(L"Shared tag");
+    toast3.Group(L"group3");
+    toastNotificationManager.ShowToast(toast3);
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithTagAsync(L"Shared tag") };
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        return false;
+    }
+
+    if (VerifyToastIsActive(toast1.ToastId()) || VerifyToastIsActive(toast2.ToastId()) || VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    return true;
 }
 
-bool VerifyFailedRemoveWithTagGroupAsyncUsingEmptyTagAndGroup()
+bool VerifyRemoveWithTagGroupAsync()
 {
-    return false;
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    winrt::ToastNotification toast1{ CreateToastNotification() };
+    toast1.Tag(L"tag1");
+    toast1.Group(L"Shared group");
+    toastNotificationManager.ShowToast(toast1);
+
+    winrt::ToastNotification toast2{ CreateToastNotification() };
+    toast2.Tag(L"tag2");
+    toast2.Group(L"Shared group");
+    toastNotificationManager.ShowToast(toast2);
+
+    winrt::ToastNotification toast3{ CreateToastNotification() };
+    toast3.Tag(L"tag3");
+    toast3.Group(L"Shared group");
+    toastNotificationManager.ShowToast(toast3);
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithTagGroupAsync(L"tag2", L"Shared group")};
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        return false;
+    }
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    return true;
 }
 
-bool VerifyFailedRemoveWithGroupAsyncUsingEmptyGroup()
+bool VerifyRemoveWithGroupAsync()
 {
-    return false;
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    winrt::ToastNotification toast1{ CreateToastNotification() };
+    toast1.Tag(L"tag1");
+    toast1.Group(L"Shared group");
+    toastNotificationManager.ShowToast(toast1);
+
+    winrt::ToastNotification toast2{ CreateToastNotification() };
+    toast2.Tag(L"tag2");
+    toast2.Group(L"Shared group");
+    toastNotificationManager.ShowToast(toast2);
+
+    winrt::ToastNotification toast3{ CreateToastNotification() };
+    toast3.Tag(L"tag3");
+    toast3.Group(L"Shared group");
+    toastNotificationManager.ShowToast(toast3);
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveGroupAsync(L"Shared group")};
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        return false;
+    }
+
+    if (VerifyToastIsActive(toast1.ToastId()) || VerifyToastIsActive(toast2.ToastId()) || VerifyToastIsActive(toast3.ToastId()))
+    {
+        return false;
+    }
+
+    return true;
 }
 
 bool VerifyRemoveAllAsync()
@@ -747,6 +872,12 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
         { "VerifyShowToast", &VerifyShowToast },
         { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
+        { "VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", &VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier },
+        { "VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", &VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier },
+        { "VerifyRemoveWithIdentiferAsync", &VerifyRemoveWithIdentiferAsync },
+        { "VerifyRemoveWithTagAsync", &VerifyRemoveWithTagAsync },
+        { "VerifyRemoveWithTagGroupAsync", &VerifyRemoveWithTagGroupAsync },
+        { "VerifyRemoveWithGroupAsync", &VerifyRemoveWithGroupAsync },
         { "VerifyRemoveAllAsync", &VerifyRemoveAllAsync },
         { "VerifyFailedGetAllAsync", &VerifyFailedGetAllAsync },
         { "VerifyGetAllAsync", &VerifyGetAllAsync },
