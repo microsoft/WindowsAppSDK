@@ -130,22 +130,15 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         toast.ToastId(notificationId);
     }
 
-    // API updates notification data when both tag and group are provided or when tag is provided.
-    // For other scenarios the API throws
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& data, hstring const& tag, hstring const& group)
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag, hstring const group)
     {
-        if (tag == winrt::hstring(L""))
-        {
-            co_return winrt::ToastProgressResult::NotificationNotFound;
-        }
+        THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guarenteed to find a specific notification to replace correctly.");
 
         std::wstring appId{ RetrieveToastAppId() };
 
         winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData{ winrt::make_self<ToastProgressDataABI>(data) };
 
         auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), toastProgressData.get());
-
-        THROW_HR_IF(hr, (hr != S_OK) && (hr != E_NOT_SET));
 
         if (SUCCEEDED(hr))
         {
@@ -155,9 +148,13 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         {
             co_return winrt::ToastProgressResult::NotificationNotFound;
         }
+        else
+        {
+            THROW_HR(hr);
+        }
     }
 
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& data, hstring const& tag)
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag)
     {
         auto toastProgressResult = co_await UpdateToastProgressDataAsync(data, tag, L"");
 

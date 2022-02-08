@@ -554,18 +554,30 @@ bool VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged()
 
 bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
 {
-    winrt::ToastProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+    try
+    {
+        winrt::ToastProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
 
-    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"Group");
-    return ProgressResultOperationHelper(progressResultOperation, winrt::ToastProgressResult::NotificationNotFound);
+        auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"Group").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
 }
 
 bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
 {
-    winrt::ToastProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
+    try
+    {
+        winrt::ToastProgressData progressData = GetToastProgressData(L"PStatus", L"PTitle", 0.10, L"10%");
 
-    auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"");
-    return ProgressResultOperationHelper(progressResultOperation, winrt::ToastProgressResult::NotificationNotFound);
+        auto progressResultOperation = winrt::ToastNotificationManager::Default().UpdateToastProgressDataAsync(progressData, L"", L"").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
 }
 
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()

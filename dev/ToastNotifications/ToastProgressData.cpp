@@ -12,7 +12,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     void ToastProgressData::SequenceNumber(uint32_t sequenceNumber)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
 
         m_sequenceNumber = sequenceNumber;
     }
@@ -24,7 +24,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     void ToastProgressData::Title(hstring const& title)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
 
         m_title = title;
     }
@@ -36,7 +36,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     void ToastProgressData::Value(double progressValue)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
 
         m_progressValue = progressValue;
     }
@@ -48,7 +48,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     void ToastProgressData::ValueStringOverride(hstring const& progressValueString)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
 
         m_progressValueString = progressValueString;
     }
@@ -60,7 +60,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     }
     void ToastProgressData::Status(hstring const& progressStatus)
     {
-        auto lock{ m_lock.lock_shared() };
+        auto lock{ m_lock.lock_exclusive() };
 
         m_progressStatus = progressStatus;
     }
