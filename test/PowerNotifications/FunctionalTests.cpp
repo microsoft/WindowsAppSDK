@@ -34,7 +34,16 @@ namespace Test::PowerNotifications
         TEST_METHOD(GetBatteryStatus)
         {
             auto value = PowerManager::BatteryStatus();
-            VERIFY_ARE_EQUAL(value, BatteryStatus::NotPresent);
+            SYSTEM_POWER_STATUS systemPowerStatus = { 0 };
+            VERIFY_IS_TRUE(GetSystemPowerStatus(&systemPowerStatus));
+            if (systemPowerStatus.BatteryFlag)
+            {
+                VERIFY_ARE_NOT_EQUAL(value, BatteryStatus::NotPresent);
+            }
+            else
+            {
+                VERIFY_ARE_EQUAL(value, BatteryStatus::NotPresent);
+            }
         }
 
         TEST_METHOD(GetPowerSupplyStatus)
