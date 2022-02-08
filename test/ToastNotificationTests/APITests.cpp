@@ -409,34 +409,34 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyRemoveAllAsync", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedGetAllAsync)
+        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast)
         {
-            RunTest(L"VerifyFailedGetAllAsync", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedGetAllAsync_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedGetAllAsync", testWaitTime());
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
         }
 		
-        TEST_METHOD(VerifyGetAllAsync)
+        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast)
         {
-            RunTest(L"VerifyGetAllAsync", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsync_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyGetAllAsync", testWaitTime());
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsync3)
+        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts)
         {
-            RunTest(L"VerifyGetAllAsync3", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsync3_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyGetAllAsync3", testWaitTime());
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
         }
     };
 }

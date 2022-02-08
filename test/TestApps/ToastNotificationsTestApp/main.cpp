@@ -74,7 +74,8 @@ bool VerifyToastIsActive(UINT32 expectedToastId)
     return found;
 }
 
-bool VerifyToastNotificationIsValid(const winrt::ToastNotification& expected, const winrt::ToastNotification& actual)
+enum class ExpectedTransientProperties { EQUAL, DEFAULT, UNKNOWN };
+bool VerifyToastNotificationIsValid(const winrt::ToastNotification& expected, const winrt::ToastNotification& actual, ExpectedTransientProperties expectedTransientProperties = ExpectedTransientProperties::EQUAL)
 {
     if (expected.Tag() != actual.Tag())
     {
@@ -114,13 +115,38 @@ bool VerifyToastNotificationIsValid(const winrt::ToastNotification& expected, co
         return false;
     }
 
-    if (expected.Priority() != actual.Priority())
+    switch (expectedTransientProperties)
     {
-        return false;
-    }
+    case ExpectedTransientProperties::EQUAL:
+        if (expected.Priority() != actual.Priority())
+        {
+            return false;
+        }
 
-    if (expected.SuppressDisplay() != actual.SuppressDisplay())
-    {
+        if (expected.SuppressDisplay() != actual.SuppressDisplay())
+        {
+            return false;
+        }
+        break;
+
+    case ExpectedTransientProperties::DEFAULT:
+        if (winrt::Microsoft::Windows::ToastNotifications::ToastPriority::Default != actual.Priority())
+        {
+            return false;
+        }
+
+        if (false != actual.SuppressDisplay())
+        {
+            return false;
+        }
+        break;
+
+    case ExpectedTransientProperties::UNKNOWN:
+        // Nothing to validate here.
+        break;
+
+    default:
+        // Unexpected selection
         return false;
     }
 
@@ -742,7 +768,7 @@ bool VerifyRemoveAllAsync()
     return true;
 }
 
-bool VerifyFailedGetAllAsync()
+bool VerifyGetAllAsyncWithZeroActiveToast()
 {
     EnsureNoActiveToasts();
 
@@ -758,7 +784,7 @@ bool VerifyFailedGetAllAsync()
     return true;
 }
 
-bool VerifyGetAllAsync()
+bool VerifyGetAllAsyncWithOneActiveToast()
 {
     EnsureNoActiveToasts();
 
@@ -769,6 +795,8 @@ bool VerifyGetAllAsync()
     expirationTime += winrt::TimeSpan{ std::chrono::seconds(10) };
     toast.ExpirationTime(expirationTime);
     toast.ExpiresOnReboot(false); // ELx - Setting this to true fails, investigating
+    toast.Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority::High);
+    toast.SuppressDisplay(true);
 
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
 
@@ -790,10 +818,10 @@ bool VerifyGetAllAsync()
     }
 
     auto actual = notifications.GetAt(0);
-    return VerifyToastNotificationIsValid(toast, actual);
+    return VerifyToastNotificationIsValid(toast, actual, ExpectedTransientProperties::DEFAULT);
 }
 
-bool VerifyGetAllAsync3()
+bool VerifyGetAllAsyncWithMultipleActiveToasts()
 {
     EnsureNoActiveToasts();
 
@@ -879,9 +907,9 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyRemoveWithTagGroupAsync", &VerifyRemoveWithTagGroupAsync },
         { "VerifyRemoveWithGroupAsync", &VerifyRemoveWithGroupAsync },
         { "VerifyRemoveAllAsync", &VerifyRemoveAllAsync },
-        { "VerifyFailedGetAllAsync", &VerifyFailedGetAllAsync },
-        { "VerifyGetAllAsync", &VerifyGetAllAsync },
-        { "VerifyGetAllAsync3", &VerifyGetAllAsync3 },
+        { "VerifyGetAllAsyncWithZeroActiveToast", &VerifyGetAllAsyncWithZeroActiveToast },
+        { "VerifyGetAllAsyncWithOneActiveToast", &VerifyGetAllAsyncWithOneActiveToast },
+        { "VerifyGetAllAsyncWithMultipleActiveToasts", &VerifyGetAllAsyncWithMultipleActiveToasts },
     };
     return switchMapping;
 }
