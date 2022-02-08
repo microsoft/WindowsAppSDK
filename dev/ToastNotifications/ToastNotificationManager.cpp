@@ -162,8 +162,6 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         std::wstring appId{ RetrieveToastAppId() };
         THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
-
-        co_return;
     }
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>> ToastNotificationManager::GetAllAsync()
     {
