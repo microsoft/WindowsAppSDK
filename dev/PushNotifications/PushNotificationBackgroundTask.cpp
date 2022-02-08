@@ -29,6 +29,8 @@ namespace winrt
 void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& taskInstance)
 {
     auto appProperties = winrt::CoreApplication::Properties();
+    // This function can be triggered by either OS background infrastructure
+    // or by the PushNotificationsLongRunningProcess.
     if (PushNotificationHelpers::IsPackagedAppScenario())
     {
         winrt::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(taskInstance) };
@@ -36,6 +38,7 @@ void PushNotificationBackgroundTask::Run(winrt::IBackgroundTaskInstance const& t
     }
     else
     {
+        // Need to mock a RawNotification object instead of winrt boxing: https://github.com/microsoft/WindowsAppSDK/issues/2075
         winrt::hstring payload{ winrt::unbox_value<winrt::hstring>(taskInstance.TriggerDetails()) };
         winrt::PushNotificationReceivedEventArgs activatedEventArgs{ winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payload.c_str()) };
         appProperties.Insert(LRP_ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);

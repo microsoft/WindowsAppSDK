@@ -5,7 +5,6 @@
 #include <winrt/Windows.Foundation.Metadata.h>
 #include "PushNotificationChannel.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.cpp"
-#include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include <FrameworkUdk/PushNotifications.h>
@@ -13,16 +12,9 @@
 #include "PushNotificationTelemetry.h"
 #include "PushNotificationUtility.h"
 
-namespace winrt::Windows
-{
-    using namespace winrt::Windows::Networking::PushNotifications;
-    using namespace winrt::Windows::Foundation;
-    using namespace winrt::Windows::Metadata;
-}
-namespace winrt::Microsoft
-{
-    using namespace winrt::Microsoft::Windows::PushNotifications;
-}
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Microsoft::Windows::PushNotifications;
+
 
 namespace PushNotificationHelpers
 {
@@ -31,12 +23,12 @@ namespace PushNotificationHelpers
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    winrt::Windows::Uri PushNotificationChannel::Uri()
+    Uri PushNotificationChannel::Uri()
     {
-        return winrt::Windows::Uri{ m_channelInfo.channelUri };
+        return winrt::Windows::Foundation::Uri{ m_channelInfo.channelUri };
     }
 
-    winrt::Windows::DateTime PushNotificationChannel::ExpirationTime()
+    DateTime PushNotificationChannel::ExpirationTime()
     {
         return m_channelInfo.channelExpiryTime;
     }
@@ -62,7 +54,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
     }
 
-    winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
+    winrt::event_token PushNotificationChannel::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
         bool registeredEvent { false };
         {
@@ -74,14 +66,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             if(PushNotificationHelpers::IsPackagedAppScenario())
             {
-                auto appUserModelId{ winrt::Microsoft::Helpers::GetAppUserModelId() };
+                auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
 
                 // Register foreground event through the UDK
                 THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
             }
             else
             {
-                auto notificationsLongRunningPlatform{ winrt::Microsoft::Helpers::GetNotificationPlatform() };
+                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -106,16 +98,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if(!registeredEvent)
         {
+            // Packaged apps with BI available will remove their handlers from the platform.
+            // Unpackaged apps / Packaged apps treated as unpackaged will unregister from Long Running process.
             if (PushNotificationHelpers::IsPackagedAppScenario())
             {
-                auto appUserModelId{ winrt::Microsoft::Helpers::GetAppUserModelId() };
+                auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
 
-                // Unregister foreground sink in UDK
                 THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
             }
             else
             {
-                auto notificationsLongRunningPlatform{ winrt::Microsoft::Helpers::GetNotificationPlatform() };
+                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -143,7 +136,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         {
             wil::unique_cotaskmem_string processName;
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
-            THROW_IF_FAILED(winrt::Microsoft::Helpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+            THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
         }
 
         return S_OK;
