@@ -11,7 +11,7 @@
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>c90d2e33c650b65377a3eb046f1f449d56e2ab7d</Sha>
     </Dependency>
-    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdkn" Version="5.0.404">
+    <Dependency Name="CsWinRT.Dependency.DotNetCoreSdk" Version="5.0.404">
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>
       </Sha>
