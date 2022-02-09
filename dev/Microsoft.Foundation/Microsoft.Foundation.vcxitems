@@ -14,6 +14,6 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.ApiContractidl" />
+    <Midl Include="$(MSBuildThisFileDirectory)Microsoft.Foundation.ApiContract.idl" />
   </ItemGroup>
 </Project>
