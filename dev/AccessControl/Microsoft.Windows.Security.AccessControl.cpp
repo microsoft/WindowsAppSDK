@@ -26,7 +26,7 @@ namespace winrt::Microsoft::Windows::Security::AccessControl::implementation
 
         winrt::check_hresult(
             GetSecurityDescriptorForAppContainerNames(
-                rawAccessRequests.size(), rawAccessRequests.data(), sid.get(), principalAccessMask, &sd, sdLength));
+                static_cast<uint32_t>(rawAccessRequests.size()), rawAccessRequests.data(), sid.get(), principalAccessMask, &sd, sdLength));
         return sd;
     }
 
