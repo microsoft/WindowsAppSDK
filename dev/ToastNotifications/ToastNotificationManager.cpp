@@ -25,7 +25,15 @@ namespace winrt
 {
     using namespace winrt::Windows::UI;
     using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Foundation::Collections;
     using namespace Windows::ApplicationModel::Core;
+
+}
+
+namespace ToastABI
+{
+    using namespace ABI::Microsoft::Internal::ToastNotifications;
+    using namespace ABI::Windows::Foundation::Collections;
 }
 
 namespace PushNotificationHelpers
@@ -110,10 +118,10 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, toast.ToastId() != 0);
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties
+        winrt::com_ptr<::ToastABI::INotificationProperties> notificationProperties
             = winrt::make_self<NotificationProperties>(toast);
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties
+        winrt::com_ptr<::ToastABI::INotificationTransientProperties> notificationTransientProperties
             = winrt::make_self<NotificationTransientProperties>(toast);
 
         auto toastAppId{ RetrieveToastAppId() };
@@ -184,12 +192,12 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         std::wstring appId{ RetrieveToastAppId() };
         THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
     }
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>> ToastNotificationManager::GetAllAsync()
+    winrt::Windows::Foundation::IAsyncOperation<winrt::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>> ToastNotificationManager::GetAllAsync()
     {
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveToastAppId() };
-        ABI::Windows::Foundation::Collections::IVector<ABI::Microsoft::Internal::ToastNotifications::INotificationProperties*>* toastPropertiesCollection;
+        ToastABI::IVector<ToastABI::INotificationProperties*>* toastPropertiesCollection;
         THROW_IF_FAILED(ToastNotifications_GetHistory(appId.c_str(), &toastPropertiesCollection));
 
         unsigned int count{};
@@ -197,11 +205,11 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         
         THROW_HR_IF(E_NOT_SET, count == 0);
 
-        winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification> toastNotifications { winrt::single_threaded_vector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>() };
+        winrt::IVector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification> toastNotifications { winrt::single_threaded_vector<winrt::Microsoft::Windows::ToastNotifications::ToastNotification>() };
 
         for (unsigned i = 0; i < count; ++i)
         {
-            ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* toastProperties;
+            ToastABI::INotificationProperties* toastProperties;
             THROW_IF_FAILED(toastPropertiesCollection->GetAt(i, &toastProperties));
 
             auto toastNotification{ ToastNotificationFromToastProperties(toastProperties) };
