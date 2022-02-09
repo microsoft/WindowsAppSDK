@@ -617,31 +617,36 @@ bool VerifyRemoveWithTagAsync()
 
     winrt::ToastNotification toast1{ CreateToastNotification() };
     toast1.Tag(L"Shared tag");
-    toast1.Group(L"group1");
+    //toast1.Group(L"group1");
     toastNotificationManager.ShowToast(toast1);
 
     winrt::ToastNotification toast2{ CreateToastNotification() };
-    toast2.Tag(L"Shared tag");
-    toast2.Group(L"group2");
+    toast2.Tag(L"Unique tag");
+    //toast2.Group(L"group2");
     toastNotificationManager.ShowToast(toast2);
 
     winrt::ToastNotification toast3{ CreateToastNotification() };
-    toast3.Tag(L"Shared tag");
+    toast3.Tag(L"Unique tag");
     toast3.Group(L"group3");
     toastNotificationManager.ShowToast(toast3);
 
-    if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
+    winrt::ToastNotification toast4{ CreateToastNotification() };
+    toast4.Tag(L"Unique tag");
+    //toast4.Group(L"group3");
+    toastNotificationManager.ShowToast(toast4);
+
+    if (!VerifyToastIsActive(toast1.ToastId()) || VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()) || !VerifyToastIsActive(toast4.ToastId()))
     {
         return false;
     }
 
-    auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithTagAsync(L"Shared tag") };
+    auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithTagAsync(L"Unique tag") };
     if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
     }
 
-    if (VerifyToastIsActive(toast1.ToastId()) || VerifyToastIsActive(toast2.ToastId()) || VerifyToastIsActive(toast3.ToastId()))
+    if (!VerifyToastIsActive(toast1.ToastId()) || VerifyToastIsActive(toast2.ToastId()) || !VerifyToastIsActive(toast3.ToastId()) || VerifyToastIsActive(toast4.ToastId()))
     {
         return false;
     }
