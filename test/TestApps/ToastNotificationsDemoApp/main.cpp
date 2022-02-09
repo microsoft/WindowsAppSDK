@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 #include <wil/win32_helpers.h>
@@ -7,33 +7,36 @@
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <MddBootstrap.h>
 
-using namespace winrt::Microsoft::Windows::AppLifecycle;
-using namespace winrt::Microsoft::Windows::PushNotifications;
-using namespace winrt::Microsoft::Windows::ToastNotifications;
-using namespace winrt::Windows::ApplicationModel::Activation;
-using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Foundation::Collections;
-using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage::Streams;
+namespace winrt
+{
+    using namespace winrt::Microsoft::Windows::AppLifecycle;
+    using namespace winrt::Microsoft::Windows::PushNotifications;
+    using namespace winrt::Microsoft::Windows::ToastNotifications;
+    using namespace winrt::Windows::ApplicationModel::Activation;
+    using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
+    using namespace winrt::Windows::Foundation;
+    using namespace winrt::Windows::Foundation::Collections;
+    using namespace winrt::Windows::Storage;
+    using namespace winrt::Windows::Storage::Streams;
+}
 
-winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChannelAsync()
+winrt::IAsyncOperation<winrt::PushNotificationChannel> RequestChannelAsync()
 {
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
-    auto channelOperation = PushNotificationManager::CreateChannelAsync(
+    auto channelOperation = winrt::PushNotificationManager::CreateChannelAsync(
         winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914"));
 
     // Setup the inprogress event handler
     channelOperation.Progress(
         [](auto&& sender, auto&& args)
         {
-            if (args.status == PushNotificationChannelStatus::InProgress)
+            if (args.status == winrt::PushNotificationChannelStatus::InProgress)
             {
                 // This is basically a noop since it isn't really an error state
                 std::cout << "Channel request is in progress." << std::endl << std::endl;
             }
-            else if (args.status == PushNotificationChannelStatus::InProgressRetry)
+            else if (args.status == winrt::PushNotificationChannelStatus::InProgressRetry)
             {
                 LOG_HR_MSG(
                     args.extendedError,
@@ -44,7 +47,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 
     auto result = co_await channelOperation;
 
-    if (result.Status() == PushNotificationChannelStatus::CompletedSuccess)
+    if (result.Status() == winrt::PushNotificationChannelStatus::CompletedSuccess)
     {
         auto channelUri = result.Channel().Uri();
 
@@ -53,7 +56,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         auto channelExpiry = result.Channel().ExpirationTime();
 
         // Register Push Event for Foreground
-        winrt::event_token token = result.Channel().PushReceived([](const auto&, PushNotificationReceivedEventArgs const& args)
+        winrt::event_token token = result.Channel().PushReceived([](const auto&, winrt::PushNotificationReceivedEventArgs const& args)
             {
                 auto payload = args.Payload();
 
@@ -65,7 +68,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
         // Caller's responsibility to keep the channel alive
         co_return result.Channel();
     }
-    else if (result.Status() == PushNotificationChannelStatus::CompletedFailure)
+    else if (result.Status() == winrt::PushNotificationChannelStatus::CompletedFailure)
     {
         LOG_HR_MSG(result.ExtendedError(), "We hit a critical non-retryable error with channel request!");
         co_return nullptr;
@@ -78,10 +81,10 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 
 };
 
-winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestChannel()
+winrt::PushNotificationChannel RequestChannel()
 {
     auto task = RequestChannelAsync();
-    if (task.wait_for(std::chrono::seconds(300)) != AsyncStatus::Completed)
+    if (task.wait_for(std::chrono::seconds(300)) != winrt::AsyncStatus::Completed)
     {
         task.Cancel();
         return nullptr;
@@ -91,14 +94,14 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
     return result;
 }
 
-std::wstring GetEnumString(ToastNotificationSetting const& setting)
+std::wstring GetEnumString(winrt::ToastNotificationSetting const& setting)
 {
-    static std::map<ToastNotificationSetting, std::wstring> enumMapping = {
-        { ToastNotificationSetting::Enabled,  L"Enabled"},
-        { ToastNotificationSetting::DisabledForApplication, L"DisabledForApplication" },
-        { ToastNotificationSetting::DisabledForUser, L"DisabledForUser"},
-        { ToastNotificationSetting::DisabledByGroupPolicy, L"DisabledByGroupPolicy"},
-        { ToastNotificationSetting::DisabledByManifest, L"DisabledByManifest"}
+    static std::map<winrt::ToastNotificationSetting, std::wstring> enumMapping = {
+        { winrt::ToastNotificationSetting::Enabled,  L"Enabled"},
+        { winrt::ToastNotificationSetting::DisabledForApplication, L"DisabledForApplication" },
+        { winrt::ToastNotificationSetting::DisabledForUser, L"DisabledForUser"},
+        { winrt::ToastNotificationSetting::DisabledByGroupPolicy, L"DisabledByGroupPolicy"},
+        { winrt::ToastNotificationSetting::DisabledByManifest, L"DisabledByManifest"}
     };
     return enumMapping[setting];
 }
@@ -123,24 +126,24 @@ int main()
     std::wcout << L"Running as " << (isPackaged ? L"packaged.\n\n" : L"unpackaged.\n\n");
 
     // Grab an instance of ToastNotificationManager
-    auto toastNotificationManager{ ToastNotificationManager::Default() };
+    auto toastNotificationManager{ winrt::ToastNotificationManager::Default() };
 
     // Display the current ToastNotificationSetting for the app.
     std::wcout << L"Printing ToastNotificationSetting for app: " << GetEnumString(toastNotificationManager.Setting()) << "\n\n";
 
-    ToastActivationInfo activationInfo{ nullptr };
+    winrt::ToastActivationInfo activationInfo{ nullptr };
     // Create toastActivationInfo depending on packaged | unpackaged scenario.
     if (isPackaged)
     {
         std::wcout << L"Calling ToastActivationInfo::CreateFromActivationGuid with ToastActivatorCLSID in manifest...\n";
-        activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
+        activationInfo = winrt::ToastActivationInfo::CreateFromActivationGuid(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
         std::wcout << L"Done.\n\n";
     }
     else
     {
         std::wcout << L"Calling ToastActivationInfo::CreateFromToastAssets...\n";
-        ToastAssets assets(L"ToastNotificationApp", Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
+        winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+        activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
         std::wcout << L"Done.\n\n";
     }
 
@@ -150,18 +153,18 @@ int main()
     std::wcout << L"Done.\n\n";
 
     // Retrieve the activation event args
-    auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
     // Check if activated from background by ToastActivation
-    if (kind == ExtendedActivationKind::AppNotification)
+    if (kind == winrt::ExtendedActivationKind::AppNotification)
     {
         std::wcout << L"Activated by ToastActivation from background.\n";
-        ToastActivatedEventArgs toastArgs{ args.Data().as<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>() };
+        winrt::ToastActivatedEventArgs toastArgs{ args.Data().as<winrt::ToastActivatedEventArgs>() };
         winrt::hstring arguments{ toastArgs.ActivationArgs() };
         std::wcout << arguments.c_str() << std::endl << std::endl;
 
-        IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
+        winrt::IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
         for (auto pair : userInput)
         {
             std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
@@ -171,13 +174,13 @@ int main()
 
     // Setting up foreground handler for ToastActivation
     std::wcout << L"Registering foreground handler to receive ToastActivationEventArgs...\n";
-    winrt::event_token token = toastNotificationManager.ToastActivated([](const auto&, winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs const& toastArgs)
+    winrt::event_token token = toastNotificationManager.ToastActivated([](const auto&, winrt::ToastActivatedEventArgs const& toastArgs)
     {
         std::wcout << L"ToastActivation received foreground!\n";
         winrt::hstring arguments{ toastArgs.ActivationArgs() };
         std::wcout << arguments.c_str() << L"\n\n";
 
-        IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
+        winrt::IMap<winrt::hstring, winrt::hstring> userInput{ toastArgs.UserInput() };
         for (auto pair : userInput)
         {
             std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
@@ -187,7 +190,7 @@ int main()
     std::wcout << L"Done.\n\n";
 
     std::wcout << L"Requesting PushNotificationChannel...\n\n";
-    PushNotificationChannel channel{ RequestChannel() };
+    winrt::PushNotificationChannel channel{ RequestChannel() };
 
     std::wcout << L"Press enter to exit the app.\n\n";
     std::cin.ignore();
