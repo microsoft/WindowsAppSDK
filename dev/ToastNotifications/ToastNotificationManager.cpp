@@ -156,9 +156,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag)
     {
-        auto toastProgressResult = co_await UpdateToastProgressDataAsync(data, tag, L"");
-
-        co_return toastProgressResult;
+        co_return co_await UpdateToastProgressDataAsync(data, tag, L"");
     }
 
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting ToastNotificationManager::Setting()
