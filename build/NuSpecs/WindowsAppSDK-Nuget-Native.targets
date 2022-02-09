@@ -9,6 +9,13 @@
     <Native-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</Native-Platform>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Foundation.winmd">
+      <Private>false</Private>
+      <Implementation>Microsoft.WindowsAppRuntime.dll</Implementation>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup Condition="'$(AppxPackage)' != 'true'">
     <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\Microsoft.Windows.ApplicationModel.DynamicDependency.winmd">
       <Private>false</Private>
