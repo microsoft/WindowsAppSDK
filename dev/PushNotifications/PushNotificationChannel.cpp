@@ -134,9 +134,16 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (!foregroundHandled)
         {
-            wil::unique_cotaskmem_string processName;
-            THROW_IF_FAILED(GetCurrentProcessPath(processName));
-            THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+            if (AppModel::Identity::IsPackagedProcess())
+            {
+                THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(GetComServerClsid(), payloadLength, payload));
+            }
+            else
+            {
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+            }
         }
 
         return S_OK;

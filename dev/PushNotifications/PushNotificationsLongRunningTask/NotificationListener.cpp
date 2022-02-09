@@ -3,7 +3,6 @@
 #include "pch.h"
 #include "../PushNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.background.h>
-#include "PushBackgroundTaskInstance.h"
 
 using namespace winrt::Windows::ApplicationModel::Background;
 namespace ToastNotifications
@@ -11,6 +10,10 @@ namespace ToastNotifications
     using namespace ABI::Microsoft::Internal::ToastNotifications;
 }
 
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
+}
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
     std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
@@ -39,15 +42,11 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
     {
         if (m_comServerClsid == winrt::guid())
         {
-            THROW_IF_FAILED(winrt::Microsoft::Windows::PushNotifications::Helpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
+            THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
         }
         else
         {
-            std::wstring payloadString(payloadArray.begin(), payloadArray.end());
-            auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadString) };
-
-            auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(m_comServerClsid, CLSCTX_ALL);
-            localBackgroundTask.Run(*pushBackgroundTaskInstance);
+            THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
         }
     };
 

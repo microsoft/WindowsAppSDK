@@ -26,10 +26,16 @@ using namespace std::literals;
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 
 static wil::unique_event g_waitHandleForArgs;
+static winrt::guid g_comServerClsid{ GUID_NULL };
 
 wil::unique_event& GetWaitHandleForArgs()
 {
     return g_waitHandleForArgs;
+}
+
+winrt::guid& GetComServerClsid()
+{
+    return g_comServerClsid;
 }
 
 namespace winrt
@@ -48,7 +54,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     static winrt::Windows::ApplicationModel::Background::IBackgroundTaskRegistration s_pushTriggerRegistration{ nullptr };
     static wil::unique_com_class_object_cookie s_comActivatorRegistration;
     static bool s_protocolRegistration{ false };
-    static winrt::guid s_taskClsid{ GUID_NULL };
     static wil::srwlock s_activatorInfoLock;
 
     inline constexpr auto c_maxBackoff{ 5min };
@@ -171,7 +176,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
                         wil::unique_cotaskmem_string processName;
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivatorWithClsid(processName.get(), s_taskClsid));
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivatorWithClsid(processName.get(), GetComServerClsid()));
 
                         std::wstring toastAppId{ RetrieveToastAppId() };
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
@@ -331,11 +336,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 }
 
                 GetWaitHandleForArgs().create();
-
-                {
-                    auto lock{ s_activatorInfoLock.lock_exclusive() };
-                    s_taskClsid = taskClsid;
-                }
+                GetComServerClsid() = taskClsid;
                 
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     taskClsid,

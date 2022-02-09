@@ -6,6 +6,7 @@
 #include  "NotificationsLongRunningProcess_h.h"
 #include <winrt/Windows.Foundation.Metadata.h>
 #include "../Common/AppModel.Identity.h"
+#include "PushBackgroundTaskInstance.h"
 
 namespace winrt
 {
@@ -104,6 +105,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         {
             THROW_IF_WIN32_ERROR(GetLastError());
         }
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    inline HRESULT PackagedAppLauncherByClsid(winrt::guid const& comServerClsid, unsigned int payloadLength, _In_reads_(payloadLength) byte* payload) noexcept try
+    {
+        auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
+        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWideString) };
+
+        auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL);
+        localBackgroundTask.Run(*pushBackgroundTaskInstance);
         return S_OK;
     }
     CATCH_RETURN()

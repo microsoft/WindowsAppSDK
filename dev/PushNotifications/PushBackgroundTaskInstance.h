@@ -7,15 +7,15 @@ struct PushBackgroundTaskInstance : winrt::implements<PushBackgroundTaskInstance
     PushBackgroundTaskInstance() {};
     PushBackgroundTaskInstance(std::wstring const& payload): m_payload(payload) {};
 
-    winrt::guid InstanceId();
-    UINT32 SuspendedCount();
-    UINT32 Progress();
-    UINT32 Progress(UINT32 progress);
-    winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Task();
-    winrt::Windows::Foundation::IInspectable TriggerDetails();
-    winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& handler);
-    void Canceled(winrt::event_token const& token) noexcept;
-    winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral();
+    winrt::guid InstanceId() { return winrt::guid(); };
+    UINT32 SuspendedCount() { return 0; };
+    UINT32 Progress() { return 0; };
+    UINT32 Progress(UINT32 /* progress */) { return 0; };
+    winrt::Windows::ApplicationModel::Background::BackgroundTaskRegistration Task() { return nullptr; };
+    winrt::Windows::Foundation::IInspectable TriggerDetails() { return winrt::box_value(m_payload); };
+    winrt::event_token Canceled(winrt::Windows::ApplicationModel::Background::BackgroundTaskCanceledEventHandler const& /* handler */) { return winrt::event_token{}; };
+    void Canceled(winrt::event_token const& /* token */) noexcept { return; };
+    winrt::Windows::ApplicationModel::Background::BackgroundTaskDeferral GetDeferral() { return nullptr; };
 private:
     std::wstring m_payload;
 };
