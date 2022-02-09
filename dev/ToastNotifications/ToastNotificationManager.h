@@ -19,9 +19,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         void ShowToast(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& toast);
 
-        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData data, hstring tag, hstring group);
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag, hstring const group);
 
-        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData data, hstring tag);
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag);
 
         winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting Setting();
 

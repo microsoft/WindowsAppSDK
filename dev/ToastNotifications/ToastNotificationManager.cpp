@@ -13,6 +13,7 @@
 #include <FrameworkUdk/toastnotificationsrt.h>
 #include "NotificationProperties.h"
 #include <NotificationTransientProperties.h>
+#include <ToastProgressDataABI.h>
 
 static winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows::ToastNotifications::ToastActivatedEventArgs>> g_toastHandlers;
 
@@ -21,11 +22,17 @@ winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows:
     return g_toastHandlers;
 }
 
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
+
 namespace winrt
 {
     using namespace winrt::Windows::UI;
     using namespace winrt::Windows::Foundation;
     using namespace Windows::ApplicationModel::Core;
+    using namespace Microsoft::Windows::ToastNotifications;
 }
 
 namespace PushNotificationHelpers
@@ -110,11 +117,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
     {
         THROW_HR_IF(WPN_E_NOTIFICATION_POSTED, toast.ToastId() != 0);
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties> notificationProperties
-            = winrt::make_self<NotificationProperties>(toast);
+        winrt::com_ptr<ToastABI::INotificationProperties> notificationProperties{ winrt::make_self<NotificationProperties>(toast) };
 
-        winrt::com_ptr<::ABI::Microsoft::Internal::ToastNotifications::INotificationTransientProperties> notificationTransientProperties
-            = winrt::make_self<NotificationTransientProperties>(toast);
+        winrt::com_ptr<ToastABI::INotificationTransientProperties> notificationTransientProperties{ winrt::make_self<NotificationTransientProperties>(toast) };
 
         auto toastAppId{ RetrieveToastAppId() };
 
@@ -124,14 +129,36 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         THROW_HR_IF(E_UNEXPECTED, notificationId == 0);
         toast.ToastId(notificationId);
     }
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData /* data */, hstring /* tag */, hstring /* group */)
+
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag, hstring const group)
     {
-        throw hresult_not_implemented();
+        THROW_HR_IF_MSG(E_INVALIDARG, tag == winrt::hstring(L""), "Update operation isn't guarenteed to find a specific notification to replace correctly.");
+
+        std::wstring appId{ RetrieveToastAppId() };
+
+        winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData{ winrt::make_self<ToastProgressDataABI>(data) };
+
+        auto hr = ToastNotifications_UpdateNotificationData(appId.c_str(), tag.c_str(), group.c_str(), toastProgressData.get());
+
+        if (SUCCEEDED(hr))
+        {
+            co_return winrt::ToastProgressResult::Succeeded;
+        }
+        else if (hr == E_NOT_SET)
+        {
+            co_return winrt::ToastProgressResult::NotificationNotFound;
+        }
+        else
+        {
+            THROW_HR(hr);
+        }
     }
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData /* data */, hstring /* tag */)
+
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::ToastNotifications::ToastProgressResult> ToastNotificationManager::UpdateToastProgressDataAsync(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const data, hstring const tag)
     {
-        throw hresult_not_implemented();
+        co_return co_await UpdateToastProgressDataAsync(data, tag, L"");
     }
+
     winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting ToastNotificationManager::Setting()
     {
         std::wstring appId { RetrieveToastAppId() };
