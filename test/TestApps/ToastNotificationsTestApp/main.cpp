@@ -538,7 +538,7 @@ bool VerifyShowToast_Unpackaged()
     return VerifyToastIsActive(toast.ToastId());
 }
 
-bool VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
+bool VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
 {
     try
     {
@@ -557,7 +557,7 @@ bool VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
     }
 }
 
-bool VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
+bool VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
 
@@ -583,7 +583,7 @@ bool VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
     }
 }
 
-bool VerifyRemoveWithIdentiferAsync()
+bool VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
 
@@ -900,9 +900,9 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyToastExpiresOnReboot", &VerifyToastExpiresOnReboot },
         { "VerifyShowToast", &VerifyShowToast },
         { "VerifyShowToast_Unpackaged", &VerifyShowToast_Unpackaged },
-        { "VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", &VerifyFailedRemoveWithIdentiferAsyncUsingZeroedToastIdentifier },
-        { "VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", &VerifyFailedRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier },
-        { "VerifyRemoveWithIdentiferAsync", &VerifyRemoveWithIdentiferAsync },
+        { "VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", &VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier },
+        { "VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", &VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier },
+        { "VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier", &VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier },
         { "VerifyRemoveWithTagAsync", &VerifyRemoveWithTagAsync },
         { "VerifyRemoveWithTagGroupAsync", &VerifyRemoveWithTagGroupAsync },
         { "VerifyRemoveWithGroupAsync", &VerifyRemoveWithGroupAsync },
