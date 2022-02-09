@@ -1,0 +1,11 @@
+//  Copyright (c) Microsoft Corporation. All rights reserved.
+
+namespace Microsoft.Foundation
+{
+    // Contract version corresponds to the Windows App SDK release version (1.0, 1.1, ...). MIDL
+    // interprets this as MAJOR.MINOR, not as a float value. For example, 1.10 is major version
+    // 1, minor version 10, which is _after_ 1.9. Note also that "1" and "1.0" are equivalent.
+
+    [contractversion(1.1)]
+    apicontract WindowsAppSDKContract{};
+}
