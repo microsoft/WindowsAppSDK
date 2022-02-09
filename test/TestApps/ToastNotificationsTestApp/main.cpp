@@ -536,9 +536,8 @@ bool VerifyShowToast_Unpackaged()
     }
 
     return VerifyToastIsActive(toast.ToastId());
-
-    return true;
 }
+
 bool VerifyRemoveAllAsync()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();

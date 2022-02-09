@@ -241,8 +241,8 @@ wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length,
 winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties)
 {
     unsigned int payloadSize{};
-    wil::unique_cotaskmem_array_ptr<byte> payload;
-    properties->get_Payload(&payloadSize, &payload);
+    wil::unique_cotaskmem_array_ptr<byte> payload{};
+    THROW_IF_FAILED(properties->get_Payload(&payloadSize, &payload));
 
     auto wide{ ConvertUtf8StringToWideString(payloadSize, payload.get()) };
     winrt::hstring xmlPayload{ wide.get() };
@@ -274,7 +274,7 @@ winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificati
 #endif
 
     unsigned long long expiry{};
-    properties->get_Expiry(&expiry);
+    THROW_IF_FAILED(properties->get_Expiry(&expiry));
     FILETIME expiryFileTime{};
     expiryFileTime.dwHighDateTime = expiry >> 32;
     expiryFileTime.dwLowDateTime = static_cast<DWORD>(expiry);
@@ -282,7 +282,7 @@ winrt::Microsoft::Windows::ToastNotifications::ToastNotification ToastNotificati
     notification.ExpirationTime(expiryClock);
 
     boolean expiresOnReboot{};
-    properties->get_ExpiresOnReboot(&expiresOnReboot);
+    THROW_IF_FAILED(properties->get_ExpiresOnReboot(&expiresOnReboot));
     notification.ExpiresOnReboot(expiresOnReboot);
 
     // Priority and SupressDisplay are transient values that do not exist in ToastProperties and thus, are left to their default.
