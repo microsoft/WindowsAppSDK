@@ -67,6 +67,7 @@ steps:
         -Platform "x86,x64,arm64"
         -Configuration "release,debug"
         -YamlStep "all"
+        -TransportPackages "none"
         -PipelineBuild
 
   - task: PublishBuildArtifacts@1
