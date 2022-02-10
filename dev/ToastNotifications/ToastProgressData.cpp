@@ -6,42 +6,62 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 {
     uint32_t ToastProgressData::SequenceNumber()
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_shared() };
+
+        return m_sequenceNumber;
     }
-    void ToastProgressData::SequenceNumber(uint32_t /* value */)
+    void ToastProgressData::SequenceNumber(uint32_t sequenceNumber)
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_sequenceNumber = sequenceNumber;
     }
     hstring ToastProgressData::Title()
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_shared() };
+
+        return m_title;
     }
-    void ToastProgressData::Title(hstring const& /* value */)
+    void ToastProgressData::Title(hstring const& title)
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_title = title;
     }
     double ToastProgressData::Value()
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_shared() };
+
+        return m_progressValue;
     }
-    void ToastProgressData::Value(double /* value */)
+    void ToastProgressData::Value(double progressValue)
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_progressValue = progressValue;
     }
     hstring ToastProgressData::ValueStringOverride()
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_shared() };
+
+        return m_progressValueString;
     }
-    void ToastProgressData::ValueStringOverride(hstring const& /* value */)
+    void ToastProgressData::ValueStringOverride(hstring const& progressValueString)
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_progressValueString = progressValueString;
     }
     hstring ToastProgressData::Status()
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_shared() };
+
+        return m_progressStatus;
     }
-    void ToastProgressData::Status(hstring const& /* value */)
+    void ToastProgressData::Status(hstring const& progressStatus)
     {
-        throw hresult_not_implemented();
+        auto lock{ m_lock.lock_exclusive() };
+
+        m_progressStatus = progressStatus;
     }
 }
