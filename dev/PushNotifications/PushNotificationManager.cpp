@@ -160,7 +160,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 try
                 {
                     ChannelDetails channelInfo{};
-                    if (IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger))
+                    if (PushNotificationHelpers::IsPackagedAppScenario())
                     {
                         auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
                         THROW_IF_FAILED(CreateChannelWithRemoteIdHelper(appUserModelId, remoteId, channelInfo));
