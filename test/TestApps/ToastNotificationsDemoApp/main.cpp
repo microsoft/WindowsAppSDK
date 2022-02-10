@@ -11,7 +11,7 @@ namespace winrt
 {
     using namespace winrt::Microsoft::Windows::AppLifecycle;
     using namespace winrt::Microsoft::Windows::PushNotifications;
-    using namespace winrt::Microsoft::Windows::ToastNotifications;
+    using namespace winrt::Microsoft::Windows::AppNotifications;
     using namespace winrt::Windows::ApplicationModel::Activation;
     using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
     using namespace winrt::Windows::Foundation;
@@ -94,14 +94,14 @@ winrt::PushNotificationChannel RequestChannel()
     return result;
 }
 
-std::wstring GetEnumString(winrt::ToastNotificationSetting const& setting)
+std::wstring GetEnumString(winrt::AppNotificationSetting const& setting)
 {
-    static std::map<winrt::ToastNotificationSetting, std::wstring> enumMapping = {
-        { winrt::ToastNotificationSetting::Enabled,  L"Enabled"},
-        { winrt::ToastNotificationSetting::DisabledForApplication, L"DisabledForApplication" },
-        { winrt::ToastNotificationSetting::DisabledForUser, L"DisabledForUser"},
-        { winrt::ToastNotificationSetting::DisabledByGroupPolicy, L"DisabledByGroupPolicy"},
-        { winrt::ToastNotificationSetting::DisabledByManifest, L"DisabledByManifest"}
+    static std::map<winrt::AppNotificationSetting, std::wstring> enumMapping = {
+        { winrt::AppNotificationSetting::Enabled,  L"Enabled"},
+        { winrt::AppNotificationSetting::DisabledForApplication, L"DisabledForApplication" },
+        { winrt::AppNotificationSetting::DisabledForUser, L"DisabledForUser"},
+        { winrt::AppNotificationSetting::DisabledByGroupPolicy, L"DisabledByGroupPolicy"},
+        { winrt::AppNotificationSetting::DisabledByManifest, L"DisabledByManifest"}
     };
     return enumMapping[setting];
 }
@@ -125,31 +125,30 @@ int main()
     // Display if app is running as packaged | unpackaged.
     std::wcout << L"Running as " << (isPackaged ? L"packaged.\n\n" : L"unpackaged.\n\n");
 
-    // Grab an instance of ToastNotificationManager
-    auto toastNotificationManager{ winrt::ToastNotificationManager::Default() };
+    // Grab an instance of AppNotificationManager
+    auto appNotificationManager{ winrt::AppNotificationManager::Default() };
 
-    // Display the current ToastNotificationSetting for the app.
-    std::wcout << L"Printing ToastNotificationSetting for app: " << GetEnumString(toastNotificationManager.Setting()) << "\n\n";
+    // Display the current AppNotificationSetting for the app.
+    std::wcout << L"Printing AppNotificationSetting for app: " << GetEnumString(appNotificationManager.Enablement()) << "\n\n";
 
-    winrt::ToastActivationInfo activationInfo{ nullptr };
+    winrt::AppNotificationActivationInfo activationInfo{ nullptr };
     // Create toastActivationInfo depending on packaged | unpackaged scenario.
     if (isPackaged)
     {
         std::wcout << L"Calling ToastActivationInfo::CreateFromActivationGuid with ToastActivatorCLSID in manifest...\n";
-        activationInfo = winrt::ToastActivationInfo::CreateFromActivationGuid(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
+        activationInfo = winrt::AppNotificationActivationInfo(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
         std::wcout << L"Done.\n\n";
     }
     else
     {
         std::wcout << L"Calling ToastActivationInfo::CreateFromToastAssets...\n";
-        winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
+        activationInfo = winrt::AppNotificationActivationInfo(L"AppNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
         std::wcout << L"Done.\n\n";
     }
 
     // Registering app for activation
-    std::wcout << L"Calling ToastNotificationManager::RegisterActivator(activationInfo)...\n";
-    toastNotificationManager.RegisterActivator(activationInfo);
+    std::wcout << L"Calling AppNotificationManager::RegisterActivator(activationInfo)...\n";
+    appNotificationManager.Register(activationInfo);
     std::wcout << L"Done.\n\n";
 
     // Retrieve the activation event args
@@ -160,11 +159,11 @@ int main()
     if (kind == winrt::ExtendedActivationKind::AppNotification)
     {
         std::wcout << L"Activated by ToastActivation from background.\n";
-        winrt::ToastActivatedEventArgs toastArgs{ args.Data().as<winrt::ToastActivatedEventArgs>() };
-        winrt::hstring arguments{ toastArgs.ActivationArgs() };
+        winrt::AppNotificationActivatedEventArgs appNotificationArgs{ args.Data().as<winrt::AppNotificationActivatedEventArgs>() };
+        winrt::hstring arguments{ appNotificationArgs.ActivationArgs() };
         std::wcout << arguments.c_str() << std::endl << std::endl;
 
-        winrt::IMap<winrt::hstring, winrt::hstring> userInput = toastArgs.UserInput();
+        winrt::IMap<winrt::hstring, winrt::hstring> userInput = appNotificationArgs.UserInput();
         for (auto pair : userInput)
         {
             std::wcout << "Key= " << pair.Key().c_str() << " " << "Value= " << pair.Value().c_str() << L"\n";
@@ -174,7 +173,7 @@ int main()
 
     // Setting up foreground handler for ToastActivation
     std::wcout << L"Registering foreground handler to receive ToastActivationEventArgs...\n";
-    winrt::event_token token = toastNotificationManager.ToastActivated([](const auto&, winrt::ToastActivatedEventArgs const& toastArgs)
+    winrt::event_token token = appNotificationManager.AppNotificationActivated([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
     {
         std::wcout << L"ToastActivation received foreground!\n";
         winrt::hstring arguments{ toastArgs.ActivationArgs() };
@@ -195,8 +194,8 @@ int main()
     std::wcout << L"Press enter to exit the app.\n\n";
     std::cin.ignore();
 
-    // If you want to stop receiving ToastNotifications for the app
-    /* toastNotificationManager.UnregisterActivator(); */
+    // If you want to stop receiving AppNotifications for the app
+    /* AppNotificationManager.UnregisterActivator(); */
     if (!isPackaged)
     {
         MddBootstrapShutdown();
