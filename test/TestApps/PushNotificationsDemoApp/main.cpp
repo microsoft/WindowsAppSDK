@@ -9,7 +9,7 @@
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
-using namespace winrt::Microsoft::Windows::ToastNotifications;
+using namespace winrt::Microsoft::Windows::AppNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
 using namespace winrt::Windows::Foundation;
@@ -94,8 +94,8 @@ int main()
 {
     if (Test::AppModel::IsPackagedProcess())
     {
-        auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("28C29657-DB85-49D2-9974-C61094CA8280"));
-        ToastNotificationManager::Default().RegisterActivator(activationInfo);
+        AppNotificationActivationInfo activationInfo{ winrt::guid("28C29657-DB85-49D2-9974-C61094CA8280") };
+        AppNotificationManager::Default().Register(activationInfo);
     }
 	else
 	{
@@ -104,9 +104,8 @@ int main()
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
 
-        ToastAssets assets(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        auto activationInfo = ToastActivationInfo::CreateFromToastAssets(assets);
-        ToastNotificationManager::Default().RegisterActivator(activationInfo);
+        AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
+        AppNotificationManager::Default().Register(activationInfo);
 	}
 
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
@@ -163,7 +162,7 @@ int main()
         PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
-    ToastNotificationManager::Default().UnregisterActivator();
+    AppNotificationManager::Default().Unregister();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();

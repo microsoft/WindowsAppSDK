@@ -5,9 +5,9 @@
 
 #include <frameworkUdk/ToastNotificationsRT.h>
 
-struct ToastProgressDataABI : winrt::implements<ToastProgressDataABI, ::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData>
+struct NotificationProgressData : winrt::implements<NotificationProgressData, ::ABI::Microsoft::Internal::ToastNotifications::IToastProgressData>
 {
-    ToastProgressDataABI(winrt::Microsoft::Windows::ToastNotifications::ToastProgressData const& progressData);
+    NotificationProgressData(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const& progressData);
 
     STDMETHOD(get_SequenceNumber)(_Out_ unsigned int* value) noexcept;
 
@@ -23,5 +23,5 @@ private:
 
     wil::srwlock m_lock;
 
-    winrt::Microsoft::Windows::ToastNotifications::ToastProgressData m_progressData;        
+    winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData;
 };

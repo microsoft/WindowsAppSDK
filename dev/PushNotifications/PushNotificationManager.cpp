@@ -20,9 +20,10 @@
 #include "NotificationsLongRunningProcess_h.h"
 #include <TerminalVelocityFeatures-PushNotifications.h>
 #include "PushNotificationUtility.h"
-#include "ToastNotificationUtility.h"
+#include "AppNotificationUtility.h"
 
 using namespace std::literals;
+using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 
@@ -207,7 +208,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
                         THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
 
-                        std::wstring toastAppId{ RetrieveToastAppId() };
+                        std::wstring toastAppId{ RetrieveNotificationAppId() };
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
 
                         PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);

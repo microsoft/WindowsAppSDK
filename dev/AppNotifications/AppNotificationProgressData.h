@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include "Microsoft.Windows.ToastNotifications.ToastProgressData.g.h"
+#include "Microsoft.Windows.AppNotifications.AppNotificationProgressData.g.h"
 
-namespace winrt::Microsoft::Windows::ToastNotifications::implementation
+namespace winrt::Microsoft::Windows::AppNotifications::implementation
 {
-    struct ToastProgressData : ToastProgressDataT<ToastProgressData>
+    struct AppNotificationProgressData : AppNotificationProgressDataT<AppNotificationProgressData>
     {
-        ToastProgressData() = default;
+        AppNotificationProgressData() = default;
 
         uint32_t SequenceNumber();
         void SequenceNumber(uint32_t sequenceNumber);
@@ -27,9 +27,9 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         wil::srwlock m_lock;
     };
 }
-namespace winrt::Microsoft::Windows::ToastNotifications::factory_implementation
+namespace winrt::Microsoft::Windows::AppNotifications::factory_implementation
 {
-    struct ToastProgressData : ToastProgressDataT<ToastProgressData, implementation::ToastProgressData>
+    struct AppNotificationProgressData : AppNotificationProgressDataT<AppNotificationProgressData, implementation::AppNotificationProgressData>
     {
     };
 }
