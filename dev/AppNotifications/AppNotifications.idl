@@ -128,14 +128,11 @@ namespace Microsoft.Windows.AppNotifications
         // Gets a Default instance of a AppNotificationManager
         static AppNotificationManager Default{ get; };
 
-        // Register an activator using an ActivationInfo context and caches the token for unregister
-        void Register(AppNotificationActivationInfo details);
+        // Register an app for notifications
+        void Register();
 
-        // Unregisters the activator and removes the cached Registration token.
+        // Unregisters the app for notifications
         void Unregister();
-
-        // Event handler for Notification Activations
-        event Windows.Foundation.TypedEventHandler<AppNotificationManager, AppNotificationActivatedEventArgs> AppNotificationActivated;
 
         // Displays the Notification in Action Center
         void Show(AppNotification notification);
