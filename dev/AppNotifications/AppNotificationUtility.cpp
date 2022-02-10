@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 #include "pch.h"
-#include "ToastNotificationUtility.h"
+#include "AppNotificationUtility.h"
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.Foundation.h>
 #include <externs.h>
@@ -15,7 +15,7 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
-std::wstring RetrieveUnpackagedToastAppId()
+std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
 {
     wil::unique_cotaskmem_string processName;
     THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -41,7 +41,7 @@ std::wstring RetrieveUnpackagedToastAppId()
     HRESULT status = RegGetValueW(
         hKey.get(),
         nullptr /* lpValue */,
-        L"ToastGUID",
+        L"NotificationGUID",
         RRF_RT_REG_SZ,
         nullptr /* pdwType */,
         &registeredGuidBuffer,
@@ -49,14 +49,14 @@ std::wstring RetrieveUnpackagedToastAppId()
 
     if (status == ERROR_FILE_NOT_FOUND)
     {
-        GUID newToastGuid;
-        THROW_IF_FAILED(CoCreateGuid(&newToastGuid));
+        GUID newNotificationGuid;
+        THROW_IF_FAILED(CoCreateGuid(&newNotificationGuid));
 
-        wil::unique_cotaskmem_string newToastGuidString;
-        THROW_IF_FAILED(StringFromCLSID(newToastGuid, &newToastGuidString));
+        wil::unique_cotaskmem_string newNotificationGuidString;
+        THROW_IF_FAILED(StringFromCLSID(newNotificationGuid, &newNotificationGuidString));
 
-        std::wstring guidWideStr{ newToastGuidString.get() };
-        RegisterValue(hKey, L"ToastGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
+        std::wstring guidWideStr{ newNotificationGuidString.get() };
+        RegisterValue(hKey, L"NotificationGUID", reinterpret_cast<const BYTE*>(guidWideStr.c_str()), REG_SZ, guidWideStr.size() * sizeof(wchar_t));
         return guidWideStr;
     }
 
@@ -64,7 +64,7 @@ std::wstring RetrieveUnpackagedToastAppId()
     return registeredGuidBuffer;
 }
 
-std::wstring RetrieveToastAppId()
+std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveNotificationAppId()
 {
     if (AppModel::Identity::IsPackagedProcess())
     {
@@ -75,34 +75,10 @@ std::wstring RetrieveToastAppId()
         return appUserModelId;
     }
 
-    return RetrieveUnpackagedToastAppId();
+    return RetrieveUnpackagedNotificationAppId();
 }
 
-void RegisterAssets(std::wstring const& appId, winrt::Microsoft::Windows::ToastNotifications::ToastAssets const& activationInfo, wil::unique_cotaskmem_string const& clsid)
-{
-    wil::unique_hkey hKey;
-    // subKey: \Software\Classes\AppUserModelId\{AppGUID}
-    std::wstring subKey{ c_appIdentifierPath + appId };
-
-    THROW_IF_FAILED(RegCreateKeyEx(
-        HKEY_CURRENT_USER,
-        subKey.c_str(),
-        0,
-        nullptr /* lpClass */,
-        REG_OPTION_NON_VOLATILE,
-        KEY_ALL_ACCESS,
-        nullptr /* lpSecurityAttributes */,
-        &hKey,
-        nullptr /* lpdwDisposition */));
-
-    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(activationInfo.DisplayName().c_str()), REG_EXPAND_SZ, activationInfo.DisplayName().size() * sizeof(wchar_t));
-    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(activationInfo.IconPath().AbsoluteUri().c_str()), REG_EXPAND_SZ, activationInfo.IconPath().AbsoluteUri().size() * sizeof(wchar_t));
-
-    std::wstring wideStringClsid{ clsid.get() };
-    RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
-}
-
-void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
+void Microsoft::Windows::AppNotifications::Helpers::RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::unique_cotaskmem_string const& clsid)
 {
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
@@ -119,12 +95,12 @@ void RegisterComServer(wil::unique_cotaskmem_string const& processName, wil::uni
         &hKey,
         nullptr /* lpdwDisposition */));
 
-    std::wstring comRegistrationExeString{ c_quote + processName.get() + c_quote + c_toastActivatedArgument };
+    std::wstring comRegistrationExeString{ c_quote + processName.get() + c_quote + c_notificationActivatedArgument };
 
     RegisterValue(hKey, nullptr, reinterpret_cast<const BYTE*>(comRegistrationExeString.c_str()), REG_SZ, (comRegistrationExeString.size() * sizeof(wchar_t)));
 }
 
-void UnRegisterComServer(std::wstring const& clsid)
+void Microsoft::Windows::AppNotifications::Helpers::UnRegisterComServer(std::wstring const& clsid)
 {
     wil::unique_hkey hKey;
     //subKey: Software\Classes\CLSID\{comActivatorGuidString}\LocalServer32
@@ -137,13 +113,13 @@ void UnRegisterComServer(std::wstring const& clsid)
         0));
 }
 
-void UnRegisterToastAppIdentifierFromRegistry()
+void Microsoft::Windows::AppNotifications::Helpers::UnRegisterNotificationAppIdentifierFromRegistry()
 {
-    std::wstring toastAppId{ RetrieveToastAppId() };
+    std::wstring notificationAppId{ RetrieveNotificationAppId() };
 
     wil::unique_hkey hKey;
     //subKey: \Software\Classes\AppUserModelId\{AppGUID}
-    std::wstring subKey{ c_appIdentifierPath + toastAppId };
+    std::wstring subKey{ c_appIdentifierPath + notificationAppId };
 
     THROW_IF_FAILED(RegDeleteKeyEx(
         HKEY_CURRENT_USER,
@@ -152,11 +128,11 @@ void UnRegisterToastAppIdentifierFromRegistry()
         0));
 }
 
-HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept try
+HRESULT Microsoft::Windows::AppNotifications::Helpers::GetActivatorGuid(std::wstring& activatorGuid) noexcept try
 {
-    std::wstring toastAppId{ RetrieveToastAppId() };
+    std::wstring notificationAppId{ RetrieveNotificationAppId() };
     // subKey: \Software\Classes\AppUserModelId\{AppGUID}
-    std::wstring subKey{ c_appIdentifierPath + toastAppId };
+    std::wstring subKey{ c_appIdentifierPath + notificationAppId };
 
     wil::unique_hkey hKey;
     THROW_IF_FAILED(RegCreateKeyEx(
@@ -186,7 +162,31 @@ HRESULT GetActivatorGuid(std::wstring& activatorGuid) noexcept try
 }
 CATCH_RETURN()
 
-std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastNotifications::ToastActivationInfo const& details)
+void Microsoft::Windows::AppNotifications::Helpers::RegisterAssets(std::wstring const& appId, winrt::hstring const& displayName, winrt::Windows::Foundation::Uri const& iconUri, wil::unique_cotaskmem_string const& clsid)
+{
+    wil::unique_hkey hKey;
+    // subKey: \Software\Classes\AppUserModelId\{AppGUID}
+    std::wstring subKey{ c_appIdentifierPath + appId };
+
+    THROW_IF_FAILED(RegCreateKeyEx(
+        HKEY_CURRENT_USER,
+        subKey.c_str(),
+        0,
+        nullptr /* lpClass */,
+        REG_OPTION_NON_VOLATILE,
+        KEY_ALL_ACCESS,
+        nullptr /* lpSecurityAttributes */,
+        &hKey,
+        nullptr /* lpdwDisposition */));
+
+    RegisterValue(hKey, L"DisplayName", reinterpret_cast<const BYTE*>(displayName.c_str()), REG_EXPAND_SZ, displayName.size() * sizeof(wchar_t));
+    RegisterValue(hKey, L"IconUri", reinterpret_cast<const BYTE*>(iconUri.AbsoluteUri().c_str()), REG_EXPAND_SZ, iconUri.AbsoluteUri().size() * sizeof(wchar_t));
+
+    std::wstring wideStringClsid{ clsid.get() };
+    RegisterValue(hKey, L"CustomActivator", reinterpret_cast<const BYTE*>(wideStringClsid.c_str()), REG_SZ, wideStringClsid.size() * sizeof(wchar_t));
+}
+
+std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details)
 {
     std::wstring registeredGuid;
     HRESULT status = GetActivatorGuid(registeredGuid);
@@ -202,8 +202,8 @@ std::wstring RegisterComActivatorGuidAndAssets(winrt::Microsoft::Windows::ToastN
         wil::unique_cotaskmem_string comActivatorGuidString;
         THROW_IF_FAILED(StringFromCLSID(comActivatorGuid, &comActivatorGuidString));
 
-        std::wstring toastAppId{ RetrieveToastAppId() };
-        RegisterAssets(toastAppId, details.Assets(), comActivatorGuidString);
+        std::wstring notificationAppId{ RetrieveNotificationAppId() };
+        RegisterAssets(notificationAppId, details.DisplayName(), details.IconUri(), comActivatorGuidString);
         RegisterComServer(processName, comActivatorGuidString);
 
         return comActivatorGuidString.get();

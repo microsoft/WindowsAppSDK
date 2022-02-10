@@ -184,14 +184,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullAssets)
+        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullActivationInfo)
         {
-            RunTest(L"VerifyFailedRegisterActivatorUsingNullAssets", testWaitTime());
+            RunTest(L"VerifyFailedRegisterActivatorUsingNullActivationInfo", testWaitTime());
         }
 
-        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged)
+        TEST_METHOD(VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullAssets_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyRegisterActivatorandUnRegisterActivatorUsingClsid)
@@ -327,6 +327,66 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyToastExpiresOnReboot_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup)
+        {
+            RunTest(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup)
+        {
+            RunTest(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup)
+        {
+            RunTest(L"VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedUpdateNotificationDataWithoutPostToast)
+        {
+            RunTest(L"VerifyFailedUpdateNotificationDataWithoutPostToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup)
+        {
+            RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup)
+        {
+            RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
         }
 
         TEST_METHOD(VerifyShowToast)
