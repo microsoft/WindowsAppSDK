@@ -24,9 +24,6 @@
     <ClCompile Include="FunctionalTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="APITests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -52,7 +49,6 @@
     <CopyFileToFolders Include="$(TargetDir)..\AppLifecycleTestApp\AppLifecycleTestApp.exe">
       <Filter>CopyFiles</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="$(MSBuildThisFileDirectory)AppLifecycle-AppxManifest.xml" />
     <CopyFileToFolders Include="$(TestPkgOutputFile)" />
   </ItemGroup>
 </Project>

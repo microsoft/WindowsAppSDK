@@ -177,13 +177,13 @@
     <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir özel denetim.</value>
   </data>
   <data name="1021" xml:space="preserve">
-    <value>Kullanıcı Denetimi (WinUI 3)</value>
+    <value>Kullanıcı Kontrolü (WinUI 3)</value>
   </data>
   <data name="1022" xml:space="preserve">
-    <value>[Deneysel] Kullanıcı Denetimi (WinUI 3)</value>
+    <value>[Deneysel] Kullanıcı Kontrolü (WinUI 3)</value>
   </data>
   <data name="1023" xml:space="preserve">
-    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı denetimi.</value>
+    <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan uygulamalar için bir kullanıcı kontrolü.</value>
   </data>
   <data name="1025" xml:space="preserve">
     <value>Sınıf Kitaplığı (Masaüstünde WinUI 3)</value>
@@ -195,10 +195,10 @@
     <value>Windows UI Kitaplığı'nı (WinUI 3) temel alan Masaüstü uygulamaları için yönetilen bir sınıf kitaplığı (.dll) oluşturmaya yönelik bir proje.</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
+    <value>Boş Uygulama, Paketli Windows Uygulama Paketleme Projesi (Masaüstünde WinUI 3)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[Deneysel] Boş Uygulama, WAP ile Paketlenmiş (Masaüstünde WinUI 3)</value>
+    <value>[Deneysel] Boş Uygulama, Paketli Windows Uygulama Paketleme Projesi (Masaüstünde WinUI 3)</value>
   </data>
   <data name="1031" xml:space="preserve">
     <value>Windows UI Kitaplığı’nı (WinUI 3) temel alan bir Masaüstü uygulaması oluşturmaya yönelik bir proje şablonu. Microsoft Store aracılığıyla dışarıdan yükleme veya dağıtım için bir MSIX paketi oluşturmak için Windows Uygulama Paketleme (WAP) projesi dahildir.</value>

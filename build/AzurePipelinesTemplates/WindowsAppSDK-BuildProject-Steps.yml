@@ -4,8 +4,34 @@ parameters:
   buildOutputDir: '$(Build.SourcesDirectory)\BuildOutput'
   artifactName: 'drop'
   channel: 'experimental'
+  enableLicenseInstall: false
+  # license installation assets are only accessible in internal builds, but are only
+  # needed in release-signed stable builds. Only enble this functionality in the private
+  # pipeline builds. Otherwise, default to an inert placeholder implementation.
+
 
 steps:
+  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    - task: NuGetAuthenticate@0
+      inputs:
+        nuGetServiceConnections: 'ProjectReunionInternal'
+
+    # Restore transport package dependencies. This is only enbaled in release-signed builds.
+    - task: PowerShell@2
+      name: ConvertVersionDetailsToPackageConfig
+      displayName: "Convert VersionDetails To PackageConfig"
+      inputs:
+        filePath: '$(Build.SourcesDirectory)\build\Scripts\ConvertVersionDetailsToPackageConfig.ps1'
+        arguments: -versionDetailsPath '$(Build.SourcesDirectory)\eng\Version.Details.xml' -packageConfigPath '$(Build.SourcesDirectory)\build\packages.config'
+
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: RestoreNuGetPackages
+      inputs:
+        restoreSolution: build/packages.config
+        feedsToUse: config
+        nugetConfigPath: build/licensing.nuget.config
+        restoreDirectory: packages
+
   - template: WindowsAppSDK-PopulateBuildDateAndRevision-Steps.yml
 
   - script: |
@@ -45,11 +71,11 @@ steps:
       nugetConfigPath: ${{ parameters.nugetConfigPath }}
 
   - task: powershell@2
-    displayName: 'Create pfx to sign MSIX test packages (DevCheck)'
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
     inputs:
       targetType: filePath
       filePath: tools\DevCheck.ps1
-      arguments: -CheckTestPfx -Clean -Offline -Verbose
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
       workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
@@ -91,7 +117,7 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.PushNotifications -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-PushNotifications.h
       workingDirectory: '$(Build.SourcesDirectory)'
-      
+
   - task: powershell@2
     displayName: 'Create EnvironmentManager TerminalVelocity features'
     inputs:
@@ -99,22 +125,37 @@ steps:
       filePath: tools\TerminalVelocity\Generate-TerminalVelocityFeatures.ps1
       arguments: -Path $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.xml -Channel ${{ parameters.channel }} -Language C++ -Namespace Microsoft.Windows.System -Output $(Build.SourcesDirectory)\dev\common\TerminalVelocityFeatures-EnvironmentManager.h
       workingDirectory: '$(Build.SourcesDirectory)'
-      
+
   - task: powershell@2
     name: UpdateTraceloggingConfig
     inputs:
       targetType: 'inline'
       script: |
         $srcPath = Get-Childitem -Path 'dev\WindowsAppRuntime_Insights\packages' -File 'MicrosoftTelemetry.h' -Recurse
-        
-        if (($srcPath -ne $null)){
-          $destinationPath = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
 
-          if (($destinationPath -ne $null)){
-            Write-Host 'SourcePath:' $srcPath.FullName $destinationPath.FullName
-            Copy-Item -Force $srcPath.FullName $destinationPath.FullName
+        if (($srcPath -ne $null)){
+          $destinationPaths = Get-Childitem -Path 'packages' -File 'Traceloggingconfig.h' -Recurse
+
+          if (($destinationPaths -ne $null)) {
+            foreach ($destPath in $destinationPaths) {
+              Write-Host 'SourcePath:' $srcPath.FullName
+              Write-Host 'DestinationPath:' $destPath.FullName
+              Copy-Item -Force $srcPath.FullName $destPath.FullName
+            }
           }
         }
+
+  # Copy MSIX license installation header into the correct source location.
+  - ${{ if eq(parameters.enableLicenseInstall, true) }}:
+    - task: CopyFiles@2
+      displayName: 'Extract license header to source location'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)\build\packages\$(AppLicensingInternalPackageName).$(AppLicensingInternalPackageVersion)\src'
+        Contents: |
+          *.h
+        TargetFolder: '$(Build.SourcesDirectory)\dev\Licensing'
+        flattenFolders: false
+        overWrite: true
 
   - task: VSBuild@1
     displayName: 'Build solution ${{ parameters.solutionPath }}'
@@ -125,18 +166,20 @@ steps:
       configuration: '$(buildConfiguration)'
       msbuildArgs: '/restore /p:AppxSymbolPackageEnabled=false /binaryLogger:$(Build.SourcesDirectory)/${{ parameters.solutionPath }}.$(buildPlatform).$(buildConfiguration).binlog /p:WindowsAppSDKVersionBuild=$(builddate_yymm) /p:WindowsAppSDKVersionRevision=$(builddate_dd)$(buildrevision) /p:VCToolsInstallDir="$(VCToolsInstallDir)\" /p:PGOBuildMode=$(PGOBuildMode) /p:WindowsAppSDKBuildPipeline=1'
 
-  - task: CmdLine@2
-    displayName: 'Install Test Certificate'
+  - task: powershell@2
+    displayName: 'Install test certificate for MSIX test packages (DevCheck)'
     inputs:
-      script: 'certutil.exe -addstore TrustedPeople MSTest.cer'
-      workingDirectory: '$(Build.SourcesDirectory)\build'
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CheckTestCert
+      workingDirectory: '$(Build.SourcesDirectory)'
 
   - task: powershell@2
     displayName: 'Setup TAEF Service (DevCheck)'
     inputs:
       targetType: filePath
       filePath: tools\DevCheck.ps1
-      arguments: -CheckTAEFService -Offline -Verbose
+      arguments: -Offline -Verbose -NoInteractive -CheckTAEFService
       workingDirectory: '$(Build.SourcesDirectory)'
 
 #DISABLED - GitHub runs as a a built-in Administrator (thus Elevated and no split-token)
@@ -166,3 +209,10 @@ steps:
 #      arguments: -SearchDir '${{ parameters.buildOutputDir }}\$(buildConfiguration)' -SourceRoot '$(Build.SourcesDirectory)' -recursive -Verbose -CommitId $(Build.SourceVersion)
 #      errorActionPreference: silentlyContinue
 
+  - task: powershell@2
+    displayName: 'Remove test certificate for MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -RemoveTestCert -RemoveTestPfx
+      workingDirectory: '$(Build.SourcesDirectory)'

@@ -7,6 +7,9 @@ parameters:
   - name: "ReleaseSigning"
     type: boolean
     default: False
+  - name: "IgnoreFailures"
+    type: boolean
+    default: False
   - name: "PublishToMaestro"
     type: boolean
     default: False
@@ -102,11 +105,12 @@ jobs:
   - template: AzurePipelinesTemplates\WindowsAppSDK-BuildDevProject-Steps.yml
     parameters:
       channel: ${{ variables.channel }}
-
-  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
+      enableLicenseInstall: true
 
 # component detection must happen *within* the build task
   - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+
+  - template: AzurePipelinesTemplates\WindowsAppSDK-PublishProjectOutput-Steps.yml
 
   - task: BinSkim@3
     inputs:
@@ -114,6 +118,7 @@ jobs:
       Function: 'analyze'
       AnalyzeTarget: '$(Build.ArtifactStagingDirectory)\*.dll;$(Build.ArtifactStagingDirectory)\*.exe'
       AnalyzeVerbose: true
+
   - task: PostAnalysis@1
     inputs:
       AllTools: false
@@ -148,6 +153,14 @@ jobs:
     publishDir : $(Build.ArtifactStagingDirectory)
     artifactName: 'windowsappsdk_binaries'
   steps:
+  - task: powershell@2
+    displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+    inputs:
+      targetType: filePath
+      filePath: tools\DevCheck.ps1
+      arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+      workingDirectory: '$(Build.SourcesDirectory)'
+
   - task: NuGetAuthenticate@0
     inputs:
       nuGetServiceConnections: 'TelemetryInternal'
@@ -165,15 +178,37 @@ jobs:
       buildOutputDir: $(buildOutputDir)
       publishDir: $(publishDir)
       channel: ${{ variables.channel }}
+      enableLicenseInstall: true
 
   - task: CopyFiles@2
-    displayName: 'Copy AnyCpu-built binaries'
+    displayName: 'Copy AnyCpu-built binaries to Nuget for staging'
     inputs:
       SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
       Contents: |
         Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
       TargetFolder: '$(Build.ArtifactStagingDirectory)\FullNuget\lib\net5.0-windows10.0.17763.0'
       flattenFolders: false
+
+  # This is purely for the SBOM
+  - task: CopyFiles@2
+    displayName: 'Copy AnyCpu-built binaries to windowsappsdk_binaries'
+    inputs:
+      SourceFolder: '$(buildOutputDir)\$(buildConfiguration)\$(buildPlatform)\Microsoft.WindowsAppRuntime.Bootstrap.Net'
+      Contents: |
+        Microsoft.WindowsAppRuntime.Bootstrap.Net.dll
+      TargetFolder: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
+      flattenFolders: false
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries\$(buildPlatform)\$(buildConfiguration)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish artifact: windowsappsdk_binaries'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\windowsappsdk_binaries'
+      artifactName: windowsappsdk_binaries
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish artifact: Full Nuget (Windows App Runtime DLLs)'
@@ -421,7 +456,7 @@ jobs:
 
   # Re-publish signed artifacts to the fullnuget artifact.
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish artifact: FullN'
+    displayName: 'Publish artifact: FullNuget'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)\fullnuget'
       artifactName: 'FullNuget'
@@ -435,7 +470,56 @@ jobs:
     useReleaseTag: '$(WindowsAppSDKFinalRelease)'
     prereleaseVersionTag: nightly
     buildPool: $(ProjectReunionBuildPool)
-    ${{ if eq(variables['Build.Reason'], 'Schedule') }}:
-      publishToMaestro: True
-    ${{ if ne(variables['Build.Reason'], 'Schedule') }}:
-      publishToMaestro: ${{ parameters.PublishToMaestro }}
+
+# Build WinAppSDK and Run Integration Test from TestAll.ps1
+- job: WinAppSDKIntegrationBuildAndTest
+  dependsOn: ['CreateNugetPackage']
+  condition: succeeded()
+  pool: $(ProjectReunionBuildPool)
+  variables:
+    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+  steps:
+    - template: ..\eng\common\AzurePipelinesTemplates\WindowsAppSDK-BuildAndIntegrationTest-Steps.yml
+      parameters:
+        TestSelection: '*Foundation_*'
+        TransportPackageArtifactName: 'FullNuget'
+        BuildType: 'stable'
+        TransportPackages: 
+          FoundationPackage:
+            Name: Microsoft.WindowsAppSDK.Foundation.TransportPackage
+            Version: $(WindowsAppSDKPackageVersion)
+
+# Publish
+- job: Publish
+  dependsOn: 
+  - CreateNugetPackage
+  - WinAppSDKIntegrationBuildAndTest
+  condition: or(succeeded(), eq(${{ parameters.IgnoreFailures }}, 'true'))
+  pool: $(ProjectReunionBuildPool)
+  variables:
+    WindowsAppSDKPackageVersion: $[ dependencies.CreateNugetPackage.outputs['SetVersion.packageVersion'] ]
+  steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        artifactName: FullNuget
+        downloadPath: '$(Build.SourcesDirectory)'
+        itemPattern: |
+          **/*.nupkg
+
+    # this mysterious guid fixes the "NuGetCommand@2 is ambiguous" error :-(
+    - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+      displayName: 'NuGet push to ProjectReunion.nuget.internal'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.SourcesDirectory)/FullNuget/*.nupkg;!$(Build.SourcesDirectory)/FullNuget/*.symbols.nupkg'
+        verbosityPush: 'Detailed'
+        nuGetFeedType: 'internal'
+        #Note: The project qualifier is always required when using a feed name. Also, do not use organization scoped feeds.
+        publishVstsFeed: 'ProjectReunion/Project.Reunion.nuget.internal'
+
+    - ${{ if or(eq(variables['Build.Reason'], 'Schedule'), eq(parameters.publishToMaestro, 'true')) }}:
+      - template: ..\eng\common\AzurePipelinesTemplates\Maestro-PublishBuildToMaestro-Steps.yml
+        parameters:
+          AssetNames: 'Microsoft.WindowsAppSDK.Foundation.TransportPackage'
+          AssetVersions: $(WindowsAppSDKPackageVersion)
+          TriggerSubscription: true

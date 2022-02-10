@@ -126,6 +126,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
+        wil::winrt_module_reference moduleRef{};
         bool usingLegacyImplementation{ false };
 
         try
@@ -291,14 +292,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_pushTriggerRegistration);
                 }
 
-                winrt::hstring taskClsidStr = winrt::to_hstring(taskClsid);
-                winrt::hstring backgroundTaskFullName = backgroundTaskName + taskClsidStr;
+                winrt::hstring taskClsidStr{ winrt::to_hstring(taskClsid) };
+                winrt::hstring backgroundTaskFullName{ backgroundTaskName + taskClsidStr };
 
-                auto tasks = BackgroundTaskRegistration::AllTasks();
-                bool isTaskRegistered = std::any_of(std::begin(tasks), std::end(tasks),
+                auto tasks{ BackgroundTaskRegistration::AllTasks() };
+                bool isTaskRegistered{ std::any_of(std::begin(tasks), std::end(tasks),
                     [&](auto&& task)
                     {
-                        auto name = task.Value().Name();
+                        auto name{ task.Value().Name() };
 
                         if (std::wstring_view(name).substr(0, backgroundTaskName.size()) != backgroundTaskName)
                         {
@@ -312,7 +313,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         }
 
                         throw winrt::hresult_invalid_argument(L"RegisterActivator has different clsid registered.");
-                    });
+                    }) };
 
                 if (!isTaskRegistered)
                 {
@@ -325,7 +326,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_NOTIMPL, !AppModel::Identity::IsPackagedProcess());
 
                     // In case the interface is not supported, let it throw.
-                    auto builder5 = builder.as<winrt::IBackgroundTaskBuilder5>();
+                    auto builder5{ builder.as<winrt::IBackgroundTaskBuilder5>() };
                     builder5.SetTaskEntryPointClsid(taskClsid);
                     winrt::com_array<winrt::IBackgroundCondition> conditions = details.GetConditions();
                     for (auto condition : conditions)
@@ -337,7 +338,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
             BackgroundTaskRegistration registeredTaskFromBuilder{ nullptr };
 
-            auto scopeExitToCleanRegistrations = wil::scope_exit(
+            auto scopeExitToCleanRegistrations{ wil::scope_exit(
                 [&]()
                 {
                     s_comActivatorRegistration.reset();
@@ -348,7 +349,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         registeredTaskFromBuilder.Unregister(true);
                     }
                 }
-            );
+            ) };
 
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
             {
@@ -376,10 +377,8 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             }
 
             scopeExitToCleanRegistrations.release();
-
-            auto lock = s_activatorInfoLock.lock_exclusive();
+            auto lock{ s_activatorInfoLock.lock_exclusive() };
             s_pushTriggerRegistration = registeredTaskFromBuilder;
-
             PushNotificationTelemetry::ActivatorRegisteredByApi(S_OK, details.Activators());
         }
 
@@ -397,7 +396,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         try
         {
-            auto lock = s_activatorInfoLock.lock_exclusive();
+            auto lock{ s_activatorInfoLock.lock_exclusive() };
             if (WI_IsFlagSet(activators, PushNotificationRegistrationActivators::PushTrigger))
             {
                 THROW_HR_IF_NULL_MSG(HRESULT_FROM_WIN32(ERROR_NOT_FOUND), s_pushTriggerRegistration, "PushTrigger not registered.");
@@ -441,7 +440,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         try
         {
-            auto lock = s_activatorInfoLock.lock_exclusive();
+            auto lock{ s_activatorInfoLock.lock_exclusive() };
             if (s_pushTriggerRegistration)
             {
                 s_pushTriggerRegistration.Unregister(true);
@@ -478,7 +477,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
     bool IsBackgroundTaskBuilderAvailable()
     {
-        static bool hasSetTaskEntrypoint = HasBackgroundTaskEntryPointClsid();
+        static bool hasSetTaskEntrypoint{ HasBackgroundTaskEntryPointClsid() };
         return hasSetTaskEntrypoint;
     }
 

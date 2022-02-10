@@ -21,21 +21,19 @@ An "unpackaged" app therefore is one that is not built into an MSIX package.
 
 ## Background
 
-Traditional Win32 apps expect to get their arguments passed into WinMain in the form of a string. They can also call the Win32
-[GetCommandLineW](https://docs.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew)
-API. Windows Forms apps expect to call
-[Environment.GetCommandLineArgs](https://docs.microsoft.com/dotnet/api/system.environment.getcommandlineargs)
-for the same purpose. This is true regardless of the "activation kind" - in fact, for unpackaged
-apps, all activations are managed in the same way, only varying by the arguments passed in to
-WinMain. Win32 apps are familiar with 3 activation kinds: regular launch (whether by command-line,
-tile/shortcut or startup), file-type and protocol association.
+Traditional Win32 apps expect to get their arguments passed into WinMain in the form of a string. 
+They can also call the Win32 [GetCommandLineW](https://docs.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew) API. Windows Forms apps expect to call
+[Environment.GetCommandLineArgs](https://docs.microsoft.com/dotnet/api/system.environment.getcommandlineargs) for the same purpose. This is true regardless of the 
+"activation kind" - in fact, for unpackaged apps, all activations are managed in the same way, 
+only varying by the arguments passed in to WinMain. Win32 apps are familiar with 3 activation 
+kinds: regular launch (whether by command-line, tile/shortcut or startup), file-type and protocol
+association.
 
-Conversely, UWP supports
-[44 different kinds of activation](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind),
-each represented by a different IActivatedEventArgs class, where the arguments are passed in to the
-app's Launched or Activated event handlers, as properties on a specific XXXActivatedEventArgs
-object. In addition, multi-instanced UWP and Desktop Bridge apps can call the
-[AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
+Conversely, UWP supports [44 different kinds of activation](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind), each represented by a different 
+IActivatedEventArgs class, where the arguments are passed in to the app's Launched or 
+Activated event handlers, as properties on a specific XXXActivatedEventArgs object. In addition, 
+multi-instanced UWP and Desktop Bridge apps can call the [AppInstance.GetActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.appinstance.getactivatedeventargs)
+
 API.
 
 Of all the rich activation kinds, some require some form of prior information registered with the
@@ -68,12 +66,12 @@ Bridge and Windows
 apps. The AppLifecycle implementation is based on this set. Some activation kinds require prior
 registration, others do not. The target list for v1 is as follows:
 
-| Activation kind | Description                                                                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Launch          | Launch from a Start tile/shortcut, from a command window, or programmatically via ShellExecute/CreateProcess.                                    |
+| Activation kind | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| Launch          | Launch from a Start tile/shortcut, from a command window, or programmatically via ShellExecute/CreateProcess. |
 | File            | The app is activated when the user double-clicks a registered file, or when a caller calls ShellExecute or LaunchFileAsync on a registered file. |
-| Protocol        | Activated via ShellExecute or LaunchUriAsync, or by specifying a protocol string on a command-line.                                              |
-| StartupTask     | The app starts on user log-in - either registered in the registry, or via shortcuts in a well-known startup folder.                              |
+| Protocol        | Activated via ShellExecute or LaunchUriAsync, or by specifying a protocol string on a command-line. |
+| StartupTask     | The app starts on user log-in - either registered in the registry, or via shortcuts in a well-known startup folder. |
 
 
 
@@ -157,37 +155,44 @@ int APIENTRY wWinMain(
 
 void RegisterForActivation()
 {
-    // Register one or more supported image filetypes,
+    // Register one or more supported filetypes, specifying 
     // an icon (specified by binary file path plus resource index),
     // a display name to use in Shell and Settings,
     // zero or more verbs for the File Explorer context menu,
     // and the path to the EXE to register for activation.
-    // Note that localizable resource strings are not supported in v1.
-    std::wstring imageFileTypes[3] = { L".jpg", L".png", L".bmp" };
-    std::wstring verbs[2] = { L"view", L"edit" };
+    hstring myFileTypes[3] = { L".foo", L".foo2", L".foo3" };
+    hstring verbs[2] = { L"view", L"edit" };
     ActivationRegistrationManager::RegisterForFileTypeActivation(
-        imageFileTypes,
-        L"C:\\Program Files\\Contoso\\MyResources.dll, -123",
+        myFileTypes,
+        exePathAndIconIndex,
         L"Contoso File Types",
         verbs,
-        L"C:\\Program Files\\Contoso\\MyApp.exe");
+        exePath
+    );
 
-    // Register some URI schemes for protocol activation,
+    // Register a URI scheme for protocol activation,
     // specifying the scheme name, icon, display name and EXE path.
     ActivationRegistrationManager::RegisterForProtocolActivation(
         L"foo",
-        L"C:\\Program Files\\Contoso\\MyResources.dll, -45",
+        exePathAndIconIndex,
         L"Contoso Foo Protocol",
-        L"C:\\Program Files\\Contoso\\MyApp.exe");
+        exePath
+    );
 
     // Register for startup activation.
+    // As we're registering for startup activation multiple times,
+    // and this is a multi-instance app, we'll get multiple instances
+    // activated at startup.
     ActivationRegistrationManager::RegisterForStartupActivation(
-        L"MyTaskId",
-        L"C:\\Program Files\\Contoso\\MyApp.exe");
+        L"ContosoStartupId",
+        exePath
+    );
 
+    // If we don't specify the EXE, it will default to this EXE.
     ActivationRegistrationManager::RegisterForStartupActivation(
-        L"AnotherTaskId",
-        L"");
+        L"ContosoStartupId2",
+        L""
+    );
 }
 ```
 
@@ -197,32 +202,72 @@ A Win32 app would typically get its command-line arguments very early in its Win
 therefore expect the app to call the new AppInstance::GetActivatedEventArgs in the same place,
 instead of using the supplied lpCmdLine parameter or using GetCommandLineW. From there, the app can
 determine the specific ExtendedActivationKind, query the object for the specific activation type,
-and then access the properties and methods of that type.
+and then access the properties and methods of that type. ExtendedActivationKind is a superset
+of the UWP ActivationKind enum. The AppActivationArguments.Data property represents the
+underlying activation event args type. Note that this provides an interface (ILaunchActivatedEventArgs,
+IFileActivatedEventArgs, and so on) and not a class.
 
 ```c++
 void RespondToActivation()
 {
-    AppActivationArguments args = AppInstance::GetCurrent().GetActivatedEventArgs();
+    AppActivationArguments args = 
+        AppInstance::GetCurrent().GetActivatedEventArgs();
     ExtendedActivationKind kind = args.Kind();
     if (kind == ExtendedActivationKind::Launch)
     {
-        auto launchArgs = args.Data().as<LaunchActivatedEventArgs>();
-        DoSomethingWithLaunchArgs(launchArgs.Arguments());
+        ILaunchActivatedEventArgs launchArgs = 
+            args.Data().as<ILaunchActivatedEventArgs>();
+        if (launchArgs)
+        {
+            winrt::hstring argString = launchArgs.Arguments();
+            std::vector<std::wstring> argStrings = SplitStrings(argString);
+            OutputMessage(L"Launch activation");
+            for (std::wstring const& s : argStrings)
+            {
+                OutputMessage(s.c_str());
+            }
+            // If the first argument is "Settings", we'll launch the Settings page.
+            if (wcscmp(argStrings[1].c_str(), L"Settings") == 0)
+            {
+                LaunchSettingsPage();
+            }
+            else
+            {
+                LaunchMainPage();
+            }
+        }
     }
     else if (kind == ExtendedActivationKind::File)
     {
-        auto fileArgs = args.Data().as<FileActivatedEventArgs>();
-        DoSomethingWithFileArgs(fileArgs.Files());
+        IFileActivatedEventArgs fileArgs = 
+            args.Data().as<IFileActivatedEventArgs>();
+        if (fileArgs)
+        {
+            IStorageItem file = fileArgs.Files().GetAt(0);
+            OutputFormattedMessage(
+                L"File activation: %s", file.Name().c_str());
+        }
     }
     else if (kind == ExtendedActivationKind::Protocol)
     {
-        auto protocolArgs = args.Data().as<ProtocolActivatedEventArgs>();
-        DoSomethingWithProtocolArgs(protocolArgs.Uri());
+        IProtocolActivatedEventArgs protocolArgs = 
+            args.Data().as<IProtocolActivatedEventArgs>();
+        if (protocolArgs)
+        {
+            Uri uri = protocolArgs.Uri();
+            OutputFormattedMessage(
+                L"Protocol activation: %s", uri.RawUri().c_str());
+        }
     }
     else if (kind == ExtendedActivationKind::StartupTask)
     {
-        auto startupArgs = args.Data().as<StartupTaskActivatedEventArgs>();
-        DoSomethingWithStartupArgs(startupArgs.TaskId());
+        IStartupTaskActivatedEventArgs startupArgs = 
+            args.Data().as<IStartupTaskActivatedEventArgs>();
+        if (startupArgs)
+        {
+            OutputFormattedMessage(
+                L"Startup activation: %s", startupArgs.TaskId().c_str());
+        }
     }
 }
 ```
@@ -243,10 +288,18 @@ startup behavior, the app must pass the taskId that it originally passed in when
 void UnregisterForActivation()
 {
     // Unregister one or more registered filetypes.
-    std::wstring imageFileTypes[3] = { L".jpg", L".png", L".bmp" };
-    ActivationRegistrationManager::UnregisterForFileTypeActivation(
-        imageFileTypes,
-        L"C:\\Program Files\\Contoso\\MyApp.exe");
+    try
+    {
+        hstring myFileTypes[3] = { L".foo", L".foo2", L".foo3" };
+        ActivationRegistrationManager::UnregisterForFileTypeActivation(
+            myFileTypes,
+            exePath
+        );
+    }
+    catch (...)
+    {
+        OutputMessage(L"Error unregistering file types");
+    }
 
     // Unregister a protocol scheme.
     ActivationRegistrationManager::UnregisterForProtocolActivation(
@@ -255,8 +308,9 @@ void UnregisterForActivation()
 
     // Unregister for startup activation.
     ActivationRegistrationManager::UnregisterForStartupActivation(
-        L"AnotherTaskId",
-        L"");
+        L"ContosoStartupId");
+    ActivationRegistrationManager::UnregisterForStartupActivation(
+        L"ContosoStartupId2");
 }
 ```
 
@@ -290,6 +344,8 @@ IActivatedEventArgs.
 
 ### ExtendedActivationKind
 
+```idl
+
 namespace Microsoft.Windows.AppLifecycle
 {
     enum ExtendedActivationKind
@@ -297,8 +353,11 @@ namespace Microsoft.Windows.AppLifecycle
         ExtensionBase = 4096
     }
 }
+```
 
-This enum is based off the platform
+
+This enum is based on the platform
+
 [ActivationKind](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.ActivationKind).
 All platform ActivationKind values are cloned to this class. We determine an "extension base" value which
 is well above the existing highest ActivationKind value (1026), to allow for new values to be added to the
@@ -328,20 +387,20 @@ namespace Microsoft.Windows.AppLifecycle
 The platform defines
 [IActivatedEventArgs](https://docs.microsoft.com/uwp/api/Windows.ApplicationModel.Activation.IActivatedEventArgs),
 which exposes a Kind property. Apps can get an IActivatedEventArgs reference, examine the Kind and
-then cast the reference to the specific concrete class type that implements IActivatedEventArgs.
+then cast the reference to the interface for that specific activation.
 This enables generic functions such as GetActivatedEventArgs and the Activated event handler, which
-provide the app with an IActivatedEventArgs that the app can then convert to a specific concrete
+provide the app with an IActivatedEventArgs that the app can then convert to a specific 
 type. However, IActivatedEventArgs also defines other properties that are only useful in a UWP
 context. In addition, we need a mechanism that supports both platform ActivationKinds and also
-Windows app SDK only ExtendedActivationKinds and their corresponding concrete class types.
+
+Windows app SDK ExtendedActivationKinds and their corresponding interface types.
 
 The new ActivationArguments type serves this purpose: the app can examine the Kind, and then cast
-the Data property to the specific concrete type (which can be either a platform IActivatedEventArgs
-concrete class, or a Windows App SDK class).
+the Data property to the interface type that represents the specific activation.
 
 **Kind** is the enum value that indicates the kind of activation this object represents.
 
-**Data** can be cast to a specific concrete class corresponding to Kind.
+**Data** can be cast to a specific interface corresponding to Kind.
 
 ### ActivatedEventArgs Clones
 
@@ -349,16 +408,13 @@ Windows App SDK initially defines four `-ActivatedEventArgs` types that replicat
 equivalent `Windows.ApplicationModel.Activation.-ActivatedEventArgs`, but support adding new
 functionality over time. These are:
 
-| API                                 | Description                                                                                                                                                        |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| class LaunchActivatedEventArgs      | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs).           |
-| class FileActivatedEventArgs        | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs).               |
-| class ProtocolActivatedEventArgs    | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs).       |
-| class StartupTaskActivatedEventArgs | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
 
-As with their in-platform versions, these `-ActivatedEventArgs` implement the in-platform
-`IActivatedEventArgs`, which provides the standard User, SplashScreen, PreviousExecutionState and
-ActivationViewSwitcher properties. These are low-priority for v1, as they are less-commonly used.
+| API                                      | Description                                                  |
+| ---------------------------------------- | ------------------------------------------------------------ |
+| interface ILaunchActivatedEventArgs      | Based on the existing [LaunchActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.launchactivatedeventargs). |
+| interface IFileActivatedEventArgs        | Based on the existing [FileActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.fileactivatedeventargs). |
+| interface IProtocolActivatedEventArgs    | Based on the existing [ProtocolActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.protocolactivatedeventargs). |
+| interface IStartupTaskActivatedEventArgs | Based on the existing [StartupTaskActivatedEventArgs](https://docs.microsoft.com/uwp/api/windows.applicationmodel.activation.startuptaskactivatedeventargs). |
 
 > In defining an API that is usable by both unpackged Win32 apps and UWP apps, inevitably there will
 > be some features that are not applicable to one or other type of consumer. However, it is
@@ -367,49 +423,6 @@ ActivationViewSwitcher properties. These are low-priority for v1, as they are le
 > ProtocolActivatedEventArgs implements 5 interfaces, of which only 2 define members that are
 > interesting to Win32 apps - so for v1, the proposal is to implement only those 2 interfaces; and
 > defer consideration of the additional interfaces to a later release.
-
-```idl
-namespace Microsoft.Windows.AppLifecycle
-{
-    [default_interface]
-    runtimeclass LaunchActivatedEventArgs :
-        Windows.ApplicationModel.Activation.IActivatedEventArgs
-    {
-        // Arguments passed during activation or launch
-        String Arguments { get; };
-
-        // Set when this activation is from the user clicking a tile
-        String TileId { get; };
-    }
-
-    [default_interface]
-    runtimeclass FileActivatedEventArgs :
-        Windows.ApplicationModel.Activation.IActivatedEventArgs
-    {
-        // Contains one or more storage items associated with this launch
-        Windows.Foundation.Collections.IVectorView<Windows.Storage.IStorageItem> Files { get; };
-
-        // Verb used for activation, previously configured by the app during its registration,
-        // such as "open" or "delete".
-        String Verb { get; };
-    }
-
-    [default_interface]
-    runtimeclass ProtocolActivatedEventArgs :
-        Windows.ApplicationModel.Activation.IActivatedEventArgs
-    {
-        Uri Uri { get; };
-    }
-
-    [default_interface]
-    runtimeclass StartupTaskActivatedEventArgs :
-        Windows.ApplicationModel.Activation.IActivatedEventArgs
-    {
-        // App defined value specified during registration of the StartupTask
-        String TaskId { get; };
-    }
-}
-```
 
 ### Activation registration
 

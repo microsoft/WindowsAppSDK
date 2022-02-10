@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #include "pch.h"
 
-#include <MddBootstrap.h>
-#include <MddBootstrapTest.h>
-
 using namespace winrt;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;
@@ -14,6 +11,7 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 
 using namespace std::chrono;
+using namespace AppModel::Identity;
 
 HWND g_window = NULL;
 wchar_t g_windowClass[] = L"TestWndClass"; // the main window class name
@@ -23,28 +21,9 @@ ATOM _RegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-std::wstring GetFullIdentityString()
-{
-    std::wstring identityString;
-    WCHAR idNameBuffer[PACKAGE_FULL_NAME_MAX_LENGTH + 1];
-    UINT32 idNameBufferLen = ARRAYSIZE(idNameBuffer);
-    if (::GetCurrentPackageFullName(&idNameBufferLen, idNameBuffer) == ERROR_SUCCESS)
-    {
-        identityString = idNameBuffer;
-    }
-
-    return identityString;
-}
-
-bool HasIdentity()
-{
-    static bool hasIdentity = !(GetFullIdentityString()).empty();
-    return hasIdentity;
-}
-
 bool NeedDynamicDependencies()
 {
-    return !HasIdentity();
+    return !IsPackagedProcess();
 }
 
 HRESULT BootstrapInitialize()
@@ -172,6 +151,17 @@ void RunGetInstancesTest()
     g_instances = AppInstance::GetInstances();
 }
 
+void RunRegisterKeyTest()
+{
+    auto instance = AppInstance::FindOrRegisterForKey(L"foo");
+    THROW_IF_NULL_ALLOC(instance);
+}
+
+void RunUnregisterKeyTest()
+{
+    AppInstance::GetCurrent().UnregisterKey();
+}
+
 ATOM _RegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEX wcex = {};
@@ -221,6 +211,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         case IDM_FILE_GETINSTANCES:
             RunGetInstancesTest();
+            break;
+
+        case IDM_FILE_REGISTERINSTANCE:
+            RunRegisterKeyTest();
+            break;
+
+        case IDM_FILE_UNREGISTERINSTANCE:
+            RunUnregisterKeyTest();
             break;
         }
         break;

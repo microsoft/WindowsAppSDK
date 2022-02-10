@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <assert.h>
 #include <unknwn.h>
+#include <ShlObj_core.h>
 #include <ShObjIdl_core.h>
 #include <shlguid.h>
 #include <shlwapi.h>
@@ -33,12 +34,15 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 
+#include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.ApplicationModel.AppExtensions.h>
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.ApplicationModel.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.Data.Xml.Dom.h>
+#include <winrt/Windows.Management.Core.h>
 #include <winrt/Windows.Management.Deployment.h>
 #include <winrt/Windows.Media.Capture.h>
 #include <winrt/Windows.Storage.h>
@@ -48,6 +52,7 @@
 #include <MsixDynamicDependency.h>
 
 #include <appmodel.identity.h>
+#include <appmodel.packagegraph.h>
 #include <microsoft.utf8.h>
 #include <security.integritylevel.h>
 

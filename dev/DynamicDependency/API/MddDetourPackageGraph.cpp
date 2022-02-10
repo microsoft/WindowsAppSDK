@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include <VersionHelpers.h>
+#include <IsWindowsVersion.h>
 
 #include "MddDetourPackageGraph.h"
 
@@ -99,44 +99,6 @@ typedef HRESULT (WINAPI* GetPackageInfo2Function)(
     BYTE* buffer,
     UINT32* count);
 
-VERSIONHELPERAPI IsWindowsVersionOrGreaterEx(
-    const WORD majorVersion,
-    const WORD minorVersion,
-    const WORD servicePackMajor,
-    const WORD buildNumber)
-{
-    OSVERSIONINFOEXW osvi{ sizeof(osvi) };
-    osvi.dwMajorVersion = majorVersion;
-    osvi.dwMinorVersion = minorVersion;
-    osvi.wServicePackMajor = servicePackMajor;
-    osvi.dwBuildNumber = buildNumber;
-
-    const DWORDLONG c_conditionMask{
-        VerSetConditionMask(
-            VerSetConditionMask(
-                VerSetConditionMask(
-                    VerSetConditionMask(
-                        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-                    VER_MINORVERSION, VER_GREATER_EQUAL),
-                VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL),
-            VER_BUILDNUMBER, VER_GREATER_EQUAL)
-    };
-
-    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR | VER_BUILDNUMBER, c_conditionMask) != FALSE;
-}
-
-VERSIONHELPERAPI IsWindows10_19H1OrGreater()
-{
-    const WORD c_win10_19h1_build{ 18362 };
-    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_win10_19h1_build);
-}
-
-VERSIONHELPERAPI IsWindows10_20H1OrGreater()
-{
-    const WORD c_win10_20h1_build{ 19041 };
-    return IsWindowsVersionOrGreaterEx(HIBYTE(_WIN32_WINNT_WIN10), LOBYTE(_WIN32_WINNT_WIN10), 0, c_win10_20h1_build);
-}
-
 HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
 {
     // Detour package graph APIs to our implementation
@@ -146,7 +108,7 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
     // NOTE: GetCurrentPackageInfo2 requires >=19H1
     // NOTE: GetCurrentPackageInfo3 requires >=20H1
     // Support down to RS5
-    if (IsWindows10_19H1OrGreater())
+    if (WindowsVersion::IsWindows10_19H1OrGreater())
     {
         HMODULE dllApisetAppmodelRuntime_1_3{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-l1-1-3.dll", nullptr, 0) };
         FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntime_1_3);
@@ -161,7 +123,7 @@ HRESULT WINAPI MddDetourPackageGraphInitialize() noexcept
         FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllGetPackageInfo2);
         TrueGetPackageInfo2 = dllGetPackageInfo2;
 
-        if (IsWindows10_20H1OrGreater())
+        if (WindowsVersion::IsWindows10_20H1OrGreater())
         {
             HMODULE dllApisetAppmodelRuntimeInternal_1_6{ LoadLibraryExW(L"api-ms-win-appmodel-runtime-internal-l1-1-6.dll", nullptr, 0) };
             FAIL_FAST_HR_IF_NULL(HRESULT_FROM_WIN32(GetLastError()), dllApisetAppmodelRuntimeInternal_1_6);

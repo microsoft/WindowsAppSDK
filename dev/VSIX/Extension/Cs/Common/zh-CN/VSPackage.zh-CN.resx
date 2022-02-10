@@ -195,10 +195,10 @@
     <value>用于创建基于 Windows UI 库 (WinUI 3) 桌面应用托管类库 (.dll) 的项目。</value>
   </data>
   <data name="1029" xml:space="preserve">
-    <value>空白应用，已使用 WAP 打包 (桌面版中的 WinUI 3)</value>
+    <value>空白应用，使用 Windows 应用程序打包项目打包(桌面版中的 WinUI 3)</value>
   </data>
   <data name="1030" xml:space="preserve">
-    <value>[实验性] 空白应用，已使用 WAP 打包(桌面版中的 WinUI 3)</value>
+    <value>[实验性] 空白应用，使用 Windows 应用程序打包项目打包(桌面版中的 WinUI 3)</value>
   </data>
   <data name="1031" xml:space="preserve">
     <value>用于基于 Windows UI 库 (WinUI 3) 创建桌面应用的项目模板。包含 Windows 应用程序打包 (WAP) 项目，用于创建 MSIX 包，以便通过 Microsoft Store 进行旁加载或分发。</value>

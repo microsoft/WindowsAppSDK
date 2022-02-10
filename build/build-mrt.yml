@@ -14,9 +14,9 @@ steps:
     modifyEnvironment: true
 
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.6'
+  displayName: 'Use NuGet 5.11'
   inputs:
-    versionSpec: 5.6
+    versionSpec: 5.11
   continueOnError: true
 
 # Start restoring packages for C++ projects. The C# ones will be restored by the build task
@@ -89,6 +89,14 @@ steps:
     filename: '${{ parameters.MRTSourcesDirectory }}\build\SetDotnetVars.cmd'
     arguments: '${{ parameters.MRTSourcesDirectory }}'
     modifyEnvironment: true
+
+- task: powershell@2
+  displayName: 'Create test pfx to sign MSIX test packages (DevCheck)'
+  inputs:
+    targetType: filePath
+    filePath: tools\DevCheck.ps1
+    arguments: -NoInteractive -Offline -Verbose -CertPassword 'BuildPipeline' -CheckTestPfx -Clean
+    workingDirectory: '$(Build.SourcesDirectory)'
 
 #  - task: BatchScript@1
 #    displayName: 'Debug'
@@ -232,6 +240,11 @@ steps:
       Microsoft.Windows.ApplicationModel.Resources.winmd
     TargetFolder: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\anycpu'
     flattenFolders: true
+
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: 'SBOM Generation Task'
+  inputs:
+    BuildDropPath: '$(Build.ArtifactStagingDirectory)\mrt_raw\lib\$(buildPlatform)'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: Binaries'
