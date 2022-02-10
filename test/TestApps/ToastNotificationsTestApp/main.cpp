@@ -522,6 +522,8 @@ bool VerifyToastExpiresOnReboot()
 
 bool VerifyShowToast()
 {
+    EnsureNoActiveToasts();
+
     // Registration happens in main()
     winrt::ToastNotification toast{ CreateToastNotification() };
 
@@ -548,6 +550,8 @@ bool VerifyShowToast_Unpackaged()
         [&] {
             toastNotificationManager.UnregisterActivator();
         });
+
+    EnsureNoActiveToasts();
 
     winrt::ToastNotification toast{ CreateToastNotification() };
 
