@@ -7,6 +7,7 @@
 #include "NotificationProperties.h"
 #include "ToastNotificationUtility.h"
 #include "../PushNotifications/PushNotificationUtility.h"
+#include "ToastProgressDataABI.h"
 
 namespace winrt
 {
@@ -43,13 +44,12 @@ NotificationProperties::NotificationProperties(winrt::ToastNotification const& t
 
     m_expiresOnReboot = toastNotification.ExpiresOnReboot();
 
-    // TODO: Uncomment once ToastProgressData is implemented
-    // m_progressData = toastNotification.ProgressData();
+    m_toastProgressData = winrt::make_self<ToastProgressDataABI>(toastNotification.ProgressData());
 }
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out_ unsigned int* notificationId) noexcept
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *notificationId = m_notificationId;
     return S_OK;
@@ -57,7 +57,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_NotificationId(_Out
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Payload(_Out_ unsigned int* payloadSize, _Out_ byte** payload) noexcept try
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     size_t tempPayloadSize = m_payload.size();
 
@@ -72,7 +72,7 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_PayloadSize(_Out_ unsigned int* payloadSize) noexcept
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *payloadSize = static_cast<unsigned int>(m_payload.size());
     return S_OK;
@@ -80,7 +80,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_PayloadSize(_Out_ u
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Tag(_Out_ HSTRING* tag) noexcept try
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *tag = safe_make_unique_hstring(m_tag.c_str()).release();
     return S_OK;
@@ -89,7 +89,7 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Group(_Out_ HSTRING* group) noexcept try
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *group = safe_make_unique_hstring(m_group.c_str()).release();
     return S_OK;
@@ -98,7 +98,7 @@ CATCH_RETURN()
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Expiry(_Out_ unsigned long long* expiry) noexcept
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *expiry = static_cast<ULONGLONG>(m_expiry.dwHighDateTime) << 32 | static_cast<ULONGLONG>(m_expiry.dwLowDateTime);
     return S_OK;
@@ -106,7 +106,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_Expiry(_Out_ unsign
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ArrivalTime(_Out_ unsigned long long* arrivalTime) noexcept
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *arrivalTime = static_cast<ULONGLONG>(m_arrivalTime.dwHighDateTime) << 32 | static_cast<ULONGLONG>(m_arrivalTime.dwLowDateTime);
     return S_OK;
@@ -114,7 +114,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ArrivalTime(_Out_ u
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_BootId(_Out_ unsigned long long* bootId) noexcept
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *bootId = m_bootId;
     return S_OK;
@@ -122,7 +122,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_BootId(_Out_ unsign
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ExpiresOnReboot(_Out_ boolean* expiresOnReboot) noexcept
 {
-    auto lock = m_lock.lock_shared();
+    auto lock{ m_lock.lock_shared() };
 
     *expiresOnReboot = m_expiresOnReboot;
     return S_OK;
@@ -130,10 +130,10 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ExpiresOnReboot(_Ou
 
 STDMETHODIMP_(HRESULT __stdcall) NotificationProperties::get_ToastProgressData(_Out_ ToastABI::IToastProgressData** progressData) noexcept
 {
-    // TODO: Uncomment once ToastProgressData is implemented
-    // auto lock = m_lock.lock_shared();
-    // *toastProgressData = m_toastProgressData.get();
-    *progressData = nullptr;
+    auto lock{ m_lock.lock_shared() };
+
+    m_toastProgressData.copy_to(progressData);
+
     return S_OK;
 }
 

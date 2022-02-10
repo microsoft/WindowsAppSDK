@@ -24,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastNotificationUtility.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ToastProgressData.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ToastProgressDataABI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)NotificationProperties.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ToastNotificationUtility.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)ToastProgressData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ToastProgressDataABI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="$(MSBuildThisFileDirectory)ToastNotifications.idl" />
