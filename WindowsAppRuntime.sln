@@ -287,7 +287,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Licensing", "Licensing", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Licensing", "dev\Licensing\Licensing.vcxitems", "{885A43FA-052D-4B0D-A2DC-13EE15796435}"
 EndProject
-<<<<<<< HEAD
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AccessControl", "AccessControl", "{A06B7FE8-D201-4EA2-BB10-61B4595EC377}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AccessControl", "dev\AccessControl\AccessControl.vcxitems", "{C91BCB93-9ED1-4ACD-85F3-26F9F6AC52E3}"
