@@ -176,8 +176,8 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveToastAppId() };
-        ToastABI::IVector<ToastABI::INotificationProperties*>* toastPropertiesCollection;
-        THROW_IF_FAILED(ToastNotifications_GetHistory(appId.c_str(), &toastPropertiesCollection));
+        winrt::com_ptr<ToastABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection;
+        THROW_IF_FAILED(ToastNotifications_GetHistory(appId.c_str(), toastPropertiesCollection.put()));
 
         unsigned int count{};
         THROW_IF_FAILED(toastPropertiesCollection->get_Size(&count));
