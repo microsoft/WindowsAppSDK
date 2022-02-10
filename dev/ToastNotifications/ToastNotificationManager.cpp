@@ -22,6 +22,12 @@ winrt::event<winrt::Windows::Foundation::EventHandler<winrt::Microsoft::Windows:
     return g_toastHandlers;
 }
 
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+    using namespace ::ABI::Windows::Foundation::Collections;
+}
+
 namespace winrt
 {
     using namespace winrt::Windows::UI;
@@ -29,12 +35,6 @@ namespace winrt
     using namespace winrt::Windows::Foundation::Collections;
     using namespace Windows::ApplicationModel::Core;
     using namespace Microsoft::Windows::ToastNotifications;
-}
-
-namespace ToastABI
-{
-    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
-    using namespace ::ABI::Windows::Foundation::Collections;
 }
 
 namespace PushNotificationHelpers
