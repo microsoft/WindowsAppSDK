@@ -309,16 +309,6 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyToastSuppressDisplay", testWaitTime());
         }
 
-        TEST_METHOD(VerifyToastProperties)
-        {
-            RunTest(L"VerifyToastPayload", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyToastProperties_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyToastPayload", testWaitTime());
-        }
-
         TEST_METHOD(VerifyToastExpiresOnReboot)
         {
             RunTest(L"VerifyToastExpiresOnReboot", testWaitTime());
@@ -329,6 +319,16 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyToastExpiresOnReboot", testWaitTime());
         }
 
+        TEST_METHOD(VerifyShowToast)
+        {
+            RunTest(L"VerifyShowToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyShowToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
+        }
+
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup)
         {
             RunTest(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", testWaitTime());
@@ -336,7 +336,7 @@ namespace Test::ToastNotifications
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", testWaitTime());
         }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup)
@@ -369,19 +369,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", testWaitTime());
         }
 
-        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
-        }
-
         TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup)
         {
             RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
         }
 
-        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup", testWaitTime());
         }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup)
@@ -389,14 +384,49 @@ namespace Test::ToastNotifications
             RunTest(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
         }
 
-        TEST_METHOD(VerifyShowToast)
+        TEST_METHOD(VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged)
         {
-            RunTest(L"VerifyShowToast", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup", testWaitTime());
         }
 
-        TEST_METHOD(VerifyShowToast_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast)
         {
-            RunTestUnpackaged(L"VerifyShowToast_Unpackaged", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast)
+        {
+            RunTest(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts)
+        {
+            RunTest(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncReportsProgressData)
+        {
+            RunTest(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncReportsProgressData_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
         }
 
         TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier)
@@ -467,46 +497,6 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyRemoveAllAsync_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyRemoveAllAsync", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast)
-        {
-            RunTest(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncWithZeroActiveToast_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyGetAllAsyncWithZeroActiveToast", testWaitTime());
-        }
-		
-        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast)
-        {
-            RunTest(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncWithOneActiveToast_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyGetAllAsyncWithOneActiveToast", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts)
-        {
-            RunTest(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncReportsProgressData)
-        {
-            RunTest(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
-        }
-
-        TEST_METHOD(VerifyGetAllAsyncReportsProgressData_Unpackaged)
-        {
-            RunTestUnpackaged(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
         }
     };
 }
