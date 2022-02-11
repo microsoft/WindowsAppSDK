@@ -6,6 +6,7 @@
 #include <winrt/Windows.ApplicationModel.Background.h>
 #include "WindowsAppRuntime.Test.AppModel.h"
 #include <MddBootstrap.h>
+#include <MddBootstrapTest.h>
 
 namespace winrt
 {
@@ -112,6 +113,10 @@ int main()
     bool isPackaged{ Test::AppModel::IsPackagedProcess() };
     if (!isPackaged)
     {
+        constexpr PCWSTR c_PackageNamePrefix{ L"WindowsAppRuntime.Test.DDLM" };
+        constexpr PCWSTR c_PackagePublisherId{ L"8wekyb3d8bbwe" };
+        RETURN_IF_FAILED(MddBootstrapTestInitialize(c_PackageNamePrefix, c_PackagePublisherId));
+
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
@@ -119,7 +124,7 @@ int main()
     }
 
     std::wcout << L"--------------------------------\n";
-    std::wcout << L"- Toast Notifications Demo App -\n";
+    std::wcout << L"- App Notifications Demo App -\n";
     std::wcout << L"--------------------------------\n\n";
 
     // Display if app is running as packaged | unpackaged.
@@ -135,19 +140,19 @@ int main()
     // Create toastActivationInfo depending on packaged | unpackaged scenario.
     if (isPackaged)
     {
-        std::wcout << L"Calling ToastActivationInfo::CreateFromActivationGuid with ToastActivatorCLSID in manifest...\n";
+        std::wcout << L"Calling AppNotificationActivationInfo with ToastActivatorCLSID in manifest...\n";
         activationInfo = winrt::AppNotificationActivationInfo(winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431"));
         std::wcout << L"Done.\n\n";
     }
     else
     {
-        std::wcout << L"Calling ToastActivationInfo::CreateFromToastAssets...\n";
+        std::wcout << L"Calling AppNotificationActivationInfo with app assets...\n";
         activationInfo = winrt::AppNotificationActivationInfo(L"AppNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
         std::wcout << L"Done.\n\n";
     }
 
     // Registering app for activation
-    std::wcout << L"Calling AppNotificationManager::RegisterActivator(activationInfo)...\n";
+    std::wcout << L"Calling AppNotificationActivationInfo::Register(activationInfo)...\n";
     appNotificationManager.Register(activationInfo);
     std::wcout << L"Done.\n\n";
 
@@ -155,10 +160,10 @@ int main()
     auto args = winrt::AppInstance::GetCurrent().GetActivatedEventArgs();
     auto kind = args.Kind();
 
-    // Check if activated from background by ToastActivation
+    // Check if activated from background by AppNotification
     if (kind == winrt::ExtendedActivationKind::AppNotification)
     {
-        std::wcout << L"Activated by ToastActivation from background.\n";
+        std::wcout << L"Activated by AppNotification from background.\n";
         winrt::AppNotificationActivatedEventArgs appNotificationArgs{ args.Data().as<winrt::AppNotificationActivatedEventArgs>() };
         winrt::hstring arguments{ appNotificationArgs.ActivationArgs() };
         std::wcout << arguments.c_str() << std::endl << std::endl;
@@ -171,11 +176,11 @@ int main()
         std::wcout << std::endl;
     }
 
-    // Setting up foreground handler for ToastActivation
-    std::wcout << L"Registering foreground handler to receive ToastActivationEventArgs...\n";
+    // Setting up foreground handler for AppNotification
+    std::wcout << L"Registering foreground handler to receive AppNotificationActivatedEventArgs...\n";
     winrt::event_token token = appNotificationManager.AppNotificationActivated([](const auto&, winrt::AppNotificationActivatedEventArgs const& toastArgs)
     {
-        std::wcout << L"ToastActivation received foreground!\n";
+        std::wcout << L"AppNotification received foreground!\n";
         winrt::hstring arguments{ toastArgs.ActivationArgs() };
         std::wcout << arguments.c_str() << L"\n\n";
 
