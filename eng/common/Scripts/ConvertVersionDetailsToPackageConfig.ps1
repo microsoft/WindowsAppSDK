@@ -20,9 +20,10 @@ foreach ($dependency in $buildConfig.Dependencies.ProductDependencies.Dependency
     $ver = $dependency.version
     Write-Host "id: " $name
     Write-Host "ver: " $ver
+
     $packagesText += '	<package id="' + $name + '" version="' + $ver + '" targetFramework="native" />
 '
-    }
+}
 $packagesText +=
 @"
 </packages>
