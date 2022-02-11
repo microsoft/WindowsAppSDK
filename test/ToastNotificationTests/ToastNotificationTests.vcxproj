@@ -265,8 +265,12 @@
     <CopyFileToFolders Include="$(TestPkgOutputPath)\Dependencies\$(PlatformTarget)\Microsoft.VCLibs.$(PlatformTarget)$(VCLibsDebugConfigName).14.00.Desktop.appx" DestinationFolders="$(TargetDir)" DestinationFileName="VCLibs.appx" TreatOutputAsContent="true" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Windows.ToastNotifications">
-      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.ToastNotifications.winmd</HintPath>
+    <Reference Include="Microsoft.Windows.AppLifecycle">
+        <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.AppLifecycle.winmd</HintPath>
+        <IsWinMDFile>true</IsWinMDFile>
+	</Reference>
+    <Reference Include="Microsoft.Windows.AppNotifications">
+      <HintPath>$(OutDir)\..\WindowsAppRuntime_DLL\Microsoft.Windows.AppNotifications.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>

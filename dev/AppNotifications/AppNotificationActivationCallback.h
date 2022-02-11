@@ -5,7 +5,7 @@
 
 #include "NotificationActivationCallback.h"
 
-struct ToastActivationCallback : winrt::implements<ToastActivationCallback, INotificationActivationCallback>
+struct AppNotificationActivationCallback : winrt::implements<AppNotificationActivationCallback, INotificationActivationCallback>
 {
     HRESULT __stdcall Activate(
         LPCWSTR appUserModelId,
@@ -14,12 +14,12 @@ struct ToastActivationCallback : winrt::implements<ToastActivationCallback, INot
         [[maybe_unused]] ULONG dataCount) noexcept;
 };
 
-struct ToastActivationCallbackFactory : winrt::implements<ToastActivationCallbackFactory, IClassFactory>
+struct AppNotificationActivationCallbackFactory : winrt::implements<AppNotificationActivationCallbackFactory, IClassFactory>
 {
     STDMETHODIMP CreateInstance(_In_opt_ IUnknown* aggregateInterface, _In_ REFIID interfaceId, _Outptr_ VOID** object) noexcept final try
     {
         RETURN_HR_IF(CLASS_E_NOAGGREGATION, aggregateInterface != nullptr);
-        return winrt::make<ToastActivationCallback>().as(interfaceId, object);
+        return winrt::make<AppNotificationActivationCallback>().as(interfaceId, object);
     }
     CATCH_RETURN()
 

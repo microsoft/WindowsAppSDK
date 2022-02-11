@@ -3,14 +3,14 @@
 
 #include "pch.h"
 
-#include "ToastNotification.h"
+#include "AppNotification.h"
 
-#include "ToastNotificationUtility.h"
+#include "AppNotificationUtility.h"
 #include "NotificationTransientProperties.h"
 
 namespace winrt
 {
-    using namespace winrt::Microsoft::Windows::ToastNotifications;
+    using namespace winrt::Microsoft::Windows::AppNotifications;
 }
 
 namespace ToastABI
@@ -18,11 +18,11 @@ namespace ToastABI
     using namespace ::ABI::Microsoft::Internal::ToastNotifications;
 }
 
-NotificationTransientProperties::NotificationTransientProperties(winrt::ToastNotification const& toastNotification) noexcept
+NotificationTransientProperties::NotificationTransientProperties(winrt::AppNotification const& toastNotification) noexcept
 {
     m_suppressPopup = toastNotification.SuppressDisplay();
 
-    if (toastNotification.Priority() == winrt::ToastPriority::High)
+    if (toastNotification.Priority() == winrt::AppNotificationPriority::High)
     {
         m_toastNotificationPriority = ToastABI::ToastNotificationPriority::ToastNotificationPriority_High;
     }
@@ -78,7 +78,7 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationTransientProperties::get_Correlatio
 {
     // In the UDK, a null/empty CV will make the UDK to throw.
     // Temporarily return a fixed CV until we address CV properly in the UDK.
-    *correlationVector = safe_make_unique_hstring(L"PmvzQKgYek6Sdk/T5sWaqw.0").release();
+    *correlationVector = Microsoft::Windows::AppNotifications::Helpers::safe_make_unique_hstring(L"PmvzQKgYek6Sdk/T5sWaqw.0").release();
     return S_OK;
 }
 CATCH_RETURN()
