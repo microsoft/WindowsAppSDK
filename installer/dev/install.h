@@ -5,7 +5,7 @@
 
 #include "pch.h"
 #include "packages.h"
-#include "tracelogging.h"
+#include "InstallActivityContext.h"
 
 namespace WindowsAppRuntimeInstaller {
 

@@ -13,31 +13,18 @@ using namespace Windows::Foundation;
 using namespace Windows::Management::Deployment;
 using namespace Windows::System;
 
-WindowsAppRuntimeInstaller_TraceLogger::Install activity {};
-InstallStage g_installStage{ InstallStage::None };
-PWSTR g_currentPackageFullName{ nullptr };
-HRESULT g_deploymentErrorExtendedHresult {S_OK};
-PCWSTR g_deploymentErrorText {L""};
-extern GUID g_deploymentErrorActivityId {};
-
 namespace WindowsAppRuntimeInstaller
 {
     HRESULT RegisterPackage(const std::wstring& packageFullName)
     {
-        g_installStage = InstallStage::RegisterPackage;
-
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.RegisterPackageByFullNameAsync(packageFullName, nullptr, DeploymentOptions::None) };
 
         deploymentOperation.get();
-
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
             const auto deploymentResult = deploymentOperation.GetResults();
-
-            g_deploymentErrorExtendedHresult = static_cast<HRESULT>(deploymentResult.ExtendedErrorCode());
-            g_deploymentErrorText = deploymentResult.ErrorText().c_str();
-            g_deploymentErrorActivityId = deploymentResult.ActivityId();
+            InstallActivityContext::Get().SetDeploymentErrorInfo(deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
 
             return static_cast<HRESULT>(deploymentOperation.ErrorCode());
         }
@@ -55,6 +42,8 @@ namespace WindowsAppRuntimeInstaller
             auto hrAddPackage = static_cast<HRESULT>(deploymentOperation.ErrorCode());
             if (hrAddPackage == ERROR_PACKAGE_ALREADY_EXISTS)
             {
+                InstallActivityContext::Get().SetInstallStage(InstallStage::RegisterPackage);
+
                 // Package already exists (such as via provisioning), re-register it instead.
                 RETURN_IF_FAILED(RegisterPackage(packageProperties->fullName.get()));
                 return S_OK;
@@ -62,10 +51,7 @@ namespace WindowsAppRuntimeInstaller
             else
             {
                 const auto deploymentResult = deploymentOperation.GetResults();
-
-                g_deploymentErrorExtendedHresult = static_cast<HRESULT>(deploymentResult.ExtendedErrorCode());
-                g_deploymentErrorText = deploymentResult.ErrorText().c_str();
-                g_deploymentErrorActivityId = deploymentResult.ActivityId();
+                InstallActivityContext::Get().SetDeploymentErrorInfo(deploymentResult.ExtendedErrorCode(), deploymentResult.ErrorText().c_str(), deploymentResult.ActivityId());
 
                 RETURN_HR(hrAddPackage);
             }
@@ -78,12 +64,10 @@ namespace WindowsAppRuntimeInstaller
         PackageManager packageManager;
         const auto deploymentOperation{ packageManager.ProvisionPackageForAllUsersAsync(packageFamilyName.c_str()) };
         deploymentOperation.get();
-
         if (deploymentOperation.Status() != AsyncStatus::Completed)
         {
             const auto deploymentResult = deploymentOperation.GetResults();
-
-            g_deploymentErrorActivityId = deploymentResult.ActivityId();
+            InstallActivityContext::Get().SetDeploymentErrorActivityId(deploymentResult.ActivityId());
 
             return static_cast<HRESULT>(deploymentOperation.ErrorCode());
         }
@@ -208,13 +192,13 @@ namespace WindowsAppRuntimeInstaller
     {
         const auto quiet{ WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::Quiet) };
 
-        g_installStage = InstallStage::GetPackageProperties;
+        InstallActivityContext::Get().SetInstallStage(InstallStage::GetPackageProperties);
 
         // Get package properties by loading the resource as a stream and reading the manifest.
         auto packageStream = GetResourceStream(resource.id, resource.resourceType);
         auto packageProperties = GetPackagePropertiesFromStream(packageStream);
 
-        g_currentPackageFullName = packageProperties->fullName.get();
+        InstallActivityContext::Get().SetCurrentResourceId(packageProperties->fullName.get());
 
         // Skip non-applicable packages.
         if (!IsPackageApplicable(packageProperties, resource.deploymentBehavior))
@@ -244,7 +228,7 @@ namespace WindowsAppRuntimeInstaller
             return;
         }
 
-        g_installStage = InstallStage::CreatePackageURI;
+        InstallActivityContext::Get().SetInstallStage(InstallStage::CreatePackageURI);
 
         // Write the package to a temp file. The PackageManager APIs require a Uri.
         wil::com_ptr<IStream> outStream{ OpenFileStream(packageFilename) };
@@ -254,7 +238,7 @@ namespace WindowsAppRuntimeInstaller
         THROW_IF_FAILED(outStream->Commit(STGC_OVERWRITE));
         outStream.reset();
 
-        g_installStage = InstallStage::AddPackage;
+        InstallActivityContext::Get().SetInstallStage(InstallStage::AddPackage);
 
         // Add the package
         Uri packageUri{ packageFilename };
@@ -267,9 +251,10 @@ namespace WindowsAppRuntimeInstaller
         THROW_IF_FAILED(hrAddResult);
 
         // Framework provisioning is not supported by the PackageManager API.
-        if (!packageProperties->isFramework)
+        if (!packageProperties->isFramework &&
+            Security::IntegrityLevel::IsElevated())
         {
-            g_installStage = InstallStage::ProvisionPackage;
+            InstallActivityContext::Get().SetInstallStage(InstallStage::ProvisionPackage);
 
             // Provisioning is expected to fail if the program is not run elevated or the user is not admin.
             auto hrProvisionResult = ProvisionPackage(packageProperties->familyName.get());
@@ -305,17 +290,18 @@ namespace WindowsAppRuntimeInstaller
 
         if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::InstallLicenses))
         {
-            g_installStage = InstallStage::InstallLicense;
+            InstallActivityContext::Get().SetInstallStage(InstallStage::InstallLicense);
 
             Microsoft::Windows::ApplicationModel::Licensing::Installer licenseInstaller;
             for (const auto& license : WindowsAppRuntimeInstaller::c_licenses)
             {
+                InstallActivityContext::Get().SetCurrentResourceId(license.id.c_str());
                 if (!quiet)
                 {
                     std::wcout << "Installing license: " << license.id << std::endl;
                 }
 
-                // DryRun = Don't the work
+                // DryRun = Don't do the work
                 if (WI_IsFlagSet(options, WindowsAppRuntimeInstaller::Options::DryRun))
                 {
                     continue;
@@ -342,11 +328,8 @@ namespace WindowsAppRuntimeInstaller
         {
             for (const auto& package : WindowsAppRuntimeInstaller::c_packages)
             {
+                InstallActivityContext::Get().Reset();
                 DeployPackageFromResource(package, options);
-
-                g_deploymentErrorExtendedHresult = 0x0;
-                g_deploymentErrorText = L"";
-                g_deploymentErrorActivityId = GUID_NULL;
             }
         }
         return S_OK;
@@ -354,44 +337,41 @@ namespace WindowsAppRuntimeInstaller
 
     void ShowErrorMessage(const HRESULT hr)
     {
+        auto& context{ InstallActivityContext::Get() };
+
         if (SUCCEEDED(hr))
         {
             std::wcout << std::endl;
             return;
         }
 
-        PWSTR message{};
+        wil::unique_hlocal_ptr<WCHAR[]> message{};
         if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
             nullptr, hr, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
         {
-            std::wcout << message;
+            std::wcout << message.get();
         }
 
-        if (g_deploymentErrorExtendedHresult &&
-            (g_installStage == InstallStage::AddPackage ||
-                g_installStage == InstallStage::RegisterPackage))
+        // Don't log redundant Hr information
+        if (context.GetDeploymentErrorExtendedHResult() &&
+            context.GetDeploymentErrorExtendedHResult() != hr &&
+            (context.GetInstallStage() == InstallStage::AddPackage ||
+                context.GetInstallStage() == InstallStage::RegisterPackage))
         {
-            std::wcout << "ExtendedError: 0x" << std::hex << g_deploymentErrorExtendedHresult << " ";
+            std::wcout << "ExtendedError: 0x" << std::hex << context.GetDeploymentErrorExtendedHResult() << " ";
 
             if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                nullptr, g_deploymentErrorExtendedHresult, 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
+                nullptr, context.GetDeploymentErrorExtendedHResult(), 0, reinterpret_cast<PWSTR>(&message), 0, nullptr) != 0)
             {
-                std::wcout << message;
+                std::wcout << message.get();
             }
         }
 
-        if (g_deploymentErrorText && wcslen(g_deploymentErrorText) != 0 &&
-            (g_installStage == InstallStage::AddPackage ||
-                g_installStage == InstallStage::RegisterPackage))
+        if (context.GetDeploymentErrorText().empty() &&
+            (context.GetInstallStage() == InstallStage::AddPackage ||
+                context.GetInstallStage() == InstallStage::RegisterPackage))
         {
-            std::wcout << "ErrorMessage: " << g_deploymentErrorText;
+            std::wcout << "ErrorMessage: " << context.GetDeploymentErrorText();
         }
-
-        if (g_installStage == InstallStage::ProvisionPackage && hr == HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED))
-        {
-            std::wcout << "TIP: If WindowsAppRuntimeInstaller.exe is not run as Administrator, please try running it as Administrator to successfully provision the package" << std::endl;
-        }
-
-        LocalFree(message);
     }
 }

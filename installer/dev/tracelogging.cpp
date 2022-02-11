@@ -4,31 +4,33 @@
 #pragma once
 
 #include "pch.h"
-#include "tracelogging.h"
+#include "InstallActivityContext.h"
 
 void __stdcall wilResultLoggingCallback(const wil::FailureInfo& failure) noexcept
 {
     if (WindowsAppRuntimeInstaller_TraceLogger::IsEnabled())
     {
-        if (activity.IsRunning())
+        if (InstallActivityContext::Get().GetActivity().IsRunning())
         {
             if (failure.type == wil::FailureType::Log &&
-                g_installStage == InstallStage::ProvisionPackage)
+                InstallActivityContext::Get().GetInstallStage() == InstallStage::ProvisionPackage)
             {
                 // Failure in Provisioning package are non-blocking and the installer will continue with installation
                 // wil failure type of Log indicates intention to just log failure but continue with the installation
-                WindowsAppRuntimeInstaller_TraceLogger::ProvisioningFailed(
-                    failure.hr,
-                    g_currentPackageFullName,
-                    g_deploymentErrorActivityId,
-                    static_cast<UINT32>(g_installStage),
-                    static_cast<UINT32>(failure.type),
-                    failure.pszFile,
-                    failure.uLineNumber);
+                WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                    "ProvisioningFailed",
+                    WindowsAppRuntimeInstaller_TraceLoggingWString(InstallActivityContext::Get().GetCurrentResourceId(), "currentPackage"),
+                    _GENERIC_PARTB_FIELDS_ENABLED, 
+                    TelemetryPrivacyDataTag(PDT_ProductAndServicePerformance),
+                    TraceLoggingKeyword(MICROSOFT_KEYWORD_MEASURES));
             }
-            else
+            // Exceptions will be followed by Returns due to try...CATCH_RETURN() usage. Hence, avoid logging twice.
+            else if (failure.type != wil::FailureType::Exception)
             {
-                WindowsAppRuntimeInstaller_TraceLogger::FallbackTelemetryCallback(false, failure);
+                InstallActivityContext::Get().SetLastFailure(failure);
+                WindowsAppRuntimeInstaller_WriteEventWithActivity(
+                    "FailureInfo",
+                    TraceLoggingCountedWideString(InstallActivityContext::Get().GetCurrentResourceId().c_str(), static_cast<ULONG>(InstallActivityContext::Get().GetCurrentResourceId().size()), "currentPackage"));
             }
         }
     }

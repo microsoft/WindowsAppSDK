@@ -17,7 +17,7 @@ int wmain(int argc, wchar_t *argv[])
     auto options{ WindowsAppRuntimeInstaller::Options::InstallPackages |
                   WindowsAppRuntimeInstaller::Options::InstallLicenses };
 
-    std::stringstream args{};
+    std::wstringstream args{};
 
     for (int i = 1; i < argc; ++i)
     {
@@ -67,7 +67,9 @@ int wmain(int argc, wchar_t *argv[])
         args << argv[i] << " ";
     }
 
-    activity = WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), (UINT32)options);
+    auto& context{ InstallActivityContext::Get() };
+
+    context.SetActivity(WindowsAppRuntimeInstaller_TraceLogger::Install::Start(args.str().c_str(), static_cast<UINT32>(options)));
     args.clear();
 
     const HRESULT deployPackagesResult{ WindowsAppRuntimeInstaller::Deploy(options) };
@@ -75,21 +77,26 @@ int wmain(int argc, wchar_t *argv[])
     {
         if (SUCCEEDED(deployPackagesResult))
         {
-            activity.Stop();
             std::wcout << "All install operations successful." << std::endl;
+
+            if (!Security::IntegrityLevel::IsElevated())
+            {
+                std::wcout << "WARNING: Since WindowsAppRuntimeInstaller.exe is not run elevated, WindowsAppSDK packages are not provisioned for all users on your machine." << std::endl;
+            }
         }
         else
         {
-            activity.Stop(
+            context.GetActivity().StopWithResult(
                 deployPackagesResult,
-                (UINT32)g_installStage,
-                g_currentPackageFullName,
-                g_deploymentErrorExtendedHresult,
-                g_deploymentErrorText,
-                g_deploymentErrorActivityId);
+                static_cast<UINT32>(context.GetInstallStage()),
+                context.GetCurrentResourceId().c_str(),
+                context.GetDeploymentErrorExtendedHResult(),
+                context.GetDeploymentErrorText().c_str(),
+                context.GetDeploymentErrorActivityId());
+
             std::wcerr << "One or more install operations failed. Result: 0x" << std::hex << deployPackagesResult << std::endl;
         }
     }
+
     return deployPackagesResult;
 }
-
