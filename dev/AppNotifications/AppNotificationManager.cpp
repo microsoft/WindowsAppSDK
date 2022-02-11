@@ -15,6 +15,13 @@
 #include "NotificationTransientProperties.h"
 #include "AppNotification.h"
 #include <NotificationProgressData.h>
+#include <algorithm>
+#include <winerror.h>
+#include <string_view>
+
+using namespace std::literals;
+
+constexpr std::wstring_view expectedAppServerArgs = L"----AppNotificationActivated:"sv;
 
 namespace winrt
 {
@@ -76,6 +83,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             THROW_IF_FAILED(GetCurrentProcessPath(processName));
             auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
             THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
+        }
+
+        if (AppModel::Identity::IsPackagedProcess())
+        {
+            winrt::guid registeredClsid{ GUID_NULL };
+            THROW_IF_FAILED(PushNotificationHelpers::CheckComServerClsid(registeredClsid, expectedAppServerArgs.data()));
+            THROW_HR_IF(E_INVALIDARG, registeredClsid != details.TaskClsid());
         }
 
         THROW_IF_FAILED(::CoRegisterClassObject(

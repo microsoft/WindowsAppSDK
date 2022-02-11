@@ -26,6 +26,7 @@ using namespace std::literals;
 using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
+constexpr std::wstring_view expectedPushServerArgs = L"----WindowsAppRuntimePushServer:"sv;
 
 static wil::unique_event g_waitHandleForArgs;
 
@@ -290,6 +291,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 GUID taskClsid = details.TaskClsid();
                 THROW_HR_IF(E_INVALIDARG, taskClsid == GUID_NULL);
+
+                winrt::guid registeredClsid{ GUID_NULL };
+                THROW_IF_FAILED(PushNotificationHelpers::CheckComServerClsid(registeredClsid, expectedPushServerArgs.data()));
+                THROW_HR_IF(E_INVALIDARG, registeredClsid != details.TaskClsid());
 
                 {
                     auto lock = s_activatorInfoLock.lock_shared();

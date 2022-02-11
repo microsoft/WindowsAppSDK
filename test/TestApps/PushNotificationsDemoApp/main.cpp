@@ -94,7 +94,7 @@ int main()
 {
     if (Test::AppModel::IsPackagedProcess())
     {
-        AppNotificationActivationInfo activationInfo{ winrt::guid("28C29657-DB85-49D2-9974-C61094CA8280") };
+        AppNotificationActivationInfo activationInfo{ winrt::guid("FE8C7374-A28F-4CBE-8D28-4288CBDFD431") };
         AppNotificationManager::Default().Register(activationInfo);
     }
 	else

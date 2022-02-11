@@ -6,6 +6,10 @@
 #include  "NotificationsLongRunningProcess_h.h"
 #include <winrt/Windows.Foundation.Metadata.h>
 #include "../Common/AppModel.Identity.h"
+#include "wil/stl.h"
+#include "wil/win32_helpers.h"
+
+#define MAX_VALUE_NAME 16383
 
 namespace winrt
 {
@@ -123,4 +127,126 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     {
         return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
+
+    inline HRESULT GetPackageFullName(wil::unique_cotaskmem_string& packagedFullName) noexcept try
+    {
+        WCHAR packageFullName[PACKAGE_FULL_NAME_MAX_LENGTH + 1]{};
+        UINT32 packageFullNameLength = ARRAYSIZE(packageFullName);
+        THROW_IF_FAILED(GetCurrentPackageFullName(&packageFullNameLength, packageFullName));
+
+        packagedFullName = wil::make_cotaskmem_string_nothrow(packageFullName);
+        THROW_IF_NULL_ALLOC(packagedFullName);
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    inline HRESULT GetExeNameFromPath(std::wstring& exePath) noexcept try
+    {
+        size_t pos{ exePath.rfind(L"\\") };
+        THROW_HR_IF(E_UNEXPECTED, pos == std::wstring::npos);
+        exePath = exePath.substr(pos + 1); // One after the delimiter
+
+        return S_OK;
+    }
+    CATCH_RETURN()
+
+    inline HRESULT CheckComServerClsid(winrt::guid& comServerClsid, const std::wstring argumentToCheck) noexcept try
+    {
+        wil::unique_cotaskmem_string packagedFullName;
+        THROW_IF_FAILED(GetPackageFullName(packagedFullName));
+
+        wil::unique_hkey hKey;
+        // Path where packaged apps' ComActivators are in the registry:
+        // HKLM\SOFTWARE\Classes\PackagedCom\Package\{PackageFullName}\Class
+        std::wstring packagedRegistryPath{ LR"(SOFTWARE\Classes\PackagedCom\Package\)" + std::wstring(packagedFullName.get()) };
+        std::wstring clsidPath{ packagedRegistryPath + LR"(\Class)"};
+        THROW_IF_FAILED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, clsidPath.c_str(), 0, KEY_READ, &hKey));
+
+        DWORD comServerGuids{};
+        DWORD maxSubKeyLen;
+        THROW_IF_FAILED(::RegQueryInfoKey(
+            hKey.get(),
+            nullptr,    // No user-defined class
+            nullptr,    // No user-defined class size
+            nullptr,    // Reserved
+            &comServerGuids,
+            &maxSubKeyLen,
+            nullptr,    // No subkey class length
+            nullptr, // No values we want to get
+            nullptr,
+            nullptr,    // No max value length
+            nullptr,    // No security descriptor
+            nullptr     // No last write time
+        ));
+
+        maxSubKeyLen++; // Account for the null character
+
+        // Loop through registered ComServerGuids, grab the ServerId and check the registered Arguments/Executable
+        for (DWORD i = 0; i < comServerGuids; i++)
+        {
+            std::vector<wchar_t> comServerGuid;
+            comServerGuid.resize(maxSubKeyLen);
+            DWORD cbName{ maxSubKeyLen };
+            THROW_IF_FAILED(RegEnumKeyExW(hKey.get(), i, comServerGuid.data(), &cbName, nullptr, nullptr, nullptr, nullptr));
+            // Path: HKLM\SOFTWARE\Classes\PackagedCom\Package\{PackageFullName}\Class\{comServerGuid}
+            std::wstring clsidPathWithKey{ clsidPath + L"\\" + comServerGuid.data() };
+
+            // Get the ServerId for the ComActivatorGuid
+            DWORD serverId = 0;
+            DWORD serverIdSize = sizeof(serverId);
+            THROW_IF_FAILED(RegGetValueW(
+                HKEY_LOCAL_MACHINE,
+                clsidPathWithKey.c_str(),
+                L"ServerId",
+                RRF_RT_REG_DWORD,
+                nullptr /* pdwType */,
+                &serverId,
+                &serverIdSize));
+
+            // Path: HKLM\SOFTWARE\Classes\PackagedCom\Package\{PackageFullName}\Server\{serverId}
+            std::wstring serverPath{ packagedRegistryPath + LR"(\Server\)" + std::to_wstring(serverId) };
+            WCHAR argumentsBuffer[MAX_VALUE_NAME];
+            DWORD argumentsBufferLength = sizeof(argumentsBuffer);
+            THROW_IF_FAILED(RegGetValueW(
+                HKEY_LOCAL_MACHINE,
+                serverPath.c_str(),
+                L"Arguments",
+                RRF_RT_REG_SZ,
+                nullptr /* pdwType */,
+                &argumentsBuffer,
+                &argumentsBufferLength));
+
+            std::wstring argumentString{ argumentsBuffer };
+
+            WCHAR exeBuffer[MAX_VALUE_NAME];
+            DWORD exeBufferLength = sizeof(exeBuffer);
+            THROW_IF_FAILED(RegGetValueW(
+                HKEY_LOCAL_MACHINE,
+                serverPath.c_str(),
+                L"Executable",
+                RRF_RT_REG_SZ,
+                nullptr /* pdwType */,
+                &exeBuffer,
+                &exeBufferLength));
+
+            std::wstring exeString{ exeBuffer };
+            THROW_IF_FAILED(GetExeNameFromPath(exeString));
+
+            wil::unique_cotaskmem_string exePath;
+            THROW_IF_FAILED(wil::GetModuleFileNameExW(GetCurrentProcess(), nullptr, exePath));
+
+            std::wstring exeToCheck{ exePath.get() };
+            THROW_IF_FAILED(GetExeNameFromPath(exeToCheck));
+
+            if (argumentString == argumentToCheck && exeString == exeToCheck)
+            {
+                std::wstring storedComActivatorString{ comServerGuid.data() };
+                comServerClsid = winrt::guid(storedComActivatorString.substr(1, storedComActivatorString.size() - 2));
+                return S_OK;
+            }
+        }
+        return E_NOT_SET;
+    }
+    CATCH_RETURN();
 }
