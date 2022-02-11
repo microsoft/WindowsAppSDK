@@ -908,11 +908,11 @@ bool VerifyGetAllAsyncWithMultipleActiveToasts()
     return true;
 }
 
-bool VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
+bool VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier()
 {
     try
     {
-        auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithIdentiferAsync(0) };
+        auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithIdentifierAsync(0) };
         if (removeToastAsync.wait_for(std::chrono::seconds(300)) == winrt::Windows::Foundation::AsyncStatus::Error)
         {
             removeToastAsync.GetResults();
@@ -927,7 +927,7 @@ bool VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier()
     }
 }
 
-bool VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
+bool VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
 
@@ -938,7 +938,7 @@ bool VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
 
     try
     {
-        auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithIdentiferAsync(id) };
+        auto removeToastAsync{ winrt::ToastNotificationManager::Default().RemoveWithIdentifierAsync(id) };
         if (removeToastAsync.wait_for(std::chrono::seconds(300)) == winrt::Windows::Foundation::AsyncStatus::Error)
         {
             removeToastAsync.GetResults();
@@ -953,7 +953,7 @@ bool VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier()
     }
 }
 
-bool VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier()
+bool VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier()
 {
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
 
@@ -971,7 +971,7 @@ bool VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier()
         return false;
     }
 
-    toastNotificationManager.RemoveWithIdentiferAsync(toast2.ToastId()).get();
+    toastNotificationManager.RemoveWithIdentifierAsync(toast2.ToastId()).get();
 
     if (!VerifyToastIsActive(toast1.ToastId()) || !VerifyToastIsActive(toast3.ToastId()))
     {
@@ -1188,9 +1188,9 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyGetAllAsyncWithMultipleActiveToasts", &VerifyGetAllAsyncWithMultipleActiveToasts },
         { "VerifyGetAllAsyncReportsProgressData", &VerifyGetAllAsyncReportsProgressData },
 
-        { "VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", &VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier },
-        { "VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", &VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier },
-        { "VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier", &VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier },
+        { "VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier },
+        { "VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier },
+        { "VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier },
         { "VerifyRemoveWithTagAsync", &VerifyRemoveWithTagAsync },
         { "VerifyRemoveWithTagGroupAsync", &VerifyRemoveWithTagGroupAsync },
         { "VerifyRemoveWithGroupAsync", &VerifyRemoveWithGroupAsync },

@@ -180,7 +180,7 @@ namespace Microsoft.Windows.ToastNotifications
         ToastNotificationSetting Setting{ get; };
 
         // Removes a specific toast with a specific toastIdentifier from Action Centre
-        Windows.Foundation.IAsyncAction RemoveWithIdentiferAsync(UInt32 toastIdentifier);
+        Windows.Foundation.IAsyncAction RemoveWithIdentifierAsync(UInt32 toastIdentifier);
 
         // Removes a toast having a specific tag
         Windows.Foundation.IAsyncAction RemoveWithTagAsync(String tag);

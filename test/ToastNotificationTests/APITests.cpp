@@ -429,34 +429,34 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier)
         {
-            RunTest(L"VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", testWaitTime());
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyRemoveWithIdentiferAsyncUsingZeroedToastIdentifier", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier)
         {
-            RunTest(L"VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", testWaitTime());
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyRemoveWithIdentiferAsyncUsingNonActiveToastIdentifier", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier)
         {
-            RunTest(L"VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier", testWaitTime());
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyRemoveWithIdentiferAsyncUsingActiveToastIdentifier", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", testWaitTime());
         }
 
         TEST_METHOD(VerifyRemoveWithTagAsync)

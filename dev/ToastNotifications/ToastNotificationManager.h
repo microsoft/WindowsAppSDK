@@ -25,7 +25,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting Setting();
 
-        winrt::Windows::Foundation::IAsyncAction RemoveWithIdentiferAsync(uint32_t toastIdentifier);
+        winrt::Windows::Foundation::IAsyncAction RemoveWithIdentifierAsync(uint32_t toastIdentifier);
         winrt::Windows::Foundation::IAsyncAction RemoveWithTagAsync(hstring tag);
         winrt::Windows::Foundation::IAsyncAction RemoveWithTagGroupAsync(hstring tag, hstring group);
         winrt::Windows::Foundation::IAsyncAction RemoveGroupAsync(hstring group);

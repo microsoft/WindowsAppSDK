@@ -169,7 +169,7 @@ namespace winrt::Microsoft::Windows::ToastNotifications::implementation
 
         return static_cast<winrt::Microsoft::Windows::ToastNotifications::ToastNotificationSetting>(toastNotificationSetting);
     }
-    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithIdentiferAsync(uint32_t toastIdentifier)
+    winrt::Windows::Foundation::IAsyncAction ToastNotificationManager::RemoveWithIdentifierAsync(uint32_t toastIdentifier)
     {
         THROW_HR_IF(E_INVALIDARG, toastIdentifier == 0);
 
