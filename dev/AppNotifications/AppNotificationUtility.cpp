@@ -8,6 +8,7 @@
 #include <winrt/Windows.Foundation.h>
 #include <externs.h>
 #include <frameworkudk/pushnotifications.h>
+#include "AppNotification.h"
 
 namespace winrt
 {
@@ -213,7 +214,7 @@ std::wstring Microsoft::Windows::AppNotifications::Helpers::RegisterComActivator
     return registeredGuid;
 }
 
-wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length, const byte* utf8String)
+wil::unique_cotaskmem_string Microsoft::Windows::AppNotifications::Helpers::ConvertUtf8StringToWideString(unsigned long length, const byte* utf8String)
 {
     int size{ MultiByteToWideChar(
         CP_UTF8,
@@ -238,7 +239,7 @@ wil::unique_cotaskmem_string ConvertUtf8StringToWideString(unsigned long length,
     return wideString;
 }
 
-winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties)
+winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows::AppNotifications::Helpers::ToastNotificationFromToastProperties(ABI::Microsoft::Internal::ToastNotifications::INotificationProperties* properties)
 {
     unsigned int payloadSize{};
     wil::unique_cotaskmem_array_ptr<byte> payload{};
@@ -263,8 +264,8 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification ToastNotificationFr
     unsigned int notificationId{};
     properties->get_NotificationId(&notificationId);
     // ELx this is private now, I think  notification.Id(notificationId);
-    //winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl = get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification);
-    //notificationImpl->SetNotificationId(notificationId);
+    winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl{ winrt::get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification) };
+    notificationImpl->SetNotificationId(notificationId);
 
 #if 0
     winrt::com_ptr<ToastABI::IToastProgressData> toastProgressDataActual;

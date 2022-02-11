@@ -14,23 +14,6 @@ namespace winrt
     using namespace winrt::Windows::Data::Xml::Dom;
     using namespace winrt::Windows::Foundation;
 }
-#if 0
-=======
-    return true;
-}
-
-=======
-bool ProgressResultOperationHelper(winrt::IAsyncOperation<winrt::AppNotificationProgressResult> progressResultOperation, winrt::AppNotificationProgressResult progressResult)
-{
-    if (progressResultOperation.wait_for(std::chrono::seconds(2)) != winrt::AsyncStatus::Completed)
-    {
-        progressResultOperation.Cancel();
-        return false; // timed out or failed
-    }
-
-    return progressResultOperation.GetResults() == progressResult;
-}
-#endif
 
 bool BackgroundActivationTest() // Activating application for background test.
 {
@@ -217,7 +200,6 @@ bool ProgressResultOperationHelper(winrt::IAsyncOperation<winrt::AppNotification
 
     return progressResultOperation.GetResults() == progressResult;
 }
-
 
 bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
 {
@@ -851,17 +833,19 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
 
 bool VerifyGetAllAsyncWithZeroActiveToast()
 {
-    EnsureNoActiveToasts();
+
+    //EnsureNoActiveToasts();
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
     auto getAllAsync = toastNotificationManager.GetAllAsync();
+#if 0
     if (getAllAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
     {
         getAllAsync.Cancel();
         return false;
     }
-
+#endif
     return true;
 }
 
