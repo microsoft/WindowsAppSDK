@@ -841,8 +841,8 @@ bool VerifyGetAllAsyncWithOneActiveToast()
     winrt::DateTime expirationTime{ winrt::clock::now() };
     expirationTime += winrt::TimeSpan{ std::chrono::seconds(10) };
     toast.ExpirationTime(expirationTime);
-    toast.ExpiresOnReboot(false); // ELx - Setting this to true fails, investigating
-    toast.Priority(winrt::Microsoft::Windows::ToastNotifications::ToastPriority::High);
+    toast.ExpiresOnReboot(true);
+    toast.Priority(winrt::ToastPriority::High);
     toast.SuppressDisplay(true);
 
     auto toastNotificationManager = winrt::ToastNotificationManager::Default();
