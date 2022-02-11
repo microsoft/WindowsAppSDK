@@ -69,6 +69,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
         PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString, c_appNotificationProtocolArgumentString };
+
         for (auto activationKind : activationKinds)
         {
             auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);

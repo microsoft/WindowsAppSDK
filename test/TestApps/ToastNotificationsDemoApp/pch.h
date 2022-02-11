@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 #pragma once
 
@@ -16,4 +16,4 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
 #include <winrt/Microsoft.Windows.PushNotifications.h>
-#include <winrt/Microsoft.Windows.ToastNotifications.h>
+#include <winrt/Microsoft.Windows.AppNotifications.h>

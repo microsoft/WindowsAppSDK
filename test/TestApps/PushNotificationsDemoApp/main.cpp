@@ -9,7 +9,7 @@
 
 using namespace winrt::Microsoft::Windows::AppLifecycle;
 using namespace winrt::Microsoft::Windows::PushNotifications;
-using namespace winrt::Microsoft::Windows::ToastNotifications;
+using namespace winrt::Microsoft::Windows::AppNotifications;
 using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Background; // BackgroundTask APIs
 using namespace winrt::Windows::Foundation;
@@ -92,7 +92,7 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    if (Test::AppModel::IsPackagedProcess())
+    if (!Test::AppModel::IsPackagedProcess())
     {
         auto activationInfo = ToastActivationInfo::CreateFromActivationGuid(winrt::guid("28C29657-DB85-49D2-9974-C61094CA8280"));
         ToastNotificationManager::Default().RegisterActivator(activationInfo);
@@ -163,7 +163,6 @@ int main()
         PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
-    ToastNotificationManager::Default().UnregisterActivator();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();

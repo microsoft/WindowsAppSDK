@@ -7,7 +7,7 @@
 
 struct NotificationProperties : winrt::implements<NotificationProperties, ::ABI::Microsoft::Internal::ToastNotifications::INotificationProperties>
 {
-    NotificationProperties(winrt::Microsoft::Windows::ToastNotifications::ToastNotification const& toastNotification);
+    NotificationProperties(winrt::Microsoft::Windows::AppNotifications::AppNotification const& toastNotification);
 
     STDMETHOD(get_NotificationId)(_Out_ unsigned int* notificationId) noexcept;
 
