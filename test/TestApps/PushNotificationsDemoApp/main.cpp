@@ -92,21 +92,13 @@ winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel RequestCha
 
 int main()
 {
-    if (Test::AppModel::IsPackagedProcess())
+    if (!Test::AppModel::IsPackagedProcess())
     {
-        AppNotificationActivationInfo activationInfo{ winrt::guid("28C29657-DB85-49D2-9974-C61094CA8280") };
-        AppNotificationManager::Default().Register(activationInfo);
-    }
-	else
-	{
         // Major.Minor version, MinVersion=0 to find any framework package for this major.minor version
         const UINT32 c_Version_MajorMinor{ 0x00040001 };
         const PACKAGE_VERSION minVersion{};
         RETURN_IF_FAILED(MddBootstrapInitialize(c_Version_MajorMinor, nullptr, minVersion));
-
-        AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Windows::Foundation::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-        AppNotificationManager::Default().Register(activationInfo);
-	}
+	  }
 
     if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
@@ -162,7 +154,6 @@ int main()
         PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
-    AppNotificationManager::Default().Unregister();
     if (!Test::AppModel::IsPackagedProcess())
     {
         MddBootstrapShutdown();
