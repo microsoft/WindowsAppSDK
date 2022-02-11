@@ -16,6 +16,11 @@ namespace winrt
     using namespace Windows::ApplicationModel::Core;
 }
 
+namespace ToastABI
+{
+    using namespace ::ABI::Microsoft::Internal::ToastNotifications;
+}
+
 std::wstring Microsoft::Windows::AppNotifications::Helpers::RetrieveUnpackagedNotificationAppId()
 {
     wil::unique_cotaskmem_string processName;
@@ -263,18 +268,16 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
 
     unsigned int notificationId{};
     properties->get_NotificationId(&notificationId);
-    // ELx this is private now, I think  notification.Id(notificationId);
+
     winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl{ winrt::get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification) };
     notificationImpl->SetNotificationId(notificationId);
 
-#if 0
-    winrt::com_ptr<ToastABI::IToastProgressData> toastProgressDataActual;
-    VERIFY_SUCCEEDED(actual->get_ToastProgressData(toastProgressDataActual.put()));
-    if (toastProgressDataExpected)
+    winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData;
+    properties->get_ToastProgressData(toastProgressData.put());
+    if (toastProgressData)
     {
-        VerifyAreEqualsToastProgressData(toastProgressDataExpected, toastProgressDataActual.get());
+        //VerifyAreEqualsToastProgressData(toastProgressDataExpected, toastProgressDataActual.get());
     }
-#endif
 
     unsigned long long expiry{};
     THROW_IF_FAILED(properties->get_Expiry(&expiry));

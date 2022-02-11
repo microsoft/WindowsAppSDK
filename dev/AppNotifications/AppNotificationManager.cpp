@@ -21,8 +21,8 @@ namespace winrt
     using namespace winrt::Windows::UI;
     using namespace winrt::Windows::Foundation;
     using namespace winrt::Windows::Foundation::Collections;
-    using namespace Windows::ApplicationModel::Core;
     using namespace winrt::Microsoft::Windows::AppNotifications;
+	using namespace Windows::ApplicationModel::Core;
 }
 
 namespace ToastABI
@@ -187,8 +187,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         ToastNotifications_RemoveToast(appId.c_str(), notificationId);
     }
 
-    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveWithTagAsync(hstring tag)
+    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveWithTagAsync(hstring const tag)
     {
+        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
+		
         std::wstring _tag{ tag.c_str() };
 
         co_await winrt::resume_background();
@@ -197,8 +199,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), nullptr);
     }
 
-    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveWithTagGroupAsync(hstring tag, hstring group)
+    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveWithTagGroupAsync(hstring const tag, hstring const group)
     {
+        THROW_HR_IF(E_INVALIDARG, tag == winrt::hstring(L""));
+        THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
+					
         std::wstring _tag{ tag.c_str() };
         std::wstring _group{ group.c_str() };
 
@@ -208,8 +213,10 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), _group.c_str());
     }
 
-    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveGroupAsync(hstring group)
+    winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveGroupAsync(hstring const group)
     {
+        THROW_HR_IF(E_INVALIDARG, group == winrt::hstring(L""));
+		
         std::wstring _group{ group.c_str() };
 
         co_await winrt::resume_background();
