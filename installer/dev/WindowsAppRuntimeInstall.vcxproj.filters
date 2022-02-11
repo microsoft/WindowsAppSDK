@@ -45,7 +45,7 @@
     <ClInclude Include="InstallActivityContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MicrosoftTelemetry.h">
+    <ClInclude Include="telemetry\MicrosoftTelemetry.h">
       <Filter>Telemetry - Do Not Modify</Filter>
     </ClInclude>
   </ItemGroup>
