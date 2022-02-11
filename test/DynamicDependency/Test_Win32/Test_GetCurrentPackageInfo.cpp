@@ -372,6 +372,37 @@ namespace Test::DynamicDependency
     private:
         static wil::unique_hmodule m_dll;
     };
+
+    class GetCurrentPackageInfoTests_Elevated : GetCurrentPackageInfoTests
+    {
+    public:
+        BEGIN_TEST_CLASS(GetCurrentPackageInfoTests_Elevated)
+            TEST_CLASS_PROPERTY(L"IsolationLevel", L"Class")
+            TEST_CLASS_PROPERTY(L"ThreadingModel", L"MTA")
+            //TEST_CLASS_PROPERTY(L"RunFixtureAs:Class", L"RestrictedUser")
+            TEST_CLASS_PROPERTY(L"RunAs", L"ElevatedUser")
+        END_TEST_CLASS()
+
+        TEST_CLASS_SETUP(Setup_Elevated)
+        {
+            return Setup();
+        }
+
+        TEST_CLASS_CLEANUP(Cleanup_Elevated)
+        {
+            return Cleanup();
+        }
+
+        TEST_METHOD(Unpackaged_PackageGraph0_Elevated)
+        {
+            Unpackaged_PackageGraph0();
+        }
+
+        TEST_METHOD(Unpackaged_PackageGraph1_Elevated)
+        {
+            Unpackaged_PackageGraph1();
+        }
+    };
 }
 
 wil::unique_hmodule Test::DynamicDependency::GetCurrentPackageInfoTests::m_dll;
