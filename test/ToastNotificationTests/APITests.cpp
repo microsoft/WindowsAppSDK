@@ -336,7 +336,7 @@ namespace Test::ToastNotifications
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", testWaitTime());
         }
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup)
@@ -346,7 +346,7 @@ namespace Test::ToastNotifications
 
         TEST_METHOD(VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged", testWaitTime());
+            RunTestUnpackaged(L"VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", testWaitTime());
         }
 
         TEST_METHOD(VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup)
@@ -497,6 +497,16 @@ namespace Test::ToastNotifications
         TEST_METHOD(VerifyGetAllAsyncWithMultipleActiveToasts_Unpackaged)
         {
             RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncReportsProgressData)
+        {
+            RunTest(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
+        }
+
+        TEST_METHOD(VerifyGetAllAsyncReportsProgressData_Unpackaged)
+        {
+            RunTestUnpackaged(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
         }
     };
 }

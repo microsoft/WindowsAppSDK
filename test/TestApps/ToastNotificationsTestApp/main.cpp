@@ -75,6 +75,31 @@ bool VerifyToastIsActive(UINT32 expectedToastId)
     return found;
 }
 
+bool VerifyProgressData(const winrt::ToastProgressData& expected, const winrt::ToastProgressData& actual)
+{
+    if (expected.Status() != actual.Status())
+    {
+        return false;
+    }
+
+    if (expected.Title() != actual.Title())
+    {
+        return false;
+    }
+
+    if (expected.Value() != actual.Value())
+    {
+        return false;
+    }
+
+    if (expected.ValueStringOverride() != actual.ValueStringOverride())
+    {
+        return false;
+    }
+
+    return true;
+}
+
 enum class ExpectedTransientProperties { EQUAL, DEFAULT, UNKNOWN };
 bool VerifyToastNotificationIsValid(const winrt::ToastNotification& expected, const winrt::ToastNotification& actual, ExpectedTransientProperties expectedTransientProperties = ExpectedTransientProperties::EQUAL)
 {
@@ -99,15 +124,16 @@ bool VerifyToastNotificationIsValid(const winrt::ToastNotification& expected, co
     {
         return false;
     }
-#if 0
-    // ELx - TODO implement this progress data support is available.
-    if (VerifyProgressData(expected.ProgressData(), actual.ProgressData()))
+
+    if (!VerifyProgressData(expected.ProgressData(), actual.ProgressData()))
     {
         return false;
     }
-#endif
-    if (expected.ExpirationTime() != actual.ExpirationTime())
+
+    if (expected.ExpirationTime() > actual.ExpirationTime())
     {
+        // External factors, like setting ProgressData can bump the expiration time.
+        // We're happy as long as the actual expiration time is equal or larger than the expected
         return false;
     }
 
@@ -777,7 +803,7 @@ bool VerifyRemoveAllAsync()
         return false;
     }
 
-    // At this point there at least 3 active toasts, the ones we just posted but there could also be others that are still active.
+    // At this point, there are at least 3 active toasts, the ones we just posted but there could also be others that are still active.
     if (getAllAsync.get().Size() < 3)
     {
         return false;
@@ -893,6 +919,54 @@ bool VerifyGetAllAsyncWithMultipleActiveToasts()
     return true;
 }
 
+bool ProgressResultOperationHelper(winrt::IAsyncOperation<winrt::ToastProgressResult> progressResultOperation, winrt::ToastProgressResult progressResult)
+{
+    if (progressResultOperation.wait_for(std::chrono::seconds(2)) != winrt::AsyncStatus::Completed)
+    {
+        progressResultOperation.Cancel();
+        return false; // timed out or failed
+    }
+
+    return progressResultOperation.GetResults() == progressResult;
+}
+
+bool VerifyGetAllAsyncReportsProgressData()
+{
+    EnsureNoActiveToasts();
+
+    auto toastNotificationManager = winrt::ToastNotificationManager::Default();
+
+    winrt::ToastNotification toast{ CreateToastNotification() };
+    toast.Tag(L"Tag");
+    toast.Group(L"Group");
+    toastNotificationManager.ShowToast(toast);
+
+    winrt::ToastProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
+    auto progressResultOperation = toastNotificationManager.UpdateToastProgressDataAsync(progressData, L"Tag", L"Group");
+    if (!ProgressResultOperationHelper(progressResultOperation, winrt::ToastProgressResult::Succeeded))
+    {
+        return false;
+    }
+
+    auto getNotificationsAsync = toastNotificationManager.GetAllAsync();
+    if (getNotificationsAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        getNotificationsAsync.Cancel();
+        return false;
+    }
+
+    auto notifications = getNotificationsAsync.GetResults();
+
+    if (notifications.Size() != 1)
+    {
+        return false;
+    }
+
+    auto actual = notifications.GetAt(0);
+
+    return VerifyToastNotificationIsValid(toast, actual, ExpectedTransientProperties::DEFAULT);
+}
+
 std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventArgs& launchArgs)
 {
     std::string unitTestName = to_string(launchArgs.Arguments());
@@ -903,17 +977,6 @@ std::string unitTestNameFromLaunchArguments(const winrt::ILaunchActivatedEventAr
     }
 
     return unitTestName;
-}
-
-bool ProgressResultOperationHelper(winrt::IAsyncOperation<winrt::ToastProgressResult> progressResultOperation, winrt::ToastProgressResult progressResult)
-{
-    if (progressResultOperation.wait_for(std::chrono::seconds(2)) != winrt::AsyncStatus::Completed)
-    {
-        progressResultOperation.Cancel();
-        return false; // timed out or failed
-    }
-
-    return progressResultOperation.GetResults() == progressResult;
 }
 
 bool PostToastHelper(std::wstring const& tag, std::wstring const& group)
@@ -1129,12 +1192,11 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyGetAllAsyncWithZeroActiveToast", &VerifyGetAllAsyncWithZeroActiveToast },
         { "VerifyGetAllAsyncWithOneActiveToast", &VerifyGetAllAsyncWithOneActiveToast },
         { "VerifyGetAllAsyncWithMultipleActiveToasts", &VerifyGetAllAsyncWithMultipleActiveToasts },
+        { "VerifyGetAllAsyncReportsProgressData", &VerifyGetAllAsyncReportsProgressData },
         { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup_Unpackaged },
         { "VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup_Unpackaged },
         { "VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged", &VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup_Unpackaged },
         { "VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged", &VerifyFailedUpdateNotificationDataWithoutPostToast_Unpackaged },
-        { "VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup },
-        { "VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup_Unpackaged", &VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup },
         { "VerifyUpdateToastProgressDataUsingValidTagAndValidGroup", &VerifyUpdateToastProgressDataUsingValidTagAndValidGroup },
         { "VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup", &VerifyUpdateToastProgressDataUsingValidTagAndEmptyGroup },
         { "VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup", &VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup },
