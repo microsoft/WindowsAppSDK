@@ -24,8 +24,6 @@
       <Uri>https://github.com/microsoft/CsWinRT</Uri>
       <Sha>c90d2e33c650b65377a3eb046f1f449d56e2ab7d</Sha>
     </Dependency>
-  </ProductDependencies>
-  <ToolsetDependencies>
     <Dependency Name="Microsoft.WinAppSDK.EngCommon" Version="1.1.0-20220210.0-CI">
       <Uri>https://dev.azure.com/microsoft/ProjectReunion/_git/ProjectReunionInternal</Uri>
       <Sha>aa64d7091a9b0e146703ba311adb93c0ebb2cd11</Sha>
