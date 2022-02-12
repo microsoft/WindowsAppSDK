@@ -9,11 +9,13 @@
 #include <externs.h>
 #include <frameworkudk/pushnotifications.h>
 #include "AppNotification.h"
+#include "NotificationProgressData.h"
 
 namespace winrt
 {
     using namespace winrt::Windows::Foundation;
     using namespace Windows::ApplicationModel::Core;
+    using namespace winrt::Microsoft::Windows::AppNotifications;
 }
 
 namespace ToastABI
@@ -268,7 +270,6 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
 
     unsigned int notificationId{};
     properties->get_NotificationId(&notificationId);
-
     winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl{ winrt::get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification) };
     notificationImpl->SetNotificationId(notificationId);
 
@@ -276,7 +277,27 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     properties->get_ToastProgressData(toastProgressData.put());
     if (toastProgressData)
     {
-        //VerifyAreEqualsToastProgressData(toastProgressDataExpected, toastProgressDataActual.get());
+        winrt::AppNotificationProgressData progressData{};
+
+        // What about the sequence number?
+
+        wil::unique_hstring status{};
+        toastProgressData->get_Status(&status);
+        progressData.Status(wil::str_raw_ptr(status));
+
+        wil::unique_hstring title{};
+        toastProgressData->get_Title(&title);
+        progressData.Title(wil::str_raw_ptr(title));
+
+        double progressValue{};
+        toastProgressData->get_Value(&progressValue);
+        progressData.Value(progressValue);
+
+        wil::unique_hstring progressValueString{};
+        toastProgressData->get_ValueStringOverride(&progressValueString);
+        progressData.ValueStringOverride(wil::str_raw_ptr(progressValueString));
+
+        notification.Progress(progressData);
     }
 
     unsigned long long expiry{};

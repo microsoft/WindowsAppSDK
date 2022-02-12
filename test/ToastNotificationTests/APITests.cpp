@@ -419,14 +419,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsyncReportsProgressData)
+        TEST_METHOD(VerifyGetAllAsyncReportsUpdatesToProgressData)
         {
-            RunTest(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncReportsUpdatesToProgressData", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsyncReportsProgressData_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncReportsUpdatesToProgressData_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyGetAllAsyncReportsProgressData", testWaitTime());
+            RunTestUnpackaged(L"VerifyGetAllAsyncReportsUpdatesToProgressData", testWaitTime());
         }
 
         TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier)
