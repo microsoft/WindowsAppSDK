@@ -8,6 +8,9 @@
 
 #include <stdint.h>
 
+/// MSIX Dynamic Dependency HRESULT: Windows App Runtime is not in the package graph.
+#define MDD_E_WINDOWSAPPRUNTIME_NOT_IN_PACKAGE_GRAPH    _HRESULT_TYPEDEF_(0x80040001L)
+
 enum class MddCreatePackageDependencyOptions : uint32_t
 {
     None = 0,
