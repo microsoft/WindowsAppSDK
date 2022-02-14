@@ -132,7 +132,6 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
         wil::winrt_module_reference moduleRef{};
-        bool usingLegacyImplementation{ false };
 
         try
         {
@@ -183,7 +182,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
                     }
 
-                    PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
+                    PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
                     co_return winrt::make<PushNotificationCreateChannelResult>(
                         winrt::make<PushNotificationChannel>(channelInfo),
                         S_OK,
@@ -203,7 +202,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                     else
                     {
-                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId, usingLegacyImplementation);
+                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             nullptr,
@@ -217,7 +216,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId, usingLegacyImplementation);
+            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId);
             throw;
         }
     }

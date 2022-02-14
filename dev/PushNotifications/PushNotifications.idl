@@ -134,6 +134,6 @@ namespace Microsoft.Windows.PushNotifications
         Windows.Foundation.IAsyncOperationWithProgress<PushNotificationCreateChannelResult, PushNotificationCreateChannelStatus> CreateChannelAsync(Guid remoteId);
 
         // Applications will call this to check which flags are supported for RegisterActivator
-        Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
+        static Boolean IsActivatorSupported(PushNotificationRegistrationActivators activators);
     };
 }

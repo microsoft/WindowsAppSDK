@@ -68,7 +68,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
 
-                // Register foreground event through the UDK
+                // Register a sink with platform which is initialized in the current process
                 THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
             }
             else
@@ -78,7 +78,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
-                // Register foreground event through the LRP
+                // Register a sink with platform brokered through PushNotificationsLongRunningProcess
                 THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(this, processName.get()));
             }
         }
