@@ -8,20 +8,26 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         AppNotificationManager() = default;
 
         static winrt::Microsoft::Windows::AppNotifications::AppNotificationManager Default();
+        void Register();
         void Register(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details);
         void Unregister();
-        winrt::event_token AppNotificationActivated(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler);
-        void AppNotificationActivated(winrt::event_token const& token) noexcept;
+        void UnregisterAll();
+        winrt::event_token NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler);
+        void NotificationInvoked(winrt::event_token const& token) noexcept;
         void Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification);
-        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> UpdateProgressDataAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group);
-        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> UpdateProgressDataAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag);
-        winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting Enablement();
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag, hstring const group);
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> UpdateAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag);
+        winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting Setting();
         winrt::Windows::Foundation::IAsyncAction RemoveByIdAsync(uint32_t notificationId);
-        winrt::Windows::Foundation::IAsyncAction RemoveWithTagAsync(hstring const tag);
-        winrt::Windows::Foundation::IAsyncAction RemoveWithTagGroupAsync(hstring const tag, hstring const group);
-        winrt::Windows::Foundation::IAsyncAction RemoveGroupAsync(hstring const group);
+        winrt::Windows::Foundation::IAsyncAction RemoveByTagAsync(hstring tag);
+        winrt::Windows::Foundation::IAsyncAction RemoveByTagAndGroupAsync(hstring tag, hstring group);
+        winrt::Windows::Foundation::IAsyncAction RemoveByGroupAsync(hstring group);
         winrt::Windows::Foundation::IAsyncAction RemoveAllAsync();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> GetAllAsync();
+
+    private:
+        wil::unique_com_class_object_cookie m_notificationComActivatorRegistration;
+        wil::srwlock m_registrationLock;
     };
 }
 namespace winrt::Microsoft::Windows::AppNotifications::factory_implementation

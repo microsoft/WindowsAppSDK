@@ -13,13 +13,13 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
     {
         AppNotification() = default;
 
-        AppNotification(winrt::Windows::Data::Xml::Dom::XmlDocument const& payload);
+        AppNotification(hstring const& payload);
         hstring Tag();
         void Tag(hstring const& value);
         hstring Group();
         void Group(hstring const& value);
         uint32_t Id();
-        winrt::Windows::Data::Xml::Dom::XmlDocument Payload();
+        hstring Payload();
         winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData Progress();
         void Progress(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const& value);
         winrt::Windows::Foundation::DateTime Expiration();
@@ -41,7 +41,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         uint32_t m_notificationId{ 0 };
 
-        winrt::Windows::Data::Xml::Dom::XmlDocument m_payload{};
+        winrt::hstring m_payload{};
 
         winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData m_progressData{};
 
