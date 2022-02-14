@@ -1021,6 +1021,37 @@ bool VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier()
     return !VerifyToastIsActive(toast2.Id());
 }
 
+bool VerifyRemoveWithTagAsyncUsingEmptyTagThrows()
+{
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    try
+    {
+        toastNotificationManager.RemoveWithTagAsync(L"").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow()
+{
+    EnsureNoActiveToasts();
+
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    auto removeToastAsync{ toastNotificationManager.RemoveWithTagAsync(L"tag") };
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 bool VerifyRemoveWithTagAsync()
 {
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
@@ -1057,6 +1088,53 @@ bool VerifyRemoveWithTagAsync()
     }
 
     if (!VerifyToastIsActive(toast1.Id()) || VerifyToastIsActive(toast2.Id()) || !VerifyToastIsActive(toast3.Id()) || VerifyToastIsActive(toast4.Id()))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows()
+{
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    try
+    {
+        toastNotificationManager.RemoveWithTagGroupAsync(L"", L"group").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows()
+{
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    try
+    {
+        toastNotificationManager.RemoveWithTagGroupAsync(L"tag", L"").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow()
+{
+    EnsureNoActiveToasts();
+
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    auto removeToastAsync{ toastNotificationManager.RemoveWithTagGroupAsync(L"tag", L"group")};
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
     }
@@ -1102,7 +1180,38 @@ bool VerifyRemoveWithTagGroupAsync()
     return true;
 }
 
-bool VerifyRemoveWithGroupAsync()
+bool VerifyRemoveGroupAsyncUsingEmptyGroupThrows()
+{
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    try
+    {
+        toastNotificationManager.RemoveGroupAsync(L"").get();
+    }
+    catch (...)
+    {
+        return winrt::to_hresult() == E_INVALIDARG;
+    }
+
+    return false;
+}
+
+bool VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow()
+{
+    EnsureNoActiveToasts();
+
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    auto removeToastAsync{ toastNotificationManager.RemoveGroupAsync(L"group") };
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyRemoveGroupAsync()
 {
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
@@ -1133,6 +1242,21 @@ bool VerifyRemoveWithGroupAsync()
     }
 
     if (VerifyToastIsActive(toast1.Id()) || VerifyToastIsActive(toast2.Id()) || VerifyToastIsActive(toast3.Id()))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow()
+{
+    EnsureNoActiveToasts();
+
+    auto toastNotificationManager = winrt::AppNotificationManager::Default();
+
+    auto removeToastAsync{ toastNotificationManager.RemoveAllAsync() };
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         return false;
     }
@@ -1238,9 +1362,17 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier },
         { "VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier },
         { "VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier },
+        { "VerifyRemoveWithTagAsyncUsingEmptyTagThrows", &VerifyRemoveWithTagAsyncUsingEmptyTagThrows },
+        { "VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow", &VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow },
         { "VerifyRemoveWithTagAsync", &VerifyRemoveWithTagAsync },
+        { "VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows", &VerifyRemoveWithTagGroupAsyncUsingEmptyTagThrows },
+        { "VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows", &VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows },
+        { "VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow", &VerifyRemoveWithTagGroupAsyncUsingNonExistentTagGroupDoesNotThrow },
         { "VerifyRemoveWithTagGroupAsync", &VerifyRemoveWithTagGroupAsync },
-        { "VerifyRemoveWithGroupAsync", &VerifyRemoveWithGroupAsync },
+        { "VerifyRemoveGroupAsyncUsingEmptyGroupThrows", &VerifyRemoveWithTagGroupAsyncUsingEmptyGroupThrows },
+        { "VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow", &VerifyRemoveGroupAsyncUsingNonExistentGroupDoesNotThrow },
+        { "VerifyRemoveGroupAsync", &VerifyRemoveGroupAsync },
+        { "VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow", &VerifyRemoveAllAsyncWithNoActiveToastDoesNotThrow },
         { "VerifyRemoveAllAsync", &VerifyRemoveAllAsync },
       };
 
