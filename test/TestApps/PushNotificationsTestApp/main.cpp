@@ -24,7 +24,7 @@ bool ChannelRequestUsingNullRemoteId()
 {
     try
     {
-        auto channelOperation = PushNotificationManager::CreateChannelAsync(winrt::guid()).get();
+        auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(winrt::guid()).get();
     }
     catch (...)
     {
@@ -54,7 +54,7 @@ HRESULT ChannelRequestHelper(IAsyncOperationWithProgress<PushNotificationCreateC
 
 bool ChannelRequestUsingRemoteId()
 {
-    auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
     auto channelOperationResult = ChannelRequestHelper(channelOperation);
 
     return channelOperationResult == S_OK;
@@ -63,7 +63,7 @@ bool ChannelRequestUsingRemoteId()
 // Verify calling channel close will fail when called twice.
 bool MultipleChannelClose()
 {
-    auto channelOperation = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
     if (channelOperation.wait_for(timeout) != AsyncStatus::Completed)
     {
         channelOperation.Cancel();
@@ -92,8 +92,8 @@ bool MultipleChannelClose()
 bool MultipleChannelRequestUsingSameRemoteId()
 {
 
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId1);
+    auto channelOperation1 = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
+    auto channelOperation2 = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
     auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
     auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
@@ -102,8 +102,8 @@ bool MultipleChannelRequestUsingSameRemoteId()
 
 bool MultipleChannelRequestUsingMultipleRemoteId()
 {
-    auto channelOperation1 = PushNotificationManager::CreateChannelAsync(remoteId1);
-    auto channelOperation2 = PushNotificationManager::CreateChannelAsync(remoteId2);
+    auto channelOperation1 = PushNotificationManager::Default().CreateChannelAsync(remoteId1);
+    auto channelOperation2 = PushNotificationManager::Default().CreateChannelAsync(remoteId2);
     auto channelOperationResult2 = ChannelRequestHelper(channelOperation2);
     auto channelOperationResult1 = ChannelRequestHelper(channelOperation1);
 
@@ -112,24 +112,24 @@ bool MultipleChannelRequestUsingMultipleRemoteId()
 
 bool ActivatorTest()
 {
-    PushNotificationManager::UnregisterAllActivators();
+    PushNotificationManager::Default().UnregisterAllActivators();
     try
     {
-        if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+        if(PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
                 c_fakeComServerId);
 
-            PushNotificationManager::RegisterActivator(info);
-            PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
+            PushNotificationManager::Default().RegisterActivator(info);
+            PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
         }
         else
         {
             PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
 
-            PushNotificationManager::RegisterActivator(info);
-            PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ProtocolActivator);
+            PushNotificationManager::Default().RegisterActivator(info);
+            PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::ProtocolActivator);
         }
 
     }
@@ -143,10 +143,10 @@ bool ActivatorTest()
 // Verify calling register activator with null PushNotificationActivationInfo is not allowed.
 bool RegisterActivatorNullDetails()
 {
-    PushNotificationManager::UnregisterAllActivators();
+    PushNotificationManager::Default().UnregisterAllActivators();
     try
     {
-        PushNotificationManager::RegisterActivator(nullptr);
+        PushNotificationManager::Default().RegisterActivator(nullptr);
     }
     catch (...)
     {
@@ -158,8 +158,8 @@ bool RegisterActivatorNullDetails()
 // Verify calling register activator with null clsid is not allowed.
 bool RegisterActivatorNullClsid()
 {
-    PushNotificationManager::UnregisterAllActivators();
-    if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+    PushNotificationManager::Default().UnregisterAllActivators();
+    if(PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
     {
         try
         {
@@ -167,7 +167,7 @@ bool RegisterActivatorNullClsid()
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
                 winrt::guid());
 
-            PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::Default().RegisterActivator(info);
         }
         catch(...)
         {
@@ -183,7 +183,7 @@ bool RegisterActivatorNullClsid()
                 PushNotificationRegistrationActivators::ProtocolActivator,
                 winrt::guid());
 
-            PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::Default().RegisterActivator(info);
         }
         catch(...)
         {
@@ -198,18 +198,18 @@ bool MultipleRegisterActivatorTest()
 {
     try
     {
-        if(PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
+        if(PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator))
         {
             PushNotificationActivationInfo info(
                 PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
                 c_fakeComServerId); // Fake clsid to test multiple activators
 
-            PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::Default().RegisterActivator(info);
         }
         else
         {
             PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
-            PushNotificationManager::RegisterActivator(info);
+            PushNotificationManager::Default().RegisterActivator(info);
         }
     }
     catch (...)
@@ -226,29 +226,29 @@ bool BackgroundActivationTest() // Activating application for background test.
 
 bool VerifyComActivatorSupported()
 {
-    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator);
+    return PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator);
 }
 
 bool VerifyComActivatorNotSupported()
 {
-    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator);
+    return !PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator);
 }
 
 bool VerifyProtocolActivatorSupported()
 {
-    return PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ProtocolActivator);
+    return PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ProtocolActivator);
 }
 
 bool VerifyProtocolActivatorNotSupported()
 {
-    return !PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ProtocolActivator);
+    return !PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ProtocolActivator);
 }
 
 bool VerifyComAndProtocolActivatorNotSupported()
 {
     try
     {
-        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator | PushNotificationRegistrationActivators::ProtocolActivator);
+        PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator | PushNotificationRegistrationActivators::ProtocolActivator);
     }
     catch (...)
     {
@@ -261,7 +261,7 @@ bool VerifyNullActivatorNotSupported()
 {
     try
     {
-        PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::Undefined);
+        PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::Undefined);
     }
     catch (...)
     {
@@ -321,25 +321,25 @@ int main() try
 {
     bool testResult = false;
     auto scope_exit = wil::scope_exit([&] {
-        PushNotificationManager::UnregisterAllActivators();
+        PushNotificationManager::Default().UnregisterAllActivators();
         ::Test::Bootstrap::CleanupBootstrap();
     });
 
     ::Test::Bootstrap::SetupBootstrap();
 
     // TODO: Register ProtocolActivator for unpackaged applications or Packaged Applications when COM activation is unsupported
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator,
             winrt::guid(c_comServerId)); // same clsid as app manifest
 
-        PushNotificationManager::RegisterActivator(info);
+        PushNotificationManager::Default().RegisterActivator(info);
     }
     else
     {
         PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
-        PushNotificationManager::RegisterActivator(info);
+        PushNotificationManager::Default().RegisterActivator(info);
     }
     
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();

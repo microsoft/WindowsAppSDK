@@ -2,20 +2,28 @@
 
 #include "pch.h"
 #include "../PushNotificationUtility.h"
+#include <winrt/Windows.ApplicationModel.background.h>
 
+using namespace winrt::Windows::ApplicationModel::Background;
 namespace ToastNotifications
 {
     using namespace ABI::Microsoft::Internal::ToastNotifications;
 }
 
+namespace PushNotificationHelpers
+{
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
+}
 HRESULT NotificationListener::RuntimeClassInitialize(
     std::shared_ptr<ForegroundSinkManager> foregroundSinkManager,
     std::shared_ptr<ToastRegistrationManager> toastRegistrationManager,
     std::wstring const& appId,
-    std::wstring const& processName) noexcept try
+    std::wstring const& processName,
+    winrt::guid const& comServerClsid) noexcept try
 {
     m_foregroundSinkManager = foregroundSinkManager;
     m_toastRegistrationManager = toastRegistrationManager;
+    m_comServerClsid = comServerClsid;
 
     m_appId = appId;
     m_processName = processName;
@@ -32,7 +40,14 @@ STDMETHODIMP_(HRESULT __stdcall) NotificationListener::OnRawNotificationReceived
 
     if (!m_foregroundSinkManager->InvokeForegroundHandlers(m_appId, payloadArray, payloadLength))
     {
-        THROW_IF_FAILED(winrt::Microsoft::Windows::PushNotifications::Helpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
+        if (m_comServerClsid == winrt::guid())
+        {
+            THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(m_processName, payloadLength, payload));
+        }
+        else
+        {
+            THROW_IF_FAILED(PushNotificationHelpers::PackagedAppLauncherByClsid(m_comServerClsid, payloadLength, payload));
+        }
     };
 
     return S_OK;

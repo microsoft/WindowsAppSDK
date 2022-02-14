@@ -543,6 +543,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
+    return false;
 }
 
 bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
@@ -557,6 +558,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
+    return false;
 }
 
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()

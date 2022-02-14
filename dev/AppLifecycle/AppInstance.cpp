@@ -68,7 +68,8 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 
         wil::unique_hlocal_ptr<PWSTR[]> argv{ CommandLineToArgvW(commandLine.c_str(), &argc) };
 
-        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString, c_toastProtocolArgumentString };
+        PCWSTR activationKinds[] = { c_msProtocolArgumentString, c_pushProtocolArgumentString, c_appNotificationProtocolArgumentString };
+
         for (auto activationKind : activationKinds)
         {
             auto [ kind, data ] = GetActivationArguments(argv.get(), argc, activationKind);
@@ -488,10 +489,10 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
             // protocol, except the catch-all LaunchActivatedEventArgs case.
             if (!contractArgument.empty())
             {
-                if (contractArgument == c_pushProtocolArgumentString || contractArgument == c_toastProtocolArgumentString)
+                if (contractArgument == c_pushProtocolArgumentString || contractArgument == c_appNotificationProtocolArgumentString)
                 {
                     // Generate a basic encoded launch Uri for Push/Toast activations
-                    PCWSTR contractId = (contractArgument == c_pushProtocolArgumentString) ? c_pushContractId : c_toastContractId;
+                    PCWSTR contractId = (contractArgument == c_pushProtocolArgumentString) ? c_pushContractId : c_appNotificationContractId;
                     std::wstring tempContractData = GenerateEncodedLaunchUri(L"App", contractId);
 
                     contractArgument = c_msProtocolArgumentString;
