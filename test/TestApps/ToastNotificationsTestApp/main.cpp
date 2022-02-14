@@ -47,27 +47,6 @@ winrt::AppNotificationProgressData GetToastProgressData(std::wstring const& stat
     return progressData;
 }
 
-bool BackgroundActivationTest() // Activating application for background test.
-{
-    return true;
-}
-
-bool UnregisterBackgroundActivationTest()
-{
-    winrt::ToastNotificationManager::Default().UnregisterActivator();
-    return true;
-}
-
-winrt::ToastNotification GetToastNotification()
-{
-    winrt::hstring xmlPayload{ L"<toast>intrepidToast</toast>" };
-
-    winrt::XmlDocument xmlDocument{};
-    xmlDocument.LoadXml(xmlPayload);
-
-    return winrt::ToastNotification(xmlDocument);
-}
-
 bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
@@ -564,6 +543,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndValidGroup()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
+    return false;
 }
 
 bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
@@ -578,6 +558,7 @@ bool VerifyUpdateToastProgressDataUsingEmptyTagAndEmptyGroup()
     {
         return winrt::to_hresult() == E_INVALIDARG;
     }
+    return false;
 }
 
 bool VerifyFailedUpdateNotificationDataWithNonExistentTagAndGroup()
