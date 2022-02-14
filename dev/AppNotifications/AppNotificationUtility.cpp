@@ -261,20 +261,20 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     winrt::Microsoft::Windows::AppNotifications::AppNotification notification(xmlDocument);
 
     wil::unique_hstring tag{};
-    properties->get_Tag(&tag);
+    THROW_IF_FAILED(properties->get_Tag(&tag));
     notification.Tag(wil::str_raw_ptr(tag));
 
     wil::unique_hstring group{};
-    properties->get_Group(&group);
+    THROW_IF_FAILED(properties->get_Group(&group));
     notification.Group(wil::str_raw_ptr(group));
 
     unsigned int notificationId{};
-    properties->get_NotificationId(&notificationId);
+    THROW_IF_FAILED(properties->get_NotificationId(&notificationId));
     winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification* notificationImpl{ winrt::get_self< winrt::Microsoft::Windows::AppNotifications::implementation::AppNotification>(notification) };
     notificationImpl->SetNotificationId(notificationId);
 
     winrt::com_ptr<ToastABI::IToastProgressData> toastProgressData;
-    properties->get_ToastProgressData(toastProgressData.put());
+    THROW_IF_FAILED(properties->get_ToastProgressData(toastProgressData.put()));
     if (toastProgressData)
     {
         winrt::AppNotificationProgressData progressData{};
@@ -282,11 +282,11 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
         // What about the sequence number?
 
         wil::unique_hstring status{};
-        toastProgressData->get_Status(&status);
+        THROW_IF_FAILED(toastProgressData->get_Status(&status));
         progressData.Status(wil::str_raw_ptr(status));
 
         wil::unique_hstring title{};
-        toastProgressData->get_Title(&title);
+        THROW_IF_FAILED(toastProgressData->get_Title(&title));
         progressData.Title(wil::str_raw_ptr(title));
 
         double progressValue{};
@@ -294,7 +294,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
         progressData.Value(progressValue);
 
         wil::unique_hstring progressValueString{};
-        toastProgressData->get_ValueStringOverride(&progressValueString);
+        THROW_IF_FAILED(toastProgressData->get_ValueStringOverride(&progressValueString));
         progressData.ValueStringOverride(wil::str_raw_ptr(progressValueString));
 
         notification.Progress(progressData);
