@@ -238,13 +238,16 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveNotificationAppId() };
-        winrt::com_ptr<ToastABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection;
-        THROW_IF_FAILED(ToastNotifications_GetHistory(appId.c_str(), toastPropertiesCollection.put()));
+        winrt::com_ptr<ToastABI::IVector<ToastABI::INotificationProperties*>> toastPropertiesCollection{};
+        auto result{ ToastNotifications_GetHistory(appId.c_str(), toastPropertiesCollection.put()) };
+
+        THROW_HR_IF(result, result != S_OK && result != E_NOT_SET); // Swallow E_NOT_SET and return an empty properties vector to signal that there are no active toasts
 
         unsigned int count{};
-        THROW_IF_FAILED(toastPropertiesCollection->get_Size(&count));
-
-        THROW_HR_IF(E_NOT_SET, count == 0);
+        if (toastPropertiesCollection)
+        {
+            THROW_IF_FAILED(toastPropertiesCollection->get_Size(&count));
+        }
 
         winrt::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification> toastNotifications{ winrt::single_threaded_vector<winrt::Microsoft::Windows::AppNotifications::AppNotification>() };
 

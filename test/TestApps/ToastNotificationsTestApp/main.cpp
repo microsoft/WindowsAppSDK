@@ -96,7 +96,7 @@ bool VerifyProgressData(const winrt::AppNotificationProgressData& expected, cons
         return false;
     }
 
-    if (expected.Value() != actual.Value())
+    if (expected.Value() != actual.Value()) // Need an epsilon...
     {
         return false;
     }
@@ -811,10 +811,18 @@ bool VerifyGetAllAsyncWithZeroActiveToast()
 
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
-    auto getAllAsync = toastNotificationManager.GetAllAsync();
-    if (getAllAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
+    auto retrieveNotificationsAsync = toastNotificationManager.GetAllAsync();
+    if (retrieveNotificationsAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
-        getAllAsync.Cancel();
+        retrieveNotificationsAsync.Cancel();
+        return false;
+    }
+
+    auto notifications = retrieveNotificationsAsync.GetResults();
+
+    auto size = notifications.Size();
+    if (size != 0)
+    {
         return false;
     }
 
@@ -849,7 +857,7 @@ bool VerifyGetAllAsyncWithOneActiveToast()
         return false;
     }
 
-    auto notifications = retrieveNotificationsAsync.get();
+    auto notifications = retrieveNotificationsAsync.GetResults();
 
     auto size = notifications.Size();
     if (size != 1)
@@ -883,7 +891,7 @@ bool VerifyGetAllAsyncWithMultipleActiveToasts()
         return false;
     }
 
-    auto notifications = getNotificationsAsync.get();
+    auto notifications = getNotificationsAsync.GetResults();
 
     if (notifications.Size() != 3)
     {
@@ -1153,7 +1161,7 @@ bool VerifyRemoveAllAsync()
     }
 
     // At this point, there are at least 3 active toasts, the ones we just posted but there could also be others that are still active.
-    if (getAllAsync.get().Size() < 3)
+    if (getAllAsync.GetResults().Size() < 3)
     {
         return false;
     }
@@ -1166,9 +1174,14 @@ bool VerifyRemoveAllAsync()
     }
 
     getAllAsync = toastNotificationManager.GetAllAsync();
-    if (getAllAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Error)
+    if (getAllAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         getAllAsync.Cancel();
+        return false;
+    }
+
+    if (getAllAsync.GetResults().Size() != 0)
+    {
         return false;
     }
 
