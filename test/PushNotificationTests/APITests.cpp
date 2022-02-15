@@ -57,6 +57,13 @@ namespace Test::PushNotifications
         {
             try
             {
+                // Cleanup previous installations. Need this to remove any manual installations outside of running this tests.
+                TP::RemovePackage(GetTestPackageFullName());
+                TP::RemovePackage_PushNotificationsLongRunningTask();
+                TP::RemovePackage_DynamicDependencyLifetimeManager();
+                TP::RemovePackage_DynamicDependencyDataStore();
+                TP::RemovePackage_WindowsAppRuntimeFramework();
+
                 TP::AddPackage_WindowsAppRuntimeFramework();       // Installs WARfwk
                 TP::AddPackage_DynamicDependencyDataStore();       // Installs WARmain
                 TP::AddPackage_DynamicDependencyLifetimeManager(); // Installs WARddlm
@@ -275,16 +282,6 @@ namespace Test::PushNotifications
         TEST_METHOD(RegisterActivatorNullDetails_Unpackaged)
         {
             RunTestUnpackaged(L"RegisterActivatorNullDetails", testWaitTime());
-        }
-
-        TEST_METHOD(RegisterActivatorNullClsid)
-        {
-            RunTest(L"RegisterActivatorNullClsid", testWaitTime());
-        }
-
-        TEST_METHOD(RegisterActivatorNullClsid_Unpackaged)
-        {
-            RunTestUnpackaged(L"RegisterActivatorNullClsid", testWaitTime());
         }
 
         TEST_METHOD(MultipleRegisterActivatorTest)

@@ -60,6 +60,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         return appNotificationManager;
     }
 
+    // TODO: Remove the details once unpackaged scenario (assets) are handled
     void AppNotificationManager::Register(winrt::Microsoft::Windows::AppNotifications::AppNotificationActivationInfo const& details)
     {
         THROW_HR_IF_MSG(E_INVALIDARG, s_notificationComActivatorRegistration, "Toast activator already registered.");
@@ -85,15 +86,11 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
             THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
         }
 
-        if (AppModel::Identity::IsPackagedProcess())
-        {
-            winrt::guid registeredClsid{ GUID_NULL };
-            THROW_IF_FAILED(PushNotificationHelpers::CheckComServerClsid(registeredClsid, expectedAppServerArgs.data()));
-            THROW_HR_IF(E_INVALIDARG, registeredClsid != details.TaskClsid());
-        }
-
+        winrt::guid registeredClsid{ GUID_NULL };
+        THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedAppServerArgs.data(), registeredClsid));
+        
         THROW_IF_FAILED(::CoRegisterClassObject(
-            AppModel::Identity::IsPackagedProcess() ? details.TaskClsid() : winrt::guid(storedComActivatorString),
+            AppModel::Identity::IsPackagedProcess() ? registeredClsid : winrt::guid(storedComActivatorString),
             winrt::make<AppNotificationActivationCallbackFactory>().get(),
             CLSCTX_LOCAL_SERVER,
             REGCLS_MULTIPLEUSE,

@@ -47,74 +47,13 @@ winrt::AppNotificationProgressData GetToastProgressData(std::wstring const& stat
     return progressData;
 }
 
-bool VerifyFailedRegisterActivatorUsingNullClsid()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
-
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
-
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_ILLEGAL_METHOD_CALL;
-    }
-
-    return false;
-}
-
-bool VerifyFailedRegisterActivatorUsingNullActivationInfo()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ nullptr };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
-bool VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged()
-{
-    try
-    {
-        winrt::AppNotificationActivationInfo activationInfo{ nullptr };
-        winrt::AppNotificationManager::Default().Register(activationInfo);
-    }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_INVALIDARG;
-    }
-
-    return false;
-}
-
+// Uncomment after removing AppNotificationActivationInfo
 bool VerifyRegisterActivatorandUnRegisterActivatorUsingClsid()
 {
-    winrt::AppNotificationManager::Default().Unregister();
+   /* winrt::AppNotificationManager::Default().Unregister();
     try
     {
-        winrt::AppNotificationActivationInfo activationInfo{ c_toastComServerId };
+        winrt::AppNotificationActivationInfo activationInfo{};
 
         winrt::AppNotificationManager::Default().Register(activationInfo);
 
@@ -123,7 +62,7 @@ bool VerifyRegisterActivatorandUnRegisterActivatorUsingClsid()
     catch (...)
     {
         return false;
-    }
+    } */
     return true;
 }
 
@@ -136,8 +75,9 @@ bool VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged()
     return true;
 }
 
+// Uncomment after removing AppNotificationActivationInfo
 bool VerifyFailedMultipleRegisterActivatorUsingSameClsid()
-{
+{/*
     try
     {
         winrt::AppNotificationActivationInfo activationInfo{ c_toastComServerId };
@@ -149,7 +89,8 @@ bool VerifyFailedMultipleRegisterActivatorUsingSameClsid()
         return winrt::to_hresult() == E_INVALIDARG;
     }
     
-    return false;
+    return false; */
+    return true;
 }
 
 bool VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged()

@@ -10,13 +10,11 @@ namespace Microsoft.Windows.AppNotifications
     runtimeclass AppNotificationActivationInfo
     {
         // Initialize using a manifest defined COM Activator Id. Only applicable to Packaged Win32 applications
-        AppNotificationActivationInfo(Guid taskClsid);
+        // TODO: Remove this as COM Activator will now be obtained from registry
+        AppNotificationActivationInfo();
 
         // Initialize using Notification Assets. Only applicable to Unpackaged Win32 applications which need to specify their own assets like DisplayName and Icon.
         AppNotificationActivationInfo(String displayName, Windows.Foundation.Uri iconUri);
-
-        // The CLSID associated with the Client COM server that Windows App SDK will activate
-        Guid TaskClsid{ get; };
 
         // The App friendly DisplayName for the Notification in Action Centre 
         String DisplayName{ get; };

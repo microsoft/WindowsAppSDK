@@ -134,7 +134,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         UINT32 packageFullNameLength = ARRAYSIZE(packageFullName);
         THROW_IF_FAILED(GetCurrentPackageFullName(&packageFullNameLength, packageFullName));
 
-        packagedFullName = wil::make_cotaskmem_string_nothrow(packageFullName);
+        packagedFullName = wil::make_cotaskmem_string(packageFullName);
         THROW_IF_NULL_ALLOC(packagedFullName);
 
         return S_OK;
@@ -151,8 +151,10 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     }
     CATCH_RETURN()
 
-    inline HRESULT CheckComServerClsid(winrt::guid& comServerClsid, const std::wstring argumentToCheck) noexcept try
+    inline HRESULT GetComRegistrationFromRegistry(const std::wstring argumentToCheck, winrt::guid& comServerClsid) noexcept try
     {
+        RETURN_HR_IF(S_OK, !AppModel::Identity::IsPackagedProcess());
+
         wil::unique_cotaskmem_string packagedFullName;
         THROW_IF_FAILED(GetPackageFullName(packagedFullName));
 
@@ -163,15 +165,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
         std::wstring clsidPath{ packagedRegistryPath + LR"(\Class)"};
         THROW_IF_FAILED(RegOpenKeyEx(HKEY_LOCAL_MACHINE, clsidPath.c_str(), 0, KEY_READ, &hKey));
 
-        DWORD comServerGuids{};
-        DWORD maxSubKeyLen;
+        DWORD comServerGuidCount{};
+        DWORD maxSubKeyLength;
         THROW_IF_FAILED(::RegQueryInfoKey(
             hKey.get(),
             nullptr,    // No user-defined class
             nullptr,    // No user-defined class size
             nullptr,    // Reserved
-            &comServerGuids,
-            &maxSubKeyLen,
+            &comServerGuidCount,
+            &maxSubKeyLength,
             nullptr,    // No subkey class length
             nullptr, // No values we want to get
             nullptr,
@@ -180,14 +182,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             nullptr     // No last write time
         ));
 
-        maxSubKeyLen++; // Account for the null character
+        THROW_HR_IF_MSG(E_FAIL, comServerGuidCount < 1, "No COM servers are registered for this app");
+
+        maxSubKeyLength++; // Account for the null character
 
         // Loop through registered ComServerGuids, grab the ServerId and check the registered Arguments/Executable
-        for (DWORD i = 0; i < comServerGuids; i++)
+        bool found = false;
+        for (DWORD i = 0; i < comServerGuidCount; i++)
         {
             std::vector<wchar_t> comServerGuid;
-            comServerGuid.resize(maxSubKeyLen);
-            DWORD cbName{ maxSubKeyLen };
+            comServerGuid.resize(maxSubKeyLength);
+            DWORD cbName{ maxSubKeyLength };
             THROW_IF_FAILED(RegEnumKeyExW(hKey.get(), i, comServerGuid.data(), &cbName, nullptr, nullptr, nullptr, nullptr));
             // Path: HKLM\SOFTWARE\Classes\PackagedCom\Package\{PackageFullName}\Class\{comServerGuid}
             std::wstring clsidPathWithKey{ clsidPath + L"\\" + comServerGuid.data() };
@@ -239,14 +244,18 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
             std::wstring exeToCheck{ exePath.get() };
             THROW_IF_FAILED(GetExeNameFromPath(exeToCheck));
 
-            if (argumentString == argumentToCheck && exeString == exeToCheck)
+            if (argumentString == argumentToCheck)
             {
+                THROW_HR_IF_MSG(E_FAIL, exeString != exeToCheck, "Caller RegistrationProcess is not the same as COM Server!");
                 std::wstring storedComActivatorString{ comServerGuid.data() };
                 comServerClsid = winrt::guid(storedComActivatorString.substr(1, storedComActivatorString.size() - 2));
-                return S_OK;
+                found = true;
+                break;
             }
         }
-        return E_NOT_SET;
+        THROW_HR_IF(E_NOT_SET, found != true);
+
+        return S_OK;
     }
     CATCH_RETURN();
 }

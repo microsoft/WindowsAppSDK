@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{448ED2E5-0B37-4D97-9E6B-8C10A507976A}"
 EndProject
@@ -264,6 +264,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationTests", "t
 		{F76B776E-86F5-48C5-8FC7-D2795ECC9746} = {F76B776E-86F5-48C5-8FC7-D2795ECC9746}
 		{4B30C685-8490-440F-9879-A75D45DAA361} = {4B30C685-8490-440F-9879-A75D45DAA361}
 		{B71E818A-882E-456A-87E5-4DE4A6602B99} = {B71E818A-882E-456A-87E5-4DE4A6602B99}
+		{C422B090-F501-4204-8068-1084B0799405} = {C422B090-F501-4204-8068-1084B0799405}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ToastNotificationsTestApp", "test\TestApps\ToastNotificationsTestApp\ToastNotificationsTestApp.vcxproj", "{4B30C685-8490-440F-9879-A75D45DAA361}"
