@@ -36,13 +36,6 @@ namespace PushNotificationHelpers
     using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
-static winrt::event<NotificationActivationEventHandler> g_notificationHandlers;
-
-winrt::event<NotificationActivationEventHandler>& Microsoft::Windows::AppNotifications::Helpers::GetAppNotificationHandlers()
-{
-    return g_notificationHandlers;
-}
-
 using namespace Microsoft::Windows::AppNotifications::Helpers;
 
 namespace winrt::Microsoft::Windows::AppNotifications::implementation
@@ -129,12 +122,14 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
     winrt::event_token AppNotificationManager::NotificationInvoked(winrt::Windows::Foundation::TypedEventHandler<winrt::Microsoft::Windows::AppNotifications::AppNotificationManager, winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs> const& handler)
     {
-        return GetAppNotificationHandlers().add(handler);
+        auto lock{ m_registrationLock.lock_exclusive() };
+        return m_notificationHandlers.add(handler);
     }
 
     void AppNotificationManager::NotificationInvoked(winrt::event_token const& token) noexcept
     {
-        GetAppNotificationHandlers().remove(token);
+        auto lock{ m_registrationLock.lock_exclusive() };
+        m_notificationHandlers.remove(token);
     }
 
     void AppNotificationManager::Show(winrt::Microsoft::Windows::AppNotifications::AppNotification const& notification)
@@ -278,5 +273,17 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         }
 
         co_return toastNotifications;
+    }
+
+    bool AppNotificationManager::ContainsInvokeHandler()
+    {
+        auto lock{ m_registrationLock.lock_shared() };
+        return (bool)m_notificationHandlers;
+    }
+
+    void AppNotificationManager::InvokeHandler(const winrt::Microsoft::Windows::AppNotifications::AppNotificationActivatedEventArgs& args)
+    {
+        auto lock{ m_registrationLock.lock_shared() };
+        m_notificationHandlers(*this, args);
     }
 }
