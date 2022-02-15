@@ -17,6 +17,8 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
 
     STDMETHOD(RegisterLongRunningActivator)(_In_ PCWSTR processName) noexcept;
 
+    STDMETHOD(RegisterLongRunningActivatorWithClsid)(_In_ PCWSTR processName, GUID comServerClsid) noexcept;
+
     STDMETHOD(UnregisterLongRunningActivator)(_In_ PCWSTR processName) noexcept;
 
     STDMETHOD(RegisterForegroundActivator)(_In_ IWpnForegroundSink* sink, _In_ PCWSTR processName) noexcept;
@@ -28,14 +30,13 @@ struct __declspec(uuid(PUSHNOTIFICATIONS_IMPL_CLSID_STRING)) NotificationsLongRu
     STDMETHOD(RemoveToastRegistrationMapping)(_In_ PCWSTR processName) noexcept;
 private:
 
-    std::map<std::wstring, std::wstring> GetFullTrustApps();
+    std::map<std::wstring, std::pair<std::wstring, winrt::guid>> GetFullTrustApps(); // AppId -> (processName, comServerGuid)
+    void RegisterLongRunningActivatorHelper(PCWSTR processName, GUID comServerClsid);
     const std::wstring GetAppIdentifier(std::wstring const& processName);
     const std::wstring BuildAppIdentifier(std::wstring const& processName);
-    void RemoveAppIdentifier(std::wstring const& processName);
-    void RemoveToastHelper(std::wstring const& processName);
 
     winrt::Windows::Storage::ApplicationDataContainer m_rawStorage{ nullptr };
-
+    winrt::Windows::Storage::ApplicationDataContainer m_comServerClsidStorage{ nullptr };
     wil::srwlock m_lock;
 
     bool m_initialized = false;

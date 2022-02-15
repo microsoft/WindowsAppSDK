@@ -7,7 +7,7 @@
 #include "externs.h"
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
-constexpr PCWSTR c_toastContractId = L"Windows.Toast";
+constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
 namespace winrt::Microsoft::Windows::PushNotifications
 {
