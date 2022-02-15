@@ -109,7 +109,11 @@ bool VerifyProgressData(const winrt::AppNotificationProgressData& expected, cons
     return true;
 }
 
-enum class ExpectedTransientProperties { EQUAL, DEFAULT, UNKNOWN };
+enum class ExpectedTransientProperties {
+    EQUAL,    // Actual values are expected to be same as expected and will be checked.
+    DEFAULT,  // Actual values are expected to have been defaulted and will be checked.
+    UNKNOWN   // Actual values can't be determined and won't be checked.
+};
 bool VerifyToastNotificationIsValid(const winrt::AppNotification& expected, const winrt::AppNotification& actual, ExpectedTransientProperties expectedTransientProperties = ExpectedTransientProperties::EQUAL)
 {
     if (expected.Tag() != actual.Tag())
@@ -232,10 +236,6 @@ bool VerifyFailedRegisterActivatorUsingNullClsid()
 {
     try
     {
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromActivationGuid(winrt::guid(GUID_NULL)); // The exception gets thrown here
-
-        // Old codewinrt::ToastNotificationManager::Default().RegisterActivator(activationInfo); // This doesn't get called
-
         winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
         winrt::AppNotificationManager::Default().Register(activationInfo);
 
@@ -252,10 +252,6 @@ bool VerifyFailedRegisterActivatorUsingNullClsid_Unpackaged()
 {
     try
     {
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromActivationGuid(winrt::guid(GUID_NULL)); // The exception gets thrown here
-
-        // Old  codewinrt::ToastNotificationManager::Default().RegisterActivator(activationInfo); // This doesn't get called
-
         winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
         winrt::AppNotificationManager::Default().Register(activationInfo);
     }
@@ -271,9 +267,6 @@ bool VerifyFailedRegisterActivatorUsingNullActivationInfo()
 {
     try
     {
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(nullptr); // The exception gets thrown here
-
-        // Old code winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo); // This doesn't get called
         winrt::AppNotificationActivationInfo activationInfo{ nullptr };
         winrt::AppNotificationManager::Default().Register(activationInfo);
     }
@@ -289,10 +282,6 @@ bool VerifyFailedRegisterActivatorUsingNullActivationInfo_Unpackaged()
 {
     try
     {
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(nullptr); // The exception gets thrown here
-
-        // Old code winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo); // This doesn't get called
-
         winrt::AppNotificationActivationInfo activationInfo{ nullptr };
         winrt::AppNotificationManager::Default().Register(activationInfo);
     }
@@ -334,14 +323,8 @@ bool VerifyRegisterActivatorandUnRegisterActivatorUsingAssets_Unpackaged()
 
 bool VerifyFailedMultipleRegisterActivatorUsingSameClsid()
 {
-    // Old code auto activationInfo = winrt::AppNotificationActivationInfo::CreateFromActivationGuid(c_toastComServerId);
-
     try
     {
-        // Old code winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo); // This is the call that actually throws
-
-        // Old code winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
-
         winrt::AppNotificationActivationInfo activationInfo{ c_toastComServerId };
         winrt::AppNotificationManager::Default().Register(activationInfo);
         winrt::AppNotificationManager::Default().Register(activationInfo);
@@ -356,16 +339,8 @@ bool VerifyFailedMultipleRegisterActivatorUsingSameClsid()
 
 bool VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged()
 {
-    // Old code winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
-    // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
-
-    // Old code winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
-
     try
     {
-        // Old code winrt::ToastNotificationManager::Default().RegisterActivator(activationInfo);
-
         winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
         winrt::AppNotificationManager::Default().Register(activationInfo);
         winrt::AppNotificationManager::Default().Register(activationInfo);
@@ -380,12 +355,8 @@ bool VerifyFailedMultipleRegisterActivatorUsingSameAssets_Unpackaged()
 
 bool VerifyFailedToastAssetsWithEmptyDisplayName_Unpackaged()
 {
-    // Old code winrt::ToastAssets assets(L"", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
-
     try
     {
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets);
-
         winrt::AppNotificationActivationInfo activationInfo(L"", winrt::Uri{ LR"(C:\Windows\System32\WindowsSecurityIcon.png)" });
     }
     catch (...)
@@ -400,10 +371,6 @@ bool VerifyFailedToastAssetsWithEmptyIconPath_Unpackaged()
 {
     try
     {
-        // Old code winrt::ToastAssets assets(L"ToastNotificationApp", winrt::Uri{ L"" }); // The exception gets thrown here
-
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets); // This doesn't get called
-
         winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", winrt::Uri{ L"" });
     }
     catch (...)
@@ -418,10 +385,6 @@ bool VerifyFailedToastAssetsWithNullIconPath_Unpackaged()
 {
     try
     {
-        // Old code winrt::ToastAssets assets(L"ToastNotificationApp", nullptr); // The exception gets thrown here
-
-        // Old code auto activationInfo = winrt::ToastActivationInfo::CreateFromToastAssets(assets); // This doesn't get called
-
         winrt::AppNotificationActivationInfo activationInfo(L"ToastNotificationApp", nullptr);
     }
     catch (...)
