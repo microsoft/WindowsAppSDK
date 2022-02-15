@@ -7,8 +7,9 @@
     - [2.1.4. Dynamic Dependency Lifetime Manager (DDLM)](#214-dynamic-dependency-lifetime-manager-ddlm)
 - [3. Package Naming](#3-package-naming)
   - [3.1. Package Naming - SubName](#31-package-naming---subname)
-  - [3.2. Package Naming - Singleton](#32-package-naming---singleton)
-  - [3.3. Package Naming - DDLM](#33-package-naming---ddlm)
+  - [3.2. Package Naming - Singleton](#32-package-naming---main)
+  - [3.3. Package Naming - Singleton](#33-package-naming---singleton)
+  - [3.4. Package Naming - DDLM](#34-package-naming---ddlm)
 - [4. Package Versioning](#4-package-versioning)
 
 # 1. Background
@@ -110,9 +111,9 @@ SDK 1.0, 1.1 and 2.0 (Stable) are installed on an x86 system, the user will have
 * Microsoft.WindowsAppRuntime.1.0
 * Microsoft.WindowsAppRuntime.1.1
 * Microsoft.WindowsAppRuntime.2.0
-* Microsoft.WindowsAppRuntime.Main.1.0
-* Microsoft.WindowsAppRuntime.Main.1.1
-* Microsoft.WindowsAppRuntime.Main.2.0
+* MicrosoftCorporationII.WinAppRuntime.Main.1.0
+* MicrosoftCorporationII.WinAppRuntime.Main.1.1
+* MicrosoftCorporationII.WinAppRuntime.Main.2.0
 * Microsoft.WindowsAppRuntime.Singleton (version 2.0)
 * Microsoft.WinAppRuntime.DDLM.0.146.711.0-x8
 * Microsoft.WinAppRuntime.DDLM.1000.328.1510.0-x8
@@ -159,11 +160,24 @@ The following SubName values are used:
 | SubName | Package | Example |
 |-|-|-|
 | | Framework | Microsoft.WindowsAppRuntime.1.0-experimental1 |
-| Main | Main | Microsoft.WindowsAppRuntime.Main.1.0-experimental1 |
+| Main | Main | MicrosoftCorporationII.WinAppRuntime.Main.1.0-e1 |
 | Singleton | Singleton | Microsoft.WindowsAppRuntime.Singleton-experimental1 |
-| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.7.3944.123.1-x6-e1 |
+| DDLM | Dynamic Dependency Lifetime Manager (DDLM) | Microsoft.WinAppRuntime.DDLM.0.146.711.0-x6-e1 |
 
-## 3.2. Package Naming - Singleton
+## 3.2. Package Naming - Main
+
+The Main package follows a different naming scheme
+
+* Name = MicrosoftCcorporationII.WinAppRuntime.Main.\<ReleaseMajorMinor\>[-ShortVersionTag]
+
+where
+
+* ReleaseMajorMinor = project release major.minor version number. See the [MSIX Package Versioning](https://github.com/microsoft/WindowsAppSDK/blob/main/specs/deployment/MSIXPackageVersioning.md) for more details.
+* ShortVersionTag = short form of the VersionTag
+
+ShortVersionTag is derived from a VersionTag by combining the 1st letter and the last digit (if any) for non-Stable channels (ShortVeresionTag is blank for the Stable channel, just like VersionTag).
+
+## 3.3. Package Naming - Singleton
 
 The Singleton package follows a different naming scheme
 
@@ -176,7 +190,7 @@ compared to other package Names, lacking any version information.
 
 See [2.1.3. Role - Singleton](#213-role---singleton) for more information.
 
-## 3.3. Package Naming - DDLM
+## 3.4. Package Naming - DDLM
 
 DDLM packages follow a different naming scheme
 
