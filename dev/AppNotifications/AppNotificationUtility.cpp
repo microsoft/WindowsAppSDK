@@ -279,7 +279,7 @@ winrt::Microsoft::Windows::AppNotifications::AppNotification Microsoft::Windows:
     {
         winrt::AppNotificationProgressData progressData{};
 
-        // SeuqenceNumber is transient and thus,  left to its default.
+        // SequenceNumber is transient and thus,  left to its default.
 
         wil::unique_hstring status{};
         THROW_IF_FAILED(toastProgressData->get_Status(&status));

@@ -238,7 +238,6 @@ bool VerifyFailedRegisterActivatorUsingNullClsid()
     {
         winrt::AppNotificationActivationInfo activationInfo{ winrt::guid(GUID_NULL) };
         winrt::AppNotificationManager::Default().Register(activationInfo);
-
     }
     catch (...)
     {
@@ -872,7 +871,7 @@ bool VerifyGetAllAsyncWithMultipleActiveToasts()
     return true;
 }
 
-bool VerifyGetAllAsyncReportsUpdatesToProgressData()
+bool VerifyGetAllAsyncIgnoresUpdatesToProgressData()
 {
     EnsureNoActiveToasts();
 
@@ -881,11 +880,13 @@ bool VerifyGetAllAsyncReportsUpdatesToProgressData()
     winrt::AppNotification toast{ CreateToastNotification() };
     toast.Tag(L"Tag");
     toast.Group(L"Group");
+    winrt::AppNotificationProgressData initialProgressData = GetToastProgressData(L"Initial Status", L"Initial Title", 0.05, L"5%");
+    toast.Progress(initialProgressData);
 
     toastNotificationManager.Show(toast);
 
-    winrt::AppNotificationProgressData progressData = GetToastProgressData(L"SomeStatus", L"SomeTitle", 0.14, L"14%");
-    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(progressData, L"Tag", L"Group");
+    winrt::AppNotificationProgressData updatedProgressData = GetToastProgressData(L"Updated Status", L"Updated Title", 0.14, L"14%");
+    auto progressResultOperation = toastNotificationManager.UpdateProgressDataAsync(updatedProgressData, L"Tag", L"Group");
     if (!ProgressResultOperationHelper(progressResultOperation, winrt::AppNotificationProgressResult::Succeeded))
     {
         return false;
@@ -895,7 +896,6 @@ bool VerifyGetAllAsyncReportsUpdatesToProgressData()
     if (getNotificationsAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
         getNotificationsAsync.Cancel();
-        Sleep(5000);
         return false;
     }
 
@@ -906,9 +906,8 @@ bool VerifyGetAllAsyncReportsUpdatesToProgressData()
         return false;
     }
 
-    toast.Progress(progressData);
     auto actual = notifications.GetAt(0);
-    return VerifyToastNotificationIsValid(toast, actual, ExpectedTransientProperties::DEFAULT);
+    return VerifyToastNotificationIsValid(toast, actual, ExpectedTransientProperties::EQUAL);
 }
 
 bool VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier()
@@ -930,7 +929,7 @@ bool VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier()
     }
 }
 
-bool VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier()
+bool VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow()
 {
     auto toastNotificationManager = winrt::AppNotificationManager::Default();
 
@@ -939,21 +938,15 @@ bool VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier()
     auto id{ toast.Id() };
     toastNotificationManager.RemoveAllAsync().get();
 
-    try
+    auto removeToastAsync{ toastNotificationManager.RemoveByIdAsync(id) };
+    if (removeToastAsync.wait_for(std::chrono::seconds(300)) != winrt::Windows::Foundation::AsyncStatus::Completed)
     {
-        auto removeToastAsync{ toastNotificationManager.RemoveByIdAsync(id) };
-        if (removeToastAsync.wait_for(std::chrono::seconds(300)) == winrt::Windows::Foundation::AsyncStatus::Error)
-        {
-            removeToastAsync.GetResults();
-        }
-
         removeToastAsync.Cancel();
         return false;
     }
-    catch (...)
-    {
-        return winrt::to_hresult() == E_FAIL; // ELx - would expect the operation to report that it couldn't remove the toast but it doesn't. The operation simply fails silently. Is this a bug or the expected behavior?
-    }
+
+    removeToastAsync.GetResults();
+    return true;
 }
 
 bool VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier()
@@ -1320,10 +1313,10 @@ std::map<std::string, bool(*)()> const& GetSwitchMapping()
         { "VerifyGetAllAsyncWithZeroActiveToast", &VerifyGetAllAsyncWithZeroActiveToast },
         { "VerifyGetAllAsyncWithOneActiveToast", &VerifyGetAllAsyncWithOneActiveToast },
         { "VerifyGetAllAsyncWithMultipleActiveToasts", &VerifyGetAllAsyncWithMultipleActiveToasts },
-        { "VerifyGetAllAsyncReportsUpdatesToProgressData", &VerifyGetAllAsyncReportsUpdatesToProgressData },
+        { "VerifyGetAllAsyncIgnoresUpdatesToProgressData", &VerifyGetAllAsyncIgnoresUpdatesToProgressData },
 
         { "VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier },
-        { "VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier },
+        { "VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow", &VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow },
         { "VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier", &VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier },
         { "VerifyRemoveWithTagAsyncUsingEmptyTagThrows", &VerifyRemoveWithTagAsyncUsingEmptyTagThrows },
         { "VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow", &VerifyRemoveWithTagAsyncUsingNonExistentTagDoesNotThrow },

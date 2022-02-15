@@ -419,14 +419,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyGetAllAsyncWithMultipleActiveToasts", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsyncReportsUpdatesToProgressData)
+        TEST_METHOD(VerifyGetAllAsyncIgnoresUpdatesToProgressData)
         {
-            RunTest(L"VerifyGetAllAsyncReportsUpdatesToProgressData", testWaitTime());
+            RunTest(L"VerifyGetAllAsyncIgnoresUpdatesToProgressData", testWaitTime());
         }
 
-        TEST_METHOD(VerifyGetAllAsyncReportsUpdatesToProgressData_Unpackaged)
+        TEST_METHOD(VerifyGetAllAsyncIgnoresUpdatesToProgressData_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyGetAllAsyncReportsUpdatesToProgressData", testWaitTime());
+            RunTestUnpackaged(L"VerifyGetAllAsyncIgnoresUpdatesToProgressData", testWaitTime());
         }
 
         TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier)
@@ -439,14 +439,14 @@ namespace Test::ToastNotifications
             RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingZeroedToastIdentifier", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow)
         {
-            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", testWaitTime());
+            RunTest(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow", testWaitTime());
         }
 
-        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier_Unpackaged)
+        TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow_Unpackaged)
         {
-            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifier", testWaitTime());
+            RunTestUnpackaged(L"VerifyRemoveWithIdentifierAsyncUsingNonActiveToastIdentifierDoesNotThrow", testWaitTime());
         }
 
         TEST_METHOD(VerifyRemoveWithIdentifierAsyncUsingActiveToastIdentifier)

@@ -184,7 +184,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveNotificationAppId() };
-        ToastNotifications_RemoveToast(appId.c_str(), notificationId);
+        THROW_IF_FAILED(ToastNotifications_RemoveToast(appId.c_str(), notificationId));
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveWithTagAsync(hstring const tag)
@@ -196,7 +196,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveNotificationAppId() };
-        LOG_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), nullptr));
+        THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), nullptr));
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveWithTagGroupAsync(hstring const tag, hstring const group)
@@ -210,7 +210,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveNotificationAppId() };
-        LOG_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), _group.c_str()));
+        THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), _tag.c_str(), _group.c_str()));
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveGroupAsync(hstring const group)
@@ -222,7 +222,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveNotificationAppId() };
-        LOG_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), nullptr, _group.c_str()));
+        THROW_IF_FAILED(ToastNotifications_RemoveToastsWithTagAndGroup(appId.c_str(), nullptr, _group.c_str()));
     }
 
     winrt::Windows::Foundation::IAsyncAction AppNotificationManager::RemoveAllAsync()
@@ -230,7 +230,7 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         co_await winrt::resume_background();
 
         std::wstring appId{ RetrieveNotificationAppId() };
-        LOG_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
+        THROW_IF_FAILED(ToastNotifications_RemoveAllToastsForApp(appId.c_str()));
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> AppNotificationManager::GetAllAsync()
