@@ -7,7 +7,7 @@
 #include "ProtocolActivatedEventArgs.h"
 #include "FileActivatedEventArgs.h"
 #include "StartupActivatedEventArgs.h"
-#include "GetRawNotificationEventArgs.h"
+#include "GetNotificationEventArgs.h"
 
 namespace winrt::Microsoft::Windows::AppLifecycle::implementation
 {
@@ -26,6 +26,7 @@ namespace winrt::Microsoft::Windows::AppLifecycle::implementation
         { ExtendedActivationKind::Protocol, c_protocolContractId, &ProtocolActivatedEventArgs::Deserialize },
         { ExtendedActivationKind::StartupTask, c_startupTaskContractId, &StartupActivatedEventArgs::Deserialize },
         { ExtendedActivationKind::Push, c_pushContractId, &winrt::Microsoft::Windows::PushNotifications::Deserialize },
+        { ExtendedActivationKind::AppNotification, c_appNotificationContractId, &winrt::Microsoft::Windows::PushNotifications::Deserialize },
     };
 
     inline bool IsEncodedLaunch(winrt::Windows::Foundation::Uri const& uri)

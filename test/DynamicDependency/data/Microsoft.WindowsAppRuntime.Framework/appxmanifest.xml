@@ -74,6 +74,16 @@
     <Extension Category="windows.activatableClass.inProcessServer">
         <InProcessServer>
             <Path>Microsoft.WindowsAppRuntime.dll</Path>
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationActivationInfo" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationManager" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotification" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressData" ThreadingModel="both" />
+            <ActivatableClass ActivatableClassId="Microsoft.Windows.AppNotifications.AppNotificationProgressResult" ThreadingModel="both" />
+        </InProcessServer>
+    </Extension>
+    <Extension Category="windows.activatableClass.inProcessServer">
+        <InProcessServer>
+            <Path>Microsoft.WindowsAppRuntime.dll</Path>
             <ActivatableClass ActivatableClassId="Microsoft.Windows.System.Power.PowerManager" ThreadingModel="both" />
         </InProcessServer>
     </Extension>

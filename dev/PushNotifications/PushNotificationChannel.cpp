@@ -5,165 +5,110 @@
 #include <winrt/Windows.Foundation.Metadata.h>
 #include "PushNotificationChannel.h"
 #include "Microsoft.Windows.PushNotifications.PushNotificationChannel.g.cpp"
-#include <winrt\Windows.Networking.PushNotifications.h>
 #include <winrt\Windows.Foundation.h>
 #include "PushNotificationReceivedEventArgs.h"
 #include <FrameworkUdk/PushNotifications.h>
 #include "externs.h"
 #include "PushNotificationTelemetry.h"
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "PushNotificationUtility.h"
 
-namespace winrt::Windows
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Microsoft::Windows::PushNotifications;
+
+
+namespace PushNotificationHelpers
 {
-    using namespace winrt::Windows::Networking::PushNotifications;
-    using namespace winrt::Windows::Foundation;
-    using namespace winrt::Windows::Metadata;
-}
-namespace winrt::Microsoft
-{
-    using namespace winrt::Microsoft::Windows::PushNotifications;
+    using namespace winrt::Microsoft::Windows::PushNotifications::Helpers;
 }
 
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
-    PushNotificationChannel::PushNotificationChannel(winrt::Windows::PushNotificationChannel const& channel): m_channel(channel) 
+    Uri PushNotificationChannel::Uri()
     {
-        THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
+        return winrt::Windows::Foundation::Uri{ m_channelInfo.channelUri };
     }
 
-    winrt::Windows::Uri PushNotificationChannel::Uri()
+    DateTime PushNotificationChannel::ExpirationTime()
     {
-        if (m_channel)
-        {
-            return winrt::Windows::Uri{ m_channel.Uri() };
-        }
-        else
-        {
-            return winrt::Windows::Uri{ m_channelInfo.channelUri };
-        }
-    }
-
-    winrt::Windows::DateTime PushNotificationChannel::ExpirationTime()
-    {
-        if (m_channel)
-        {
-            return m_channel.ExpirationTime();
-        }
-        else
-        {
-            return m_channelInfo.channelExpiryTime;
-        }
+        return m_channelInfo.channelExpiryTime;
     }
 
     void PushNotificationChannel::Close()
     {
         try
         {
-            if (m_channel)
-            {
-                m_channel.Close();
-            }
-            else
-            {
-                THROW_IF_FAILED(PushNotifications_CloseChannel(m_channelInfo.appUserModelId.c_str(), m_channelInfo.channelId.c_str()));
-            }
-
+            THROW_IF_FAILED(PushNotifications_CloseChannel(m_channelInfo.appId.c_str(), m_channelInfo.channelId.c_str()));
             PushNotificationTelemetry::ChannelClosedByApi(S_OK);
         }
 
         catch (...)
         {
-            auto channelCloseException = hresult_error(to_hresult());
+            auto channelCloseException { hresult_error(to_hresult()) };
 
             PushNotificationTelemetry::ChannelClosedByApi(channelCloseException.code());
 
             if (channelCloseException.code() != HRESULT_FROM_WIN32(ERROR_NOT_FOUND))
             {
-                throw hresult_error(to_hresult());
+                throw channelCloseException;
             }
         }
     }
 
-    winrt::event_token PushNotificationChannel::PushReceived(winrt::Windows::TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
+    winrt::event_token PushNotificationChannel::PushReceived(TypedEventHandler<winrt::Microsoft::Windows::PushNotifications::PushNotificationChannel, winrt::Microsoft::Windows::PushNotifications::PushNotificationReceivedEventArgs> handler)
     {
-        if (IsPackagedAppScenario())
+        bool registeredEvent { false };
         {
-            if (m_channel)
+            auto lock { m_lock.lock_shared() };
+            registeredEvent = bool(m_foregroundHandlers);
+        }
+
+        if(!registeredEvent)
+        {
+            if(PushNotificationHelpers::IsPackagedAppScenario())
             {
-                return m_channel.PushNotificationReceived([weak_self = get_weak(), handler](auto&&, auto&& args)
-                {
-                    if (auto strong = weak_self.get())
-                    {
-                        auto pushArgs = winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(args);
-                        pushArgs.Handled(true);
-                        handler(*strong, pushArgs);
-                    };
-                });
+                auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
+
+                // Register a sink with platform which is initialized in the current process
+                THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
             }
             else
             {
-                // The channelUri is directly obtained when we request Channel from UDK using RemoteId
-                auto lock = m_lock.lock_exclusive();
-
-                if (!m_foregroundHandlerCount)
-                {
-                    auto appUserModelId{ winrt::Microsoft::Helpers::GetAppUserModelId() };
-
-                    THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appUserModelId.get(), this));
-                }
-
-                ++m_foregroundHandlerCount;
-
-                return m_foregroundHandlers.add(handler);
-            }
-        }
-        else
-        {
-            auto lock = m_lock.lock_exclusive();
-            if (!m_foregroundHandlerCount++)
-            {
-                auto notificationsLongRunningPlatform{ winrt::Microsoft::Helpers::GetNotificationPlatform() };
+                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
 
-                THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(this, processName.get()));             
+                // Register a sink with platform brokered through PushNotificationsLongRunningProcess
+                THROW_IF_FAILED(notificationsLongRunningPlatform->RegisterForegroundActivator(this, processName.get()));
             }
-            return m_foregroundHandlers.add(handler);
         }
+
+        auto lock { m_lock.lock_exclusive() };
+        return m_foregroundHandlers.add(handler);
     }
 
     void PushNotificationChannel::PushReceived(winrt::event_token const& token) noexcept
     {
-        if (IsPackagedAppScenario())
+        bool registeredEvent { false };
         {
-            if (m_channel)
+            auto lock { m_lock.lock_exclusive() };
+            m_foregroundHandlers.remove(token);
+            registeredEvent = bool(m_foregroundHandlers);
+        }
+
+        if(!registeredEvent)
+        {
+            // Packaged apps with BI available will remove their handlers from the platform.
+            // Unpackaged apps / Packaged apps treated as unpackaged will unregister from Long Running process.
+            if (PushNotificationHelpers::IsPackagedAppScenario())
             {
-                m_channel.PushNotificationReceived(token);
+                auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
+
+                THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
             }
             else
             {
-                auto lock = m_lock.lock_exclusive();
-
-                if (m_foregroundHandlerCount == 1)
-                {
-                    auto appUserModelId{ winrt::Microsoft::Helpers::GetAppUserModelId() };
-
-                    THROW_IF_FAILED(PushNotifications_UnregisterNotificationSinkForFullTrustApplication(appUserModelId.get()));
-                }
-
-                m_foregroundHandlers.remove(token);
-                --m_foregroundHandlerCount;
-            }
-        }
-        else
-        {
-            auto lock = m_lock.lock_exclusive();
-            m_foregroundHandlers.remove(token);
-            if (!--m_foregroundHandlerCount)
-            {
-                auto notificationsLongRunningPlatform{ winrt::Microsoft::Helpers::GetNotificationPlatform() };
+                auto notificationsLongRunningPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                 wil::unique_cotaskmem_string processName;
                 THROW_IF_FAILED(GetCurrentProcessPath(processName));
@@ -189,23 +134,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
 
         if (!foregroundHandled)
         {
-            wil::unique_cotaskmem_string processName;
-            THROW_IF_FAILED(GetCurrentProcessPath(processName));
-            THROW_IF_FAILED(winrt::Microsoft::Helpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+            if (!AppModel::Identity::IsPackagedProcess())
+            {
+                wil::unique_cotaskmem_string processName;
+                THROW_IF_FAILED(GetCurrentProcessPath(processName));
+                THROW_IF_FAILED(PushNotificationHelpers::ProtocolLaunchHelper(processName.get(), payloadLength, payload));
+            }
         }
 
         return S_OK;
     }
     CATCH_RETURN();
-
-    bool PushNotificationChannel::IsBackgroundTaskBuilderAvailable()
-    {
-        return winrt::Windows::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid");
-    }
-
-    // Determines if the caller should be treated as packaged app or not.
-    bool PushNotificationChannel::IsPackagedAppScenario()
-    {
-        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
-    }
 }

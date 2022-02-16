@@ -4,7 +4,14 @@
 #pragma once
 #include "pch.h"
 #include  "NotificationsLongRunningProcess_h.h"
+#include <winrt/Windows.Foundation.Metadata.h>
+#include "../Common/AppModel.Identity.h"
+#include "PushBackgroundTaskInstance.h"
 
+namespace winrt
+{
+    using namespace Windows::Foundation;
+}
 namespace winrt::Microsoft::Windows::PushNotifications::Helpers
 {
     inline std::string WideStringToUtf8String(_In_ std::wstring const& utf16string)
@@ -102,8 +109,30 @@ namespace winrt::Microsoft::Windows::PushNotifications::Helpers
     }
     CATCH_RETURN()
 
+    inline HRESULT PackagedAppLauncherByClsid(winrt::guid const& comServerClsid, unsigned int payloadLength, _In_reads_(payloadLength) byte* payload) noexcept try
+    {
+        auto payloadAsWideString{ Utf8BytesToWideString(payloadLength, payload) };
+        auto pushBackgroundTaskInstance{ winrt::make_self<PushBackgroundTaskInstance>(payloadAsWideString) };
+
+        auto localBackgroundTask = winrt::create_instance<winrt::Windows::ApplicationModel::Background::IBackgroundTask>(comServerClsid, CLSCTX_ALL);
+        localBackgroundTask.Run(*pushBackgroundTaskInstance);
+        return S_OK;
+    }
+    CATCH_RETURN()
+
     inline wil::com_ptr<INotificationsLongRunningPlatform> GetNotificationPlatform()
     {
         return wil::CoCreateInstance<NotificationsLongRunningPlatform, INotificationsLongRunningPlatform>(CLSCTX_LOCAL_SERVER);
+    }
+
+    inline bool IsBackgroundTaskBuilderAvailable()
+    {
+        static bool hasSetTaskEntrypoint{ winrt::Metadata::ApiInformation::IsMethodPresent(L"Windows.ApplicationModel.Background.BackgroundTaskBuilder", L"SetTaskEntryPointClsid") };
+        return hasSetTaskEntrypoint;
+    }
+
+    inline bool IsPackagedAppScenario()
+    {
+        return AppModel::Identity::IsPackagedProcess() && IsBackgroundTaskBuilderAvailable();
     }
 }

@@ -7,6 +7,7 @@
 #include "externs.h"
 
 constexpr PCWSTR c_pushContractId = L"Windows.Push";
+constexpr PCWSTR c_appNotificationContractId = L"Windows.Toast";
 
 namespace winrt::Microsoft::Windows::PushNotifications
 {
@@ -25,11 +26,6 @@ namespace winrt::Microsoft::Windows::PushNotifications
                 return winrt::make<winrt::Microsoft::Windows::PushNotifications::implementation::PushNotificationReceivedEventArgs>(payloadAsWstring);
             }
         }
-
-        const DWORD receiveArgsTimeoutInMSec{ 2000 };
-        THROW_HR_IF(HRESULT_FROM_WIN32(ERROR_TIMEOUT), !GetWaitHandleForArgs().wait(receiveArgsTimeoutInMSec));
-
-        // If COM static store was uninit, let it throw
-        return winrt::Windows::ApplicationModel::Core::CoreApplication::Properties().Lookup(ACTIVATED_EVENT_ARGS_KEY);
+        return GetArgsFromComStore();
     }
 }

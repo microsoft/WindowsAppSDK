@@ -21,6 +21,8 @@ interface INotificationsLongRunningPlatform : IUnknown
 {
     HRESULT RegisterLongRunningActivator([in] LPCWSTR processName);
 
+    HRESULT RegisterLongRunningActivatorWithClsid([in] LPCWSTR processName, [in] GUID comServerClsid);
+
     HRESULT UnregisterLongRunningActivator([in] LPCWSTR processName);
 
     HRESULT RegisterFullTrustApplication([in] LPCWSTR processName, [in] GUID remoteId, [out] LPWSTR* appId);
@@ -28,6 +30,10 @@ interface INotificationsLongRunningPlatform : IUnknown
     HRESULT RegisterForegroundActivator([in] IWpnForegroundSink* sink, [in] LPCWSTR processName);
 
     HRESULT UnregisterForegroundActivator([in] LPCWSTR processName);
+
+    HRESULT AddToastRegistrationMapping([in] LPCWSTR processName, [in] LPCWSTR toastAppId);
+
+    HRESULT RemoveToastRegistrationMapping([in] LPCWSTR processName);
 };
 
 [uuid(PUSHNOTIFICATIONS_LIBID_UUID)]

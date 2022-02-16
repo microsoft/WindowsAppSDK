@@ -26,7 +26,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)externs.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GetRawNotificationEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GetNotificationEventArgs.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PushBackgroundTaskInstance.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationActivationInfo.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationBackgroundTask.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PushNotificationChannel.h" />
