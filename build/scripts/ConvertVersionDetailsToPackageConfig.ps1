@@ -27,12 +27,9 @@ foreach ($dependency in $buildConfig.Dependencies.ProductDependencies.Dependency
         Write-Host "##vso[task.setvariable variable=AppLicensingInternalPackageVersion;]$ver"
     }
 
-    $excluded = $name.StartsWith("CsWinRT.Dependency.")
-    if (-not $excluded)
-    {
-        $packagesText += '	<package id="' + $name + '" version="' + $ver + '" targetFramework="native" />
+    $packagesText += '	<package id="' + $name + '" version="' + $ver + '" targetFramework="native" />
 '
-    }
+
 }
 $packagesText +=
 @"
