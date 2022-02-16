@@ -9,26 +9,25 @@ void NotificationListenerManager::Initialize(std::shared_ptr<ForegroundSinkManag
     m_toastRegistrationManager = toastRegistrationManager;
 }
 
-void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::wstring>& appIdList)
+// The mapping setup here is appId -> (processName, comServerClsid)
+void NotificationListenerManager::SetAppIdMapping(std::map<std::wstring, std::pair<std::wstring, winrt::guid>>& appIdList)
 {
     for (auto appData : appIdList)
     {
-        AddListener(appData.first, appData.second);
+        AddListener(appData.first /* appId */, appData.second.first /* processName */, appData.second.second /* comServerClsid */);
     }
 }
 
-void NotificationListenerManager::AddListener(std::wstring const& appId, std::wstring const& processName)
+void NotificationListenerManager::AddListener(std::wstring const& appId, std::wstring const& processName, winrt::guid const& comServerClsid)
 {
     THROW_HR_IF(E_INVALIDARG, appId.empty());
-    THROW_HR_IF(E_INVALIDARG, processName.empty());
-
-    
+    THROW_HR_IF(E_INVALIDARG, processName.empty());    
 
     // Make sure we keep the long running sink up-to-date with wpncore.
     ComPtr<INotificationListener> newListener;
     {
         auto lock{ m_lock.lock_shared() };
-        THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&newListener, m_foregroundSinkManager, m_toastRegistrationManager, appId, processName));
+        THROW_IF_FAILED(MakeAndInitialize<NotificationListener>(&newListener, m_foregroundSinkManager, m_toastRegistrationManager, appId, processName, comServerClsid));
     }
 
     THROW_IF_FAILED(PushNotifications_RegisterNotificationSinkForFullTrustApplication(appId.c_str(), newListener.Get()));

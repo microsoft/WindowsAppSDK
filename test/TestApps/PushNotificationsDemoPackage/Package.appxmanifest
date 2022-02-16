@@ -54,7 +54,7 @@
 					</com:ComServer>
 				</com:Extension>
 				<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
-					<uap:Protocol Name="windowsappruntimetestprotocol-packaged">
+					<uap:Protocol Name="packagedpush-protocol">
 						<uap:DisplayName>WindowsAppRuntimeTestProtocol</uap:DisplayName>
 					</uap:Protocol>
 				</uap:Extension>

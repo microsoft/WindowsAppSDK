@@ -18,7 +18,6 @@
 #include <string_view>
 #include <frameworkudk/pushnotifications.h>
 #include "NotificationsLongRunningProcess_h.h"
-#include <TerminalVelocityFeatures-PushNotifications.h>
 #include "PushNotificationUtility.h"
 #include "AppNotificationUtility.h"
 
@@ -29,10 +28,16 @@ constexpr std::wstring_view backgroundTaskName = L"PushBackgroundTaskName"sv;
 constexpr std::wstring_view expectedPushServerArgs = L"----WindowsAppRuntimePushServer:"sv;
 
 static wil::unique_event g_waitHandleForArgs;
+static winrt::guid g_comServerClsid{ GUID_NULL };
 
 wil::unique_event& GetWaitHandleForArgs()
 {
     return g_waitHandleForArgs;
+}
+
+winrt::guid& GetComServerClsid()
+{
+    return g_comServerClsid;
 }
 
 namespace winrt
@@ -91,22 +96,15 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_IF_FAILED(notificationPlatform->RegisterFullTrustApplication(processName.get(), remoteId, &unpackagedAppUserModelId));
     }
 
-    winrt::hresult CreateChannelWithRemoteIdHelper(const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
+    winrt::hresult CreateChannelWithRemoteIdHelper(wil::unique_cotaskmem_string const& appId, const winrt::guid& remoteId, ChannelDetails& channelInfo) noexcept try
     {
-        wchar_t appUserModelId[APPLICATION_USER_MODEL_ID_MAX_LENGTH] = {};
-        UINT32 appUserModelIdSize{ ARRAYSIZE(appUserModelId) };
-
-        THROW_IF_FAILED(GetCurrentApplicationUserModelId(&appUserModelIdSize, appUserModelId));
-
-        THROW_HR_IF(E_INVALIDARG, (appUserModelIdSize > APPLICATION_USER_MODEL_ID_MAX_LENGTH) || (appUserModelIdSize == 0));
-
         HRESULT operationalCode{};
         ABI::Windows::Foundation::DateTime channelExpiryTime{};
         wil::unique_cotaskmem_string channelId;
         wil::unique_cotaskmem_string channelUri;
 
         THROW_IF_FAILED(PushNotifications_CreateChannelWithRemoteIdentifier(
-            appUserModelId,
+            appId.get(),
             remoteId,
             &operationalCode,
             &channelId,
@@ -116,7 +114,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         THROW_IF_FAILED(operationalCode);
 
         winrt::copy_from_abi(channelInfo.channelExpiryTime, &channelExpiryTime);
-        channelInfo.appUserModelId = winrt::hstring{ appUserModelId };
+        channelInfo.appId = winrt::hstring{ appId.get() };
         channelInfo.channelId = winrt::hstring{ channelId.get() };
         channelInfo.channelUri = winrt::hstring{ channelUri.get() };
 
@@ -124,12 +122,17 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
     }
     CATCH_RETURN()
 
+    winrt::Microsoft::Windows::PushNotifications::PushNotificationManager PushNotificationManager::Default()
+    {
+        static auto pushNotificationManager{ winrt::make<PushNotificationManager>() };
+        return pushNotificationManager;
+    }
+
     winrt::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> PushNotificationManager::CreateChannelAsync(const winrt::guid remoteId)
     {
         THROW_HR_IF(E_NOTIMPL, !::Microsoft::Windows::PushNotifications::Feature_PushNotifications::IsEnabled());
 
         wil::winrt_module_reference moduleRef{};
-        bool usingLegacyImplementation{ false };
 
         try
         {
@@ -157,72 +160,38 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             {
                 try
                 {
-                    if (IsActivatorSupported(PushNotificationRegistrationActivators::PushTrigger))
+                    ChannelDetails channelInfo{};
+                    if (PushNotificationHelpers::IsPackagedAppScenario())
                     {
-                        ChannelDetails channelInfo{};
-                        winrt::hresult hr = CreateChannelWithRemoteIdHelper(remoteId, channelInfo);
-
-                        // RemoteId APIs are not applicable for downlevel OS versions.
-                        // So we get error E_NOTIMPL and we fallback to calling into
-                        // public WinRT API CreatePushNotificationChannelForApplicationAsync
-                        // to request a channel.
-                        if (SUCCEEDED(hr))
-                        {
-                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
-
-                            co_return winrt::make<PushNotificationCreateChannelResult>(
-                                winrt::make<PushNotificationChannel>(channelInfo),
-                                S_OK,
-                                PushNotificationChannelStatus::CompletedSuccess);
-                        }
-                        else if (hr == E_NOTIMPL)
-                        {
-                            usingLegacyImplementation = true;
-
-                            PushNotificationChannelManager channelManager{};
-                            winrt::PushNotificationChannel pushChannelReceived{ nullptr };
-
-                            pushChannelReceived = co_await channelManager.CreatePushNotificationChannelForApplicationAsync();
-
-                            PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
-
-                            co_return winrt::make<PushNotificationCreateChannelResult>(
-                                winrt::make<PushNotificationChannel>(pushChannelReceived),
-                                S_OK,
-                                PushNotificationChannelStatus::CompletedSuccess);
-                        }
-                        else
-                        {
-                            winrt::check_hresult(hr);
-                        }
+                        auto appUserModelId{ PushNotificationHelpers::GetAppUserModelId() };
+                        THROW_IF_FAILED(CreateChannelWithRemoteIdHelper(appUserModelId, remoteId, channelInfo));
                     }
                     else
                     {
+                        // AppId is generated by PushNotificationLongRunningTask singleton
                         wil::unique_cotaskmem_string unpackagedAppUserModelId;
                         RegisterUnpackagedApplicationHelper(remoteId, unpackagedAppUserModelId);
-                        PushNotificationChannelManager channelManager{};
-                        winrt::PushNotificationChannel pushChannelReceived{ co_await channelManager.CreatePushNotificationChannelForApplicationAsync(unpackagedAppUserModelId.get()) };
+                        THROW_IF_FAILED(CreateChannelWithRemoteIdHelper(unpackagedAppUserModelId, remoteId, channelInfo));
 
                         auto notificationPlatform{ PushNotificationHelpers::GetNotificationPlatform() };
 
                         wil::unique_cotaskmem_string processName;
                         THROW_IF_FAILED(GetCurrentProcessPath(processName));
-                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivator(processName.get()));
+                        THROW_IF_FAILED(notificationPlatform->RegisterLongRunningActivatorWithClsid(processName.get(), GetComServerClsid()));
 
                         std::wstring toastAppId{ RetrieveNotificationAppId() };
                         THROW_IF_FAILED(notificationPlatform->AddToastRegistrationMapping(processName.get(), toastAppId.c_str()));
-
-                        PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId, usingLegacyImplementation);
-
-                        co_return winrt::make<PushNotificationCreateChannelResult>(
-                            winrt::make<PushNotificationChannel>(pushChannelReceived),
-                            S_OK,
-                            PushNotificationChannelStatus::CompletedSuccess);
                     }
+
+                    PushNotificationTelemetry::ChannelRequestedByApi(S_OK, remoteId);
+                    co_return winrt::make<PushNotificationCreateChannelResult>(
+                        winrt::make<PushNotificationChannel>(channelInfo),
+                        S_OK,
+                        PushNotificationChannelStatus::CompletedSuccess);
                 }
                 catch (...)
                 {
-                    auto channelRequestException = hresult_error(to_hresult(), take_ownership_from_abi);
+                    auto channelRequestException{ hresult_error(to_hresult(), take_ownership_from_abi) };
 
                     if ((backOffTime <= c_maxBackoff) && IsChannelRequestRetryable(channelRequestException.code()))
                     {
@@ -234,7 +203,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     }
                     else
                     {
-                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId, usingLegacyImplementation);
+                        PushNotificationTelemetry::ChannelRequestedByApi(channelRequestException.code(), remoteId);
 
                         co_return winrt::make<PushNotificationCreateChannelResult>(
                             nullptr,
@@ -248,7 +217,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         }
         catch (...)
         {
-            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId, usingLegacyImplementation);
+            PushNotificationTelemetry::ChannelRequestedByApi(wil::ResultFromCaughtException(), remoteId);
             throw;
         }
     }
@@ -276,6 +245,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
                     THROW_HR_IF(E_INVALIDARG, s_protocolRegistration);
                 }
 
+                // AppId generated by PushNotificationsLongRunningTask singleton
                 wil::unique_cotaskmem_string unpackagedAppUserModelId;
                 RegisterUnpackagedApplicationHelper(GUID_NULL, unpackagedAppUserModelId); // create default registration for app
 
@@ -290,7 +260,7 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             winrt::guid registeredClsid{ GUID_NULL };
             THROW_IF_FAILED(PushNotificationHelpers::GetComRegistrationFromRegistry(expectedPushServerArgs.data(), registeredClsid));
 
-            if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger))
+            if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::PushTrigger) && PushNotificationHelpers::IsPackagedAppScenario())
             {
                 {
                     auto lock = s_activatorInfoLock.lock_shared();
@@ -359,12 +329,13 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
             if (WI_IsFlagSet(registrationActivators, PushNotificationRegistrationActivators::ComActivator))
             {
                 {
-                    auto lock = s_activatorInfoLock.lock_shared();
+                    auto lock{ s_activatorInfoLock.lock_shared() };
                     THROW_HR_IF_MSG(E_INVALIDARG, s_comActivatorRegistration, "ComActivator already registered.");
                 }
 
                 GetWaitHandleForArgs().create();
-
+                GetComServerClsid() = taskClsid;
+                
                 THROW_IF_FAILED(::CoRegisterClassObject(
                     registeredClsid,
                     winrt::make<PushNotificationBackgroundTaskFactory>().get(),
@@ -483,17 +454,14 @@ namespace winrt::Microsoft::Windows::PushNotifications::implementation
         auto isProtocolActivatorSet{ WI_IsFlagSet(activators, PushNotificationRegistrationActivators::ProtocolActivator) };
 
         THROW_HR_IF(E_INVALIDARG, isBackgroundTaskFlagSet && isProtocolActivatorSet); // Invalid flag combination
-        if (PushNotificationHelpers::IsPackagedAppScenario())
+        if (AppModel::Identity::IsPackagedProcess() && isBackgroundTaskFlagSet)
         {
-            if (isProtocolActivatorSet) // ProtocolActivator unsupported if COM activation is available
-            {
-                return false;
-            }
-            return isBackgroundTaskFlagSet;
+            return true;
         }
-        else
+        else if(!AppModel::Identity::IsPackagedProcess() && isProtocolActivatorSet)
         {
-            return isProtocolActivatorSet;
+            return true;
         }
+        return false;
     }
 }

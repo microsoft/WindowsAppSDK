@@ -17,9 +17,9 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressResult> UpdateProgressDataAsync(winrt::Microsoft::Windows::AppNotifications::AppNotificationProgressData const data, hstring const tag);
         winrt::Microsoft::Windows::AppNotifications::AppNotificationSetting Enablement();
         winrt::Windows::Foundation::IAsyncAction RemoveByIdAsync(uint32_t notificationId);
-        winrt::Windows::Foundation::IAsyncAction RemoveWithTagAsync(hstring tag);
-        winrt::Windows::Foundation::IAsyncAction RemoveWithTagGroupAsync(hstring tag, hstring group);
-        winrt::Windows::Foundation::IAsyncAction RemoveGroupAsync(hstring group);
+        winrt::Windows::Foundation::IAsyncAction RemoveWithTagAsync(hstring const tag);
+        winrt::Windows::Foundation::IAsyncAction RemoveWithTagGroupAsync(hstring const tag, hstring const group);
+        winrt::Windows::Foundation::IAsyncAction RemoveGroupAsync(hstring const group);
         winrt::Windows::Foundation::IAsyncAction RemoveAllAsync();
         winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::Windows::AppNotifications::AppNotification>> GetAllAsync();
     };

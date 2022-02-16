@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  IgnorableNamespaces="uap uap5 rescap com">
+
+	<Identity
+	  Name="ToastNotificationsWin32App"
+	  Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+	  Version="1.0.0.0" />
+
+	<Properties>
+		<DisplayName>Toast Notifications Win32 Demo App</DisplayName>
+		<PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+		<Logo>Images\StoreLogo.png</Logo>
+	</Properties>
+
+	<Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.Framework" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" MinVersion="0.0.0.0"/>
+	</Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+			  DisplayName="Toast Notifications Win32 Demo App"
+			  Description="Toast Notifications Win32 Demo App"
+			  BackgroundColor="transparent"
+			  Square150x150Logo="Images\Square150x150Logo.png"
+			  Square44x44Logo="Images\Square44x44Logo.png">
+				<uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+				<uap:SplashScreen Image="Images\SplashScreen.png" uap5:Optional="true"/>
+      </uap:VisualElements>
+      <Extensions>
+		<desktop:Extension Category="windows.toastNotificationActivation">
+			<desktop:ToastNotificationActivation ToastActivatorCLSID="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" />
+		</desktop:Extension>
+		<com:Extension Category="windows.comServer">
+			<com:ComServer>
+				<com:ExeServer Executable="ToastNotificationsDemoApp\ToastNotificationsDemoApp.exe" Arguments="----AppNotificationActivated:" DisplayName="Toast activator">
+					<com:Class Id="FE8C7374-A28F-4CBE-8D28-4288CBDFD431" DisplayName="Toast activator"/>
+				</com:ExeServer>
+			</com:ComServer>
+		</com:Extension>
+		<uap:Extension Category="windows.protocol" EntryPoint="Windows.FullTrustApplication">
+			<uap:Protocol Name="packagedtoast-protocol">
+				<uap:DisplayName>WindowsAppRuntimeTestProtocol</uap:DisplayName>
+			</uap:Protocol>
+		</uap:Extension>
+		<com:Extension Category="windows.comServer">
+			<com:ComServer>
+				<com:ExeServer Executable="ToastNotificationsDemoApp\ToastNotificationsDemoApp.exe" DisplayName="SampleBackgroundApp" Arguments="----WindowsAppRuntimePushServer:">
+					<com:Class Id="e3815064-8aef-4db3-a682-603f312d0d99" DisplayName="Windows App SDK Push" />
+				</com:ExeServer>
+			</com:ComServer>
+		</com:Extension>
+	</Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

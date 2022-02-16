@@ -20,7 +20,7 @@ winrt::Windows::Foundation::IAsyncOperation<PushNotificationChannel> RequestChan
 {
     // To obtain an AAD RemoteIdentifier for your app,
     // follow the instructions on https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app
-    auto channelOperation = PushNotificationManager::CreateChannelAsync(
+    auto channelOperation = PushNotificationManager::Default().CreateChannelAsync(
         winrt::guid("0160ee84-0c53-4851-9ff2-d7f5a87ed914"));
 
     // Setup the inprogress event handler
@@ -108,17 +108,17 @@ int main()
           AppNotificationManager::Default().Register(activationInfo);
     }
 
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         PushNotificationActivationInfo info(
             PushNotificationRegistrationActivators::PushTrigger | PushNotificationRegistrationActivators::ComActivator);
 
-        PushNotificationManager::RegisterActivator(info);
+        PushNotificationManager::Default().RegisterActivator(info);
     }
     else
     {
         PushNotificationActivationInfo info(PushNotificationRegistrationActivators::ProtocolActivator);
-        PushNotificationManager::RegisterActivator(info);
+        PushNotificationManager::Default().RegisterActivator(info);
     }
 
     auto args = AppInstance::GetCurrent().GetActivatedEventArgs();
@@ -155,10 +155,10 @@ int main()
         std::cin.ignore();
     }
 
-    if (PushNotificationManager::IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
+    if (PushNotificationManager::Default().IsActivatorSupported(PushNotificationRegistrationActivators::ComActivator))
     {
         // Don't unregister PushTrigger because we still want to receive push notifications from background infrastructure.
-        PushNotificationManager::UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
+        PushNotificationManager::Default().UnregisterActivator(PushNotificationRegistrationActivators::ComActivator);
     }
 
     AppNotificationManager::Default().Unregister();

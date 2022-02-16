@@ -8,15 +8,16 @@
 namespace winrt::Microsoft::Windows::PushNotifications::implementation
 {
 
-    struct PushNotificationManager
+    struct PushNotificationManager : PushNotificationManagerT<PushNotificationManager>
     {
-        PushNotificationManager() = delete;
+        PushNotificationManager() = default;
 
-        static void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
-        static void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
-        static void UnregisterAllActivators();
+        static winrt::Microsoft::Windows::PushNotifications::PushNotificationManager Default();
+        void RegisterActivator(Microsoft::Windows::PushNotifications::PushNotificationActivationInfo const& details);
+        void UnregisterActivator(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
+        void UnregisterAllActivators();
 
-        static winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const remoteId);
+        winrt::Windows::Foundation::IAsyncOperationWithProgress<winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelResult, winrt::Microsoft::Windows::PushNotifications::PushNotificationCreateChannelStatus> CreateChannelAsync(winrt::guid const remoteId);
 
         static bool IsActivatorSupported(Microsoft::Windows::PushNotifications::PushNotificationRegistrationActivators const& activators);
     };
