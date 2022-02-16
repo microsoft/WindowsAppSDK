@@ -20,8 +20,6 @@ namespace Microsoft::Windows::AppNotifications::Helpers
     const std::wstring c_quote{ LR"(")" };
     const std::wstring c_notificationActivatedArgument{ L" ----AppNotificationActivated:" };
 
-    winrt::event<NotificationActivationEventHandler>& GetAppNotificationHandlers();
-
     inline const int GUID_LENGTH = 39; // GUID + '{' + '}' + '/0'
 
     inline std::wstring ConvertPathToKey(std::wstring path)

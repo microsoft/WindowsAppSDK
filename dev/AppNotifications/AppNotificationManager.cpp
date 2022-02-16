@@ -30,19 +30,6 @@ namespace winrt
     using namespace winrt::Microsoft::Windows::AppNotifications;
 }
 
-static winrt::event<NotificationActivationEventHandler> g_notificationHandlers;
-static wil::unique_event g_waitHandleForActivation;
-
-wil::unique_event& GetWaitHandleForActivation()
-{
-    return g_waitHandleForActivation;
-}
-
-winrt::event<NotificationActivationEventHandler>& Microsoft::Windows::AppNotifications::Helpers::GetAppNotificationHandlers()
-{
-    return g_notificationHandlers;
-}
-
 namespace ToastABI
 {
     using namespace ::ABI::Microsoft::Internal::ToastNotifications;
@@ -135,19 +122,26 @@ namespace winrt::Microsoft::Windows::AppNotifications::implementation
 
         winrt::AppNotificationActivatedEventArgs activatedEventArgs = winrt::make<winrt::Microsoft::Windows::AppNotifications::implementation::AppNotificationActivatedEventArgs>(invokedArgs, userInput);
 
-        if (m_notificationHandlers)
+        if (!m_firstNotificationReceived)
         {
-            /* As the process is already launched, we invoke the foreground toast event handlers with the activatedEventArgs */
-            m_notificationHandlers(Default(), activatedEventArgs);
+            m_firstNotificationReceived = true;
+
+            std::wstring commandLine{ GetCommandLine() };
+            auto pos{ commandLine.find(c_notificationActivatedArgument) };
+            if (pos == std::wstring::npos)
+            {
+                m_notificationHandlers(Default(), activatedEventArgs);
+            }
+            else
+            {
+                auto appProperties = winrt::CoreApplication::Properties();
+                appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
+                SetEvent(GetWaitHandleForArgs().get());
+            }
         }
         else
         {
-            /* Activation results in a process launch, we cache the activatedEventArgs in the COM static store
-               and fire an event to let the main thread know that it is okay to infer into AppLifeCycle::GetToastActivatedEventArgs().
-            */
-            auto appProperties = winrt::CoreApplication::Properties();
-            appProperties.Insert(ACTIVATED_EVENT_ARGS_KEY, activatedEventArgs);
-            SetEvent(GetWaitHandleForArgs().get());
+            m_notificationHandlers(Default(), activatedEventArgs);
         }
 
         return S_OK;
